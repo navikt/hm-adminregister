@@ -1,0 +1,256 @@
+@use 'src/styles/mixins';
+
+@import '@navikt/ds-css';
+@import '@navikt/ds-tokens/dist/tokens';
+@import 'overwrite-aksel';
+@import 'auth-pages';
+@import 'menu';
+@import 'not-found';
+@import 'variables';
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #f6f7fc;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  @include mixins.for-size(tablet-up) {
+    flex: auto;
+  }
+  /* Page content. The value of the margin-left property should match the value of the sidemenu's width property */
+}
+
+main.show-menu {
+  @include mixins.for-size(phone-up) {
+    margin-left: 123px;
+  }
+
+  @include mixins.for-size(tablet-up) {
+    margin-left: 270px;
+  }
+
+  > div {
+    padding: $a-spacing-6 $a-spacing-3;
+
+    @include mixins.for-size(tablet-up) {
+      padding-left: $a-spacing-12;
+      padding-top: $a-spacing-12;
+    }
+  }
+}
+
+main:not(.show-menu) {
+  > div {
+    padding: $a-spacing-6 $a-spacing-3;
+
+    @include mixins.for-size(tablet-up) {
+      padding: $a-spacing-12 $a-spacing-3;
+    }
+  }
+}
+
+.logo-and-name-container {
+  display: flex;
+  gap: $a-spacing-2;
+  align-items: center;
+  padding: $a-spacing-8 $a-spacing-1;
+
+  .name {
+    display: flex;
+    flex-direction: column;
+    font-weight: 400;
+  }
+}
+
+.flex {
+  display: flex;
+
+  &--column {
+    flex-direction: column;
+  }
+
+  &--row {
+    flex-direction: row;
+
+    @include mixins.for-size(phone-only) {
+      flex-direction: column;
+    }
+  }
+
+  &--space-between {
+    justify-content: space-between;
+  }
+}
+
+.flex-column-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include mixins.for-size(desktop-up) {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+  }
+}
+
+.spacing {
+  &-top {
+    &--small {
+      margin-top: $a-spacing-2;
+    }
+
+    &--medium {
+      margin-top: $a-spacing-4;
+    }
+
+    &--large {
+      margin-top: $a-spacing-8;
+    }
+
+    &--xlarge {
+      margin-top: $a-spacing-16;
+    }
+  }
+}
+
+.spacing {
+  &-bottom {
+    &--small {
+      margin-bottom: $a-spacing-2;
+    }
+
+    &--medium {
+      margin-bottom: $a-spacing-4;
+    }
+
+    &--large {
+      margin-bottom: $a-spacing-8;
+    }
+
+    &--xlarge {
+      margin-bottom: $a-spacing-16;
+    }
+  }
+}
+
+.fit-content {
+  width: fit-content;
+}
+
+.text-overflow-hidden {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.max-width {
+  max-width: 1200px;
+  margin: auto;
+  padding-left: $a-spacing-3;
+  padding-right: $a-spacing-3;
+
+  @include mixins.for-size(desktop-up) {
+    padding-left: $a-spacing-6;
+    padding-right: $a-spacing-6;
+  }
+}
+
+.page {
+  &__background-container {
+    min-height: 100vh;
+  }
+
+  &__content-container {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-12;
+    max-width: 55rem;
+  }
+}
+
+.search-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: $a-spacing-4;
+
+  &__search-box {
+    width: 80%;
+    max-width: 35rem;
+  }
+
+  &__add-new-button {
+    align-self: flex-end;
+  }
+}
+
+.panel-list {
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-4;
+  }
+
+  &__name-panel {
+    display: flex;
+    justify-content: space-between;
+    padding: $a-spacing-4;
+    border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
+    border-radius: $a-border-radius-medium;
+  }
+
+  &__title {
+    font-size: 18px;
+  }
+
+  &__description {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $a-spacing-7;
+
+  .button-container {
+    display: flex;
+    width: 100%;
+    gap: $a-spacing-4;
+    margin-top: $a-spacing-4;
+
+    button {
+      flex-grow: 1;
+    }
+  }
+
+  .readonly {
+    border: none;
+    background-color: inherit;
+    min-height: 3rem;
+
+    input {
+      border: none;
+      background-color: inherit;
+      min-height: 3rem;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  &--max-width-small {
+    width: 400px;
+
+    @include mixins.for-size(phone-only) {
+      width: 100%;
+    }
+  }
+}

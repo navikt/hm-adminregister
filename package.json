@@ -1,0 +1,29 @@
+{
+  "name": "hm-brille-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8"
+  },
+  "scripts": {
+    "postinstall": "npm --prefix client install && npm --prefix server install",
+    "dev": "npm run --prefix client dev",
+    "start": "npm run --prefix server start",
+    "test:client": "npm run --prefix client test",
+    "test:server": "npm run --prefix server test",
+    "test": "run-p test:*",
+    "build:client": "npm run --prefix client build",
+    "build:server": "npm run --prefix server build",
+    "build": "run-p build:*",
+    "clean:client": "npm run --prefix client clean",
+    "clean:server": "npm run --prefix server clean",
+    "clean": "run-p clean:*",
+    "prettier": "npm run --prefix client prettier"
+  },
+  "dependencies": {
+    "@navikt/aksel-icons": "^4.7.2",
+    "@navikt/ds-tokens": "^4.7.2"
+  }
+}

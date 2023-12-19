@@ -1,0 +1,68 @@
+@use './mixins';
+@import 'variables';
+@import '@navikt/ds-tokens/dist/tokens';
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $fm-bg-light;
+}
+
+.auth-dialog-box {
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 29rem;
+    gap: $a-spacing-5;
+    background-color: $a-white;
+    padding: $a-spacing-12 $a-spacing-12;
+    border-radius: $a-border-radius-xlarge;
+    box-shadow: $a-shadow-small;
+
+    h2 {
+      font-weight: $a-font-weight-regular;
+      font-size: $a-font-size-xlarge;
+      line-height: $a-font-line-height-xlarge;
+    }
+
+    &--max-width > * {
+      max-width: 19rem;
+    }
+  }
+
+  &__form {
+    margin-top: $a-spacing-5;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: $a-spacing-6;
+
+    button {
+      align-self: center;
+      margin-top: $a-spacing-5;
+    }
+  }
+
+  &__erorr-message {
+    color: $a-red-400;
+  }
+
+  &__success-message {
+    color: $a-green-400;
+  }
+
+  &__button-container {
+    display: flex;
+    width: 100%;
+    gap: $a-spacing-4;
+
+    button {
+      flex-grow: 1;
+    }
+  }
+}

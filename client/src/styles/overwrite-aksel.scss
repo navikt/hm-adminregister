@@ -1,0 +1,41 @@
+.navds-alert--info {
+  background-color: $a-purple-50;
+  border-color: $a-purple-400;
+
+  .navds-alert__icon {
+    color: $a-purple-600;
+  }
+}
+
+.navds-button--primary {
+  background-color: #3a4583;
+  border-radius: 10px;
+
+  &:active,
+  &:hover {
+    background-color: #8269a2;
+  }
+}
+
+.navds-button--secondary {
+  color: #3a4583;
+  box-shadow: rgb(58, 69, 131) 0px 0px 0px 2px inset;
+  border-radius: 10px;
+
+  &:active,
+  &:hover {
+    background: #efecf4;
+    color: #3a4583;
+  }
+}
+
+.navds-button--tertiary {
+  color: #3a4583;
+  border-radius: 10px;
+
+  &:active,
+  &:hover {
+    background: #efecf4;
+    color: #3a4583;
+  }
+}

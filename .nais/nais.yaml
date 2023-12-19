@@ -1,0 +1,31 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: {{app_name}}
+  namespace: teamdigihot
+  labels:
+    app: {{app_name}}
+    team: teamdigihot
+spec:
+  image: {{image}}
+  port: 3000
+  ingresses:
+  {{#each ingress as |url|}}
+     - {{url}}
+  {{/each}}
+  accessPolicy:
+    outbound:
+      rules:
+        - application: hm-grunndata-register
+          namespace: teamdigihot
+          cluster: {{cluster}}
+  env:
+    - name: RUNTIME_ENVIRONMENT
+      value: {{runtime_env}}
+    - name: HM_REGISTER_URL
+      value: {{hm_register_url}}
+    - name: PUBLIC_ORIGIN
+      value: {{public_origin}}
+  replicas:
+    min: {{replicas.min}}
+    max: {{replicas.max}}

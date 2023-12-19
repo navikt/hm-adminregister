@@ -1,0 +1,29 @@
+// Inspired by this article: https://www.freecodecamp.org/news/the-100-correct-way-to-do-css-breakpoints-88d6a5ba1862/
+
+@mixin for-size($range) {
+  @if $range == phone-only {
+    @media (max-width: 480px) {
+      @content;
+    }
+  } @else if $range == phone-up {
+    @media (min-width: 481px) {
+      @content;
+    }
+  } @else if $range == tablet-only {
+    @media ((max-width: 767px) and (min-width: 481px)) {
+      @content;
+    }
+  } @else if $range == tablet-up {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if $range == desktop-up {
+    @media (min-width: 1024px) {
+      @content;
+    }
+  } @else if $range == desktop-xl-up {
+    @media (min-width: 1280px) {
+      @content;
+    }
+  }
+}

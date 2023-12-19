@@ -1,0 +1,56 @@
+name: Manually deploy to NAIS (ENV)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Deploy to environment
+        options:
+          - alpha
+          - dev
+          - prod
+
+run-name: Bygg og deploy til ${{ inputs.environment }}
+
+env:
+  BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment }}
+  CLUSTER: ${{ inputs.environment == 'prod' && 'prod-gcp' || 'dev-gcp' }}
+  IMAGE_PROXY_URL: ${{ fromJson('{"alpha":"https://finnhjelpemiddel.intern.dev.nav.no/imageproxy","dev":"https://finnhjelpemiddel.intern.dev.nav.no/imageproxy","prod":"https://finnhjelpemiddel.nav.no/imageproxy"}')[inputs.environment] }}
+
+jobs:
+  build:
+    name: Build and push docker container
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      packages: 'write'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.docker-build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/docker-build-push@v0
+        name: Build ${{ inputs.environment }}
+        id: docker-build
+        with:
+          team: teamdigihot
+          build_args: |
+            BUILD_ENV=${{ env.BUILD_ENV }}
+            IMAGE_PROXY_URL=${{ env.IMAGE_PROXY_URL }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+
+  deploy:
+    name: Deploy ${{ inputs.environment }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: ${{ env.CLUSTER }}
+          RESOURCE: .nais/nais.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+          VARS: .nais/nais-${{ inputs.environment }}.json
