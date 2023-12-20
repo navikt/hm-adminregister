@@ -1,4 +1,4 @@
-import { baseUrl } from '../http'
+import { baseUrl } from "../utils/swr-hooks";
 
 export async function initMSW(): Promise<ServiceWorkerRegistration | void> {
   if (!window.appSettings.USE_MSW) {

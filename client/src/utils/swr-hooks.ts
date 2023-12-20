@@ -14,6 +14,19 @@ import { useEffect } from 'react'
 import { useHydratedAuthStore } from './store/useAuthStore'
 import useSWR, { Fetcher } from 'swr'
 
+
+export function baseUrl(url: string = '') {
+  if (process.env.NODE_ENV === 'production') {
+    return `/${url}`
+  } else {
+    return url
+  }
+}
+
+export function apiUrl(url: string) {
+  return baseUrl(`/api${url}`)
+}
+
 export class CustomError extends Error {
   statusCode: number
 
