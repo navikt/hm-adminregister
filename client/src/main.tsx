@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { SWRConfig, SWRConfiguration } from 'swr'
 import { App } from './App'
-import { GlobalStyle } from './GlobalStyle'
 import { baseUrl, http } from './http'
 import { initMSW } from './mocks/initMSW'
 import './styles/globals.scss'
@@ -23,7 +22,6 @@ initMSW().then(() => {
     createRoot(container).render(
         <>
             <React.StrictMode>
-                <GlobalStyle />
                 <SWRConfig value={swrConfig}>
                     <BrowserRouter basename={baseUrl()}>
                         <App />

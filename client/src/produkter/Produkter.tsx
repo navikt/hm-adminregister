@@ -28,7 +28,7 @@ const Produkter = () => {
     }
 
     return (
-        <main>
+        <main className="show-menu">
             <div className="page__background-container">
                 <Heading level="1" size="medium" spacing>
                     Produkter
