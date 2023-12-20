@@ -10,31 +10,33 @@ import { baseUrl, http } from './http'
 import './i18n'
 import { initMSW } from './mocks/initMSW'
 import { initAmplitude } from './utils/amplitude'
-import  './styles/globals.scss'
+import './styles/globals.scss'
 import { initSentry } from './utils/sentry'
 
 const swrConfig: SWRConfiguration = {
-  async fetcher(url: string) {
-    return http.get(url)
-  },
+    async fetcher(url: string) {
+        return http.get(url)
+    },
 }
 
-initAmplitude()
-initSentry()
+// initAmplitude()
+// initSentry()
 
 initMSW().then(() => {
-  const container = document.getElementById('root')!
-  if (Modal.setAppElement) {
-    Modal.setAppElement(container)
-  }
-  createRoot(container).render(
-    <React.StrictMode>
-      <GlobalStyle />
-      <SWRConfig value={swrConfig}>
-        <BrowserRouter basename={baseUrl()}>
-          <App />
-        </BrowserRouter>
-      </SWRConfig>
-    </React.StrictMode>
-  )
+    const container = document.getElementById('root')!
+    if (Modal.setAppElement) {
+        Modal.setAppElement(container)
+    }
+    createRoot(container).render(
+        <>
+            <React.StrictMode>
+                <GlobalStyle />
+                <SWRConfig value={swrConfig}>
+                    <BrowserRouter basename={baseUrl()}>
+                        <App />
+                    </BrowserRouter>
+                </SWRConfig>
+            </React.StrictMode>
+        </>
+    )
 })

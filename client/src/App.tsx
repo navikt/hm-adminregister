@@ -9,6 +9,15 @@ import { ApplicationProvider } from './state/ApplicationContext'
 import { useTranslation } from 'react-i18next'
 import Navbar from "./layout/Navbar";
 
+
+export function App2() {
+    return (
+        <h2>
+            Hei ja
+        </h2>
+    )
+}
+
 export function App() {
     return (
         <FeilGrense erInnsendingFeil={false}>

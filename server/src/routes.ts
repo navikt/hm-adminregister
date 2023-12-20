@@ -1,11 +1,10 @@
-import { fetchDecoratorHtml } from '@navikt/nav-dekoratoren-moduler/ssr'
 import cookieParser from 'cookie-parser'
 import express, { RequestHandler, Router } from 'express'
 import type { ExchangeToken } from './auth'
 import { config } from './config'
-import { logger } from './logger'
 import { createMetrics } from './metrics'
 import { proxyHandlers } from './proxy'
+import path from "path";
 
 export const routes = {
   internal(): Router {
@@ -24,41 +23,18 @@ export const routes = {
   public(): Router {
     return Router()
       .use(cookieParser())
-      .get('/settings.js', settingsHandler)
-      .get('*', express.static(config.build_path, { index: false }))
-      .get('*', spaHandler)
+        .get('*', express.static(config.build_path))
+        .get('*', function (req, res) {
+          res.sendFile('index.html', {root: path.join(__dirname, '../../client/dist/')});
+        });
   },
+
 }
 
 const spaHandler: RequestHandler = async (req, res) => {
-  try {
-    let language = req.cookies['decorator-language']
-    if (language === undefined || !['nb', 'nn'].includes(language)) {
-      language = 'nb'
-    }
 
-    const decorator = await fetchDecoratorHtml({
-      env: config.nais_cluster_name === 'prod-gcp' ? 'prod' : 'dev',
-      context: 'samarbeidspartner',
-      chatbot: false,
-      language: language,
-      availableLanguages: [
-        {
-          locale: 'nb',
-          handleInApp: true,
-        },
-        {
-          locale: 'nn',
-          handleInApp: true,
-        },
-      ],
-    })
-    res.render('index.html', decorator)
-  } catch (err: unknown) {
-    const error = `Feil under henting av dekoratør: ${err}`
-    logger.error(error)
-    res.status(500).send(error)
-  }
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+
 }
 
 const settingsHandler: RequestHandler = (req, res) => {

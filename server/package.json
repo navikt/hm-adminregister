@@ -1,10 +1,10 @@
 {
-  "name": "hm-brille-frontend-server",
+  "name": "hm-adminregister2-server",
   "private": true,
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "cross-env IS_LABS=true USE_MSW=true ts-node-dev --transpile-only -r source-map-support/register -r dotenv/config src/server.ts",
+    "dev": "cross-env IS_LABS=true USE_MSW=false ts-node-dev --transpile-only -r source-map-support/register -r dotenv/config src/server.ts",
     "test": "cross-env IS_LABS=true USE_MSW=true jest ./test",
     "build": "tsc -p .",
     "start": "cross-env IS_LABS=true USE_MSW=true node -r source-map-support/register -r dotenv/config dist/server.js",

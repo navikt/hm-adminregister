@@ -1,9 +1,9 @@
 import path from 'path'
 
 export const config = {
-  base_path: process.env.NODE_ENV === 'production' ? '/hjelpemidler/barnebriller/' : '/',
+  base_path: process.env.NODE_ENV === 'production' ? '/' : '/',
   build_path: path.join(__dirname, '../../client/dist'),
-  port: process.env.PORT || 5000,
+  port: process.env.PORT || 5001,
   node_env: process.env.NODE_ENV || 'production',
   nais_cluster_name: process.env.NAIS_CLUSTER_NAME || 'labs-gcp',
   is_labs: process.env.IS_LABS || false,
