@@ -1,0 +1,28 @@
+@import '@navikt/ds-tokens/dist/tokens';
+
+.tag-with-icon {
+  padding: $a-spacing-1 $a-spacing-2;
+  border-radius: $a-border-radius-medium;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+
+  &--grey {
+    background-color: $a-gray-100;
+  }
+
+  &--orange {
+    background-color: $a-orange-200;
+  }
+
+  &--green {
+    background-color: $a-green-100;
+  }
+}

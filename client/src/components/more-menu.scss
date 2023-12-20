@@ -1,0 +1,20 @@
+@import '@navikt/ds-tokens/dist/tokens';
+
+.more-menu {
+  &__button {
+    &:hover {
+      cursor: pointer;
+      font-size: 1.6rem;
+    }
+  }
+
+  &__popover {
+    width: 100px;
+  }
+
+  &__button {
+    &:hover {
+      background-color: none;
+    }
+  }
+}

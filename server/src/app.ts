@@ -1,5 +1,4 @@
 import express, { Express } from 'express'
-import mustacheExpress from 'mustache-express'
 import type { Auth } from './auth'
 import { config } from './config'
 import { routes } from './routes'

@@ -1,17 +1,7 @@
 import React, { Dispatch, SetStateAction, useContext, useState } from 'react'
-import type { Brilleseddel } from '../types'
 
 export interface AppState {
-  orgnr: string
-  orgNavn: string
-  orgAdresse: string
-  barnFnr: string
-  barnNavn: string
-  barnAlder?: number
-  brillestyrke: Brilleseddel
-  bestillingsdato?: Date
-  brillepris: string
-  bestillingsreferanse: string
+  example: string
 }
 
 interface IApplicationContext {
@@ -22,20 +12,7 @@ interface IApplicationContext {
 }
 
 export const initialAppState: AppState = {
-  orgnr: '',
-  orgNavn: '',
-  orgAdresse: '',
-  barnFnr: '',
-  barnNavn: '',
-  brillestyrke: {
-    høyreSfære: '',
-    høyreSylinder: '',
-    venstreSfære: '',
-    venstreSylinder: '',
-  },
-  bestillingsdato: undefined,
-  brillepris: '',
-  bestillingsreferanse: '',
+  example: '',
 }
 
 const ApplicationContext = React.createContext<IApplicationContext>({
