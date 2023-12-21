@@ -3,10 +3,10 @@ import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from '@navikt/a
 import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from '@navikt/ds-react'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useHydratedErrorStore } from "../../utils/store/useErrorStore";
-import { MediaDTO, ProductRegistrationDTO } from "../../utils/response-types";
-import { getEditedProductDTOAddFiles, mapToMediaInfo } from "../../utils/product-util";
-import { ImageContainer } from "../../components/ImageCard";
+import { useHydratedErrorStore } from "../utils/store/useErrorStore";
+import { MediaDTO, ProductRegistrationDTO } from "../utils/response-types";
+import { getEditedProductDTOAddFiles, mapToMediaInfo } from "../utils/product-util";
+import { ImageContainer } from "../components/ImageCard";
 
 interface Props {
   modalIsOpen: boolean

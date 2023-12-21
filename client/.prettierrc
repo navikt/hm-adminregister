@@ -4,27 +4,5 @@
   "singleQuote": true,
   "arrowParens": "always",
   "trailingComma": "es5",
-  "endOfLine": "auto",
-  "tabWidth": 2,
-  "importOrder": [
-    "^react",
-    "^next",
-    "^[a-z]",
-    "^@?\\w",
-    "^@/utils",
-    "^@/hooks",
-    "^@/components",
-    "^\\u0000",
-    "^\\.\\.(?!/?$)",
-    "^\\.\\./?$",
-    "^\\./(?=.*/)(?!/?$)",
-    "^\\.(?!/?$)",
-    "^\\./?$",
-    "^.+\\.?(scss)$"
-  ],
-  "[yaml]": {
-    "editor.formatOnSave": false
-  },
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "endOfLine": "auto"
 }

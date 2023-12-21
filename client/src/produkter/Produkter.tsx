@@ -69,7 +69,7 @@ const Produkter = () => {
                             {renderData &&
                                 renderData.map((product, i) => (
                                     <LinkPanel
-                                        href={`/adminregister/produkter/${product.seriesId}`}
+                                        href={`/produkter/${product.seriesId}`}
                                         className="panel-list__name-panel"
                                         key={i}
                                     >

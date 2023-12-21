@@ -5,10 +5,10 @@ import classNames from 'classnames'
 import { useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { z } from 'zod'
-import { productVariantSchema } from "../../utils/zodSchema/newProduct";
-import { ProductRegistrationDTO } from "../../utils/response-types";
+import { productVariantSchema } from "../utils/zodSchema/newProduct";
+import { ProductRegistrationDTO } from "../utils/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { isUUID, labelRequired } from "../../utils/string-util";
+import { isUUID, labelRequired } from "../utils/string-util";
 
 type FormData = z.infer<typeof productVariantSchema>
 

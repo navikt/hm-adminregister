@@ -6,11 +6,12 @@ import { SubmitHandler, useFormContext } from 'react-hook-form'
 import { PlusCircleIcon } from '@navikt/aksel-icons'
 import { FloppydiskIcon } from '@navikt/aksel-icons'
 import { PencilWritingIcon } from '@navikt/aksel-icons'
-import { EditCommonInfoProduct } from './page'
-import { IsoCategoryDTO, ProductRegistrationDTO } from "../../utils/response-types";
-import { useIsoCategories } from "../../utils/swr-hooks";
-import { labelRequired } from "../../utils/string-util";
-import Combobox from "../../components/Combobox";
+import { EditCommonInfoProduct } from './Produkt'
+import { IsoCategoryDTO, ProductRegistrationDTO } from "../utils/response-types";
+import { useIsoCategories } from "../utils/swr-hooks";
+import { labelRequired } from "../utils/string-util";
+import Combobox from "../components/Combobox";
+
 
 interface Props {
   product: ProductRegistrationDTO

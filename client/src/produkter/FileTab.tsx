@@ -4,11 +4,11 @@ import { Alert, Button, HStack, Label, Tabs, VStack } from '@navikt/ds-react'
 import { useState } from 'react'
 import './product-page.scss'
 import UploadModal from './UploadModal'
-import { ProductRegistrationDTO } from "../../utils/response-types";
-import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "../../utils/product-util";
-import { useHydratedErrorStore } from "../../utils/store/useErrorStore";
-import { ImageCard } from "../../components/ImageCard";
-import { MoreMenu } from "../../components/MoreMenu";
+import { ProductRegistrationDTO } from "../utils/response-types";
+import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "../utils/product-util";
+import { useHydratedErrorStore } from "../utils/store/useErrorStore";
+import { ImageCard } from "../components/ImageCard";
+import { MoreMenu } from "../components/MoreMenu";
 
 
 interface Props {
