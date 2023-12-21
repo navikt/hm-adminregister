@@ -18,6 +18,8 @@ import Leverandører from "./leverandor/Leverandører";
 import LeverandørProfil from "./leverandor/LeverandørProfil";
 import OpprettLeverandør from "./leverandor/OpprettLeverandør";
 import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
+import BekreftLeverandRopplysninger from "./logg-inn/leverandoropplysninger/BekreftLeverandøropplysninger";
+import Brukeropplysninger from "./logg-inn/brukeropplysninger/Brukeropplysninger";
 
 export function App() {
     return (
@@ -49,6 +51,8 @@ export function App() {
                 <Route path="/leverandor/opprett-bruker" element={<><OpprettLeverandørBruker /></>} />
 
                 <Route path="/logg-inn" element={<LoggInn />} />
+                <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
+                <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
             </Routes>
         </>
     )
