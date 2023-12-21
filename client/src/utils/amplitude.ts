@@ -27,7 +27,7 @@ export enum SkjemaSteg {
   KRAV = 10,
 }
 
-const SKJEMANAVN = 'hm-brille-frontend'
+const SKJEMANAVN = 'hm-adminregister2'
 
 let skjemaId = uuidv4()
 
