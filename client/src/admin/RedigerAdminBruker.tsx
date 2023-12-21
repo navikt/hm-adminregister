@@ -12,6 +12,7 @@ import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "../utils/string-util";
 import { mapLoggedInUser } from "../utils/user-util";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof adminInfoUpdate>
 
@@ -103,7 +104,7 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
         })
         try {
             setLoading(true)
-            const response = await fetch(`/admreg/admin/api/v1/users/${user.id}`, {
+            const response = await fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users/${user.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

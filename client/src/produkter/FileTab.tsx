@@ -9,6 +9,7 @@ import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "../uti
 import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { ImageCard } from "../components/ImageCard";
 import { MoreMenu } from "../components/MoreMenu";
+import { HM_REGISTER_URL } from "../environments";
 
 
 interface Props {
@@ -28,7 +29,7 @@ const FileTab = ({ products, mutateProducts, fileType }: Props) => {
   const handleDeleteFile = async (uri: string) => {
     const oid = products[0].id
     //Fetch latest version of product
-    let res = await fetch(`/admreg/vendor/api/v1/product/registrations/${oid}`, {
+    let res = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${oid}`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -44,7 +45,7 @@ const FileTab = ({ products, mutateProducts, fileType }: Props) => {
     const productToUpdate: ProductRegistrationDTO = await res.json()
     const editedProductDTO = getEditedProductDTORemoveFiles(productToUpdate, uri)
 
-    res = await fetch(`/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+    res = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

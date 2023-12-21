@@ -4,6 +4,7 @@ import { Alert, BodyShort, Button, Detail, Link, VStack } from '@navikt/ds-react
 import { Buldings3Icon, ChevronDownIcon, LeaveIcon, PersonCircleIcon, PersonIcon } from '@navikt/aksel-icons'
 import { useNavigate } from "react-router-dom";
 import { useHydratedAuthStore } from "../../utils/store/useAuthStore";
+import { HM_REGISTER_URL } from "../../environments";
 
 const ProfileMenu = () => {
   const [error, setError] = useState<Error | null>(null)
@@ -15,7 +16,7 @@ const ProfileMenu = () => {
   async function handleLogout(event: any) {
     event.preventDefault()
     try {
-      const res = await fetch(`/admreg/logout`, {
+      const res = await fetch(`${HM_REGISTER_URL}admreg/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

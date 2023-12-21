@@ -1,0 +1,1 @@
+export const HM_REGISTER_URL = import.meta.env.VITE_HM_REGISTER_URL;

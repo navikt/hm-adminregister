@@ -10,6 +10,7 @@ import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "../utils/string-util";
 import { SupplierDTOBody } from "../utils/supplier-util";
+import { HM_REGISTER_URL } from "../environments";
 
 
 type FormData = z.infer<typeof newSupplierSchema>
@@ -73,7 +74,7 @@ export default function OpprettLeverandør() {
       },
     }
 
-    const response = await fetch('/admreg/admin/api/v1/supplier/registrations', {
+    const response = await fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/supplier/registrations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

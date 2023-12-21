@@ -5,6 +5,7 @@ import { mapSupplier, Supplier, SupplierUser } from "../utils/supplier-util";
 import { useHydratedAuthStore } from "../utils/store/useAuthStore";
 import SupplierInfo from "../components/supplier/SupplierInfo";
 import SupplierUsers from "../components/supplier/SupplierUsers";
+import { HM_REGISTER_URL } from "../environments";
 
 export default function Profil() {
     const [error, setError] = useState<Error | null>(null)
@@ -21,7 +22,7 @@ export default function Profil() {
 
         setLoading(true)
 
-        fetch('/admreg/vendor/api/v1/supplier/registrations/', {
+        fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/supplier/registrations/`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -33,7 +34,7 @@ export default function Profil() {
             .then((data) => {
                 setSupplier(mapSupplier(data))
 
-                fetch('/admreg/vendor/api/v1/users', {
+                fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/users`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

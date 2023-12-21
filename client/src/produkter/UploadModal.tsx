@@ -7,6 +7,7 @@ import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { MediaDTO, ProductRegistrationDTO } from "../utils/response-types";
 import { getEditedProductDTOAddFiles, mapToMediaInfo } from "../utils/product-util";
 import { ImageContainer } from "../components/ImageCard";
+import { HM_REGISTER_URL } from "../environments";
 
 interface Props {
   modalIsOpen: boolean
@@ -36,7 +37,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     for (const upload of uploads) {
       formData.append('files', upload.file)
     }
-    let res = await fetch(`/admreg/vendor/api/v1/media/product/files/${oid}`, {
+    let res = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/media/product/files/${oid}`, {
       method: 'POST',
       headers: {
         accept: 'application/json',
@@ -51,7 +52,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     }
     const mediaDTOs: MediaDTO[] = await res.json()
     //Fetch produkt to update the latest version
-    res = await fetch(`/admreg/vendor/api/v1/product/registrations/${oid}`, {
+    res = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${oid}`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -75,7 +76,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
         )
       )
 
-    res = await fetch(`/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+    res = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -12,6 +12,7 @@ import { SupplierRegistrationDTO } from "../../utils/response-types";
 import { useHydratedErrorStore } from "../../utils/store/useErrorStore";
 import { formatPhoneNumber, labelRequired } from "../../utils/string-util";
 import { supplierInfoUpdate } from "../../utils/zodSchema/login";
+import { HM_REGISTER_URL } from "../../environments";
 
 type FormData = z.infer<typeof supplierInfoUpdate>
 
@@ -116,7 +117,7 @@ const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegist
 
     const supplierJSON = JSON.stringify(supplierBody)
     setLoading(true)
-    const response = await fetch('/admreg/vendor/api/v1/supplier/registrations', {
+    const response = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/supplier/registrations`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ import { ProductRegistrationDTO } from "../utils/response-types";
 import { useHydratedAuthStore } from "../utils/store/useAuthStore";
 import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { fetcherGET } from "../utils/swr-hooks";
+import { HM_REGISTER_URL } from "../environments";
 
 const RedigerProduktVariant = () => {
     const { loggedInUser } = useHydratedAuthStore()
@@ -14,8 +15,8 @@ const RedigerProduktVariant = () => {
     const { productId } = useParams()
 
     const registrationsPath = loggedInUser?.isAdmin
-        ? `/admreg/admin/api/v1/product/registrations/${productId}`
-        : `/admreg/vendor/api/v1/product/registrations/${productId}`
+        ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/${productId}`
+        : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${productId}`
 
     const { data: product, error, isLoading, mutate } =
         useSWR<ProductRegistrationDTO>(registrationsPath, fetcherGET)

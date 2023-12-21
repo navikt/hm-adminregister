@@ -8,6 +8,7 @@ import { UserDTO } from "../../utils/response-types";
 import { useNavigate } from "react-router-dom";
 import { userInfoUpdate } from "../../utils/zodSchema/login";
 import { formatPhoneNumber, labelRequired } from "../../utils/string-util";
+import { HM_REGISTER_URL } from "../../environments";
 
 type FormData = z.infer<typeof userInfoUpdate>
 
@@ -64,8 +65,8 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
     })
   }
 
-  const userPasswordUrl = isAdmin ? '/admreg/admin/api/v1/users/password' : '/admreg/vendor/api/v1/users/password'
-  const userInfoUrl = isAdmin ? `/admreg/admin/api/v1/users/${user.id}` : '/admreg/vendor/api/v1/users'
+  const userPasswordUrl = isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/users/password` : `${HM_REGISTER_URL}admreg/vendor/api/v1/users/password`
+  const userInfoUrl = isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/users/${user.id}` : `${HM_REGISTER_URL}admreg/vendor/api/v1/users`
 
   async function onSubmit(data: FormData) {
     const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, '')

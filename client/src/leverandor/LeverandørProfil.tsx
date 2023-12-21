@@ -7,6 +7,7 @@ import { mapSupplier, Supplier, SupplierUser } from "../utils/supplier-util";
 import SupplierInfo from "../components/supplier/SupplierInfo";
 import SupplierUsers from "../components/supplier/SupplierUsers";
 import { useParams } from "react-router-dom";
+import { HM_REGISTER_URL } from "../environments";
 
 const LeverandørProfil = () => {
     const [error, setError] = useState<Error | null>(null)
@@ -18,7 +19,7 @@ const LeverandørProfil = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch('/admreg/admin/api/v1/supplier/registrations/' + id, {
+        fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/supplier/registrations/` + id, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -30,7 +31,7 @@ const LeverandørProfil = () => {
             .then((data) => {
                 setSupplier(mapSupplier(data))
                 if (data) {
-                    fetch('/admreg/admin/api/v1/users/supplierId/' + id, {
+                    fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users/supplierId/` + id, {
                         headers: {
                             'Content-Type': 'application/json',
                         },

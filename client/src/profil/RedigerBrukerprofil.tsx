@@ -12,6 +12,7 @@ import { UserDTO } from "../utils/response-types";
 import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "../utils/string-util";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof supplierUserInfoUpdate>
 
@@ -99,7 +100,7 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
             },
         })
         setLoading(true)
-        const response = await fetch('/admreg/vendor/api/v1/users', {
+        const response = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/users`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

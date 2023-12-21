@@ -34,14 +34,5 @@ const htmlPlugin = ({ development }: { development?: boolean }): Plugin => ({
 
 // https://vitejs.dev/config/
 export default defineConfig((env) => ({
-    plugins: [htmlPlugin({ development: env.mode === 'development' }), react()],
-    server: {
-        proxy: {
-            '/admreg': {
-                target: 'http://localhost:8080/',
-                changeOrigin: true,
-                secure: false,
-            },
-        },
-    },
+    plugins: [react()],
 }))

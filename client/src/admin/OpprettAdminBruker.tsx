@@ -10,6 +10,7 @@ import { useHydratedErrorStore } from "../utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { NewAdminUserDTO } from "../utils/admin-util";
 import { labelRequired } from "../utils/string-util";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof newAdminUserSchema>
 
@@ -61,7 +62,7 @@ export default function OpprettAdminBruker() {
             roles: ['ROLE_ADMIN'],
             attributes: {},
         }
-        const response = await fetch('/admreg/admin/api/v1/users', {
+        const response = await fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

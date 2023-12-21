@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { loginSchema } from "../utils/zodSchema/login";
 import { useHydratedAuthStore } from "../utils/store/useAuthStore";
 import { mapLoggedInUser } from "../utils/user-util";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof loginSchema>
 
@@ -52,7 +53,7 @@ export default function LoggInn() {
   async function onSubmit(data: FormData) {
     try {
       setLoading(true)
-      const loginRes = await fetch('/admreg/login', {
+      const loginRes = await fetch(`${HM_REGISTER_URL}admreg/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ export default function LoggInn() {
       })
 
       if (loginRes.ok) {
-        const loggedInUserRes = await fetch('/admreg/loggedInUser', {
+        const loggedInUserRes = await fetch(`${HM_REGISTER_URL}admreg/loggedInUser`, {
           method: 'GET',
           credentials: 'include',
           headers: {

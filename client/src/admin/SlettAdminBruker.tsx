@@ -6,11 +6,12 @@ import './slett-admin.scss'
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { UserDTO } from "../utils/response-types";
 import { fetcherGET } from "../utils/swr-hooks";
+import { HM_REGISTER_URL } from "../environments";
 
 const DeleteAdminUser = () => {
     const [searchParams] = useSearchParams()
     const userId = String(searchParams.get('_')) || ''
-    const path = '/admreg/admin/api/v1/users/'
+    const path = `${HM_REGISTER_URL}admreg/admin/api/v1/users/`
     const { data, error, isLoading } = useSWR<UserDTO>(userId ? path + userId : null, fetcherGET)
 
     if (!data || isLoading) return <Loader size="3xlarge" title="venter..."></Loader>
@@ -45,7 +46,7 @@ const DeleteUserForm = ({ user }: { user: UserDTO }) => {
         } else if (state) {
             try {
                 setLoading(true)
-                const response = await fetch(`/admreg/admin/api/v1/users/${user.id}`, {
+                const response = await fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users/${user.id}`, {
                     method: 'DELETE',
                     headers: {
                         accept: 'application/json',

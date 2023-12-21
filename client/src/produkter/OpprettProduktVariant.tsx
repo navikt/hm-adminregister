@@ -12,6 +12,7 @@ import { DraftVariantDTO, ProductRegistrationDTO } from "../utils/response-types
 import { fetcherGET } from "../utils/swr-hooks";
 import { isUUID, labelRequired } from "../utils/string-util";
 import ProductVariantForm from "./ProductVariantForm";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof newProductVariantSchema>
 
@@ -28,17 +29,17 @@ const OpprettProduktVariant = () => {
     const { seriesId, productId } = useParams()
 
     const seriesIdPath = loggedInUser?.isAdmin
-        ? `/admreg/admin/api/v1/product/registrations/series/${seriesId}`
-        : `/admreg/vendor/api/v1/product/registrations/series/${seriesId}`
+        ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/series/${seriesId}`
+        : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/series/${seriesId}`
 
     const registrationsDraftPath = loggedInUser?.isAdmin
-        ? `/admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
-        : `/admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`
+        ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
+        : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`
 
     const registrationsUpdatePath = (id: string) =>
         loggedInUser?.isAdmin
-            ? `/admreg/admin/api/v1/product/registrations/${id}`
-            : `/admreg/vendor/api/v1/product/registrations/${id}`
+            ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/${id}`
+            : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${id}`
 
     ///PROBLEM den skriver over uansett nå, yey
 
