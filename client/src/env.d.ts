@@ -4,6 +4,7 @@ interface ImportMetaEnv {
     readonly DEV: boolean;
     readonly PROD: boolean;
     readonly VITE_HM_REGISTER_URL: string;
+    readonly VITE_IMAGE_PROXY_URL: string;
 }
 
 interface ImportMeta {
