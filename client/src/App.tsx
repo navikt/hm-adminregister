@@ -14,6 +14,10 @@ import RedigerAdminBruker from "./admin/RedigerAdminBruker";
 import SlettAdminBruker from "./admin/SlettAdminBruker";
 import Profil from "./profil/Profil";
 import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
+import Leverandører from "./leverandor/Leverandører";
+import LeverandørProfil from "./leverandor/LeverandørProfil";
+import OpprettLeverandør from "./leverandor/OpprettLeverandør";
+import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
 
 export function App() {
     return (
@@ -38,6 +42,11 @@ export function App() {
 
                 <Route path="/profil" element={<><Navbar /><Profil /></>} />
                 <Route path="/profil/rediger-brukerprofil" element={<><RedigerBrukerprofil /></>} />
+
+                <Route path="/leverandor" element={<><Navbar /><Leverandører /></>} />
+                <Route path="/leverandor/:id" element={<><Navbar /><LeverandørProfil /></>} />
+                <Route path="/leverandor/opprett-leverandor" element={<><OpprettLeverandør /></>} />
+                <Route path="/leverandor/opprett-bruker" element={<><OpprettLeverandørBruker /></>} />
 
                 <Route path="/logg-inn" element={<LoggInn />} />
             </Routes>

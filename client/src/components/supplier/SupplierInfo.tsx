@@ -12,7 +12,7 @@ const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
     <VStack gap="8">
       <VStack gap="6">
         {loggedInUser?.isAdmin && (
-          <Link className="supplier-profile__parent-page-link" href="/adminregister/leverandor">
+          <Link className="supplier-profile__parent-page-link" href="/leverandor">
             <ArrowUndoIcon title="Tilbake til oversikt" fontSize="1.5rem" />
             Tilbake til oversikt
           </Link>
