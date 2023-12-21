@@ -2,7 +2,7 @@
 
 @import '@navikt/ds-tokens/dist/tokens';
 
-.create-new-product {
+.create-new-admin-user {
   margin-top: $a-spacing-16;
   width: 100%;
   display: flex;
@@ -12,10 +12,12 @@
     display: flex;
     flex-direction: column;
     gap: $a-spacing-8;
-    margin-bottom: $a-spacing-16;
   }
 
-  h1 {
-    text-align: left;
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $a-spacing-4;
   }
 }
