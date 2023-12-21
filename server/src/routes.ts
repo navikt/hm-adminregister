@@ -2,7 +2,6 @@ import cookieParser from 'cookie-parser'
 import express, { Router } from 'express'
 import { config } from './config'
 import { createMetrics } from './metrics'
-import { proxyHandlers } from './proxy'
 import path from "path";
 
 export const routes = {
@@ -15,9 +14,6 @@ export const routes = {
         res.set('Content-Type', metrics.contentType)
         res.end(await metrics.metrics())
       })
-  },
-  api(): Router {
-    return Router().use(proxyHandlers.api())
   },
   public(): Router {
     return Router()

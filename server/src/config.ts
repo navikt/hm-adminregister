@@ -7,7 +7,4 @@ export const config = {
     node_env: process.env.NODE_ENV || 'production',
     nais_cluster_name: process.env.NAIS_CLUSTER_NAME || 'labs-gcp',
     use_msw: process.env.USE_MSW === 'true',
-    api: {
-        hm_register_url: process.env.HM_REGISTER_URL || 'http://localhost:8080/',
-    },
 }

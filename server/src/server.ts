@@ -6,7 +6,6 @@ import { routes } from "./routes";
 const router = express.Router()
 router.use('/internal/', routes.internal())
 router.use('/', routes.public())
-//router.use('/admreg/', routes.api())
 
 const app = express()
 app.use(config.base_path, router)
