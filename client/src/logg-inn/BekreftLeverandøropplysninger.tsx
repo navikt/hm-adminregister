@@ -6,13 +6,13 @@ import { BodyShort, Button, Heading, Label, Loader, TextField } from '@navikt/ds
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
-import { useHydratedAuthStore } from "../../utils/store/useAuthStore";
-import { useSupplier } from "../../utils/swr-hooks";
-import { SupplierRegistrationDTO } from "../../utils/response-types";
-import { useHydratedErrorStore } from "../../utils/store/useErrorStore";
-import { formatPhoneNumber, labelRequired } from "../../utils/string-util";
-import { supplierInfoUpdate } from "../../utils/zodSchema/login";
-import { HM_REGISTER_URL } from "../../environments";
+import { useHydratedAuthStore } from "../utils/store/useAuthStore";
+import { useSupplier } from "../utils/swr-hooks";
+import { SupplierRegistrationDTO } from "../utils/response-types";
+import { useHydratedErrorStore } from "../utils/store/useErrorStore";
+import { formatPhoneNumber, labelRequired } from "../utils/string-util";
+import { supplierInfoUpdate } from "../utils/zodSchema/login";
+import { HM_REGISTER_URL } from "../environments";
 
 type FormData = z.infer<typeof supplierInfoUpdate>
 

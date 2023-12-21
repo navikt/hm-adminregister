@@ -18,8 +18,9 @@ import Leverandører from "./leverandor/Leverandører";
 import LeverandørProfil from "./leverandor/LeverandørProfil";
 import OpprettLeverandør from "./leverandor/OpprettLeverandør";
 import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
-import BekreftLeverandRopplysninger from "./logg-inn/leverandoropplysninger/BekreftLeverandøropplysninger";
-import Brukeropplysninger from "./logg-inn/brukeropplysninger/Brukeropplysninger";
+import BekreftLeverandRopplysninger from "./logg-inn/BekreftLeverandøropplysninger";
+import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
+
 
 export function App() {
     return (
