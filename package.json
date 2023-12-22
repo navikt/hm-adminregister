@@ -23,7 +23,6 @@
     "prettier": "npm run --prefix client prettier"
   },
   "dependencies": {
-    "@navikt/aksel-icons": "^4.7.2",
-    "@navikt/ds-tokens": "^4.7.2"
+
   }
 }
