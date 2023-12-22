@@ -24,6 +24,8 @@ spec:
       value: {{runtime_env}}
     - name: PUBLIC_ORIGIN
       value: {{public_origin}}
+    - name: PORT
+      value: '3000'
   replicas:
     min: {{replicas.min}}
     max: {{replicas.max}}
