@@ -1,6 +1,10 @@
-//Todo: fix uten next-bibliotek
-
 import { IMAGE_PROXY_URL } from "../environments";
+
+export type ImageLoaderProps = {
+  src: string;
+  width: number;
+  quality?: number;
+};
 
 enum Size {
   SMALL = '400',
@@ -15,6 +19,6 @@ type ImageOptions = {
 
 const imageLoader = ({ src, size }: ImageOptions) => `${IMAGE_PROXY_URL}/${size}d/${src}`
 
-export const smallImageLoader = ({ src }: any) => imageLoader({ src, size: Size.SMALL })
-export const mediumImageLoader = ({ src }: any) => imageLoader({ src, size: Size.MEDIUM })
-export const largeImageLoader = ({ src }: any) => imageLoader({ src, size: Size.LARGE })
+export const smallImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.SMALL })
+export const mediumImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.MEDIUM })
+export const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.LARGE })

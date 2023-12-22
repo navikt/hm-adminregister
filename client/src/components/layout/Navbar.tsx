@@ -9,9 +9,10 @@ import {
   MenuHamburgerIcon,
   PencilLineIcon
 } from '@navikt/aksel-icons'
-import { Button, HStack, Link, VStack } from '@navikt/ds-react'
+import { Button, HStack, VStack } from '@navikt/ds-react'
 import { useHydratedAuthStore } from "../../utils/store/useAuthStore";
 import { useUser } from "../../utils/swr-hooks";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -56,7 +57,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
     <VStack className="menu__nav-links">
       {user && user.roles.includes('ROLE_ADMIN') && (
         <Link
-          href="/leverandor"
+          to="/leverandor"
           className={classNames('page-link', { 'page-link--active': pathname === '/leverandor' })}
           aria-selected={pathname === '/leverandor'}
         >
@@ -69,7 +70,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </Link>
       )}
       <Link
-        href="/rammeavtaler"
+        to="/rammeavtaler"
         className={classNames('page-link', { 'page-link--active': pathname === '/rammeavtaler' })}
         aria-selected={pathname === '/rammeavtaler'}
       >
@@ -81,7 +82,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </HStack>
       </Link>
       <Link
-        href="/produkter"
+        to="/produkter"
         className={classNames('page-link', { 'page-link--active': pathname === '/produkter' })}
         aria-selected={pathname === '/produkter'}
       >
@@ -93,7 +94,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </HStack>
       </Link>
       <Link
-        href="/tilbehor"
+        to="/tilbehor"
         className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}
         aria-selected={pathname === '/tilbehor'}
       >

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import classNames from 'classnames'
 import { MoreMenu } from './MoreMenu'
 import { MediaInfo } from "../utils/response-types";
+import { smallImageLoader } from '../utils/image-util'
 
 interface Props {
   mediaInfo: MediaInfo
@@ -41,8 +42,9 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
             sizes="50vw"
           />
         ) : (
+
           <img
-            src={uri}
+            src={smallImageLoader({src: uri, width: 400})}
             onError={() => {
               setImageLoadingError(true)
             }}

@@ -1,10 +1,12 @@
 
 import { PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, Box, Button, Link, Pagination, Table, Tabs, VStack } from '@navikt/ds-react'
+import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from '@navikt/ds-react'
 import { ProductRegistrationDTO } from "../utils/response-types";
 import { useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "../utils/string-util";
 import { getAllUniqueTechDataKeys } from "../utils/product-util";
+import { Link } from "react-router-dom";
+
 
 
 const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
@@ -52,7 +54,7 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
                     <Table.HeaderCell scope="row"></Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
-                        <Link href={`${pathname}/rediger-variant/${product.id}?page=${page}`} passHref legacyBehavior>
+                        <Link to={`${pathname}/rediger-variant/${product.id}?page=${page}`}>
                           <Button
                             as="a"
                             title="Rediger artikkel"
@@ -106,7 +108,7 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
       )}
       {products[0] && (
         //Sender med siste siden
-        <Link href={`${pathname}/opprett-variant/${products[0].id}?page=${totalPages + 1}`} passHref legacyBehavior>
+        <Link to={`${pathname}/opprett-variant/${products[0].id}?page=${totalPages + 1}`}>
           <Button
             as="a"
             className="fit-content"
