@@ -8,7 +8,7 @@ COPY client .
 
 RUN if [ "$CLUSTER" = "dev-gcp" ]; then \
        npm run && npm run build:dev \
-    elif [ "CLUSTER" = "prod-gcp" ]; then \
+    elif [ "$CLUSTER" = "prod-gcp" ]; then \
        npm run && npm run build:prod \
     else \
         echo "No valid cluster specified"; \
