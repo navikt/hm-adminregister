@@ -9,10 +9,10 @@ COPY client .
 ARG CLUSTER
 ENV CLUSTER ${CLUSTER}
 
-RUN if [ "$CLUSTER" = "dev-gcp" ]; then \
-       npm run && npm run build:dev \
+RUN if [ "$CLUSTER" = "dev-gcp" ] ; then \
+       npm run && npm run build:dev ; \
     elif [ "$CLUSTER" = "prod-gcp" ]; then \
-       npm run && npm run build:prod \
+       npm run && npm run build:prod ; \
     else \
         echo "No valid cluster specified"; \
     fi
