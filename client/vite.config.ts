@@ -34,5 +34,6 @@ const htmlPlugin = ({ development }: { development?: boolean }): Plugin => ({
 
 // https://vitejs.dev/config/
 export default defineConfig((env) => ({
+    base: env.mode === 'development' ? '/' : '/adminregister-vite',
     plugins: [react()],
 }))

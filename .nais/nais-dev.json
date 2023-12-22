@@ -1,10 +1,10 @@
 {
   "ingress": [
-    "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-frontend-vite"
+    "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-vite"
   ],
   "cluster": "dev-gcp",
   "runtime_env": "dev",
-  "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-frontend-vite",
+  "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-vite",
   "replicas": {
     "min": 1,
     "max": 1
