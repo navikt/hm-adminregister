@@ -69,7 +69,12 @@ const Produkter = () => {
                             {renderData &&
                                 renderData.map((product, i) => (
                                     <LinkPanel
-                                        href={`/produkter/${product.seriesId}`}
+                                        onClick={() => navigate(`/produkter/${product.seriesId}`)}
+                                        onKeyDown={ (event) => {
+                                            if(event.key === 'Enter'){
+                                                navigate(`/produkter/${product.seriesId}`)
+                                            }
+                                        }}
                                         className="panel-list__name-panel"
                                         key={i}
                                     >
