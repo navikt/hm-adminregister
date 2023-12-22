@@ -28,6 +28,14 @@ jobs:
       image: ${{ steps.docker-build.outputs.image }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up .npmrc to use in Docker build
+        uses: actions/setup-node@v3
+        with:
+          registry-url: "https://npm.pkg.github.com"
+
+      - run: cp $NPM_CONFIG_USERCONFIG .npmrc
+
       - uses: nais/docker-build-push@v0
         name: Build ${{ inputs.environment }}
         id: docker-build
