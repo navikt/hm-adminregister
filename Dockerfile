@@ -6,6 +6,9 @@ RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
 RUN npm ci
 COPY client .
 
+ARG CLUSTER
+ENV CLUSTER ${CLUSTER}
+
 RUN if [ "$CLUSTER" = "dev-gcp" ]; then \
        npm run && npm run build:dev \
     elif [ "$CLUSTER" = "prod-gcp" ]; then \
