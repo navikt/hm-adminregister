@@ -12,7 +12,7 @@ import {
 import { Button, HStack, VStack } from '@navikt/ds-react'
 import { useHydratedAuthStore } from "../../utils/store/useAuthStore";
 import { useUser } from "../../utils/swr-hooks";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -46,7 +46,7 @@ const Navbar = () => {
 export default Navbar
 
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
-  const pathname = window.location.pathname
+  const { pathname } = useLocation()
   const { loggedInUser } = useHydratedAuthStore()
   const { user, userError, userIsLoading } = useUser(loggedInUser)
 

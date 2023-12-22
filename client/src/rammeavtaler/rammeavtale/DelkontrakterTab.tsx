@@ -1,9 +1,9 @@
 import { Alert, ExpansionCard, Tabs, VStack } from '@navikt/ds-react'
 import { AgreementPostDTO } from '../../utils/response-types'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 const DelkontrakterTab = ({ posts }: { posts: AgreementPostDTO[] }) => {
-  const pathname = window.location.pathname
+  const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
 
 

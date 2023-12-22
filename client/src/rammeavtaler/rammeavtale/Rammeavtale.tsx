@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
 import DelkontrakterTab from './DelkontrakterTab'
 import FileTab from './FileTab'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
 import { AgreementInfoDTO, AgreementRegistrationDTO } from '../../utils/response-types'
@@ -22,7 +22,7 @@ export type EditCommonInfoAgreement = {
 
 const AgreementPage = () => {
   const [searchParams] = useSearchParams()
-  const pathname = window.location.pathname
+  const { pathname } = useLocation()
   const activeTab = searchParams.get('tab')
   const { agreementId } = useParams()
 

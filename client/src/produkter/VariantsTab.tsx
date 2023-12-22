@@ -2,7 +2,7 @@
 import { PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from '@navikt/ds-react'
 import { ProductRegistrationDTO } from "../utils/response-types";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { isUUID, toValueAndUnit } from "../utils/string-util";
 import { getAllUniqueTechDataKeys } from "../utils/product-util";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 
 const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
-  const pathname = window.location.pathname
+  const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const techKeys = getAllUniqueTechDataKeys(products)
   const columnsPerPage = 5
