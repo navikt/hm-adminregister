@@ -15,46 +15,39 @@ run-name: Bygg og deploy til ${{ inputs.environment }}
 env:
   BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment }}
   CLUSTER: ${{ inputs.environment == 'prod' && 'prod-gcp' || 'dev-gcp' }}
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   build:
     name: Build and push docker container
     permissions:
       contents: 'read'
-      id-token: 'write'
       packages: 'write'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.docker-build.outputs.image }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Login to GitHub Package Repository
-        uses: docker/login-action@v2
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up .npmrc to use in Docker build
-        uses: actions/setup-node@v3
+      - name: Build and publish Docker image
+        uses: docker/build-push-action@v5
         with:
-          registry-url: "https://npm.pkg.github.com"
-
-      - run: cp $NPM_CONFIG_USERCONFIG .npmrc
-
-      - uses: nais/docker-build-push@v0
-        name: Build ${{ inputs.environment }}
-        id: docker-build
-        with:
-          team: teamdigihot
-          build_args: |
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}
+          build-args: |
             BUILD_ENV=${{ env.BUILD_ENV }}
             CLUSTER=${{ env.CLUSTER }}
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           secrets: |
             "NODE_AUTH_TOKEN=${{ secrets.READER_TOKEN }}"
+
 
   deploy:
     name: Deploy ${{ inputs.environment }}
@@ -67,5 +60,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ env.CLUSTER }}
           RESOURCE: .nais/nais.yaml
-          VAR: image=${{ needs.build.outputs.image }}
+          VAR: image=${{ env.IMAGE }}
           VARS: .nais/nais-${{ inputs.environment }}.json
