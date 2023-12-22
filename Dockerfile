@@ -6,8 +6,13 @@ RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
 RUN npm ci
 COPY client .
 
-RUN if [ "CLUSTER" = "dev-gcp" ] ; then npm run &&  npm run build:dev
-RUN if [ "CLUSTER" = "prod-gcp" ] ; then npm run && npm run build:prod
+RUN if [ "$CLUSTER" = "dev-gcp" ]; then \
+       npm run && npm run build:dev \
+    elif [ "CLUSTER" = "prod-gcp" ]; then \
+       npm run && npm run build:prod \
+    else \
+        echo "No valid cluster specified"; \
+    fi
 
 FROM node:16.15.0-alpine as server-builder
 WORKDIR /app
