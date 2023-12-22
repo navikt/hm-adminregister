@@ -22,8 +22,6 @@ spec:
   env:
     - name: RUNTIME_ENVIRONMENT
       value: {{runtime_env}}
-    - name: HM_REGISTER_URL
-      value: {{hm_register_url}}
     - name: PUBLIC_ORIGIN
       value: {{public_origin}}
   replicas:

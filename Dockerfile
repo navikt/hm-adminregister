@@ -5,7 +5,9 @@ RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
     echo '//npm.pkg.github.com/:_authToken='$(cat /run/secrets/NODE_AUTH_TOKEN) >> .npmrc
 RUN npm ci
 COPY client .
-RUN npm run && npm run build
+
+RUN if [ "CLUSTER" = "dev-gcp" ] ; then npm run &&  npm run build:dev
+RUN if [ "CLUSTER" = "prod-gcp" ] ; then npm run && npm run build:prod
 
 FROM node:16.15.0-alpine as server-builder
 WORKDIR /app

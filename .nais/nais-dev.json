@@ -4,7 +4,6 @@
   ],
   "cluster": "dev-gcp",
   "runtime_env": "dev",
-  "hm_register_url": "https://finnhjelpemiddel.intern.dev.nav.no",
   "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-frontend-vite",
   "replicas": {
     "min": 1,
