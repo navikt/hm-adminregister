@@ -22,7 +22,7 @@ export default function Profil() {
 
         setLoading(true)
 
-        fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/supplier/registrations/`, {
+        fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/supplier/registrations/`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -34,7 +34,7 @@ export default function Profil() {
             .then((data) => {
                 setSupplier(mapSupplier(data))
 
-                fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/users`, {
+                fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/users`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

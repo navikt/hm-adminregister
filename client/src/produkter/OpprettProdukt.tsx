@@ -36,7 +36,7 @@ export default function OpprettProdukt() {
       isoCategory: data.isoCategory,
     }
 
-    const response = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/draftWith`, {
+    const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draftWith`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

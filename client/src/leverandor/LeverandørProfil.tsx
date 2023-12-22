@@ -19,7 +19,7 @@ const LeverandørProfil = () => {
 
     useEffect(() => {
         setLoading(true)
-        fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/supplier/registrations/` + id, {
+        fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/supplier/registrations/` + id, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -31,7 +31,7 @@ const LeverandørProfil = () => {
             .then((data) => {
                 setSupplier(mapSupplier(data))
                 if (data) {
-                    fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users/supplierId/` + id, {
+                    fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/users/supplierId/` + id, {
                         headers: {
                             'Content-Type': 'application/json',
                         },

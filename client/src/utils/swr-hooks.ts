@@ -73,8 +73,8 @@ export function useProducts() {
   const { loggedInUser } = useHydratedAuthStore()
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/series/group`
-    : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/series/group`
+    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/group`
+    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/series/group`
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET)
 
@@ -97,8 +97,8 @@ export function useAgreements({ page, pageSize }: { page: number, pageSize: numb
   const { loggedInUser } = useHydratedAuthStore()
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
-    : `${HM_REGISTER_URL}admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
+    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
+    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(path, fetcherGET)
 
@@ -117,7 +117,7 @@ export function useAgreements({ page, pageSize }: { page: number, pageSize: numb
 
 export function useUser(loggedInUser?: LoggedInUser) {
   const { setGlobalError } = useHydratedErrorStore()
-  const path = loggedInUser?.isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/users/` : `${HM_REGISTER_URL}admreg/vendor/api/v1/users/`
+  const path = loggedInUser?.isAdmin ? `${HM_REGISTER_URL}/admreg/admin/api/v1/users/` : `${HM_REGISTER_URL}/admreg/vendor/api/v1/users/`
   const { data, error, isLoading } = useSWR<UserDTO>(loggedInUser ? path + loggedInUser?.userId : null, fetcherGET)
 
   useEffect(() => {
@@ -136,8 +136,8 @@ export function useUser(loggedInUser?: LoggedInUser) {
 export function useSupplier(isAdmin: boolean | undefined, id?: string) {
   const { setGlobalError } = useHydratedErrorStore()
   const path = isAdmin
-    ? `${HM_REGISTER_URL}admreg/admin/api/v1/supplier/registrations/${id}`
-    : `${HM_REGISTER_URL}admreg/vendor/api/v1/supplier/registrations`
+    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/supplier/registrations/${id}`
+    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/supplier/registrations`
   const shouldFetch = (isAdmin && id) || isAdmin === false
   const { data, error, isLoading, mutate } = useSWR<SupplierRegistrationDTO>(shouldFetch ? path : null, fetcherGET, {
     shouldRetryOnError: false,
@@ -161,7 +161,7 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
 export function useSuppliers() {
   const { setGlobalError } = useHydratedErrorStore()
 
-  const path = `${HM_REGISTER_URL}admreg/admin/api/v1/supplier/registrations`
+  const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/supplier/registrations`
   const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET)
   const suppliers = data && mapSuppliers(data)
 
@@ -179,7 +179,7 @@ export function useSuppliers() {
 }
 
 export function useIsoCategories() {
-  const path = `${HM_REGISTER_URL}admreg/api/v1/isocategories`
+  const path = `${HM_REGISTER_URL}/admreg/api/v1/isocategories`
   const { data, error, isLoading } = useSWR<IsoCategoryDTO[]>(path, fetcherGET)
   const isoCategories = data && data
 
@@ -191,7 +191,7 @@ export function useIsoCategories() {
 }
 
 export function useImagesConnectedToOID(oid: string, isAdmin?: boolean) {
-  const mediaUrl = isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/media/${oid}` : `${HM_REGISTER_URL}admreg/vendor/api/v1/media/${oid}`
+  const mediaUrl = isAdmin ? `${HM_REGISTER_URL}/admreg/admin/api/v1/media/${oid}` : `${HM_REGISTER_URL}/admreg/vendor/api/v1/media/${oid}`
 
   const { data, error, isLoading, mutate } = useSWR<MediaDTO[]>(mediaUrl, fetcherGET)
 
@@ -207,7 +207,7 @@ export function useImagesConnectedToOID(oid: string, isAdmin?: boolean) {
 }
 
 export function useDocumentsConnectedToOID(isAdmin: boolean | undefined, oid: string) {
-  const mediaUrl = isAdmin ? `${HM_REGISTER_URL}admreg/vendor/api/v1/media/${oid}` : `${HM_REGISTER_URL}admreg/vendor/api/v1/media/${oid}`
+  const mediaUrl = isAdmin ? `${HM_REGISTER_URL}/admreg/vendor/api/v1/media/${oid}` : `${HM_REGISTER_URL}/admreg/vendor/api/v1/media/${oid}`
 
   const { data: files, error, isLoading, mutate } = useSWR<MediaDTO[]>(mediaUrl, fetcherGET)
 
@@ -223,7 +223,7 @@ export function useDocumentsConnectedToOID(isAdmin: boolean | undefined, oid: st
 export function useAdminUsers() {
   const { setGlobalError } = useHydratedErrorStore()
 
-  const path = `${HM_REGISTER_URL}admreg/admin/api/v1/users/`
+  const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/users/`
   const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET)
   const adminUsers: UserDTO[] | undefined = data && data.content
 

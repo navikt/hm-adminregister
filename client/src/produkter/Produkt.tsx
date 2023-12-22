@@ -37,8 +37,8 @@ const ProductPage = () => {
     const { loggedInUser } = useHydratedAuthStore()
     const { setGlobalError } = useHydratedErrorStore()
     const seriesIdPath = loggedInUser?.isAdmin
-        ? `${HM_REGISTER_URL}admreg/admin/api/v1/product/registrations/series/${seriesId}`
-        : `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/series/${seriesId}`
+        ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
+        : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`
 
     const {
         data: products,
@@ -53,7 +53,7 @@ const ProductPage = () => {
         isLoading: isoIsLoading,
     } = useSWR<IsoCategoryDTO>(
         products && products[0].isoCategory && products[0].isoCategory !== '0'
-            ? `${HM_REGISTER_URL}admreg/api/v1/isocategories/${products[0].isoCategory}`
+            ? `${HM_REGISTER_URL}/admreg/api/v1/isocategories/${products[0].isoCategory}`
             : null,
         fetcherGET
     )
@@ -67,7 +67,7 @@ const ProductPage = () => {
     async function onSubmit(data: EditCommonInfoProduct) {
         //Need to fetch latest version
         const productToUpdate: ProductRegistrationDTO = await fetch(
-            `${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${products && products[0].id}`,
+            `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${products && products[0].id}`,
             {
                 method: 'GET',
                 credentials: 'include',
@@ -94,7 +94,7 @@ const ProductPage = () => {
 
         const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description)
 
-        const response = await fetch(`${HM_REGISTER_URL}admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+        const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

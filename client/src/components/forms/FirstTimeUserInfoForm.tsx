@@ -65,8 +65,8 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
     })
   }
 
-  const userPasswordUrl = isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/users/password` : `${HM_REGISTER_URL}admreg/vendor/api/v1/users/password`
-  const userInfoUrl = isAdmin ? `${HM_REGISTER_URL}admreg/admin/api/v1/users/${user.id}` : `${HM_REGISTER_URL}admreg/vendor/api/v1/users`
+  const userPasswordUrl = isAdmin ? `${HM_REGISTER_URL}/admreg/admin/api/v1/users/password` : `${HM_REGISTER_URL}/admreg/vendor/api/v1/users/password`
+  const userInfoUrl = isAdmin ? `${HM_REGISTER_URL}/admreg/admin/api/v1/users/${user.id}` : `${HM_REGISTER_URL}/admreg/vendor/api/v1/users`
 
   async function onSubmit(data: FormData) {
     const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, '')

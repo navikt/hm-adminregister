@@ -53,7 +53,7 @@ export default function LoggInn() {
   async function onSubmit(data: FormData) {
     try {
       setLoading(true)
-      const loginRes = await fetch(`${HM_REGISTER_URL}admreg/login`, {
+      const loginRes = await fetch(`${HM_REGISTER_URL}/admreg/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export default function LoggInn() {
       })
 
       if (loginRes.ok) {
-        const loggedInUserRes = await fetch(`${HM_REGISTER_URL}admreg/loggedInUser`, {
+        const loggedInUserRes = await fetch(`${HM_REGISTER_URL}/admreg/loggedInUser`, {
           method: 'GET',
           credentials: 'include',
           headers: {

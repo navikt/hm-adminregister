@@ -104,7 +104,7 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
         })
         try {
             setLoading(true)
-            const response = await fetch(`${HM_REGISTER_URL}admreg/admin/api/v1/users/${user.id}`, {
+            const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/users/${user.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
