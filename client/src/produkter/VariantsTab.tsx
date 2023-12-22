@@ -28,10 +28,6 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
     return undefined
   }
 
-  const updateUrlOnPageChange = (page: number) => {
-    window.history.replaceState(null, '', `/adminregister${pathname}?tab=variants&page=${page}`)
-  }
-
   let paginatedVariants = products
   paginatedVariants = paginatedVariants.slice((page - 1) * columnsPerPage, page * columnsPerPage)
 
@@ -101,7 +97,7 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
               </Table>
             </div>
             {totalPages > 1 && (
-              <Pagination page={page} onPageChange={updateUrlOnPageChange} count={totalPages} size="small" />
+              <Pagination page={page} count={totalPages} size="small" />
             )}
           </VStack>
         </Box>
