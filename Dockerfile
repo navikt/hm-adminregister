@@ -36,7 +36,7 @@ FROM gcr.io/distroless/nodejs:16 as runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
-EXPOSE 5000
+EXPOSE 3000
 
 COPY --from=client-builder /app/dist ./client/dist
 COPY --from=server-builder /app/dist ./server/dist
