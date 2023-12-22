@@ -1,15 +1,14 @@
 {
   "ingress": [
-    "https://finnhjelpemiddel.intern.dev.nav.no/adminregister2",
-    "https://finnhjelpemiddel.ekstern.dev.nav.no/adminregister2"
+    "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-frontend-vite"
   ],
   "cluster": "dev-gcp",
   "runtime_env": "dev",
   "hm_register_url": "https://finnhjelpemiddel.intern.dev.nav.no",
-  "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister2",
+  "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister-frontend-vite",
   "replicas": {
     "min": 1,
     "max": 1
   },
-  "app_name": "hm-adminregister-frontend2"
+  "app_name": "hm-adminregister-frontend-vite"
 }
