@@ -49,9 +49,10 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
               setImageLoadingError(true)
             }}
             alt={text ?? 'OBS mangler alt-tekst'}
-            style={{ padding: '10px', objectFit: 'contain' }}
+            style={{ position: 'absolute', height: '100%', width: '100%', inset: '0px', objectFit: 'contain', color: 'transparent', padding: '10px' }}
             sizes="50vw"
           />
+
         )}
       </div>
     </div>
