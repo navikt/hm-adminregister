@@ -94,8 +94,6 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     setModalIsOpen(false)
   }
 
-  console.log(uploads)
-
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event?.currentTarget?.files || [])
 

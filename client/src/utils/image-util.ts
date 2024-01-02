@@ -1,4 +1,4 @@
-import { IMAGE_PROXY_URL } from "../environments";
+import { IMAGE_PROXY_URL } from '../environments'
 
 export type ImageLoaderProps = {
   src: string;
@@ -19,6 +19,13 @@ type ImageOptions = {
 
 const imageLoader = ({ src, size }: ImageOptions) => `${IMAGE_PROXY_URL}/${size}d/${src}`
 
-export const smallImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.SMALL })
+const imageLoaderAdvanced = ({ src, size }: ImageOptions) => {
+  if (!src.startsWith('data:')) return imageLoader({ src, size })
+  else {
+    return src
+  }
+}
+
+export const smallImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.SMALL })
 export const mediumImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.MEDIUM })
 export const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.LARGE })
