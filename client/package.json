@@ -32,7 +32,6 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "openapi-typescript": "^6.7.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@types/amplitude-js": "^8.16.2",
     "@types/react": "^18.0.17",
