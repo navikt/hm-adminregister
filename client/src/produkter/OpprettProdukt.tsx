@@ -12,6 +12,7 @@ import { ProductDraftWithDTO } from '../utils/response-types'
 import { labelRequired } from '../utils/string-util'
 import Combobox from '../components/Combobox'
 import { HM_REGISTER_URL } from "../environments";
+import { useHydratedAuthStore } from '../utils/store/useAuthStore'
 
 type FormData = z.infer<typeof createNewProductSchema>
 
@@ -28,6 +29,11 @@ export default function OpprettProdukt() {
     resolver: zodResolver(createNewProductSchema),
     mode: 'onSubmit',
   })
+  const { loggedInUser } = useHydratedAuthStore()
+
+  const createProductPath = () => loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draftWith`
+    : `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/draftWith`
 
   async function onSubmit(data: FormData) {
     const newProduct: ProductDraftWithDTO = {
@@ -36,7 +42,7 @@ export default function OpprettProdukt() {
       isoCategory: data.isoCategory,
     }
 
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draftWith`, {
+    const response = await fetch(createProductPath(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
