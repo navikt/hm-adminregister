@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Alert, Button, Heading, LinkPanel, Loader, Pagination, Search } from '@navikt/ds-react'
 import { PlusIcon } from '@navikt/aksel-icons'
 import { useAgreements } from '../utils/swr-hooks'
-import { AgreementDto } from '../utils/response-types'
+import { AgreementGroupDto } from '../utils/response-types'
 import { useNavigate } from 'react-router-dom'
 
 const Rammeavtaler = () => {
@@ -10,7 +10,7 @@ const Rammeavtaler = () => {
   const pageSize = 10
   const { data, isLoading } = useAgreements({ page: pageState - 1, pageSize })
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filteredData, setFilteredData] = useState<AgreementDto | undefined>()
+  const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>()
   const navigate = useNavigate()
 
   const handleSearch = (value: string) => {

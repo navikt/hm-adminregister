@@ -12,6 +12,9 @@ export interface paths {
   "/admreg/admin/api/v1/agreement/registrations/draft/from/{id}/reference/{reference}": {
     post: operations["createAgreementFromAnother"];
   };
+  "/admreg/admin/api/v1/agreement/registrations/draft/reference": {
+    post: operations["draftAgreementWith"];
+  };
   "/admreg/admin/api/v1/agreement/registrations/draft/reference/{reference}": {
     post: operations["draftAgreement"];
   };
@@ -200,6 +203,12 @@ export interface components {
       media: components["schemas"]["MediaInfo"][];
       description?: string | null;
     };
+    AgreementBasicInformationDto: {
+      /** Format: uuid */
+      id: string;
+      title: string;
+      reference: string;
+    };
     AgreementData: {
       resume?: string | null;
       text?: string | null;
@@ -207,6 +216,14 @@ export interface components {
       attachments: components["schemas"]["AgreementAttachment"][];
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
+    };
+    AgreementDraftWithDTO: {
+      title: string;
+      reference: string;
+      /** Format: date-time */
+      published: string;
+      /** Format: date-time */
+      expired: string;
     };
     AgreementPost: {
       identifier: string;
@@ -346,7 +363,7 @@ export interface components {
        */
       sort: string;
     };
-    Page_AgreementRegistrationDTO_: components["schemas"]["Slice_AgreementRegistrationDTO_"] & {
+    Page_AgreementBasicInformationDto_: components["schemas"]["Slice_AgreementBasicInformationDto_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
@@ -499,8 +516,8 @@ export interface components {
     };
     /** @enum {string} */
     SeriesStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "REJECTED";
-    Slice_AgreementRegistrationDTO_: {
-      content: components["schemas"]["AgreementRegistrationDTO"][];
+    Slice_AgreementBasicInformationDto_: {
+      content: components["schemas"]["AgreementBasicInformationDto"][];
       pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -671,7 +688,7 @@ export interface operations {
       /** @description findAgreements 200 response */
       200: {
         content: {
-          "application/json": components["schemas"]["Page_AgreementRegistrationDTO_"];
+          "application/json": components["schemas"]["Page_AgreementBasicInformationDto_"];
         };
       };
     };
@@ -700,6 +717,21 @@ export interface operations {
     };
     responses: {
       /** @description createAgreementFromAnother 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
+  draftAgreementWith: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AgreementDraftWithDTO"];
+      };
+    };
+    responses: {
+      /** @description draftAgreementWith 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["AgreementRegistrationDTO"];
@@ -1452,7 +1484,7 @@ export interface operations {
       /** @description findAgreements_1 200 response */
       200: {
         content: {
-          "application/json": components["schemas"]["Page_AgreementRegistrationDTO_"];
+          "application/json": components["schemas"]["Page_AgreementBasicInformationDto_"];
         };
       };
     };

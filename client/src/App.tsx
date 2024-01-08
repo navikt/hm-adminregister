@@ -22,6 +22,7 @@ import BekreftLeverandRopplysninger from './logg-inn/BekreftLeverandøropplysnin
 import Brukeropplysninger from './logg-inn/Brukeropplysninger'
 import Rammeavtaler from './rammeavtaler/Rammeavtaler'
 import Rammeavtale from './rammeavtaler/rammeavtale/Rammeavtale'
+import OpprettRammeavtale from './rammeavtaler/rammeavtale/OpprettRammeavtale'
 
 
 export function App() {
@@ -56,6 +57,7 @@ export function App() {
 
         <Route path='/rammeavtaler' element={<><Navbar /><Rammeavtaler /></>} />
         <Route path='/rammeavtaler/:agreementId' element={<><Navbar /><Rammeavtale /></>} />
+        <Route path='/rammeavtaler/opprett' element={<><OpprettRammeavtale /></>} />
 
         <Route path='/logg-inn' element={<LoggInn />} />
         <Route path='/logg-inn/leverandoropplysninger' element={<BekreftLeverandRopplysninger />} />

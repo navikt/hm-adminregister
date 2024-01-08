@@ -10,7 +10,7 @@ import FileTab from './FileTab'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
-import { AgreementInfoDTO, AgreementRegistrationDTO } from '../../utils/response-types'
+import { AgreementRegistrationDTO } from '../../utils/response-types'
 import { CustomError, fetcherGET } from '../../utils/swr-hooks'
 import StatusTag from '../../components/StatusTag'
 import DefinitionList from '../../components/definition-list/DefinitionList'
@@ -176,21 +176,6 @@ const PublishButton = ({ isAdmin, isPending, isDraft }: { isAdmin: boolean; isPe
       </Button>
     )
   }
-}
-
-const AgreementInfo = ({ agreement }: { agreement: AgreementInfoDTO }) => {
-  return (
-    <>
-      <DefinitionList.Term>Avtale</DefinitionList.Term>
-      <DefinitionList.Definition>{agreement.title ?? 'ingen'}</DefinitionList.Definition>
-      <DefinitionList.Term>Delkontrakt</DefinitionList.Term>
-      <DefinitionList.Definition>
-        {agreement.postNr && agreement.postTitle ? `Nr ${agreement.postNr}: ${agreement.postTitle}` : 'ingen'}
-      </DefinitionList.Definition>
-      <DefinitionList.Term>Rangering</DefinitionList.Term>
-      <DefinitionList.Definition>{agreement.rank ? agreement.rank : 'ingen'}</DefinitionList.Definition>
-    </>
-  )
 }
 
 const getEditedAgreementDTO = (

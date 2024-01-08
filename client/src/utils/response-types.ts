@@ -24,7 +24,7 @@ export type SeriesChunk = {
   numberOfElements?: number
 }
 export type AgreementsChunk = {
-  content: components['schemas']['AgreementDto'][]
+  content: components['schemas']['AgreementBasicInformationDto'][]
   pageable: components['schemas']['OpenApiPageable']
   /** Format: int32 */
   pageNumber?: number
@@ -42,8 +42,7 @@ export type ProductRegistrationDTO = components['schemas']['ProductRegistrationD
 export type AgreementRegistrationDTO = components['schemas']['AgreementRegistrationDTO']
 export type AgreementPostDTO = components['schemas']['AgreementPost']
 export type IsoCategoryDTO = components['schemas']['IsoCategoryDTO']
-export type AgreementInfoDTO = components['schemas']['AgreementInfo']
-export type AgreementDto = components['schemas']['AgreementDto'][]
+export type AgreementGroupDto = components['schemas']['AgreementBasicInformationDto'][]
 export type AgreementAttachment = components['schemas']['AgreementAttachment']
 export type AgreementDraftWithDTO = components['schemas']['AgreementDraftWithDTO']
 export type MediaDTO = components['schemas']['MediaDTO']
