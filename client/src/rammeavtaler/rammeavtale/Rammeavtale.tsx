@@ -1,6 +1,6 @@
 import React from 'react'
 import useSWR from 'swr'
-import { Alert, Button, HGrid, Heading, Loader, Tabs, VStack } from '@navikt/ds-react'
+import { Alert, Button, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
 import { EyeClosedIcon } from '@navikt/aksel-icons'
 import './agreement-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -11,10 +11,10 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
 import { AgreementRegistrationDTO } from '../../utils/response-types'
-import { CustomError, fetcherGET } from '../../utils/swr-hooks'
+import { fetcherGET } from '../../utils/swr-hooks'
 import StatusTag from '../../components/StatusTag'
-import DefinitionList from '../../components/definition-list/DefinitionList'
 import { HM_REGISTER_URL } from '../../environments'
+import { updateAgreement } from '../../api/AgreementApi'
 
 export type EditCommonInfoAgreement = {
   description: string
@@ -39,7 +39,7 @@ const AgreementPage = () => {
     error,
     isLoading,
     mutate: mutateAgreement,
-  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath: null, fetcherGET)
+  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET)
 
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`)
@@ -48,46 +48,12 @@ const AgreementPage = () => {
   const formMethods = useForm<EditCommonInfoAgreement>()
 
   async function onSubmit(data: EditCommonInfoAgreement) {
-    //Need to fetch latest version
-    const agreementToUpdate: AgreementRegistrationDTO = await fetch(
-      `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreement && agreement.id}`,
-      {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    ).then((res) => {
-      if (!res.ok) {
-        return res.json().then((data) => {
-          throw new CustomError(data.errorMessage || res.statusText, res.status)
-        })
-      }
-      return res.json()
+    updateAgreement(agreement!!.id, data).then(
+      (agreement) =>
+        mutateAgreement(agreement),
+    ).catch((error) => {
+      setGlobalError(error.status, error.message)
     })
-
-    const description = data.description
-      ? data.description
-      : ''
-
-    const editedAgreementDTO = getEditedAgreementDTO(agreementToUpdate, description)
-
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(editedAgreementDTO),
-    })
-
-    if (response.ok) {
-      mutateAgreement()
-    } else {
-      const responsData = await response.json()
-      setGlobalError(response.status, responsData.message)
-    }
   }
 
   if (error) {
@@ -175,18 +141,5 @@ const PublishButton = ({ isAdmin, isPending, isDraft }: { isAdmin: boolean; isPe
         Publiser
       </Button>
     )
-  }
-}
-
-const getEditedAgreementDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  newDescription: string,
-): AgreementRegistrationDTO => {
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      text: newDescription,
-    },
   }
 }
