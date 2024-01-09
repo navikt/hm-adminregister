@@ -33,7 +33,7 @@ export default function OpprettRammeavtale() {
     useDatepicker({
       fromDate: undefined,
       onDateChange: (value) => {
-        if (value) setValue('avtaleperiodeStart', toDateTimeString(value))
+        if (value) setValue('avtaleperiodeStart', value)
       },
     })
 
@@ -41,16 +41,17 @@ export default function OpprettRammeavtale() {
     useDatepicker({
       fromDate: undefined,
       onDateChange: (value) => {
-        if (value) setValue('avtaleperiodeSlutt', toDateTimeString(value))
+        if (value) setValue('avtaleperiodeSlutt', value)
       },
     })
 
   async function onSubmit(data: FormData) {
+
     const newAgreement: AgreementDraftWithDTO = {
       title: data.agreementName,
       reference: data.anbudsnummer,
-      expired: data.avtaleperiodeSlutt,
-      published: data.avtaleperiodeStart,
+      expired: toDateTimeString(data.avtaleperiodeSlutt),
+      published: toDateTimeString(data.avtaleperiodeStart),
     }
 
     postAgreementDraft(loggedInUser?.isAdmin || false, newAgreement).then(
@@ -84,7 +85,7 @@ export default function OpprettRammeavtale() {
                 <DatePicker {...datepickerPropsAvtaleperiodeStart}>
                   <DatePicker.Input
                     {...inputPropsAvtaleperiodeStart}
-                    label='Fra'
+                    label={labelRequired('Fra')}
                     id='avtaleperiodeStart'
                     name='avtaleperiodeStart'
                     error={errors?.avtaleperiodeStart?.message}
@@ -92,8 +93,12 @@ export default function OpprettRammeavtale() {
                   />
                 </DatePicker>
                 <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
-                  <DatePicker.Input {...inputPropsAvtaleperiodeSlutt} label='Til'
-                                    error={errors?.avtaleperiodeSlutt?.message} />
+                  <DatePicker.Input
+                      {...inputPropsAvtaleperiodeSlutt}
+                      label={labelRequired('Til')}
+                      id='avtaleperiodeSlutt'
+                      name='avtaleperiodeSlutt'
+                      error={errors?.avtaleperiodeSlutt?.message}/>
                 </DatePicker>
               </HStack>
             </div>
