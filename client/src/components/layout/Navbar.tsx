@@ -96,18 +96,19 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <span>Produkter</span>
         </HStack>
       </Link>
-      <Link
-        to='/tilbehor'
-        className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}
-        aria-selected={pathname === '/tilbehor'}
-      >
-        {pathname === '/tilbehor' && <div className='active' />}
-        <div className='line' />
-        <HStack gap='4' style={{ paddingLeft: '16px' }}>
-          <WrenchIcon fontSize={'1.5rem'} />
-          <span>Tilbehør</span>
-        </HStack>
-      </Link>
+        {/* todo: Legg til tilbehør */}
+        {/*<Link*/}
+        {/*  to='/tilbehor'*/}
+        {/*  className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}*/}
+        {/*  aria-selected={pathname === '/tilbehor'}*/}
+        {/*>*/}
+        {/*  {pathname === '/tilbehor' && <div className='active' />}*/}
+        {/*  <div className='line' />*/}
+        {/*  <HStack gap='4' style={{ paddingLeft: '16px' }}>*/}
+        {/*    <WrenchIcon fontSize={'1.5rem'} />*/}
+        {/*    <span>Tilbehør</span>*/}
+        {/*  </HStack>*/}
+        {/*</Link>*/}
     </VStack>
   )
 }
