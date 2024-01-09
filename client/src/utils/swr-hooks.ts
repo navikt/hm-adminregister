@@ -91,13 +91,36 @@ export function useProducts() {
   }
 }
 
-export function useAgreements({ page, pageSize }: { page: number, pageSize: number }) {
+export function usePagedAgreements({ page, pageSize }: { page: number, pageSize: number }) {
   const { setGlobalError } = useHydratedErrorStore()
   const { loggedInUser } = useHydratedAuthStore()
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
     : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
+
+  const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message)
+    }
+  }, [error, setGlobalError])
+
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export function useAgreements() {
+  const { setGlobalError } = useHydratedErrorStore()
+  const { loggedInUser } = useHydratedAuthStore()
+
+  const path = loggedInUser?.isAdmin
+      ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations`
+      : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 
