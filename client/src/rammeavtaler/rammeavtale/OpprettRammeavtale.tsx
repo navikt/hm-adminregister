@@ -1,23 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Heading, TextField } from '@navikt/ds-react'
+import { Button, DatePicker, Heading, HStack, Label, TextField, useDatepicker } from '@navikt/ds-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import './create-agreement.scss'
 import React from 'react'
-import { createNewProductSchema } from '../../utils/zodSchema/newProduct'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
-import { useIsoCategories } from '../../utils/swr-hooks'
 import { useNavigate } from 'react-router-dom'
-import { ProductDraftWithDTO } from '../../utils/response-types'
+import { AgreementDraftWithDTO } from '../../utils/response-types'
 import { labelRequired } from '../../utils/string-util'
-import Combobox from '../../components/Combobox'
-import { HM_REGISTER_URL } from "../../environments";
+import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { createNewAgreementSchema } from '../../utils/zodSchema/newAgreement'
+import { toDateTimeString } from '../../utils/date-util'
+import { postAgreementDraft } from '../../api/AgreementApi'
 
-type FormData = z.infer<typeof createNewProductSchema>
+type FormData = z.infer<typeof createNewAgreementSchema>
 
 export default function OpprettRammeavtale() {
   const { setGlobalError } = useHydratedErrorStore()
-  const { isoCategories, isoError } = useIsoCategories()
   const navigate = useNavigate()
   const {
     handleSubmit,
@@ -25,72 +24,92 @@ export default function OpprettRammeavtale() {
     formState: { errors, isSubmitting, isDirty, isValid },
     setValue,
   } = useForm<FormData>({
-    resolver: zodResolver(createNewProductSchema),
+    resolver: zodResolver(createNewAgreementSchema),
     mode: 'onSubmit',
   })
+  const { loggedInUser } = useHydratedAuthStore()
+
+  const { datepickerProps: datepickerPropsAvtaleperiodeStart, inputProps: inputPropsAvtaleperiodeStart } =
+    useDatepicker({
+      fromDate: undefined,
+      onDateChange: (value) => {
+        if (value) setValue('avtaleperiodeStart', toDateTimeString(value))
+      },
+    })
+
+  const { datepickerProps: datepickerPropsAvtaleperiodeSlutt, inputProps: inputPropsAvtaleperiodeSlutt } =
+    useDatepicker({
+      fromDate: undefined,
+      onDateChange: (value) => {
+        if (value) setValue('avtaleperiodeSlutt', toDateTimeString(value))
+      },
+    })
 
   async function onSubmit(data: FormData) {
-    const newProduct: ProductDraftWithDTO = {
-      title: data.productName,
-      text: '',
-      isoCategory: data.isoCategory,
+    const newAgreement: AgreementDraftWithDTO = {
+      title: data.agreementName,
+      reference: data.anbudsnummer,
+      expired: data.avtaleperiodeSlutt,
+      published: data.avtaleperiodeStart,
     }
 
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draftWith`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    postAgreementDraft(loggedInUser?.isAdmin || false, newAgreement).then(
+      (agreement) => {
+        navigate(`/rammeavtaler/${agreement.id}`)
       },
-      credentials: 'include',
-      body: JSON.stringify(newProduct),
+    ).catch((error) => {
+      setGlobalError(error.message)
     })
-    if (response.ok) {
-      const responseData = await response.json()
-      const id = responseData.id
-      if (id) navigate(`/rammeavtaler/${id}`)
-    } else {
-      const responsData = await response.json()
-      setGlobalError(response.status, responsData.message)
-    }
-  }
-
-  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
-  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoCode + ' - ' + cat.isoTitle)
-
-  const handleSetFormValueIso = (value: string) => {
-    const parts = value.split('-')
-    const firstPartWithoutSpaces = parts[0].replace(/\s/g, '') // Remove spaces
-    setValue('isoCategory', firstPartWithoutSpaces)
   }
 
   return (
     <main>
-      <div className="create-new-product">
-        <div className="content">
-          <Heading level="1" size="large" align="center">
-            Kom i gang med nytt produkt
+      <div className='create-new-agreement'>
+        <div className='content'>
+          <Heading level='1' size='large' align='center'>
+            Kom i gang med ny rammeavtale
           </Heading>
-          <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
+          <form className='form form--max-width-small' onSubmit={handleSubmit(onSubmit)}>
             <TextField
-              {...register('productName', { required: true })}
-              label={labelRequired('Produktnavn')}
-              id="productName"
-              name="productName"
-              type="text"
-              error={errors?.productName?.message}
+              {...register('agreementName', { required: true })}
+              label={labelRequired('Avtalenavn')}
+              id='agreementName'
+              name='agreementName'
+              type='text'
+              error={errors?.agreementName?.message}
             />
-            <Combobox
-              {...register('isoCategory', { required: true })}
-              options={isoCodesAndTitles}
-              setValue={handleSetFormValueIso}
-              label={labelRequired('Iso-kategori (kode)')}
-              errorMessage={errors?.productName?.message}
+            <div>
+              <Label className='outer-label'>Avtaleperiode</Label>
+              <HStack gap='4' justify='space-between' style={{ marginTop: '0.5rem' }}>
+                <DatePicker {...datepickerPropsAvtaleperiodeStart}>
+                  <DatePicker.Input
+                    {...inputPropsAvtaleperiodeStart}
+                    label='Fra'
+                    id='avtaleperiodeStart'
+                    name='avtaleperiodeStart'
+                    error={errors?.avtaleperiodeStart?.message}
+
+                  />
+                </DatePicker>
+                <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
+                  <DatePicker.Input {...inputPropsAvtaleperiodeSlutt} label='Til'
+                                    error={errors?.avtaleperiodeSlutt?.message} />
+                </DatePicker>
+              </HStack>
+            </div>
+            <TextField
+              {...register('anbudsnummer', { required: true })}
+              label={labelRequired('Anbudsnummer')}
+              id='anbudsnummer'
+              name='anbudsnummer'
+              type='text'
+              error={errors?.anbudsnummer?.message}
             />
-            <div className="button-container">
-              <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
+            <div className='button-container'>
+              <Button type='reset' variant='tertiary' size='medium' onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type="submit" size="medium">
+              <Button type='submit' size='medium'>
                 Opprett
               </Button>
             </div>
