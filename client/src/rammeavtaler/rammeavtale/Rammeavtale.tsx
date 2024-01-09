@@ -39,7 +39,7 @@ const AgreementPage = () => {
     error,
     isLoading,
     mutate: mutateAgreement,
-  } = useSWR<AgreementRegistrationDTO>(agreementPath, fetcherGET)
+  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath: null, fetcherGET)
 
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`)

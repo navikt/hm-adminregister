@@ -43,7 +43,7 @@ const OpprettProduktVariant = () => {
 
     ///PROBLEM den skriver over uansett nå, yey
 
-    const { data: products, mutate } = useSWR<ProductRegistrationDTO[]>(seriesIdPath, fetcherGET)
+    const { data: products, mutate } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET)
     const {
         handleSubmit,
         register,

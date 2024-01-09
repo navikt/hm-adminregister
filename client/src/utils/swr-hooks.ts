@@ -13,7 +13,7 @@ import { useHydratedErrorStore } from './store/useErrorStore'
 import { useEffect } from 'react'
 import { useHydratedAuthStore } from './store/useAuthStore'
 import useSWR, { Fetcher } from 'swr'
-import { HM_REGISTER_URL } from "../environments";
+import { HM_REGISTER_URL } from '../environments'
 
 
 export function baseUrl(url: string = '') {
@@ -76,7 +76,7 @@ export function useProducts() {
     ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/group`
     : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/series/group`
 
-  const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET)
+  const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET)
 
   useEffect(() => {
     if (error) {
@@ -93,14 +93,13 @@ export function useProducts() {
 
 export function useAgreements({ page, pageSize }: { page: number, pageSize: number }) {
   const { setGlobalError } = useHydratedErrorStore()
-
   const { loggedInUser } = useHydratedAuthStore()
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
     : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
 
-  const { data, error, isLoading } = useSWR<AgreementsChunk>(path, fetcherGET)
+  const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 
   useEffect(() => {
     if (error) {

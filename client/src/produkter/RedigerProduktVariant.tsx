@@ -19,7 +19,7 @@ const RedigerProduktVariant = () => {
         : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productId}`
 
     const { data: product, error, isLoading, mutate } =
-        useSWR<ProductRegistrationDTO>(registrationsPath, fetcherGET)
+        useSWR<ProductRegistrationDTO>(loggedInUser ? registrationsPath: null, fetcherGET)
 
     if (error) {
         setGlobalError(error.status, error.message)
