@@ -1,5 +1,5 @@
 {
-  "name": "hm-adminregister-frontend-server",
+  "name": "hm-adminregister-server",
   "private": true,
   "version": "1.0.0",
   "main": "dist/server.js",
