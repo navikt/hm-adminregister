@@ -6,5 +6,4 @@ export const config = {
     port: process.env.PORT || 5001,
     node_env: process.env.NODE_ENV || 'production',
     nais_cluster_name: process.env.NAIS_CLUSTER_NAME || 'labs-gcp',
-    use_msw: process.env.USE_MSW === 'true',
 }

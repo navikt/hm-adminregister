@@ -9,5 +9,4 @@ router.use('/', routes.public())
 
 const app = express()
 app.use(config.base_path, router)
-app.set('trust proxy', 1)
 app.listen(config.port, () => console.info(`Listening on port ${config.port}`))
