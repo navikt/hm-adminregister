@@ -15,7 +15,6 @@ import { useHydratedAuthStore } from '../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../utils/store/useErrorStore'
 import { IsoCategoryDTO, ProductRegistrationDTO } from '../utils/response-types'
 import { fetcherGET } from '../utils/swr-hooks'
-import { mapImagesAndPDFfromMedia } from '../utils/product-util'
 import StatusTag from '../components/StatusTag'
 import { HM_REGISTER_URL } from '../environments'
 import { updateProduct } from "../api/ProductApi";
@@ -98,7 +97,6 @@ const ProductPage = () => {
         )
     }
 
-    const { images, pdfs } = mapImagesAndPDFfromMedia(products)
     const isDraft = products[0].draftStatus === 'DRAFT'
     const isPending = products[0].adminStatus === 'PENDING'
 
