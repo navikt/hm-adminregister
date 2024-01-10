@@ -18,7 +18,7 @@ import { HM_REGISTER_URL } from '../environments'
 
 export function baseUrl(url: string = '') {
   if (process.env.NODE_ENV === 'production') {
-    return `/adminregister-vite${url}`
+    return `/adminregister${url}`
   } else {
     return url
   }

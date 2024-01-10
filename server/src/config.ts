@@ -1,7 +1,7 @@
 import path from 'path'
 
 export const config = {
-    base_path: process.env.NODE_ENV === 'production' ? '/adminregister-vite' : '/',
+    base_path: process.env.NODE_ENV === 'production' ? '/adminregister' : '/',
     build_path: path.join(__dirname, '../../client/dist'),
     port: process.env.PORT || 5001,
     node_env: process.env.NODE_ENV || 'production',

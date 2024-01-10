@@ -3,6 +3,6 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig((env) => ({
-    base: env.mode === 'development' ? '/' : '/adminregister-vite',
+    base: env.mode === 'development' ? '/' : '/adminregister',
     plugins: [react()],
 }))
