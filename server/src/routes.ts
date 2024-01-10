@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser'
 import express, { Router } from 'express'
 import { config } from './config'
 import { createMetrics } from './metrics'
-import path from "path";
+import path from 'path'
 
 export const routes = {
   internal(): Router {
@@ -18,9 +18,9 @@ export const routes = {
   public(): Router {
     return Router()
       .use(cookieParser())
-        .get('*', express.static(config.build_path))
-        .get('*', function (req, res) {
-          res.sendFile('index.html', {root: path.join(__dirname, '../../client/dist/')});
-        });
+      .get('*', express.static(config.build_path))
+      .get('*', function(req, res) {
+        res.sendFile('index.html', { root: path.join(__dirname, '../../client/dist/') })
+      })
   },
 }

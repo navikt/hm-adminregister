@@ -94,11 +94,11 @@ export default function OpprettRammeavtale() {
                 </DatePicker>
                 <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
                   <DatePicker.Input
-                      {...inputPropsAvtaleperiodeSlutt}
-                      label={labelRequired('Til')}
-                      id='avtaleperiodeSlutt'
-                      name='avtaleperiodeSlutt'
-                      error={errors?.avtaleperiodeSlutt?.message}/>
+                    {...inputPropsAvtaleperiodeSlutt}
+                    label={labelRequired('Til')}
+                    id='avtaleperiodeSlutt'
+                    name='avtaleperiodeSlutt'
+                    error={errors?.avtaleperiodeSlutt?.message} />
                 </DatePicker>
               </HStack>
             </div>

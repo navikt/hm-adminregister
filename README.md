@@ -44,6 +44,7 @@ docker-compose up
 ```
 
 For at henting av ISO skal funke må dette kjøres i ett annet terminal vindu (samtidig som docker compose):
+
 ```
 kubectl port-forward $(kubectl get pods -l app=hm-grunndata-db -o custom-columns=:metadata.name) 8083:8080
 ```

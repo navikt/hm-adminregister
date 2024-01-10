@@ -15,7 +15,7 @@ export const newSupplierSchema = z.object({
       },
       {
         message: 'Ugyldig e-postformat',
-      }
+      },
     ),
   homepage: z
     .string()
@@ -31,7 +31,7 @@ export const newSupplierSchema = z.object({
       },
       {
         message: 'Ugyldig format',
-      }
+      },
     ),
   phone: z
     .string()
@@ -43,7 +43,7 @@ export const newSupplierSchema = z.object({
         }
         return /^[+\d]+$/.test(value)
       },
-      { message: 'Telefonnummer må bestå av siffer' }
+      { message: 'Telefonnummer må bestå av siffer' },
     ),
 })
 

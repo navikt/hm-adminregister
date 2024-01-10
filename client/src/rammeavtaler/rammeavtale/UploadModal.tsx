@@ -1,4 +1,3 @@
-
 import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
 import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from '@navikt/ds-react'
 import { useRef, useState } from 'react'
@@ -71,8 +70,8 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
         agreementToUpdate,
         mapToMediaInfo(
           mediaDTOs,
-          uploads.map((up) => up.file)
-        )
+          uploads.map((up) => up.file),
+        ),
       )
 
     res = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
@@ -92,6 +91,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
     setUploads([])
     setModalIsOpen(false)
   }
+
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event?.currentTarget?.files || [])
 
@@ -103,7 +103,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
         previousState.map((f) => ({
           ...f,
           previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        }))
+        })),
       )
     })
   }
@@ -123,7 +123,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
 
     const files = Array.from(event.dataTransfer.files)
     const isValidFiles = files.every((file) =>
-      acceptedFileTypesDocuments.includes(file.type)
+      acceptedFileTypesDocuments.includes(file.type),
     )
 
     if (!isValidFiles) {
@@ -139,7 +139,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
         previousState.map((f) => ({
           ...f,
           previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        }))
+        })),
       )
     })
   }
@@ -159,15 +159,15 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
             onDragLeave={handleDragEvent}
             onDragOver={handleDragEvent}
             onDrop={handleDragEvent}
-            className="images-tab__upload-container"
+            className='images-tab__upload-container'
           >
-            <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
-            <BodyShort className="images-tab__text">Slipp bildet her eller</BodyShort>
+            <FileImageFillIcon className='images-tab__upload-icon' title='filillustarsjon' fontSize='4rem' />
+            <BodyShort className='images-tab__text'>Slipp bildet her eller</BodyShort>
             <Button
-              size="small"
-              variant="secondary"
-              icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
-              iconPosition="right"
+              size='small'
+              variant='secondary'
+              icon={<UploadIcon title='Last opp bilde' fontSize='1.5rem' />}
+              iconPosition='right'
               onClick={(event) => {
                 event.preventDefault()
                 fileInputRef?.current?.click()
@@ -176,38 +176,38 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
               Last opp
             </Button>
             <input
-              id="fileInput"
+              id='fileInput'
               onChange={(event) => handleChange(event)}
               multiple={true}
               ref={fileInputRef}
-              type="file"
+              type='file'
               hidden
               accept={'application/pdf'}
             />
           </div>
 
           {isUploading && (
-            <HStack justify="center">
-              <Loader size="2xlarge" title="venter..." />
+            <HStack justify='center'>
+              <Loader size='2xlarge' title='venter...' />
             </HStack>
           )}
 
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
-          <ol className="images-inline">
+          <ol className='images-inline'>
             {uploads.map((upload, i) => (
               <li key={`pdf-${i}`}>
-                <HStack gap={{ xs: '1', sm: '2', md: '3' }} align="center">
+                <HStack gap={{ xs: '1', sm: '2', md: '3' }} align='center'>
 
-                  <FilePdfIcon fontSize="1.5rem" />
+                  <FilePdfIcon fontSize='1.5rem' />
 
 
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
-                  variant="tertiary"
+                  variant='tertiary'
                   icon={<TrashIcon />}
-                  title="slett"
-                  fontSize="1.5rem"
+                  title='slett'
+                  fontSize='1.5rem'
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
               </li>
@@ -215,7 +215,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
           </ol>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" variant="primary">
+          <Button type='submit' variant='primary'>
             Lagre
           </Button>
           <Button
@@ -223,7 +223,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
               event.preventDefault()
               setModalIsOpen(false)
             }}
-            variant="secondary"
+            variant='secondary'
           >
             Avbryt
           </Button>
@@ -239,10 +239,10 @@ const fileToUri = async (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = function () {
+    reader.onload = function() {
       resolve(reader.result as string)
     }
-    reader.onerror = function (error) {
+    reader.onerror = function(error) {
       reject(error)
     }
   })

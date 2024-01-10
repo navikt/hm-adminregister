@@ -1,14 +1,7 @@
 import React, { useState } from 'react'
 import classNames from 'classnames'
 import ProfileMenu from './ProfileMenu'
-import {
-  WrenchIcon,
-  PackageFillIcon,
-  Buldings3Icon,
-  XMarkIcon,
-  MenuHamburgerIcon,
-  PencilLineIcon,
-} from '@navikt/aksel-icons'
+import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from '@navikt/aksel-icons'
 import { Button, HStack, VStack } from '@navikt/ds-react'
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { useUser } from '../../utils/swr-hooks'
@@ -96,19 +89,19 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <span>Produkter</span>
         </HStack>
       </Link>
-        {/* todo: Legg til tilbehør */}
-        {/*<Link*/}
-        {/*  to='/tilbehor'*/}
-        {/*  className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}*/}
-        {/*  aria-selected={pathname === '/tilbehor'}*/}
-        {/*>*/}
-        {/*  {pathname === '/tilbehor' && <div className='active' />}*/}
-        {/*  <div className='line' />*/}
-        {/*  <HStack gap='4' style={{ paddingLeft: '16px' }}>*/}
-        {/*    <WrenchIcon fontSize={'1.5rem'} />*/}
-        {/*    <span>Tilbehør</span>*/}
-        {/*  </HStack>*/}
-        {/*</Link>*/}
+      {/* todo: Legg til tilbehør */}
+      {/*<Link*/}
+      {/*  to='/tilbehor'*/}
+      {/*  className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}*/}
+      {/*  aria-selected={pathname === '/tilbehor'}*/}
+      {/*>*/}
+      {/*  {pathname === '/tilbehor' && <div className='active' />}*/}
+      {/*  <div className='line' />*/}
+      {/*  <HStack gap='4' style={{ paddingLeft: '16px' }}>*/}
+      {/*    <WrenchIcon fontSize={'1.5rem'} />*/}
+      {/*    <span>Tilbehør</span>*/}
+      {/*  </HStack>*/}
+      {/*</Link>*/}
     </VStack>
   )
 }

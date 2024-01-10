@@ -18,7 +18,7 @@ export const userInfoUpdate = z
           }
           return /^[+\s\d]+$/.test(value.trim())
         },
-        { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
+        { message: 'Telefonnummer må være på +47 xxxxxxxx format' },
       ),
     oldPassword: z.string().min(8, 'Passord må inneholde minst 8 tegn.'),
     newPassword: z.string().min(8, 'Passord må inneholde minst 8 tegn.'),
@@ -48,7 +48,7 @@ export const supplierInfoUpdate = z.object({
         }
         return /^[+\s\d]+$/.test(value.trim())
       },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
+      { message: 'Telefonnummer må være på +47 xxxxxxxx format' },
     ),
 })
 
@@ -64,7 +64,7 @@ export const supplierUserInfoUpdate = z.object({
         }
         return /^[+\s\d]+$/.test(value.trim())
       },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
+      { message: 'Telefonnummer må være på +47 xxxxxxxx format' },
     ),
 })
 
@@ -81,7 +81,7 @@ export const adminProfileUpdate = z
           }
           return /^[+\s\d]+$/.test(value.trim())
         },
-        { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
+        { message: 'Telefonnummer må være på +47 xxxxxxxx format' },
       ),
     oldPassword: z.string().min(12, 'Passord må inneholde minst 12 tegn.'),
     password: z.string().min(12, 'Passord må inneholde minst 12 tegn.'),
@@ -104,6 +104,6 @@ export const adminInfoUpdate = z.object({
         }
         return /^[+\s\d]+$/.test(value.trim())
       },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
+      { message: 'Telefonnummer må være på +47 xxxxxxxx format' },
     ),
 })

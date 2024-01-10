@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { Alert, BodyShort, Button, Detail, VStack } from '@navikt/ds-react'
 import { Buldings3Icon, ChevronDownIcon, LeaveIcon, PersonCircleIcon, PersonIcon } from '@navikt/aksel-icons'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { HM_REGISTER_URL } from '../../environments'
-import { Link } from 'react-router-dom'
 
 const ProfileMenu = () => {
   const [error, setError] = useState<Error | null>(null)

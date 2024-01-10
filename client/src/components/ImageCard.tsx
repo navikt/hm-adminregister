@@ -1,4 +1,4 @@
-import { VStack, Label } from '@navikt/ds-react'
+import { Label, VStack } from '@navikt/ds-react'
 import { useState } from 'react'
 import classNames from 'classnames'
 import { MoreMenu } from './MoreMenu'

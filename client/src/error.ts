@@ -1,4 +1,8 @@
 export class HttpError extends Error {
+  constructor(message: string, readonly status: number, options?: ErrorOptions) {
+    super(message, options)
+  }
+
   static kallFeilet<T>(url: string, response: Response): HttpError {
     return new HttpError(`Kall mot url: '${url}' feilet, status: ${response.status}`, response.status)
   }
@@ -13,10 +17,6 @@ export class HttpError extends Error {
       error = new HttpError('Ukjent feil', 500)
     }
     return error
-  }
-
-  constructor(message: string, readonly status: number, options?: ErrorOptions) {
-    super(message, options)
   }
 }
 

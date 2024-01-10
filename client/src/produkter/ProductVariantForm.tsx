@@ -1,23 +1,22 @@
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TextField, HStack, Button, Alert } from '@navikt/ds-react'
+import { Alert, Button, HStack, TextField } from '@navikt/ds-react'
 import classNames from 'classnames'
 import { useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { productVariantSchema } from "../utils/zodSchema/newProduct";
-import { ProductRegistrationDTO } from "../utils/response-types";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { isUUID, labelRequired } from "../utils/string-util";
+import { productVariantSchema } from '../utils/zodSchema/newProduct'
+import { ProductRegistrationDTO } from '../utils/response-types'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { isUUID, labelRequired } from '../utils/string-util'
 
 type FormData = z.infer<typeof productVariantSchema>
 
 const ProductVariantForm = ({
-  product,
-  registrationPath,
-  mutate,
-  firstTime,
-}: {
+                              product,
+                              registrationPath,
+                              mutate,
+                              firstTime,
+                            }: {
   product: ProductRegistrationDTO
   registrationPath: string
   mutate: () => void
@@ -92,13 +91,13 @@ const ProductVariantForm = ({
   // }
 
   return (
-    <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
+    <form className='form form--max-width-small' onSubmit={handleSubmit(onSubmit)}>
       <TextField
         {...register('articleName', { required: true })}
         label={labelRequired('Artikkelnavn')}
-        id="articleName"
-        name="articleName"
-        type="text"
+        id='articleName'
+        name='articleName'
+        type='text'
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
         defaultValue={product.articleName}
@@ -109,9 +108,9 @@ const ProductVariantForm = ({
       <TextField
         {...register('supplierRef', { required: true })}
         label={labelRequired('Leverandør artikkelnummer')}
-        id="supplierRef"
-        name="supplierRef"
-        type="text"
+        id='supplierRef'
+        name='supplierRef'
+        type='text'
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
         error={errors?.supplierRef?.message}
@@ -119,13 +118,13 @@ const ProductVariantForm = ({
       <TextField
         {...register('hmsArtNr')}
         label={'HMS nummer'}
-        id="hmsArtNr"
-        name="hmsArtNr"
-        type="text"
+        id='hmsArtNr'
+        name='hmsArtNr'
+        type='text'
         error={errors?.hmsArtNr?.message}
       />
       {techDataFields.length > 0 && (
-        <Alert variant="info">
+        <Alert variant='info'>
           {firstTime
             ? `Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`
             : 'Teknisk data hentet inn fra tidligere opprettet artikkel.'}
@@ -134,20 +133,20 @@ const ProductVariantForm = ({
       {techDataFields.map((key, index) => {
         const errorForField = errors?.techData?.[index]?.value
         return (
-          <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2">
+          <HStack key={`techdata-${key.key}-${index}`} align='end' gap='2'>
             <TextField
               {...register(`techData.${index}.value`, { required: false })}
               label={labelRequired(`${key.key}`)}
               id={`techData.${index}.value`}
               name={`techData.${index}.value`}
-              type="text"
+              type='text'
               error={errorForField?.message}
             />
             {
               <input
                 {...register(`techData.${index}.unit`, { required: false })}
                 readOnly
-                className="readonly"
+                className='readonly'
                 id={`techData.${index}.unit`}
                 name={`techData.${index}.unit`}
                 // error={errorForField}
@@ -156,17 +155,17 @@ const ProductVariantForm = ({
           </HStack>
         )
       })}
-      <div className="button-container">
-        <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
+      <div className='button-container'>
+        <Button type='reset' variant='tertiary' size='medium' onClick={() => window.history.back()}>
           {firstTime ? 'Hopp over' : 'Avbryt'}
         </Button>
-        <Button type="submit" size="medium" disabled={!isSubmittable}>
+        <Button type='submit' size='medium' disabled={!isSubmittable}>
           Lagre
         </Button>
       </div>
       {error?.name && (
         <p>
-          <span className="auth-dialog-box__erorr-message">{error?.message}</span>
+          <span className='auth-dialog-box__erorr-message'>{error?.message}</span>
         </p>
       )}
     </form>

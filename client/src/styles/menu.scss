@@ -13,6 +13,7 @@
 
   &.open {
     background-color: $fh-bg-default;
+
     &__burgermenu-button {
       color: #b7bfd8;
     }
@@ -121,7 +122,7 @@
     }
 
     &:focus-visible,
-    // &:focus,
+      // &:focus,
     &:hover:not(.page-link--active) {
       background-color: #363c5d;
     }

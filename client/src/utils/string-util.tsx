@@ -15,7 +15,7 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
 
 // Rules from Språkrådet: https://www.sprakradet.no/sprakhjelp/Skriveregler/Mellomrom/
 export const toValueAndUnit = (value: string, unit: string) => {
-  if (unit === '"' || unit === "'" || unit === '°') {
+  if (unit === '"' || unit === '\'' || unit === '°') {
     return value + unit
   }
 

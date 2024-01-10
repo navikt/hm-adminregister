@@ -2,10 +2,10 @@ import classNames from 'classnames'
 import styles from './DefinitionList.module.scss'
 
 const DefinitionList = ({
-  children,
-  className,
-  fullWidth = false,
-}: {
+                          children,
+                          className,
+                          fullWidth = false,
+                        }: {
   children: React.ReactNode
   className?: string
   fullWidth?: boolean

@@ -1,16 +1,12 @@
-
 import { Alert, Button, Heading, Tabs, Textarea, VStack } from '@navikt/ds-react'
-import React, { useRef } from 'react'
-import { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
-import { PlusCircleIcon } from '@navikt/aksel-icons'
-import { FloppydiskIcon } from '@navikt/aksel-icons'
-import { PencilWritingIcon } from '@navikt/aksel-icons'
+import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { EditCommonInfoProduct } from './Produkt'
-import { IsoCategoryDTO, ProductRegistrationDTO } from "../utils/response-types";
-import { useIsoCategories } from "../utils/swr-hooks";
-import { labelRequired } from "../utils/string-util";
-import Combobox from "../components/Combobox";
+import { IsoCategoryDTO, ProductRegistrationDTO } from '../utils/response-types'
+import { useIsoCategories } from '../utils/swr-hooks'
+import { labelRequired } from '../utils/string-util'
+import Combobox from '../components/Combobox'
 
 
 interface Props {
@@ -60,16 +56,16 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
   }
 
   return (
-    <Tabs.Panel value="about" className="tab-panel">
-      <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef} role="legg til produktinfo">
-        <VStack gap="14">
-          <VStack gap="2">
-            <Heading level="2" size="small">
+    <Tabs.Panel value='about' className='tab-panel'>
+      <form method='POST' onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef} role='legg til produktinfo'>
+        <VStack gap='14'>
+          <VStack gap='2'>
+            <Heading level='2' size='small'>
               {labelRequired('Iso-kategori (kode)')}
             </Heading>
 
             {isoError ? (
-              <Alert variant="error">
+              <Alert variant='error'>
                 Beklager, en feil har skjedd. Det er ikke mulig å legge til eller endre iso-kategori for øyeblikket.
                 Prøv igjen senere.
               </Alert>
@@ -79,13 +75,13 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
                   <>
                     {!product.isoCategory || product.isoCategory === '0' ? (
                       <>
-                        <Alert variant="info">
+                        <Alert variant='info'>
                           Produktet trenger en ISO-kategori før det kan sendes til godkjenning
                         </Alert>
                         <Button
-                          className="fit-content"
-                          variant="tertiary"
-                          icon={<PlusCircleIcon title="Legg til iso-kategori" fontSize="1.5rem" />}
+                          className='fit-content'
+                          variant='tertiary'
+                          icon={<PlusCircleIcon title='Legg til iso-kategori' fontSize='1.5rem' />}
                           onClick={() => setShowEditIsoMode(true)}
                         >
                           Velg ISO-kategori
@@ -97,9 +93,9 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
                           {isoCategory?.isoTitle} ({isoCategory?.isoCode})
                         </div>
                         <Button
-                          className="fit-content"
-                          variant="tertiary"
-                          icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
+                          className='fit-content'
+                          variant='tertiary'
+                          icon={<PencilWritingIcon title='Endre iso-kategori' fontSize='1.5rem' />}
                           onClick={() => setShowEditIsoMode(true)}
                         >
                           Endre ISO-kategori
@@ -126,10 +122,10 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
                 )}
 
                 <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  type="button"
-                  icon={<FloppydiskIcon title="Lagre iso-kategori" fontSize="1.5rem" />}
+                  className='fit-content'
+                  variant='tertiary'
+                  type='button'
+                  icon={<FloppydiskIcon title='Lagre iso-kategori' fontSize='1.5rem' />}
                   onClick={handleSaveIso}
                 >
                   Lagre
@@ -138,8 +134,8 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
             )}
           </VStack>
 
-          <VStack gap="2">
-            <Heading level="2" size="small">
+          <VStack gap='2'>
+            <Heading level='2' size='small'>
               {labelRequired('Produktbeskrivelse')}
             </Heading>
 
@@ -147,11 +143,11 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
               <>
                 {!product.productData.attributes.text ? (
                   <>
-                    <Alert variant="info">Produktet trenger en beskrivelse før det kan sendes til godkjenning</Alert>
+                    <Alert variant='info'>Produktet trenger en beskrivelse før det kan sendes til godkjenning</Alert>
                     <Button
-                      className="fit-content"
-                      variant="tertiary"
-                      icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+                      className='fit-content'
+                      variant='tertiary'
+                      icon={<PlusCircleIcon title='Legg til beskrivelse' fontSize='1.5rem' />}
                       onClick={() => setShowEditDescriptionMode(true)}
                     >
                       Legg til beskrivelse
@@ -159,11 +155,11 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
                   </>
                 ) : (
                   <>
-                    <pre className="pre">{product.productData.attributes.text}</pre>
+                    <pre className='pre'>{product.productData.attributes.text}</pre>
                     <Button
-                      className="fit-content"
-                      variant="tertiary"
-                      icon={<PencilWritingIcon title="Endre beskrivelse" fontSize="1.5rem" />}
+                      className='fit-content'
+                      variant='tertiary'
+                      icon={<PencilWritingIcon title='Endre beskrivelse' fontSize='1.5rem' />}
                       onClick={() => setShowEditDescriptionMode(true)}
                     >
                       Endre beskrivelse
@@ -179,14 +175,14 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
                   defaultValue={product.productData.attributes.text ?? (product.productData.attributes.text || '')}
                   label={''}
                   description={getDescription()}
-                  id="description"
-                  name="description"
+                  id='description'
+                  name='description'
                   onChange={(event) => formMethods.setValue('description', event.currentTarget.value)}
                 />
                 <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
+                  className='fit-content'
+                  variant='tertiary'
+                  icon={<FloppydiskIcon title='Lagre beskrivelse' fontSize='1.5rem' />}
                   onClick={handleSaveDescription}
                 >
                   Lagre

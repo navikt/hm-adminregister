@@ -1,5 +1,6 @@
 import {
-  AdminUserChunk, AgreementsChunk,
+  AdminUserChunk,
+  AgreementsChunk,
   IsoCategoryDTO,
   MediaDTO,
   SeriesChunk,
@@ -119,8 +120,8 @@ export function useAgreements() {
   const { loggedInUser } = useHydratedAuthStore()
 
   const path = loggedInUser?.isAdmin
-      ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations`
-      : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations`
+    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations`
+    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 

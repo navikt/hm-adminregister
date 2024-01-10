@@ -1,12 +1,9 @@
-
 import { PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from '@navikt/ds-react'
-import { ProductRegistrationDTO } from "../utils/response-types";
-import { useLocation, useSearchParams } from 'react-router-dom'
-import { isUUID, toValueAndUnit } from "../utils/string-util";
-import { getAllUniqueTechDataKeys } from "../utils/product-util";
-import { Link } from "react-router-dom";
-
+import { ProductRegistrationDTO } from '../utils/response-types'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { isUUID, toValueAndUnit } from '../utils/string-util'
+import { getAllUniqueTechDataKeys } from '../utils/product-util'
 
 
 const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
@@ -32,32 +29,32 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
   paginatedVariants = paginatedVariants.slice((page - 1) * columnsPerPage, page * columnsPerPage)
 
   return (
-    <Tabs.Panel value="variants" className="tab-panel">
+    <Tabs.Panel value='variants' className='tab-panel'>
       {isFirstTime && (
-        <Alert variant="info">
+        <Alert variant='info'>
           Produktet trenger en eller flere artikler. Her kan man legge inn artikler som varierer for eksempel i
           størrelse eller farge. Alle artiklene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
           fra leverandør og teknisk data.
         </Alert>
       )}
       {!isFirstTime && (
-        <Box background="surface-default" padding={{ xs: '2', md: '6' }} borderRadius="xlarge">
-          <VStack gap="4">
-            <div className="variant-table">
+        <Box background='surface-default' padding={{ xs: '2', md: '6' }} borderRadius='xlarge'>
+          <VStack gap='4'>
+            <div className='variant-table'>
               <Table>
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell scope="row"></Table.HeaderCell>
+                    <Table.HeaderCell scope='row'></Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
-                      <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
+                      <Table.HeaderCell scope='row' key={`edit-${product.id}`}>
                         <Link to={`${pathname}/rediger-variant/${product.id}?page=${page}`}>
                           <Button
-                            as="a"
-                            title="Rediger artikkel"
-                            variant="tertiary-neutral"
-                            size="small"
-                            icon={<PencilWritingIcon aria-hidden title="rediger artikkel" />}
-                            iconPosition="right"
+                            as='a'
+                            title='Rediger artikkel'
+                            variant='tertiary-neutral'
+                            size='small'
+                            icon={<PencilWritingIcon aria-hidden title='rediger artikkel' />}
+                            iconPosition='right'
                           />
                         </Link>
                       </Table.HeaderCell>
@@ -66,13 +63,13 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
                 </Table.Header>
                 <Table.Body>
                   <Table.Row>
-                    <Table.HeaderCell scope="row">Artikkelnavn:</Table.HeaderCell>
+                    <Table.HeaderCell scope='row'>Artikkelnavn:</Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.DataCell key={`articleName-${i}`}>{product.articleName || '-'}</Table.DataCell>
                     ))}
                   </Table.Row>
                   <Table.Row>
-                    <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
+                    <Table.HeaderCell scope='row'>Lev-artnr:</Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.DataCell key={`levart-${i}`}>
                         {product.supplierRef ? (isUUID(product.supplierRef) ? '-' : product.supplierRef) : '-'}
@@ -80,14 +77,14 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
                     ))}
                   </Table.Row>
                   <Table.Row>
-                    <Table.HeaderCell scope="row">Hms-nr:</Table.HeaderCell>
+                    <Table.HeaderCell scope='row'>Hms-nr:</Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.DataCell key={`hms-${i}`}>{product.hmsArtNr || '-'}</Table.DataCell>
                     ))}
                   </Table.Row>
                   {techKeys.map((key) => (
                     <Table.Row key={key}>
-                      <Table.HeaderCell scope="row">{key}</Table.HeaderCell>
+                      <Table.HeaderCell scope='row'>{key}</Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
                         <Table.DataCell key={`${key}-${i}`}>{techValue(product, key) || '-'}</Table.DataCell>
                       ))}
@@ -97,7 +94,7 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
               </Table>
             </div>
             {totalPages > 1 && (
-              <Pagination page={page} count={totalPages} size="small" />
+              <Pagination page={page} count={totalPages} size='small' />
             )}
           </VStack>
         </Box>
@@ -106,10 +103,10 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
         //Sender med siste siden
         <Link to={`${pathname}/opprett-variant/${products[0].id}?page=${totalPages + 1}`}>
           <Button
-            as="a"
-            className="fit-content"
-            variant="tertiary"
-            icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+            as='a'
+            className='fit-content'
+            variant='tertiary'
+            icon={<PlusCircleIcon title='Legg til beskrivelse' fontSize='1.5rem' />}
             style={{ marginTop: '16px' }}
           >
             Legg til ny artikkel

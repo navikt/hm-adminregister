@@ -63,37 +63,37 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
         oid={agreement.id}
         mutateAgreement={mutateAgreement}
       />
-      <Tabs.Panel value="documents" className="tab-panel">
-        <VStack gap="8">
-            <>
-              {sortedPdfs.length > 0 && (
-                <ol className="documents">
-                  {sortedPdfs.map((pdf) => (
-                    <li className="document" key={pdf.uri}>
-                      <HStack gap={{ xs: '1', sm: '2', md: '3' }} align="center">
-                        <FilePdfIcon fontSize="2rem" />
-                        <a href={pdf.sourceUri} target="_blank" className="document-type">
-                          {pdf.text || pdf.uri.split('/').pop()}
-                        </a>
-                      </HStack>
-                      <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType="document" />
-                    </li>
-                  ))}
-                </ol>
-              )}
-              {sortedPdfs.length === 0 && (
-                <Alert variant="info">Produktet trenger dokumenter før det kan sendes til godkjenning</Alert>
-              )}
-            </>
+      <Tabs.Panel value='documents' className='tab-panel'>
+        <VStack gap='8'>
+          <>
+            {sortedPdfs.length > 0 && (
+              <ol className='documents'>
+                {sortedPdfs.map((pdf) => (
+                  <li className='document' key={pdf.uri}>
+                    <HStack gap={{ xs: '1', sm: '2', md: '3' }} align='center'>
+                      <FilePdfIcon fontSize='2rem' />
+                      <a href={pdf.sourceUri} target='_blank' className='document-type'>
+                        {pdf.text || pdf.uri.split('/').pop()}
+                      </a>
+                    </HStack>
+                    <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType='document' />
+                  </li>
+                ))}
+              </ol>
+            )}
+            {sortedPdfs.length === 0 && (
+              <Alert variant='info'>Produktet trenger dokumenter før det kan sendes til godkjenning</Alert>
+            )}
+          </>
 
 
           <Button
-            className="fit-content"
-            variant="tertiary"
+            className='fit-content'
+            variant='tertiary'
             icon={
               <PlusCircleIcon
                 title='Legg til dokument'
-                fontSize="1.5rem"
+                fontSize='1.5rem'
               />
             }
             onClick={() => setModalIsOpen(true)}

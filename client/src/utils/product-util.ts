@@ -1,7 +1,7 @@
 import { MediaDTO, MediaInfo, ProductRegistrationDTO } from './response-types'
 
 export const mapImagesAndPDFfromMedia = (
-  products: ProductRegistrationDTO[]
+  products: ProductRegistrationDTO[],
 ): { images: MediaInfo[]; pdfs: MediaInfo[] } => {
   const seen: { [uri: string]: boolean } = {}
   const pdfs: MediaInfo[] = []
@@ -35,7 +35,7 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): st
 
 export const getEditedProductDTOAddFiles = (
   productToEdit: ProductRegistrationDTO,
-  files: MediaInfo[]
+  files: MediaInfo[],
 ): ProductRegistrationDTO => {
   const oldAndNewfiles = productToEdit.productData.media.concat(files)
   return {
@@ -49,7 +49,7 @@ export const getEditedProductDTOAddFiles = (
 
 export const getEditedProductDTORemoveFiles = (
   productToEdit: ProductRegistrationDTO,
-  fileToRemoveUri: string
+  fileToRemoveUri: string,
 ): ProductRegistrationDTO => {
   const filteredFiles = productToEdit.productData.media.filter((file) => file.uri !== fileToRemoveUri)
   return {

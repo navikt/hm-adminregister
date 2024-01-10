@@ -24,8 +24,8 @@ const useAuthStore = create<AuthStore & AuthActions>()(
     {
       name: 'authStore', // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
-    }
-  )
+    },
+  ),
 )
 
 export const useHydratedAuthStore = ((selector, compare) => {
@@ -35,8 +35,8 @@ export const useHydratedAuthStore = ((selector, compare) => {
   return hydrated
     ? store
     : {
-        loggedInUser: undefined,
-        clearLoggedInState: () => undefined,
-        setLoggedInUser: () => undefined,
-      }
+      loggedInUser: undefined,
+      clearLoggedInState: () => undefined,
+      setLoggedInUser: () => undefined,
+    }
 }) as typeof useAuthStore

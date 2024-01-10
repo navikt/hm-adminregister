@@ -56,7 +56,7 @@ export const mapSuppliers = (data: SupplierChunk): Supplier[] => {
 }
 
 export const mapSuppliersUser = (
-  _source: UserDTO
+  _source: UserDTO,
 ): {
   roles: string[]
   name: string
@@ -78,7 +78,7 @@ export const mapSuppliersUser = (
 }
 
 export const mapSuppliersUsers = (
-  data: SupplierUserChunk
+  data: SupplierUserChunk,
 ): {
   roles: string[]
   name: string

@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { PersonIcon } from '@navikt/aksel-icons'
 import { Alert, Button, Checkbox, Heading, TextField } from '@navikt/ds-react'
-import { newSupplierUserSchema } from "../utils/zodSchema/newUser";
-import { useHydratedErrorStore } from "../utils/store/useErrorStore";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { SupplierUserDTO } from "../utils/supplier-util";
-import { labelRequired } from "../utils/string-util";
-import { HM_REGISTER_URL } from "../environments";
+import { newSupplierUserSchema } from '../utils/zodSchema/newUser'
+import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { SupplierUserDTO } from '../utils/supplier-util'
+import { labelRequired } from '../utils/string-util'
+import { HM_REGISTER_URL } from '../environments'
 
 type FormData = z.infer<typeof newSupplierUserSchema>
 
@@ -84,23 +84,23 @@ export default function OpprettLeverandørBruker() {
   }
 
   return (
-    <div className="create-new-supplier-user">
-      <div className="content">
-        <div className="header-container">
-          <PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />
-          <Heading level="1" size="large" align="center">
+    <div className='create-new-supplier-user'>
+      <div className='content'>
+        <div className='header-container'>
+          <PersonIcon aria-hidden={true} title='a11y-title' width={43} height={43} />
+          <Heading level='1' size='large' align='center'>
             Opprett ny bruker
           </Heading>
         </div>
-        <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+        <form action='' method='POST' onSubmit={handleSubmit(onSubmit)}>
           <TextField
             {...register('email', { required: true })}
             label={labelRequired('E-post')}
-            id="email"
-            type="email"
-            name="email"
-            description="Eksempel: firma@domene.no"
-            autoComplete="on"
+            id='email'
+            type='email'
+            name='email'
+            description='Eksempel: firma@domene.no'
+            autoComplete='on'
             onBlur={() => handleFieldBlur('email')}
             onFocus={() => handleFieldFocus('email')}
             error={blurredFields.email && errors?.email?.message}
@@ -108,26 +108,26 @@ export default function OpprettLeverandørBruker() {
           <TextField
             {...register('password', { required: true })}
             label={labelRequired('Midlertidig passord')}
-            id="password"
+            id='password'
             type={isPasswordShown ? 'text' : 'password'}
-            name="password"
-            autoComplete="off"
+            name='password'
+            autoComplete='off'
             onBlur={() => handleFieldBlur('password')}
             onFocus={() => handleFieldFocus('password')}
             error={blurredFields.password && errors?.password?.message}
           />
-          <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value="isPassShown">
+          <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value='isPassShown'>
             Vis passord
           </Checkbox>
-          <Alert variant="info">
+          <Alert variant='info'>
             Husk at det ikke vil være mulig å finne tilbake til det midlertidige passordet etter at brukeren er
             opprettet.
           </Alert>
-          <div className="button-container">
-            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+          <div className='button-container'>
+            <Button type='reset' variant='secondary' size='medium' onClick={() => window.history.back()}>
               Avbryt
             </Button>
-            <Button type="submit" size="medium" disabled={!isDirty || !isValid || isSubmitting}>
+            <Button type='submit' size='medium' disabled={!isDirty || !isValid || isSubmitting}>
               Opprett
             </Button>
           </div>

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { ProductDraftWithDTO } from '../utils/response-types'
 import { labelRequired } from '../utils/string-util'
 import Combobox from '../components/Combobox'
-import { HM_REGISTER_URL } from "../environments";
+import { HM_REGISTER_URL } from '../environments'
 import { useHydratedAuthStore } from '../utils/store/useAuthStore'
 
 type FormData = z.infer<typeof createNewProductSchema>
@@ -71,18 +71,18 @@ export default function OpprettProdukt() {
 
   return (
     <main>
-      <div className="create-new-product">
-        <div className="content">
-          <Heading level="1" size="large" align="center">
+      <div className='create-new-product'>
+        <div className='content'>
+          <Heading level='1' size='large' align='center'>
             Kom i gang med nytt produkt
           </Heading>
-          <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
+          <form className='form form--max-width-small' onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register('productName', { required: true })}
               label={labelRequired('Produktnavn')}
-              id="productName"
-              name="productName"
-              type="text"
+              id='productName'
+              name='productName'
+              type='text'
               error={errors?.productName?.message}
             />
             <Combobox
@@ -92,11 +92,11 @@ export default function OpprettProdukt() {
               label={labelRequired('Iso-kategori (kode)')}
               errorMessage={errors?.productName?.message}
             />
-            <div className="button-container">
-              <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
+            <div className='button-container'>
+              <Button type='reset' variant='tertiary' size='medium' onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type="submit" size="medium">
+              <Button type='submit' size='medium'>
                 Opprett
               </Button>
             </div>

@@ -1,7 +1,7 @@
 import { AgreementAttachment, AgreementRegistrationDTO, MediaInfo } from './response-types'
 
 export const mapPDFfromMedia = (
-  agreement: AgreementRegistrationDTO
+  agreement: AgreementRegistrationDTO,
 ): { pdfs: MediaInfo[] } => {
   const seen: { [uri: string]: boolean } = {}
   const pdfs: MediaInfo[] = []
@@ -22,7 +22,7 @@ export const mapPDFfromMedia = (
 
 export const getEditedAgreementDTOAddFiles = (
   agreementToEdit: AgreementRegistrationDTO,
-  files: MediaInfo[]
+  files: MediaInfo[],
 ): AgreementRegistrationDTO => {
 
   //todo: fix merging av attachments
@@ -44,7 +44,7 @@ export const getEditedAgreementDTOAddFiles = (
 
 export const getEditedAgreementDTORemoveFiles = (
   agreementToEdit: AgreementRegistrationDTO,
-  fileToRemoveUri: string
+  fileToRemoveUri: string,
 ): AgreementRegistrationDTO => {
   const filteredFiles =
     agreementToEdit.agreementData.attachments

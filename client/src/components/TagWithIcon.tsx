@@ -18,7 +18,7 @@ const TagWithIcon = ({ icon, text, color }: { icon: ReactNode; text: string; col
       })}
     >
       {icon}
-      <p className="text">{text}</p>
+      <p className='text'>{text}</p>
     </span>
   )
 }

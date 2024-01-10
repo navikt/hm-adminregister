@@ -26,9 +26,11 @@ export const useHydratedErrorStore = ((selector, compare) => {
   return hydrated
     ? store
     : {
-        errorCode: undefined,
-        errorMessage: undefined,
-        setGlobalError: (_errorCode: ErrorCode, _errorMessage?: string) => {},
-        clearError: () => {},
-      }
+      errorCode: undefined,
+      errorMessage: undefined,
+      setGlobalError: (_errorCode: ErrorCode, _errorMessage?: string) => {
+      },
+      clearError: () => {
+      },
+    }
 }) as typeof useErrorStore

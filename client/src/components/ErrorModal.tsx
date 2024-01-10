@@ -1,7 +1,7 @@
 import { Button, Modal } from '@navikt/ds-react'
 import './error-modal.scss'
-import { useNavigate } from "react-router-dom";
-import { useHydratedErrorStore } from "../utils/store/useErrorStore";
+import { useNavigate } from 'react-router-dom'
+import { useHydratedErrorStore } from '../utils/store/useErrorStore'
 
 const ErrorModal = () => {
   const { errorCode, errorMessage, clearError } = useHydratedErrorStore()
@@ -41,12 +41,12 @@ const ErrorModal = () => {
         closeButton: true,
       }}
       onClose={handleClose}
-      className="error-modal"
+      className='error-modal'
     >
-      <Modal.Body className="error-modal__body">{getUserErrorMessage()}</Modal.Body>
+      <Modal.Body className='error-modal__body'>{getUserErrorMessage()}</Modal.Body>
       <Modal.Footer>
         {errorCode !== 400 && (
-          <Button className="error-modal__button" onClick={handleClick}>
+          <Button className='error-modal__button' onClick={handleClick}>
             {errorCode === 401 ? 'Logg inn på nytt' : 'Gå til hovedsiden'}
           </Button>
         )}

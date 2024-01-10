@@ -5,12 +5,12 @@ import './create-supplier.scss'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { newSupplierSchema } from "../utils/zodSchema/newSupplier";
-import { useHydratedErrorStore } from "../utils/store/useErrorStore";
-import { useNavigate } from "react-router-dom";
-import { formatPhoneNumber, labelRequired } from "../utils/string-util";
-import { SupplierDTOBody } from "../utils/supplier-util";
-import { HM_REGISTER_URL } from "../environments";
+import { newSupplierSchema } from '../utils/zodSchema/newSupplier'
+import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { useNavigate } from 'react-router-dom'
+import { formatPhoneNumber, labelRequired } from '../utils/string-util'
+import { SupplierDTOBody } from '../utils/supplier-util'
+import { HM_REGISTER_URL } from '../environments'
 
 
 type FormData = z.infer<typeof newSupplierSchema>
@@ -96,22 +96,22 @@ export default function OpprettLeverandør() {
   }
 
   return (
-    <div className="create-new-supplier">
-      <div className="content">
-        <div className="header-container">
-          <Buldings3Icon title="a11y-title" width={43} height={43} aria-hidden />
-          <Heading level="1" size="large" align="center">
+    <div className='create-new-supplier'>
+      <div className='content'>
+        <div className='header-container'>
+          <Buldings3Icon title='a11y-title' width={43} height={43} aria-hidden />
+          <Heading level='1' size='large' align='center'>
             Opprett ny leverandør
           </Heading>
         </div>
-        <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+        <form action='' method='POST' onSubmit={handleSubmit(onSubmit)}>
           <TextField
             {...register('name', { required: true })}
             label={labelRequired('Firmanavn')}
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="on"
+            id='name'
+            name='name'
+            type='text'
+            autoComplete='on'
             onBlur={() => handleFieldBlur('name')}
             onFocus={() => handleFieldFocus('name')}
             error={blurredFields.name && errors.name && errors.name.message}
@@ -119,44 +119,44 @@ export default function OpprettLeverandør() {
           <TextField
             {...register('email', { required: false })}
             label={'E-post'}
-            id="email"
-            type="email"
-            name="email"
-            autoComplete="on"
+            id='email'
+            type='email'
+            name='email'
+            autoComplete='on'
             onBlur={() => handleFieldBlur('email')}
             onFocus={() => handleFieldFocus('email')}
             error={blurredFields.email && errors.email && errors.email.message}
           />
           <TextField
             {...register('homepage', { required: false })}
-            label="Nettside"
-            id="homepage"
-            type="text"
-            name="homepage"
-            description="Eksempel: www.domene.no"
-            autoComplete="on"
+            label='Nettside'
+            id='homepage'
+            type='text'
+            name='homepage'
+            description='Eksempel: www.domene.no'
+            autoComplete='on'
             onBlur={() => handleFieldBlur('homepage')}
             onFocus={() => handleFieldFocus('homepage')}
             error={blurredFields.homepage && errors.homepage && errors.homepage.message}
           />
           <TextField
             {...register('phone', { required: false })}
-            label="Telefonnummer"
-            id="phoneNumber"
-            type="text"
-            name="phone"
-            autoComplete="on"
+            label='Telefonnummer'
+            id='phoneNumber'
+            type='text'
+            name='phone'
+            autoComplete='on'
             onChange={(event) => setPhoneValue(event.target.value)}
             onBlur={() => handleFieldBlur('phone')}
             onFocus={() => handleFieldFocus('phone')}
             error={blurredFields.phone && errors.phone && errors.phone.message}
             value={phoneValue}
           />
-          <div className="button-container">
-            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+          <div className='button-container'>
+            <Button type='reset' variant='secondary' size='medium' onClick={() => window.history.back()}>
               Avbryt
             </Button>
-            <Button type="submit" size="medium" disabled={!isDirty || !isValid || isSubmitting}>
+            <Button type='submit' size='medium' disabled={!isDirty || !isValid || isSubmitting}>
               Opprett
             </Button>
           </div>
