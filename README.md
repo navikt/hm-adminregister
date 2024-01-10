@@ -36,13 +36,13 @@ yarn dev
 pnpm dev
 ```
 
-## Testbrukere
+## Testbrukere (etter å ha fulgt guide i  [grunndata-register](https://github.com/navikt/hm-grunndata-register).)
 
  ```
- finnadmin@finnhjelpemidler.no
- E*V*P*
- finnhans@finnhjelpemidler.no
- E*V*P*
+admin@test.test
+test12345
+user1@test.test
+token123
  ```
 
 Open [http://localhost:5173/](http://localhost:5173/) with your browser to see the result.
