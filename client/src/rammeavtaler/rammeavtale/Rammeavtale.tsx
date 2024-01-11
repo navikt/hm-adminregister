@@ -1,7 +1,7 @@
 import React from 'react'
 import useSWR from 'swr'
-import { Alert, Button, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
-import { EyeClosedIcon } from '@navikt/aksel-icons'
+import { Alert, BodyShort, Button, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
+import { CogIcon } from '@navikt/aksel-icons'
 import './agreement-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
@@ -12,10 +12,10 @@ import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
 import { AgreementRegistrationDTO } from '../../utils/response-types'
 import { fetcherGET } from '../../utils/swr-hooks'
-import StatusTag from '../../components/StatusTag'
 import { HM_REGISTER_URL } from '../../environments'
 import { updateAgreement } from '../../api/AgreementApi'
-import { toReadableString } from '../../utils/date-util'
+import { toDate, toReadableDateTimeString, toReadableString } from '../../utils/date-util'
+import StatusTagAgreement from '../../components/StatusTagAgreement'
 
 export type EditCommonInfoAgreement = {
   description: string
@@ -109,15 +109,18 @@ const AgreementPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: '2', md: '4' }}>
-            <Heading level='1' size='medium'>
+            <Button className='settings-button' variant='secondary' icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}>
+            </Button>
+            <Heading level='1' size='small'>
               Status
             </Heading>
-            <StatusTag isPending={false} isDraft={isDraft} />
-            <PublishButton isAdmin={loggedInUser?.isAdmin || false} isPending={false} isDraft={isDraft} />
-            <Button variant='secondary' disabled={isDraft}
-                    icon={<EyeClosedIcon aria-hidden fontSize={'1.5rem'} />}>
-              Avpubliser
-            </Button>
+            <StatusTagAgreement publiseringsdato={toDate(agreement.published)} isDraft={isDraft} />
+            <div>
+              <BodyShort>
+                <b>Opprettet</b>
+              </BodyShort>
+              {toReadableDateTimeString(agreement.created)}
+            </div>
           </VStack>
         </HGrid>
       </FormProvider>
@@ -125,27 +128,3 @@ const AgreementPage = () => {
   )
 }
 export default AgreementPage
-
-const PublishButton = ({ isAdmin, isPending, isDraft }: { isAdmin: boolean; isPending: boolean; isDraft: boolean }) => {
-  if (isDraft) {
-    return (
-      <Button style={{ marginTop: '20px' }} disabled={isAdmin}>
-        Send til godkjenning
-      </Button>
-    )
-  } else if (isAdmin && isPending) {
-    return <Button style={{ marginTop: '20px' }}>Publiser</Button>
-  } else if (!isAdmin && isPending) {
-    return (
-      <Button style={{ marginTop: '20px' }} disabled={true}>
-        Send til godkjenning
-      </Button>
-    )
-  } else {
-    return (
-      <Button style={{ marginTop: '20px' }} disabled={true}>
-        Publiser
-      </Button>
-    )
-  }
-}

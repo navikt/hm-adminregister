@@ -1,21 +1,15 @@
 import { Alert, ExpansionCard, Tabs, VStack } from '@navikt/ds-react'
 import { AgreementPostDTO } from '../../utils/response-types'
-import { useLocation, useSearchParams } from 'react-router-dom'
 
 const DelkontrakterTab = ({ posts }: { posts: AgreementPostDTO[] }) => {
-  const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
 
-
-  const isFirstTime = posts.length === 1
+  const isFirstTime = posts.length === 0
 
   return (
     <Tabs.Panel value='delkontrakter' className='tab-panel'>
       {isFirstTime && (
         <Alert variant='info'>
-          Produktet trenger en eller flere artikler. Her kan man legge inn artikler som varierer for eksempel i
-          størrelse eller farge. Alle artiklene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
-          fra leverandør og teknisk data.
+          Rammeavtalen trenger delkontrakter.
         </Alert>
       )}
       {!isFirstTime && (

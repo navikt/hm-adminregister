@@ -7,3 +7,11 @@ export const toDateTimeString = (date: Date): string => {
 export const toReadableString = (date: string): string => {
   return format(parseISO(date), 'MM.dd.yyyy')
 }
+
+export const toReadableDateTimeString = (date: string): string => {
+  return format(parseISO(date), "MM.dd.yyyy' , kl. 'HH:mm")
+}
+
+export const toDate = (date: string): Date => {
+  return parseISO(date)
+}
