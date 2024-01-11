@@ -105,11 +105,12 @@ const AgreementPage = () => {
               </Tabs.List>
               <AboutTab agreement={agreement} onSubmit={onSubmit} />
               <FileTab agreement={agreement} mutateAgreement={mutateAgreement} />
-              <DelkontrakterTab posts={agreement.agreementData.posts} />
+              <DelkontrakterTab mutateAgreement={mutateAgreement} agreementId={agreement.id}
+                                posts={agreement.agreementData.posts} />
             </Tabs>
           </VStack>
           <VStack gap={{ xs: '2', md: '4' }}>
-            <Button className='settings-button' variant='secondary' icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}>
+            <Button className='fit-content' variant='secondary' icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}>
             </Button>
             <Heading level='1' size='small'>
               Status

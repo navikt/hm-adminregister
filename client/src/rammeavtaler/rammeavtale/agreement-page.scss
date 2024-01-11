@@ -21,10 +21,6 @@ pre {
   }
 }
 
-.settings-button {
-  width: fit-content;
-}
-
 .documents,
 .images-inline {
   list-style: none;
@@ -130,19 +126,13 @@ pre {
   }
 }
 
-.images-tab {
-  &__upload-container {
+.delkontrakter-tab {
+  &__new-delkontrakt-container {
     display: flex;
     align-items: center;
     justify-content: center;
     padding-right: 1rem;
-
-    gap: 1rem;
     width: 626px;
-    height: 121px;
-    background-color: #efecf4;
-    border-radius: 5px;
-    border: 2px dotted #8269a2;
 
     button {
       background-color: white;

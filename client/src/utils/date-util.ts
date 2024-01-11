@@ -15,3 +15,7 @@ export const toReadableDateTimeString = (date: string): string => {
 export const toDate = (date: string): Date => {
   return parseISO(date)
 }
+
+export const todayTimestamp = (): string => {
+  return toDateTimeString(new Date())
+}
