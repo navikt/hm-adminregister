@@ -8,8 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { labelRequired } from '../../utils/string-util'
 import { Avstand } from '../../components/Avstand'
 import { updateAgreementWithNewDelkontrakt } from '../../api/AgreementApi'
-import { AgreementPostDTO, AgreementRegistrationDTO } from '../../utils/response-types'
-import { todayTimestamp } from '../../utils/date-util'
 
 interface Props {
   modalIsOpen: boolean
@@ -25,12 +23,22 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NyDelkontraktFormData>({
     resolver: zodResolver(createNewDelkontraktSchema),
     mode: 'onSubmit',
   })
   const { setGlobalError } = useHydratedErrorStore()
+
+  async function onSubmitContinue(data: NyDelkontraktFormData) {
+    await onSubmit(data)
+  }
+
+  async function onSubmitClose(data: NyDelkontraktFormData) {
+    await onSubmit(data)
+    setModalIsOpen(false)
+  }
 
   async function onSubmit(data: NyDelkontraktFormData) {
     setIsSaving(true)
@@ -44,7 +52,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
       setGlobalError(error.message)
       setIsSaving(false)
     })
-
+    reset()
   }
 
   return (
@@ -56,7 +64,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
       }}
       onClose={() => setModalIsOpen(false)}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form>
         <Modal.Body>
           <div
             className='delkontrakter-tab__new-delkontrakt-container'
@@ -88,23 +96,24 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
         </Modal.Body>
         <Modal.Footer>
           <Button
-            onClick={(event) => {
-              event.preventDefault()
-              // todo: clean input fields
-            }}
+            onClick={handleSubmit(onSubmitContinue)}
             variant='primary'
+            type='submit'
           >
             Legg til og fortsett
           </Button>
-          <Button type='submit' variant='secondary'>
+          <Button
+            onClick={handleSubmit(onSubmitClose)}
+            type='submit' variant='secondary'>
             Legg til
           </Button>
           <Button
-            onClick={(event) => {
-              event.preventDefault()
+            onClick={() => {
               setModalIsOpen(false)
+              reset()
             }}
             variant='tertiary'
+            type='reset'
           >
             Avbryt
           </Button>
