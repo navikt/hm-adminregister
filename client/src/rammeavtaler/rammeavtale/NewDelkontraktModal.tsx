@@ -60,7 +60,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
       open={modalIsOpen}
       header={{
         heading: 'Legg til delkontrakt',
-        closeButton: true,
+        closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
     >
@@ -95,28 +95,30 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={handleSubmit(onSubmitContinue)}
-            variant='primary'
-            type='submit'
-          >
-            Legg til og fortsett
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmitClose)}
-            type='submit' variant='secondary'>
-            Legg til
-          </Button>
-          <Button
-            onClick={() => {
-              setModalIsOpen(false)
-              reset()
-            }}
-            variant='tertiary'
-            type='reset'
-          >
-            Avbryt
-          </Button>
+          <HStack gap='2'>
+            <Button
+              onClick={() => {
+                setModalIsOpen(false)
+                reset()
+              }}
+              variant='tertiary'
+              type='reset'
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmitClose)}
+              type='submit' variant='secondary'>
+              Legg til
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmitContinue)}
+              variant='primary'
+              type='submit'
+            >
+              Legg til og fortsett
+            </Button>
+          </HStack>
         </Modal.Footer>
       </form>
     </Modal>
