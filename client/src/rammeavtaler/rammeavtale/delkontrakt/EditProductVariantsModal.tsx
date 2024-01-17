@@ -5,14 +5,12 @@ import { PencilWritingIcon, TrashIcon } from '@navikt/aksel-icons'
 
 interface Props {
   modalIsOpen: boolean
-  oid: string
   setModalIsOpen: (open: boolean) => void
-  mutateAgreement: () => void
   varianter: ProductAgreementRegistrationDTOList
 }
 
 
-const EditProducstVariantsModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, varianter }: Props) => {
+const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: Props) => {
 
 
   return (

@@ -12,11 +12,9 @@ import { useState } from 'react'
 interface Props {
   delkontrakt: AgreementPostDTO
   produkter: ProduktvarianterForDelkontrakterDTOList
-  mutateAgreement: () => void
-  oid: string
 }
 
-export const Delkontrakt = ({ delkontrakt, produkter, mutateAgreement, oid }: Props) => {
+export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([])
@@ -27,8 +25,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, mutateAgreement, oid }: Pr
 
   return (
     <>
-      <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen}
-                                 mutateAgreement={mutateAgreement} oid={oid} varianter={varianter} />
+      <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} varianter={varianter} />
 
       <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
         <ExpansionCard.Header>
@@ -56,7 +53,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, mutateAgreement, oid }: Pr
                           <Table.DataCell>{produkt.produktTittel}</Table.DataCell>
                           <Table.DataCell>
                             <Button
-                              iconPosition="right"
+                              iconPosition='right'
                               variant={'tertiary'}
                               icon={
                                 <PencilWritingIcon
