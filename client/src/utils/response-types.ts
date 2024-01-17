@@ -39,6 +39,10 @@ export type AgreementsChunk = {
 }
 export type SeriesGroupDTO = components['schemas']['SeriesGroupDTO'][]
 export type ProductRegistrationDTO = components['schemas']['ProductRegistrationDTO']
+export type ProductAgreementRegistrationDTO = components['schemas']['ProductAgreementRegistrationDTO']
+export type ProductAgreementRegistrationDTOList = components['schemas']['ProductAgreementRegistrationDTO'][]
+export type ProduktvarianterForDelkontrakterDTO = components['schemas']['ProduktvarianterForDelkontrakterDTO']
+export type ProduktvarianterForDelkontrakterDTOList = components['schemas']['ProduktvarianterForDelkontrakterDTO'][]
 export type AgreementRegistrationDTO = components['schemas']['AgreementRegistrationDTO']
 export type AgreementPostDTO = components['schemas']['AgreementPost']
 export type IsoCategoryDTO = components['schemas']['IsoCategoryDTO']

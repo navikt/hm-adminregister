@@ -5,184 +5,211 @@
 
 
 export interface paths {
-  '/admreg/admin/api/v1/agreement/registrations': {
-    get: operations['findAgreements'];
-    post: operations['createAgreement'];
+  "/admreg/admin/api/v1/agreement/registrations": {
+    get: operations["findAgreements"];
+    post: operations["createAgreement"];
   };
-  '/admreg/admin/api/v1/agreement/registrations/draft/from/{id}/reference/{reference}': {
-    post: operations['createAgreementFromAnother'];
+  "/admreg/admin/api/v1/agreement/registrations/draft/from/{id}/reference/{reference}": {
+    post: operations["createAgreementFromAnother"];
   };
-  '/admreg/admin/api/v1/agreement/registrations/draft/reference': {
-    post: operations['draftAgreementWith'];
+  "/admreg/admin/api/v1/agreement/registrations/draft/reference": {
+    post: operations["draftAgreementWith"];
   };
-  '/admreg/admin/api/v1/agreement/registrations/draft/reference/{reference}': {
-    post: operations['draftAgreement'];
+  "/admreg/admin/api/v1/agreement/registrations/draft/reference/{reference}": {
+    post: operations["draftAgreement"];
   };
-  '/admreg/admin/api/v1/agreement/registrations/{id}': {
-    get: operations['getAgreementById'];
-    put: operations['updateAgreement'];
+  "/admreg/admin/api/v1/agreement/registrations/{id}": {
+    get: operations["getAgreementById"];
+    put: operations["updateAgreement"];
   };
-  '/admreg/admin/api/v1/import/token/{supplierId}': {
-    post: operations['createSupplierToken'];
+  "/admreg/admin/api/v1/bestillingsordning/registrations": {
+    post: operations["createBestillingsordning"];
   };
-  '/admreg/admin/api/v1/media/agreement/files/{oid}': {
-    post: operations['uploadAgreementFiles'];
+  "/admreg/admin/api/v1/bestillingsordning/registrations/{hmsArtNr}": {
+    get: operations["findByHmsNr"];
+    put: operations["updateBestillingsordningStatus"];
   };
-  '/admreg/admin/api/v1/media/product/files/{oid}': {
-    post: operations['uploadProductFiles'];
+  "/admreg/admin/api/v1/import/token/{supplierId}": {
+    post: operations["createSupplierToken"];
   };
-  '/admreg/admin/api/v1/media/{oid}': {
-    get: operations['getMediaList'];
+  "/admreg/admin/api/v1/isocategory/registrations": {
+    get: operations["getAllCategories"];
+    post: operations["createIsoCategory"];
   };
-  '/admreg/admin/api/v1/media/{oid}/{uri}': {
-    delete: operations['deleteFile'];
+  "/admreg/admin/api/v1/isocategory/registrations/{isocode}": {
+    get: operations["getCategoryByIsocode"];
+    put: operations["updateCategoryByIsocode"];
   };
-  '/admreg/admin/api/v1/product-agreement': {
-    post: operations['createProductAgreement'];
+  "/admreg/admin/api/v1/media/agreement/files/{oid}": {
+    post: operations["uploadAgreementFiles"];
   };
-  '/admreg/admin/api/v1/product-agreement/excel-import': {
-    post: operations['excelImport'];
+  "/admreg/admin/api/v1/media/product/files/{oid}": {
+    post: operations["uploadProductFiles"];
   };
-  '/admreg/admin/api/v1/product-agreement/ids': {
-    delete: operations['deleteProductAgreementByIds'];
+  "/admreg/admin/api/v1/media/{oid}": {
+    get: operations["getMediaList"];
   };
-  '/admreg/admin/api/v1/product-agreement/{id}': {
-    delete: operations['deleteProductAgreementById'];
+  "/admreg/admin/api/v1/media/{oid}/{uri}": {
+    delete: operations["deleteFile"];
   };
-  '/admreg/admin/api/v1/product/registrations': {
-    get: operations['findProducts'];
-    post: operations['createProduct'];
+  "/admreg/admin/api/v1/product-agreement": {
+    post: operations["createProductAgreement"];
   };
-  '/admreg/admin/api/v1/product/registrations/approve/{id}': {
-    put: operations['approveProduct'];
+  "/admreg/admin/api/v1/product-agreement/excel-import": {
+    post: operations["excelImport"];
   };
-  '/admreg/admin/api/v1/product/registrations/draft/supplier/{supplierId}': {
-    post: operations['draftProduct'];
+  "/admreg/admin/api/v1/product-agreement/ids": {
+    delete: operations["deleteProductAgreementByIds"];
   };
-  '/admreg/admin/api/v1/product/registrations/draft/variant/{id}': {
-    post: operations['createProductVariant'];
+  "/admreg/admin/api/v1/product-agreement/variants/{id}": {
+    get: operations["getProductVariantsByAgreementId"];
   };
-  '/admreg/admin/api/v1/product/registrations/draftWith/supplier/{supplierId}': {
-    post: operations['draftProductWith'];
+  "/admreg/admin/api/v1/product-agreement/{id}": {
+    get: operations["getProductsByAgreementId"];
+    delete: operations["deleteProductAgreementById"];
   };
-  '/admreg/admin/api/v1/product/registrations/series/group': {
-    get: operations['findSeriesGroup'];
+  "/admreg/admin/api/v1/product/registrations": {
+    get: operations["findProducts"];
+    post: operations["createProduct"];
   };
-  '/admreg/admin/api/v1/product/registrations/series/{seriesId}': {
-    get: operations['findBySeriesIdAndSupplierId'];
+  "/admreg/admin/api/v1/product/registrations/approve/{id}": {
+    put: operations["approveProduct"];
   };
-  '/admreg/admin/api/v1/product/registrations/{id}': {
-    get: operations['getProductById'];
-    put: operations['updateProduct'];
-    delete: operations['deleteProduct'];
+  "/admreg/admin/api/v1/product/registrations/draft/supplier/{supplierId}": {
+    post: operations["draftProduct"];
   };
-  '/admreg/admin/api/v1/supplier/registrations': {
-    get: operations['findSuppliers'];
-    post: operations['createSupplier'];
+  "/admreg/admin/api/v1/product/registrations/draft/variant/{id}": {
+    post: operations["createProductVariant"];
   };
-  '/admreg/admin/api/v1/supplier/registrations/{id}': {
-    get: operations['getById'];
-    put: operations['updateSupplier'];
-    delete: operations['deactivateSupplier'];
+  "/admreg/admin/api/v1/product/registrations/draftWith/supplier/{supplierId}": {
+    post: operations["draftProductWith"];
   };
-  '/admreg/admin/api/v1/users': {
-    get: operations['getUsers'];
-    post: operations['createUser'];
+  "/admreg/admin/api/v1/product/registrations/series/group": {
+    get: operations["findSeriesGroup"];
   };
-  '/admreg/admin/api/v1/users/email/{email}': {
-    get: operations['getUserByEmail'];
+  "/admreg/admin/api/v1/product/registrations/series/{seriesId}": {
+    get: operations["findBySeriesIdAndSupplierId"];
   };
-  '/admreg/admin/api/v1/users/password': {
-    put: operations['changePassword'];
+  "/admreg/admin/api/v1/product/registrations/{id}": {
+    get: operations["getProductById"];
+    put: operations["updateProduct"];
+    delete: operations["deleteProduct"];
   };
-  '/admreg/admin/api/v1/users/supplierId/{supplierId}': {
-    get: operations['getUsersBySupplierId'];
+  "/admreg/admin/api/v1/supplier/registrations": {
+    get: operations["findSuppliers"];
+    post: operations["createSupplier"];
   };
-  '/admreg/admin/api/v1/users/{id}': {
-    get: operations['getUser'];
-    put: operations['updateUser'];
-    delete: operations['deleteUser'];
+  "/admreg/admin/api/v1/supplier/registrations/{id}": {
+    get: operations["getById"];
+    put: operations["updateSupplier"];
+    delete: operations["deactivateSupplier"];
   };
-  '/admreg/api/v1/isocategories': {
-    get: operations['getAllCategories'];
+  "/admreg/admin/api/v1/techlabel/registrations": {
+    get: operations["getAllTechLabels"];
+    post: operations["createTechLabel"];
   };
-  '/admreg/api/v1/isocategories/{isocode}': {
-    get: operations['getCategoryByIsocode'];
+  "/admreg/admin/api/v1/techlabel/registrations/{id}": {
+    get: operations["getTechLabelById"];
+    put: operations["updateTechLabel"];
   };
-  '/admreg/api/v1/techlabels': {
-    get: operations['fetchTechLabels'];
+  "/admreg/admin/api/v1/users": {
+    get: operations["getUsers"];
+    post: operations["createUser"];
   };
-  '/admreg/api/v1/techlabels/name/{name}': {
-    get: operations['fetchTechLabelsByName'];
+  "/admreg/admin/api/v1/users/email/{email}": {
+    get: operations["getUserByEmail"];
   };
-  '/admreg/api/v1/techlabels/{isocode}': {
-    get: operations['fetchTechLabelsByIsocode'];
+  "/admreg/admin/api/v1/users/password": {
+    put: operations["changePassword"];
   };
-  '/admreg/keys': {
-    get: operations['keys'];
+  "/admreg/admin/api/v1/users/supplierId/{supplierId}": {
+    get: operations["getUsersBySupplierId"];
   };
-  '/admreg/loggedInUser': {
-    get: operations['getLoggedInUser'];
+  "/admreg/admin/api/v1/users/{id}": {
+    get: operations["getUser"];
+    put: operations["updateUser"];
+    delete: operations["deleteUser"];
   };
-  '/admreg/login': {
-    post: operations['login'];
+  "/admreg/api/v1/isocategories": {
+    get: operations["getAllCategories_1"];
   };
-  '/admreg/logout': {
-    get: operations['indexGet'];
-    post: operations['index'];
+  "/admreg/api/v1/isocategories/{isocode}": {
+    get: operations["getCategoryByIsocode_1"];
   };
-  '/admreg/vendor/api/v1/agreement/registrations': {
-    get: operations['findAgreements_1'];
+  "/admreg/api/v1/techlabels": {
+    get: operations["fetchTechLabels"];
   };
-  '/admreg/vendor/api/v1/media/product/files/{oid}': {
-    post: operations['uploadFiles'];
+  "/admreg/api/v1/techlabels/name/{name}": {
+    get: operations["fetchTechLabelsByName"];
   };
-  '/admreg/vendor/api/v1/media/{oid}': {
-    get: operations['getMediaList_1'];
+  "/admreg/api/v1/techlabels/{isocode}": {
+    get: operations["fetchTechLabelsByIsocode"];
   };
-  '/admreg/vendor/api/v1/media/{oid}/{uri}': {
-    delete: operations['deleteFile_1'];
+  "/admreg/keys": {
+    get: operations["keys"];
   };
-  '/admreg/vendor/api/v1/product/registrations': {
-    get: operations['findProducts_1'];
-    post: operations['createProduct_1'];
+  "/admreg/loggedInUser": {
+    get: operations["getLoggedInUser"];
   };
-  '/admreg/vendor/api/v1/product/registrations/draft': {
-    post: operations['draftProduct_1'];
+  "/admreg/login": {
+    post: operations["login"];
   };
-  '/admreg/vendor/api/v1/product/registrations/draft/variant/{id}': {
-    post: operations['createProductVariant_1'];
+  "/admreg/logout": {
+    get: operations["indexGet"];
+    post: operations["index"];
   };
-  '/admreg/vendor/api/v1/product/registrations/draftWith': {
-    post: operations['draftProductWith_1'];
+  "/admreg/vendor/api/v1/agreement/registrations": {
+    get: operations["findAgreements_1"];
   };
-  '/admreg/vendor/api/v1/product/registrations/series/group': {
-    get: operations['findSeriesGroup_1'];
+  "/admreg/vendor/api/v1/media/product/files/{oid}": {
+    post: operations["uploadFiles"];
   };
-  '/admreg/vendor/api/v1/product/registrations/series/{seriesId}': {
-    get: operations['findBySeriesIdAndSupplierId_1'];
+  "/admreg/vendor/api/v1/media/{oid}": {
+    get: operations["getMediaList_1"];
   };
-  '/admreg/vendor/api/v1/product/registrations/{id}': {
-    get: operations['getProductById_1'];
-    put: operations['updateProduct_1'];
-    delete: operations['deleteProduct_1'];
+  "/admreg/vendor/api/v1/media/{oid}/{uri}": {
+    delete: operations["deleteFile_1"];
   };
-  '/admreg/vendor/api/v1/series': {
-    get: operations['getSeries'];
+  "/admreg/vendor/api/v1/product/registrations": {
+    get: operations["findProducts_1"];
+    post: operations["createProduct_1"];
   };
-  '/admreg/vendor/api/v1/supplier/registrations': {
-    get: operations['getById_1'];
-    put: operations['updateSupplier_1'];
+  "/admreg/vendor/api/v1/product/registrations/draft": {
+    post: operations["draftProduct_1"];
   };
-  '/admreg/vendor/api/v1/users': {
-    get: operations['getUsers_1'];
-    put: operations['updateUser_1'];
+  "/admreg/vendor/api/v1/product/registrations/draft/variant/{id}": {
+    post: operations["createProductVariant_1"];
   };
-  '/admreg/vendor/api/v1/users/password': {
-    put: operations['changePassword_1'];
+  "/admreg/vendor/api/v1/product/registrations/draftWith": {
+    post: operations["draftProductWith_1"];
   };
-  '/admreg/vendor/api/v1/users/{userId}': {
-    get: operations['getUserId'];
+  "/admreg/vendor/api/v1/product/registrations/series/group": {
+    get: operations["findSeriesGroup_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/series/{seriesId}": {
+    get: operations["findBySeriesIdAndSupplierId_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/{id}": {
+    get: operations["getProductById_1"];
+    put: operations["updateProduct_1"];
+    delete: operations["deleteProduct_1"];
+  };
+  "/admreg/vendor/api/v1/series": {
+    get: operations["getSeries"];
+  };
+  "/admreg/vendor/api/v1/supplier/registrations": {
+    get: operations["getById_1"];
+    put: operations["updateSupplier_1"];
+  };
+  "/admreg/vendor/api/v1/users": {
+    get: operations["getUsers_1"];
+    put: operations["updateUser_1"];
+  };
+  "/admreg/vendor/api/v1/users/password": {
+    put: operations["changePassword_1"];
+  };
+  "/admreg/vendor/api/v1/users/{userId}": {
+    get: operations["getUserId"];
   };
 }
 
@@ -197,10 +224,10 @@ export interface components {
       approved?: string | null;
     };
     /** @enum {string} */
-    AdminStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
+    AdminStatus: "PENDING" | "APPROVED" | "REJECTED";
     AgreementAttachment: {
       title?: string | null;
-      media: components['schemas']['MediaInfo'][];
+      media: components["schemas"]["MediaInfo"][];
       description?: string | null;
     };
     AgreementBasicInformationDto: {
@@ -213,8 +240,8 @@ export interface components {
       resume?: string | null;
       text?: string | null;
       identifier: string;
-      attachments: components['schemas']['AgreementAttachment'][];
-      posts: components['schemas']['AgreementPost'][];
+      attachments: components["schemas"]["AgreementAttachment"][];
+      posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
     AgreementDraftWithDTO: {
@@ -237,8 +264,8 @@ export interface components {
     AgreementRegistrationDTO: {
       /** Format: uuid */
       id: string;
-      draftStatus: components['schemas']['DraftStatus'];
-      agreementStatus: components['schemas']['AgreementStatus'];
+      draftStatus: components["schemas"]["DraftStatus"];
+      agreementStatus: components["schemas"]["AgreementStatus"];
       title: string;
       reference: string;
       /** Format: date-time */
@@ -253,15 +280,15 @@ export interface components {
       updatedByUser: string;
       createdBy: string;
       updatedBy: string;
-      agreementData: components['schemas']['AgreementData'];
+      agreementData: components["schemas"]["AgreementData"];
       /** Format: int64 */
       version?: number | null;
     };
     /** @enum {string} */
-    AgreementStatus: 'ACTIVE' | 'INACTIVE' | 'DELETED';
+    AgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     Attributes: {
       manufacturer?: string | null;
-      compatibleWidth?: components['schemas']['CompatibleWith'] | null;
+      compatibleWidth?: components["schemas"]["CompatibleWith"] | null;
       keywords?: string[] | null;
       series?: string | null;
       shortdescription?: string | null;
@@ -271,12 +298,29 @@ export interface components {
       tenderId?: string | null;
       hasTender?: boolean | null;
     };
-    Authentication: components['schemas']['Principal'] & {
+    Authentication: components["schemas"]["Principal"] & {
       attributes: {
         [key: string]: unknown;
       };
       roles: string[];
     };
+    BestillingsordningRegistrationDTO: {
+      /** Format: uuid */
+      id: string;
+      hmsArtNr: string;
+      navn: string;
+      status: components["schemas"]["BestillingsordningStatus"];
+      updatedByUser: string;
+      createdByUser: string;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+      /** Format: date-time */
+      deactivated?: string | null;
+    };
+    /** @enum {string} */
+    BestillingsordningStatus: "ACTIVE" | "INACTIVE";
     ChangePasswordDTO: {
       oldPassword: string;
       newPassword: string;
@@ -285,7 +329,7 @@ export interface components {
       seriesIds: string[];
     };
     /** @enum {string} */
-    DraftStatus: 'DRAFT' | 'DONE';
+    DraftStatus: "DRAFT" | "DONE";
     DraftVariantDTO: {
       articleName: string;
       supplierRef: string;
@@ -294,7 +338,8 @@ export interface components {
       isoCode: string;
       isoTitle: string;
       isoText: string;
-      isoTranslations?: components['schemas']['IsoTranslationsDTO'] | null;
+      isoTextShort?: string | null;
+      isoTranslations?: components["schemas"]["IsoTranslationsDTO"] | null;
       /** Format: int32 */
       isoLevel: number;
       isActive: boolean;
@@ -304,6 +349,30 @@ export interface components {
       created: string;
       /** Format: date-time */
       updated: string;
+    };
+    IsoCategoryRegistrationDTO: {
+      isoCode: string;
+      isoTitle: string;
+      isoText: string;
+      isoTextShort: string;
+      isoTranslations: components["schemas"]["IsoTranslations"];
+      /** Format: int32 */
+      isoLevel: number;
+      isActive: boolean;
+      showTech: boolean;
+      allowMulti: boolean;
+      createdByUser: string;
+      updatedByUser: string;
+      createdBy: string;
+      updatedBy: string;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+    };
+    IsoTranslations: {
+      titleEn?: string | null;
+      textEn?: string | null;
     };
     IsoTranslationsDTO: {
       titleEn?: string | null;
@@ -317,12 +386,12 @@ export interface components {
       uri: string;
       sourceUri: string;
       filename?: string | null;
-      type: components['schemas']['MediaType'];
+      type: components["schemas"]["MediaType"];
       /** Format: int64 */
       size: number;
       md5: string;
       status: string;
-      source: components['schemas']['MediaSourceType'];
+      source: components["schemas"]["MediaSourceType"];
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -334,16 +403,16 @@ export interface components {
       uri: string;
       /** Format: int32 */
       priority: number;
-      type: components['schemas']['MediaType'];
+      type: components["schemas"]["MediaType"];
       text?: string | null;
-      source: components['schemas']['MediaSourceType'];
+      source: components["schemas"]["MediaSourceType"];
       /** Format: date-time */
       updated: string;
     };
     /** @enum {string} */
-    MediaSourceType: 'HMDB' | 'REGISTER' | 'EXTERNALURL' | 'IMPORT' | 'UNKNOWN';
+    MediaSourceType: "HMDB" | "REGISTER" | "EXTERNALURL" | "IMPORT" | "UNKNOWN";
     /** @enum {string} */
-    MediaType: 'PDF' | 'IMAGE' | 'VIDEO' | 'XLS' | 'OTHER';
+    MediaType: "PDF" | "IMAGE" | "VIDEO" | "XLS" | "OTHER";
     OpenApiPageable: {
       /**
        * Format: int32
@@ -363,31 +432,31 @@ export interface components {
        */
       sort: string;
     };
-    Page_AgreementBasicInformationDto_: components['schemas']['Slice_AgreementBasicInformationDto_'] & {
+    Page_AgreementBasicInformationDto_: components["schemas"]["Slice_AgreementBasicInformationDto_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
       totalPages?: number;
     };
-    Page_ProductRegistrationDTO_: components['schemas']['Slice_ProductRegistrationDTO_'] & {
+    Page_ProductRegistrationDTO_: components["schemas"]["Slice_ProductRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
       totalPages?: number;
     };
-    Page_SeriesRegistrationDTO_: components['schemas']['Slice_SeriesRegistrationDTO_'] & {
+    Page_SeriesRegistrationDTO_: components["schemas"]["Slice_SeriesRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
       totalPages?: number;
     };
-    Page_SupplierRegistrationDTO_: components['schemas']['Slice_SupplierRegistrationDTO_'] & {
+    Page_SupplierRegistrationDTO_: components["schemas"]["Slice_SupplierRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
       totalPages?: number;
     };
-    Page_UserDTO_: components['schemas']['Slice_UserDTO_'] & {
+    Page_UserDTO_: components["schemas"]["Slice_UserDTO_"] & {
       /** Format: int64 */
       totalSize: number;
       /** Format: int32 */
@@ -400,7 +469,7 @@ export interface components {
       dryRun: boolean;
       /** Format: int32 */
       count: number;
-      productAgreements: components['schemas']['ProductAgreementRegistrationDTO'][];
+      productAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
     ProductAgreementRegistrationDTO: {
       /** Format: uuid */
@@ -419,7 +488,7 @@ export interface components {
       post: number;
       /** Format: int32 */
       rank: number;
-      status: components['schemas']['ProductAgreementStatus'];
+      status: components["schemas"]["ProductAgreementStatus"];
       createdBy: string;
       /** Format: date-time */
       created: string;
@@ -431,13 +500,13 @@ export interface components {
       expired: string;
     };
     /** @enum {string} */
-    ProductAgreementStatus: 'ACTIVE' | 'INACTIVE' | 'DELETED';
+    ProductAgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     ProductData: {
-      attributes: components['schemas']['Attributes'];
+      attributes: components["schemas"]["Attributes"];
       accessory: boolean;
       sparePart: boolean;
-      techData: components['schemas']['TechData'][];
-      media: components['schemas']['MediaInfo'][];
+      techData: components["schemas"]["TechData"][];
+      media: components["schemas"]["MediaInfo"][];
     };
     ProductDraftWithDTO: {
       title: string;
@@ -458,11 +527,11 @@ export interface components {
       isoCategory: string;
       title: string;
       articleName: string;
-      draftStatus: components['schemas']['DraftStatus'];
-      adminStatus: components['schemas']['AdminStatus'];
-      registrationStatus: components['schemas']['RegistrationStatus'];
+      draftStatus: components["schemas"]["DraftStatus"];
+      adminStatus: components["schemas"]["AdminStatus"];
+      registrationStatus: components["schemas"]["RegistrationStatus"];
       message?: string | null;
-      adminInfo?: components['schemas']['AdminInfo'] | null;
+      adminInfo?: components["schemas"]["AdminInfo"] | null;
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -476,13 +545,23 @@ export interface components {
       createdBy: string;
       updatedBy: string;
       createdByAdmin: boolean;
-      productData: components['schemas']['ProductData'];
-      agreements: components['schemas']['ProductAgreementRegistrationDTO'][];
+      productData: components["schemas"]["ProductData"];
+      agreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
       /** Format: int64 */
       version?: number | null;
     };
+    ProduktvarianterForDelkontrakterDTO: {
+      /** Format: int32 */
+      delkontraktNr: number;
+      produktTittel: string;
+      /** Format: int32 */
+      rangering: number;
+      /** Format: uuid */
+      produktserie?: string | null;
+      produktvarianter: components["schemas"]["ProductAgreementRegistrationDTO"][];
+    };
     /** @enum {string} */
-    RegistrationStatus: 'ACTIVE' | 'INACTIVE' | 'DELETED';
+    RegistrationStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     SeriesGroupDTO: {
       title: string;
       seriesId: string;
@@ -498,8 +577,8 @@ export interface components {
       title: string;
       text: string;
       isoCategory: string;
-      draftStatus: components['schemas']['DraftStatus'];
-      status: components['schemas']['SeriesStatus'];
+      draftStatus: components["schemas"]["DraftStatus"];
+      status: components["schemas"]["SeriesStatus"];
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -515,10 +594,10 @@ export interface components {
       version?: number | null;
     };
     /** @enum {string} */
-    SeriesStatus: 'ACTIVE' | 'INACTIVE' | 'PENDING' | 'REJECTED';
+    SeriesStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "REJECTED";
     Slice_AgreementBasicInformationDto_: {
-      content: components['schemas']['AgreementBasicInformationDto'][];
-      pageable: components['schemas']['OpenApiPageable'];
+      content: components["schemas"]["AgreementBasicInformationDto"][];
+      pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
       /** Format: int64 */
@@ -530,8 +609,8 @@ export interface components {
       numberOfElements?: number;
     };
     Slice_ProductRegistrationDTO_: {
-      content: components['schemas']['ProductRegistrationDTO'][];
-      pageable: components['schemas']['OpenApiPageable'];
+      content: components["schemas"]["ProductRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
       /** Format: int64 */
@@ -543,8 +622,8 @@ export interface components {
       numberOfElements?: number;
     };
     Slice_SeriesRegistrationDTO_: {
-      content: components['schemas']['SeriesRegistrationDTO'][];
-      pageable: components['schemas']['OpenApiPageable'];
+      content: components["schemas"]["SeriesRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
       /** Format: int64 */
@@ -556,8 +635,8 @@ export interface components {
       numberOfElements?: number;
     };
     Slice_SupplierRegistrationDTO_: {
-      content: components['schemas']['SupplierRegistrationDTO'][];
-      pageable: components['schemas']['OpenApiPageable'];
+      content: components["schemas"]["SupplierRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
       /** Format: int64 */
@@ -569,8 +648,8 @@ export interface components {
       numberOfElements?: number;
     };
     Slice_UserDTO_: {
-      content: components['schemas']['UserDTO'][];
-      pageable: components['schemas']['OpenApiPageable'];
+      content: components["schemas"]["UserDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
       /** Format: int64 */
@@ -593,10 +672,10 @@ export interface components {
     SupplierRegistrationDTO: {
       /** Format: uuid */
       id: string;
-      status: components['schemas']['SupplierStatus'];
-      draftStatus: components['schemas']['DraftStatus'];
+      status: components["schemas"]["SupplierStatus"];
+      draftStatus: components["schemas"]["DraftStatus"];
       name: string;
-      supplierData: components['schemas']['SupplierData'];
+      supplierData: components["schemas"]["SupplierData"];
       identifier: string;
       /** Format: date-time */
       created: string;
@@ -608,7 +687,7 @@ export interface components {
       createdByUser: string;
     };
     /** @enum {string} */
-    SupplierStatus: 'INACTIVE' | 'ACTIVE';
+    SupplierStatus: "INACTIVE" | "ACTIVE";
     TechData: {
       key: string;
       value: string;
@@ -625,6 +704,25 @@ export interface components {
       unit?: string | null;
       createdBy: string;
       updatedBy: string;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+    };
+    TechLabelRegistrationDTO: {
+      /** Format: uuid */
+      id: string;
+      identifier: string;
+      label: string;
+      guide: string;
+      isoCode: string;
+      type: string;
+      unit?: string | null;
+      isActive: boolean;
+      createdBy: string;
+      updatedBy: string;
+      updatedByUser: string;
+      createdByUser: string;
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -681,14 +779,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findAgreements 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_AgreementBasicInformationDto_'];
+          "application/json": components["schemas"]["Page_AgreementBasicInformationDto_"];
         };
       };
     };
@@ -696,14 +794,14 @@ export interface operations {
   createAgreement: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['AgreementRegistrationDTO'];
+        "application/json": components["schemas"]["AgreementRegistrationDTO"];
       };
     };
     responses: {
       /** @description createAgreement 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
         };
       };
     };
@@ -719,7 +817,7 @@ export interface operations {
       /** @description createAgreementFromAnother 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
         };
       };
     };
@@ -727,14 +825,14 @@ export interface operations {
   draftAgreementWith: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['AgreementDraftWithDTO'];
+        "application/json": components["schemas"]["AgreementDraftWithDTO"];
       };
     };
     responses: {
       /** @description draftAgreementWith 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
         };
       };
     };
@@ -749,7 +847,7 @@ export interface operations {
       /** @description draftAgreement 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
         };
       };
     };
@@ -764,7 +862,7 @@ export interface operations {
       /** @description getAgreementById 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
         };
       };
     };
@@ -777,14 +875,63 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['AgreementRegistrationDTO'];
+        "application/json": components["schemas"]["AgreementRegistrationDTO"];
       };
     };
     responses: {
       /** @description updateAgreement 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['AgreementRegistrationDTO'];
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createBestillingsordning: {
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["BestillingsordningRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description createBestillingsordning 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BestillingsordningRegistrationDTO"];
+        };
+      };
+    };
+  };
+  findByHmsNr: {
+    parameters: {
+      path: {
+        hmsArtNr: string;
+      };
+    };
+    responses: {
+      /** @description findByHmsNr 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BestillingsordningRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateBestillingsordningStatus: {
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["BestillingsordningRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description updateBestillingsordningStatus 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BestillingsordningRegistrationDTO"];
         };
       };
     };
@@ -799,7 +946,71 @@ export interface operations {
       /** @description createSupplierToken 200 response */
       200: {
         content: {
-          'application/json': string;
+          "application/json": string;
+        };
+      };
+    };
+  };
+  getAllCategories: {
+    responses: {
+      /** @description getAllCategories 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["IsoCategoryRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  createIsoCategory: {
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["IsoCategoryRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description createIsoCategory 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["IsoCategoryRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getCategoryByIsocode: {
+    parameters: {
+      path: {
+        isocode: string;
+      };
+    };
+    responses: {
+      /** @description getCategoryByIsocode 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["IsoCategoryRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateCategoryByIsocode: {
+    parameters: {
+      path: {
+        isocode: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["IsoCategoryRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description updateCategoryByIsocode 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["IsoCategoryRegistrationDTO"];
         };
       };
     };
@@ -812,7 +1023,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'multipart/form-data': {
+        "multipart/form-data": {
           files: string[];
         };
       };
@@ -821,7 +1032,7 @@ export interface operations {
       /** @description uploadAgreementFiles 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'][];
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -834,7 +1045,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'multipart/form-data': {
+        "multipart/form-data": {
           files: string[];
         };
       };
@@ -843,7 +1054,7 @@ export interface operations {
       /** @description uploadProductFiles 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'][];
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -858,7 +1069,7 @@ export interface operations {
       /** @description getMediaList 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'][];
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -874,7 +1085,7 @@ export interface operations {
       /** @description deleteFile 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'];
+          "application/json": components["schemas"]["MediaDTO"];
         };
       };
     };
@@ -882,14 +1093,14 @@ export interface operations {
   createProductAgreement: {
     requestBody: {
       content: {
-        'multipart/form-data': components['schemas']['ProductAgreementRegistrationDTO'];
+        "multipart/form-data": components["schemas"]["ProductAgreementRegistrationDTO"];
       };
     };
     responses: {
       /** @description createProductAgreement 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductAgreementRegistrationDTO'];
+          "application/json": components["schemas"]["ProductAgreementRegistrationDTO"];
         };
       };
     };
@@ -902,7 +1113,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'multipart/form-data': {
+        "multipart/form-data": {
           /** Format: binary */
           file: string;
         };
@@ -912,7 +1123,7 @@ export interface operations {
       /** @description excelImport 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductAgreementImportDTO'];
+          "application/json": components["schemas"]["ProductAgreementImportDTO"];
         };
       };
     };
@@ -920,13 +1131,43 @@ export interface operations {
   deleteProductAgreementByIds: {
     requestBody: {
       content: {
-        'application/json': string[];
+        "application/json": string[];
       };
     };
     responses: {
       /** @description deleteProductAgreementByIds 200 response */
       200: {
         content: never;
+      };
+    };
+  };
+  getProductVariantsByAgreementId: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getProductVariantsByAgreementId 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProduktvarianterForDelkontrakterDTO"][];
+        };
+      };
+    };
+  };
+  getProductsByAgreementId: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getProductsByAgreementId 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
+        };
       };
     };
   };
@@ -949,14 +1190,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findProducts 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_ProductRegistrationDTO_'];
+          "application/json": components["schemas"]["Page_ProductRegistrationDTO_"];
         };
       };
     };
@@ -964,14 +1205,14 @@ export interface operations {
   createProduct: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductRegistrationDTO'];
+        "application/json": components["schemas"]["ProductRegistrationDTO"];
       };
     };
     responses: {
       /** @description createProduct 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -986,7 +1227,7 @@ export interface operations {
       /** @description approveProduct 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1005,7 +1246,7 @@ export interface operations {
       /** @description draftProduct 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1018,14 +1259,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['DraftVariantDTO'];
+        "application/json": components["schemas"]["DraftVariantDTO"];
       };
     };
     responses: {
       /** @description createProductVariant 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1042,14 +1283,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductDraftWithDTO'];
+        "application/json": components["schemas"]["ProductDraftWithDTO"];
       };
     };
     responses: {
       /** @description draftProductWith 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1060,14 +1301,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findSeriesGroup 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SeriesGroupDTO'][];
+          "application/json": components["schemas"]["SeriesGroupDTO"][];
         };
       };
     };
@@ -1082,7 +1323,7 @@ export interface operations {
       /** @description findBySeriesIdAndSupplierId 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'][];
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
         };
       };
     };
@@ -1097,7 +1338,7 @@ export interface operations {
       /** @description getProductById 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1110,14 +1351,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductRegistrationDTO'];
+        "application/json": components["schemas"]["ProductRegistrationDTO"];
       };
     };
     responses: {
       /** @description updateProduct 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1132,7 +1373,7 @@ export interface operations {
       /** @description deleteProduct 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1143,14 +1384,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findSuppliers 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_SupplierRegistrationDTO_'];
+          "application/json": components["schemas"]["Page_SupplierRegistrationDTO_"];
         };
       };
     };
@@ -1158,14 +1399,14 @@ export interface operations {
   createSupplier: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['SupplierRegistrationDTO'];
+        "application/json": components["schemas"]["SupplierRegistrationDTO"];
       };
     };
     responses: {
       /** @description createSupplier 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
         };
       };
     };
@@ -1180,7 +1421,7 @@ export interface operations {
       /** @description getById 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
         };
       };
     };
@@ -1193,14 +1434,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['SupplierRegistrationDTO'];
+        "application/json": components["schemas"]["SupplierRegistrationDTO"];
       };
     };
     responses: {
       /** @description updateSupplier 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
         };
       };
     };
@@ -1215,7 +1456,71 @@ export interface operations {
       /** @description deactivateSupplier 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getAllTechLabels: {
+    responses: {
+      /** @description getAllTechLabels 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TechLabelRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  createTechLabel: {
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["TechLabelRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description createTechLabel 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TechLabelRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getTechLabelById: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getTechLabelById 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TechLabelRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateTechLabel: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["TechLabelRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description updateTechLabel 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TechLabelRegistrationDTO"];
         };
       };
     };
@@ -1226,14 +1531,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description getUsers 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_UserDTO_'];
+          "application/json": components["schemas"]["Page_UserDTO_"];
         };
       };
     };
@@ -1241,14 +1546,14 @@ export interface operations {
   createUser: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['UserRegistrationDTO'];
+        "application/json": components["schemas"]["UserRegistrationDTO"];
       };
     };
     responses: {
       /** @description createUser 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };
@@ -1263,7 +1568,7 @@ export interface operations {
       /** @description getUserByEmail 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };
@@ -1271,14 +1576,14 @@ export interface operations {
   changePassword: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['ChangePasswordDTO'];
+        "application/json": components["schemas"]["ChangePasswordDTO"];
       };
     };
     responses: {
       /** @description changePassword 200 response */
       200: {
         content: {
-          'application/json': Record<string, never>;
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -1293,7 +1598,7 @@ export interface operations {
       /** @description getUsersBySupplierId 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'][];
+          "application/json": components["schemas"]["UserDTO"][];
         };
       };
     };
@@ -1308,7 +1613,7 @@ export interface operations {
       /** @description getUser 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };
@@ -1321,14 +1626,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['UserDTO'];
+        "application/json": components["schemas"]["UserDTO"];
       };
     };
     responses: {
       /** @description updateUser 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };
@@ -1343,32 +1648,32 @@ export interface operations {
       /** @description deleteUser 200 response */
       200: {
         content: {
-          'application/json': string;
+          "application/json": string;
         };
       };
     };
   };
-  getAllCategories: {
+  getAllCategories_1: {
     responses: {
-      /** @description getAllCategories 200 response */
+      /** @description getAllCategories_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['IsoCategoryDTO'][];
+          "application/json": components["schemas"]["IsoCategoryDTO"][];
         };
       };
     };
   };
-  getCategoryByIsocode: {
+  getCategoryByIsocode_1: {
     parameters: {
       path: {
         isocode: string;
       };
     };
     responses: {
-      /** @description getCategoryByIsocode 200 response */
+      /** @description getCategoryByIsocode_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['IsoCategoryDTO'];
+          "application/json": components["schemas"]["IsoCategoryDTO"];
         };
       };
     };
@@ -1378,8 +1683,8 @@ export interface operations {
       /** @description fetchTechLabels 200 response */
       200: {
         content: {
-          'application/json': {
-            [key: string]: components['schemas']['TechLabelDTO'][];
+          "application/json": {
+            [key: string]: components["schemas"]["TechLabelDTO"][];
           };
         };
       };
@@ -1395,7 +1700,7 @@ export interface operations {
       /** @description fetchTechLabelsByName 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['TechLabelDTO'][];
+          "application/json": components["schemas"]["TechLabelDTO"][];
         };
       };
     };
@@ -1410,7 +1715,7 @@ export interface operations {
       /** @description fetchTechLabelsByIsocode 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['TechLabelDTO'][];
+          "application/json": components["schemas"]["TechLabelDTO"][];
         };
       };
     };
@@ -1420,7 +1725,7 @@ export interface operations {
       /** @description keys 200 response */
       200: {
         content: {
-          'application/json': string[];
+          "application/json": string[];
         };
       };
     };
@@ -1430,7 +1735,7 @@ export interface operations {
       /** @description getLoggedInUser 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Authentication'];
+          "application/json": components["schemas"]["Authentication"];
         };
       };
     };
@@ -1438,15 +1743,15 @@ export interface operations {
   login: {
     requestBody: {
       content: {
-        'application/x-www-form-urlencoded': components['schemas']['UsernamePasswordCredentials'];
-        'application/json': components['schemas']['UsernamePasswordCredentials'];
+        "application/x-www-form-urlencoded": components["schemas"]["UsernamePasswordCredentials"];
+        "application/json": components["schemas"]["UsernamePasswordCredentials"];
       };
     };
     responses: {
       /** @description login 200 response */
       200: {
         content: {
-          'application/json': Record<string, never>;
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -1456,7 +1761,7 @@ export interface operations {
       /** @description indexGet 200 response */
       200: {
         content: {
-          'application/json': Record<string, never>;
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -1466,7 +1771,7 @@ export interface operations {
       /** @description index 200 response */
       200: {
         content: {
-          'application/json': Record<string, never>;
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -1477,14 +1782,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findAgreements_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_AgreementBasicInformationDto_'];
+          "application/json": components["schemas"]["Page_AgreementBasicInformationDto_"];
         };
       };
     };
@@ -1497,7 +1802,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'multipart/form-data': {
+        "multipart/form-data": {
           files: string[];
         };
       };
@@ -1506,7 +1811,7 @@ export interface operations {
       /** @description uploadFiles 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'][];
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -1521,7 +1826,7 @@ export interface operations {
       /** @description getMediaList_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'][];
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -1537,7 +1842,7 @@ export interface operations {
       /** @description deleteFile_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['MediaDTO'];
+          "application/json": components["schemas"]["MediaDTO"];
         };
       };
     };
@@ -1548,14 +1853,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findProducts_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_ProductRegistrationDTO_'];
+          "application/json": components["schemas"]["Page_ProductRegistrationDTO_"];
         };
       };
     };
@@ -1563,14 +1868,14 @@ export interface operations {
   createProduct_1: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductRegistrationDTO'];
+        "application/json": components["schemas"]["ProductRegistrationDTO"];
       };
     };
     responses: {
       /** @description createProduct_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1586,7 +1891,7 @@ export interface operations {
       /** @description draftProduct_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1599,14 +1904,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['DraftVariantDTO'];
+        "application/json": components["schemas"]["DraftVariantDTO"];
       };
     };
     responses: {
       /** @description createProductVariant_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1620,14 +1925,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductDraftWithDTO'];
+        "application/json": components["schemas"]["ProductDraftWithDTO"];
       };
     };
     responses: {
       /** @description draftProductWith_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1638,14 +1943,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description findSeriesGroup_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SeriesGroupDTO'][];
+          "application/json": components["schemas"]["SeriesGroupDTO"][];
         };
       };
     };
@@ -1660,7 +1965,7 @@ export interface operations {
       /** @description findBySeriesIdAndSupplierId_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'][];
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
         };
       };
     };
@@ -1675,7 +1980,7 @@ export interface operations {
       /** @description getProductById_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1688,14 +1993,14 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProductRegistrationDTO'];
+        "application/json": components["schemas"]["ProductRegistrationDTO"];
       };
     };
     responses: {
       /** @description updateProduct_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1710,7 +2015,7 @@ export interface operations {
       /** @description deleteProduct_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['ProductRegistrationDTO'];
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -1721,14 +2026,14 @@ export interface operations {
         params?: {
           [key: string]: string;
         } | null;
-        pageable: components['schemas']['OpenApiPageable'];
+        pageable: components["schemas"]["OpenApiPageable"];
       };
     };
     responses: {
       /** @description getSeries 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['Page_SeriesRegistrationDTO_'];
+          "application/json": components["schemas"]["Page_SeriesRegistrationDTO_"];
         };
       };
     };
@@ -1738,7 +2043,7 @@ export interface operations {
       /** @description getById_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
         };
       };
     };
@@ -1746,14 +2051,14 @@ export interface operations {
   updateSupplier_1: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['SupplierRegistrationDTO'];
+        "application/json": components["schemas"]["SupplierRegistrationDTO"];
       };
     };
     responses: {
       /** @description updateSupplier_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['SupplierRegistrationDTO'];
+          "application/json": components["schemas"]["SupplierRegistrationDTO"];
         };
       };
     };
@@ -1763,7 +2068,7 @@ export interface operations {
       /** @description getUsers_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'][];
+          "application/json": components["schemas"]["UserDTO"][];
         };
       };
     };
@@ -1771,14 +2076,14 @@ export interface operations {
   updateUser_1: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['UserDTO'];
+        "application/json": components["schemas"]["UserDTO"];
       };
     };
     responses: {
       /** @description updateUser_1 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };
@@ -1786,14 +2091,14 @@ export interface operations {
   changePassword_1: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['ChangePasswordDTO'];
+        "application/json": components["schemas"]["ChangePasswordDTO"];
       };
     };
     responses: {
       /** @description changePassword_1 200 response */
       200: {
         content: {
-          'application/json': Record<string, never>;
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -1808,7 +2113,7 @@ export interface operations {
       /** @description getUserId 200 response */
       200: {
         content: {
-          'application/json': components['schemas']['UserDTO'];
+          "application/json": components["schemas"]["UserDTO"];
         };
       };
     };

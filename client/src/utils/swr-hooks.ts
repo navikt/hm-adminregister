@@ -3,6 +3,7 @@ import {
   AgreementsChunk,
   IsoCategoryDTO,
   MediaDTO,
+  ProductAgreementRegistrationDTOList, ProduktvarianterForDelkontrakterDTOList,
   SeriesChunk,
   SupplierChunk,
   SupplierRegistrationDTO,
@@ -101,6 +102,46 @@ export function usePagedAgreements({ page, pageSize }: { page: number, pageSize:
     : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message)
+    }
+  }, [error, setGlobalError])
+
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export function useProductVariantsByAgreementId(agreementId: string) {
+  const { setGlobalError } = useHydratedErrorStore()
+
+  const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/product-agreement/variants/${agreementId}`
+
+  const { data, error, isLoading } = useSWR<ProduktvarianterForDelkontrakterDTOList>(path, fetcherGET)
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message)
+    }
+  }, [error, setGlobalError])
+
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export function useProductsForAgreement(agreementId: string) {
+  const { setGlobalError } = useHydratedErrorStore()
+
+  const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/product-agreement/${agreementId}`
+
+  const { data, error, isLoading } = useSWR<ProductAgreementRegistrationDTOList>(path, fetcherGET)
 
   useEffect(() => {
     if (error) {
