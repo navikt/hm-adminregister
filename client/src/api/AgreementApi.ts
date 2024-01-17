@@ -2,8 +2,8 @@ import { HM_REGISTER_URL } from '../environments'
 import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } from '../utils/response-types'
 import { CustomError } from '../utils/swr-hooks'
 import { EditCommonInfoAgreement } from '../rammeavtaler/rammeavtale/Rammeavtale'
-import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/NewDelkontraktModal'
 import { todayTimestamp } from '../utils/date-util'
+import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/NewDelkontraktModal'
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin

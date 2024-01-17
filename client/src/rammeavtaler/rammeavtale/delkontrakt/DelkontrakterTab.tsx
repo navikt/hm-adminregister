@@ -1,10 +1,10 @@
 import { Alert, Button, Tabs, VStack } from '@navikt/ds-react'
-import { AgreementPostDTO } from '../../utils/response-types'
+import { AgreementPostDTO } from '../../../utils/response-types'
 import { useState } from 'react'
-import { Avstand } from '../../components/Avstand'
+import { Avstand } from '../../../components/Avstand'
 import NewDelkontraktModal from './NewDelkontraktModal'
 import { Delkontrakt } from './Delkontrakt'
-import { useProductVariantsByAgreementId } from '../../utils/swr-hooks'
+import { useProductVariantsByAgreementId } from '../../../utils/swr-hooks'
 
 const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
   posts: AgreementPostDTO[],

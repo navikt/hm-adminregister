@@ -5,7 +5,6 @@ import { CogIcon } from '@navikt/aksel-icons'
 import './agreement-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
-import DelkontrakterTab from './DelkontrakterTab'
 import FileTab from './FileTab'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
@@ -16,6 +15,7 @@ import { HM_REGISTER_URL } from '../../environments'
 import { updateAgreement } from '../../api/AgreementApi'
 import { toDate, toReadableDateTimeString, toReadableString } from '../../utils/date-util'
 import StatusTagAgreement from '../../components/StatusTagAgreement'
+import DelkontrakterTab from './delkontrakt/DelkontrakterTab'
 
 export type EditCommonInfoAgreement = {
   description: string

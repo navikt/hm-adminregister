@@ -1,13 +1,13 @@
 import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from '@navikt/ds-react'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
+import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
 import { z } from 'zod'
-import { createNewDelkontraktSchema } from '../../utils/zodSchema/newDelkontrakt'
+import { createNewDelkontraktSchema } from '../../../utils/zodSchema/newDelkontrakt'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { labelRequired } from '../../utils/string-util'
-import { Avstand } from '../../components/Avstand'
-import { updateAgreementWithNewDelkontrakt } from '../../api/AgreementApi'
+import { labelRequired } from '../../../utils/string-util'
+import { Avstand } from '../../../components/Avstand'
+import { updateAgreementWithNewDelkontrakt } from '../../../api/AgreementApi'
 
 interface Props {
   modalIsOpen: boolean
@@ -16,31 +16,31 @@ interface Props {
   mutateAgreement: () => void
 }
 
-export type NyDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>
+export type NewProductDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>
 
-const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Props) => {
+const NewProductDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
     register,
     reset,
     formState: { errors, isSubmitting, isDirty, isValid },
-  } = useForm<NyDelkontraktFormData>({
+  } = useForm<NewProductDelkontraktFormData>({
     resolver: zodResolver(createNewDelkontraktSchema),
     mode: 'onSubmit',
   })
   const { setGlobalError } = useHydratedErrorStore()
 
-  async function onSubmitContinue(data: NyDelkontraktFormData) {
+  async function onSubmitContinue(data: NewProductDelkontraktFormData) {
     await onSubmit(data)
   }
 
-  async function onSubmitClose(data: NyDelkontraktFormData) {
+  async function onSubmitClose(data: NewProductDelkontraktFormData) {
     await onSubmit(data)
     setModalIsOpen(false)
   }
 
-  async function onSubmit(data: NyDelkontraktFormData) {
+  async function onSubmit(data: NewProductDelkontraktFormData) {
     setIsSaving(true)
 
     updateAgreementWithNewDelkontrakt(oid, data).then(
@@ -125,4 +125,4 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
   )
 }
 
-export default NewDelkontraktModal
+export default NewProductDelkontraktModal
