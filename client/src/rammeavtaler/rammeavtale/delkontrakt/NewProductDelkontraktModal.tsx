@@ -8,17 +8,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { labelRequired } from '../../../utils/string-util'
 import { Avstand } from '../../../components/Avstand'
 import { updateAgreementWithNewDelkontrakt } from '../../../api/AgreementApi'
+import { createNewProductOnDelkontraktSchema } from '../../../utils/zodSchema/newProductOnDelkontrakt'
 
 interface Props {
   modalIsOpen: boolean
-  oid: string
   setModalIsOpen: (open: boolean) => void
   mutateAgreement: () => void
 }
 
-export type NewProductDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>
+export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
-const NewProductDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Props) => {
+const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
@@ -26,7 +26,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAg
     reset,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NewProductDelkontraktFormData>({
-    resolver: zodResolver(createNewDelkontraktSchema),
+    resolver: zodResolver(createNewProductOnDelkontraktSchema),
     mode: 'onSubmit',
   })
   const { setGlobalError } = useHydratedErrorStore()
@@ -43,23 +43,16 @@ const NewProductDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAg
   async function onSubmit(data: NewProductDelkontraktFormData) {
     setIsSaving(true)
 
-    updateAgreementWithNewDelkontrakt(oid, data).then(
-      (agreement) => {
-        setIsSaving(false)
-        mutateAgreement()
-      },
-    ).catch((error) => {
-      setGlobalError(error.message)
-      setIsSaving(false)
-    })
+    // todo: metode for å legge til produkt på delkontrakt
     reset()
+    setIsSaving(false)
   }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: 'Legg til delkontrakt',
+        heading: 'Legg til produkt',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -71,20 +64,12 @@ const NewProductDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAg
           >
             <VStack style={{ width: '100%' }}>
               <TextField
-                {...register('tittel', { required: true })}
-                label={labelRequired('Tittel')}
-                id='tittel'
-                name='tittel'
+                {...register('hmsNummer', { required: true })}
+                label={labelRequired('HMS-nummer')}
+                id='hmsNummer'
+                name='hmsNummer'
                 type='text'
-                error={errors?.tittel?.message}
-              />
-              <Avstand marginBottom={5} />
-              <Textarea
-                {...register('beskrivelse', { required: true })}
-                label={labelRequired('Beskrivelse')}
-                id='beskrivelse'
-                name='beskrivelse'
-                error={errors?.beskrivelse?.message}
+                error={errors?.hmsNummer?.message}
               />
             </VStack>
           </div>

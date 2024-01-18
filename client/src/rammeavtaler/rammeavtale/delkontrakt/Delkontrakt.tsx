@@ -8,6 +8,7 @@ import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon }
 import EditProducstVariantsModal from './EditProductVariantsModal'
 import React, { useState } from 'react'
 import { EditProductOnDelkontrakt } from './EditProductOnDelkontrakt'
+import NewProductDelkontraktModal from './NewProductDelkontraktModal'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -17,6 +18,7 @@ interface Props {
 export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
+  const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([])
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe)
@@ -25,6 +27,7 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
 
   return (
     <>
+      <NewProductDelkontraktModal modalIsOpen={nyttProduktModalIsOpen} setModalIsOpen={setNyttProduktModalIsOpen} mutateAgreement={() => {}} />
       <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} varianter={varianter} />
 
       <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
@@ -104,7 +107,7 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
                   />
                 }
                 onClick={() => {
-
+                  setNyttProduktModalIsOpen(true)
                 }}
               >
                 <span className='produkt-button'>Legg til Produkt</span>
