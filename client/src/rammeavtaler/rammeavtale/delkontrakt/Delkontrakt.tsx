@@ -4,10 +4,10 @@ import {
   ProduktvarianterForDelkontrakterDTOList,
 } from '../../../utils/response-types'
 import { Button, Dropdown, ExpansionCard, HStack, Table, VStack } from '@navikt/ds-react'
-import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { EditProductOnDelkontrakt } from '../EditProductOnDelkontrakt'
+import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
 import EditProducstVariantsModal from './EditProductVariantsModal'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { EditProductOnDelkontrakt } from './EditProductOnDelkontrakt'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -70,7 +70,21 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
                             </Button>
                           </Table.DataCell>
                           <Table.DataCell>{produkt.rangering}</Table.DataCell>
-                          <Table.DataCell><EditProductOnDelkontrakt /></Table.DataCell>
+                          <Table.DataCell>
+                            <Button
+                              iconPosition='right'
+                              variant={'tertiary'}
+                              icon={
+                                <TrashIcon
+                                  title='Slett'
+                                  fontSize='1.5rem'
+                                />
+                              }
+
+                              onClick={() => {
+
+                              }} />
+                          </Table.DataCell>
                         </Table.Row>
                       )
                     })}
@@ -97,6 +111,7 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
               </Button>
               <Dropdown>
                 <Button
+                  style={{ marginLeft: 'auto' }}
                   variant='tertiary'
                   icon={
                     <MenuElipsisVerticalIcon

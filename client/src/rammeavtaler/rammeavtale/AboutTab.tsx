@@ -18,12 +18,6 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
 
   formMethods.setValue('description', agreement.agreementData.text ?? '')
 
-  const getDescription = () => (
-    <>
-
-    </>
-  )
-
   const handleSaveDescription = () => {
     setShowEditDescriptionMode(false)
     formRef.current?.requestSubmit()

@@ -20,7 +20,6 @@ import DelkontrakterTab from './delkontrakt/DelkontrakterTab'
 export type EditCommonInfoAgreement = {
   description: string
 }
-
 const AgreementPage = () => {
   const [searchParams] = useSearchParams()
   const { pathname } = useLocation()

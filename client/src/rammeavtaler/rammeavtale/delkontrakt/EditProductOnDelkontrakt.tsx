@@ -1,7 +1,5 @@
 import { Button, Dropdown } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon } from '@navikt/aksel-icons'
-
-
 export const EditProductOnDelkontrakt = () => {
 
   return (

@@ -52,7 +52,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: P
                             icon={
                               <TrashIcon
                                 title='Slett'
-                                fontSize='1.2rem'
+                                fontSize='1.5rem'
                               />
                             }
 
