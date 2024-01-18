@@ -13,6 +13,48 @@ export const registrationsUpdatePath = (isAdmin: boolean, productId: string) =>
     ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/${productId}`
     : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productId}`
 
+
+export const getProduct = async (hmsArtNr: string): Promise<ProductRegistrationDTO> => {
+  return await fetch(
+    `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+}
+
+export const getProductVariants = async (seriesId: string): Promise<ProductRegistrationDTO[]> => {
+
+  return await fetch(
+    `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/${seriesId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+}
+
 export const updateProduct = async (productId: string, commonInfoProduct: EditCommonInfoProduct): Promise<ProductRegistrationDTO> => {
 
   const productToUpdate: ProductRegistrationDTO = await fetch(

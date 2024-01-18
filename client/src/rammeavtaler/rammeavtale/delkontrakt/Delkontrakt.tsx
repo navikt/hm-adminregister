@@ -7,7 +7,6 @@ import { Button, Dropdown, ExpansionCard, HStack, Table, VStack } from '@navikt/
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
 import EditProducstVariantsModal from './EditProductVariantsModal'
 import React, { useState } from 'react'
-import { EditProductOnDelkontrakt } from './EditProductOnDelkontrakt'
 import NewProductDelkontraktModal from './NewProductDelkontraktModal'
 
 interface Props {

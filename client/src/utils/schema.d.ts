@@ -84,6 +84,9 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/draftWith/supplier/{supplierId}": {
     post: operations["draftProductWith"];
   };
+  "/admreg/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
+    get: operations["getProductByHmsArtNr"];
+  };
   "/admreg/admin/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup"];
   };
@@ -1288,6 +1291,21 @@ export interface operations {
     };
     responses: {
       /** @description draftProductWith 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getProductByHmsArtNr: {
+    parameters: {
+      path: {
+        hmsArtNr: string;
+      };
+    };
+    responses: {
+      /** @description getProductByHmsArtNr 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];

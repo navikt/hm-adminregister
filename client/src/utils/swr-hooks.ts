@@ -1,9 +1,9 @@
 import {
-  AdminUserChunk,
+  AdminUserChunk, AgreementRegistrationDTO,
   AgreementsChunk,
   IsoCategoryDTO,
   MediaDTO,
-  ProductAgreementRegistrationDTOList, ProduktvarianterForDelkontrakterDTOList,
+  ProductAgreementRegistrationDTOList, ProductRegistrationDTO, ProduktvarianterForDelkontrakterDTOList,
   SeriesChunk,
   SupplierChunk,
   SupplierRegistrationDTO,
@@ -129,6 +129,27 @@ export function useProductVariantsByAgreementId(agreementId: string) {
     }
   }, [error, setGlobalError])
 
+  return {
+    data,
+    isLoading,
+    error,
+  }
+}
+
+export function useProductVariantsBySeriesId(seriesId?: string) {
+  const { setGlobalError } = useHydratedErrorStore()
+
+  const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
+
+  const { data, error, isLoading } = useSWR<ProductRegistrationDTO[]>(seriesId ? path :  null, fetcherGET)
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message)
+    }
+  }, [error, setGlobalError])
+
+  console.log('Lster bariant')
   return {
     data,
     isLoading,
