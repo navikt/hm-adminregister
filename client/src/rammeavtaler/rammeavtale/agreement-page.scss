@@ -150,11 +150,10 @@ pre {
   }
 
 
-
   &__products {
 
-    border-collapse:separate;
-    border-spacing:0 5px;
+    border-collapse: separate;
+    border-spacing: 0 5px;
 
     th {
       border: 0;
@@ -162,9 +161,9 @@ pre {
 
     td {
       border-left: 1px solid var(--a-gray-300);
-      border-bottom: 1px solid  var(--a-gray-300);
-      border-top: 1px solid  var(--a-gray-300);
-      border-right: 1px solid  var(--a-gray-300);
+      border-bottom: 1px solid var(--a-gray-300);
+      border-top: 1px solid var(--a-gray-300);
+      border-right: 1px solid var(--a-gray-300);
     }
 
     td:first-child {
@@ -172,11 +171,13 @@ pre {
       border-bottom-left-radius: 5px;
       border-right: 0;
     }
+
     td:last-child {
       border-top-right-radius: 5px;
       border-bottom-right-radius: 5px;
       border-left: 0;
     }
+
     td:not(:first-child):not(:last-child) {
       border-left: 0;
       border-right: 0;

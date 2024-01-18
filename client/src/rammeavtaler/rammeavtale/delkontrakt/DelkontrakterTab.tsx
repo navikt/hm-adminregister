@@ -34,11 +34,10 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
           <VStack gap='5'>
             <>
               {posts.length > 0 && (
-                posts.map((post) => (
-                    <>
-                      <Delkontrakt delkontrakt={post}
-                                   produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []} />
-                    </>
+                posts.map((post, i) => (
+                    <Delkontrakt key={i} delkontrakt={post}
+                                 produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []} />
+
                   ),
                 ))
               }

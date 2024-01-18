@@ -1,46 +1,107 @@
-import React from 'react'
+import './../agreement-page.scss'
+import React, { useEffect, useState } from 'react'
 import { useProductVariantsBySeriesId } from '../../../utils/swr-hooks'
-import { BodyShort, Table, VStack } from '@navikt/ds-react'
+import { BodyShort, Checkbox, Table, VStack } from '@navikt/ds-react'
 import { ProductRegistrationDTO } from '../../../utils/response-types'
 
 
 interface Props {
   seriesId?: string
   product: ProductRegistrationDTO
+  setValgteRader: (rader: string[]) => void
 }
 
-export const VarianterListe = ({ seriesId, product }: Props) => {
+export const VarianterListe = ({ seriesId, product, setValgteRader }: Props) => {
 
   const { data: variants, isLoading } = useProductVariantsBySeriesId(seriesId)
+  const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!!])
+  const toggleSelectedRow = (value: string) =>
+    setSelectedRows((list: string[]): string[] =>
+      list.includes(value)
+        ? list.filter((id: string) => id !== value)
+        : [...list, value],
+    )
+
+  useEffect(() => {
+    setSelectedRows([product.hmsArtNr!!])
+  }, [product])
+
+  useEffect(() => {
+    setValgteRader(selectedRows)
+  }, [selectedRows])
 
   return (
     <>
       {variants && (
         <VStack>
-          <BodyShort>Varianter: </BodyShort>
+
           <Table>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell scope='col'>Navn</Table.HeaderCell>
-                <Table.HeaderCell scope='col'>HMS-nummer.</Table.HeaderCell>
-                <Table.HeaderCell scope='col'>Levart. nr.</Table.HeaderCell>
-                <Table.HeaderCell scope='col'></Table.HeaderCell>
+                <Table.HeaderCell scope='col'>HMS-nummer</Table.HeaderCell>
+                <Table.HeaderCell scope='col'>Lev-artnr.</Table.HeaderCell>
+                <Table.DataCell>
+                  <Checkbox
+                    checked={selectedRows.length === variants.length}
+                    onChange={() => {
+                      selectedRows.length
+                        ? setSelectedRows([])
+                        : setSelectedRows(variants.map(({ hmsArtNr }) => hmsArtNr!!))
+                    }}
+                    hideLabel
+                  >
+                    Velg alle rader
+                  </Checkbox>
+                </Table.DataCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               <Table.Row key={product.id}>
-                <Table.DataCell>{product.title}</Table.DataCell>
+                <Table.DataCell className='no-bottom-border'>{product.articleName}</Table.DataCell>
                 <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
                 <Table.DataCell>{product.supplierRef}</Table.DataCell>
-                <Table.DataCell></Table.DataCell>
+                <Table.DataCell>
+                  <Checkbox
+                    hideLabel
+                    checked={selectedRows.includes(product.hmsArtNr!!)}
+                    onChange={() => {
+                      toggleSelectedRow(product.hmsArtNr!!)
+                    }}
+                    aria-labelledby={`id-${product.hmsArtNr}`}
+                  >
+                    {' '}
+                  </Checkbox>
+                </Table.DataCell>
               </Table.Row>
+
+              {variants && variants.length > 1 && (
+                <Table.Row>
+                  <Table.HeaderCell scope={'col'} colSpan={4} style={{ paddingTop: '1.5rem', borderBottom: 0 }}>
+                    <b>Andre varianter i serie:</b>
+                  </Table.HeaderCell>
+                </Table.Row>
+              )}
               {variants.filter((variant) => variant.hmsArtNr !== product.hmsArtNr).map((variant, i) => {
                 return (
-                  <Table.Row key={variant.id}>
-                    <Table.DataCell>{variant.title}</Table.DataCell>
-                    <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
-                    <Table.DataCell>{variant.supplierRef}</Table.DataCell>
-                  </Table.Row>
+
+                    <Table.Row key={variant.id}>
+                      <Table.DataCell>{variant.articleName}</Table.DataCell>
+                      <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
+                      <Table.DataCell>{variant.supplierRef}</Table.DataCell>
+                      <Table.DataCell>
+                        <Checkbox
+                          hideLabel
+                          checked={selectedRows.includes(variant.hmsArtNr!!)}
+                          onChange={() => {
+                            toggleSelectedRow(variant.hmsArtNr!!)
+                          }}
+                          aria-labelledby={`id-${variant.hmsArtNr}`}
+                        >
+                          {' '}
+                        </Checkbox>
+                      </Table.DataCell>
+                    </Table.Row>
                 )
               })}
             </Table.Body>

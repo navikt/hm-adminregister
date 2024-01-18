@@ -1,7 +1,7 @@
 import { Button, HStack, Modal, Table, VStack } from '@navikt/ds-react'
 import React from 'react'
 import { ProductAgreementRegistrationDTOList } from '../../../utils/response-types'
-import { PencilWritingIcon, TrashIcon } from '@navikt/aksel-icons'
+import { TrashIcon } from '@navikt/aksel-icons'
 
 interface Props {
   modalIsOpen: boolean

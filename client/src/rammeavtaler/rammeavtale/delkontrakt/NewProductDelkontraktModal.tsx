@@ -9,6 +9,7 @@ import { createNewProductOnDelkontraktSchema } from '../../../utils/zodSchema/ne
 import { getProduct } from '../../../api/ProductApi'
 import { ProductRegistrationDTO } from '../../../utils/response-types'
 import { VarianterListe } from './VarianterListe'
+import './../agreement-page.scss'
 
 interface Props {
   modalIsOpen: boolean
@@ -22,6 +23,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [product, setProduct] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [seriesId, setSeriesId] = useState<string | undefined>(undefined)
+  const [valgteVarianter, setValgteVarianter] = useState<string[]>([])
 
   const {
     handleSubmit,
@@ -34,35 +36,31 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
   })
   const { setGlobalError } = useHydratedErrorStore()
 
-  async function onSubmitContinue(data: NewProductDelkontraktFormData) {
-    await onSubmit(data)
-  }
-
-  async function onSubmitClose(data: NewProductDelkontraktFormData) {
-    await onSubmit(data)
-    setModalIsOpen(false)
-  }
-
-  async function onSubmit(data: NewProductDelkontraktFormData) {
-    setIsSaving(true)
-
-    // todo: metode for å legge til produkt på delkontrakt
-    reset()
-    setIsSaving(false)
-  }
-
-
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
-    getProduct(data.hmsNummer).then(
-      (product) => {
-        setProduct(product)
-        if (product.seriesId) {
-          setSeriesId(product.seriesId)
-        }
-      },
-    ).catch((error) => {
-      setGlobalError(error.status, error.message)
-    })
+
+    if (!product || product.hmsArtNr !== data.hmsNummer) {
+      getProduct(data.hmsNummer).then(
+        (product) => {
+          setProduct(product)
+          if (product.seriesId) {
+            setSeriesId(product.seriesId)
+          }
+        },
+      ).catch((error) => {
+        setGlobalError(error.status, error.message)
+      })
+    }
+  }
+
+  async function onClickLeggTilValgteVarianter() {
+    setIsSaving(true)
+    // todo: lagre varianter
+    setIsSaving(false)
+    reset()
+    setValgteVarianter([])
+    setProduct(undefined)
+    setModalIsOpen(false)
+
   }
 
   return (
@@ -77,10 +75,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
       <form>
         <Modal.Body>
 
-          <div
-            className='delkontrakter-tab__new-delkontrakt-container'
-          >
-
+          <div className='delkontrakter-tab__new-delkontrakt-container'>
             <VStack gap={'2'} style={{ width: '100%' }}>
               <TextField
                 {...register('hmsNummer', { required: true })}
@@ -105,7 +100,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
               )}
               {product && (
                 <VStack gap='5'>
-                  <VarianterListe product={product} seriesId={seriesId} />
+                  <VarianterListe setValgteRader={setValgteVarianter} product={product} seriesId={seriesId} />
                 </VStack>
               )}
             </VStack>
@@ -117,12 +112,23 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
               onClick={() => {
                 setModalIsOpen(false)
                 setProduct(undefined)
+                setValgteVarianter([])
                 reset()
               }}
               variant='tertiary'
               type='reset'
             >
               Avbryt
+            </Button>
+            <Button
+              onClick={() => {
+                onClickLeggTilValgteVarianter()
+              }}
+              disabled={valgteVarianter.length === 0}
+              variant='primary'
+              type='button'
+            >
+              Legg til avhukede varianter
             </Button>
           </HStack>
         </Modal.Footer>

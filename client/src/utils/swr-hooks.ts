@@ -149,7 +149,6 @@ export function useProductVariantsBySeriesId(seriesId?: string) {
     }
   }, [error, setGlobalError])
 
-  console.log('Lster bariant')
   return {
     data,
     isLoading,
