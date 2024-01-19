@@ -74,17 +74,8 @@ export const VarianterListe = ({ seriesId, product, setValgteRader }: Props) => 
                   </Checkbox>
                 </Table.DataCell>
               </Table.Row>
-
-              {variants && variants.length > 1 && (
-                <Table.Row>
-                  <Table.HeaderCell scope={'col'} colSpan={4} style={{ paddingTop: '1.5rem', borderBottom: 0 }}>
-                    <b>Andre varianter i samme serie:</b>
-                  </Table.HeaderCell>
-                </Table.Row>
-              )}
               {variants.filter((variant) => variant.hmsArtNr !== product.hmsArtNr).map((variant, i) => {
                 return (
-
                     <Table.Row key={variant.id}>
                       <Table.DataCell>{variant.articleName}</Table.DataCell>
                       <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
