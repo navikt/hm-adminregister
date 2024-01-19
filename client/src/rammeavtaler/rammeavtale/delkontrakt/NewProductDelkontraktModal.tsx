@@ -21,9 +21,9 @@ export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDel
 
 const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
-  const [product, setProduct] = useState<ProductRegistrationDTO | undefined>(undefined)
-  const [seriesId, setSeriesId] = useState<string | undefined>(undefined)
-  const [valgteVarianter, setValgteVarianter] = useState<string[]>([])
+  const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
+  const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
+  const [variantsToAdd, setVariantsToAdd] = useState<string[]>([])
 
   const {
     handleSubmit,
@@ -38,12 +38,12 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
 
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
 
-    if (!product || product.hmsArtNr !== data.hmsNummer) {
+    if (!productToAdd || productToAdd.hmsArtNr !== data.hmsNummer) {
       getProduct(data.hmsNummer).then(
         (product) => {
-          setProduct(product)
+          setProductToAdd(product)
           if (product.seriesId) {
-            setSeriesId(product.seriesId)
+            setProductToAddSeriesId(product.seriesId)
           }
         },
       ).catch((error) => {
@@ -57,8 +57,8 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
     // todo: lagre varianter
     setIsSaving(false)
     reset()
-    setValgteVarianter([])
-    setProduct(undefined)
+    setVariantsToAdd([])
+    setProductToAdd(undefined)
     setModalIsOpen(false)
 
   }
@@ -98,9 +98,10 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
                   <Loader size='2xlarge' title='venter...' />
                 </HStack>
               )}
-              {product && (
+              {productToAdd && (
                 <VStack gap='5'>
-                  <VarianterListe setValgteRader={setValgteVarianter} product={product} seriesId={seriesId} />
+                  <VarianterListe setValgteRader={setVariantsToAdd} product={productToAdd}
+                                  seriesId={productToAddSeriesId} />
                 </VStack>
               )}
             </VStack>
@@ -111,8 +112,8 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
             <Button
               onClick={() => {
                 setModalIsOpen(false)
-                setProduct(undefined)
-                setValgteVarianter([])
+                setProductToAdd(undefined)
+                setVariantsToAdd([])
                 reset()
               }}
               variant='tertiary'
@@ -124,7 +125,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
               onClick={() => {
                 onClickLeggTilValgteVarianter()
               }}
-              disabled={valgteVarianter.length === 0}
+              disabled={variantsToAdd.length === 0}
               variant='primary'
               type='button'
             >

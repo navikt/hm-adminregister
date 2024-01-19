@@ -23,13 +23,12 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: P
       }}
       onClose={() => setModalIsOpen(false)}
     >
+
       <Modal.Body>
-        <div
-          className='delkontrakter-tab__new-delkontrakt-container'
-        >
+        <div className='delkontrakter-tab__new-delkontrakt-container'>
           {varianter.length > 0 && (
             <VStack gap='2'>
-              <Table size='medium'>
+              <Table>
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell scope='col'>Navn på variant</Table.HeaderCell>
@@ -47,6 +46,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: P
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
                         <Table.DataCell>
                           <Button
+                            className='button-icon'
                             iconPosition='right'
                             variant={'tertiary'}
                             icon={

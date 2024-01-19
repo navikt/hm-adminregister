@@ -78,7 +78,7 @@ export const VarianterListe = ({ seriesId, product, setValgteRader }: Props) => 
               {variants && variants.length > 1 && (
                 <Table.Row>
                   <Table.HeaderCell scope={'col'} colSpan={4} style={{ paddingTop: '1.5rem', borderBottom: 0 }}>
-                    <b>Andre varianter i serie:</b>
+                    <b>Andre varianter i samme serie:</b>
                   </Table.HeaderCell>
                 </Table.Row>
               )}
