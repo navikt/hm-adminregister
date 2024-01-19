@@ -4,6 +4,7 @@ import { CustomError } from '../utils/swr-hooks'
 import { EditCommonInfoAgreement } from '../rammeavtaler/rammeavtale/Rammeavtale'
 import { todayTimestamp } from '../utils/date-util'
 import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/NewDelkontraktModal'
+import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/EditDelkontraktModal'
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin
@@ -119,6 +120,58 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
   }
 }
 
+export const updateDelkontrakt = async (agreementId: string, delkontraktId: string, data: EditDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
+
+  const agreementToUpdate = await fetch(
+    `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+
+  const delkontraktToUpdate = agreementToUpdate.agreementData.posts.find(
+    (post: AgreementPostDTO) => post.identifier === delkontraktId,
+  )
+
+  const oppdatertDelkontrakt: AgreementPostDTO = {
+    identifier: delkontraktToUpdate.identifier,
+    nr: delkontraktToUpdate.nr,
+    title: data.tittel,
+    description: data.beskrivelse,
+    created: delkontraktToUpdate.created,
+  }
+
+  const updatedAgreement =
+    getAgreeementWithUpdatedDelkontraktDTO(agreementToUpdate, oppdatertDelkontrakt)
+
+  const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(updatedAgreement),
+  })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
+  }
+}
+
 const getEditedAgreementDTO = (
   agreementToEdit: AgreementRegistrationDTO,
   newDescription: string,
@@ -132,6 +185,19 @@ const getEditedAgreementDTO = (
   }
 }
 
+const getAgreeementWithUpdatedDelkontraktDTO = (
+  agreementToEdit: AgreementRegistrationDTO,
+  updatedPost: AgreementPostDTO,
+): AgreementRegistrationDTO => {
+
+  const index = agreementToEdit.agreementData.posts.findIndex((post) => post.identifier === updatedPost.identifier)
+  agreementToEdit.agreementData.posts[index] = updatedPost
+
+  return {
+    ...agreementToEdit,
+  }
+}
+
 const getAgreeementWithNewDelkontraktDTO = (
   agreementToEdit: AgreementRegistrationDTO,
   newPost: AgreementPostDTO,
@@ -139,7 +205,7 @@ const getAgreeementWithNewDelkontraktDTO = (
 
   const updatedPosts = [
     ...agreementToEdit.agreementData.posts, newPost,
-    ]
+  ]
 
   return {
     ...agreementToEdit,

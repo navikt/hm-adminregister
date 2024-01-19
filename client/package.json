@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
+    "@navikt/aksel-icons": "^5.11.4",
     "@navikt/ds-css": "^5.11.4",
     "@navikt/ds-react": "^5.11.4",
     "@navikt/ds-tokens": "^5.11.4",
-    "@navikt/aksel-icons": "^5.11.4",
     "amplitude-js": "^8.19.0",
+    "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
@@ -27,7 +28,6 @@
     "styled-components": "^5.3.5",
     "swr": "^2.2.4",
     "uuid": "^8.3.2",
-    "classnames": "^2.3.2",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"
   },
@@ -43,10 +43,10 @@
     "msw": "^0.45.0",
     "prettier": "^3.1.0",
     "rimraf": "^3.0.2",
+    "sass": "^1.69.5",
     "typescript": "^4.7.4",
     "vite": "^4.5.1",
-    "vitest": "^0.22.1",
-    "sass": "^1.69.5"
+    "vitest": "^0.22.1"
   },
   "msw": {
     "workerDirectory": "public"

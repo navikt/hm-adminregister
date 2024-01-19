@@ -8,17 +8,24 @@ import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon }
 import EditProducstVariantsModal from './EditProductVariantsModal'
 import React, { useState } from 'react'
 import NewProductDelkontraktModal from './NewProductDelkontraktModal'
+import EditDelkontraktModal from './EditDelkontraktModal'
 
 interface Props {
   delkontrakt: AgreementPostDTO
   produkter: ProduktvarianterForDelkontrakterDTOList
+  agreementId: string
+  delkontraktId: string
+  mutateAgreement: () => void
 }
 
-export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
+export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreement }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([])
+
+  const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false)
+
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe)
     setModalIsOpen(true)
@@ -26,7 +33,16 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
 
   return (
     <>
-      <NewProductDelkontraktModal modalIsOpen={nyttProduktModalIsOpen} setModalIsOpen={setNyttProduktModalIsOpen} mutateAgreement={() => {}} />
+      <EditDelkontraktModal
+        modalIsOpen={editDelkontraktModalIsOpen}
+        setModalIsOpen={setEditDelkontraktModalIsOpen}
+        oid={agreementId}
+        delkontrakt={delkontrakt}
+        mutateAgreement={mutateAgreement}
+      />
+      <NewProductDelkontraktModal modalIsOpen={nyttProduktModalIsOpen} setModalIsOpen={setNyttProduktModalIsOpen}
+                                  mutateAgreement={() => {
+                                  }} />
       <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} varianter={varianter} />
 
       <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
@@ -127,6 +143,7 @@ export const Delkontrakt = ({ delkontrakt, produkter }: Props) => {
                 <Dropdown.Menu>
                   <Dropdown.Menu.GroupedList>
                     <Dropdown.Menu.GroupedList.Item onClick={() => {
+                      setEditDelkontraktModalIsOpen(true)
                     }}>
                       Endre tittel og beskrivelse
                     </Dropdown.Menu.GroupedList.Item>

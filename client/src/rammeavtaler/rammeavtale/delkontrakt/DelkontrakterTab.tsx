@@ -24,6 +24,7 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
         oid={agreementId}
         mutateAgreement={mutateAgreement}
       />
+
       <Tabs.Panel value='delkontrakter' className='tab-panel'>
         {isFirstTime && (
           <Alert variant='info'>
@@ -35,8 +36,14 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
             <>
               {posts.length > 0 && (
                 posts.map((post, i) => (
-                    <Delkontrakt key={i} delkontrakt={post}
-                                 produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []} />
+                    <Delkontrakt
+                      key={i}
+                      delkontrakt={post}
+                      produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []}
+                      agreementId={agreementId}
+                      delkontraktId={post.identifier}
+                      mutateAgreement={mutateAgreement}
+                    />
 
                   ),
                 ))
