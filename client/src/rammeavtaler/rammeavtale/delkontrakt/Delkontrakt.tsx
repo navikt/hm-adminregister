@@ -9,6 +9,7 @@ import EditProducstVariantsModal from './EditProductVariantsModal'
 import React, { useState } from 'react'
 import NewProductDelkontraktModal from './NewProductDelkontraktModal'
 import EditDelkontraktModal from './EditDelkontraktModal'
+import ConfirmModal from '../../../components/ConfirmModal'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -23,12 +24,20 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([])
-
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false)
+  const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false)
+
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe)
     setModalIsOpen(true)
+  }
+
+
+  const onConfirmDeleteDelkontrakt = () => {
+    // todo: delete delkontrakt
+    setDeleteDelkontraktIsOpen(false)
+
   }
 
   return (
@@ -40,6 +49,15 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
         delkontrakt={delkontrakt}
         mutateAgreement={mutateAgreement}
       />
+      <ConfirmModal
+        title={`Slett '${delkontrakt.title}'`}
+        text='Er du sikker på at du vil slette delkontrakten?'
+        onClick={onConfirmDeleteDelkontrakt}
+        onClose={() => {
+          setDeleteDelkontraktIsOpen(false)
+        }}
+        isModalOpen={deleteDelkontraktIsOpen}
+      />
       <NewProductDelkontraktModal modalIsOpen={nyttProduktModalIsOpen} setModalIsOpen={setNyttProduktModalIsOpen}
                                   mutateAgreement={() => {
                                   }} />
@@ -49,7 +67,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
         <ExpansionCard.Header>
           <ExpansionCard.Title size='small'>{delkontrakt.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
-        <ExpansionCard.Content>
+        <ExpansionCard.Content style={{ overflow: 'auto' }}>
           <VStack gap='3'>
             <p className='beskrivelse'><b>Beskrivelse:</b></p>
             {delkontrakt.description}
@@ -150,8 +168,12 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
                   </Dropdown.Menu.GroupedList>
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
-                    <Dropdown.Menu.List.Item href='https://nav.no'>
-                      Slett
+                    <Dropdown.Menu.List.Item
+                      onClick={() => {
+                        setDeleteDelkontraktIsOpen(true)
+                      }}
+                    >
+                      Slett delkontrakt
                     </Dropdown.Menu.List.Item>
                   </Dropdown.Menu.List>
                 </Dropdown.Menu>

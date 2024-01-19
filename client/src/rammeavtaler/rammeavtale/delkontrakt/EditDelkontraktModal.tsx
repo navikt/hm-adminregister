@@ -31,10 +31,6 @@ const EditDelkontraktModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, m
   } = useForm<EditDelkontraktFormData>({
     resolver: zodResolver(createNewDelkontraktSchema),
     mode: 'onSubmit',
-    defaultValues: {
-      tittel: delkontrakt.title || '',
-      beskrivelse: delkontrakt.description || '',
-    },
   })
   const { setGlobalError } = useHydratedErrorStore()
 
@@ -75,6 +71,7 @@ const EditDelkontraktModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, m
             <VStack style={{ width: '100%' }}>
               <TextField
                 {...register('tittel', { required: true })}
+                defaultValue={delkontrakt.title || ''}
                 label={labelRequired('Tittel')}
                 id='tittel'
                 name='tittel'
@@ -84,6 +81,7 @@ const EditDelkontraktModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, m
               <Avstand marginBottom={5} />
               <Textarea
                 {...register('beskrivelse', { required: true })}
+                defaultValue={delkontrakt.description || ''}
                 label={labelRequired('Beskrivelse')}
                 id='beskrivelse'
                 name='beskrivelse'
