@@ -1,6 +1,5 @@
 import './../agreement-page.scss'
 import React, { useEffect, useState } from 'react'
-import { useProductVariantsBySeriesId } from '../../../utils/swr-hooks'
 import { BodyShort, Checkbox, Table, VStack } from '@navikt/ds-react'
 import { ProductRegistrationDTO } from '../../../utils/response-types'
 
@@ -8,12 +7,12 @@ import { ProductRegistrationDTO } from '../../../utils/response-types'
 interface Props {
   seriesId?: string
   product: ProductRegistrationDTO
+  variants: ProductRegistrationDTO[]
   setValgteRader: (rader: string[]) => void
 }
 
-export const VarianterListe = ({ seriesId, product, setValgteRader }: Props) => {
+export const VarianterListe = ({ product, variants, setValgteRader }: Props) => {
 
-  const { data: variants, isLoading } = useProductVariantsBySeriesId(seriesId)
   const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!!])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>

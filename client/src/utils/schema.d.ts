@@ -58,6 +58,9 @@ export interface paths {
   "/admreg/admin/api/v1/product-agreement": {
     post: operations["createProductAgreement"];
   };
+  "/admreg/admin/api/v1/product-agreement/batch": {
+    post: operations["createProductAgreements"];
+  };
   "/admreg/admin/api/v1/product-agreement/excel-import": {
     post: operations["excelImport"];
   };
@@ -499,7 +502,8 @@ export interface components {
       id: string;
       /** Format: uuid */
       productId?: string | null;
-      seriesId?: string | null;
+      /** Format: uuid */
+      seriesUuid?: string | null;
       title: string;
       articleName?: string | null;
       /** Format: uuid */
@@ -582,6 +586,7 @@ export interface components {
       produktTittel: string;
       /** Format: int32 */
       rangering: number;
+      /** Format: uuid */
       produktserie?: string | null;
       produktvarianter: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
@@ -1142,6 +1147,21 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductAgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createProductAgreements: {
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["ProductAgreementRegistrationDTO"][];
+      };
+    };
+    responses: {
+      /** @description createProductAgreements 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
         };
       };
     };

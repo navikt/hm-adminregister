@@ -10,20 +10,25 @@ import { getProduct } from '../../../api/ProductApi'
 import { ProductRegistrationDTO } from '../../../utils/response-types'
 import { VarianterListe } from './VarianterListe'
 import './../agreement-page.scss'
+import { addProductsToAgreement } from '../../../api/AgreementProductApi'
+import { useProductVariantsBySeriesId } from '../../../utils/swr-hooks'
 
 interface Props {
   modalIsOpen: boolean
   setModalIsOpen: (open: boolean) => void
+  agreementId: string
+  post: number
   mutateAgreement: () => void
 }
 
 export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
-const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreement }: Props) => {
+const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreement, agreementId, post }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
   const [variantsToAdd, setVariantsToAdd] = useState<string[]>([])
+  const { data: variants, isLoading } = useProductVariantsBySeriesId(productToAddSeriesId)
 
   const {
     handleSubmit,
@@ -54,7 +59,21 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
 
   async function onClickLeggTilValgteVarianter() {
     setIsSaving(true)
-    // todo: lagre varianter
+
+    addProductsToAgreement(
+      agreementId,
+      post,
+      variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!!)) || [],
+    ).then(
+      (agreement) => {
+        mutateAgreement()
+        setIsSaving(false)
+
+      },
+    ).catch((error) => {
+      setGlobalError(error.message)
+      setIsSaving(false)
+    })
     setIsSaving(false)
     reset()
     setVariantsToAdd([])
@@ -100,7 +119,9 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
               )}
               {productToAdd && (
                 <VStack gap='5'>
-                  <VarianterListe setValgteRader={setVariantsToAdd} product={productToAdd}
+                  <VarianterListe setValgteRader={setVariantsToAdd}
+                                  product={productToAdd}
+                                  variants={variants || []}
                                   seriesId={productToAddSeriesId} />
                 </VStack>
               )}
