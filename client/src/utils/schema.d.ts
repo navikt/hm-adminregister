@@ -22,6 +22,9 @@ export interface paths {
     get: operations["getAgreementById"];
     put: operations["updateAgreement"];
   };
+  "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
+    get: operations["getDelkontraktById"];
+  };
   "/admreg/admin/api/v1/bestillingsordning/registrations": {
     post: operations["createBestillingsordning"];
   };
@@ -255,6 +258,23 @@ export interface components {
       /** Format: date-time */
       expired: string;
     };
+    AgreementInfo: {
+      /** Format: uuid */
+      id: string;
+      identifier?: string | null;
+      title?: string | null;
+      /** Format: int32 */
+      rank: number;
+      /** Format: int32 */
+      postNr: number;
+      postIdentifier?: string | null;
+      postTitle?: string | null;
+      reference: string;
+      /** Format: date-time */
+      expired: string;
+      /** Format: date-time */
+      published?: string | null;
+    };
     AgreementPost: {
       identifier: string;
       /** Format: int32 */
@@ -479,7 +499,9 @@ export interface components {
       id: string;
       /** Format: uuid */
       productId?: string | null;
+      seriesId?: string | null;
       title: string;
+      articleName?: string | null;
       /** Format: uuid */
       supplierId: string;
       supplierRef: string;
@@ -501,6 +523,7 @@ export interface components {
       published: string;
       /** Format: date-time */
       expired: string;
+      updatedByUser: string;
     };
     /** @enum {string} */
     ProductAgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
@@ -549,7 +572,7 @@ export interface components {
       updatedBy: string;
       createdByAdmin: boolean;
       productData: components["schemas"]["ProductData"];
-      agreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      agreements: components["schemas"]["AgreementInfo"][];
       /** Format: int64 */
       version?: number | null;
     };
@@ -559,7 +582,6 @@ export interface components {
       produktTittel: string;
       /** Format: int32 */
       rangering: number;
-      /** Format: uuid */
       produktserie?: string | null;
       produktvarianter: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
@@ -886,6 +908,22 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["AgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getDelkontraktById: {
+    parameters: {
+      path: {
+        id: string;
+        delkontraktId: string;
+      };
+    };
+    responses: {
+      /** @description getDelkontraktById 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AgreementPost"];
         };
       };
     };

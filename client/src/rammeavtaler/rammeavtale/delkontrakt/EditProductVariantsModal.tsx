@@ -41,7 +41,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: P
                   {varianter.map((variant, i) => {
                     return (
                       <Table.Row key={i} shadeOnHover={false}>
-                        <Table.DataCell>{variant.title}</Table.DataCell>
+                        <Table.DataCell>{variant.articleName}</Table.DataCell>
                         <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
                         <Table.DataCell>
