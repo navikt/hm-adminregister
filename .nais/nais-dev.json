@@ -1,5 +1,8 @@
 {
-  "ingress": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
+  "ingress": [
+    "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
+    "https://finnhjelpemiddel.ekstern.dev.nav.no/adminregister"
+  ],
   "cluster": "dev-gcp",
   "runtime_env": "dev",
   "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
