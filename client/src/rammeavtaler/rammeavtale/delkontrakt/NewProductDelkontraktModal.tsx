@@ -18,12 +18,12 @@ interface Props {
   setModalIsOpen: (open: boolean) => void
   agreementId: string
   post: number
-  mutateAgreement: () => void
+  mutateDelkontrakter: () => void
 }
 
 export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
-const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreement, agreementId, post }: Props) => {
+const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkontrakter, agreementId, post }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
@@ -66,7 +66,7 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateAgreeme
       variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!!)) || [],
     ).then(
       (agreement) => {
-        mutateAgreement()
+        mutateDelkontrakter()
         setIsSaving(false)
 
       },

@@ -121,7 +121,7 @@ export function useProductVariantsByAgreementId(agreementId: string) {
 
   const path = `${HM_REGISTER_URL}/admreg/admin/api/v1/product-agreement/variants/${agreementId}`
 
-  const { data, error, isLoading } = useSWR<ProduktvarianterForDelkontrakterDTOList>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<ProduktvarianterForDelkontrakterDTOList>(path, fetcherGET)
 
   useEffect(() => {
     if (error) {
@@ -133,6 +133,7 @@ export function useProductVariantsByAgreementId(agreementId: string) {
     data,
     isLoading,
     error,
+    mutate
   }
 }
 

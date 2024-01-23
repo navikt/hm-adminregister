@@ -12,7 +12,12 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
   mutateAgreement: () => void
 }) => {
 
-  const { data: delkontrakter, isLoading: delkontrakterIsLoading } = useProductVariantsByAgreementId(agreementId)
+  const {
+    data: delkontrakter,
+    isLoading: delkontrakterIsLoading,
+    mutate: mutateDelkontrakter,
+  }
+    = useProductVariantsByAgreementId(agreementId)
   const [nyRammeavtaleModalIsOpen, setNyRammeavtaleModalIsOpen] = useState(false)
   const isFirstTime = posts.length === 0
 
@@ -41,8 +46,7 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
                       delkontrakt={post}
                       produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []}
                       agreementId={agreementId}
-                      delkontraktId={post.identifier}
-                      mutateAgreement={mutateAgreement}
+                      mutateDelkontrakter={mutateDelkontrakter}
                     />
 
                   ),

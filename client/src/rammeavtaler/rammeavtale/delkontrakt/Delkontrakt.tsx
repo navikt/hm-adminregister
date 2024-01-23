@@ -15,11 +15,10 @@ interface Props {
   delkontrakt: AgreementPostDTO
   produkter: ProduktvarianterForDelkontrakterDTOList
   agreementId: string
-  post: number
-  mutateAgreement: () => void
+  mutateDelkontrakter: () => void
 }
 
-export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreement }: Props) => {
+export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkontrakter }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
@@ -47,7 +46,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
         setModalIsOpen={setEditDelkontraktModalIsOpen}
         oid={agreementId}
         delkontrakt={delkontrakt}
-        mutateAgreement={mutateAgreement}
+        mutateDelkontrakter={mutateDelkontrakter}
       />
       <ConfirmModal
         title={`Slett '${delkontrakt.title}'`}
@@ -63,8 +62,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateAgreeme
         setModalIsOpen={setNyttProduktModalIsOpen}
         agreementId={agreementId}
         post={delkontrakt.nr}
-        mutateAgreement={() => {
-        }} />
+        mutateDelkontrakter={mutateDelkontrakter} />
       <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} varianter={varianter} />
 
       <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
