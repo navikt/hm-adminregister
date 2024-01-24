@@ -10,9 +10,9 @@ spec:
   image: {{image}}
   port: 3000
   ingresses:
-    {{ #each ingress as |url|}}
-        - {{url}}
-    {{/each}}
+  {{#each ingress as |url|}}
+    - {{url}}
+  {{/each}}
   accessPolicy:
     outbound:
       rules:
