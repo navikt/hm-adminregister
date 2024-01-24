@@ -63,6 +63,8 @@ export default function OpprettRammeavtale() {
     })
   }
 
+
+
   return (
     <main>
       <div className='create-new-agreement'>
@@ -114,7 +116,7 @@ export default function OpprettRammeavtale() {
               <Button type='reset' variant='tertiary' size='medium' onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type='submit' size='medium'>
+              <Button type='submit' size='medium' disabled={isSubmitting || !isValid}>
                 Opprett
               </Button>
             </div>

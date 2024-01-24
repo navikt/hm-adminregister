@@ -23,11 +23,12 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
     >
       <Modal.Body>{text}</Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>
-          Avbryt
-        </Button>
+
         <Button onClick={onClick}>
-          OK
+          Slett
+        </Button>
+        <Button variant='tertiary' onClick={onClose}>
+          Avbryt
         </Button>
       </Modal.Footer>
     </Modal>
