@@ -5,6 +5,7 @@ import { EditCommonInfoAgreement } from '../rammeavtaler/rammeavtale/Rammeavtale
 import { todayTimestamp } from '../utils/date-util'
 import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/NewDelkontraktModal'
 import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/EditDelkontraktModal'
+import { v4 as uuidv4 } from 'uuid'
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin
@@ -73,7 +74,7 @@ export const updateAgreement = async (agreementId: string, data: EditCommonInfoA
 
 export const updateAgreementWithNewDelkontrakt = async (agreementId: string, data: NyDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
-  const agreementToUpdate = await fetch(
+  const agreementToUpdate: AgreementRegistrationDTO = await fetch(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
     {
       method: 'GET',
@@ -92,10 +93,10 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
   })
 
   // todo: sette riktig info i delkontrakt
+
   const nyDelkontrakt: AgreementPostDTO = {
-    // identifier: (agreementToUpdate.agreementData.posts.length + 2).toString(),
-    identifier: 'adawdwadawdawd',
-    nr: agreementToUpdate.agreementData.posts.length + 2,
+    identifier: uuidv4(),
+    nr: Math.max(...agreementToUpdate.agreementData.posts.map((post) => post.nr)) + 1,
     title: data.tittel,
     description: data.beskrivelse,
     created: todayTimestamp(),

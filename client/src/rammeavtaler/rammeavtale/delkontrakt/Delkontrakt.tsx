@@ -10,6 +10,8 @@ import React, { useState } from 'react'
 import NewProductDelkontraktModal from './NewProductDelkontraktModal'
 import EditDelkontraktModal from './EditDelkontraktModal'
 import ConfirmModal from '../../../components/ConfirmModal'
+import { deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
+import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -26,6 +28,11 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false)
   const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false)
 
+  const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false)
+  const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([])
+  const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null)
+
+  const { setGlobalError } = useHydratedErrorStore()
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe)
@@ -36,6 +43,26 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
   const onConfirmDeleteDelkontrakt = () => {
     // todo: delete delkontrakt
     setDeleteDelkontraktIsOpen(false)
+
+  }
+
+  const onConfirmDeleteProduktserie = () => {
+
+    console.log(produktserieToDelete)
+    const productAgreementsToDelete =
+      produktserieToDelete.map((variant) => {
+        return variant.id
+      })
+
+    console.log(productAgreementsToDelete)
+    deleteProductsFromAgreement(productAgreementsToDelete).then(
+      () => {
+        mutateDelkontrakter()
+      },
+    ).catch((error) => {
+      setGlobalError(error.message)
+    })
+    setDeleteProduktserieModalIsOpen(false)
 
   }
 
@@ -56,6 +83,15 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
           setDeleteDelkontraktIsOpen(false)
         }}
         isModalOpen={deleteDelkontraktIsOpen}
+      />
+      <ConfirmModal
+        title={`Slett produktserie '${produktserieToDeleteTitle}'`}
+        text='Er du sikker på at du vil slette produktserie?'
+        onClick={onConfirmDeleteProduktserie}
+        onClose={() => {
+          setDeleteProduktserieModalIsOpen(false)
+        }}
+        isModalOpen={deleteProduktserieModalIsOpen}
       />
       <NewProductDelkontraktModal
         modalIsOpen={nyttProduktModalIsOpen}
@@ -118,9 +154,10 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                                   fontSize='1.5rem'
                                 />
                               }
-
                               onClick={() => {
-
+                                setProduktserieToDelete(produkt.produktvarianter)
+                                setProduktserieToDeleteTitle(produkt.produktTittel)
+                                setDeleteProduktserieModalIsOpen(true)
                               }} />
                           </Table.DataCell>
                         </Table.Row>

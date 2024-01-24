@@ -28,6 +28,27 @@ export const getProductsForAgreement = async (agreementId: string): Promise<Prod
   }
 }
 
+export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
+
+  const response = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(agreementProductIds),
+    })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
+  }
+}
+
 export const addProductsToAgreement = async (agreementId: string, post: number, productsToAdd: ProductRegistrationDTO[]): Promise<ProductAgreementRegistrationDTOList> => {
 
   const agreementToUpdate = await fetch(
