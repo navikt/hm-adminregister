@@ -5,14 +5,14 @@ import {
 } from '../../../utils/response-types'
 import { Button, Dropdown, ExpansionCard, HStack, Table, VStack } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import EditProducstVariantsModal from './EditProductVariantsModal'
 import React, { useState } from 'react'
-import NewProductDelkontraktModal from './NewProductDelkontraktModal'
-import EditDelkontraktModal from './EditDelkontraktModal'
+import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
+import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
 import ConfirmModal from '../../../components/ConfirmModal'
 import { deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
 import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
 import { deleteDelkontrakt } from '../../../api/AgreementApi'
+import EditProducstVariantsModal from './EditProductVariantsOnDelkontraktModal'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -74,7 +74,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
   return (
     <>
-      <EditDelkontraktModal
+      <EditDelkontraktInfoModal
         modalIsOpen={editDelkontraktModalIsOpen}
         setModalIsOpen={setEditDelkontraktModalIsOpen}
         oid={agreementId}
@@ -99,7 +99,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         }}
         isModalOpen={deleteProduktserieModalIsOpen}
       />
-      <NewProductDelkontraktModal
+      <NewProductOnDelkontraktModal
         modalIsOpen={nyttProduktModalIsOpen}
         setModalIsOpen={setNyttProduktModalIsOpen}
         agreementId={agreementId}

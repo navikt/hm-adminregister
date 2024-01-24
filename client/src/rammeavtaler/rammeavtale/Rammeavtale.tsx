@@ -15,7 +15,7 @@ import { HM_REGISTER_URL } from '../../environments'
 import { updateAgreement } from '../../api/AgreementApi'
 import { toDate, toReadableDateTimeString, toReadableString } from '../../utils/date-util'
 import StatusTagAgreement from '../../components/StatusTagAgreement'
-import DelkontrakterTab from './delkontrakt/DelkontrakterTab'
+import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
 
 export type EditCommonInfoAgreement = {
   description: string

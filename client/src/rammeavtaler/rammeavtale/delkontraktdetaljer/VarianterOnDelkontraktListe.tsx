@@ -11,7 +11,7 @@ interface Props {
   setValgteRader: (rader: string[]) => void
 }
 
-export const VarianterListe = ({ product, variants, setValgteRader }: Props) => {
+export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader }: Props) => {
 
   const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!!])
   const toggleSelectedRow = (value: string) =>

@@ -3,9 +3,9 @@ import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } fro
 import { CustomError } from '../utils/swr-hooks'
 import { EditCommonInfoAgreement } from '../rammeavtaler/rammeavtale/Rammeavtale'
 import { todayTimestamp } from '../utils/date-util'
-import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/NewDelkontraktModal'
-import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt/EditDelkontraktModal'
 import { v4 as uuidv4 } from 'uuid'
+import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal'
+import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin

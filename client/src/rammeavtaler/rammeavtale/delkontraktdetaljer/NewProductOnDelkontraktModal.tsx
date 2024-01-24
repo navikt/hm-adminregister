@@ -8,7 +8,7 @@ import { labelRequired } from '../../../utils/string-util'
 import { createNewProductOnDelkontraktSchema } from '../../../utils/zodSchema/newProductOnDelkontrakt'
 import { getProduct } from '../../../api/ProductApi'
 import { ProductRegistrationDTO } from '../../../utils/response-types'
-import { VarianterListe } from './VarianterListe'
+import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
 import './../agreement-page.scss'
 import { addProductsToAgreement } from '../../../api/AgreementProductApi'
 import { useProductVariantsBySeriesId } from '../../../utils/swr-hooks'
@@ -23,7 +23,7 @@ interface Props {
 
 export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
-const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkontrakter, agreementId, post }: Props) => {
+const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkontrakter, agreementId, post }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
@@ -119,10 +119,10 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkont
               )}
               {productToAdd && (
                 <VStack gap='5'>
-                  <VarianterListe setValgteRader={setVariantsToAdd}
-                                  product={productToAdd}
-                                  variants={variants || []}
-                                  seriesId={productToAddSeriesId} />
+                  <VarianterOnDelkontraktListe setValgteRader={setVariantsToAdd}
+                                               product={productToAdd}
+                                               variants={variants || []}
+                                               seriesId={productToAddSeriesId} />
                 </VStack>
               )}
             </VStack>
@@ -159,4 +159,4 @@ const NewProductDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkont
   )
 }
 
-export default NewProductDelkontraktModal
+export default NewProductOnDelkontraktModal

@@ -21,7 +21,7 @@ interface Props {
 
 export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>
 
-const EditDelkontraktModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateDelkontrakter }: Props) => {
+const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateDelkontrakter }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
@@ -119,4 +119,4 @@ const EditDelkontraktModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, m
   )
 }
 
-export default EditDelkontraktModal
+export default EditDelkontraktInfoModal
