@@ -33,7 +33,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter }: P
       <Modal.Body>
         <div className='delkontrakter-tab__new-delkontrakt-container'>
           {varianter.length > 0 && (
-            <VStack gap='2'>
+            <VStack gap='2' style={{width: '100%'}}>
                 <Table>
                   <Table.Header>
                     <Table.Row>
