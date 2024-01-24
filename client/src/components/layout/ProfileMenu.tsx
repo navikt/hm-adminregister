@@ -15,7 +15,7 @@ const ProfileMenu = () => {
   async function handleLogout(event: any) {
     event.preventDefault()
     try {
-      const res = await fetch(`${HM_REGISTER_URL}/admreg/logout`, {
+      const res = await fetch(`${HM_REGISTER_URL()}/admreg/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

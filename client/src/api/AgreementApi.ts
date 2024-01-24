@@ -8,8 +8,8 @@ import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontrakt
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/draft/reference`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations/draft/reference`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/draft/reference`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/draft/reference`
 
   const response = await fetch(createAgreementPath(), {
     method: 'POST',
@@ -31,7 +31,7 @@ export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: Agree
 export const updateAgreement = async (agreementId: string, data: EditCommonInfoAgreement): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -54,7 +54,7 @@ export const updateAgreement = async (agreementId: string, data: EditCommonInfoA
 
   const editedAgreementDTO = getEditedAgreementDTO(agreementToUpdate, description)
 
-  const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const updateAgreement = async (agreementId: string, data: EditCommonInfoA
 export const updateAgreementWithNewDelkontrakt = async (agreementId: string, data: NyDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -103,7 +103,7 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
 
   const updatedAgreement = getAgreeementWithNewDelkontraktDTO(agreementToUpdate, nyDelkontrakt)
 
-  const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
 export const updateDelkontrakt = async (agreementId: string, delkontraktId: string, data: EditDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -155,7 +155,7 @@ export const updateDelkontrakt = async (agreementId: string, delkontraktId: stri
   const updatedAgreement =
     getAgreeementWithUpdatedDelkontraktDTO(agreementToUpdate, oppdatertDelkontrakt)
 
-  const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

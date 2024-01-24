@@ -15,8 +15,8 @@ const RedigerProduktVariant = () => {
   const { productId } = useParams()
 
   const registrationsPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/${productId}`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productId}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/${productId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`
 
   const { data: product, error, isLoading, mutate } =
     useSWR<ProductRegistrationDTO>(loggedInUser ? registrationsPath : null, fetcherGET)

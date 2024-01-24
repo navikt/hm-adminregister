@@ -62,7 +62,7 @@ export default function OpprettAdminBruker() {
       roles: ['ROLE_ADMIN'],
       attributes: {},
     }
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/users`, {
+    const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

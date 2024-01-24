@@ -119,7 +119,7 @@ const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegist
 
     const supplierJSON = JSON.stringify(supplierBody)
     setLoading(true)
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/supplier/registrations`, {
+    const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/supplier/registrations`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

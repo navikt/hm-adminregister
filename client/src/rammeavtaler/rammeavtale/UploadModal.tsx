@@ -35,7 +35,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
     for (const upload of uploads) {
       formData.append('files', upload.file)
     }
-    let res = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/media/agreement/files/${oid}`, {
+    let res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/media/agreement/files/${oid}`, {
       method: 'POST',
       headers: {
         accept: 'application/json',
@@ -50,7 +50,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
     }
     const mediaDTOs: MediaDTO[] = await res.json()
     //Fetch produkt to update the latest version
-    res = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
+    res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -74,7 +74,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
         ),
       )
 
-    res = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+    res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

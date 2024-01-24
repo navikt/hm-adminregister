@@ -24,7 +24,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
   const handleDeleteFile = async (uri: string) => {
     const oid = agreement.id
     //Fetch latest version of product
-    let res = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
+    let res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
       method: 'GET',
       credentials: 'include',
       headers: {

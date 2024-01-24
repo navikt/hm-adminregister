@@ -27,8 +27,8 @@ const OpprettProduktVariant = () => {
   const { seriesId, productId } = useParams()
 
   const seriesIdPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`
 
   ///PROBLEM den skriver over uansett nå, yey
 

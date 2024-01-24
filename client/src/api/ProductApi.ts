@@ -5,18 +5,18 @@ import { CustomError } from '../utils/swr-hooks'
 
 const registrationsDraftPath = (isAdmin: boolean, productId: string): string =>
   isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`
 
 export const registrationsUpdatePath = (isAdmin: boolean, productId: string) =>
   isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/${productId}`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productId}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/${productId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`
 
 
 export const getProduct = async (hmsArtNr: string): Promise<ProductRegistrationDTO> => {
   return await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -37,7 +37,7 @@ export const getProduct = async (hmsArtNr: string): Promise<ProductRegistrationD
 export const getProductVariants = async (seriesId: string): Promise<ProductRegistrationDTO[]> => {
 
   return await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/series/${seriesId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -58,7 +58,7 @@ export const getProductVariants = async (seriesId: string): Promise<ProductRegis
 export const updateProduct = async (productId: string, commonInfoProduct: EditCommonInfoProduct): Promise<ProductRegistrationDTO> => {
 
   const productToUpdate: ProductRegistrationDTO = await fetch(
-    `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productId}`,
+    `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -85,7 +85,7 @@ export const updateProduct = async (productId: string, commonInfoProduct: EditCo
 
   const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description)
 
-  const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

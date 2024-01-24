@@ -74,7 +74,7 @@ export default function OpprettLeverandør() {
       },
     }
 
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/admin/api/v1/supplier/registrations`, {
+    const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

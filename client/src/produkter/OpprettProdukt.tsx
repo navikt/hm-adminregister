@@ -32,8 +32,8 @@ export default function OpprettProdukt() {
   const { loggedInUser } = useHydratedAuthStore()
 
   const createProductPath = () => loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/product/registrations/draftWith`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/product/registrations/draftWith`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draftWith`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draftWith`
 
   async function onSubmit(data: FormData) {
     const newProduct: ProductDraftWithDTO = {

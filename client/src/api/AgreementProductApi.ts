@@ -11,7 +11,7 @@ import { todayTimestamp } from '../utils/date-util'
 export const getProductsForAgreement = async (agreementId: string): Promise<ProductAgreementRegistrationDTOList> => {
 
   const response = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/product-agreement/${agreementId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/${agreementId}`,
     {
       method: 'GET',
       headers: {
@@ -31,7 +31,7 @@ export const getProductsForAgreement = async (agreementId: string): Promise<Prod
 export const addProductsToAgreement = async (agreementId: string, post: number, productsToAdd: ProductRegistrationDTO[]): Promise<ProductAgreementRegistrationDTOList> => {
 
   const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -79,7 +79,7 @@ export const addProductsToAgreement = async (agreementId: string, post: number, 
 
 
   const response = await fetch(
-    `${HM_REGISTER_URL}/admreg/admin/api/v1/product-agreement/batch`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
     {
       method: 'POST',
       headers: {

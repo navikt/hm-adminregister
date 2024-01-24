@@ -100,7 +100,7 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
       },
     })
     setLoading(true)
-    const response = await fetch(`${HM_REGISTER_URL}/admreg/vendor/api/v1/users`, {
+    const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

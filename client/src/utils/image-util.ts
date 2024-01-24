@@ -17,7 +17,7 @@ type ImageOptions = {
   size: Size
 }
 
-const imageLoader = ({ src, size }: ImageOptions) => `${IMAGE_PROXY_URL}/${size}d/${src}`
+const imageLoader = ({ src, size }: ImageOptions) => `${IMAGE_PROXY_URL()}/${size}d/${src}`
 
 const imageLoaderAdvanced = ({ src, size }: ImageOptions) => {
   if (!src.startsWith('data:')) return imageLoader({ src, size })

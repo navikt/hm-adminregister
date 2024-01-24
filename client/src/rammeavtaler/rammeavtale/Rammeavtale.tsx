@@ -29,8 +29,8 @@ const AgreementPage = () => {
   const { loggedInUser } = useHydratedAuthStore()
   const { setGlobalError } = useHydratedErrorStore()
   const agreementPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL}/admreg/admin/api/v1/agreement/registrations/${agreementId}`
-    : `${HM_REGISTER_URL}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`
 
   const navigate = useNavigate()
 
