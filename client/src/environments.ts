@@ -1,4 +1,6 @@
 export const HM_REGISTER_URL = () => {
+  console.log(window.location.hostname)
+  console.log(window.location.origin)
   if (window.location.hostname.includes('external')) {
     return import.meta.env.VITE_HM_REGISTER_EXTERNAL_URL
   } else {
