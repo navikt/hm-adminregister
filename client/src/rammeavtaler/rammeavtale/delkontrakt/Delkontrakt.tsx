@@ -12,15 +12,17 @@ import EditDelkontraktModal from './EditDelkontraktModal'
 import ConfirmModal from '../../../components/ConfirmModal'
 import { deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
 import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
+import { deleteDelkontrakt } from '../../../api/AgreementApi'
 
 interface Props {
   delkontrakt: AgreementPostDTO
   produkter: ProduktvarianterForDelkontrakterDTOList
   agreementId: string
   mutateDelkontrakter: () => void
+  mutateAgreement: () => void
 }
 
-export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkontrakter }: Props) => {
+export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkontrakter, mutateAgreement }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
@@ -41,20 +43,24 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
 
   const onConfirmDeleteDelkontrakt = () => {
-    // todo: delete delkontrakt
-    setDeleteDelkontraktIsOpen(false)
 
+    deleteDelkontrakt(agreementId, delkontrakt.identifier).then(
+      () => {
+        mutateAgreement()
+      },
+    ).catch((error) => {
+      setGlobalError(error.message)
+    })
+    setDeleteDelkontraktIsOpen(false)
   }
 
   const onConfirmDeleteProduktserie = () => {
 
-    console.log(produktserieToDelete)
     const productAgreementsToDelete =
       produktserieToDelete.map((variant) => {
         return variant.id
       })
 
-    console.log(productAgreementsToDelete)
     deleteProductsFromAgreement(productAgreementsToDelete).then(
       () => {
         mutateDelkontrakter()

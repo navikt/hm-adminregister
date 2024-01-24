@@ -47,6 +47,7 @@ const DelkontrakterTab = ({ posts, agreementId, mutateAgreement }: {
                       produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []}
                       agreementId={agreementId}
                       mutateDelkontrakter={mutateDelkontrakter}
+                      mutateAgreement={mutateAgreement}
                     />
 
                   ),

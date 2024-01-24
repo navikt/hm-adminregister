@@ -121,6 +121,45 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
   }
 }
 
+export const deleteDelkontrakt = async (agreementId: string, delkontraktId: string): Promise<AgreementRegistrationDTO> => {
+
+  const agreementToUpdate: AgreementRegistrationDTO = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+
+  const updatedAgreement = getAgreeementWithoutDeletedDelkontraktDTO(agreementToUpdate, delkontraktId)
+
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(updatedAgreement),
+  })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
+  }
+}
+
 export const updateDelkontrakt = async (agreementId: string, delkontraktId: string, data: EditDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await fetch(
@@ -207,6 +246,24 @@ const getAgreeementWithNewDelkontraktDTO = (
   const updatedPosts = [
     ...agreementToEdit.agreementData.posts, newPost,
   ]
+
+  return {
+    ...agreementToEdit,
+    agreementData: {
+      ...agreementToEdit.agreementData,
+      posts: updatedPosts,
+    },
+  }
+}
+
+const getAgreeementWithoutDeletedDelkontraktDTO = (
+  agreementToEdit: AgreementRegistrationDTO,
+  delkontraktId: string,
+): AgreementRegistrationDTO => {
+
+  const updatedPosts =
+    agreementToEdit.agreementData.posts.filter((post) => post.identifier !== delkontraktId)
+
 
   return {
     ...agreementToEdit,
