@@ -130,7 +130,18 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                     {produkter.map((produkt, i) => {
                       return (
                         <Table.Row key={i} shadeOnHover={false}>
-                          <Table.DataCell>{produkt.produktTittel}</Table.DataCell>
+                          <Table.DataCell>
+                            {produkt.serieIdentifier ? (
+                              <a href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
+                                 target='_blank' rel='noreferrer'>
+                                {produkt.produktTittel}
+                              </a>
+                            ) : (
+                              produkt.produktTittel
+                            )
+                            }
+
+                          </Table.DataCell>
                           <Table.DataCell>
                             <Button
                               iconPosition='right'
@@ -172,7 +183,8 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                   </Table.Body>
                 </Table>
               </VStack>
-            )}
+            )
+            }
 
             <HStack>
               <Button

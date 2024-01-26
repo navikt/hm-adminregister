@@ -24,6 +24,7 @@ export interface paths {
   };
   "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
     get: operations["getDelkontraktById"];
+    delete: operations["deleteDelkontraktById"];
   };
   "/admreg/admin/api/v1/bestillingsordning/registrations": {
     post: operations["createBestillingsordning"];
@@ -588,6 +589,7 @@ export interface components {
       rangering: number;
       /** Format: uuid */
       produktserie?: string | null;
+      serieIdentifier?: string | null;
       produktvarianter: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
     /** @enum {string} */
@@ -933,6 +935,22 @@ export interface operations {
       };
     };
   };
+  deleteDelkontraktById: {
+    parameters: {
+      path: {
+        id: string;
+        delkontraktId: string;
+      };
+    };
+    responses: {
+      /** @description deleteDelkontraktById 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
   createBestillingsordning: {
     requestBody: {
       content: {
@@ -1154,7 +1172,7 @@ export interface operations {
   createProductAgreements: {
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["ProductAgreementRegistrationDTO"][];
+        "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
       };
     };
     responses: {
