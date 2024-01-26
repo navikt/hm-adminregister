@@ -8,26 +8,6 @@ import { CustomError } from '../utils/swr-hooks'
 import { v4 as uuidv4 } from 'uuid'
 import { todayTimestamp } from '../utils/date-util'
 
-export const getProductsForAgreement = async (agreementId: string): Promise<ProductAgreementRegistrationDTOList> => {
-
-  const response = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/${agreementId}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-
-  if (response.ok) {
-    return await response.json()
-  } else {
-    const error = await response.json()
-    return Promise.reject(error)
-  }
-}
-
 export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
 
   const response = await fetch(
@@ -47,6 +27,52 @@ export const deleteProductsFromAgreement = async (agreementProductIds: string[])
     const error = await response.json()
     return Promise.reject(error)
   }
+
+}
+
+export const changeRankOnProductAgreements = async (productAgreementIds: string[], newRank: number) => {
+
+  const productAgreementsToUpdate: ProductAgreementRegistrationDTO[] = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/get-by-ids`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(productAgreementIds),
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+
+  const updatedProductAgreements: ProductAgreementRegistrationDTO[] =
+    getEditedProductAgreements(productAgreementsToUpdate, newRank)
+
+  const response = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(updatedProductAgreements),
+    })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    console.log(error)
+    return Promise.reject(error)
+  }
+
 }
 
 export const addProductsToAgreement = async (agreementId: string, post: number, productsToAdd: ProductRegistrationDTO[]): Promise<ProductAgreementRegistrationDTOList> => {
@@ -96,9 +122,6 @@ export const addProductsToAgreement = async (agreementId: string, post: number, 
     productAgreementsToAdd.push(productAgreement)
   })
 
-  console.log(productAgreementsToAdd)
-
-
   const response = await fetch(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
     {
@@ -117,4 +140,20 @@ export const addProductsToAgreement = async (agreementId: string, post: number, 
     console.log(error)
     return Promise.reject(error)
   }
+}
+
+const getEditedProductAgreements = (
+  productAgreementsToEdit: ProductAgreementRegistrationDTO[],
+  newRanking: number,
+): ProductAgreementRegistrationDTO[] => {
+
+
+  return productAgreementsToEdit.map(productAgreement => {
+    return {
+      ...productAgreement,
+      rank: newRanking,
+      updated: todayTimestamp(),
+    }
+  })
+
 }

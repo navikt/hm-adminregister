@@ -3,13 +3,13 @@ import {
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
 } from '../../../utils/response-types'
-import { Button, Dropdown, ExpansionCard, HStack, Table, VStack } from '@navikt/ds-react'
+import { Button, Dropdown, ExpansionCard, HStack, Select, Table, VStack } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
 import React, { useState } from 'react'
 import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
 import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
 import ConfirmModal from '../../../components/ConfirmModal'
-import { deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
+import { changeRankOnProductAgreements, deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
 import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
 import { deleteDelkontrakt } from '../../../api/AgreementApi'
 import EditProducstVariantsModal from './EditProductVariantsOnDelkontraktModal'
@@ -69,6 +69,18 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
       setGlobalError(error.message)
     })
     setDeleteProduktserieModalIsOpen(false)
+
+  }
+
+  const onChangeRangering = (productAgreementIds: string[], nyRangering: string) => {
+    changeRankOnProductAgreements(productAgreementIds, parseInt(nyRangering)).then(
+      () => {
+        mutateDelkontrakter()
+      },
+    ).catch((error) => {
+      mutateDelkontrakter()
+      setGlobalError(error.message)
+    })
 
   }
 
@@ -160,7 +172,27 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
                             </Button>
                           </Table.DataCell>
-                          <Table.DataCell>{produkt.rangering}</Table.DataCell>
+                          <Table.DataCell>
+                            <Select
+                              id='rangering'
+                              name='rangering'
+                              label={''}
+                              defaultValue={produkt.rangering}
+                              onChange={(e) => {
+                                onChangeRangering(
+                                  produkt.produktvarianter.map((variant) => variant.id),
+                                  e.target.value,
+                                )
+                              }}
+                              style={{ width: '4em' }}
+                            >
+                              {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
+                                <option key={it} value={it}>
+                                  {it}
+                                </option>
+                              ))}
+                            </Select>
+                          </Table.DataCell>
                           <Table.DataCell>
                             <Button
                               iconPosition='right'
@@ -242,3 +274,12 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
     </>
   )
 }
+
+
+function range(start: number, stop: number): number[] {
+  const size = stop - start + 1
+  return [...Array(size).keys()].map((i) => i + start)
+}
+
+const MIN_RANGERING = 1
+const MAX_RANGERING = 9
