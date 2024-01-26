@@ -16,12 +16,12 @@ interface Props {
   oid: string
   delkontrakt: AgreementPostDTO
   setModalIsOpen: (open: boolean) => void
-  mutateDelkontrakter: () => void
+  mutateAgreement : () => void
 }
 
 export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>
 
-const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateDelkontrakter }: Props) => {
+const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
@@ -45,7 +45,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
     updateDelkontrakt(oid, delkontrakt.identifier, data).then(
       (agreement) => {
         setIsSaving(false)
-        mutateDelkontrakter()
+        mutateAgreement()
       },
     ).catch((error) => {
       setGlobalError(error.message)
