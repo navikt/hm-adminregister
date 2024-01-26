@@ -3,7 +3,7 @@ import {
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
 } from '../../../utils/response-types'
-import { Button, Dropdown, ExpansionCard, HStack, Select, Table, VStack } from '@navikt/ds-react'
+import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
 import React, { useState } from 'react'
 import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
@@ -33,6 +33,8 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
   const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false)
   const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([])
   const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null)
+
+  const [updatingRank, setUpdatingRank] = useState<boolean>(false)
 
   const { setGlobalError } = useHydratedErrorStore()
 
@@ -73,13 +75,16 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
   }
 
   const onChangeRangering = (productAgreementIds: string[], nyRangering: string) => {
+    setUpdatingRank(true)
     changeRankOnProductAgreements(productAgreementIds, parseInt(nyRangering)).then(
       () => {
         mutateDelkontrakter()
+        setUpdatingRank(false)
       },
     ).catch((error) => {
       mutateDelkontrakter()
       setGlobalError(error.message)
+      setUpdatingRank(false)
     })
 
   }
@@ -173,25 +178,30 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                             </Button>
                           </Table.DataCell>
                           <Table.DataCell>
-                            <Select
-                              id='rangering'
-                              name='rangering'
-                              label={''}
-                              defaultValue={produkt.rangering}
-                              onChange={(e) => {
-                                onChangeRangering(
-                                  produkt.produktvarianter.map((variant) => variant.id),
-                                  e.target.value,
-                                )
-                              }}
-                              style={{ width: '4em' }}
-                            >
-                              {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
-                                <option key={it} value={it}>
-                                  {it}
-                                </option>
-                              ))}
-                            </Select>
+                            {updatingRank ? (
+                                <Loader></Loader>
+                              ) : (
+                              <Select
+                                id='rangering'
+                                name='rangering'
+                                label={''}
+                                value={produkt.rangering}
+                                onChange={(e) => {
+                                  onChangeRangering(
+                                    produkt.produktvarianter.map((variant) => variant.id),
+                                    e.target.value,
+                                  )
+                                }}
+                                style={{ width: '4em' }}
+                              >
+                                {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
+                                  <option key={it} value={it}>
+                                    {it}
+                                  </option>
+                                ))}
+                              </Select>
+                            )}
+
                           </Table.DataCell>
                           <Table.DataCell>
                             <Button
