@@ -6,6 +6,7 @@ import { todayTimestamp } from '../utils/date-util'
 import { v4 as uuidv4 } from 'uuid'
 import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal'
 import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
+import { EditAgreementFormDataDto } from '../utils/zodSchema/editAgreement'
 
 export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: AgreementDraftWithDTO): Promise<AgreementRegistrationDTO> => {
   const createAgreementPath = () => isAdmin
@@ -28,8 +29,46 @@ export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: Agree
   }
 }
 
+export const updateAgreementInfo = async (agreementId: string, data: EditAgreementFormDataDto): Promise<AgreementRegistrationDTO> => {
 
-export const updateAgreement = async (agreementId: string, data: EditCommonInfoAgreement): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+
+  const editedAgreementDTO = getEditedAgreementWithNewInfoDTO(agreementToUpdate, data)
+
+  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(editedAgreementDTO),
+  })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
+  }
+}
+
+export const updateAgreementDescription = async (agreementId: string, data: EditCommonInfoAgreement): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await fetch(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
@@ -222,6 +261,19 @@ const getEditedAgreementDTO = (
       ...agreementToEdit.agreementData,
       text: newDescription,
     },
+  }
+}
+
+const getEditedAgreementWithNewInfoDTO = (
+  agreementToEdit: AgreementRegistrationDTO,
+  editedInfo: EditAgreementFormDataDto,
+): AgreementRegistrationDTO => {
+  return {
+    ...agreementToEdit,
+    title: editedInfo.agreementName,
+    published: editedInfo.avtaleperiodeStart,
+    expired: editedInfo.avtaleperiodeSlutt,
+    reference: editedInfo.anbudsnummer,
   }
 }
 

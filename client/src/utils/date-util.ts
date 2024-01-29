@@ -5,11 +5,11 @@ export const toDateTimeString = (date: Date): string => {
 }
 
 export const toReadableString = (date: string): string => {
-  return format(parseISO(date), 'MM.dd.yyyy')
+  return format(parseISO(date), 'dd.MM.yyyy')
 }
 
 export const toReadableDateTimeString = (date: string): string => {
-  return format(parseISO(date), "MM.dd.yyyy' , kl. 'HH:mm")
+  return format(parseISO(date), 'dd.MM.yyyy\' , kl. \'HH:mm')
 }
 
 export const toDate = (date: string): Date => {
