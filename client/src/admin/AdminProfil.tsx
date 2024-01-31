@@ -3,13 +3,13 @@ import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from '@navikt/ds
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import { useNavigate } from 'react-router-dom'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useAdminUsers, useUser } from '../utils/swr-hooks'
 import { formatPhoneNumber } from '../utils/string-util'
 
 export default function AdminProfil() {
   const navigate = useNavigate()
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { user, userError, userIsLoading } = useUser(loggedInUser)
   const { adminUsers, isLoading, error } = useAdminUsers()
 

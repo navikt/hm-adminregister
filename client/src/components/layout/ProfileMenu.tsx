@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { Alert, BodyShort, Button, Detail, VStack } from '@navikt/ds-react'
 import { Buldings3Icon, ChevronDownIcon, LeaveIcon, PersonCircleIcon, PersonIcon } from '@navikt/aksel-icons'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import { HM_REGISTER_URL } from '../../environments'
 
 const ProfileMenu = () => {
   const [error, setError] = useState<Error | null>(null)
   const [open, setOpen] = useState<boolean>(false)
-  const { loggedInUser, clearLoggedInState } = useHydratedAuthStore()
+  const { loggedInUser, clearLoggedInState } = useAuthStore()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 

@@ -3,12 +3,12 @@ import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import React from 'react'
 import { Supplier, SupplierUser } from '../../utils/supplier-util'
 import { useNavigate } from 'react-router-dom'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import { formatPhoneNumber } from '../../utils/string-util'
 
 const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: Supplier }) => {
   const navigate = useNavigate()
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const handleCreateNewSupplierUser = () => {
     navigate(`/leverandor/opprett-bruker?suppid=${supplier.id}`)
   }

@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import ProfileMenu from './ProfileMenu'
 import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from '@navikt/aksel-icons'
 import { Button, HStack, VStack } from '@navikt/ds-react'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import { useUser } from '../../utils/swr-hooks'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -40,15 +40,14 @@ export default Navbar
 
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
   const { pathname } = useLocation()
-  const { loggedInUser } = useHydratedAuthStore()
-  const { user, userError, userIsLoading } = useUser(loggedInUser)
+  const { loggedInUser } = useAuthStore()
 
   if (!menuOpen) {
     return <></>
   }
   return (
     <VStack className='menu__nav-links'>
-      {user && user.roles.includes('ROLE_ADMIN') && (
+      {loggedInUser && loggedInUser.isAdmin && (
         <>
           <Link
             to='/leverandor'

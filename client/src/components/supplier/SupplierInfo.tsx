@@ -2,13 +2,13 @@ import { Heading, VStack } from '@navikt/ds-react'
 import { ArrowUndoIcon, Buldings3Icon } from '@navikt/aksel-icons'
 import React from 'react'
 import { Supplier } from '../../utils/supplier-util'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import DefinitionList from '../definition-list/DefinitionList'
 import { formatPhoneNumber } from '../../utils/string-util'
 import { Link } from 'react-router-dom'
 
 const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   return (
     <VStack gap='8'>
       <VStack gap='6'>

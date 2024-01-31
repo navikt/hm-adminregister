@@ -1,11 +1,11 @@
 import { ComponentIcon } from '@navikt/aksel-icons'
 import { Heading, Loader } from '@navikt/ds-react'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useUser } from '../utils/swr-hooks'
 import FirstTimeUserInfoForm from '../components/forms/FirstTimeUserInfoForm'
 
 const FirstTimeAdminInfo = () => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { user, userIsLoading } = useUser(loggedInUser)
 
   if (userIsLoading) {

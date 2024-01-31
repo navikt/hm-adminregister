@@ -6,7 +6,7 @@ import { z } from 'zod'
 import useSWR from 'swr'
 import { useParams } from 'react-router-dom'
 import { newProductVariantSchema } from '../utils/zodSchema/newProduct'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../utils/store/useErrorStore'
 import { DraftVariantDTO, ProductRegistrationDTO } from '../utils/response-types'
 import { fetcherGET } from '../utils/swr-hooks'
@@ -19,7 +19,7 @@ type FormData = z.infer<typeof newProductVariantSchema>
 
 const OpprettProduktVariant = () => {
 
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useHydratedErrorStore()
   const [blurredField, setBlurredField] = useState(false)
   const [newProduct, setNewProduct] = useState<ProductRegistrationDTO | null>(null)

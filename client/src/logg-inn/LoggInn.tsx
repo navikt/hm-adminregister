@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { ComponentIcon } from '@navikt/aksel-icons'
 import { useNavigate } from 'react-router-dom'
 import { loginSchema } from '../utils/zodSchema/login'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { mapLoggedInUser } from '../utils/user-util'
 import { HM_REGISTER_URL } from '../environments'
 
@@ -24,7 +24,8 @@ export default function LoggInn() {
     email: false,
     password: false,
   })
-  const { setLoggedInUser } = useHydratedAuthStore()
+  const { setLoggedInUser } = useAuthStore()
+
   const {
     handleSubmit,
     register,
@@ -73,6 +74,7 @@ export default function LoggInn() {
         if (loggedInUserRes.ok) {
           const loggedInUser = mapLoggedInUser(await loggedInUserRes.json())
           setLoggedInUser(loggedInUser)
+
           if (loggedInUser.userName === '') {
             if (loggedInUser.isAdmin) {
               navigate('/admin/adminopplysninger')
@@ -81,6 +83,7 @@ export default function LoggInn() {
             }
           } else {
             if (loggedInUser.isAdmin) {
+              console.log('admin -> navigate to /admin/profil')
               navigate('/admin/profil')
             } else {
               navigate('/profil')

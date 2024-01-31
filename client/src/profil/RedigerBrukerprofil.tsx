@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supplierUserInfoUpdate } from '../utils/zodSchema/login'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useUser } from '../utils/swr-hooks'
 import { UserDTO } from '../utils/response-types'
 import { useHydratedErrorStore } from '../utils/store/useErrorStore'
@@ -22,7 +22,7 @@ interface BlurredFields {
 }
 
 const RedigerBrukerprofil = () => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { user, userIsLoading } = useUser(loggedInUser)
 
   if (userIsLoading) {

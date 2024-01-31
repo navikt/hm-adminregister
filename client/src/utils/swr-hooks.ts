@@ -1,22 +1,21 @@
 import {
-  AdminUserChunk, AgreementRegistrationDTO,
+  AdminUserChunk,
   AgreementsChunk,
   IsoCategoryDTO,
-  MediaDTO,
-  ProductAgreementRegistrationDTOList, ProductRegistrationDTO, ProduktvarianterForDelkontrakterDTOList,
+  ProductRegistrationDTO,
+  ProduktvarianterForDelkontrakterDTOList,
   SeriesChunk,
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
 } from './response-types'
-import { LoggedInUser } from './user-util'
 import { mapSuppliers } from './supplier-util'
 import { useHydratedErrorStore } from './store/useErrorStore'
 import { useEffect } from 'react'
-import { useHydratedAuthStore } from './store/useAuthStore'
+import { useAuthStore } from './store/useAuthStore'
 import useSWR, { Fetcher } from 'swr'
 import { HM_REGISTER_URL } from '../environments'
-
+import { LoggedInUser } from './user-util'
 
 export function baseUrl(url: string = '') {
   if (process.env.NODE_ENV === 'production') {
@@ -31,12 +30,12 @@ export function apiUrl(url: string) {
 }
 
 export class CustomError extends Error {
-  statusCode: number
+  status: number
 
   constructor(message: string, statusCode: number) {
     super(message)
     this.name = 'CustomError'
-    this.statusCode = statusCode
+    this.status = statusCode
   }
 }
 
@@ -44,14 +43,6 @@ export const fetcherMultipleUrls: Fetcher<any[], string[]> = (urls: string[]) =>
   const f = (url: string) => fetch(url).then((r) => r.json())
   return Promise.all(urls.map((url) => f(url)))
 }
-
-//Ikke i bruk enda, men skal brukes til å hente flere urls
-// const {
-//   data: media,
-//   error: mediaError,
-//   isLoading: mediaIsLoading,
-// } = useSWR<MediaDTO[]>(urlsMaybe && urlsMaybe.length > 0 ? urlsMaybe : null, fetcherMultipleUrls)
-// console.log('media?', urlsMaybe, media)
 
 export const fetcherGET: Fetcher<any, string> = (url) =>
   fetch(url, {
@@ -62,6 +53,10 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     },
   }).then((res) => {
     if (!res.ok) {
+      if (res.status === 401) {
+        window.location.href = `/logg-inn`
+        return res.json()
+      }
       return res.json().then((data) => {
         throw new CustomError(data.errorMessage || res.statusText, res.status)
       })
@@ -72,7 +67,7 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
 export function useProducts() {
   const { setGlobalError } = useHydratedErrorStore()
 
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/group`
@@ -80,11 +75,10 @@ export function useProducts() {
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     data,
@@ -95,7 +89,7 @@ export function useProducts() {
 
 export function usePagedAgreements({ page, pageSize }: { page: number, pageSize: number }) {
   const { setGlobalError } = useHydratedErrorStore()
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
@@ -103,11 +97,10 @@ export function usePagedAgreements({ page, pageSize }: { page: number, pageSize:
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     data,
@@ -133,7 +126,7 @@ export function useProductVariantsByAgreementId(agreementId: string) {
     data,
     isLoading,
     error,
-    mutate
+    mutate,
   }
 }
 
@@ -142,33 +135,12 @@ export function useProductVariantsBySeriesId(seriesId?: string) {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
 
-  const { data, error, isLoading } = useSWR<ProductRegistrationDTO[]>(seriesId ? path :  null, fetcherGET)
+  const { data, error, isLoading } = useSWR<ProductRegistrationDTO[]>(seriesId ? path : null, fetcherGET)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
-
-  return {
-    data,
-    isLoading,
-    error,
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
   }
-}
-
-export function useProductsForAgreement(agreementId: string) {
-  const { setGlobalError } = useHydratedErrorStore()
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/${agreementId}`
-
-  const { data, error, isLoading } = useSWR<ProductAgreementRegistrationDTOList>(path, fetcherGET)
-
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
 
   return {
     data,
@@ -179,7 +151,7 @@ export function useProductsForAgreement(agreementId: string) {
 
 export function useAgreements() {
   const { setGlobalError } = useHydratedErrorStore()
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations`
@@ -187,11 +159,10 @@ export function useAgreements() {
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     data,
@@ -200,21 +171,29 @@ export function useAgreements() {
   }
 }
 
-export function useUser(loggedInUser?: LoggedInUser) {
+export function useUser(loggedInUser: LoggedInUser | undefined) {
   const { setGlobalError } = useHydratedErrorStore()
   const path = loggedInUser?.isAdmin ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/` : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`
-  const { data, error, isLoading } = useSWR<UserDTO>(loggedInUser ? path + loggedInUser?.userId : null, fetcherGET)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  const {
+    data,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<UserDTO>(loggedInUser ? path + loggedInUser?.userId : null, fetcherGET, {
+    shouldRetryOnError: false,
+  })
+
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     user: data,
     userError: error,
     userIsLoading: isLoading,
+    mutateUser: mutate,
   }
 }
 
@@ -229,11 +208,10 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
     revalidateOnMount: true,
   })
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     supplier: data,
@@ -250,11 +228,10 @@ export function useSuppliers() {
   const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET)
   const suppliers = data && mapSuppliers(data)
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     suppliers,
@@ -275,36 +252,6 @@ export function useIsoCategories() {
   }
 }
 
-export function useImagesConnectedToOID(oid: string, isAdmin?: boolean) {
-  const mediaUrl = isAdmin ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/media/${oid}` : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/media/${oid}`
-
-  const { data, error, isLoading, mutate } = useSWR<MediaDTO[]>(mediaUrl, fetcherGET)
-
-  const imagesConnectedToOID: MediaDTO[] | undefined =
-    data && data.filter((file) => file.type === 'IMAGE' && file.status !== 'DELETED')
-
-  return {
-    imagesConnectedToOID,
-    isLoading,
-    error,
-    mutate,
-  }
-}
-
-export function useDocumentsConnectedToOID(isAdmin: boolean | undefined, oid: string) {
-  const mediaUrl = isAdmin ? `${HM_REGISTER_URL()}/admreg/vendor/api/v1/media/${oid}` : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/media/${oid}`
-
-  const { data: files, error, isLoading, mutate } = useSWR<MediaDTO[]>(mediaUrl, fetcherGET)
-
-  const pdfs = files && files.filter((file) => file.type === 'PDF')
-
-  return {
-    pdfs,
-    isLoading,
-    error,
-  }
-}
-
 export function useAdminUsers() {
   const { setGlobalError } = useHydratedErrorStore()
 
@@ -312,11 +259,10 @@ export function useAdminUsers() {
   const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET)
   const adminUsers: UserDTO[] | undefined = data && data.content
 
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message)
-    }
-  }, [error, setGlobalError])
+  if (error) {
+    setGlobalError(error.status, error.message)
+    throw error
+  }
 
   return {
     adminUsers,

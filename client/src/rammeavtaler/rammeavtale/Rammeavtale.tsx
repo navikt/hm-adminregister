@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
 import FileTab from './FileTab'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
 import { AgreementRegistrationDTO } from '../../utils/response-types'
 import { fetcherGET } from '../../utils/swr-hooks'
@@ -27,7 +27,7 @@ const AgreementPage = () => {
   const activeTab = searchParams.get('tab')
   const { agreementId } = useParams()
 
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useHydratedErrorStore()
   const agreementPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`

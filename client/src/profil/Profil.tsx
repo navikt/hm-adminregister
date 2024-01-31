@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { HGrid, Loader, VStack } from '@navikt/ds-react'
 import { useNavigate } from 'react-router-dom'
 import { mapSupplier, Supplier, SupplierUser } from '../utils/supplier-util'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import SupplierInfo from '../components/supplier/SupplierInfo'
 import SupplierUsers from '../components/supplier/SupplierUsers'
 import { HM_REGISTER_URL } from '../environments'
@@ -13,7 +13,7 @@ export default function Profil() {
   const [supplier, setSupplier] = useState<Supplier>()
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([])
   const [isLoading, setLoading] = useState(false)
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   useEffect(() => {
     if (loggedInUser?.isAdmin) {

@@ -12,7 +12,7 @@ import { ProductDraftWithDTO } from '../utils/response-types'
 import { labelRequired } from '../utils/string-util'
 import Combobox from '../components/Combobox'
 import { HM_REGISTER_URL } from '../environments'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 
 type FormData = z.infer<typeof createNewProductSchema>
 
@@ -29,7 +29,7 @@ export default function OpprettProdukt() {
     resolver: zodResolver(createNewProductSchema),
     mode: 'onSubmit',
   })
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   const createProductPath = () => loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draftWith`

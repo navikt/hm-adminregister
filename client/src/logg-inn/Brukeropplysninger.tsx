@@ -1,12 +1,12 @@
 import { ComponentIcon } from '@navikt/aksel-icons'
 import { Heading, Loader } from '@navikt/ds-react'
 import { useUser } from '../utils/swr-hooks'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import React from 'react'
 import FirstTimeUserInfoForm from '../components/forms/FirstTimeUserInfoForm'
 
 const FirstTimeUserInfo = () => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { user, userIsLoading } = useUser(loggedInUser)
 
   //TODO: Mulig vi må gjøre noe tilsvarende her som i ConfirmSupplierInfo med loadingen

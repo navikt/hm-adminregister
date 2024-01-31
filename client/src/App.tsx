@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
 import LoggInn from './logg-inn/LoggInn'
-import ErrorModal from './components/ErrorModal'
 import Navbar from './components/layout/Navbar'
 import Produkter from './produkter/Produkter'
 import OpprettProdukt from './produkter/OpprettProdukt'
@@ -23,15 +22,18 @@ import Brukeropplysninger from './logg-inn/Brukeropplysninger'
 import Rammeavtaler from './rammeavtaler/Rammeavtaler'
 import Rammeavtale from './rammeavtaler/rammeavtale/Rammeavtale'
 import OpprettRammeavtale from './rammeavtaler/rammeavtale/OpprettRammeavtale'
-
+import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorFallback } from './error/ErrorFallback'
+import { NotFound } from './error/NotFound'
+import { Startside } from './Startside'
 
 export function App() {
-  return (
-    <>
-      <ErrorModal />
 
+  return (
+    <FeilGrense>
       <Routes>
-        <Route path='/' element={<LoggInn />} />
+        <Route path='/' element={<Startside />} />
+        <Route path='/logg-inn' element={<LoggInn />} />
 
         <Route path='/produkter' element={<><Navbar /><Produkter /></>} />
         <Route path='/produkter/opprett' element={<><OpprettProdukt /></>} />
@@ -58,11 +60,18 @@ export function App() {
         <Route path='/rammeavtaler' element={<><Navbar /><Rammeavtaler /></>} />
         <Route path='/rammeavtaler/:agreementId' element={<><Navbar /><Rammeavtale /></>} />
         <Route path='/rammeavtaler/opprett' element={<><OpprettRammeavtale /></>} />
-
-        <Route path='/logg-inn' element={<LoggInn />} />
         <Route path='/logg-inn/leverandoropplysninger' element={<BekreftLeverandRopplysninger />} />
         <Route path='/logg-inn/brukeropplysninger' element={<Brukeropplysninger />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
-    </>
+    </FeilGrense>
+  )
+}
+
+const FeilGrense = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      {children}
+    </ErrorBoundary>
   )
 }

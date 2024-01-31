@@ -3,13 +3,13 @@ import useSWR from 'swr'
 import { useParams } from 'react-router-dom'
 import ProductVariantForm from './ProductVariantForm'
 import { ProductRegistrationDTO } from '../utils/response-types'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../utils/store/useErrorStore'
 import { fetcherGET } from '../utils/swr-hooks'
 import { HM_REGISTER_URL } from '../environments'
 
 const RedigerProduktVariant = () => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useHydratedErrorStore()
 
   const { productId } = useParams()

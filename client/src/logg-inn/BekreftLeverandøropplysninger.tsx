@@ -6,7 +6,7 @@ import { BodyShort, Button, Heading, Label, Loader, TextField } from '@navikt/ds
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useHydratedAuthStore } from '../utils/store/useAuthStore'
+import { useAuthStore } from '../utils/store/useAuthStore'
 import { useSupplier } from '../utils/swr-hooks'
 import { SupplierRegistrationDTO } from '../utils/response-types'
 import { useHydratedErrorStore } from '../utils/store/useErrorStore'
@@ -23,7 +23,7 @@ interface BlurredFields {
 }
 
 const BekreftLeverandøropplysninger = () => {
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin)
 

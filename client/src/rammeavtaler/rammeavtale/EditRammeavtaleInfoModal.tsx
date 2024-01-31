@@ -10,7 +10,7 @@ import {
 } from '../../utils/zodSchema/editAgreement'
 import { updateAgreementInfo } from '../../api/AgreementApi'
 import { AgreementRegistrationDTO } from '../../utils/response-types'
-import { useHydratedAuthStore } from '../../utils/store/useAuthStore'
+import { useAuthStore } from '../../utils/store/useAuthStore'
 import { labelRequired } from '../../utils/string-util'
 import { toDate, toDateTimeString } from '../../utils/date-util'
 
@@ -25,7 +25,7 @@ interface Props {
 const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  const { loggedInUser } = useHydratedAuthStore()
+  const { loggedInUser } = useAuthStore()
 
   const {
     handleSubmit,
