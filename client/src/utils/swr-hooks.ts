@@ -25,10 +25,6 @@ export function baseUrl(url: string = '') {
   }
 }
 
-export function apiUrl(url: string) {
-  return baseUrl(`/api${url}`)
-}
-
 export class CustomError extends Error {
   status: number
 
@@ -37,11 +33,6 @@ export class CustomError extends Error {
     this.name = 'CustomError'
     this.status = statusCode
   }
-}
-
-export const fetcherMultipleUrls: Fetcher<any[], string[]> = (urls: string[]) => {
-  const f = (url: string) => fetch(url).then((r) => r.json())
-  return Promise.all(urls.map((url) => f(url)))
 }
 
 export const fetcherGET: Fetcher<any, string> = (url) =>

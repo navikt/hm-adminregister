@@ -1,6 +1,7 @@
 import { BodyShort, Box, Button, Heading, HGrid, Link, List, Page, VStack } from '@navikt/ds-react'
+import { FallbackProps } from 'react-error-boundary'
 
-export function Error500Page() {
+export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
   return (
     <Page data-aksel-template='500-v2'>
       <Page.Block as='main' width='xl' gutters>
@@ -15,7 +16,6 @@ export function Error500Page() {
                   <Heading level='1' size='large' spacing>
                     Beklager, noe gikk galt.
                   </Heading>
-                  {/* Tekster bør tilpasses den aktuelle 500-feilen. Teksten under er for en generisk 500-feil. */}
                   <BodyShort spacing>
                     En teknisk feil på våre servere gjør at siden er
                     utilgjengelig. Dette skyldes ikke noe du gjorde.
@@ -24,34 +24,38 @@ export function Error500Page() {
                   <List>
                     <List.Item>
                       vente noen minutter og{' '}
-                      {/* Husk at POST-data går tapt når man reloader med JS. For å unngå dette kan dere
-                        fjerne lenken (men beholde teksten) slik at man må bruke nettleserens reload-knapp. */}
-                      <Link href='#' onClick={() => location.reload()}>
+                      <Link href='#' onClick={() => {
+                        location.reload()
+                        resetErrorBoundary()
+                      }}
+                      >
                         laste siden på nytt
                       </Link>
                     </List.Item>
                     <List.Item>
                       {/* Vurder å sjekke at window.history.length > 1 før dere rendrer dette som en lenke */}
-                      <Link href='#' onClick={() => history.back()}>
+                      <Link href='#' onClick={() => {
+                        history.back()
+                        resetErrorBoundary()
+                      }}>
                         gå tilbake til forrige side
                       </Link>
                     </List.Item>
                   </List>
                   <BodyShort>
-                    Hvis problemet vedvarer, kan du{' '}
-                    {/* https://nav.no/kontaktoss for eksterne flater */}
-                    <Link href='#' target='_blank'>
-                      kontakte oss (åpnes i ny fane)
-                    </Link>
-                    .
+                    Hvis problemet vedvarer, kan du sende oss en e-post {' '}
+                    <a href='mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no'>
+                      digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
+                    </a>
                   </BodyShort>
                 </div>
 
-                <BodyShort size='small' textColor='subtle'>
-                  Feil-id: 12345678-9123-4567-8912-345678912345
-                </BodyShort>
-
-                <Button>Gå til Min side</Button>
+                <Button
+                  onClick={() => {
+                    resetErrorBoundary()
+                    location.href = '/'
+                  }}>
+                  Gå til startsiden</Button>
               </VStack>
               <div>
                 <Heading level='1' size='large' spacing>
