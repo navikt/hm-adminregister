@@ -1,11 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import { useAuthStore } from './utils/store/useAuthStore'
 
-
 export const Startside = () => {
 
   const { loggedInUser } = useAuthStore()
-
 
   if (!loggedInUser) {
     return <Navigate to={'/logg-inn'} />
@@ -16,6 +14,5 @@ export const Startside = () => {
   } else {
     return <Navigate to={'/logg-inn'} />
   }
-
 
 }
