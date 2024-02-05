@@ -28,6 +28,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
     deleteProductsFromAgreement(selectedRows).then(
       () => {
         mutateDelkontrakt()
+        setSelectedRows([])
       },
     ).catch((error) => {
       setGlobalError(error.message)
