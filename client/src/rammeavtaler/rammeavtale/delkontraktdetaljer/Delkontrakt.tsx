@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response-types'
 import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
 import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
 import ConfirmModal from '../../../components/ConfirmModal'
@@ -36,13 +36,20 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
   const [updatingRank, setUpdatingRank] = useState<boolean>(false)
 
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>(undefined)
+
   const { setGlobalError } = useHydratedErrorStore()
+
+  useEffect(() => {
+    if (selectedSeriesId !== undefined) {
+      setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || [])
+    }
+  }, [produkter])
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe)
     setModalIsOpen(true)
   }
-
 
   const onConfirmDeleteDelkontrakt = () => {
 
@@ -122,7 +129,12 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         agreementId={agreementId}
         post={delkontrakt.nr}
         mutateDelkontrakter={mutateDelkontrakter} />
-      <EditProducstVariantsModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} varianter={varianter} />
+      <EditProducstVariantsModal
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+        varianter={varianter}
+        mutateDelkontrakt={mutateDelkontrakter}
+      />
 
       <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
         <ExpansionCard.Header>
@@ -172,6 +184,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
                               onClick={() => {
                                 onClickVariants(produkt.produktvarianter)
+                                setSelectedSeriesId(produkt.produktserie!!)
                               }}>
                               {produkt.produktvarianter.length}
 
@@ -179,8 +192,8 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                           </Table.DataCell>
                           <Table.DataCell>
                             {updatingRank ? (
-                                <Loader></Loader>
-                              ) : (
+                              <Loader></Loader>
+                            ) : (
                               <Select
                                 id='rangering'
                                 name='rangering'
