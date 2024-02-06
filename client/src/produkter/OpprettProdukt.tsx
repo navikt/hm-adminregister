@@ -31,7 +31,7 @@ export default function OpprettProdukt() {
   })
   const { loggedInUser } = useAuthStore()
 
-  const createProductPath = () => loggedInUser?.isAdmin
+  const createProductDraftPath = () => loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draftWith`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draftWith`
 
@@ -42,7 +42,7 @@ export default function OpprettProdukt() {
       isoCategory: data.isoCategory,
     }
 
-    const response = await fetch(createProductPath(), {
+    const response = await fetch(createProductDraftPath(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
