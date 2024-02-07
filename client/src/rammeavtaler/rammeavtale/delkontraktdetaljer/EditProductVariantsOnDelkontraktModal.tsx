@@ -39,7 +39,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
     <Modal
       open={modalIsOpen}
       header={{
-        heading: 'Produktvarianter på avtalen',
+        heading: `Produktvarianter på avtalen`,
         closeButton: false,
         size: 'small',
       }}

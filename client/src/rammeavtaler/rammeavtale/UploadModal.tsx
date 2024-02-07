@@ -13,6 +13,7 @@ interface Props {
   oid: string
   setModalIsOpen: (open: boolean) => void
   mutateAgreement: () => void
+  agreementAttachmentId?: string
 }
 
 interface Upload {
@@ -20,7 +21,7 @@ interface Upload {
   previewUrl?: string
 }
 
-const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Props) => {
+const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreementAttachmentId }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploads, setUploads] = useState<Upload[]>([])
@@ -35,6 +36,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
     for (const upload of uploads) {
       formData.append('files', upload.file)
     }
+
     let res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/media/agreement/files/${oid}`, {
       method: 'POST',
       headers: {
@@ -49,7 +51,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
       return
     }
     const mediaDTOs: MediaDTO[] = await res.json()
-    //Fetch produkt to update the latest version
+    //Fetch agreement to update the latest version
     res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
       method: 'GET',
       credentials: 'include',
@@ -68,6 +70,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
       mediaDTOs &&
       getEditedAgreementDTOAddFiles(
         agreementToUpdate,
+        agreementAttachmentId!!,
         mapToMediaInfo(
           mediaDTOs,
           uploads.map((up) => up.file),
@@ -147,7 +150,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
     <Modal
       open={modalIsOpen}
       header={{
-        heading: 'Legg til bilder',
+        heading: 'Legg til dokumenter',
         closeButton: true,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -162,11 +165,11 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Prop
             className='images-tab__upload-container'
           >
             <FileImageFillIcon className='images-tab__upload-icon' title='filillustarsjon' fontSize='4rem' />
-            <BodyShort className='images-tab__text'>Slipp bildet her eller</BodyShort>
+            <BodyShort className='images-tab__text'>Slipp dokumentet her eller</BodyShort>
             <Button
               size='small'
               variant='secondary'
-              icon={<UploadIcon title='Last opp bilde' fontSize='1.5rem' />}
+              icon={<UploadIcon title='Last opp dokument' fontSize='1.5rem' />}
               iconPosition='right'
               onClick={(event) => {
                 event.preventDefault()

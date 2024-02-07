@@ -60,10 +60,14 @@ export interface paths {
     post: operations["createProductAgreement"];
   };
   "/admreg/admin/api/v1/product-agreement/batch": {
+    put: operations["updateProductAgreements"];
     post: operations["createProductAgreements"];
   };
   "/admreg/admin/api/v1/product-agreement/excel-import": {
     post: operations["excelImport"];
+  };
+  "/admreg/admin/api/v1/product-agreement/get-by-ids": {
+    post: operations["getProductsAgreementsByIds"];
   };
   "/admreg/admin/api/v1/product-agreement/ids": {
     delete: operations["deleteProductAgreementByIds"];
@@ -236,6 +240,8 @@ export interface components {
     /** @enum {string} */
     AdminStatus: "PENDING" | "APPROVED" | "REJECTED";
     AgreementAttachment: {
+      /** Format: uuid */
+      id?: string;
       title?: string | null;
       media: components["schemas"]["MediaInfo"][];
       description?: string | null;
@@ -322,6 +328,9 @@ export interface components {
       text?: string | null;
       url?: string | null;
       bestillingsordning?: boolean | null;
+      digitalSoknad?: boolean | null;
+      pakrevdGodkjenningskurs?: components["schemas"]["PakrevdGodkjenningskurs"] | null;
+      produkttype?: components["schemas"]["Produkttype"] | null;
       tenderId?: string | null;
       hasTender?: boolean | null;
     };
@@ -489,6 +498,12 @@ export interface components {
       /** Format: int32 */
       totalPages?: number;
     };
+    PakrevdGodkjenningskurs: {
+      tittel: string;
+      isokode: string;
+      /** Format: int32 */
+      kursId: number;
+    };
     Principal: {
       name?: string;
     };
@@ -538,6 +553,8 @@ export interface components {
       sparePart: boolean;
       techData: components["schemas"]["TechData"][];
       media: components["schemas"]["MediaInfo"][];
+      identifier?: string | null;
+      seriesIdentifier?: string | null;
     };
     ProductDraftWithDTO: {
       title: string;
@@ -581,6 +598,8 @@ export interface components {
       /** Format: int64 */
       version?: number | null;
     };
+    /** @enum {string} */
+    Produkttype: "Hovedprodukt" | "Tilbehoer" | "Del";
     ProduktvarianterForDelkontrakterDTO: {
       /** Format: int32 */
       delkontraktNr: number;
@@ -734,6 +753,8 @@ export interface components {
       isocode: string;
       type: string;
       unit?: string | null;
+      /** Format: int32 */
+      sort: number;
       createdBy: string;
       updatedBy: string;
       /** Format: date-time */
@@ -750,6 +771,8 @@ export interface components {
       isoCode: string;
       type: string;
       unit?: string | null;
+      /** Format: int32 */
+      sort: number;
       isActive: boolean;
       createdBy: string;
       updatedBy: string;
@@ -1169,6 +1192,21 @@ export interface operations {
       };
     };
   };
+  updateProductAgreements: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
+      };
+    };
+    responses: {
+      /** @description updateProductAgreements 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
+        };
+      };
+    };
+  };
   createProductAgreements: {
     requestBody: {
       content: {
@@ -1203,6 +1241,21 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductAgreementImportDTO"];
+        };
+      };
+    };
+  };
+  getProductsAgreementsByIds: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description getProductsAgreementsByIds 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
         };
       };
     };

@@ -22,41 +22,58 @@ export const mapPDFfromMedia = (
 
 export const getEditedAgreementDTOAddFiles = (
   agreementToEdit: AgreementRegistrationDTO,
+  attachmentIdToEdit: string,
   files: MediaInfo[],
 ): AgreementRegistrationDTO => {
 
-  //todo: fix merging av attachments
+  const indexOfAttachmentToEdit =
+    agreementToEdit.agreementData.attachments.findIndex((attachment) => attachment.id === attachmentIdToEdit)
+  const attachmentToEdit: AgreementAttachment = {
+    ...agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit],
+  }
+
+  attachmentToEdit.media = attachmentToEdit.media.concat(files)
+
   const oldAndNewAttachments =
-    agreementToEdit.agreementData.attachments
-      .flatMap(attatchment => attatchment.media.concat(files))
+    agreementToEdit.agreementData.attachments.map((attachment) => {
+      return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment
+    })
 
   return {
     ...agreementToEdit,
     agreementData: {
       ...agreementToEdit.agreementData,
-      attachments: [{
-        ...agreementToEdit.agreementData.attachments[0],
-        media: oldAndNewAttachments,
-      }],
+      attachments: oldAndNewAttachments,
     },
   }
 }
 
 export const getEditedAgreementDTORemoveFiles = (
   agreementToEdit: AgreementRegistrationDTO,
+  attachmentIdToEdit: string,
   fileToRemoveUri: string,
 ): AgreementRegistrationDTO => {
-  const filteredFiles =
-    agreementToEdit.agreementData.attachments
-      .flatMap(attachment => attachment.media).filter((file) => file.uri !== fileToRemoveUri)
+
+
+  const indexOfAttachmentToEdit =
+    agreementToEdit.agreementData.attachments.findIndex((attachment) => attachment.id === attachmentIdToEdit)
+  const attachmentToEdit: AgreementAttachment = {
+    ...agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit],
+  }
+
+  attachmentToEdit.media = attachmentToEdit.media.filter((file) => file.uri !== fileToRemoveUri)
+
+  const oldAndNewAttachments =
+    agreementToEdit.agreementData.attachments.map((attachment) => {
+      return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment
+    })
+
   return {
     ...agreementToEdit,
     agreementData: {
       ...agreementToEdit.agreementData,
-      attachments: [{
-        ...agreementToEdit.agreementData.attachments[0],
-        media: filteredFiles,
-      }],
+      attachments: oldAndNewAttachments,
     },
   }
+
 }
