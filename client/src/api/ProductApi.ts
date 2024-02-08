@@ -1,7 +1,7 @@
-import { EditCommonInfoProduct } from '../produkter/Produkt'
-import { DraftVariantDTO, ProductRegistrationDTO } from '../utils/response-types'
-import { HM_REGISTER_URL } from '../environments'
-import { CustomError } from '../utils/swr-hooks'
+import { EditCommonInfoProduct } from 'produkter/Produkt'
+import { DraftVariantDTO, ProductRegistrationDTO } from 'utils/response-types'
+import { HM_REGISTER_URL } from 'environments'
+import { CustomError } from 'utils/swr-hooks'
 
 const registrationsDraftPath = (isAdmin: boolean, productId: string): string =>
   isAdmin

@@ -2,11 +2,11 @@ import {
   ProductAgreementRegistrationDTO,
   ProductAgreementRegistrationDTOList,
   ProductRegistrationDTO,
-} from '../utils/response-types'
-import { HM_REGISTER_URL } from '../environments'
-import { CustomError } from '../utils/swr-hooks'
+} from 'utils/response-types'
+import { HM_REGISTER_URL } from 'environments'
+import { CustomError } from 'utils/swr-hooks'
 import { v4 as uuidv4 } from 'uuid'
-import { todayTimestamp } from '../utils/date-util'
+import { todayTimestamp } from 'utils/date-util'
 
 export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
 

@@ -1,12 +1,12 @@
-import { HM_REGISTER_URL } from '../environments'
-import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } from '../utils/response-types'
-import { CustomError } from '../utils/swr-hooks'
-import { EditCommonInfoAgreement } from '../rammeavtaler/rammeavtale/Rammeavtale'
-import { todayTimestamp } from '../utils/date-util'
+import { HM_REGISTER_URL } from 'environments'
+import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } from 'utils/response-types'
+import { CustomError } from 'utils/swr-hooks'
+import { EditCommonInfoAgreement } from 'rammeavtaler/rammeavtale/Rammeavtale'
+import { todayTimestamp } from 'utils/date-util'
 import { v4 as uuidv4 } from 'uuid'
-import { NyDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal'
-import { EditDelkontraktFormData } from '../rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
-import { EditAgreementFormDataDto } from '../utils/zodSchema/editAgreement'
+import { NyDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal'
+import { EditDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
+import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
 
 
 export const updateAgreement = async (agreementId: string, updatedAgreement: AgreementRegistrationDTO): Promise<AgreementRegistrationDTO> => {
