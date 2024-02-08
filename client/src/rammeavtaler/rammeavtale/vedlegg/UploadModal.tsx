@@ -2,11 +2,11 @@ import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from '@navikt/a
 import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from '@navikt/ds-react'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
-import { AgreementRegistrationDTO, MediaDTO } from '../../utils/response-types'
-import { mapToMediaInfo } from '../../utils/product-util'
-import { getEditedAgreementDTOAddFiles } from '../../utils/agreement-util'
-import { HM_REGISTER_URL } from '../../environments'
+import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
+import { HM_REGISTER_URL } from '../../../environments'
+import { AgreementRegistrationDTO, MediaDTO } from '../../../utils/response-types'
+import { getEditedAgreementDTOAddFiles } from '../../../utils/agreement-util'
+import { mapToMediaInfo } from '../../../utils/product-util'
 
 interface Props {
   modalIsOpen: boolean

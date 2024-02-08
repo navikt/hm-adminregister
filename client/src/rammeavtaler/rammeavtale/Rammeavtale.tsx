@@ -5,7 +5,6 @@ import { CogIcon } from '@navikt/aksel-icons'
 import './agreement-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
-import FileTab from './FileTab'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../../utils/store/useAuthStore'
 import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
@@ -17,6 +16,7 @@ import { toDate, toReadableDateTimeString, toReadableString } from '../../utils/
 import StatusTagAgreement from '../../components/StatusTagAgreement'
 import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
 import EditRammeavtaleInfoModal from './EditRammeavtaleInfoModal'
+import FileTab from './vedlegg/FileTab'
 
 export type EditCommonInfoAgreement = {
   description: string

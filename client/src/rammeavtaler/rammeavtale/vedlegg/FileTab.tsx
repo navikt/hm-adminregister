@@ -1,9 +1,9 @@
 import { Alert, Button, Tabs, VStack } from '@navikt/ds-react'
 import React from 'react'
-import './agreement-page.scss'
-import { AgreementRegistrationDTO } from '../../utils/response-types'
+import './../agreement-page.scss'
 import { PlusCircleIcon } from '@navikt/aksel-icons'
 import { AttachmentGroup } from './AttachmentGroup'
+import { AgreementRegistrationDTO } from '../../../utils/response-types'
 
 interface Props {
   agreement: AgreementRegistrationDTO
