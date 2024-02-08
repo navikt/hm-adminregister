@@ -1,8 +1,8 @@
 import { Button, Checkbox, HStack, Modal, Table, VStack } from '@navikt/ds-react'
 import React, { useState } from 'react'
-import { ProductAgreementRegistrationDTOList } from '../../../utils/response-types'
-import { deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
-import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
+import { ProductAgreementRegistrationDTOList } from 'utils/response-types'
+import { deleteProductsFromAgreement } from 'api/AgreementProductApi'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 
 interface Props {
   modalIsOpen: boolean

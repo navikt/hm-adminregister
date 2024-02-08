@@ -1,7 +1,7 @@
 import './../agreement-page.scss'
 import React, { useEffect, useState } from 'react'
 import { BodyShort, Checkbox, Table, VStack } from '@navikt/ds-react'
-import { ProductRegistrationDTO } from '../../../utils/response-types'
+import { ProductRegistrationDTO } from 'utils/response-types'
 
 
 interface Props {

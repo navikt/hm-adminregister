@@ -2,16 +2,16 @@ import {
   AgreementPostDTO,
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
-} from '../../../utils/response-types'
+} from 'utils/response-types'
 import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from '@navikt/ds-react'
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
 import React, { useEffect, useState } from 'react'
 import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
 import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
 import ConfirmModal from '../../../components/ConfirmModal'
-import { changeRankOnProductAgreements, deleteProductsFromAgreement } from '../../../api/AgreementProductApi'
-import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
-import { deleteDelkontrakt } from '../../../api/AgreementApi'
+import { changeRankOnProductAgreements, deleteProductsFromAgreement } from 'api/AgreementProductApi'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
+import { deleteDelkontrakt } from 'api/AgreementApi'
 import EditProducstVariantsModal from './EditProductVariantsOnDelkontraktModal'
 
 interface Props {

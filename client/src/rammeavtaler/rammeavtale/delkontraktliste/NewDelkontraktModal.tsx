@@ -1,13 +1,13 @@
 import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from '@navikt/ds-react'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { z } from 'zod'
-import { createNewDelkontraktSchema } from '../../../utils/zodSchema/newDelkontrakt'
+import { createNewDelkontraktSchema } from 'utils/zodSchema/newDelkontrakt'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { labelRequired } from '../../../utils/string-util'
-import { Avstand } from '../../../components/Avstand'
-import { updateAgreementWithNewDelkontrakt } from '../../../api/AgreementApi'
+import { labelRequired } from 'utils/string-util'
+import { Avstand } from 'components/Avstand'
+import { updateAgreementWithNewDelkontrakt } from 'api/AgreementApi'
 
 interface Props {
   modalIsOpen: boolean

@@ -2,9 +2,9 @@ import { Alert, Button, Heading, Tabs, Textarea, VStack } from '@navikt/ds-react
 import React, { useRef, useState } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { AgreementRegistrationDTO } from '../../utils/response-types'
+import { AgreementRegistrationDTO } from 'utils/response-types'
 import { EditCommonInfoAgreement } from './Rammeavtale'
-import { labelRequired } from '../../utils/string-util'
+import { labelRequired } from 'utils/string-util'
 
 interface Props {
   agreement: AgreementRegistrationDTO

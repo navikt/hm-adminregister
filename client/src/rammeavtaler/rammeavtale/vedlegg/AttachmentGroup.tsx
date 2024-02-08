@@ -3,11 +3,11 @@ import { FilePdfIcon, MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from 
 import React, { useState } from 'react'
 import UploadModal from './UploadModal'
 import EditAttachmentGroupModal from './EditAttachmentGroupModal'
-import { AgreementAttachment, AgreementRegistrationDTO } from '../../../utils/response-types'
-import { useHydratedErrorStore } from '../../../utils/store/useErrorStore'
-import { HM_REGISTER_URL } from '../../../environments'
-import { getEditedAgreementDTORemoveFiles } from '../../../utils/agreement-util'
-import { updateAgreement } from '../../../api/AgreementApi'
+import { AgreementAttachment, AgreementRegistrationDTO } from 'utils/response-types'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
+import { HM_REGISTER_URL } from 'environments'
+import { getEditedAgreementDTORemoveFiles } from 'utils/agreement-util'
+import { updateAgreement } from 'api/AgreementApi'
 
 
 

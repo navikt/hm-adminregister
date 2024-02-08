@@ -2,17 +2,17 @@ import { Button, DatePicker, HStack, Label, Loader, Modal, TextField, useDatepic
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useHydratedErrorStore } from '../../utils/store/useErrorStore'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import {
   EditAgreementFormData,
   EditAgreementFormDataDto,
   editAgreementSchema,
-} from '../../utils/zodSchema/editAgreement'
-import { updateAgreementInfo } from '../../api/AgreementApi'
-import { AgreementRegistrationDTO } from '../../utils/response-types'
-import { useAuthStore } from '../../utils/store/useAuthStore'
-import { labelRequired } from '../../utils/string-util'
-import { toDate, toDateTimeString } from '../../utils/date-util'
+} from 'utils/zodSchema/editAgreement'
+import { updateAgreementInfo } from 'api/AgreementApi'
+import { AgreementRegistrationDTO } from 'utils/response-types'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { labelRequired } from 'utils/string-util'
+import { toDate, toDateTimeString } from 'utils/date-util'
 
 
 interface Props {
