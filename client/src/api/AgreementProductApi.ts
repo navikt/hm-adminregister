@@ -7,6 +7,7 @@ import { HM_REGISTER_URL } from 'environments'
 import { CustomError } from 'utils/swr-hooks'
 import { v4 as uuidv4 } from 'uuid'
 import { todayTimestamp } from 'utils/date-util'
+import { getAgreement } from 'api/AgreementApi'
 
 export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
 
@@ -77,23 +78,7 @@ export const changeRankOnProductAgreements = async (productAgreementIds: string[
 
 export const addProductsToAgreement = async (agreementId: string, post: number, productsToAdd: ProductRegistrationDTO[]): Promise<ProductAgreementRegistrationDTOList> => {
 
-  const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
+  const agreementToUpdate = await getAgreement(agreementId)
 
   const productAgreementsToAdd: ProductAgreementRegistrationDTO[] = []
 

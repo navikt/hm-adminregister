@@ -1,6 +1,5 @@
 import { HM_REGISTER_URL } from 'environments'
 import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } from 'utils/response-types'
-import { CustomError } from 'utils/swr-hooks'
 import { EditCommonInfoAgreement } from 'rammeavtaler/rammeavtale/Rammeavtale'
 import { todayTimestamp } from 'utils/date-util'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,7 +7,25 @@ import { NyDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktliste
 import { EditDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
 import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
 
+export const getAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
+  const response = await fetch(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
 
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
+  }
+}
 export const updateAgreement = async (agreementId: string, updatedAgreement: AgreementRegistrationDTO): Promise<AgreementRegistrationDTO> => {
   const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, {
     method: 'PUT',
@@ -50,24 +67,7 @@ export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: Agree
 
 export const updateAgreementInfo = async (agreementId: string, data: EditAgreementFormDataDto): Promise<AgreementRegistrationDTO> => {
 
-  const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
-
+  const agreementToUpdate = await getAgreement(agreementId)
   const editedAgreementDTO = getEditedAgreementWithNewInfoDTO(agreementToUpdate, data)
 
   return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO)
@@ -75,23 +75,7 @@ export const updateAgreementInfo = async (agreementId: string, data: EditAgreeme
 
 export const updateAgreementDescription = async (agreementId: string, data: EditCommonInfoAgreement): Promise<AgreementRegistrationDTO> => {
 
-  const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
+  const agreementToUpdate = await getAgreement(agreementId)
 
   const description = data.description
     ? data.description
@@ -104,23 +88,7 @@ export const updateAgreementDescription = async (agreementId: string, data: Edit
 
 export const updateAgreementWithNewDelkontrakt = async (agreementId: string, data: NyDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
-  const agreementToUpdate: AgreementRegistrationDTO = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
+  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
 
   const nyDelkontrakt: AgreementPostDTO = {
     identifier: uuidv4(),
@@ -136,25 +104,7 @@ export const updateAgreementWithNewDelkontrakt = async (agreementId: string, dat
 }
 
 export const deleteDelkontrakt = async (agreementId: string, delkontraktId: string): Promise<AgreementRegistrationDTO> => {
-
-  const agreementToUpdate: AgreementRegistrationDTO = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
-
+  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
   const updatedAgreement = getAgreeementWithoutDeletedDelkontraktDTO(agreementToUpdate, delkontraktId)
 
   return await updateAgreement(updatedAgreement.id, updatedAgreement)
@@ -162,27 +112,15 @@ export const deleteDelkontrakt = async (agreementId: string, delkontraktId: stri
 
 export const updateDelkontrakt = async (agreementId: string, delkontraktId: string, data: EditDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
-  const agreementToUpdate = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status)
-      })
-    }
-    return res.json()
-  })
+  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
 
   const delkontraktToUpdate = agreementToUpdate.agreementData.posts.find(
     (post: AgreementPostDTO) => post.identifier === delkontraktId,
   )
+
+  if (delkontraktToUpdate === undefined) {
+    return Promise.reject('Delkontrakt not found')
+  }
 
   const oppdatertDelkontrakt: AgreementPostDTO = {
     identifier: delkontraktToUpdate.identifier,

@@ -19,7 +19,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
           <>
             {agreement.agreementData.attachments.length > 0 && (
               agreement.agreementData.attachments.map((attachment, i) => (
-                <AttachmentGroup agreementId={agreement.id} mutateAgreement={mutateAgreement} attachment={attachment} />
+                <AttachmentGroup key={i} agreementId={agreement.id} mutateAgreement={mutateAgreement} attachment={attachment} />
               ))
             )}
             {agreement.agreementData.attachments.length === 0 && (

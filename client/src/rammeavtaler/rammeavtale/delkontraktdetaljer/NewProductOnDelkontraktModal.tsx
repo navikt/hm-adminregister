@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { labelRequired } from 'utils/string-util'
 import { createNewProductOnDelkontraktSchema } from 'utils/zodSchema/newProductOnDelkontrakt'
-import { getProduct } from 'api/ProductApi'
+import { getProductByHmsNr } from 'api/ProductApi'
 import { ProductRegistrationDTO } from 'utils/response-types'
 import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
 import './../agreement-page.scss'
@@ -44,7 +44,7 @@ const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelko
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
 
     if (!productToAdd || productToAdd.hmsArtNr !== data.hmsNummer) {
-      getProduct(data.hmsNummer).then(
+      getProductByHmsNr(data.hmsNummer).then(
         (product) => {
           setProductToAdd(product)
           if (product.seriesId) {
