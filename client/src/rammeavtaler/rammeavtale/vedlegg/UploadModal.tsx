@@ -13,7 +13,7 @@ interface Props {
   oid: string
   setModalIsOpen: (open: boolean) => void
   mutateAgreement: () => void
-  agreementAttachmentId?: string
+  agreementAttachmentId: string
 }
 
 interface Upload {
@@ -70,7 +70,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
       mediaDTOs &&
       getEditedAgreementDTOAddFiles(
         agreementToUpdate,
-        agreementAttachmentId!!,
+        agreementAttachmentId,
         mapToMediaInfo(
           mediaDTOs,
           uploads.map((up) => up.file),
@@ -93,6 +93,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
     mutateAgreement()
     setUploads([])
     setModalIsOpen(false)
+
   }
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {

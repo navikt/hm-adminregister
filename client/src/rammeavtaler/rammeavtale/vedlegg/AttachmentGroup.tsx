@@ -3,12 +3,10 @@ import { FilePdfIcon, MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from 
 import React, { useState } from 'react'
 import UploadModal from './UploadModal'
 import EditAttachmentGroupModal from './EditAttachmentGroupModal'
-import { AgreementAttachment, AgreementRegistrationDTO } from 'utils/response-types'
+import { AgreementAttachment } from 'utils/response-types'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
-import { HM_REGISTER_URL } from 'environments'
-import { getEditedAgreementDTORemoveFiles } from 'utils/agreement-util'
-import { updateAgreement } from 'api/AgreementApi'
-
+import { deleteAttachmentGroup, deleteFileFromAttachmentGroup } from 'api/AgreementApi'
+import ConfirmModal from 'components/ConfirmModal'
 
 
 interface Props {
@@ -20,30 +18,12 @@ interface Props {
 export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Props) => {
 
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedAgreementAttachment, setSelectedAgreementAttachment] = useState<AgreementAttachment | undefined>(undefined)
   const [editAttachmentGroupModalIsOpen, setEditAttachmentGroupModalIsOpen] = useState(false)
+  const [deleteAttachmentIsOpen, setDeleteAttachmentIsOpen] = useState(false)
 
   const { setGlobalError } = useHydratedErrorStore()
   const handleDeleteFile = async (uri: string, attachmentIdToUpdate: string) => {
-    const oid = agreementId
-    //Fetch latest version of agreement
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText)
-      return
-    }
-
-    const agreementToUpdate: AgreementRegistrationDTO = await res.json()
-    const editedAgreementDTO = getEditedAgreementDTORemoveFiles(agreementToUpdate, attachmentIdToUpdate, uri)
-
-    updateAgreement(agreementToUpdate.id, editedAgreementDTO).then(
+    deleteFileFromAttachmentGroup(agreementId, uri, attachmentIdToUpdate).then(
       () => {
         mutateAgreement()
       },
@@ -54,6 +34,17 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
     )
   }
 
+  const onConfirmDeleteDelkontrakt = () => {
+    deleteAttachmentGroup(agreementId, attachment.id!).then(() => {
+      mutateAgreement()
+    }).catch(
+      (error) => {
+        setGlobalError(error.status, error.statusText)
+      },
+    )
+    setDeleteAttachmentIsOpen(false)
+  }
+
   return (
     <>
       <UploadModal
@@ -61,7 +52,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         setModalIsOpen={setModalIsOpen}
         oid={agreementId}
         mutateAgreement={mutateAgreement}
-        agreementAttachmentId={selectedAgreementAttachment?.id}
+        agreementAttachmentId={attachment.id!}
       />
       <EditAttachmentGroupModal
         modalIsOpen={editAttachmentGroupModalIsOpen}
@@ -69,6 +60,15 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         attachment={attachment}
         setModalIsOpen={setEditAttachmentGroupModalIsOpen}
         mutateAgreement={mutateAgreement}
+      />
+      <ConfirmModal
+        title={`Slett '${attachment.title}'`}
+        text='Er du sikker på at du vil slette vedleggsgruppen?'
+        onClick={onConfirmDeleteDelkontrakt}
+        onClose={() => {
+          setDeleteAttachmentIsOpen(false)
+        }}
+        isModalOpen={deleteAttachmentIsOpen}
       />
       <ExpansionCard size='small' key={attachment.id} aria-label='default-demo'>
         <ExpansionCard.Header>
@@ -143,7 +143,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                 <Dropdown.Menu.List>
                   <Dropdown.Menu.List.Item
                     onClick={() => {
-                      //setDeleteDelkontraktIsOpen(true)
+                      setDeleteAttachmentIsOpen(true)
                     }}
                   >
                     Slett dokumentgruppe

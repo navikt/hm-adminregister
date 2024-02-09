@@ -8,6 +8,7 @@ import { editAttachmentGroupInfoSchema } from 'utils/zodSchema/editAttachmentGro
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
 import { Avstand } from 'components/Avstand'
+import { updateAgreementAttachmentGroup } from 'api/AgreementApi'
 
 
 interface Props {
@@ -36,7 +37,13 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
   async function onSubmit(data: EditAttachmentGroupFormData) {
     setIsSaving(true)
     setModalIsOpen(false)
-    //todo: implement updateAttachmentGroup
+    updateAgreementAttachmentGroup(oid, attachment.id!, data).then(() => {
+      mutateAgreement()
+    }).catch(
+      (error) => {
+        setGlobalError(error)
+      },
+    )
     setIsSaving(false)
     reset()
   }

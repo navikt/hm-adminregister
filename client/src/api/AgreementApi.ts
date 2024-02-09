@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { NyDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal'
 import { EditDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
 import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
+import { EditAttachmentGroupFormData } from 'rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal'
+import { getEditedAgreementDTORemoveFiles } from 'utils/agreement-util'
 
 export const getAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
   const response = await fetch(
@@ -65,6 +67,21 @@ export const postAgreementDraft = async (isAdmin: Boolean, agreementDraft: Agree
   }
 }
 
+export const deleteFileFromAttachmentGroup = async (agreementId: string, uri: string, attachmentIdToUpdate: string): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate = await getAgreement(agreementId)
+  const editedAgreementDTO = getEditedAgreementDTORemoveFiles(agreementToUpdate, attachmentIdToUpdate, uri)
+
+  return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO)
+}
+
+export const updateAgreementAttachmentGroup = async (agreementId: string, attachmentId: string, data: EditAttachmentGroupFormData): Promise<AgreementRegistrationDTO> => {
+
+  const agreementToUpdate = await getAgreement(agreementId)
+  const editedAgreementDTO = getEditedAgreementWithNewAttachmentGroupInfo(agreementToUpdate, attachmentId, data)
+
+  return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO)
+}
+
 export const updateAgreementInfo = async (agreementId: string, data: EditAgreementFormDataDto): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate = await getAgreement(agreementId)
@@ -110,6 +127,13 @@ export const deleteDelkontrakt = async (agreementId: string, delkontraktId: stri
   return await updateAgreement(updatedAgreement.id, updatedAgreement)
 }
 
+export const deleteAttachmentGroup = async (agreementId: string, attachmentId: string): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
+  const updatedAgreement = getAgreeementWithoutDeletedAttachmentDTO(agreementToUpdate, attachmentId)
+
+  return await updateAgreement(updatedAgreement.id, updatedAgreement)
+}
+
 export const updateDelkontrakt = async (agreementId: string, delkontraktId: string, data: EditDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
 
   const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
@@ -147,6 +171,24 @@ const getEditedAgreementDTO = (
       text: newDescription,
     },
   }
+}
+
+const getEditedAgreementWithNewAttachmentGroupInfo = (
+  agreementToEdit: AgreementRegistrationDTO,
+  attachmentId: string,
+  editedInfo: EditAttachmentGroupFormData,
+): AgreementRegistrationDTO => {
+
+  const indexOfAttachmentToUpdate = agreementToEdit.agreementData.attachments.findIndex((attachment) => attachment.id === attachmentId)
+  const attachmentToUpdate = agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate]
+  agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate] = {
+    id: attachmentToUpdate.id,
+    title: editedInfo.tittel,
+    description: editedInfo.beskrivelse,
+    media: attachmentToUpdate.media,
+  }
+
+  return agreementToEdit
 }
 
 const getEditedAgreementWithNewInfoDTO = (
@@ -207,6 +249,24 @@ const getAgreeementWithoutDeletedDelkontraktDTO = (
     agreementData: {
       ...agreementToEdit.agreementData,
       posts: updatedPosts,
+    },
+  }
+}
+
+const getAgreeementWithoutDeletedAttachmentDTO = (
+  agreementToEdit: AgreementRegistrationDTO,
+  attachmentId: string,
+): AgreementRegistrationDTO => {
+
+  const updatedAttachments =
+    agreementToEdit.agreementData.attachments.filter((attachment) => attachment.id !== attachmentId)
+
+
+  return {
+    ...agreementToEdit,
+    agreementData: {
+      ...agreementToEdit.agreementData,
+      attachments: updatedAttachments,
     },
   }
 }
