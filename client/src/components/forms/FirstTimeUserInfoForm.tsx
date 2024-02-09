@@ -4,11 +4,11 @@ import { Button, Heading, Loader, TextField } from '@navikt/ds-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { UserDTO } from '../../utils/response-types'
+import { UserDTO } from 'utils/response-types'
 import { useNavigate } from 'react-router-dom'
-import { userInfoUpdate } from '../../utils/zodSchema/login'
-import { formatPhoneNumber, labelRequired } from '../../utils/string-util'
-import { HM_REGISTER_URL } from '../../environments'
+import { userInfoUpdate } from 'utils/zodSchema/login'
+import { formatPhoneNumber, labelRequired } from 'utils/string-util'
+import { HM_REGISTER_URL } from 'environments'
 
 type FormData = z.infer<typeof userInfoUpdate>
 

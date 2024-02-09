@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { HGrid, Loader, VStack } from '@navikt/ds-react'
 
 import './supplier-profile.scss'
-import { mapSupplier, Supplier, SupplierUser } from '../utils/supplier-util'
+import { mapSupplier, Supplier, SupplierUser } from 'utils/supplier-util'
 import SupplierInfo from '../components/supplier/SupplierInfo'
 import SupplierUsers from '../components/supplier/SupplierUsers'
 import { useParams } from 'react-router-dom'
-import { HM_REGISTER_URL } from '../environments'
+import { HM_REGISTER_URL } from 'environments'
 
 const LeverandørProfil = () => {
   const [error, setError] = useState<Error | null>(null)

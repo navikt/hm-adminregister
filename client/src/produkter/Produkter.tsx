@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { Alert, Button, Heading, LinkPanel, Loader, Search } from '@navikt/ds-react'
 import './products.scss'
 import { PlusIcon } from '@navikt/aksel-icons'
-import { useProducts } from '../utils/swr-hooks'
-import { SeriesGroupDTO } from '../utils/response-types'
+import { useProducts } from 'utils/swr-hooks'
+import { SeriesGroupDTO } from 'utils/response-types'
 import { useNavigate } from 'react-router-dom'
 
 const Produkter = () => {

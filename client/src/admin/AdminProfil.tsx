@@ -3,9 +3,9 @@ import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from '@navikt/ds
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../utils/store/useAuthStore'
-import { useAdminUsers, useUser } from '../utils/swr-hooks'
-import { formatPhoneNumber } from '../utils/string-util'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useAdminUsers, useUser } from 'utils/swr-hooks'
+import { formatPhoneNumber } from 'utils/string-util'
 
 export default function AdminProfil() {
   const navigate = useNavigate()

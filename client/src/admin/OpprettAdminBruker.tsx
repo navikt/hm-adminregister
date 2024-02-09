@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { PersonIcon } from '@navikt/aksel-icons'
 import { Alert, Button, Checkbox, Heading, TextField } from '@navikt/ds-react'
-import { newAdminUserSchema } from '../utils/zodSchema/newUser'
-import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { newAdminUserSchema } from 'utils/zodSchema/newUser'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { useNavigate } from 'react-router-dom'
-import { NewAdminUserDTO } from '../utils/admin-util'
-import { labelRequired } from '../utils/string-util'
-import { HM_REGISTER_URL } from '../environments'
+import { NewAdminUserDTO } from 'utils/admin-util'
+import { labelRequired } from 'utils/string-util'
+import { HM_REGISTER_URL } from 'environments'
 
 type FormData = z.infer<typeof newAdminUserSchema>
 

@@ -3,9 +3,9 @@ import React, { useRef, useState } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { EditCommonInfoProduct } from './Produkt'
-import { IsoCategoryDTO, ProductRegistrationDTO } from '../utils/response-types'
-import { useIsoCategories } from '../utils/swr-hooks'
-import { labelRequired } from '../utils/string-util'
+import { IsoCategoryDTO, ProductRegistrationDTO } from 'utils/response-types'
+import { useIsoCategories } from 'utils/swr-hooks'
+import { labelRequired } from 'utils/string-util'
 import Combobox from '../components/Combobox'
 
 

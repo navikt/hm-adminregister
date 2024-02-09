@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { PersonIcon } from '@navikt/aksel-icons'
 import { Alert, Button, Checkbox, Heading, TextField } from '@navikt/ds-react'
-import { newSupplierUserSchema } from '../utils/zodSchema/newUser'
-import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { newSupplierUserSchema } from 'utils/zodSchema/newUser'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { SupplierUserDTO } from '../utils/supplier-util'
-import { labelRequired } from '../utils/string-util'
-import { HM_REGISTER_URL } from '../environments'
+import { SupplierUserDTO } from 'utils/supplier-util'
+import { labelRequired } from 'utils/string-util'
+import { HM_REGISTER_URL } from 'environments'
 
 type FormData = z.infer<typeof newSupplierUserSchema>
 

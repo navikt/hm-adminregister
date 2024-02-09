@@ -1,7 +1,7 @@
 import { ComponentIcon } from '@navikt/aksel-icons'
 import { Heading, Loader } from '@navikt/ds-react'
-import { useUser } from '../utils/swr-hooks'
-import { useAuthStore } from '../utils/store/useAuthStore'
+import { useUser } from 'utils/swr-hooks'
+import { useAuthStore } from 'utils/store/useAuthStore'
 import React from 'react'
 import FirstTimeUserInfoForm from '../components/forms/FirstTimeUserInfoForm'
 

@@ -1,10 +1,10 @@
 import { Heading, VStack } from '@navikt/ds-react'
 import { ArrowUndoIcon, Buldings3Icon } from '@navikt/aksel-icons'
 import React from 'react'
-import { Supplier } from '../../utils/supplier-util'
-import { useAuthStore } from '../../utils/store/useAuthStore'
+import { Supplier } from 'utils/supplier-util'
+import { useAuthStore } from 'utils/store/useAuthStore'
 import DefinitionList from '../definition-list/DefinitionList'
-import { formatPhoneNumber } from '../../utils/string-util'
+import { formatPhoneNumber } from 'utils/string-util'
 import { Link } from 'react-router-dom'
 
 const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {

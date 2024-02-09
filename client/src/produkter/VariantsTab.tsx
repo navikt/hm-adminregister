@@ -1,9 +1,9 @@
 import { PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from '@navikt/ds-react'
-import { ProductRegistrationDTO } from '../utils/response-types'
+import { ProductRegistrationDTO } from 'utils/response-types'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { isUUID, toValueAndUnit } from '../utils/string-util'
-import { getAllUniqueTechDataKeys } from '../utils/product-util'
+import { isUUID, toValueAndUnit } from 'utils/string-util'
+import { getAllUniqueTechDataKeys } from 'utils/product-util'
 
 
 const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {

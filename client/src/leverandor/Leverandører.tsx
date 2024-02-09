@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Button, Heading, LinkPanel, Loader, Search } from '@navikt/ds-react'
 import { PlusIcon } from '@navikt/aksel-icons'
-import { useSuppliers } from '../utils/swr-hooks'
+import { useSuppliers } from 'utils/swr-hooks'
 import { useNavigate } from 'react-router-dom'
-import { Supplier } from '../utils/supplier-util'
+import { Supplier } from 'utils/supplier-util'
 
 
 const Leverandører = () => {

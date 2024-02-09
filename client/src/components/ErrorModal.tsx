@@ -1,7 +1,7 @@
 import { Button, Modal } from '@navikt/ds-react'
 import './error-modal.scss'
 import { useNavigate } from 'react-router-dom'
-import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 
 const ErrorModal = () => {
   const { errorCode, errorMessage, clearError } = useHydratedErrorStore()

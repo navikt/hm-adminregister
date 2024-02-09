@@ -5,10 +5,10 @@ import { Button, Heading, Loader, TextField } from '@navikt/ds-react'
 import React, { useState } from 'react'
 import { ComponentIcon } from '@navikt/aksel-icons'
 import { useNavigate } from 'react-router-dom'
-import { loginSchema } from '../utils/zodSchema/login'
-import { useAuthStore } from '../utils/store/useAuthStore'
-import { mapLoggedInUser } from '../utils/user-util'
-import { HM_REGISTER_URL } from '../environments'
+import { loginSchema } from 'utils/zodSchema/login'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { mapLoggedInUser } from 'utils/user-util'
+import { HM_REGISTER_URL } from 'environments'
 
 type FormData = z.infer<typeof loginSchema>
 

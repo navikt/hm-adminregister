@@ -5,12 +5,12 @@ import './create-supplier.scss'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { newSupplierSchema } from '../utils/zodSchema/newSupplier'
-import { useHydratedErrorStore } from '../utils/store/useErrorStore'
+import { newSupplierSchema } from 'utils/zodSchema/newSupplier'
+import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { useNavigate } from 'react-router-dom'
-import { formatPhoneNumber, labelRequired } from '../utils/string-util'
-import { SupplierDTOBody } from '../utils/supplier-util'
-import { HM_REGISTER_URL } from '../environments'
+import { formatPhoneNumber, labelRequired } from 'utils/string-util'
+import { SupplierDTOBody } from 'utils/supplier-util'
+import { HM_REGISTER_URL } from 'environments'
 
 
 type FormData = z.infer<typeof newSupplierSchema>

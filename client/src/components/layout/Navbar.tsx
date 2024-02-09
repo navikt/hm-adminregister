@@ -3,8 +3,7 @@ import classNames from 'classnames'
 import ProfileMenu from './ProfileMenu'
 import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from '@navikt/aksel-icons'
 import { Button, HStack, VStack } from '@navikt/ds-react'
-import { useAuthStore } from '../../utils/store/useAuthStore'
-import { useUser } from '../../utils/swr-hooks'
+import { useAuthStore } from 'utils/store/useAuthStore'
 import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
