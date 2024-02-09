@@ -12,7 +12,13 @@ import { NyDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktliste
 import { EditDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal'
 import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
 import { EditAttachmentGroupFormData } from 'rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal'
-import { getEditedAgreementDTORemoveFiles } from 'utils/agreement-util'
+import {
+  getAgreeementWithNewAttachmentGroup,
+  getAgreeementWithNewDelkontraktDTO,
+  getAgreeementWithoutDeletedAttachmentDTO, getAgreeementWithoutDeletedDelkontraktDTO,
+  getAgreeementWithUpdatedDelkontraktDTO, getEditedAgreementDTO,
+  getEditedAgreementDTORemoveFiles, getEditedAgreementWithNewAttachmentGroupInfo, getEditedAgreementWithNewInfoDTO,
+} from 'utils/agreement-util'
 import { NyAttachmentGroupFormData } from 'rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal'
 
 export const getAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
@@ -181,132 +187,4 @@ export const updateDelkontrakt = async (agreementId: string, delkontraktId: stri
   return await updateAgreement(updatedAgreement.id, updatedAgreement)
 }
 
-const getEditedAgreementDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  newDescription: string,
-): AgreementRegistrationDTO => {
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      text: newDescription,
-    },
-  }
-}
-
-const getEditedAgreementWithNewAttachmentGroupInfo = (
-  agreementToEdit: AgreementRegistrationDTO,
-  attachmentId: string,
-  editedInfo: EditAttachmentGroupFormData,
-): AgreementRegistrationDTO => {
-
-  const indexOfAttachmentToUpdate = agreementToEdit.agreementData.attachments.findIndex((attachment) => attachment.id === attachmentId)
-  const attachmentToUpdate = agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate]
-  agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate] = {
-    id: attachmentToUpdate.id,
-    title: editedInfo.tittel,
-    description: editedInfo.beskrivelse,
-    media: attachmentToUpdate.media,
-  }
-
-  return agreementToEdit
-}
-
-const getEditedAgreementWithNewInfoDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  editedInfo: EditAgreementFormDataDto,
-): AgreementRegistrationDTO => {
-  return {
-    ...agreementToEdit,
-    title: editedInfo.agreementName,
-    published: editedInfo.avtaleperiodeStart,
-    expired: editedInfo.avtaleperiodeSlutt,
-    reference: editedInfo.anbudsnummer,
-  }
-}
-
-const getAgreeementWithUpdatedDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  updatedPost: AgreementPostDTO,
-): AgreementRegistrationDTO => {
-
-  const index = agreementToEdit.agreementData.posts.findIndex((post) => post.identifier === updatedPost.identifier)
-  agreementToEdit.agreementData.posts[index] = updatedPost
-
-  return {
-    ...agreementToEdit,
-  }
-}
-
-const getAgreeementWithNewDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  newPost: AgreementPostDTO,
-): AgreementRegistrationDTO => {
-
-  const updatedPosts = [
-    ...agreementToEdit.agreementData.posts, newPost,
-  ]
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      posts: updatedPosts,
-    },
-  }
-}
-
-
-const getAgreeementWithNewAttachmentGroup = (
-  agreementToEdit: AgreementRegistrationDTO,
-  newAttachment: AgreementAttachment,
-): AgreementRegistrationDTO => {
-
-  const updatedAttachments = [
-    ...agreementToEdit.agreementData.attachments, newAttachment,
-  ]
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      attachments: updatedAttachments,
-    },
-  }
-}
-const getAgreeementWithoutDeletedDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  delkontraktId: string,
-): AgreementRegistrationDTO => {
-
-  const updatedPosts =
-    agreementToEdit.agreementData.posts.filter((post) => post.identifier !== delkontraktId)
-
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      posts: updatedPosts,
-    },
-  }
-}
-
-const getAgreeementWithoutDeletedAttachmentDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  attachmentId: string,
-): AgreementRegistrationDTO => {
-
-  const updatedAttachments =
-    agreementToEdit.agreementData.attachments.filter((attachment) => attachment.id !== attachmentId)
-
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      attachments: updatedAttachments,
-    },
-  }
-}
 
