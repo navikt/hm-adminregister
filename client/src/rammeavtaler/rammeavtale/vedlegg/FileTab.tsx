@@ -1,9 +1,10 @@
 import { Alert, Button, Tabs, VStack } from '@navikt/ds-react'
-import React from 'react'
+import React, { useState } from 'react'
 import './../agreement-page.scss'
 import { PlusCircleIcon } from '@navikt/aksel-icons'
 import { AttachmentGroup } from './AttachmentGroup'
 import { AgreementRegistrationDTO } from 'utils/response-types'
+import NewAttachmentGroupModal from 'rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal'
 
 interface Props {
   agreement: AgreementRegistrationDTO
@@ -12,14 +13,23 @@ interface Props {
 
 const FileTab = ({ agreement, mutateAgreement }: Props) => {
 
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+
   return (
     <>
+      <NewAttachmentGroupModal
+        oid={agreement.id}
+        mutateAgreement={mutateAgreement}
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+      />
       <Tabs.Panel value='documents' className='tab-panel'>
         <VStack gap='8'>
           <>
             {agreement.agreementData.attachments.length > 0 && (
               agreement.agreementData.attachments.map((attachment, i) => (
-                <AttachmentGroup key={i} agreementId={agreement.id} mutateAgreement={mutateAgreement} attachment={attachment} />
+                <AttachmentGroup key={i} agreementId={agreement.id} mutateAgreement={mutateAgreement}
+                                 attachment={attachment} />
               ))
             )}
             {agreement.agreementData.attachments.length === 0 && (
@@ -36,7 +46,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
               />
             }
             onClick={() => {
-
+              setModalIsOpen(true)
             }}
           >
             Legg til dokumentgruppe

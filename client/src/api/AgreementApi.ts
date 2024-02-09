@@ -1,5 +1,10 @@
 import { HM_REGISTER_URL } from 'environments'
-import { AgreementDraftWithDTO, AgreementPostDTO, AgreementRegistrationDTO } from 'utils/response-types'
+import {
+  AgreementAttachment,
+  AgreementDraftWithDTO,
+  AgreementPostDTO,
+  AgreementRegistrationDTO,
+} from 'utils/response-types'
 import { EditCommonInfoAgreement } from 'rammeavtaler/rammeavtale/Rammeavtale'
 import { todayTimestamp } from 'utils/date-util'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,6 +13,7 @@ import { EditDelkontraktFormData } from 'rammeavtaler/rammeavtale/delkontraktdet
 import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
 import { EditAttachmentGroupFormData } from 'rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal'
 import { getEditedAgreementDTORemoveFiles } from 'utils/agreement-util'
+import { NyAttachmentGroupFormData } from 'rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal'
 
 export const getAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
   const response = await fetch(
@@ -101,6 +107,21 @@ export const updateAgreementDescription = async (agreementId: string, data: Edit
   const editedAgreementDTO = getEditedAgreementDTO(agreementToUpdate, description)
 
   return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO)
+}
+
+export const updateAgreementWithNewAttachmentGroup = async (agreementId: string, data: NyAttachmentGroupFormData): Promise<AgreementRegistrationDTO> => {
+
+  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId)
+  const nyAttachmentGroup: AgreementAttachment = {
+    id: uuidv4(),
+    title: data.tittel,
+    description: data.beskrivelse,
+    media: [],
+  }
+
+  const updatedAgreement = getAgreeementWithNewAttachmentGroup(agreementToUpdate, nyAttachmentGroup)
+
+  return await updateAgreement(updatedAgreement.id, updatedAgreement)
 }
 
 export const updateAgreementWithNewDelkontrakt = async (agreementId: string, data: NyDelkontraktFormData): Promise<AgreementRegistrationDTO> => {
@@ -235,6 +256,24 @@ const getAgreeementWithNewDelkontraktDTO = (
   }
 }
 
+
+const getAgreeementWithNewAttachmentGroup = (
+  agreementToEdit: AgreementRegistrationDTO,
+  newAttachment: AgreementAttachment,
+): AgreementRegistrationDTO => {
+
+  const updatedAttachments = [
+    ...agreementToEdit.agreementData.attachments, newAttachment,
+  ]
+
+  return {
+    ...agreementToEdit,
+    agreementData: {
+      ...agreementToEdit.agreementData,
+      attachments: updatedAttachments,
+    },
+  }
+}
 const getAgreeementWithoutDeletedDelkontraktDTO = (
   agreementToEdit: AgreementRegistrationDTO,
   delkontraktId: string,
