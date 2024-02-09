@@ -1,4 +1,4 @@
-import { IMAGE_PROXY_URL } from '../environments'
+import { IMAGE_PROXY_URL } from 'environments'
 
 export type ImageLoaderProps = {
   src: string;

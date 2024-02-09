@@ -14,7 +14,7 @@ import { useHydratedErrorStore } from './store/useErrorStore'
 import { useEffect } from 'react'
 import { useAuthStore } from './store/useAuthStore'
 import useSWR, { Fetcher } from 'swr'
-import { HM_REGISTER_URL } from '../environments'
+import { HM_REGISTER_URL } from 'environments'
 import { LoggedInUser } from './user-util'
 
 export function baseUrl(url: string = '') {

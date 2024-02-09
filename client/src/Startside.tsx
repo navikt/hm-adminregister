@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import { useAuthStore } from './utils/store/useAuthStore'
+import { useAuthStore } from 'utils/store/useAuthStore'
 
 export const Startside = () => {
 

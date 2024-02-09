@@ -23,9 +23,9 @@ import Rammeavtaler from './rammeavtaler/Rammeavtaler'
 import Rammeavtale from './rammeavtaler/rammeavtale/Rammeavtale'
 import OpprettRammeavtale from './rammeavtaler/rammeavtale/OpprettRammeavtale'
 import { ErrorBoundary } from 'react-error-boundary'
-import { ErrorFallback } from './error/ErrorFallback'
-import { NotFound } from './error/NotFound'
-import { Startside } from './Startside'
+import { ErrorFallback } from 'error/ErrorFallback'
+import { NotFound } from 'error/NotFound'
+import { Startside } from 'Startside'
 
 export function App() {
 
