@@ -7,6 +7,7 @@ import { AgreementAttachment } from 'utils/response-types'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { deleteAttachmentGroup, deleteFileFromAttachmentGroup } from 'api/AgreementApi'
 import ConfirmModal from 'components/ConfirmModal'
+import { DocumentList } from 'components/styledcomponents/DocumentList'
 
 
 interface Props {
@@ -75,11 +76,11 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
           <ExpansionCard.Title size='small'>{attachment.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: 'auto' }}>
-          <ol className='documents'>
-            <p className='beskrivelse'><b>Beskrivelse:</b></p>
-            {attachment.description && <p>{attachment.description}</p>}
+          <DocumentList>
+            <b>Beskrivelse:</b>
+            {attachment.description}
             {attachment.media.map((pdf, j) => (
-              <li className='document' key={pdf.uri}>
+              <li key={pdf.uri}>
                 <HStack gap={{ xs: '1', sm: '2', md: '3' }} align='center'>
                   <FilePdfIcon fontSize='2rem' />
                   <a href={pdf.sourceUri} target='_blank' className='document-type'>
@@ -101,7 +102,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                   }} />
               </li>
             ))}
-          </ol>
+          </DocumentList>
           <HStack>
             <Button
               className='fit-content'
@@ -116,7 +117,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                 setModalIsOpen(true)
               }}
             >
-              <span className='produkt-button'>Legg til dokumenter</span>
+              <span>Legg til dokumenter</span>
             </Button>
             <Dropdown>
               <Button

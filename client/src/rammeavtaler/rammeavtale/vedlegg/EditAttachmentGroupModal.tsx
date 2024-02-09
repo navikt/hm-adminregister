@@ -9,6 +9,7 @@ import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
 import { Avstand } from 'components/Avstand'
 import { updateAgreementAttachmentGroup } from 'api/AgreementApi'
+import Content from 'components/styledcomponents/Content'
 
 
 interface Props {
@@ -59,9 +60,7 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Modal.Body>
-          <div
-            className='delkontrakter-tab__new-delkontrakt-container'
-          >
+          <Content>
             <VStack style={{ width: '100%' }}>
               <TextField
                 {...register('tittel', { required: true })}
@@ -82,7 +81,7 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
                 error={errors?.beskrivelse?.message}
               />
             </VStack>
-          </div>
+          </Content>
           {isSaving && (
             <HStack justify='center'>
               <Loader size='2xlarge' title='venter...' />
@@ -90,7 +89,6 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
           )}
         </Modal.Body>
         <Modal.Footer>
-          <HStack gap='2'>
             <Button
               onClick={() => {
                 setModalIsOpen(false)
@@ -105,7 +103,6 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
               type='submit' variant='secondary'>
               Lagre endringer
             </Button>
-          </HStack>
         </Modal.Footer>
       </form>
     </Modal>

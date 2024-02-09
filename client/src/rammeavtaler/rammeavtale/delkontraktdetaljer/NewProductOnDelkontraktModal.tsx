@@ -9,9 +9,9 @@ import { createNewProductOnDelkontraktSchema } from 'utils/zodSchema/newProductO
 import { getProductByHmsNr } from 'api/ProductApi'
 import { ProductRegistrationDTO } from 'utils/response-types'
 import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
-import './../agreement-page.scss'
 import { addProductsToAgreement } from 'api/AgreementProductApi'
 import { useProductVariantsBySeriesId } from 'utils/swr-hooks'
+import Content from 'components/styledcomponents/Content'
 
 interface Props {
   modalIsOpen: boolean
@@ -23,7 +23,13 @@ interface Props {
 
 export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
-const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelkontrakter, agreementId, post }: Props) => {
+const NewProductOnDelkontraktModal = ({
+                                        modalIsOpen,
+                                        setModalIsOpen,
+                                        mutateDelkontrakter,
+                                        agreementId,
+                                        post,
+                                      }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
@@ -94,7 +100,7 @@ const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelko
       <form>
         <Modal.Body>
 
-          <div className='delkontrakter-tab__new-delkontrakt-container'>
+          <Content>
             <VStack gap={'2'} style={{ width: '100%' }}>
               <TextField
                 {...register('hmsNummer', { required: true })}
@@ -126,10 +132,9 @@ const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelko
                 </VStack>
               )}
             </VStack>
-          </div>
+          </Content>
         </Modal.Body>
         <Modal.Footer>
-          <HStack gap='2'>
             <Button
               onClick={() => {
                 setModalIsOpen(false)
@@ -152,7 +157,6 @@ const NewProductOnDelkontraktModal = ({ modalIsOpen, setModalIsOpen, mutateDelko
             >
               Legg til avhukede varianter
             </Button>
-          </HStack>
         </Modal.Footer>
       </form>
     </Modal>

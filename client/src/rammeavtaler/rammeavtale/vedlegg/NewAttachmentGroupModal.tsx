@@ -8,6 +8,7 @@ import { labelRequired } from 'utils/string-util'
 import { Avstand } from 'components/Avstand'
 import { updateAgreementWithNewAttachmentGroup } from 'api/AgreementApi'
 import { createNewAttachmentGroupSchema } from 'utils/zodSchema/newAttachmentGroup'
+import Content from 'components/styledcomponents/Content'
 
 interface Props {
   modalIsOpen: boolean
@@ -66,9 +67,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
     >
       <form>
         <Modal.Body>
-          <div
-            className='delkontrakter-tab__new-delkontrakt-container'
-          >
+          <Content>
             <VStack style={{ width: '100%' }}>
               <TextField
                 {...register('tittel', { required: true })}
@@ -87,7 +86,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
                 error={errors?.beskrivelse?.message}
               />
             </VStack>
-          </div>
+          </Content>
           {isSaving && (
             <HStack justify='center'>
               <Loader size='2xlarge' title='venter...' />
@@ -95,7 +94,6 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
           )}
         </Modal.Body>
         <Modal.Footer>
-          <HStack gap='2'>
             <Button
               onClick={() => {
                 setModalIsOpen(false)
@@ -118,7 +116,6 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
             >
               Legg til og fortsett
             </Button>
-          </HStack>
         </Modal.Footer>
       </form>
     </Modal>

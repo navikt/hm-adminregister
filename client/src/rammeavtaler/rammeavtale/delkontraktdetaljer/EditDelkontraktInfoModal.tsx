@@ -10,13 +10,14 @@ import { Avstand } from 'components/Avstand'
 import { updateDelkontrakt } from 'api/AgreementApi'
 import { editDelkontraktSchema } from 'utils/zodSchema/editDelkontrakt'
 import { AgreementPostDTO } from 'utils/response-types'
+import Content from 'components/styledcomponents/Content'
 
 interface Props {
   modalIsOpen: boolean
   oid: string
   delkontrakt: AgreementPostDTO
   setModalIsOpen: (open: boolean) => void
-  mutateAgreement : () => void
+  mutateAgreement: () => void
 }
 
 export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>
@@ -65,9 +66,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
     >
       <form>
         <Modal.Body>
-          <div
-            className='delkontrakter-tab__new-delkontrakt-container'
-          >
+          <Content>
             <VStack style={{ width: '100%' }}>
               <TextField
                 {...register('tittel', { required: true })}
@@ -88,7 +87,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
                 error={errors?.beskrivelse?.message}
               />
             </VStack>
-          </div>
+          </Content>
           {isSaving && (
             <HStack justify='center'>
               <Loader size='2xlarge' title='venter...' />
@@ -96,7 +95,6 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
           )}
         </Modal.Body>
         <Modal.Footer>
-          <HStack gap='2'>
             <Button
               onClick={() => {
                 setModalIsOpen(false)
@@ -112,7 +110,6 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
               type='submit' variant='secondary'>
               Lagre endringer
             </Button>
-          </HStack>
         </Modal.Footer>
       </form>
     </Modal>

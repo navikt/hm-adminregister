@@ -1,10 +1,10 @@
 import { Alert, Button, Tabs, VStack } from '@navikt/ds-react'
 import React, { useState } from 'react'
-import './../agreement-page.scss'
 import { PlusCircleIcon } from '@navikt/aksel-icons'
 import { AttachmentGroup } from './AttachmentGroup'
 import { AgreementRegistrationDTO } from 'utils/response-types'
 import NewAttachmentGroupModal from 'rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal'
+import { TabPanel } from 'components/styledcomponents/TabPanel'
 
 interface Props {
   agreement: AgreementRegistrationDTO
@@ -23,7 +23,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
       />
-      <Tabs.Panel value='documents' className='tab-panel'>
+      <TabPanel value='documents'>
         <VStack gap='5'>
           <>
             {agreement.agreementData.attachments.length > 0 && (
@@ -52,7 +52,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
             Legg til dokumentgruppe
           </Button>
         </VStack>
-      </Tabs.Panel>
+      </TabPanel>
     </>
   )
 }

@@ -1,5 +1,6 @@
 import { Button, Modal } from '@navikt/ds-react'
 import './error-modal.scss'
+import Content from 'components/styledcomponents/Content'
 
 interface Props {
   title: string
@@ -13,7 +14,6 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
 
   return (
     <Modal
-      className='error-modal'
       open={isModalOpen}
       header={{
         heading: title,
@@ -21,14 +21,18 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
       }}
       onClose={onClose}
     >
-      <Modal.Body>{text}</Modal.Body>
+      <Modal.Body>
+        <Content>
+          {text}
+        </Content>
+      </Modal.Body>
       <Modal.Footer>
 
-        <Button onClick={onClick}>
-          Slett
-        </Button>
         <Button variant='tertiary' onClick={onClose}>
           Avbryt
+        </Button>
+        <Button onClick={onClick}>
+          Slett
         </Button>
       </Modal.Footer>
     </Modal>

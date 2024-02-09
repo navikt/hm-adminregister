@@ -1,10 +1,11 @@
-import { Alert, Button, Heading, Tabs, Textarea, VStack } from '@navikt/ds-react'
+import { Alert, Button, Heading, Textarea, VStack } from '@navikt/ds-react'
 import React, { useRef, useState } from 'react'
 import { SubmitHandler, useFormContext } from 'react-hook-form'
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { AgreementRegistrationDTO } from 'utils/response-types'
 import { EditCommonInfoAgreement } from './Rammeavtale'
 import { labelRequired } from 'utils/string-util'
+import { TabPanel } from 'components/styledcomponents/TabPanel'
 
 interface Props {
   agreement: AgreementRegistrationDTO
@@ -24,7 +25,7 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
   }
 
   return (
-    <Tabs.Panel value='about' className='tab-panel'>
+    <TabPanel value='about'>
       <form method='POST' onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef} role='legg til beskrivelse'>
         <VStack gap='14'>
 
@@ -85,7 +86,7 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
           </VStack>
         </VStack>
       </form>
-    </Tabs.Panel>
+    </TabPanel>
   )
 }
 

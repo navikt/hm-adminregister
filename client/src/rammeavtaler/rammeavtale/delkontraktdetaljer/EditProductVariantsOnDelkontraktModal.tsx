@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { ProductAgreementRegistrationDTOList } from 'utils/response-types'
 import { deleteProductsFromAgreement } from 'api/AgreementProductApi'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
+import Content from 'components/styledcomponents/Content'
 
 interface Props {
   modalIsOpen: boolean
@@ -47,7 +48,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
     >
 
       <Modal.Body>
-        <div className='delkontrakter-tab__new-delkontrakt-container'>
+        <Content>
           {varianter.length > 0 && (
             <VStack gap='2' style={{ width: '100%' }}>
               <Table>
@@ -98,10 +99,9 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
               </Table>
             </VStack>
           )}
-        </div>
+        </Content>
       </Modal.Body>
       <Modal.Footer>
-        <HStack gap='2'>
           <Button
             onClick={() => {
               setModalIsOpen(false)
@@ -119,7 +119,6 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
           >
             Fjern valgte produkter
           </Button>
-        </HStack>
       </Modal.Footer>
     </Modal>
   )

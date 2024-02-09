@@ -3,16 +3,13 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
-import {
-  EditAgreementFormData,
-  EditAgreementFormDataDto,
-  editAgreementSchema,
-} from 'utils/zodSchema/editAgreement'
+import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from 'utils/zodSchema/editAgreement'
 import { updateAgreementInfo } from 'api/AgreementApi'
 import { AgreementRegistrationDTO } from 'utils/response-types'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { labelRequired } from 'utils/string-util'
 import { toDate, toDateTimeString } from 'utils/date-util'
+import Content from 'components/styledcomponents/Content'
 
 
 interface Props {
@@ -103,9 +100,7 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
     >
       <form>
         <Modal.Body>
-          <div
-            className='delkontrakter-tab__new-delkontrakt-container'
-          >
+          <Content>
             <VStack gap='5' style={{ width: '100%' }}>
               <TextField
                 {...register('agreementName', { required: true })}
@@ -117,8 +112,8 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
                 error={errors?.agreementName?.message}
               />
               <div>
-                <Label className='outer-label'>Avtaleperiode</Label>
-                <HStack gap='4' justify='space-between' style={{ marginTop: '0.5rem' }}>
+                <Label>Avtaleperiode</Label>
+                <HStack gap='4' justify='start' style={{ marginTop: '0.5rem' }}>
                   <DatePicker {...datepickerPropsAvtaleperiodeStart} >
                     <DatePicker.Input
                       {...inputPropsAvtaleperiodeStart}
@@ -149,7 +144,7 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
                 error={errors?.anbudsnummer?.message}
               />
             </VStack>
-          </div>
+          </Content>
           {isSaving && (
             <HStack justify='center'>
               <Loader size='2xlarge' title='venter...' />
@@ -157,7 +152,6 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
           )}
         </Modal.Body>
         <Modal.Footer>
-          <HStack gap='2'>
             <Button
               onClick={() => {
                 setModalIsOpen(false)
@@ -173,7 +167,6 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
               type='submit' variant='secondary'>
               Lagre endringer
             </Button>
-          </HStack>
         </Modal.Footer>
       </form>
     </Modal>

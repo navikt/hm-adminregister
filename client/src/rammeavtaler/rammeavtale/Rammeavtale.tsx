@@ -2,7 +2,6 @@ import React from 'react'
 import useSWR from 'swr'
 import { Alert, BodyShort, Button, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
 import { CogIcon } from '@navikt/aksel-icons'
-import './agreement-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -17,6 +16,7 @@ import StatusTagAgreement from '../../components/StatusTagAgreement'
 import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
 import EditRammeavtaleInfoModal from './EditRammeavtaleInfoModal'
 import FileTab from './vedlegg/FileTab'
+import { WordWrappedHeading } from 'components/styledcomponents/Heading'
 
 export type EditCommonInfoAgreement = {
   description: string
@@ -97,15 +97,17 @@ const AgreementPage = () => {
         <FormProvider {...formMethods}>
           <HGrid gap='12' columns={{ xs: 1, sm: 'minmax(16rem, 55rem) 200px' }} className='agreement-page'>
             <VStack gap={{ xs: '4', md: '8' }}>
-              <VStack gap='1'>
-                <Heading level='1' size='xlarge'>
-                  {agreement.title ?? agreement.title}
-                </Heading>
-              </VStack>
-              <VStack className='agreement-info'>
-                <p><b>Periode:</b> {toReadableString(agreement.published)} - {toReadableString(agreement.expired)}</p>
-                <p><b>Anbudsnr:</b> {agreement.reference}</p>
-              </VStack>
+              <WordWrappedHeading level='1' size='xlarge'>
+                {agreement.title ?? agreement.title}
+              </WordWrappedHeading>
+              <div>
+                <div>
+                  <b>Periode:</b> {toReadableString(agreement.published)} - {toReadableString(agreement.expired)}
+                </div>
+                <div>
+                  <b>Anbudsnr:</b> {agreement.reference}
+                </div>
+              </div>
               <Tabs defaultValue={activeTab || 'about'} onChange={updateUrlOnTabChange}>
                 <Tabs.List>
                   <Tabs.Tab value='about' label='Om avtalen' />

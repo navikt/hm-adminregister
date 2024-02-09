@@ -13,6 +13,7 @@ import { changeRankOnProductAgreements, deleteProductsFromAgreement } from 'api/
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { deleteDelkontrakt } from 'api/AgreementApi'
 import EditProducstVariantsModal from './EditProductVariantsOnDelkontraktModal'
+import { RowBoxTable } from 'components/styledcomponents/Table'
 
 interface Props {
   delkontrakt: AgreementPostDTO
@@ -142,11 +143,11 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: 'auto' }}>
           <VStack gap='3'>
-            <p className='beskrivelse'><b>Beskrivelse:</b></p>
+            <b>Beskrivelse:</b>
             {delkontrakt.description}
             {produkter.length > 0 && (
               <VStack gap='2'>
-                <Table size='small' className='delkontrakter-tab__products' style={{ borderCollapse: 'separate' }}>
+                <RowBoxTable size='small'>
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell scope='col'>Produkter</Table.HeaderCell>
@@ -236,7 +237,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                       )
                     })}
                   </Table.Body>
-                </Table>
+                </RowBoxTable>
               </VStack>
             )
             }
@@ -255,7 +256,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                   setNyttProduktModalIsOpen(true)
                 }}
               >
-                <span className='produkt-button'>Legg til Produkt</span>
+                <span>Legg til Produkt</span>
               </Button>
               <Dropdown>
                 <Button
