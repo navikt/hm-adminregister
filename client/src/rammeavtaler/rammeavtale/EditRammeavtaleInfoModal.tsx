@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from 'utils/zodSchema/editAgreement'
-import { updateAgreementInfo } from 'api/AgreementApi'
+import { deleteAgreement, updateAgreementInfo } from 'api/AgreementApi'
 import { AgreementRegistrationDTO } from 'utils/response-types'
-import { useAuthStore } from 'utils/store/useAuthStore'
 import { labelRequired } from 'utils/string-util'
 import { toDate, toDateTimeString } from 'utils/date-util'
+import ConfirmModal from 'components/ConfirmModal'
 import Content from 'components/styledcomponents/Content'
 
 
@@ -21,8 +21,6 @@ interface Props {
 
 const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false)
-
-  const { loggedInUser } = useAuthStore()
 
   const {
     handleSubmit,
@@ -98,6 +96,7 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
       }}
       onClose={() => setModalIsOpen(false)}
     >
+
       <form>
         <Modal.Body>
           <Content>
@@ -145,29 +144,32 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
               />
             </VStack>
           </Content>
-          {isSaving && (
-            <HStack justify='center'>
-              <Loader size='2xlarge' title='venter...' />
-            </HStack>
-          )}
+          {
+            isSaving && (
+              <HStack justify='center'>
+                <Loader size='2xlarge' title='venter...' />
+              </HStack>
+            )
+          }
         </Modal.Body>
         <Modal.Footer>
-            <Button
-              onClick={() => {
-                setModalIsOpen(false)
-                reset()
-              }}
-              variant='tertiary'
-              type='reset'
-            >
-              Avbryt
-            </Button>
-            <Button
-              onClick={handleSubmit(onSubmitClose)}
-              type='submit' variant='secondary'>
-              Lagre endringer
-            </Button>
+          <Button
+            onClick={() => {
+              setModalIsOpen(false)
+              reset()
+            }}
+            variant='tertiary'
+            type='reset'
+          >
+            Avbryt
+          </Button>
+          <Button
+            onClick={handleSubmit(onSubmitClose)}
+            type='submit' variant='secondary'>
+            Lagre endringer
+          </Button>
         </Modal.Footer>
+
       </form>
     </Modal>
   )

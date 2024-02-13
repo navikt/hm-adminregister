@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import useSWR from 'swr'
-import { Alert, BodyShort, Button, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
+import { Alert, BodyShort, Button, Dropdown, Heading, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
 import { CogIcon } from '@navikt/aksel-icons'
 import { FormProvider, useForm } from 'react-hook-form'
 import AboutTab from './AboutTab'
@@ -17,6 +17,7 @@ import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
 import EditRammeavtaleInfoModal from './EditRammeavtaleInfoModal'
 import FileTab from './vedlegg/FileTab'
 import { WordWrappedHeading } from 'components/styledcomponents/Heading'
+import ConfirmModal from 'components/ConfirmModal'
 
 export type EditCommonInfoAgreement = {
   description: string
@@ -35,6 +36,26 @@ const AgreementPage = () => {
 
   const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false)
 
+  const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false)
+
+  const handleSlettRammeavtale = () => {
+
+    setSlettRammeavtaleModalIsOpen(false)
+    navigate('/rammeavtaler')
+
+    //todo implement delete agreement
+
+    // deleteAgreement(agreementId!).then(() => {
+    //   setSlettRammeavtaleModalIsOpen(false)
+    //   mutateAgreement().then(() => {
+    //     navigate('/rammeavtaler')
+    //   })
+    // }).catch((error) => {
+    //   setGlobalError(error.message)
+    // })
+
+
+  }
   const navigate = useNavigate()
 
   const {
@@ -92,6 +113,13 @@ const AgreementPage = () => {
         agreement={agreement}
         setModalIsOpen={setIsEditAgreementModalOpen}
         mutateAgreement={mutateAgreement} />
+      <ConfirmModal
+        title={'Slett rammeavtale'}
+        text={`Er du sikker på at du vil slette rammeavtale ${agreement?.title}`}
+        onClick={() => handleSlettRammeavtale()}
+        onClose={() => setSlettRammeavtaleModalIsOpen(false)}
+        isModalOpen={slettRammeavtaleModalIsOpen}
+      />
 
       <main className='show-menu'>
         <FormProvider {...formMethods}>
@@ -120,17 +148,36 @@ const AgreementPage = () => {
                                   posts={agreement.agreementData.posts} />
               </Tabs>
             </VStack>
+
+
             <VStack gap={{ xs: '2', md: '4' }}>
-              <Button
-                className='fit-content'
-                variant='secondary'
-                icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}
-                onClick={
-                  () => {
-                    setIsEditAgreementModalOpen(true)
-                  }
-                }
-              />
+              <Dropdown>
+                <Button
+                  className='fit-content'
+                  variant='secondary'
+                  icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}
+                  as={Dropdown.Toggle}>
+                </Button>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.GroupedList>
+                    <Dropdown.Menu.GroupedList.Item onClick={() => {
+                      setIsEditAgreementModalOpen(true)
+                    }}>
+                      Endre rammeavtale
+                    </Dropdown.Menu.GroupedList.Item>
+                  </Dropdown.Menu.GroupedList>
+                  <Dropdown.Menu.Divider />
+                  <Dropdown.Menu.List>
+                    <Dropdown.Menu.List.Item
+                      onClick={() => {
+                        setSlettRammeavtaleModalIsOpen(true)
+                      }}
+                    >
+                      Slett rammeavtale
+                    </Dropdown.Menu.List.Item>
+                  </Dropdown.Menu.List>
+                </Dropdown.Menu>
+              </Dropdown>
               <Heading level='1' size='small'>
                 Status
               </Heading>

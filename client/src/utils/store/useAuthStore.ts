@@ -16,7 +16,6 @@ export const useAuthStore = create<AuthStore & AuthActions>()(
     (set) => ({
       loggedInUser: undefined,
       clearLoggedInState: () => {
-        console.log('clearLoggedInState')
         set({ loggedInUser: undefined })
       },
       setLoggedInUser: (loggedInUser) => set({ loggedInUser }),

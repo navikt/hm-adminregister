@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, DatePicker, Heading, HStack, Label, TextField, useDatepicker, VStack } from '@navikt/ds-react'
+import { Button, DatePicker, Heading, HStack, Label, Loader, TextField, useDatepicker, VStack } from '@navikt/ds-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import React from 'react'
+import React, { useState } from 'react'
 import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { useNavigate } from 'react-router-dom'
 import { AgreementDraftWithDTO } from 'utils/response-types'
@@ -18,6 +18,7 @@ type FormData = z.infer<typeof createNewAgreementSchema>
 export default function OpprettRammeavtale() {
   const { setGlobalError } = useHydratedErrorStore()
   const navigate = useNavigate()
+  const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
     register,
@@ -46,7 +47,7 @@ export default function OpprettRammeavtale() {
     })
 
   async function onSubmit(data: FormData) {
-
+    setIsSaving(true)
     const newAgreement: AgreementDraftWithDTO = {
       title: data.agreementName,
       reference: data.anbudsnummer,
@@ -56,13 +57,19 @@ export default function OpprettRammeavtale() {
 
     postAgreementDraft(loggedInUser?.isAdmin || false, newAgreement).then(
       (agreement) => {
+        setIsSaving(false)
         navigate(`/rammeavtaler/${agreement.id}`)
       },
     ).catch((error) => {
+      setIsSaving(false)
       setGlobalError(error.message)
     })
+
   }
 
+  if (isSubmitting) {
+    return <Loader size='3xlarge' title='Sender...'></Loader>
+  }
 
   return (
     <main>
@@ -115,7 +122,7 @@ export default function OpprettRammeavtale() {
               <Button type='reset' variant='tertiary' size='medium' onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type='submit' size='medium' disabled={isSubmitting || !isValid}>
+              <Button type='submit' size='medium' disabled={isSaving || isSubmitting || !isValid}>
                 Opprett
               </Button>
             </div>

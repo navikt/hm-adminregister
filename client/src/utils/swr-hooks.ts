@@ -84,7 +84,7 @@ export function usePagedAgreements({ page, pageSize }: { page: number, pageSize:
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}&agreementStatus=ACTIVE`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 

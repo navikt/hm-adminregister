@@ -5,6 +5,7 @@ export const Startside = () => {
 
   const { loggedInUser } = useAuthStore()
 
+
   if (!loggedInUser) {
     return <Navigate to={'/logg-inn'} />
   } else if (loggedInUser?.isAdmin) {

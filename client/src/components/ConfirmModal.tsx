@@ -31,7 +31,7 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
         <Button variant='tertiary' onClick={onClose}>
           Avbryt
         </Button>
-        <Button onClick={onClick}>
+        <Button onClick={onClick} variant='danger'>
           Slett
         </Button>
       </Modal.Footer>

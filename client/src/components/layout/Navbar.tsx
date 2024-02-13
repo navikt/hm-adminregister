@@ -8,7 +8,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
-
   return (
     <nav className={classNames('menu', { open: menuOpen })}>
       <div className='menu__logo'>Finn Hjelpemiddel (admin)</div>
