@@ -60,7 +60,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
     <Modal
       open={modalIsOpen}
       header={{
-        heading: 'Legg til delkontrakt',
+        heading: 'Legg til dokumentgruppe',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
