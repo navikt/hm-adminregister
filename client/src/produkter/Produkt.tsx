@@ -18,6 +18,7 @@ import { fetcherGET } from 'utils/swr-hooks'
 import StatusTag from '../components/StatusTag'
 import { HM_REGISTER_URL } from 'environments'
 import { sendTilGodkjenning, updateProduct } from 'api/ProductApi'
+import StatusPanel from 'produkter/StatusPanel'
 
 export type EditCommonInfoProduct = {
   description: string
@@ -144,10 +145,7 @@ const ProductPage = () => {
                                onClick={onSendTilGodkjenning}
               />
             }
-            <Heading level="1" size="medium">
-              Status
-            </Heading>
-            <StatusTag isPending={isPending} isDraft={isDraft} />
+            <StatusPanel product={products[0]} />
           </VStack>
         </HGrid>
       </FormProvider>
