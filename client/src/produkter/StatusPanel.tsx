@@ -18,20 +18,18 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
 
   const isDraft = product.draftStatus === 'DRAFT'
   const isPending = product.adminStatus === 'PENDING'
+  const sendtTilGodkjenning = (!isDraft && isPending)
+  const publisert = (!isDraft && product.adminStatus === 'APPROVED')
 
   return (
     <VStack gap="4">
       <Heading level="1" size="medium">
         Status
       </Heading>
+
       <StatusTag isPending={isPending} isDraft={isDraft} />
 
-      <Box>
-        <BodyLong size="small" weight="semibold">Endret</BodyLong>
-        <BodyLong size="small">{toReadableDateTimeString(product.updated)}</BodyLong>
-      </Box>
-
-      {isAdmin ? (
+      {isAdmin && (
         <VStack gap="2" align="start">
           <Textarea
             label={'Melding til leverandør'}
@@ -45,22 +43,43 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
             Send melding
           </Button>
         </VStack>
-      ) : (
+      )}
+
+      {!isAdmin && product.message && (
         <Box>
           <BodyLong size="small" weight="semibold">Melding til leverandør</BodyLong>
           <BodyLong size="small">{product.message}</BodyLong>
         </Box>
       )}
-      <Box>
-        <BodyLong size="small" weight="semibold">Sendt til godkjenning</BodyLong>
-        <BodyLong size="small">Dato her</BodyLong>
-      </Box>
-      <Box>
-        <BodyLong size="small" weight="semibold">Opprettet</BodyLong>
-        <BodyLong size="small">{toReadableDateTimeString(product.created)}</BodyLong>
-      </Box>
+
+      {publisert && product.published && (
+        <StatusBox title="Publisert" date={product.published} />
+      )}
+
+      {publisert && product.published && (
+        <StatusBox title="Endringer publisert" date={product.published} />
+      )}
+      
+      {sendtTilGodkjenning && (
+        <StatusBox title="Sendt til godkjenning" date={product.created} />
+      )}
+
+      <StatusBox title="Endret" date={product.updated} />
+
+      <StatusBox title="Opprettet" date={product.created} />
     </VStack>
   )
 }
 
+const StatusBox = ({ title, date }: {
+  title: string,
+  date: string
+}) => {
+  return (
+    <Box>
+      <BodyLong size="small" weight="semibold">{title}</BodyLong>
+      <BodyLong size="small">{toReadableDateTimeString(date)}</BodyLong>
+    </Box>
+  )
+}
 export default StatusPanel
