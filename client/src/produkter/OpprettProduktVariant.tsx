@@ -13,7 +13,7 @@ import { fetcherGET } from 'utils/swr-hooks'
 import { isUUID, labelRequired } from 'utils/string-util'
 import ProductVariantForm from './ProductVariantForm'
 import { HM_REGISTER_URL } from 'environments'
-import { draftProductVariant, registrationsUpdatePath, updateProductVariant } from 'api/ProductApi'
+import { draftProductVariant, registrationsPath, updateProductVariant } from 'api/ProductApi'
 
 type FormData = z.infer<typeof newProductVariantSchema>
 
@@ -118,7 +118,7 @@ const OpprettProduktVariant = () => {
           {newProduct && (
             <ProductVariantForm
               product={newProduct}
-              registrationPath={registrationsUpdatePath(loggedInUser?.isAdmin || false, newProduct.id)}
+              registrationPath={registrationsPath(loggedInUser?.isAdmin || false, newProduct.id)}
               mutate={mutate}
               firstTime={true}
             />

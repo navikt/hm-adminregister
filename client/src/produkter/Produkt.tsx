@@ -17,7 +17,7 @@ import { IsoCategoryDTO, ProductRegistrationDTO } from 'utils/response-types'
 import { fetcherGET } from 'utils/swr-hooks'
 import StatusTag from '../components/StatusTag'
 import { HM_REGISTER_URL } from 'environments'
-import { updateProduct } from 'api/ProductApi'
+import { sendTilGodkjenning, updateProduct } from 'api/ProductApi'
 
 export type EditCommonInfoProduct = {
   description: string
@@ -72,6 +72,13 @@ const ProductPage = () => {
     })
   }
 
+  async function onSendTilGodkjenning() {
+    sendTilGodkjenning(products!![0].id).then(
+      () => mutateProducts(),
+    ).catch((error) => {
+      setGlobalError(error.status, error.message)
+    })
+  }
 
   if (error) {
     return (
@@ -125,8 +132,18 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: '2', md: '4' }}>
-            <PublishButton isAdmin={loggedInUser?.isAdmin || false} isPending={isPending}
-                           isDraft={isDraft} />
+            {loggedInUser?.isAdmin
+              ? <PublishButton isAdmin={true}
+                               isPending={isPending}
+                               isDraft={isDraft}
+                               onClick={onSendTilGodkjenning}
+              />
+              : <PublishButton isAdmin={false}
+                               isPending={isPending}
+                               isDraft={isDraft}
+                               onClick={onSendTilGodkjenning}
+              />
+            }
             <Heading level="1" size="medium">
               Status
             </Heading>
@@ -139,10 +156,15 @@ const ProductPage = () => {
 }
 export default ProductPage
 
-const PublishButton = ({ isAdmin, isPending, isDraft }: { isAdmin: boolean; isPending: boolean; isDraft: boolean }) => {
+const PublishButton = ({ isAdmin, isPending, isDraft, onClick }: {
+  isAdmin: boolean;
+  isPending: boolean;
+  isDraft: boolean,
+  onClick: any
+}) => {
   if (isDraft) {
     return (
-      <Button style={{ marginTop: '20px' }} disabled={isAdmin}>
+      <Button style={{ marginTop: '20px' }} disabled={isAdmin} onClick={onClick}>
         Send til godkjenning
       </Button>
     )

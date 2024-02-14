@@ -8,7 +8,7 @@ const registrationsDraftPath = (isAdmin: boolean, productId: string): string =>
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`
 
-export const registrationsUpdatePath = (isAdmin: boolean, productId: string) =>
+export const registrationsPath = (isAdmin: boolean, productId: string) =>
   isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/${productId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`
@@ -84,7 +84,7 @@ export const updateProduct = async (productId: string, commonInfoProduct: EditCo
 
 export const updateProductVariant = async (isAdmin: boolean, updatedProduct: ProductRegistrationDTO): Promise<ProductRegistrationDTO> => {
 
-  const response = await fetch(registrationsUpdatePath(isAdmin, updatedProduct.id), {
+  const response = await fetch(registrationsPath(isAdmin, updatedProduct.id), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -136,5 +136,46 @@ const getEditedProductDTO = (
         text: newDescription,
       },
     },
+  }
+}
+
+export const sendTilGodkjenning = async (productId: string): Promise<ProductRegistrationDTO> => {
+
+  const productToEdit: ProductRegistrationDTO = await fetch(registrationsPath(false, productId),
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  ).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new CustomError(data.errorMessage || res.statusText, res.status)
+      })
+    }
+    return res.json()
+  })
+
+  const editedProductDTO: ProductRegistrationDTO = {
+    ...productToEdit,
+    draftStatus: 'DONE',
+  }
+
+  const response = await fetch(registrationsPath(false, productId), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(editedProductDTO),
+  })
+
+  if (response.ok) {
+    return await response.json()
+  } else {
+    const error = await response.json()
+    return Promise.reject(error)
   }
 }
