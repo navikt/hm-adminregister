@@ -145,7 +145,7 @@ const ProductPage = () => {
                                onClick={onSendTilGodkjenning}
               />
             }
-            <StatusPanel product={products[0]} />
+            <StatusPanel product={products[0]} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>
         </HGrid>
       </FormProvider>
