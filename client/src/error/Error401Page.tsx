@@ -40,7 +40,7 @@ export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                 </BodyShort>
                 <BodyShort>
                   <Link target='_blank' href='mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no'>
-                    Contact us (opens in new tab)
+                    Contact us by mail
                   </Link>{''}
                   if the problem persists.
                 </BodyShort>

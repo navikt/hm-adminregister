@@ -66,9 +66,8 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                   refresh this page or try again in a few minutes.{' '}
                 </BodyShort>
                 <BodyShort>
-                  {/* https://www.nav.no/kontaktoss/en for eksterne flater */}
-                  <Link target='_blank' href='#'>
-                    Contact us (opens in new tab)
+                  <Link target='_blank' href='mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no'>
+                    Contact us by mail
                   </Link>{' '}
                   if the problem persists.
                 </BodyShort>
