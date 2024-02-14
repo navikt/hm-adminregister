@@ -82,9 +82,7 @@ export function usePagedAgreements({ page, pageSize }: { page: number, pageSize:
   const { setGlobalError } = useHydratedErrorStore()
   const { loggedInUser } = useAuthStore()
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations?page=${page}&size=${pageSize}&agreementStatus=ACTIVE`
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}&excludedAgreementStatus=DELETED`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 
@@ -144,9 +142,7 @@ export function useAgreements() {
   const { setGlobalError } = useHydratedErrorStore()
   const { loggedInUser } = useAuthStore()
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations`
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?excludedAgreementStatus=DELETED`
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET)
 

@@ -10,7 +10,7 @@ import { useHydratedErrorStore } from 'utils/store/useErrorStore'
 import { AgreementRegistrationDTO } from 'utils/response-types'
 import { fetcherGET } from 'utils/swr-hooks'
 import { HM_REGISTER_URL } from 'environments'
-import { updateAgreementDescription } from 'api/AgreementApi'
+import { deleteAgreement, updateAgreementDescription } from 'api/AgreementApi'
 import { toDate, toReadableDateTimeString, toReadableString } from 'utils/date-util'
 import StatusTagAgreement from '../../components/StatusTagAgreement'
 import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
@@ -34,6 +34,13 @@ const AgreementPage = () => {
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`
 
+  const {
+    data: agreement,
+    error,
+    isLoading,
+    mutate: mutateAgreement,
+  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET)
+
   const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false)
 
   const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false)
@@ -43,27 +50,18 @@ const AgreementPage = () => {
     setSlettRammeavtaleModalIsOpen(false)
     navigate('/rammeavtaler')
 
-    //todo implement delete agreement
-
-    // deleteAgreement(agreementId!).then(() => {
-    //   setSlettRammeavtaleModalIsOpen(false)
-    //   mutateAgreement().then(() => {
-    //     navigate('/rammeavtaler')
-    //   })
-    // }).catch((error) => {
-    //   setGlobalError(error.message)
-    // })
+    deleteAgreement(agreementId!).then(() => {
+      setSlettRammeavtaleModalIsOpen(false)
+      mutateAgreement().then(() => {
+        navigate('/rammeavtaler')
+      })
+    }).catch((error) => {
+      setGlobalError(error.message)
+    })
 
 
   }
   const navigate = useNavigate()
-
-  const {
-    data: agreement,
-    error,
-    isLoading,
-    mutate: mutateAgreement,
-  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET)
 
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`)
@@ -115,7 +113,7 @@ const AgreementPage = () => {
         mutateAgreement={mutateAgreement} />
       <ConfirmModal
         title={'Slett rammeavtale'}
-        text={`Er du sikker på at du vil slette rammeavtale ${agreement?.title}`}
+        text={`Er du sikker på at du vil slette rammeavtale "${agreement?.title}"`}
         onClick={() => handleSlettRammeavtale()}
         onClose={() => setSlettRammeavtaleModalIsOpen(false)}
         isModalOpen={slettRammeavtaleModalIsOpen}
