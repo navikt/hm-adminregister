@@ -125,16 +125,12 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: '2', md: '4' }}>
-            <Heading level='1' size='medium'>
+            <PublishButton isAdmin={loggedInUser?.isAdmin || false} isPending={isPending}
+                           isDraft={isDraft} />
+            <Heading level="1" size="medium">
               Status
             </Heading>
             <StatusTag isPending={isPending} isDraft={isDraft} />
-            <PublishButton isAdmin={loggedInUser?.isAdmin || false} isPending={isPending}
-                           isDraft={isDraft} />
-            <Button variant='secondary' disabled={isDraft}
-                    icon={<EyeClosedIcon aria-hidden fontSize={'1.5rem'} />}>
-              Avpubliser
-            </Button>
           </VStack>
         </HGrid>
       </FormProvider>
