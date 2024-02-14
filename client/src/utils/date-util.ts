@@ -9,7 +9,7 @@ export const toReadableString = (date: string): string => {
 }
 
 export const toReadableDateTimeString = (date: string): string => {
-  return format(parseISO(date), 'dd.MM.yyyy\' , kl. \'HH:mm')
+  return format(parseISO(date), 'dd.MM.yyyy\', kl. \'HH:mm')
 }
 
 export const toDate = (date: string): Date => {
