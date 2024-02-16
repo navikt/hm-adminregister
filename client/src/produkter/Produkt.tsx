@@ -66,8 +66,7 @@ const ProductPage = () => {
 
   async function onSubmit(data: EditCommonInfoProduct) {
     updateProduct(products!![0].id, data).then(
-      (product) =>
-        mutateProducts(),
+      () => mutateProducts(),
     ).catch((error) => {
       setGlobalError(error.status, error.message)
     })
@@ -127,10 +126,13 @@ const ProductPage = () => {
               <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.</BodyLong>
           </Modal.Body>
           <Modal.Footer>
-            <Button>Send til godkjenning</Button>
-            <Button variant="secondary">Avbryt</Button>
+            <Button onClick={() => {
+              onSendTilGodkjenning().then(() => setModalIsOpen(false))
+            }}>Send til godkjenning</Button>
+            <Button variant="secondary" onClick={() => setModalIsOpen(false)}>Avbryt</Button>
           </Modal.Footer>
         </Modal>
+
         <HGrid gap='12' columns={{ xs: 1, sm: 'minmax(16rem, 55rem) 200px' }} className='product-page'>
           <VStack gap={{ xs: '4', md: '8' }}>
             <VStack gap='1'>
