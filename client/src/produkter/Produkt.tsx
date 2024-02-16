@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import useSWR from 'swr'
 
-import { Alert, Button, Heading, HGrid, Label, Loader, Tabs, VStack } from '@navikt/ds-react'
+import { Alert, BodyLong, Button, Heading, HGrid, Label, Loader, Modal, Tabs, VStack } from '@navikt/ds-react'
 
 import './product-page.scss'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { fetcherGET } from 'utils/swr-hooks'
 import { HM_REGISTER_URL } from 'environments'
 import { sendTilGodkjenning, updateProduct } from 'api/ProductApi'
 import StatusPanel from 'produkter/StatusPanel'
+import { RocketIcon } from '@navikt/aksel-icons'
 
 export type EditCommonInfoProduct = {
   description: string
@@ -26,6 +27,7 @@ export type EditCommonInfoProduct = {
 const ProductPage = () => {
   const [searchParams] = useSearchParams()
   const { pathname } = useLocation()
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const activeTab = searchParams.get('tab')
 
   const { seriesId } = useParams()
@@ -109,6 +111,26 @@ const ProductPage = () => {
   return (
     <main className='show-menu'>
       <FormProvider {...formMethods}>
+        <Modal
+          open={modalIsOpen}
+          header={{ icon: <RocketIcon aria-hidden />, heading: 'Klar for godkjenning?' }}
+          onClose={() => setModalIsOpen(false)}
+        >
+          <Modal.Body>
+            <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
+            <ul>
+              <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
+              <li>tekniske data er korrekte.</li>
+              <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
+            </ul>
+            <BodyLong>
+              <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.</BodyLong>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button>Send til godkjenning</Button>
+            <Button variant="secondary">Avbryt</Button>
+          </Modal.Footer>
+        </Modal>
         <HGrid gap='12' columns={{ xs: 1, sm: 'minmax(16rem, 55rem) 200px' }} className='product-page'>
           <VStack gap={{ xs: '4', md: '8' }}>
             <VStack gap='1'>
@@ -140,7 +162,7 @@ const ProductPage = () => {
               : <PublishButton isAdmin={false}
                                isPending={isPending}
                                isDraft={isDraft}
-                               onClick={onSendTilGodkjenning}
+                               onClick={() => setModalIsOpen(true)}
               />
             }
             <StatusPanel product={products[0]} isAdmin={loggedInUser?.isAdmin || false} />
