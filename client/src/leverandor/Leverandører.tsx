@@ -69,12 +69,6 @@ const Leverandører = () => {
                 <LinkPanel
                   as={Link}
                   to={`/leverandor/${supplier.id}`}
-                  onClick={() => navigate(`/leverandor/${supplier.id}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      navigate(`/leverandor/${supplier.id}`)
-                    }
-                  }}
                   border
                   className='panel-list__name-panel'
                   key={i}
