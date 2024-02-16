@@ -3,7 +3,7 @@ import { Alert, Button, Heading, LinkPanel, Loader, Pagination, Search } from '@
 import { PlusIcon } from '@navikt/aksel-icons'
 import { useAgreements, usePagedAgreements } from 'utils/swr-hooks'
 import { AgreementGroupDto } from 'utils/response-types'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Rammeavtaler = () => {
   const [pageState, setPageState] = useState(1)
@@ -93,12 +93,8 @@ const Rammeavtaler = () => {
               {data?.content &&
                 data?.content.map((rammeavtale, i) => (
                   <LinkPanel
-                    onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        navigate(`/rammeavtaler/${rammeavtale.id}`)
-                      }
-                    }}
+                    as={Link}
+                    to={`/rammeavtaler/${rammeavtale.id}`}
                     className='panel-list__name-panel'
                     key={i}
                   >

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Heading, LinkPanel, Loader, Search } from '@navikt/ds-react'
 import { PlusIcon } from '@navikt/aksel-icons'
 import { useSuppliers } from 'utils/swr-hooks'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Supplier } from 'utils/supplier-util'
 
 
@@ -67,6 +67,8 @@ const Leverandører = () => {
             {renderData &&
               renderData.map((supplier, i) => (
                 <LinkPanel
+                  as={Link}
+                  to={`/leverandor/${supplier.id}`}
                   onClick={() => navigate(`/leverandor/${supplier.id}`)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') {

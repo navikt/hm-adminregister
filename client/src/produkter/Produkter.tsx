@@ -4,7 +4,7 @@ import './products.scss'
 import { PlusIcon } from '@navikt/aksel-icons'
 import { useProducts } from 'utils/swr-hooks'
 import { SeriesGroupDTO } from 'utils/response-types'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Produkter = () => {
   const { data, isLoading } = useProducts()
@@ -69,12 +69,8 @@ const Produkter = () => {
               {renderData &&
                 renderData.map((product, i) => (
                   <LinkPanel
-                    onClick={() => navigate(`/produkter/${product.seriesId}`)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        navigate(`/produkter/${product.seriesId}`)
-                      }
-                    }}
+                    as={Link}
+                    to={`/produkter/${product.seriesId}`}
                     className='panel-list__name-panel'
                     key={i}
                   >
