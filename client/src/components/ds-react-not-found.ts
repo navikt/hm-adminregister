@@ -1,1 +1,1 @@
-export { BodyShort, Heading } from '@navikt/ds-react'
+export { BodyShort, Heading } from "@navikt/ds-react";

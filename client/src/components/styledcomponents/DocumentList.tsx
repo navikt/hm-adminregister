@@ -1,5 +1,4 @@
-import styled from 'styled-components'
-
+import styled from "styled-components";
 
 export const DocumentList = styled.ol`
   list-style: none;
@@ -13,11 +12,9 @@ export const DocumentList = styled.ol`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
     background-color: #ffffff;
     box-shadow: var(--a-shadow-xsmall);
     border-radius: var(--a-border-radius-medium);
-
-
   }
-`
+`;

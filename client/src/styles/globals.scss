@@ -1,12 +1,12 @@
-@use './_mixins';
+@use "./_mixins";
 
-@import '@navikt/ds-css';
-@import '@navikt/ds-tokens/dist/tokens';
-@import 'overwrite-aksel';
-@import 'auth-pages';
-@import 'menu';
-@import 'not-found';
-@import 'variables';
+@import "@navikt/ds-css";
+@import "@navikt/ds-tokens/dist/tokens";
+@import "overwrite-aksel";
+@import "auth-pages";
+@import "menu";
+@import "not-found";
+@import "variables";
 
 html,
 body {
@@ -254,4 +254,3 @@ main:not(.show-menu) {
     }
   }
 }
-

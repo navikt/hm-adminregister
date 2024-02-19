@@ -1,73 +1,73 @@
-import React, { useState } from 'react'
-import classNames from 'classnames'
-import ProfileMenu from './ProfileMenu'
-import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from '@navikt/aksel-icons'
-import { Button, HStack, VStack } from '@navikt/ds-react'
-import { useAuthStore } from 'utils/store/useAuthStore'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useState } from "react";
+import classNames from "classnames";
+import ProfileMenu from "./ProfileMenu";
+import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from "@navikt/aksel-icons";
+import { Button, HStack, VStack } from "@navikt/ds-react";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <nav className={classNames('menu', { open: menuOpen })}>
-      <div className='menu__logo'>Finn Hjelpemiddel (admin)</div>
+    <nav className={classNames("menu", { open: menuOpen })}>
+      <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
       <Button
-        className='menu__burgermenu-button'
+        className="menu__burgermenu-button"
         icon={
           menuOpen ? (
-            <XMarkIcon title='Lukk menyen' />
+            <XMarkIcon title="Lukk menyen" />
           ) : (
-            <MenuHamburgerIcon title='Åpne menyen' style={{ color: '#272a3a' }} />
+            <MenuHamburgerIcon title="Åpne menyen" style={{ color: "#272a3a" }} />
           )
         }
-        variant='tertiary'
+        variant="tertiary"
         onClick={() => setMenuOpen(!menuOpen)}
       />
-      <VStack gap='32' className='menu__desktop'>
+      <VStack gap="32" className="menu__desktop">
         <NavigationLinks menuOpen={true} />
         <ProfileMenu />
       </VStack>
-      <div className={classNames('menu__mobile', { open: menuOpen })}>
+      <div className={classNames("menu__mobile", { open: menuOpen })}>
         <NavigationLinks menuOpen={menuOpen} />
         {menuOpen && <ProfileMenu />}
       </div>
     </nav>
-  )
-}
-export default Navbar
+  );
+};
+export default Navbar;
 
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
-  const { pathname } = useLocation()
-  const { loggedInUser } = useAuthStore()
+  const { pathname } = useLocation();
+  const { loggedInUser } = useAuthStore();
 
   if (!menuOpen) {
-    return <></>
+    return <></>;
   }
   return (
-    <VStack className='menu__nav-links'>
+    <VStack className="menu__nav-links">
       {loggedInUser && loggedInUser.isAdmin && (
         <>
           <Link
-            to='/leverandor'
-            className={classNames('page-link', { 'page-link--active': pathname === '/leverandor' })}
-            aria-selected={pathname === '/leverandor'}
+            to="/leverandor"
+            className={classNames("page-link", { "page-link--active": pathname === "/leverandor" })}
+            aria-selected={pathname === "/leverandor"}
           >
-            {pathname === '/leverandor' && <div className='active' />}
-            <div className='line' />
-            <HStack gap='4' style={{ paddingLeft: '16px' }}>
-              <Buldings3Icon fontSize={'1.5rem'} />
+            {pathname === "/leverandor" && <div className="active" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <Buldings3Icon fontSize={"1.5rem"} />
               <span>Leverandører</span>
             </HStack>
           </Link>
           <Link
-            to='/rammeavtaler'
-            className={classNames('page-link', { 'page-link--active': pathname === '/rammeavtaler' })}
-            aria-selected={pathname === '/rammeavtaler'}
+            to="/rammeavtaler"
+            className={classNames("page-link", { "page-link--active": pathname === "/rammeavtaler" })}
+            aria-selected={pathname === "/rammeavtaler"}
           >
-            {pathname === '/rammeavtaler' && <div className='active' />}
-            <div className='line' />
-            <HStack gap='4' style={{ paddingLeft: '16px' }}>
-              <PencilLineIcon title='a11y-title' fontSize='1.5rem' />
+            {pathname === "/rammeavtaler" && <div className="active" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <PencilLineIcon title="a11y-title" fontSize="1.5rem" />
               <span>Rammeavtaler</span>
             </HStack>
           </Link>
@@ -75,14 +75,14 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
       )}
 
       <Link
-        to='/produkter'
-        className={classNames('page-link', { 'page-link--active': pathname === '/produkter' })}
-        aria-selected={pathname === '/produkter'}
+        to="/produkter"
+        className={classNames("page-link", { "page-link--active": pathname === "/produkter" })}
+        aria-selected={pathname === "/produkter"}
       >
-        {pathname === '/produkter' && <div className='active' />}
-        <div className='line' />
-        <HStack gap='4' style={{ paddingLeft: '16px' }}>
-          <PackageFillIcon fontSize={'1.5rem'} />
+        {pathname === "/produkter" && <div className="active" />}
+        <div className="line" />
+        <HStack gap="4" style={{ paddingLeft: "16px" }}>
+          <PackageFillIcon fontSize={"1.5rem"} />
           <span>Produkter</span>
         </HStack>
       </Link>
@@ -100,5 +100,5 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
       {/*  </HStack>*/}
       {/*</Link>*/}
     </VStack>
-  )
-}
+  );
+};

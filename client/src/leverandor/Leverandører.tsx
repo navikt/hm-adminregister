@@ -1,60 +1,58 @@
-import React, { useState } from 'react'
-import { Button, Heading, LinkPanel, Loader, Search } from '@navikt/ds-react'
-import { PlusIcon } from '@navikt/aksel-icons'
-import { useSuppliers } from 'utils/swr-hooks'
-import { Link, useNavigate } from 'react-router-dom'
-import { Supplier } from 'utils/supplier-util'
-
+import React, { useState } from "react";
+import { Button, Heading, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { PlusIcon } from "@navikt/aksel-icons";
+import { useSuppliers } from "utils/swr-hooks";
+import { Link, useNavigate } from "react-router-dom";
+import { Supplier } from "utils/supplier-util";
 
 const Leverandører = () => {
-  const { suppliers, isLoading } = useSuppliers()
-  const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filteredData, setFilteredData] = useState<Supplier[] | undefined>()
-
+  const { suppliers, isLoading } = useSuppliers();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredData, setFilteredData] = useState<Supplier[] | undefined>();
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value)
+    setSearchTerm(value);
     const fileteresSuppliers = suppliers?.filter((supplier) =>
       supplier.name.toLowerCase().includes(value.toLowerCase()),
-    )
+    );
 
-    setFilteredData(fileteresSuppliers)
-  }
+    setFilteredData(fileteresSuppliers);
+  };
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : suppliers
+  const renderData = filteredData && filteredData.length > 0 ? filteredData : suppliers;
 
   const handleCreateNewSupplier = () => {
-    navigate('/leverandor/opprett-leverandor')
-  }
+    navigate("/leverandor/opprett-leverandor");
+  };
 
   return (
-    <main className='show-menu'>
-      <div className='page__background-container'>
-        <Heading level='1' size='medium' spacing>
+    <main className="show-menu">
+      <div className="page__background-container">
+        <Heading level="1" size="medium" spacing>
           Leverandører
         </Heading>
 
-        <div className='page__content-container'>
-          <div className='search-panel'>
-            <form className='search-panel__search-box '>
+        <div className="page__content-container">
+          <div className="search-panel">
+            <form className="search-panel__search-box ">
               <Search
-                className='search-button'
-                label='Søk etter en leverandør'
-                variant='primary'
+                className="search-button"
+                label="Søk etter en leverandør"
+                variant="primary"
                 clearButton={true}
-                placeholder='Søk etter leverandørnavn'
-                size='medium'
+                placeholder="Søk etter leverandørnavn"
+                size="medium"
                 value={searchTerm}
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <div className='search-panel__add-new-button'>
+            <div className="search-panel__add-new-button">
               <Button
-                variant='secondary'
-                size='medium'
+                variant="secondary"
+                size="medium"
                 icon={<PlusIcon aria-hidden />}
-                iconPosition='left'
+                iconPosition="left"
                 onClick={handleCreateNewSupplier}
               >
                 Opprett ny leverandør
@@ -62,25 +60,25 @@ const Leverandører = () => {
             </div>
           </div>
 
-          <div className='panel-list__container'>
-            {isLoading && <Loader size='3xlarge' title='venter...' />}
+          <div className="panel-list__container">
+            {isLoading && <Loader size="3xlarge" title="venter..." />}
             {renderData &&
               renderData.map((supplier, i) => (
                 <LinkPanel
                   as={Link}
                   to={`/leverandor/${supplier.id}`}
                   border
-                  className='panel-list__name-panel'
+                  className="panel-list__name-panel"
                   key={i}
                 >
-                  <LinkPanel.Title className='panel-list__title'>{supplier.name}</LinkPanel.Title>
+                  <LinkPanel.Title className="panel-list__title">{supplier.name}</LinkPanel.Title>
                 </LinkPanel>
               ))}
           </div>
         </div>
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default Leverandører
+export default Leverandører;

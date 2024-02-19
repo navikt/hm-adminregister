@@ -1,28 +1,28 @@
-import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
-import { LoggedInUser } from '../user-util'
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { LoggedInUser } from "../user-util";
 
 type AuthStore = {
-  loggedInUser: LoggedInUser | undefined
-}
+  loggedInUser: LoggedInUser | undefined;
+};
 
 type AuthActions = {
-  clearLoggedInState: () => void
-  setLoggedInUser: (loggedInUser: LoggedInUser) => void
-}
+  clearLoggedInState: () => void;
+  setLoggedInUser: (loggedInUser: LoggedInUser) => void;
+};
 
 export const useAuthStore = create<AuthStore & AuthActions>()(
   persist(
     (set) => ({
       loggedInUser: undefined,
       clearLoggedInState: () => {
-        set({ loggedInUser: undefined })
+        set({ loggedInUser: undefined });
       },
       setLoggedInUser: (loggedInUser) => set({ loggedInUser }),
     }),
     {
-      name: 'authStore', // name of the item in the storage (must be unique)
+      name: "authStore", // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
     },
   ),
-)
+);

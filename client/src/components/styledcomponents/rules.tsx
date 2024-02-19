@@ -1,5 +1,5 @@
 const size = {
-  large: '800px',
-}
+  large: "800px",
+};
 
-export { size }
+export { size };
