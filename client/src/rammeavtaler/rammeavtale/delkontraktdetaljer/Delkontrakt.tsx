@@ -2,100 +2,94 @@ import {
   AgreementPostDTO,
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
-} from 'utils/response-types'
-import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from '@navikt/ds-react'
-import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import React, { useEffect, useState } from 'react'
-import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
-import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
-import ConfirmModal from '../../../components/ConfirmModal'
-import { changeRankOnProductAgreements, deleteProductsFromAgreement } from 'api/AgreementProductApi'
-import { useHydratedErrorStore } from 'utils/store/useErrorStore'
-import { deleteDelkontrakt } from 'api/AgreementApi'
-import EditProducstVariantsModal from './EditProductVariantsOnDelkontraktModal'
-import { RowBoxTable } from 'components/styledcomponents/Table'
+} from "utils/response-types";
+import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from "@navikt/ds-react";
+import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
+import React, { useEffect, useState } from "react";
+import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
+import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
+import ConfirmModal from "../../../components/ConfirmModal";
+import { changeRankOnProductAgreements, deleteProductsFromAgreement } from "api/AgreementProductApi";
+import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { deleteDelkontrakt } from "api/AgreementApi";
+import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
+import { RowBoxTable } from "components/styledcomponents/Table";
 
 interface Props {
-  delkontrakt: AgreementPostDTO
-  produkter: ProduktvarianterForDelkontrakterDTOList
-  agreementId: string
-  mutateDelkontrakter: () => void
-  mutateAgreement: () => void
+  delkontrakt: AgreementPostDTO;
+  produkter: ProduktvarianterForDelkontrakterDTOList;
+  agreementId: string;
+  mutateDelkontrakter: () => void;
+  mutateAgreement: () => void;
 }
 
 export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkontrakter, mutateAgreement }: Props) => {
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
+  const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([]);
+  const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
+  const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
 
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false)
-  const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
-  const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([])
-  const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false)
-  const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false)
+  const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false);
+  const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
+  const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null);
 
-  const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false)
-  const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([])
-  const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null)
+  const [updatingRank, setUpdatingRank] = useState<boolean>(false);
 
-  const [updatingRank, setUpdatingRank] = useState<boolean>(false)
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>(undefined);
 
-  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>(undefined)
-
-  const { setGlobalError } = useHydratedErrorStore()
+  const { setGlobalError } = useHydratedErrorStore();
 
   useEffect(() => {
     if (selectedSeriesId !== undefined) {
-      setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || [])
+      setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || []);
     }
-  }, [produkter])
+  }, [produkter]);
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
-    setVarianter(valgtVariantListe)
-    setModalIsOpen(true)
-  }
+    setVarianter(valgtVariantListe);
+    setModalIsOpen(true);
+  };
 
   const onConfirmDeleteDelkontrakt = () => {
-
-    deleteDelkontrakt(agreementId, delkontrakt.identifier).then(
-      () => {
-        mutateAgreement()
-      },
-    ).catch((error) => {
-      setGlobalError(error.message)
-    })
-    setDeleteDelkontraktIsOpen(false)
-  }
+    deleteDelkontrakt(agreementId, delkontrakt.identifier)
+      .then(() => {
+        mutateAgreement();
+      })
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+    setDeleteDelkontraktIsOpen(false);
+  };
 
   const onConfirmDeleteProduktserie = () => {
+    const productAgreementsToDelete = produktserieToDelete.map((variant) => {
+      return variant.id;
+    });
 
-    const productAgreementsToDelete =
-      produktserieToDelete.map((variant) => {
-        return variant.id
+    deleteProductsFromAgreement(productAgreementsToDelete)
+      .then(() => {
+        mutateDelkontrakter();
       })
-
-    deleteProductsFromAgreement(productAgreementsToDelete).then(
-      () => {
-        mutateDelkontrakter()
-      },
-    ).catch((error) => {
-      setGlobalError(error.message)
-    })
-    setDeleteProduktserieModalIsOpen(false)
-
-  }
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+    setDeleteProduktserieModalIsOpen(false);
+  };
 
   const onChangeRangering = (productAgreementIds: string[], nyRangering: string) => {
-    setUpdatingRank(true)
-    changeRankOnProductAgreements(productAgreementIds, parseInt(nyRangering)).then(
-      () => {
-        mutateDelkontrakter()
-        setUpdatingRank(false)
-      },
-    ).catch((error) => {
-      mutateDelkontrakter()
-      setGlobalError(error.message)
-      setUpdatingRank(false)
-    })
-
-  }
+    setUpdatingRank(true);
+    changeRankOnProductAgreements(productAgreementIds, parseInt(nyRangering))
+      .then(() => {
+        mutateDelkontrakter();
+        setUpdatingRank(false);
+      })
+      .catch((error) => {
+        mutateDelkontrakter();
+        setGlobalError(error.message);
+        setUpdatingRank(false);
+      });
+  };
 
   return (
     <>
@@ -108,19 +102,19 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
       />
       <ConfirmModal
         title={`Slett '${delkontrakt.title}'`}
-        text='Er du sikker på at du vil slette delkontrakten?'
+        text="Er du sikker på at du vil slette delkontrakten?"
         onClick={onConfirmDeleteDelkontrakt}
         onClose={() => {
-          setDeleteDelkontraktIsOpen(false)
+          setDeleteDelkontraktIsOpen(false);
         }}
         isModalOpen={deleteDelkontraktIsOpen}
       />
       <ConfirmModal
         title={`Slett produktserie '${produktserieToDeleteTitle}'`}
-        text='Er du sikker på at du vil slette produktserie?'
+        text="Er du sikker på at du vil slette produktserie?"
         onClick={onConfirmDeleteProduktserie}
         onClose={() => {
-          setDeleteProduktserieModalIsOpen(false)
+          setDeleteProduktserieModalIsOpen(false);
         }}
         isModalOpen={deleteProduktserieModalIsOpen}
       />
@@ -129,7 +123,8 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         setModalIsOpen={setNyttProduktModalIsOpen}
         agreementId={agreementId}
         post={delkontrakt.nr}
-        mutateDelkontrakter={mutateDelkontrakter} />
+        mutateDelkontrakter={mutateDelkontrakter}
+      />
       <EditProducstVariantsModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
@@ -137,23 +132,23 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         mutateDelkontrakt={mutateDelkontrakter}
       />
 
-      <ExpansionCard size='small' key={delkontrakt.nr} aria-label='default-demo'>
+      <ExpansionCard size="small" key={delkontrakt.nr} aria-label="default-demo">
         <ExpansionCard.Header>
-          <ExpansionCard.Title size='small'>{delkontrakt.title}</ExpansionCard.Title>
+          <ExpansionCard.Title size="small">{delkontrakt.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
-        <ExpansionCard.Content style={{ overflow: 'auto' }}>
-          <VStack gap='3'>
+        <ExpansionCard.Content style={{ overflow: "auto" }}>
+          <VStack gap="3">
             <b>Beskrivelse:</b>
             {delkontrakt.description}
             {produkter.length > 0 && (
-              <VStack gap='2'>
-                <RowBoxTable size='small'>
+              <VStack gap="2">
+                <RowBoxTable size="small">
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell scope='col'>Produkter</Table.HeaderCell>
-                      <Table.HeaderCell scope='col'>Artikler.</Table.HeaderCell>
-                      <Table.HeaderCell scope='col'>Rangering</Table.HeaderCell>
-                      <Table.HeaderCell scope='col'></Table.HeaderCell>
+                      <Table.HeaderCell scope="col">Produkter</Table.HeaderCell>
+                      <Table.HeaderCell scope="col">Artikler.</Table.HeaderCell>
+                      <Table.HeaderCell scope="col">Rangering</Table.HeaderCell>
+                      <Table.HeaderCell scope="col"></Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
@@ -162,33 +157,28 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                         <Table.Row key={i} shadeOnHover={false}>
                           <Table.DataCell>
                             {produkt.serieIdentifier ? (
-                              <a href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
-                                 target='_blank' rel='noreferrer'>
+                              <a
+                                href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
                                 {produkt.produktTittel}
                               </a>
                             ) : (
                               produkt.produktTittel
-                            )
-                            }
-
+                            )}
                           </Table.DataCell>
                           <Table.DataCell>
                             <Button
-                              iconPosition='right'
-                              variant={'tertiary'}
-                              icon={
-                                <PencilWritingIcon
-                                  title='Rediger'
-                                  fontSize='1.2rem'
-                                />
-                              }
-
+                              iconPosition="right"
+                              variant={"tertiary"}
+                              icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
                               onClick={() => {
-                                onClickVariants(produkt.produktvarianter)
-                                setSelectedSeriesId(produkt.produktserie!!)
-                              }}>
+                                onClickVariants(produkt.produktvarianter);
+                                setSelectedSeriesId(produkt.produktserie!!);
+                              }}
+                            >
                               {produkt.produktvarianter.length}
-
                             </Button>
                           </Table.DataCell>
                           <Table.DataCell>
@@ -196,17 +186,17 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                               <Loader></Loader>
                             ) : (
                               <Select
-                                id='rangering'
-                                name='rangering'
-                                label={''}
+                                id="rangering"
+                                name="rangering"
+                                label={""}
                                 value={produkt.rangering}
                                 onChange={(e) => {
                                   onChangeRangering(
                                     produkt.produktvarianter.map((variant) => variant.id),
                                     e.target.value,
-                                  )
+                                  );
                                 }}
-                                style={{ width: '4em' }}
+                                style={{ width: "4em" }}
                               >
                                 {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
                                   <option key={it} value={it}>
@@ -215,67 +205,52 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                                 ))}
                               </Select>
                             )}
-
                           </Table.DataCell>
                           <Table.DataCell>
                             <Button
-                              iconPosition='right'
-                              variant={'tertiary'}
-                              icon={
-                                <TrashIcon
-                                  title='Slett'
-                                  fontSize='1.5rem'
-                                />
-                              }
+                              iconPosition="right"
+                              variant={"tertiary"}
+                              icon={<TrashIcon title="Slett" fontSize="1.5rem" />}
                               onClick={() => {
-                                setProduktserieToDelete(produkt.produktvarianter)
-                                setProduktserieToDeleteTitle(produkt.produktTittel)
-                                setDeleteProduktserieModalIsOpen(true)
-                              }} />
+                                setProduktserieToDelete(produkt.produktvarianter);
+                                setProduktserieToDeleteTitle(produkt.produktTittel);
+                                setDeleteProduktserieModalIsOpen(true);
+                              }}
+                            />
                           </Table.DataCell>
                         </Table.Row>
-                      )
+                      );
                     })}
                   </Table.Body>
                 </RowBoxTable>
               </VStack>
-            )
-            }
+            )}
 
             <HStack>
               <Button
-                className='fit-content'
-                variant='tertiary'
-                icon={
-                  <PlusCircleIcon
-                    title='Legg til produkt'
-                    fontSize='1.5rem'
-                  />
-                }
+                className="fit-content"
+                variant="tertiary"
+                icon={<PlusCircleIcon title="Legg til produkt" fontSize="1.5rem" />}
                 onClick={() => {
-                  setNyttProduktModalIsOpen(true)
+                  setNyttProduktModalIsOpen(true);
                 }}
               >
                 <span>Legg til Produkt</span>
               </Button>
               <Dropdown>
                 <Button
-                  style={{ marginLeft: 'auto' }}
-                  variant='tertiary'
-                  icon={
-                    <MenuElipsisVerticalIcon
-                      title='Rediger'
-                      fontSize='1.5rem'
-                    />
-                  }
-
-                  as={Dropdown.Toggle}>
-                </Button>
+                  style={{ marginLeft: "auto" }}
+                  variant="tertiary"
+                  icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
+                  as={Dropdown.Toggle}
+                ></Button>
                 <Dropdown.Menu>
                   <Dropdown.Menu.GroupedList>
-                    <Dropdown.Menu.GroupedList.Item onClick={() => {
-                      setEditDelkontraktModalIsOpen(true)
-                    }}>
+                    <Dropdown.Menu.GroupedList.Item
+                      onClick={() => {
+                        setEditDelkontraktModalIsOpen(true);
+                      }}
+                    >
                       Endre tittel og beskrivelse
                     </Dropdown.Menu.GroupedList.Item>
                   </Dropdown.Menu.GroupedList>
@@ -283,7 +258,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
                       onClick={() => {
-                        setDeleteDelkontraktIsOpen(true)
+                        setDeleteDelkontraktIsOpen(true);
                       }}
                     >
                       Slett delkontrakt
@@ -296,14 +271,13 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         </ExpansionCard.Content>
       </ExpansionCard>
     </>
-  )
-}
-
+  );
+};
 
 function range(start: number, stop: number): number[] {
-  const size = stop - start + 1
-  return [...Array(size).keys()].map((i) => i + start)
+  const size = stop - start + 1;
+  return [...Array(size).keys()].map((i) => i + start);
 }
 
-const MIN_RANGERING = 1
-const MAX_RANGERING = 9
+const MIN_RANGERING = 1;
+const MAX_RANGERING = 9;

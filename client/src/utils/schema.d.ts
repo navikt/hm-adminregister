@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/admreg/admin/api/v1/agreement/registrations": {
     get: operations["findAgreements"];
@@ -827,7 +826,6 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-
   findAgreements: {
     parameters: {
       query: {

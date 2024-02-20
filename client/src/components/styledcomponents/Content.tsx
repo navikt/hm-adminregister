@@ -1,6 +1,6 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
-import { size } from './rules'
+import { size } from "./rules";
 
 const Content = styled.div`
   width: 626px;
@@ -10,6 +10,6 @@ const Content = styled.div`
   @media (max-width: ${size.large}) {
     width: 95%;
   }
-`
+`;
 
-export default Content
+export default Content;

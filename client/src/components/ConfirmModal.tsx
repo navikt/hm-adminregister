@@ -1,17 +1,16 @@
-import { Button, Modal } from '@navikt/ds-react'
-import './error-modal.scss'
-import Content from 'components/styledcomponents/Content'
+import { Button, Modal } from "@navikt/ds-react";
+import "./error-modal.scss";
+import Content from "components/styledcomponents/Content";
 
 interface Props {
-  title: string
-  text: string
-  onClick: () => void
-  onClose: () => void
-  isModalOpen: boolean
+  title: string;
+  text: string;
+  onClick: () => void;
+  onClose: () => void;
+  isModalOpen: boolean;
 }
 
 const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => {
-
   return (
     <Modal
       open={isModalOpen}
@@ -22,21 +21,18 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
       onClose={onClose}
     >
       <Modal.Body>
-        <Content>
-          {text}
-        </Content>
+        <Content>{text}</Content>
       </Modal.Body>
       <Modal.Footer>
-
-        <Button variant='tertiary' onClick={onClose}>
+        <Button variant="tertiary" onClick={onClose}>
           Avbryt
         </Button>
-        <Button onClick={onClick} variant='danger'>
+        <Button onClick={onClick} variant="danger">
           Slett
         </Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
-export default ConfirmModal
+export default ConfirmModal;

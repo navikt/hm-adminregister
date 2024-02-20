@@ -1,60 +1,60 @@
-import React from 'react'
-import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from '@navikt/ds-react'
+import React from "react";
+import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from "@navikt/ds-react";
 
-import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from 'utils/store/useAuthStore'
-import { useAdminUsers, useUser } from 'utils/swr-hooks'
-import { formatPhoneNumber } from 'utils/string-util'
+import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useAdminUsers, useUser } from "utils/swr-hooks";
+import { formatPhoneNumber } from "utils/string-util";
 
 export default function AdminProfil() {
-  const navigate = useNavigate()
-  const { loggedInUser } = useAuthStore()
-  const { user, userError, userIsLoading } = useUser(loggedInUser)
-  const { adminUsers, isLoading, error } = useAdminUsers()
+  const navigate = useNavigate();
+  const { loggedInUser } = useAuthStore();
+  const { user, userError, userIsLoading } = useUser(loggedInUser);
+  const { adminUsers, isLoading, error } = useAdminUsers();
 
   if (userIsLoading) {
-    return <Loader size='3xlarge' title='Henter brukerinformasjon...'></Loader>
+    return <Loader size="3xlarge" title="Henter brukerinformasjon..."></Loader>;
   }
 
-  if (user?.name === '') navigate('/admin/adminopplysninger')
+  if (user?.name === "") navigate("/admin/adminopplysninger");
 
   const handleCreateNewAdminUser = () => {
-    navigate('/admin/opprett-admin')
-  }
+    navigate("/admin/opprett-admin");
+  };
 
   const handleDeleteAdminUser = (userId: string) => {
-    navigate(`/admin/slett-admin?_=${userId}`)
-  }
+    navigate(`/admin/slett-admin?_=${userId}`);
+  };
 
   if (!user) {
     return (
-      <HGrid gap='12' columns='minmax(16rem, 55rem)'>
-        <Alert variant='info'>Ingen bruker funnet, prøv å last inn på nytt</Alert>
+      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+        <Alert variant="info">Ingen bruker funnet, prøv å last inn på nytt</Alert>
       </HGrid>
-    )
+    );
   }
 
   return (
-    <main className='show-menu'>
-      <HGrid columns='minmax(16rem, 55rem)'>
-        <Heading level='1' size='large' spacing>
+    <main className="show-menu">
+      <HGrid columns="minmax(16rem, 55rem)">
+        <Heading level="1" size="large" spacing>
           Admin-profil
         </Heading>
-        <VStack gap='10'>
+        <VStack gap="10">
           Bruker med epostadresse {user.email} er innlogget med
-          {` ${user.roles.includes('ROLE_ADMIN') ? 'Admin' : 'Supplier'} rolle!`}
-          <Heading level='2' size='medium'>
+          {` ${user.roles.includes("ROLE_ADMIN") ? "Admin" : "Supplier"} rolle!`}
+          <Heading level="2" size="medium">
             Admin brukere
           </Heading>
           {adminUsers && adminUsers.length > 0 && (
             <Table>
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell scope='col'>Navn</Table.HeaderCell>
-                  <Table.HeaderCell scope='col'>E-post</Table.HeaderCell>
-                  <Table.HeaderCell scope='col'>Telefonnummer</Table.HeaderCell>
-                  <Table.HeaderCell scope='col' colSpan={2}>
+                  <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                  <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
+                  <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
+                  <Table.HeaderCell scope="col" colSpan={2}>
                     Handling
                   </Table.HeaderCell>
                 </Table.Row>
@@ -62,7 +62,7 @@ export default function AdminProfil() {
               <Table.Body>
                 {adminUsers.map(
                   (user, i) =>
-                    user.roles.includes('ROLE_ADMIN') && (
+                    user.roles.includes("ROLE_ADMIN") && (
                       <Table.Row key={i}>
                         <Table.DataCell>{user.name}</Table.DataCell>
                         <Table.DataCell>{user.email}</Table.DataCell>
@@ -72,12 +72,12 @@ export default function AdminProfil() {
                         <Table.DataCell>
                           {loggedInUser?.isAdmin && loggedInUser?.userId != user.id && (
                             <Button
-                              title='Slette bruker'
-                              variant='tertiary-neutral'
-                              size='small'
+                              title="Slette bruker"
+                              variant="tertiary-neutral"
+                              size="small"
                               disabled={false}
                               icon={<TrashIcon aria-hidden />}
-                              iconPosition='right'
+                              iconPosition="right"
                               onClick={() => handleDeleteAdminUser(user.id)}
                             />
                           )}
@@ -85,14 +85,14 @@ export default function AdminProfil() {
                         <Table.DataCell>
                           {loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
                             <Button
-                              title='Redigere profil'
-                              variant='tertiary-neutral'
-                              size='small'
+                              title="Redigere profil"
+                              variant="tertiary-neutral"
+                              size="small"
                               disabled={false}
                               icon={<PencilWritingIcon aria-hidden />}
-                              iconPosition='right'
+                              iconPosition="right"
                               onClick={() => {
-                                navigate('/admin/rediger-admin')
+                                navigate("/admin/rediger-admin");
                               }}
                             />
                           )}
@@ -104,17 +104,17 @@ export default function AdminProfil() {
             </Table>
           )}
           <Button
-            variant='secondary'
-            size='small'
+            variant="secondary"
+            size="small"
             icon={<PlusIcon aria-hidden />}
-            iconPosition='left'
+            iconPosition="left"
             onClick={handleCreateNewAdminUser}
-            className='fit-content'
+            className="fit-content"
           >
             Legg til ny adminbruker
           </Button>
         </VStack>
       </HGrid>
     </main>
-  )
+  );
 }

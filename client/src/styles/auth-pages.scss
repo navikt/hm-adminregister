@@ -1,6 +1,6 @@
-@use './mixins';
-@import 'variables';
-@import '@navikt/ds-tokens/dist/tokens';
+@use "./mixins";
+@import "variables";
+@import "@navikt/ds-tokens/dist/tokens";
 
 .auth-page {
   display: flex;

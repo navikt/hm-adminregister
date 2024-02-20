@@ -1,25 +1,25 @@
-import { Heading, VStack } from '@navikt/ds-react'
-import { ArrowUndoIcon, Buldings3Icon } from '@navikt/aksel-icons'
-import React from 'react'
-import { Supplier } from 'utils/supplier-util'
-import { useAuthStore } from 'utils/store/useAuthStore'
-import DefinitionList from '../definition-list/DefinitionList'
-import { formatPhoneNumber } from 'utils/string-util'
-import { Link } from 'react-router-dom'
+import { Heading, VStack } from "@navikt/ds-react";
+import { ArrowUndoIcon, Buldings3Icon } from "@navikt/aksel-icons";
+import React from "react";
+import { Supplier } from "utils/supplier-util";
+import { useAuthStore } from "utils/store/useAuthStore";
+import DefinitionList from "../definition-list/DefinitionList";
+import { formatPhoneNumber } from "utils/string-util";
+import { Link } from "react-router-dom";
 
 const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
-  const { loggedInUser } = useAuthStore()
+  const { loggedInUser } = useAuthStore();
   return (
-    <VStack gap='8'>
-      <VStack gap='6'>
+    <VStack gap="8">
+      <VStack gap="6">
         {loggedInUser?.isAdmin && (
-          <Link className='supplier-profile__parent-page-link' to='/leverandor'>
-            <ArrowUndoIcon title='Tilbake til oversikt' fontSize='1.5rem' />
+          <Link className="supplier-profile__parent-page-link" to="/leverandor">
+            <ArrowUndoIcon title="Tilbake til oversikt" fontSize="1.5rem" />
             Tilbake til oversikt
           </Link>
         )}
-        <Buldings3Icon title='leverandor' fontSize='2.5rem' aria-hidden />
-        <Heading level='1' size='large'>
+        <Buldings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
+        <Heading level="1" size="large">
           {supplier?.name}
         </Heading>
       </VStack>
@@ -32,7 +32,7 @@ const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
         <DefinitionList.Definition>{supplier?.homepageUrl}</DefinitionList.Definition>
       </DefinitionList>
     </VStack>
-  )
-}
+  );
+};
 
-export default SupplierInfo
+export default SupplierInfo;

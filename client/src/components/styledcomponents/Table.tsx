@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import { Table } from '@navikt/ds-react'
+import styled from "styled-components";
+import { Table } from "@navikt/ds-react";
 
 export const RowBoxTable = styled(Table)`
   border-collapse: separate;
@@ -29,4 +29,4 @@ export const RowBoxTable = styled(Table)`
     border-left: 0;
     border-right: 0;
   }
-`
+`;

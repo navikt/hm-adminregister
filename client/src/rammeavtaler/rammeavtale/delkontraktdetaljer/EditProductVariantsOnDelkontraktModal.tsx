@@ -1,40 +1,36 @@
-import { Button, Checkbox, HStack, Modal, Table, VStack } from '@navikt/ds-react'
-import React, { useState } from 'react'
-import { ProductAgreementRegistrationDTOList } from 'utils/response-types'
-import { deleteProductsFromAgreement } from 'api/AgreementProductApi'
-import { useHydratedErrorStore } from 'utils/store/useErrorStore'
-import Content from 'components/styledcomponents/Content'
+import { Button, Checkbox, HStack, Modal, Table, VStack } from "@navikt/ds-react";
+import React, { useState } from "react";
+import { ProductAgreementRegistrationDTOList } from "utils/response-types";
+import { deleteProductsFromAgreement } from "api/AgreementProductApi";
+import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import Content from "components/styledcomponents/Content";
 
 interface Props {
-  modalIsOpen: boolean
-  setModalIsOpen: (open: boolean) => void
-  varianter: ProductAgreementRegistrationDTOList
-  mutateDelkontrakt: () => void
+  modalIsOpen: boolean;
+  setModalIsOpen: (open: boolean) => void;
+  varianter: ProductAgreementRegistrationDTOList;
+  mutateDelkontrakt: () => void;
 }
 
-
 const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mutateDelkontrakt }: Props) => {
-
-  const [selectedRows, setSelectedRows] = useState<string[]>([])
-  const { setGlobalError } = useHydratedErrorStore()
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const { setGlobalError } = useHydratedErrorStore();
 
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value)
-        ? list.filter((id: string) => id !== value)
-        : [...list, value],
-    )
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
+    );
 
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
-    deleteProductsFromAgreement(selectedRows).then(
-      () => {
-        mutateDelkontrakt()
-        setSelectedRows([])
-      },
-    ).catch((error) => {
-      setGlobalError(error.message)
-    })
-  }
+    deleteProductsFromAgreement(selectedRows)
+      .then(() => {
+        mutateDelkontrakt();
+        setSelectedRows([]);
+      })
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+  };
 
   return (
     <Modal
@@ -42,28 +38,25 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
       header={{
         heading: `Produktvarianter på avtalen`,
         closeButton: false,
-        size: 'small',
+        size: "small",
       }}
       onClose={() => setModalIsOpen(false)}
     >
-
       <Modal.Body>
         <Content>
           {varianter.length > 0 && (
-            <VStack gap='2' style={{ width: '100%' }}>
+            <VStack gap="2" style={{ width: "100%" }}>
               <Table>
                 <Table.Header>
                   <Table.Row>
-                    <Table.HeaderCell scope='col'>Navn</Table.HeaderCell>
-                    <Table.HeaderCell scope='col'>HMS-nummer</Table.HeaderCell>
-                    <Table.HeaderCell scope='col'>Lev-artnr.</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
                     <Table.DataCell>
                       <Checkbox
                         checked={selectedRows.length === varianter.length}
                         onChange={() => {
-                          selectedRows.length
-                            ? setSelectedRows([])
-                            : setSelectedRows(varianter.map(({ id }) => id!!))
+                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(varianter.map(({ id }) => id!!));
                         }}
                         hideLabel
                       >
@@ -73,7 +66,6 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-
                   {varianter.map((variant, i) => {
                     return (
                       <Table.Row key={variant.id}>
@@ -85,15 +77,15 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
                             hideLabel
                             checked={selectedRows.includes(variant.id!!)}
                             onChange={() => {
-                              toggleSelectedRow(variant.id!!)
+                              toggleSelectedRow(variant.id!!);
                             }}
                             aria-labelledby={`id-${variant.id}`}
                           >
-                            {' '}
+                            {" "}
                           </Checkbox>
                         </Table.DataCell>
                       </Table.Row>
-                    )
+                    );
                   })}
                 </Table.Body>
               </Table>
@@ -102,26 +94,26 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
         </Content>
       </Modal.Body>
       <Modal.Footer>
-          <Button
-            onClick={() => {
-              setModalIsOpen(false)
-            }}
-            variant='tertiary'
-            type='reset'
-          >
-            Lukk
-          </Button>
-          <Button
-            onClick={() => handleFjernValgteProdukter(selectedRows)}
-            type='submit'
-            variant='secondary'
-            disabled={selectedRows.length === 0}
-          >
-            Fjern valgte produkter
-          </Button>
+        <Button
+          onClick={() => {
+            setModalIsOpen(false);
+          }}
+          variant="tertiary"
+          type="reset"
+        >
+          Lukk
+        </Button>
+        <Button
+          onClick={() => handleFjernValgteProdukter(selectedRows)}
+          type="submit"
+          variant="secondary"
+          disabled={selectedRows.length === 0}
+        >
+          Fjern valgte produkter
+        </Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
-export default EditProducstVariantsModal
+export default EditProducstVariantsModal;
