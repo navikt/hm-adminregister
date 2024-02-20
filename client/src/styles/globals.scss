@@ -177,8 +177,7 @@ main:not(.show-menu) {
 .search-panel {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: $a-spacing-4;
+  gap: $a-spacing-2;
 
   &__search-box {
     width: 80%;
