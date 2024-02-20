@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Alert, Button, Heading, LinkPanel, Loader, Search } from '@navikt/ds-react'
 import './products.scss'
-import { PlusIcon } from '@navikt/aksel-icons'
+import { FileExcelIcon, PlusIcon } from '@navikt/aksel-icons'
 import { useProducts } from 'utils/swr-hooks'
 import { SeriesGroupDTO } from 'utils/response-types'
 import { Link, useNavigate } from 'react-router-dom'
@@ -48,7 +48,6 @@ const Produkter = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <div className='search-panel__add-new-button'>
               <Button
                 variant='secondary'
                 size='medium'
@@ -58,7 +57,17 @@ const Produkter = () => {
               >
                 Nytt produkt
               </Button>
-            </div>
+
+              <Button
+                variant='secondary'
+                size='medium'
+                icon={<FileExcelIcon aria-hidden />}
+                iconPosition='left'
+                onClick={() => navigate('/produkter/importer-produkter')}
+              >
+                Import
+              </Button>
+
           </div>
 
           {filteredData?.length === 0 && searchTerm.length ? (

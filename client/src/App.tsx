@@ -26,6 +26,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorFallback } from 'error/ErrorFallback'
 import { NotFound } from 'error/NotFound'
 import { Startside } from 'Startside'
+import { ImporterOgValiderProdukter } from 'produkter/import/ImporterOgValiderProdukter'
 
 export function App() {
 
@@ -37,6 +38,7 @@ export function App() {
 
         <Route path='/produkter' element={<><Navbar /><Produkter /></>} />
         <Route path='/produkter/opprett' element={<><OpprettProdukt /></>} />
+        <Route path='/produkter/importer-produkter' element={<><ImporterOgValiderProdukter /></>} />
         <Route path='/produkter/:seriesId' element={<><Navbar /><Produkt /></>} />
         <Route path='/produkter/:seriesId/rediger-variant/:productId'
                element={<><RedigerProduktVariant /></>} />
