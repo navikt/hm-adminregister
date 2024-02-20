@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Button, Heading, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
 import "./products.scss";
 import { FileExcelIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useProducts } from "utils/swr-hooks";
@@ -48,7 +48,7 @@ const Produkter = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <div className="search-panel__add-new-button">
+            <HStack gap="2" className="search-panel__add-new-button">
               <Button
                 variant="secondary"
                 size="medium"
@@ -59,24 +59,15 @@ const Produkter = () => {
                 Nytt produkt
               </Button>
               <Button
-                variant='secondary'
-                size='medium'
+                variant="secondary"
+                size="medium"
                 icon={<FileExcelIcon aria-hidden />}
-                iconPosition='left'
-                onClick={() => navigate('/produkter/importer-produkter')}
+                iconPosition="left"
+                onClick={() => navigate("/produkter/importer-produkter")}
               >
                 Import
               </Button>
-              <Button
-                variant='secondary'
-                size='medium'
-                icon={<FileExcelIcon aria-hidden />}
-                iconPosition='left'
-                onClick={() => navigate('/produkter/importer-produkter')}
-              >
-                Import
-              </Button>
-            </div>
+            </HStack>
           </div>
 
           {filteredData?.length === 0 && searchTerm.length ? (

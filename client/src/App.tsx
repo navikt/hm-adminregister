@@ -26,6 +26,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
+import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 
 export function App() {
   return (
@@ -33,6 +34,15 @@ export function App() {
       <Routes>
         <Route path="/" element={<Startside />} />
         <Route path="/logg-inn" element={<LoggInn />} />
+
+        <Route
+          path="/produkter/importer-produkter"
+          element={
+            <>
+              <ImporterOgValiderProdukter />
+            </>
+          }
+        />
 
         <Route
           path="/produkter"
