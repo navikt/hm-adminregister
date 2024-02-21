@@ -7,6 +7,7 @@ import { HM_REGISTER_URL } from "environments";
 import { AgreementRegistrationDTO, MediaDTO } from "utils/types/response-types";
 import { getEditedAgreementDTOAddFiles } from "utils/agreement-util";
 import { mapToMediaInfo } from "utils/product-util";
+import { fileToUri } from "utils/file-util";
 
 interface Props {
   modalIsOpen: boolean;
@@ -233,15 +234,3 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 };
 
 export default UploadModal;
-
-const fileToUri = async (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      resolve(reader.result as string);
-    };
-    reader.onerror = function (error) {
-      reject(error);
-    };
-  });

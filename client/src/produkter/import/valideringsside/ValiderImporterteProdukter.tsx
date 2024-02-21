@@ -4,9 +4,9 @@ import { importProducts } from "api/ImportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
-import { Upload } from "produkter/import/components/ImporterProdukter";
-import { ProductSeriesInfo } from "produkter/import/components/ProductSeriesInfo";
-import { VariantsTable } from "produkter/import/components/VariantsTable";
+import { Upload } from "produkter/import/ImporterProdukter";
+import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSeriesInfo";
+import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
 
 interface Props {
   upload: Upload;

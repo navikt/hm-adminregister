@@ -7,6 +7,7 @@ import { MediaDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTOAddFiles, mapToMediaInfo } from "utils/product-util";
 import { ImageContainer } from "felleskomponenter/ImageCard";
 import { HM_REGISTER_URL } from "environments";
+import { fileToUri } from "utils/file-util";
 
 interface Props {
   modalIsOpen: boolean;
@@ -241,15 +242,3 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
 };
 
 export default UploadModal;
-
-const fileToUri = async (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      resolve(reader.result as string);
-    };
-    reader.onerror = function (error) {
-      reject(error);
-    };
-  });

@@ -1,6 +1,7 @@
 import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
+import { fileToUri } from "utils/file-util";
 
 export interface Upload {
   file: File;
@@ -152,15 +153,3 @@ export default function ImporterProdukter({ validerImporterteProdukter }: Props)
     </main>
   );
 }
-
-const fileToUri = async (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      resolve(reader.result as string);
-    };
-    reader.onerror = function (error) {
-      reject(error);
-    };
-  });
