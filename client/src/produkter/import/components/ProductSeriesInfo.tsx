@@ -1,5 +1,4 @@
 import { Product } from "utils/types/types";
-import "./import-page.scss";
 
 export const ProductSeriesInfo = ({ product }: { product: Product }) => {
   return (

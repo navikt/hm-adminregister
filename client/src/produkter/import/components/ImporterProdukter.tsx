@@ -1,5 +1,4 @@
 import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader } from "@navikt/ds-react";
-import "./import-page.scss";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 

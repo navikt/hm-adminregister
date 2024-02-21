@@ -1,12 +1,12 @@
 import { ExpansionCard, Loader } from "@navikt/ds-react";
-import { Upload } from "produkter/import/ImporterProdukter";
 import React, { useEffect, useState } from "react";
 import { importProducts } from "api/ImportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
-import { ProductSeriesInfo } from "produkter/import/ProductSeriesInfo";
-import { VariantsTable } from "produkter/import/VariantsTable";
+import { Upload } from "produkter/import/components/ImporterProdukter";
+import { ProductSeriesInfo } from "produkter/import/components/ProductSeriesInfo";
+import { VariantsTable } from "produkter/import/components/VariantsTable";
 
 interface Props {
   upload: Upload;
