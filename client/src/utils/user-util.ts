@@ -9,8 +9,9 @@ export interface LoggedInUser {
 }
 
 export const mapLoggedInUser = (_source: LoggedInUserResponse): LoggedInUser => {
+  const roles: string[] = _source.attributes["roles"] as string[];
   return {
-    isAdmin: Array(_source.attributes["roles"]).includes("ROLE_ADMIN"),
+    isAdmin: roles.includes("ROLE_ADMIN"),
     userId: String(_source.attributes["userId"]) ?? undefined,
     //kun supplier bruker får supplierId
     supplierId: String(_source.attributes["supplierId"]) ?? undefined,
