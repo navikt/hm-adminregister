@@ -3,8 +3,8 @@ import { HGrid, Loader, VStack } from "@navikt/ds-react";
 import { useNavigate } from "react-router-dom";
 import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
 import { useAuthStore } from "utils/store/useAuthStore";
-import SupplierInfo from "components/supplier/SupplierInfo";
-import SupplierUsers from "components/supplier/SupplierUsers";
+import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
+import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { HM_REGISTER_URL } from "environments";
 
 export default function Profil() {

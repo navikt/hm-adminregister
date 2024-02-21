@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ProductAgreementRegistrationDTOList } from "utils/types/response-types";
 import { deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;

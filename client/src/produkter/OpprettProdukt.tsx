@@ -10,9 +10,9 @@ import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
 import { ProductDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
-import Combobox from "../components/Combobox";
 import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "utils/store/useAuthStore";
+import Combobox from "felleskomponenter/Combobox";
 
 type FormData = z.infer<typeof createNewProductSchema>;
 

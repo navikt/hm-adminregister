@@ -6,9 +6,9 @@ import { z } from "zod";
 import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
-import { Avstand } from "components/Avstand";
+import { Avstand } from "felleskomponenter/Avstand";
 import { updateAgreementWithNewDelkontrakt } from "api/AgreementApi";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;

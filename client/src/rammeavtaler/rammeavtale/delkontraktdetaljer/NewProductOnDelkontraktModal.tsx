@@ -11,7 +11,7 @@ import { ProductRegistrationDTO } from "utils/types/response-types";
 import { VarianterOnDelkontraktListe } from "./VarianterOnDelkontraktListe";
 import { addProductsToAgreement } from "api/AgreementProductApi";
 import { useProductVariantsBySeriesId } from "utils/swr-hooks";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;

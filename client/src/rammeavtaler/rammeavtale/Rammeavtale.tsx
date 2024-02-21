@@ -12,12 +12,12 @@ import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 import { deleteAgreement, updateAgreementDescription } from "api/AgreementApi";
 import { toDate, toReadableDateTimeString, toReadableString } from "utils/date-util";
-import StatusTagAgreement from "../../components/StatusTagAgreement";
 import DelkontrakterTab from "./delkontraktliste/DelkontrakterTab";
 import EditRammeavtaleInfoModal from "./EditRammeavtaleInfoModal";
 import FileTab from "./vedlegg/FileTab";
-import { WordWrappedHeading } from "components/styledcomponents/Heading";
-import ConfirmModal from "components/ConfirmModal";
+import { WordWrappedHeading } from "felleskomponenter/styledcomponents/Heading";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import StatusTagAgreement from "felleskomponenter/StatusTagAgreement";
 
 export type EditCommonInfoAgreement = {
   description: string;

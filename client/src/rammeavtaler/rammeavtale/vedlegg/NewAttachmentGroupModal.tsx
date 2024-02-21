@@ -5,10 +5,10 @@ import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
-import { Avstand } from "components/Avstand";
+import { Avstand } from "felleskomponenter/Avstand";
 import { updateAgreementWithNewAttachmentGroup } from "api/AgreementApi";
 import { createNewAttachmentGroupSchema } from "utils/zodSchema/newAttachmentGroup";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;

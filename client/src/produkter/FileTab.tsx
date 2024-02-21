@@ -6,8 +6,8 @@ import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "utils/product-util";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { ImageCard } from "components/ImageCard";
-import { MoreMenu } from "components/MoreMenu";
+import { ImageCard } from "felleskomponenter/ImageCard";
+import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { HM_REGISTER_URL } from "environments";
 
 interface Props {

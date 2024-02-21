@@ -4,7 +4,7 @@ import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { AttachmentGroup } from "./AttachmentGroup";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
 import NewAttachmentGroupModal from "rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal";
-import { TabPanel } from "components/styledcomponents/TabPanel";
+import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 
 interface Props {
   agreement: AgreementRegistrationDTO;

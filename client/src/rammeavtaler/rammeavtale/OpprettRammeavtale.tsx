@@ -11,7 +11,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { createNewAgreementSchema } from "utils/zodSchema/newAgreement";
 import { toDateTimeString } from "utils/date-util";
 import { postAgreementDraft } from "api/AgreementApi";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 type FormData = z.infer<typeof createNewAgreementSchema>;
 

@@ -5,7 +5,7 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { EditCommonInfoAgreement } from "./Rammeavtale";
 import { labelRequired } from "utils/string-util";
-import { TabPanel } from "components/styledcomponents/TabPanel";
+import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 
 interface Props {
   agreement: AgreementRegistrationDTO;

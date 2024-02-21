@@ -1,6 +1,6 @@
 import { Button, Modal } from "@navikt/ds-react";
 import "./error-modal.scss";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   title: string;

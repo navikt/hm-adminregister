@@ -7,9 +7,9 @@ import { AgreementAttachment } from "utils/types/response-types";
 import { editAttachmentGroupInfoSchema } from "utils/zodSchema/editAttachmentGroupInfo";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
-import { Avstand } from "components/Avstand";
+import { Avstand } from "felleskomponenter/Avstand";
 import { updateAgreementAttachmentGroup } from "api/AgreementApi";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;

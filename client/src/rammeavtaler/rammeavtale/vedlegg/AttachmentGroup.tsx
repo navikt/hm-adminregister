@@ -6,8 +6,8 @@ import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
 import { AgreementAttachment } from "utils/types/response-types";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { deleteAttachmentGroup, deleteFileFromAttachmentGroup } from "api/AgreementApi";
-import ConfirmModal from "components/ConfirmModal";
-import { DocumentList } from "components/styledcomponents/DocumentList";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { DocumentList } from "felleskomponenter/styledcomponents/DocumentList";
 
 interface Props {
   agreementId: string;

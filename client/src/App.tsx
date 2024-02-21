@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import LoggInn from "./logg-inn/LoggInn";
-import Navbar from "./components/layout/Navbar";
 import Produkter from "./produkter/Produkter";
 import OpprettProdukt from "./produkter/OpprettProdukt";
 import Produkt from "./produkter/Produkt";
@@ -27,6 +26,7 @@ import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
+import Navbar from "felleskomponenter/layout/Navbar";
 
 export function App() {
   return (

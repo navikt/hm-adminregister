@@ -6,7 +6,7 @@ import { EditCommonInfoProduct } from "./Produkt";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { useIsoCategories } from "utils/swr-hooks";
 import { labelRequired } from "utils/string-util";
-import Combobox from "../components/Combobox";
+import Combobox from "felleskomponenter/Combobox";
 
 interface Props {
   product: ProductRegistrationDTO;

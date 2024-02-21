@@ -1,6 +1,6 @@
-import { ProductAgreementRegistrationDTOList, ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
-import { Upload } from "produkter/import/ImporterProdukter";
+import { Upload } from "produkter/import/components/ImporterProdukter";
 
 const productImportPathDryrun = (isAdmin: boolean): string =>
   isAdmin

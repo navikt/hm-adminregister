@@ -3,7 +3,7 @@ import { Heading, Loader } from "@navikt/ds-react";
 import { useUser } from "utils/swr-hooks";
 import { useAuthStore } from "utils/store/useAuthStore";
 import React from "react";
-import FirstTimeUserInfoForm from "../components/forms/FirstTimeUserInfoForm";
+import FirstTimeUserInfoForm from "felleskomponenter/forms/FirstTimeUserInfoForm";
 
 const FirstTimeUserInfo = () => {
   const { loggedInUser } = useAuthStore();

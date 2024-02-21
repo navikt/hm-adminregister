@@ -2,7 +2,7 @@ import { ComponentIcon } from "@navikt/aksel-icons";
 import { Heading, Loader } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useUser } from "utils/swr-hooks";
-import FirstTimeUserInfoForm from "../components/forms/FirstTimeUserInfoForm";
+import FirstTimeUserInfoForm from "felleskomponenter/forms/FirstTimeUserInfoForm";
 
 const FirstTimeAdminInfo = () => {
   const { loggedInUser } = useAuthStore();

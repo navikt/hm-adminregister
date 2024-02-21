@@ -8,12 +8,12 @@ import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon }
 import React, { useEffect, useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
 import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
-import ConfirmModal from "../../../components/ConfirmModal";
 import { changeRankOnProductAgreements, deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { deleteDelkontrakt } from "api/AgreementApi";
 import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
-import { RowBoxTable } from "components/styledcomponents/Table";
+import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 interface Props {
   delkontrakt: AgreementPostDTO;

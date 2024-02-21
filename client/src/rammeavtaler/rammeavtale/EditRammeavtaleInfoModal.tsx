@@ -4,12 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from "utils/zodSchema/editAgreement";
-import { deleteAgreement, updateAgreementInfo } from "api/AgreementApi";
+import { updateAgreementInfo } from "api/AgreementApi";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { toDate, toDateTimeString } from "utils/date-util";
-import ConfirmModal from "components/ConfirmModal";
-import Content from "components/styledcomponents/Content";
+import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;
