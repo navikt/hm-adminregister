@@ -1,5 +1,5 @@
 export interface Product {
-  id: string;
+  id?: string;
   title: string;
   attributes: Attributes;
   variantCount: number;
@@ -20,7 +20,7 @@ export interface ProductVariant {
   hmsArtNr: string | null;
   supplierRef: string;
   articleName: string;
-  techData: TechData;
+  techData: TechDataDict;
   hasAgreement: boolean;
   filters: { [key: string]: string | number };
   expired: string;
@@ -38,7 +38,7 @@ export interface AgreementInfo {
   expired: string;
 }
 
-export interface TechData {
+export interface TechDataDict {
   [key: string]: { value: string; unit: string };
 }
 
@@ -49,7 +49,7 @@ interface Attributes {
   shortdescription?: string;
   text?: string;
   bestillingsordning?: boolean;
-  commonCharacteristics?: TechData;
+  commonCharacteristics?: TechDataDict;
   compatibleWith?: string[];
 }
 

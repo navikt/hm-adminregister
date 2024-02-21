@@ -4,6 +4,7 @@ import { formatAgreementRanks, toValueAndUnit } from "utils/string-util";
 import classNames from "classnames";
 import { sortIntWithStringFallback } from "utils/sort-util";
 import { Product, ProductVariant } from "utils/types/types";
+import "./import-page.scss";
 
 type SortColumns = {
   orderBy: string | null;
@@ -65,7 +66,7 @@ export const VariantsTable = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="comparing-table">
+    <div className="variants-table">
       <Table>
         <Table.Header>
           <Table.Row>
