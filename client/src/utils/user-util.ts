@@ -1,4 +1,4 @@
-import { LoggedInUserResponse } from "./response-types";
+import { LoggedInUserResponse } from "./types/response-types";
 
 export interface LoggedInUser {
   isAdmin: boolean;

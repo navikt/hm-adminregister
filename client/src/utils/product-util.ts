@@ -1,4 +1,4 @@
-import { MediaDTO, MediaInfo, ProductRegistrationDTO } from "./response-types";
+import { MediaDTO, MediaInfo, ProductRegistrationDTO } from "./types/response-types";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],

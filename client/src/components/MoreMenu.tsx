@@ -2,7 +2,7 @@ import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
 import { Button, Popover, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import "./more-menu.scss";
-import { MediaInfo } from "utils/response-types";
+import { MediaInfo } from "utils/types/response-types";
 
 export const MoreMenu = ({
   mediaInfo,

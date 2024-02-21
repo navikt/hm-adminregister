@@ -2,7 +2,7 @@ import { Label, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import classNames from "classnames";
 import { MoreMenu } from "./MoreMenu";
-import { MediaInfo } from "utils/response-types";
+import { MediaInfo } from "utils/types/response-types";
 import { smallImageLoader } from "utils/image-util";
 
 interface Props {

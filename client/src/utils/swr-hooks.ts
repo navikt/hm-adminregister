@@ -8,7 +8,7 @@ import {
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
-} from "./response-types";
+} from "./types/response-types";
 import { mapSuppliers } from "./supplier-util";
 import { useHydratedErrorStore } from "./store/useErrorStore";
 import { useEffect } from "react";

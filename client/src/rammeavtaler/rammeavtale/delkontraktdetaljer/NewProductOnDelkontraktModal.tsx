@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
 import { createNewProductOnDelkontraktSchema } from "utils/zodSchema/newProductOnDelkontrakt";
 import { getProductByHmsNr } from "api/ProductApi";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import { VarianterOnDelkontraktListe } from "./VarianterOnDelkontraktListe";
 import { addProductsToAgreement } from "api/AgreementProductApi";
 import { useProductVariantsBySeriesId } from "utils/swr-hooks";

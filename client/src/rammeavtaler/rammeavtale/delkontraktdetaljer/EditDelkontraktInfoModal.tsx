@@ -9,7 +9,7 @@ import { labelRequired } from "utils/string-util";
 import { Avstand } from "components/Avstand";
 import { updateDelkontrakt } from "api/AgreementApi";
 import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
-import { AgreementPostDTO } from "utils/response-types";
+import { AgreementPostDTO } from "utils/types/response-types";
 import Content from "components/styledcomponents/Content";
 
 interface Props {

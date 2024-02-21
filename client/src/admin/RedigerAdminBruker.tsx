@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { adminInfoUpdate } from "utils/zodSchema/login";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useUser } from "utils/swr-hooks";
-import { UserDTO } from "utils/response-types";
+import { UserDTO } from "utils/types/response-types";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";

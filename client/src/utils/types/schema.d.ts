@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/admreg/admin/api/v1/agreement/registrations": {
     get: operations["findAgreements"];
@@ -20,6 +21,7 @@ export interface paths {
   "/admreg/admin/api/v1/agreement/registrations/{id}": {
     get: operations["getAgreementById"];
     put: operations["updateAgreement"];
+    delete: operations["deleteAgreeent"];
   };
   "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
     get: operations["getDelkontraktById"];
@@ -54,6 +56,16 @@ export interface paths {
   };
   "/admreg/admin/api/v1/media/{oid}/{uri}": {
     delete: operations["deleteFile"];
+  };
+  "/admreg/admin/api/v1/news": {
+    post: operations["createNews"];
+  };
+  "/admreg/admin/api/v1/news/draft": {
+    post: operations["createNewsDraft"];
+  };
+  "/admreg/admin/api/v1/news/{id}": {
+    put: operations["updateNews"];
+    delete: operations["deleteNews"];
   };
   "/admreg/admin/api/v1/product-agreement": {
     post: operations["createProductAgreement"];
@@ -93,6 +105,12 @@ export interface paths {
   };
   "/admreg/admin/api/v1/product/registrations/draftWith/supplier/{supplierId}": {
     post: operations["draftProductWith"];
+  };
+  "/admreg/admin/api/v1/product/registrations/excel/export": {
+    post: operations["createExport"];
+  };
+  "/admreg/admin/api/v1/product/registrations/excel/import": {
+    post: operations["importExcel"];
   };
   "/admreg/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
     get: operations["getProductByHmsArtNr"];
@@ -196,6 +214,15 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/draftWith": {
     post: operations["draftProductWith_1"];
   };
+  "/admreg/vendor/api/v1/product/registrations/excel/export": {
+    post: operations["createExport_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/excel/import": {
+    post: operations["importExcel_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun": {
+    post: operations["importExcelDryrun"];
+  };
   "/admreg/vendor/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup_1"];
   };
@@ -240,7 +267,7 @@ export interface components {
     AdminStatus: "PENDING" | "APPROVED" | "REJECTED";
     AgreementAttachment: {
       /** Format: uuid */
-      id?: string;
+      id?: string | null;
       title?: string | null;
       media: components["schemas"]["MediaInfo"][];
       description?: string | null;
@@ -372,6 +399,7 @@ export interface components {
     IsoCategoryDTO: {
       isoCode: string;
       isoTitle: string;
+      isoTitleShort?: string | null;
       isoText: string;
       isoTextShort?: string | null;
       isoTranslations?: components["schemas"]["IsoTranslationsDTO"] | null;
@@ -448,6 +476,29 @@ export interface components {
     MediaSourceType: "HMDB" | "REGISTER" | "EXTERNALURL" | "IMPORT" | "UNKNOWN";
     /** @enum {string} */
     MediaType: "PDF" | "IMAGE" | "VIDEO" | "XLS" | "OTHER";
+    NewsRegistrationDTO: {
+      /** Format: uuid */
+      id: string;
+      title: string;
+      text: string;
+      status: components["schemas"]["NewsStatus"];
+      draftStatus: components["schemas"]["DraftStatus"];
+      /** Format: date-time */
+      published: string;
+      /** Format: date-time */
+      expired: string;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+      author: string;
+      createdBy: string;
+      updatedBy: string;
+      createdByUser: string;
+      updatedByUser: string;
+    };
+    /** @enum {string} */
+    NewsStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     OpenApiPageable: {
       /**
        * Format: int32
@@ -571,6 +622,41 @@ export interface components {
       seriesUUID?: string | null;
       /** @deprecated */
       seriesId: string;
+      isoCategory: string;
+      title: string;
+      articleName: string;
+      draftStatus: components["schemas"]["DraftStatus"];
+      adminStatus: components["schemas"]["AdminStatus"];
+      registrationStatus: components["schemas"]["RegistrationStatus"];
+      message?: string | null;
+      adminInfo?: components["schemas"]["AdminInfo"] | null;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+      /** Format: date-time */
+      published?: string | null;
+      /** Format: date-time */
+      expired?: string | null;
+      updatedByUser: string;
+      createdByUser: string;
+      createdBy: string;
+      updatedBy: string;
+      createdByAdmin: boolean;
+      productData: components["schemas"]["ProductData"];
+      agreements: components["schemas"]["AgreementInfo"][];
+      /** Format: int64 */
+      version?: number | null;
+    };
+    ProductRegistrationDryRunDTO: {
+      /** Format: uuid */
+      id?: string | null;
+      /** Format: uuid */
+      supplierId: string;
+      supplierRef: string;
+      hmsArtNr?: string | null;
+      /** Format: uuid */
+      seriesUUID?: string | null;
       isoCategory: string;
       title: string;
       articleName: string;
@@ -749,6 +835,7 @@ export interface components {
       identifier: string;
       label: string;
       guide: string;
+      definition?: string | null;
       isocode: string;
       type: string;
       unit?: string | null;
@@ -767,6 +854,7 @@ export interface components {
       identifier: string;
       label: string;
       guide: string;
+      definition?: string | null;
       isoCode: string;
       type: string;
       unit?: string | null;
@@ -826,6 +914,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   findAgreements: {
     parameters: {
       query: {
@@ -933,6 +1022,21 @@ export interface operations {
     };
     responses: {
       /** @description updateAgreement 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AgreementRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteAgreeent: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description deleteAgreeent 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["AgreementRegistrationDTO"];
@@ -1172,6 +1276,64 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["MediaDTO"];
         };
+      };
+    };
+  };
+  createNews: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NewsRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description createNews 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["NewsRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createNewsDraft: {
+    responses: {
+      /** @description createNewsDraft 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["NewsRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateNews: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["NewsRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description updateNews 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["NewsRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteNews: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description deleteNews 200 response */
+      200: {
+        content: never;
       };
     };
   };
@@ -1421,6 +1583,44 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createExport: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description createExport 200 response */
+      200: {
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+        };
+      };
+    };
+  };
+  importExcel: {
+    parameters: {
+      query: {
+        dryRun: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description importExcel 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
         };
       };
     };
@@ -2078,6 +2278,57 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createExport_1: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description createExport_1 200 response */
+      200: {
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+        };
+      };
+    };
+  };
+  importExcel_1: {
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description importExcel_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  importExcelDryrun: {
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description importExcelDryrun 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDryRunDTO"][];
         };
       };
     };

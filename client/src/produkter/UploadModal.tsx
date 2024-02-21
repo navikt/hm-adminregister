@@ -3,7 +3,7 @@ import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from "@navi
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { MediaDTO, ProductRegistrationDTO } from "utils/response-types";
+import { MediaDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTOAddFiles, mapToMediaInfo } from "utils/product-util";
 import { ImageContainer } from "components/ImageCard";
 import { HM_REGISTER_URL } from "environments";

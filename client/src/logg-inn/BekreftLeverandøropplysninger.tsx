@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useSupplier } from "utils/swr-hooks";
-import { SupplierRegistrationDTO } from "utils/response-types";
+import { SupplierRegistrationDTO } from "utils/types/response-types";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { supplierInfoUpdate } from "utils/zodSchema/login";

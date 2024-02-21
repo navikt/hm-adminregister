@@ -8,7 +8,7 @@ import { createNewProductSchema } from "utils/zodSchema/newProduct";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
-import { ProductDraftWithDTO } from "utils/response-types";
+import { ProductDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import Combobox from "../components/Combobox";
 import { HM_REGISTER_URL } from "environments";

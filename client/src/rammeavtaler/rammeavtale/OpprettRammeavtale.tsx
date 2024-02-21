@@ -5,7 +5,7 @@ import { z } from "zod";
 import React, { useState } from "react";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
-import { AgreementDraftWithDTO } from "utils/response-types";
+import { AgreementDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { createNewAgreementSchema } from "utils/zodSchema/newAgreement";

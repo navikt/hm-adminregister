@@ -52,7 +52,7 @@ Open [http://localhost:5173/](http://localhost:5173/) with your browser to see t
 schema.d.ts is updated by running hm-grunndata-register locally and running the following command:
 
 ```
-npx openapi-typescript http://localhost:8080/admreg/swagger/hjelpemiddel-registrering-api-0.1.yml -o ./client/src/utils/schema.d.ts
+npx openapi-typescript http://localhost:8080/admreg/swagger/hjelpemiddel-registrering-api-0.1.yml -o ./client/src/utils/types/schema.d.ts
 ```
 
 Read more about [`openapi-typescript`](https://www.npmjs.com/package/openapi-typescript?activeTab=readme)

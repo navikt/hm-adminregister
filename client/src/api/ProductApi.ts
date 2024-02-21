@@ -1,5 +1,5 @@
 import { EditCommonInfoProduct } from "produkter/Produkt";
-import { DraftVariantDTO, ProductRegistrationDTO } from "utils/response-types";
+import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { CustomError } from "utils/swr-hooks";
 

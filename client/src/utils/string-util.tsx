@@ -1,3 +1,5 @@
+import { AgreementInfo } from "utils/types/types";
+
 export const labelRequired = (label: string) => (
   <>
     {label}
@@ -25,4 +27,15 @@ export const toValueAndUnit = (value: string, unit: string) => {
 export const isUUID = (string: string) => {
   const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(string);
+};
+
+export const formatAgreementRanks = (agreements: AgreementInfo[]): string => {
+  if (agreements.length === 0) return "-";
+  if (agreements.length === 1 && agreements[0].rank === 99) return "-";
+
+  return agreements
+    .map((ag) => ag.rank)
+    .filter((rank) => rank !== 99)
+    .sort()
+    .join(", ");
 };

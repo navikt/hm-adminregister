@@ -2,7 +2,7 @@ import {
   ProductAgreementRegistrationDTO,
   ProductAgreementRegistrationDTOList,
   ProductRegistrationDTO,
-} from "utils/response-types";
+} from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { CustomError } from "utils/swr-hooks";
 import { v4 as uuidv4 } from "uuid";

@@ -3,7 +3,7 @@ import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navi
 import "./products.scss";
 import { FileExcelIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useProducts } from "utils/swr-hooks";
-import { SeriesGroupDTO } from "utils/response-types";
+import { SeriesGroupDTO } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 
 const Produkter = () => {

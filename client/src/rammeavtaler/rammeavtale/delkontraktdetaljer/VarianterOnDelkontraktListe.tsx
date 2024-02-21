@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BodyShort, Checkbox, Table, VStack } from "@navikt/ds-react";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 
 interface Props {
   seriesId?: string;

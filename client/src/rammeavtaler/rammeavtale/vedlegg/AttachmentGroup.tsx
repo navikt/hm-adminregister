@@ -3,7 +3,7 @@ import { FilePdfIcon, MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from 
 import React, { useState } from "react";
 import UploadModal from "./UploadModal";
 import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
-import { AgreementAttachment } from "utils/response-types";
+import { AgreementAttachment } from "utils/types/response-types";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { deleteAttachmentGroup, deleteFileFromAttachmentGroup } from "api/AgreementApi";
 import ConfirmModal from "components/ConfirmModal";

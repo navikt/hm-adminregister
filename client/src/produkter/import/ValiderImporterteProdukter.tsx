@@ -3,7 +3,7 @@ import { Upload } from "produkter/import/ImporterProdukter";
 import React, { useEffect, useState } from "react";
 import { importProducts } from "api/ImportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import * as _ from "lodash";
 
 interface Props {

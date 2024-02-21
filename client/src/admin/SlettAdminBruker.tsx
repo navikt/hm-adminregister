@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import useSWR from "swr";
 import "./slett-admin.scss";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { UserDTO } from "utils/response-types";
+import { UserDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 

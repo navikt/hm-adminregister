@@ -1,6 +1,6 @@
 import { Button, Checkbox, HStack, Modal, Table, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
-import { ProductAgreementRegistrationDTOList } from "utils/response-types";
+import { ProductAgreementRegistrationDTOList } from "utils/types/response-types";
 import { deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import Content from "components/styledcomponents/Content";

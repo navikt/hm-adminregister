@@ -2,7 +2,7 @@ import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { AttachmentGroup } from "./AttachmentGroup";
-import { AgreementRegistrationDTO } from "utils/response-types";
+import { AgreementRegistrationDTO } from "utils/types/response-types";
 import NewAttachmentGroupModal from "rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal";
 import { TabPanel } from "components/styledcomponents/TabPanel";
 

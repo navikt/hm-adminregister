@@ -5,7 +5,7 @@ import {
   SupplierStatus,
   SupplierUserChunk,
   UserDTO,
-} from "./response-types";
+} from "./types/response-types";
 
 export interface Supplier {
   id: string;

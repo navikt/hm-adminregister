@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import { BodyLong, Box, Button, Heading, Label, Textarea, VStack } from "@navikt/ds-react";
 import StatusTag from "components/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { productVariantSchema } from "utils/zodSchema/newProduct";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, labelRequired } from "utils/string-util";
 

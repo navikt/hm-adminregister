@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { newProductVariantSchema } from "utils/zodSchema/newProduct";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { DraftVariantDTO, ProductRegistrationDTO } from "utils/response-types";
+import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { isUUID, labelRequired } from "utils/string-util";
 import ProductVariantForm from "./ProductVariantForm";

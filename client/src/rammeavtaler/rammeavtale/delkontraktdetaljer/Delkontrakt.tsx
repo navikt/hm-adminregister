@@ -2,7 +2,7 @@ import {
   AgreementPostDTO,
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
-} from "utils/response-types";
+} from "utils/types/response-types";
 import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import React, { useEffect, useState } from "react";

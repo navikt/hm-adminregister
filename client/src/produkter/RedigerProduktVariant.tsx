@@ -2,7 +2,7 @@ import { Heading, HStack, Loader, VStack } from "@navikt/ds-react";
 import useSWR from "swr";
 import { useParams } from "react-router-dom";
 import ProductVariantForm from "./ProductVariantForm";
-import { ProductRegistrationDTO } from "utils/response-types";
+import { ProductRegistrationDTO } from "utils/types/response-types";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET } from "utils/swr-hooks";

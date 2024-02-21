@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
-import { AgreementRegistrationDTO, MediaDTO } from "utils/response-types";
+import { AgreementRegistrationDTO, MediaDTO } from "utils/types/response-types";
 import { getEditedAgreementDTOAddFiles } from "utils/agreement-util";
 import { mapToMediaInfo } from "utils/product-util";
 

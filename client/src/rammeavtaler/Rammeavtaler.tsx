@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, Button, Heading, LinkPanel, Loader, Pagination, Search } from "@navikt/ds-react";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
-import { AgreementGroupDto } from "utils/response-types";
+import { AgreementGroupDto } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 
 const Rammeavtaler = () => {

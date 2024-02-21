@@ -4,7 +4,7 @@ import {
   AgreementDraftWithDTO,
   AgreementPostDTO,
   AgreementRegistrationDTO,
-} from "utils/response-types";
+} from "utils/types/response-types";
 import { EditCommonInfoAgreement } from "rammeavtaler/rammeavtale/Rammeavtale";
 import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";

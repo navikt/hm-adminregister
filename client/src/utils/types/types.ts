@@ -1,0 +1,63 @@
+export interface Product {
+  id: string;
+  title: string;
+  attributes: Attributes;
+  variantCount: number;
+  variants: ProductVariant[];
+  compareData: ComparingData;
+  isoCategory: string;
+  isoCategoryTitle: string;
+  isoCategoryText: string;
+  accessory: boolean;
+  sparepart: boolean;
+  supplierId: string;
+  agreements: AgreementInfo[];
+  /** expired from backend is a Date data field like 2043-06-01T14:19:30.505665648*/
+}
+
+export interface ProductVariant {
+  id: string;
+  hmsArtNr: string | null;
+  supplierRef: string;
+  articleName: string;
+  techData: TechData;
+  hasAgreement: boolean;
+  filters: { [key: string]: string | number };
+  expired: string;
+  agreements: AgreementInfo[];
+  /** expired from backend is a Date data field like 2043-06-01T14:19:30.505665648*/
+}
+
+export interface AgreementInfo {
+  id: string;
+  identifier: string;
+  title: string;
+  rank: number;
+  postNr: number;
+  postTitle: string;
+  expired: string;
+}
+
+export interface TechData {
+  [key: string]: { value: string; unit: string };
+}
+
+interface Attributes {
+  manufacturer?: string;
+  articlename?: string;
+  series?: string;
+  shortdescription?: string;
+  text?: string;
+  bestillingsordning?: boolean;
+  commonCharacteristics?: TechData;
+  compatibleWith?: string[];
+}
+
+export interface ComparingData {
+  techDataRange: TechDataRange;
+  agreementRank: number | null;
+}
+
+export interface TechDataRange {
+  [key: string]: { minValue: string; maxValue: string | null; unit: string };
+}

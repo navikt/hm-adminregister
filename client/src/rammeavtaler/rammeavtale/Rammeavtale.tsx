@@ -7,7 +7,7 @@ import AboutTab from "./AboutTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { AgreementRegistrationDTO } from "utils/response-types";
+import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 import { deleteAgreement, updateAgreementDescription } from "api/AgreementApi";

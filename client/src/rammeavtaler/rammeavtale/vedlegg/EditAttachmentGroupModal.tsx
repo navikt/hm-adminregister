@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AgreementAttachment } from "utils/response-types";
+import { AgreementAttachment } from "utils/types/response-types";
 import { editAttachmentGroupInfoSchema } from "utils/zodSchema/editAttachmentGroupInfo";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
