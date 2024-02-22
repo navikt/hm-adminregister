@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { Alert, Button, Dropdown, Heading, HStack, LinkPanel, Loader, Search, VStack } from "@navikt/ds-react";
 import "./products.scss";
-import { FileExcelIcon, PlusIcon } from "@navikt/aksel-icons";
+import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useProducts } from "utils/swr-hooks";
 import { SeriesGroupDTO } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
+import { Avstand } from "felleskomponenter/Avstand";
 
 const Produkter = () => {
   const { data, isLoading } = useProducts();
@@ -33,7 +34,6 @@ const Produkter = () => {
         <Heading level="1" size="medium" spacing>
           Produkter
         </Heading>
-
         <div className="page__content-container">
           <div className="search-panel">
             <form className="search-panel__search-box" onSubmit={handleSubmit}>
@@ -58,37 +58,68 @@ const Produkter = () => {
               >
                 Nytt produkt
               </Button>
-              <Button
-                variant="secondary"
-                size="medium"
-                icon={<FileExcelIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/produkter/importer-produkter")}
-              >
-                Import
-              </Button>
+              <Dropdown>
+                <Button
+                  style={{ marginLeft: "auto" }}
+                  variant="tertiary"
+                  icon={<MenuElipsisVerticalIcon title="Importer eller eksporter produkter" fontSize="1.5rem" />}
+                  as={Dropdown.Toggle}
+                ></Button>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.GroupedList>
+                    <Dropdown.Menu.GroupedList.Item
+                      onClick={() => {
+                        navigate("/produkter/importer-produkter");
+                      }}
+                    >
+                      <FileExcelIcon aria-hidden />
+                      Importer produkter
+                    </Dropdown.Menu.GroupedList.Item>
+                  </Dropdown.Menu.GroupedList>
+                  <Dropdown.Menu.Divider />
+                  <Dropdown.Menu.List>
+                    <Dropdown.Menu.List.Item
+                      onClick={() => {
+                        console.log("not implemented");
+                      }}
+                    >
+                      <FileExcelIcon aria-hidden />
+                      Eksporter produkter
+                    </Dropdown.Menu.List.Item>
+                  </Dropdown.Menu.List>
+                </Dropdown.Menu>
+              </Dropdown>
             </HStack>
           </div>
-
-          {filteredData?.length === 0 && searchTerm.length ? (
-            <Alert variant="info">Ingen produkter funnet.</Alert>
-          ) : (
-            <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
-              {renderData &&
-                renderData.map((product, i) => (
-                  <LinkPanel as={Link} to={`/produkter/${product.seriesId}`} className="panel-list__name-panel" key={i}>
-                    <LinkPanel.Title className="panel-list__title panel-list__width">
-                      {product.title || "Ukjent produktnavn"}
-                    </LinkPanel.Title>
-                    <LinkPanel.Description className="panel-list__description">
-                      Antall artikler: {product.count}
-                    </LinkPanel.Description>
-                  </LinkPanel>
-                ))}
-            </div>
-          )}
         </div>
+        <Avstand marginBottom={4} />
+        <VStack className="products-page__products">
+          <div className="page__content-container">
+            {filteredData?.length === 0 && searchTerm.length ? (
+              <Alert variant="info">Ingen produkter funnet.</Alert>
+            ) : (
+              <div className="panel-list__container">
+                {isLoading && <Loader size="3xlarge" title="venter..." />}
+                {renderData &&
+                  renderData.map((product, i) => (
+                    <LinkPanel
+                      as={Link}
+                      to={`/produkter/${product.seriesId}`}
+                      className="panel-list__name-panel"
+                      key={i}
+                    >
+                      <LinkPanel.Title className="panel-list__title panel-list__width">
+                        {product.title || "Ukjent produktnavn"}
+                      </LinkPanel.Title>
+                      <LinkPanel.Description className="panel-list__description">
+                        Antall artikler: {product.count}
+                      </LinkPanel.Description>
+                    </LinkPanel>
+                  ))}
+              </div>
+            )}
+          </div>
+        </VStack>
       </div>
     </main>
   );
