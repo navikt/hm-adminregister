@@ -9,10 +9,8 @@ import { baseUrl } from "utils/swr-hooks";
 const container = document.getElementById("root")!;
 createRoot(container).render(
   <>
-    <React.StrictMode>
-      <BrowserRouter basename={baseUrl()}>
-        <App />
-      </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter basename={baseUrl()}>
+      <App />
+    </BrowserRouter>
   </>,
 );
