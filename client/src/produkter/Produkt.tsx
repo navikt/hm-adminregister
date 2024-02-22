@@ -29,7 +29,7 @@ const ProductPage = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
   const { seriesId } = useParams();
@@ -83,27 +83,27 @@ const ProductPage = () => {
   }
 
   const hasImage = (): boolean => {
-    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length > 0
-  }
+    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length > 0;
+  };
 
   const hasDocument = (): boolean => {
-    return products!![0].productData.media.filter((media) => media.type == "PDF").length > 0
-  }
+    return products!![0].productData.media.filter((media) => media.type == "PDF").length > 0;
+  };
 
-  const hasTekniskData = (): boolean => {
+  const hasTechnicalData = (): boolean => {
     return products!!.length > 1 || !isUUID(products!![0].supplierRef);
-  }
+  };
 
-  const validateProdukt = () => {
+  const validateProduct = () => {
     if (
       !products!![0].productData.attributes.text ||
       !hasImage() ||
       !hasDocument() ||
-      !hasTekniskData()
+      !hasTechnicalData()
     ) {
-      setIsInvalid(true);
+      setIsValid(false);
     } else {
-      setIsInvalid(false);
+      setIsValid(true);
     }
   };
 
@@ -135,28 +135,7 @@ const ProductPage = () => {
   const isPending = products[0].adminStatus === "PENDING";
 
   const GodkjenningModal = () => {
-    return isInvalid ? <Modal
-        open={modalIsOpen}
-        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
-        onClose={() => setModalIsOpen(false)}
-      >
-        <Modal.Body>
-          <BodyLong>Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til
-            godkjenning.</BodyLong>
-          <BodyLong>Vennligst rett opp følgende feil:</BodyLong>
-          <ul>
-              {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-              {!hasImage() && <li>Produktet mangler bilder</li>}
-              {!hasDocument() && <li>Produktet mangler dokumenter</li>}
-              {!hasTekniskData() && <li>Produktet mangler teknisk data</li>}
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
-            Lukk
-          </Button>
-        </Modal.Footer>
-      </Modal> :
+    return isValid ?
       <Modal
         open={modalIsOpen}
         header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
@@ -183,6 +162,28 @@ const ProductPage = () => {
           </Button>
           <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
             Avbryt
+          </Button>
+        </Modal.Footer>
+      </Modal> :
+      <Modal
+        open={modalIsOpen}
+        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
+        onClose={() => setModalIsOpen(false)}
+      >
+        <Modal.Body>
+          <BodyLong>Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til
+            godkjenning.</BodyLong>
+          <BodyLong>Vennligst rett opp følgende feil:</BodyLong>
+          <ul>
+            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
+            {!hasImage() && <li>Produktet mangler bilder</li>}
+            {!hasDocument() && <li>Produktet mangler dokumenter</li>}
+            {!hasTechnicalData() && <li>Produktet mangler teknisk data</li>}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+            Lukk
           </Button>
         </Modal.Footer>
       </Modal>;
@@ -222,7 +223,7 @@ const ProductPage = () => {
                 isPending={isPending}
                 isDraft={isDraft}
                 onClick={() => {
-                  validateProdukt();
+                  validateProduct();
                   setModalIsOpen(true);
                 }}
               />
