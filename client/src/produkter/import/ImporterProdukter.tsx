@@ -136,11 +136,22 @@ export default function ImporterProdukter({ validerImporterteProdukter }: Props)
             </ol>
           )}
 
-          <HStack justify="end">
+          <HStack justify="end" gap="4">
+            <Button
+              className="fit-content"
+              size="medium"
+              variant="secondary"
+              iconPosition="right"
+              onClick={() => {
+                history.back();
+              }}
+            >
+              Avbryt
+            </Button>
             <Button
               disabled={!upload}
-              size="small"
-              variant="secondary"
+              size="medium"
+              variant="primary"
               onClick={(event) => {
                 validerImporterteProdukter(upload!);
               }}
