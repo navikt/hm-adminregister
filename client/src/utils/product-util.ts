@@ -83,8 +83,6 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
   let mappedProducts: Product[] = [];
 
   Object.entries(groupedBySeries).forEach(([key, dtos]) => {
-    console.log("key", key);
-    console.log("dtos", dtos);
     if (dtos.length > 0) {
       const firstProduct = dtos[0];
       const product: Product = {
