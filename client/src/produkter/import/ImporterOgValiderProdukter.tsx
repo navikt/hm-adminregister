@@ -8,5 +8,13 @@ export const ImporterOgValiderProdukter = () => {
 
   if (!upload) {
     return <ImporterProdukter validerImporterteProdukter={setUpload} />;
-  } else return <ValiderImporterteProdukter upload={upload} />;
+  } else
+    return (
+      <ValiderImporterteProdukter
+        upload={upload}
+        reseetUpload={() => {
+          setUpload(undefined);
+        }}
+      />
+    );
 };
