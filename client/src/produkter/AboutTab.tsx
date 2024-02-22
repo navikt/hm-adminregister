@@ -12,9 +12,10 @@ interface Props {
   product: ProductRegistrationDTO;
   onSubmit: SubmitHandler<EditCommonInfoProduct>;
   isoCategory?: IsoCategoryDTO;
+  showInputError: boolean;
 }
 
-const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
+const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => {
   const formMethods = useFormContext<EditCommonInfoProduct>();
   const [showEditIsoMode, setShowEditIsoMode] = useState(false);
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
@@ -142,7 +143,8 @@ const AboutTab = ({ product, onSubmit, isoCategory }: Props) => {
               <>
                 {!product.productData.attributes.text ? (
                   <>
-                    <Alert variant="info">Produktet trenger en beskrivelse før det kan sendes til godkjenning</Alert>
+                    <Alert variant={showInputError ? "error" : "info"}>Produktet trenger en beskrivelse før det kan
+                      sendes til godkjenning</Alert>
                     <Button
                       className="fit-content"
                       variant="tertiary"

@@ -5,7 +5,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 
-const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
+const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[], showInputError: boolean }) => {
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
@@ -30,7 +30,7 @@ const VariantsTab = ({ products }: { products: ProductRegistrationDTO[] }) => {
   return (
     <Tabs.Panel value="variants" className="tab-panel">
       {isFirstTime && (
-        <Alert variant="info">
+        <Alert variant={showInputError ? "error" : "info"}>
           Produktet trenger en eller flere artikler. Her kan man legge inn artikler som varierer for eksempel i
           størrelse eller farge. Alle artiklene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
           fra leverandør og teknisk data.

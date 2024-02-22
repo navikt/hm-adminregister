@@ -208,10 +208,12 @@ const ProductPage = () => {
                 <Tabs.Tab value="documents" label="Dokumenter" />
                 <Tabs.Tab value="variants" label="Teknisk data / artikler" />
               </Tabs.List>
-              <AboutTab product={products[0]} onSubmit={onSubmit} isoCategory={isoCategory} />
-              <FileTab products={products} mutateProducts={mutateProducts} fileType="images" />
-              <FileTab products={products} mutateProducts={mutateProducts} fileType="documents" />
-              <VariantsTab products={products} />
+              <AboutTab product={products[0]} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
+              <FileTab products={products} mutateProducts={mutateProducts} fileType="images"
+                       showInputError={!isValid} />
+              <FileTab products={products} mutateProducts={mutateProducts} fileType="documents"
+                       showInputError={!isValid} />
+              <VariantsTab products={products} showInputError={!isValid} />
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>

@@ -14,9 +14,10 @@ interface Props {
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
   fileType: "images" | "documents";
+  showInputError: boolean;
 }
 
-const FileTab = ({ products, mutateProducts, fileType }: Props) => {
+const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images, pdfs } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useHydratedErrorStore();
@@ -79,7 +80,7 @@ const FileTab = ({ products, mutateProducts, fileType }: Props) => {
                 </ol>
               )}
               {sortedImages.length === 0 && (
-                <Alert variant="info">
+                <Alert variant={showInputError ? "error" : "info"}>
                   Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre eller brukermanual.
                 </Alert>
               )}
@@ -102,7 +103,8 @@ const FileTab = ({ products, mutateProducts, fileType }: Props) => {
                 </ol>
               )}
               {sortedPdfs.length === 0 && (
-                <Alert variant="info">Produktet trenger dokumenter før det kan sendes til godkjenning</Alert>
+                <Alert variant={showInputError ? "error" : "info"}>Produktet trenger dokumenter før det kan sendes til
+                  godkjenning</Alert>
               )}
             </>
           )}
