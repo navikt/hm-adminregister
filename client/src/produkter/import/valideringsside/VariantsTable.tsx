@@ -1,9 +1,10 @@
-import { Table } from "@navikt/ds-react";
+import { HStack, Table, VStack } from "@navikt/ds-react";
 import { Fragment, useState } from "react";
 import { formatAgreementRanks, toValueAndUnit } from "utils/string-util";
 import classNames from "classnames";
 import { sortIntWithStringFallback } from "utils/sort-util";
 import { Product, ProductVariant } from "utils/types/types";
+import { PlusCircleFillIcon } from "@navikt/aksel-icons";
 
 type SortColumns = {
   orderBy: string | null;
@@ -70,13 +71,15 @@ export const VariantsTable = ({ product }: { product: Product }) => {
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>Tittel</Table.ColumnHeader>
-            {product.variants.map((variant) => (
-              <Table.ColumnHeader key={variant.id}>{variant.articleName}</Table.ColumnHeader>
+            {product.variants.map((variant, i) => (
+              <Table.ColumnHeader key={i}>
+                <VariantTitleHeader variant={variant} />
+              </Table.ColumnHeader>
             ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <Table.Row>
+          <Table.Row key={product.id}>
             <Table.HeaderCell>HMS-nummer</Table.HeaderCell>
             {product.variants.map((variant) => (
               <Table.DataCell key={variant.id}>{variant.hmsArtNr ?? "-"}</Table.DataCell>
@@ -86,9 +89,9 @@ export const VariantsTable = ({ product }: { product: Product }) => {
           {product.agreements && product.agreements.length > 0 && (
             <Table.Row>
               <Table.HeaderCell>Rangering</Table.HeaderCell>
-              {product.variants.map((variant) => (
-                <Fragment key={variant.id}>
-                  <Table.DataCell key={variant.id}>{formatAgreementRanks(variant.agreements!)}</Table.DataCell>
+              {product.variants.map((variant, i) => (
+                <Fragment key={i}>
+                  <Table.DataCell key={i}>{formatAgreementRanks(variant.agreements!)}</Table.DataCell>
                 </Fragment>
               ))}
             </Table.Row>
@@ -121,5 +124,18 @@ export const VariantsTable = ({ product }: { product: Product }) => {
         </Table.Body>
       </Table>
     </div>
+  );
+};
+
+const VariantTitleHeader = ({ variant }: { variant: ProductVariant }) => {
+  return (
+    <HStack>
+      {variant.articleName}{" "}
+      {!variant.id && (
+        <HStack align="center">
+          <PlusCircleFillIcon color="green" />
+        </HStack>
+      )}
+    </HStack>
   );
 };
