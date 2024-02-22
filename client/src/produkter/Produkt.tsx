@@ -18,6 +18,7 @@ import { HM_REGISTER_URL } from "environments";
 import { sendTilGodkjenning, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import { RocketIcon } from "@navikt/aksel-icons";
+import { isUUID } from "utils/string-util";
 
 export type EditCommonInfoProduct = {
   description: string;
@@ -28,6 +29,7 @@ const ProductPage = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
   const activeTab = searchParams.get("tab");
 
   const { seriesId } = useParams();
@@ -44,18 +46,18 @@ const ProductPage = () => {
     data: products,
     error,
     isLoading,
-    mutate: mutateProducts,
+    mutate: mutateProducts
   } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
 
   const {
     data: isoCategory,
     error: isoError,
-    isLoading: isoIsLoading,
+    isLoading: isoIsLoading
   } = useSWR<IsoCategoryDTO>(
     products && products[0].isoCategory && products[0].isoCategory !== "0"
       ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${products[0].isoCategory}`
       : null,
-    fetcherGET,
+    fetcherGET
   );
 
   const updateUrlOnTabChange = (value: string) => {
@@ -79,6 +81,31 @@ const ProductPage = () => {
         setGlobalError(error.status, error.message);
       });
   }
+
+  const hasImage = (): boolean => {
+    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length > 0
+  }
+
+  const hasDocument = (): boolean => {
+    return products!![0].productData.media.filter((media) => media.type == "PDF").length > 0
+  }
+
+  const hasTekniskData = (): boolean => {
+    return products!!.length > 1 || !isUUID(products!![0].supplierRef);
+  }
+
+  const validateProdukt = () => {
+    if (
+      !products!![0].productData.attributes.text ||
+      !hasImage() ||
+      !hasDocument() ||
+      !hasTekniskData()
+    ) {
+      setIsInvalid(true);
+    } else {
+      setIsInvalid(false);
+    }
+  };
 
   if (error) {
     return (
@@ -107,39 +134,64 @@ const ProductPage = () => {
   const isDraft = products[0].draftStatus === "DRAFT";
   const isPending = products[0].adminStatus === "PENDING";
 
+  const GodkjenningModal = () => {
+    return isInvalid ? <Modal
+        open={modalIsOpen}
+        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
+        onClose={() => setModalIsOpen(false)}
+      >
+        <Modal.Body>
+          <BodyLong>Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til
+            godkjenning.</BodyLong>
+          <BodyLong>Vennligst rett opp følgende feil:</BodyLong>
+          <ul>
+              {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
+              {!hasImage() && <li>Produktet mangler bilder</li>}
+              {!hasDocument() && <li>Produktet mangler dokumenter</li>}
+              {!hasTekniskData() && <li>Produktet mangler teknisk data</li>}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+            Lukk
+          </Button>
+        </Modal.Footer>
+      </Modal> :
+      <Modal
+        open={modalIsOpen}
+        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
+        onClose={() => setModalIsOpen(false)}
+      >
+        <Modal.Body>
+          <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
+          <ul>
+            <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
+            <li>tekniske data er korrekte.</li>
+            <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
+          </ul>
+          <BodyLong>
+            <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.
+          </BodyLong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            onClick={() => {
+              onSendTilGodkjenning().then(() => setModalIsOpen(false));
+            }}
+          >
+            Send til godkjenning
+          </Button>
+          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+            Avbryt
+          </Button>
+        </Modal.Footer>
+      </Modal>;
+  };
+
   return (
     <main className="show-menu">
       <FormProvider {...formMethods}>
-        <Modal
-          open={modalIsOpen}
-          header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
-          onClose={() => setModalIsOpen(false)}
-        >
-          <Modal.Body>
-            <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
-            <ul>
-              <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
-              <li>tekniske data er korrekte.</li>
-              <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
-            </ul>
-            <BodyLong>
-              <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.
-            </BodyLong>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              onClick={() => {
-                onSendTilGodkjenning().then(() => setModalIsOpen(false));
-              }}
-            >
-              Send til godkjenning
-            </Button>
-            <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
-              Avbryt
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
+        <GodkjenningModal />
         <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
           <VStack gap={{ xs: "4", md: "8" }}>
             <VStack gap="1">
@@ -169,7 +221,10 @@ const ProductPage = () => {
                 isAdmin={false}
                 isPending={isPending}
                 isDraft={isDraft}
-                onClick={() => setModalIsOpen(true)}
+                onClick={() => {
+                  validateProdukt();
+                  setModalIsOpen(true);
+                }}
               />
             )}
             <StatusPanel product={products[0]} isAdmin={loggedInUser?.isAdmin || false} />
@@ -182,11 +237,11 @@ const ProductPage = () => {
 export default ProductPage;
 
 const PublishButton = ({
-  isAdmin,
-  isPending,
-  isDraft,
-  onClick,
-}: {
+                         isAdmin,
+                         isPending,
+                         isDraft,
+                         onClick
+                       }: {
   isAdmin: boolean;
   isPending: boolean;
   isDraft: boolean;
