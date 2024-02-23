@@ -6,7 +6,7 @@ import { mapProductRegistrationDTOToProduct } from "utils/product-util";
 import { Upload } from "produkter/import/ImporterProdukter";
 import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSeriesInfo";
 import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
-import { useIsoCategories } from "utils/swr-hooks";
+import { baseUrl, useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
 import { importProducts } from "api/ImportExportApi";
 
@@ -72,8 +72,8 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
             </Heading>
             <p>
               <BodyShort>
-                Importeringen var vellykket. Du kan nå gå til <a href="/produkter">produktoversikten</a> for å se de
-                importerte produktene.
+                Importeringen var vellykket. Du kan nå gå til <a href={baseUrl("/produkter")}>produktoversikten</a> for
+                å se de importerte produktene.
               </BodyShort>
             </p>
           </div>
