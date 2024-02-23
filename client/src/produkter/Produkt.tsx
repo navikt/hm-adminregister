@@ -224,7 +224,17 @@ const ProductPage = () => {
             </VStack>
             <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
               <Tabs.List>
-                <Tabs.Tab value="about" label="Om produktet" />
+                <Tabs.Tab
+                  value="about"
+                  label={
+                    <>
+                      Om produktet
+                      {!products!![0].productData.attributes.text && !isValid && (
+                        <ExclamationmarkTriangleIcon className="product-error-text" />
+                      )}
+                    </>
+                  }
+                />
                 <Tabs.Tab value="images" label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} />} />
                 <Tabs.Tab
                   value="documents"
