@@ -64,48 +64,50 @@ const Produkter = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <HStack gap="2" className="search-panel__add-new-button">
-              <Button
-                variant="secondary"
-                size="medium"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/produkter/opprett")}
-              >
-                Nytt produkt
-              </Button>
-              <Dropdown>
+            {loggedInUser && !loggedInUser.isAdmin && (
+              <HStack gap="2" className="search-panel__add-new-button">
                 <Button
-                  style={{ marginLeft: "auto" }}
-                  variant="tertiary"
-                  icon={<MenuElipsisVerticalIcon title="Importer eller eksporter produkter" fontSize="1.5rem" />}
-                  as={Dropdown.Toggle}
-                ></Button>
-                <Dropdown.Menu>
-                  <Dropdown.Menu.GroupedList>
-                    <Dropdown.Menu.GroupedList.Item
-                      onClick={() => {
-                        navigate("/produkter/importer-produkter");
-                      }}
-                    >
-                      <FileExcelIcon aria-hidden />
-                      Importer produkter
-                    </Dropdown.Menu.GroupedList.Item>
-                  </Dropdown.Menu.GroupedList>
-                  <Dropdown.Menu.Divider />
-                  <Dropdown.Menu.List>
-                    <Dropdown.Menu.List.Item
-                      onClick={() => {
-                        exportProductsForSupplier();
-                      }}
-                    >
-                      <FileExcelIcon aria-hidden />
-                      Eksporter produkter
-                    </Dropdown.Menu.List.Item>
-                  </Dropdown.Menu.List>
-                </Dropdown.Menu>
-              </Dropdown>
-            </HStack>
+                  variant="secondary"
+                  size="medium"
+                  icon={<PlusIcon aria-hidden />}
+                  iconPosition="left"
+                  onClick={() => navigate("/produkter/opprett")}
+                >
+                  Nytt produkt
+                </Button>
+                <Dropdown>
+                  <Button
+                    style={{ marginLeft: "auto" }}
+                    variant="tertiary"
+                    icon={<MenuElipsisVerticalIcon title="Importer eller eksporter produkter" fontSize="1.5rem" />}
+                    as={Dropdown.Toggle}
+                  ></Button>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.GroupedList>
+                      <Dropdown.Menu.GroupedList.Item
+                        onClick={() => {
+                          navigate("/produkter/importer-produkter");
+                        }}
+                      >
+                        <FileExcelIcon aria-hidden />
+                        Importer produkter
+                      </Dropdown.Menu.GroupedList.Item>
+                    </Dropdown.Menu.GroupedList>
+                    <Dropdown.Menu.Divider />
+                    <Dropdown.Menu.List>
+                      <Dropdown.Menu.List.Item
+                        onClick={() => {
+                          exportProductsForSupplier();
+                        }}
+                      >
+                        <FileExcelIcon aria-hidden />
+                        Eksporter produkter
+                      </Dropdown.Menu.List.Item>
+                    </Dropdown.Menu.List>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </HStack>
+            )}
           </div>
         </div>
         <Avstand marginBottom={4} />
