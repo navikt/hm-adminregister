@@ -12,6 +12,28 @@ const productImportPath = (isAdmin: boolean): string =>
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/excel/import`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/excel/import`;
 
+const productExportForSupplierPath = (isAdmin: boolean): string =>
+  isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/excel/export/supplier`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/excel/export/supplier`;
+
+export const exportProducts = async (isAdmin: boolean): Promise<any> => {
+  const response = await fetch(productExportForSupplierPath(isAdmin), {
+    method: "POST",
+    headers: {
+      accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    },
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    return await response.arrayBuffer();
+  } else {
+    const error = await response.json();
+    return Promise.reject(error);
+  }
+};
+
 export const importProducts = async (
   isAdmin: boolean,
   upload: Upload,

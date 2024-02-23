@@ -1,6 +1,5 @@
 import { Alert, BodyShort, Button, ExpansionCard, Heading, HStack, Loader } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
-import { importProducts } from "api/ImportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
@@ -9,6 +8,7 @@ import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSerie
 import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
+import { importProducts } from "api/ImportExportApi";
 
 interface Props {
   upload: Upload;

@@ -6,8 +6,11 @@ import { useProducts } from "utils/swr-hooks";
 import { SeriesGroupDTO } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
+import { exportProducts } from "api/ImportExportApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 const Produkter = () => {
+  const { loggedInUser } = useAuthStore();
   const { data, isLoading } = useProducts();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesGroupDTO | undefined>();
@@ -26,6 +29,19 @@ const Produkter = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
+  };
+
+  const exportProductsForSupplier = () => {
+    exportProducts(loggedInUser?.isAdmin || false).then((response) => {
+      var bytes = new Uint8Array(response); // pass your byte response to this constructor
+      var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "products.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    });
   };
 
   return (
@@ -80,7 +96,7 @@ const Produkter = () => {
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
                       onClick={() => {
-                        console.log("not implemented");
+                        exportProductsForSupplier();
                       }}
                     >
                       <FileExcelIcon aria-hidden />
