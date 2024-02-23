@@ -17,7 +17,7 @@ import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 import { sendTilGodkjenning, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
-import { RocketIcon } from "@navikt/aksel-icons";
+import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
 
 export type EditCommonInfoProduct = {
@@ -46,18 +46,18 @@ const ProductPage = () => {
     data: products,
     error,
     isLoading,
-    mutate: mutateProducts
+    mutate: mutateProducts,
   } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
 
   const {
     data: isoCategory,
     error: isoError,
-    isLoading: isoIsLoading
+    isLoading: isoIsLoading,
   } = useSWR<IsoCategoryDTO>(
     products && products[0].isoCategory && products[0].isoCategory !== "0"
       ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${products[0].isoCategory}`
       : null,
-    fetcherGET
+    fetcherGET,
   );
 
   const updateUrlOnTabChange = (value: string) => {
@@ -138,7 +138,7 @@ const ProductPage = () => {
   const isPending = products[0].adminStatus === "PENDING";
 
   const GodkjenningModal = () => {
-    return isValid ?
+    return isValid ? (
       <Modal
         open={modalIsOpen}
         header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
@@ -167,17 +167,19 @@ const ProductPage = () => {
             Avbryt
           </Button>
         </Modal.Footer>
-      </Modal> :
+      </Modal>
+    ) : (
       <Modal
         open={modalIsOpen}
         header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
         onClose={() => setModalIsOpen(false)}
       >
         <Modal.Body>
-          <BodyLong>Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til
-            godkjenning.</BodyLong>
-          <BodyLong>Vennligst rett opp følgende feil:</BodyLong>
-          <ul>
+          <BodyLong spacing>
+            Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til godkjenning.
+          </BodyLong>
+          <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
+          <ul className="product-error-text">
             {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
             {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
@@ -189,7 +191,23 @@ const ProductPage = () => {
             Lukk
           </Button>
         </Modal.Footer>
-      </Modal>;
+      </Modal>
+    );
+  };
+
+  const TabLabel = ({ title, numberOfElementsFn }: { title: string; numberOfElementsFn: () => number }) => {
+    return (
+      <>
+        {title}
+        {numberOfElementsFn() === 0 && !isValid ? (
+          <span className="product-error-text product-tab-tabel">
+            ({numberOfElementsFn()})<ExclamationmarkTriangleIcon />
+          </span>
+        ) : (
+          <span>({numberOfElementsFn()})</span>
+        )}
+      </>
+    );
   };
 
   return (
@@ -207,15 +225,29 @@ const ProductPage = () => {
             <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
               <Tabs.List>
                 <Tabs.Tab value="about" label="Om produktet" />
-                <Tabs.Tab value="images" label={`Bilder (${numberOfImages()})`} />
-                <Tabs.Tab value="documents" label={`Dokumenter (${numberOfDocuments()})`} />
-                <Tabs.Tab value="variants" label={`Teknisk data / artikler (${numberOfVariants()})`} />
+                <Tabs.Tab value="images" label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} />} />
+                <Tabs.Tab
+                  value="documents"
+                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} />}
+                />
+                <Tabs.Tab
+                  value="variants"
+                  label={<TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} />}
+                />
               </Tabs.List>
               <AboutTab product={products[0]} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
-              <FileTab products={products} mutateProducts={mutateProducts} fileType="images"
-                       showInputError={!isValid} />
-              <FileTab products={products} mutateProducts={mutateProducts} fileType="documents"
-                       showInputError={!isValid} />
+              <FileTab
+                products={products}
+                mutateProducts={mutateProducts}
+                fileType="images"
+                showInputError={!isValid}
+              />
+              <FileTab
+                products={products}
+                mutateProducts={mutateProducts}
+                fileType="documents"
+                showInputError={!isValid}
+              />
               <VariantsTab products={products} showInputError={!isValid} />
             </Tabs>
           </VStack>
@@ -243,11 +275,11 @@ const ProductPage = () => {
 export default ProductPage;
 
 const PublishButton = ({
-                         isAdmin,
-                         isPending,
-                         isDraft,
-                         onClick
-                       }: {
+  isAdmin,
+  isPending,
+  isDraft,
+  onClick,
+}: {
   isAdmin: boolean;
   isPending: boolean;
   isDraft: boolean;
