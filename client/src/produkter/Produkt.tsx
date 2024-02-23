@@ -82,24 +82,27 @@ const ProductPage = () => {
       });
   }
 
-  const hasImage = (): boolean => {
-    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length > 0;
+  const numberOfImages = () => {
+    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length;
   };
 
-  const hasDocument = (): boolean => {
-    return products!![0].productData.media.filter((media) => media.type == "PDF").length > 0;
+  const numberOfDocuments = () => {
+    return products!![0].productData.media.filter((media) => media.type == "PDF").length;
   };
 
-  const hasTechnicalData = (): boolean => {
-    return products!!.length > 1 || !isUUID(products!![0].supplierRef);
+  const numberOfVariants = () => {
+    if (isUUID(products!![0].supplierRef)) {
+      return 0;
+    }
+    return products!!.length;
   };
 
   const validateProduct = () => {
     if (
       !products!![0].productData.attributes.text ||
-      !hasImage() ||
-      !hasDocument() ||
-      !hasTechnicalData()
+      numberOfImages() === 0 ||
+      numberOfDocuments() === 0 ||
+      numberOfVariants() === 0
     ) {
       setIsValid(false);
     } else {
@@ -176,9 +179,9 @@ const ProductPage = () => {
           <BodyLong>Vennligst rett opp følgende feil:</BodyLong>
           <ul>
             {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {!hasImage() && <li>Produktet mangler bilder</li>}
-            {!hasDocument() && <li>Produktet mangler dokumenter</li>}
-            {!hasTechnicalData() && <li>Produktet mangler teknisk data</li>}
+            {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
+            {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
+            {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
           </ul>
         </Modal.Body>
         <Modal.Footer>
@@ -204,9 +207,9 @@ const ProductPage = () => {
             <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
               <Tabs.List>
                 <Tabs.Tab value="about" label="Om produktet" />
-                <Tabs.Tab value="images" label="Bilder" />
-                <Tabs.Tab value="documents" label="Dokumenter" />
-                <Tabs.Tab value="variants" label="Teknisk data / artikler" />
+                <Tabs.Tab value="images" label={`Bilder (${numberOfImages()})`} />
+                <Tabs.Tab value="documents" label={`Dokumenter (${numberOfDocuments()})`} />
+                <Tabs.Tab value="variants" label={`Teknisk data / artikler (${numberOfVariants()})`} />
               </Tabs.List>
               <AboutTab product={products[0]} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
               <FileTab products={products} mutateProducts={mutateProducts} fileType="images"
