@@ -144,7 +144,7 @@ const AgreementPage = () => {
                 <DelkontrakterTab
                   mutateAgreement={mutateAgreement}
                   agreementId={agreement.id}
-                  posts={agreement.agreementData.posts}
+                  posts={agreement.agreementData.posts.sort((a, b) => a.nr - b.nr)}
                 />
               </Tabs>
             </VStack>

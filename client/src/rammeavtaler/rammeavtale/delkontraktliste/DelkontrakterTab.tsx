@@ -6,6 +6,7 @@ import NewDelkontraktModal from "./NewDelkontraktModal";
 import { useProductVariantsByAgreementId } from "utils/swr-hooks";
 import { Delkontrakt } from "../delkontraktdetaljer/Delkontrakt";
 import { ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
+import { reorderPosts } from "api/AgreementApi";
 
 const DelkontrakterTab = ({
   posts,
@@ -16,6 +17,16 @@ const DelkontrakterTab = ({
   agreementId: string;
   mutateAgreement: () => void;
 }) => {
+  const reorderDelkontrakt = (post1: number, post2: number) => {
+    reorderPosts(agreementId, post1, post2)
+      .then((r) => {
+        mutateAgreement();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   const {
     data: delkontrakter,
     isLoading: delkontrakterIsLoading,
@@ -47,7 +58,7 @@ const DelkontrakterTab = ({
           <VStack gap="5">
             {posts.length > 0 &&
               posts.map((post, i) => (
-                <HGrid columns="auto 60px">
+                <HGrid columns="auto 60px" key={i}>
                   <Delkontrakt
                     key={i}
                     delkontrakt={post}
@@ -63,11 +74,21 @@ const DelkontrakterTab = ({
                         size={"small"}
                         variant="tertiary"
                         icon={<ChevronUpIcon />}
-                        onClick={() => {}}
+                        onClick={() => {
+                          reorderDelkontrakt(post.nr, posts[i - 1].nr);
+                        }}
                       />
                     )}
                     {i !== posts.length - 1 && (
-                      <Button aria-label="sorter-ned" size={"small"} variant="tertiary" icon={<ChevronDownIcon />} />
+                      <Button
+                        aria-label="sorter-ned"
+                        size={"small"}
+                        variant="tertiary"
+                        icon={<ChevronDownIcon />}
+                        onClick={() => {
+                          reorderDelkontrakt(post.nr, posts[i + 1].nr);
+                        }}
+                      />
                     )}
                   </VStack>
                 </HGrid>

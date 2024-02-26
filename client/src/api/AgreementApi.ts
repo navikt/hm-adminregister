@@ -104,6 +104,27 @@ export const postAgreementDraft = async (
   }
 };
 
+export const reorderPosts = async (
+  agreementId: string,
+  post1: number,
+  post2: number,
+): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate = await getAgreement(agreementId);
+  const post1Index = agreementToUpdate.agreementData.posts.findIndex((post) => post.nr === post1);
+  const post2Index = agreementToUpdate.agreementData.posts.findIndex((post) => post.nr === post2);
+
+  console.log("1-1", agreementToUpdate.agreementData.posts[post1Index]);
+  console.log("1-2", agreementToUpdate.agreementData.posts[post2Index]);
+
+  agreementToUpdate.agreementData.posts[post1Index].nr = post2;
+  agreementToUpdate.agreementData.posts[post2Index].nr = post1;
+
+  console.log("2-1", agreementToUpdate.agreementData.posts[post1Index]);
+  console.log("2-2", agreementToUpdate.agreementData.posts[post2Index]);
+
+  return await updateAgreement(agreementId, agreementToUpdate);
+};
+
 export const deleteFileFromAttachmentGroup = async (
   agreementId: string,
   uri: string,
