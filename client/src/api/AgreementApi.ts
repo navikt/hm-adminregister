@@ -113,14 +113,8 @@ export const reorderPosts = async (
   const post1Index = agreementToUpdate.agreementData.posts.findIndex((post) => post.nr === post1);
   const post2Index = agreementToUpdate.agreementData.posts.findIndex((post) => post.nr === post2);
 
-  console.log("1-1", agreementToUpdate.agreementData.posts[post1Index]);
-  console.log("1-2", agreementToUpdate.agreementData.posts[post2Index]);
-
   agreementToUpdate.agreementData.posts[post1Index].nr = post2;
   agreementToUpdate.agreementData.posts[post2Index].nr = post1;
-
-  console.log("2-1", agreementToUpdate.agreementData.posts[post1Index]);
-  console.log("2-2", agreementToUpdate.agreementData.posts[post2Index]);
 
   return await updateAgreement(agreementId, agreementToUpdate);
 };
