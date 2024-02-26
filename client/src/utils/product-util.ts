@@ -70,6 +70,7 @@ export const mapToMediaInfo = (mediaDTO: MediaDTO[], files: File[]): MediaInfo[]
     //La brukeren sette prioritet selv senere
     //Legge til text også når brukeren kan skrive inn bildebeskrivelse
     text: media.filename,
+    filename: media.filename,
     priority: i + 1,
     type: media.type,
     source: media.source,
