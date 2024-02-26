@@ -71,20 +71,23 @@ const Rammeavtaler = () => {
               {isLoading && <Loader size="3xlarge" title="venter..." />}
               {filteredData &&
                 filteredData.map((rammeavtale, i) => (
-                  <LinkPanel
-                    onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        navigate(`/rammeavtaler/${rammeavtale.id}`);
-                      }
-                    }}
-                    className="panel-list__name-panel"
-                    key={i}
-                  >
-                    <LinkPanel.Title className="panel-list__title panel-list__width">
-                      {rammeavtale.title || "Ukjent produktnavn"}
-                    </LinkPanel.Title>
-                  </LinkPanel>
+                  <>
+                    <LinkPanel
+                      onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          navigate(`/rammeavtaler/${rammeavtale.id}`);
+                        }
+                      }}
+                      className="panel-list__name-panel"
+                      key={i}
+                    >
+                      <LinkPanel.Title className="panel-list__title panel-list__width">
+                        {rammeavtale.title || "Ukjent produktnavn"}
+                      </LinkPanel.Title>
+                    </LinkPanel>
+                    <div></div>
+                  </>
                 ))}
             </div>
           ) : (

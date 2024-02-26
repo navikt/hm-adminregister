@@ -132,7 +132,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         mutateDelkontrakt={mutateDelkontrakter}
       />
 
-      <ExpansionCard size="small" key={delkontrakt.nr} aria-label="default-demo">
+      <ExpansionCard size="medium" key={delkontrakt.nr} aria-label="delkontrakt">
         <ExpansionCard.Header>
           <ExpansionCard.Title size="small">{delkontrakt.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
