@@ -1,6 +1,6 @@
 import { Alert, Button, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
 import { AgreementPostDTO } from "utils/types/response-types";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Avstand } from "felleskomponenter/Avstand";
 import NewDelkontraktModal from "./NewDelkontraktModal";
 import { useProductVariantsByAgreementId } from "utils/swr-hooks";
@@ -66,7 +66,7 @@ const DelkontrakterTab = ({
             <HGrid columns="auto 60px" gap="4">
               {posts.length > 0 &&
                 posts.map((post, i) => (
-                  <div key={i}>
+                  <Fragment key={i}>
                     <Delkontrakt
                       key={i}
                       delkontrakt={post}
@@ -99,7 +99,7 @@ const DelkontrakterTab = ({
                         />
                       )}
                     </VStack>
-                  </div>
+                  </Fragment>
                 ))}
             </HGrid>
           </>

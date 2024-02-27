@@ -3,7 +3,18 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
+    post: operations["createDelkontrakt"];
+  };
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}": {
+    get: operations["findByAgreementId"];
+  };
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/{id}": {
+    get: operations["findByDelkontraktId"];
+    put: operations["updateDelkontrakt"];
+  };
   "/admreg/admin/api/v1/agreement/registrations": {
     get: operations["findAgreements"];
     post: operations["createAgreement"];
@@ -57,6 +68,7 @@ export interface paths {
     delete: operations["deleteFile"];
   };
   "/admreg/admin/api/v1/news": {
+    get: operations["getNews"];
     post: operations["createNews"];
   };
   "/admreg/admin/api/v1/news/draft": {
@@ -110,6 +122,9 @@ export interface paths {
   };
   "/admreg/admin/api/v1/product/registrations/excel/import": {
     post: operations["importExcel"];
+  };
+  "/admreg/admin/api/v1/product/registrations/excel/import-dryrun": {
+    post: operations["importExcelDryrun"];
   };
   "/admreg/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
     get: operations["getProductByHmsArtNr"];
@@ -216,11 +231,14 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/excel/export": {
     post: operations["createExport_1"];
   };
+  "/admreg/vendor/api/v1/product/registrations/excel/export/supplier": {
+    post: operations["createExportForAllSupplierProducts"];
+  };
   "/admreg/vendor/api/v1/product/registrations/excel/import": {
     post: operations["importExcel_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun": {
-    post: operations["importExcelDryrun"];
+    post: operations["importExcelDryrun_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup_1"];
@@ -282,6 +300,7 @@ export interface components {
       text?: string | null;
       identifier: string;
       attachments: components["schemas"]["AgreementAttachment"][];
+      /** @deprecated */
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
@@ -304,6 +323,9 @@ export interface components {
       postNr: number;
       postIdentifier?: string | null;
       postTitle?: string | null;
+      /** Format: uuid */
+      postId?: string | null;
+      refNr?: string | null;
       reference: string;
       /** Format: date-time */
       expired: string;
@@ -312,8 +334,11 @@ export interface components {
     };
     AgreementPost: {
       identifier: string;
+      /** Format: uuid */
+      id?: string | null;
       /** Format: int32 */
       nr: number;
+      refNr?: string | null;
       title: string;
       description: string;
       /** Format: date-time */
@@ -359,11 +384,6 @@ export interface components {
       tenderId?: string | null;
       hasTender?: boolean | null;
     };
-    Authentication: components["schemas"]["Principal"] & {
-      attributes: {
-        [key: string]: unknown;
-      };
-    };
     BestillingsordningRegistrationDTO: {
       /** Format: uuid */
       id: string;
@@ -387,6 +407,25 @@ export interface components {
     };
     CompatibleWith: {
       seriesIds: string[];
+    };
+    DelkontraktData: {
+      title?: string | null;
+      description?: string | null;
+      /** Format: int32 */
+      sortNr: number;
+      refNr?: string | null;
+    };
+    DelkontraktRegistrationDTO: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      agreementId: string;
+      identifier: string;
+      delkontraktData: components["schemas"]["DelkontraktData"];
+      createdBy: string;
+      updatedBy: string;
+      /** Format: date-time */
+      updated: string;
     };
     /** @enum {string} */
     DraftStatus: "DRAFT" | "DONE";
@@ -522,6 +561,12 @@ export interface components {
       /** Format: int32 */
       totalPages?: number;
     };
+    Page_NewsRegistrationDTO_: components["schemas"]["Slice_NewsRegistrationDTO_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
     Page_ProductRegistrationDTO_: components["schemas"]["Slice_ProductRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
@@ -551,9 +596,6 @@ export interface components {
       isokode: string;
       /** Format: int32 */
       kursId: number;
-    };
-    Principal: {
-      name?: string;
     };
     ProductAgreementImportDTO: {
       dryRun: boolean;
@@ -694,6 +736,12 @@ export interface components {
       serieIdentifier?: string | null;
       produktvarianter: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
+    RegistrationAuthentication: {
+      name: string;
+      attributes: {
+        [key: string]: unknown;
+      };
+    };
     /** @enum {string} */
     RegistrationStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     SeriesGroupDTO: {
@@ -731,6 +779,19 @@ export interface components {
     SeriesStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "REJECTED";
     Slice_AgreementBasicInformationDto_: {
       content: components["schemas"]["AgreementBasicInformationDto"][];
+      pageable: components["schemas"]["OpenApiPageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_NewsRegistrationDTO_: {
+      content: components["schemas"]["NewsRegistrationDTO"][];
       pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -912,6 +973,76 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
+  createDelkontrakt: {
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description createDelkontrakt 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+  };
+  findByAgreementId: {
+    parameters: {
+      path: {
+        agreementId: string;
+      };
+    };
+    responses: {
+      /** @description findByAgreementId 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DelkontraktRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  findByDelkontraktId: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description findByDelkontraktId 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateDelkontrakt: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          dto: components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+    responses: {
+      /** @description updateDelkontrakt 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+  };
   findAgreements: {
     parameters: {
       query: {
@@ -1276,6 +1407,24 @@ export interface operations {
       };
     };
   };
+  getNews: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description getNews 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_NewsRegistrationDTO_"];
+        };
+      };
+    };
+  };
   createNews: {
     requestBody: {
       content: {
@@ -1426,7 +1575,9 @@ export interface operations {
     responses: {
       /** @description deleteProductAgreementByIds 200 response */
       200: {
-        content: never;
+        content: {
+          "application/json": string;
+        };
       };
     };
   };
@@ -1600,11 +1751,6 @@ export interface operations {
     };
   };
   importExcel: {
-    parameters: {
-      query: {
-        dryRun: boolean;
-      };
-    };
     requestBody: {
       content: {
         "multipart/form-data": {
@@ -1618,6 +1764,24 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  importExcelDryrun: {
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description importExcelDryrun 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDryRunDTO"][];
         };
       };
     };
@@ -2077,7 +2241,7 @@ export interface operations {
       /** @description getLoggedInUser 200 response */
       200: {
         content: {
-          "application/json": components["schemas"]["Authentication"];
+          "application/json": components["schemas"]["RegistrationAuthentication"];
         };
       };
     };
@@ -2294,6 +2458,16 @@ export interface operations {
       };
     };
   };
+  createExportForAllSupplierProducts: {
+    responses: {
+      /** @description createExportForAllSupplierProducts 200 response */
+      200: {
+        content: {
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+        };
+      };
+    };
+  };
   importExcel_1: {
     requestBody: {
       content: {
@@ -2312,7 +2486,7 @@ export interface operations {
       };
     };
   };
-  importExcelDryrun: {
+  importExcelDryrun_1: {
     requestBody: {
       content: {
         "multipart/form-data": {
@@ -2322,7 +2496,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description importExcelDryrun 200 response */
+      /** @description importExcelDryrun_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDryRunDTO"][];
