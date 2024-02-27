@@ -66,7 +66,7 @@ const DelkontrakterTab = ({
             <HGrid columns="auto 60px" gap="4">
               {posts.length > 0 &&
                 posts.map((post, i) => (
-                  <>
+                  <div key={i}>
                     <Delkontrakt
                       key={i}
                       delkontrakt={post}
@@ -99,7 +99,7 @@ const DelkontrakterTab = ({
                         />
                       )}
                     </VStack>
-                  </>
+                  </div>
                 ))}
             </HGrid>
           </>
