@@ -10,8 +10,8 @@ import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { deleteAgreement, updateAgreementDescription } from "api/AgreementApi";
-import { toDate, toReadableDateTimeString, toReadableString } from "utils/date-util";
+import { deleteAgreement, publishAgreement, updateAgreementDescription } from "api/AgreementApi";
+import { toReadableDateTimeString, toReadableString } from "utils/date-util";
 import DelkontrakterTab from "./delkontraktliste/DelkontrakterTab";
 import EditRammeavtaleInfoModal from "./EditRammeavtaleInfoModal";
 import FileTab from "./vedlegg/FileTab";
@@ -60,6 +60,17 @@ const AgreementPage = () => {
         setGlobalError(error.message);
       });
   };
+
+  const handlePublishRammeavtale = () => {
+    publishAgreement(agreementId!)
+      .then(() => {
+        mutateAgreement();
+      })
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+  };
+
   const navigate = useNavigate();
 
   const updateUrlOnTabChange = (value: string) => {
@@ -183,7 +194,9 @@ const AgreementPage = () => {
                 Status
               </Heading>
 
+              {isDraft && <PublishButton onClick={handlePublishRammeavtale} />}
               <StatusTagAgreement publiseringsdato={agreement.published} isDraft={isDraft} />
+
               <div>
                 <BodyShort>
                   <b>Opprettet</b>
@@ -198,3 +211,11 @@ const AgreementPage = () => {
   );
 };
 export default AgreementPage;
+
+const PublishButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <Button style={{ marginTop: "20px" }} onClick={onClick}>
+      Publiser
+    </Button>
+  );
+};

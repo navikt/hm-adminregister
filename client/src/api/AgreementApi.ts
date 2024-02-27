@@ -104,6 +104,12 @@ export const postAgreementDraft = async (
   }
 };
 
+export const publishAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate = await getAgreement(agreementId);
+  agreementToUpdate.draftStatus = "DONE";
+  return await updateAgreement(agreementId, agreementToUpdate);
+};
+
 export const reorderPosts = async (
   agreementId: string,
   post1: number,
