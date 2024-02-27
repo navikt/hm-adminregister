@@ -182,7 +182,8 @@ const AgreementPage = () => {
               <Heading level="1" size="small">
                 Status
               </Heading>
-              <StatusTagAgreement publiseringsdato={toDate(agreement.published)} isDraft={isDraft} />
+
+              <StatusTagAgreement publiseringsdato={agreement.published} isDraft={isDraft} />
               <div>
                 <BodyShort>
                   <b>Opprettet</b>

@@ -1,7 +1,8 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon } from "@navikt/aksel-icons";
 import TagWithIcon, { colors } from "./TagWithIcon";
+import { toDate, toReadableDateTimeString } from "utils/date-util";
 
-const StatusTagAgreement = ({ publiseringsdato, isDraft }: { publiseringsdato: Date; isDraft: boolean }) => {
+const StatusTagAgreement = ({ publiseringsdato, isDraft }: { publiseringsdato: string; isDraft: boolean }) => {
   if (isDraft) {
     return (
       <TagWithIcon
@@ -10,11 +11,11 @@ const StatusTagAgreement = ({ publiseringsdato, isDraft }: { publiseringsdato: D
         color={colors.GREY}
       />
     );
-  } else if (publiseringsdato > new Date()) {
+  } else if (toDate(publiseringsdato) > new Date()) {
     return (
       <TagWithIcon
         icon={<ClockDashedIcon aria-hidden fontSize={"1.5rem"} />}
-        text="Venter på godkjenning"
+        text={`Ikke aktiv før ${toReadableDateTimeString(publiseringsdato)}`}
         color={colors.ORANGE}
       />
     );
