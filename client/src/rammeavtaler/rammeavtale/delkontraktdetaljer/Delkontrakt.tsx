@@ -99,7 +99,7 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
         setModalIsOpen={setEditDelkontraktModalIsOpen}
         oid={agreementId}
         delkontrakt={delkontrakt}
-        mutateAgreement={mutateAgreement}
+        mutateDelkontrakter={mutateDelkontrakter}
       />
       <ConfirmModal
         title={`Slett '${delkontrakt.delkontraktData.title}'`}

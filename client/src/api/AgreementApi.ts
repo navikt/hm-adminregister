@@ -225,31 +225,3 @@ export const deleteAttachmentGroup = async (
 
   return await updateAgreement(updatedAgreement.id, updatedAgreement);
 };
-
-export const updateDelkontrakt = async (
-  agreementId: string,
-  delkontraktId: string,
-  data: EditDelkontraktFormData,
-): Promise<AgreementRegistrationDTO> => {
-  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId);
-
-  const delkontraktToUpdate = agreementToUpdate.agreementData.posts.find(
-    (post: AgreementPostDTO) => post.identifier === delkontraktId,
-  );
-
-  if (delkontraktToUpdate === undefined) {
-    return Promise.reject("Delkontrakt not found");
-  }
-
-  const oppdatertDelkontrakt: AgreementPostDTO = {
-    identifier: delkontraktToUpdate.identifier,
-    nr: delkontraktToUpdate.nr,
-    title: data.tittel,
-    description: data.beskrivelse,
-    created: delkontraktToUpdate.created,
-  };
-
-  const updatedAgreement = getAgreeementWithUpdatedDelkontraktDTO(agreementToUpdate, oppdatertDelkontrakt);
-
-  return await updateAgreement(updatedAgreement.id, updatedAgreement);
-};

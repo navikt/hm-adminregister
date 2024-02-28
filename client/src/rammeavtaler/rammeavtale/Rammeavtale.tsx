@@ -152,11 +152,7 @@ const AgreementPage = () => {
                 </Tabs.List>
                 <AboutTab agreement={agreement} onSubmit={onSubmit} />
                 <FileTab agreement={agreement} mutateAgreement={mutateAgreement} />
-                <DelkontrakterTab
-                  mutateAgreement={mutateAgreement}
-                  agreementId={agreement.id}
-                  posts={agreement.agreementData.posts.sort((a, b) => a.nr - b.nr)}
-                />
+                <DelkontrakterTab mutateAgreement={mutateAgreement} agreementId={agreement.id} />
               </Tabs>
             </VStack>
 

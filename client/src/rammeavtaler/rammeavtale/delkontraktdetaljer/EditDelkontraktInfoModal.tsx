@@ -7,22 +7,22 @@ import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
-import { updateDelkontrakt } from "api/AgreementApi";
 import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
-import { AgreementPostDTO, DelkontraktRegistrationDTO } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
+import { DelkontraktRegistrationDTO } from "utils/types/response-types";
+import { updateDelkontrakt } from "api/DelkontraktApi";
 
 interface Props {
   modalIsOpen: boolean;
   oid: string;
   delkontrakt: DelkontraktRegistrationDTO;
   setModalIsOpen: (open: boolean) => void;
-  mutateAgreement: () => void;
+  mutateDelkontrakter: () => void;
 }
 
 export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>;
 
-const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateAgreement }: Props) => {
+const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateDelkontrakter }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const {
     handleSubmit,
@@ -43,10 +43,10 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
   async function onSubmit(data: EditDelkontraktFormData) {
     setIsSaving(true);
 
-    updateDelkontrakt(oid, delkontrakt.identifier, data)
-      .then((agreement) => {
+    updateDelkontrakt(delkontrakt.id, data)
+      .then(() => {
         setIsSaving(false);
-        mutateAgreement();
+        mutateDelkontrakter();
       })
       .catch((error) => {
         setGlobalError(error.message);
