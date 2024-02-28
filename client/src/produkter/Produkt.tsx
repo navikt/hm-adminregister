@@ -82,6 +82,14 @@ const ProductPage = () => {
       });
   }
 
+  async function onPublish() {
+    const validationResult = productIsValid();
+    setIsValid(validationResult);
+    if (!validationResult) {
+      setModalIsOpen(true);
+    }
+  }
+
   const numberOfImages = () => {
     return products!![0].productData.media.filter((media) => media.type == "IMAGE").length;
   };
@@ -97,17 +105,13 @@ const ProductPage = () => {
     return products!!.length;
   };
 
-  const validateProduct = () => {
-    if (
+  const productIsValid = () => {
+    return !(
       !products!![0].productData.attributes.text ||
       numberOfImages() === 0 ||
       numberOfDocuments() === 0 ||
       numberOfVariants() === 0
-    ) {
-      setIsValid(false);
-    } else {
-      setIsValid(true);
-    }
+    );
   };
 
   if (error) {
@@ -136,6 +140,28 @@ const ProductPage = () => {
 
   const isDraft = products[0].draftStatus === "DRAFT";
   const isPending = products[0].adminStatus === "PENDING";
+
+  const InvalidProductModal = () => {
+    return (
+      <Modal open={modalIsOpen} header={{ heading: "Produktet mangler data" }} onClose={() => setModalIsOpen(false)}>
+        <Modal.Body>
+          <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
+          <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
+          <ul className="product-error-text">
+            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
+            {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
+            {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
+            {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+            Lukk
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
 
   const GodkjenningModal = () => {
     return isValid ? (
@@ -169,29 +195,7 @@ const ProductPage = () => {
         </Modal.Footer>
       </Modal>
     ) : (
-      <Modal
-        open={modalIsOpen}
-        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
-        onClose={() => setModalIsOpen(false)}
-      >
-        <Modal.Body>
-          <BodyLong spacing>
-            Det ser ut til å være noen feil som du må rette opp før du kan sende produktet til godkjenning.
-          </BodyLong>
-          <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
-          <ul className="product-error-text">
-            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
-            {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
-            {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
-            Lukk
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <InvalidProductModal />
     );
   };
 
@@ -263,14 +267,14 @@ const ProductPage = () => {
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin ? (
-              <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onSendTilGodkjenning} />
+              <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
             ) : (
               <PublishButton
                 isAdmin={false}
                 isPending={isPending}
                 isDraft={isDraft}
                 onClick={() => {
-                  validateProduct();
+                  setIsValid(productIsValid());
                   setModalIsOpen(true);
                 }}
               />
@@ -295,25 +299,25 @@ const PublishButton = ({
   isDraft: boolean;
   onClick: any;
 }) => {
-  if (isDraft) {
+  if (isAdmin) {
     return (
-      <Button style={{ marginTop: "20px" }} disabled={isAdmin} onClick={onClick}>
+      <Button style={{ marginTop: "20px" }} onClick={onClick}>
+        Publiser
+      </Button>
+    );
+  } else if (isDraft) {
+    return (
+      <Button style={{ marginTop: "20px" }} onClick={onClick}>
         Send til godkjenning
       </Button>
     );
-  } else if (isAdmin && isPending) {
-    return <Button style={{ marginTop: "20px" }}>Publiser</Button>;
-  } else if (!isAdmin && isPending) {
+  } else if (isPending) {
     return (
       <Button style={{ marginTop: "20px" }} disabled={true}>
         Send til godkjenning
       </Button>
     );
   } else {
-    return (
-      <Button style={{ marginTop: "20px" }} disabled={true}>
-        Publiser
-      </Button>
-    );
+    return <Button style={{ marginTop: "20px" }}>Publiser</Button>;
   }
 };
