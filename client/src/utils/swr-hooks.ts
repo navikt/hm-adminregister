@@ -1,6 +1,7 @@
 import {
   AdminUserChunk,
   AgreementsChunk,
+  DelkontraktRegistrationDTO,
   IsoCategoryDTO,
   ProductRegistrationDTO,
   ProduktvarianterForDelkontrakterDTOList,
@@ -104,6 +105,27 @@ export function useProductVariantsByAgreementId(agreementId: string) {
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/${agreementId}`;
 
   const { data, error, isLoading, mutate } = useSWR<ProduktvarianterForDelkontrakterDTOList>(path, fetcherGET);
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message);
+    }
+  }, [error, setGlobalError]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useDelkontrakterByAgreementId(agreementId: string) {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/${agreementId}`;
+
+  const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO[]>(path, fetcherGET);
 
   useEffect(() => {
     if (error) {

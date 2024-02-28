@@ -1,5 +1,6 @@
 import {
   AgreementPostDTO,
+  DelkontraktRegistrationDTO,
   ProductAgreementRegistrationDTOList,
   ProduktvarianterForDelkontrakterDTOList,
 } from "utils/types/response-types";
@@ -16,14 +17,14 @@ import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 interface Props {
-  delkontrakt: AgreementPostDTO;
-  produkter: ProduktvarianterForDelkontrakterDTOList;
+  delkontrakt: DelkontraktRegistrationDTO;
+  //produkter: ProduktvarianterForDelkontrakterDTOList; todo: hente via swr når endept er klart
   agreementId: string;
   mutateDelkontrakter: () => void;
   mutateAgreement: () => void;
 }
 
-export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkontrakter, mutateAgreement }: Props) => {
+export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mutateAgreement }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([]);
@@ -40,11 +41,11 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
 
   const { setGlobalError } = useHydratedErrorStore();
 
-  useEffect(() => {
-    if (selectedSeriesId !== undefined) {
-      setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || []);
-    }
-  }, [produkter]);
+  // useEffect(() => {
+  //   if (selectedSeriesId !== undefined) {
+  //     setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || []);
+  //   }
+  // }, [produkter]);
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe);
@@ -101,7 +102,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         mutateAgreement={mutateAgreement}
       />
       <ConfirmModal
-        title={`Slett '${delkontrakt.title}'`}
+        title={`Slett '${delkontrakt.delkontraktData.title}'`}
         text="Er du sikker på at du vil slette delkontrakten?"
         onClick={onConfirmDeleteDelkontrakt}
         onClose={() => {
@@ -122,7 +123,7 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         modalIsOpen={nyttProduktModalIsOpen}
         setModalIsOpen={setNyttProduktModalIsOpen}
         agreementId={agreementId}
-        post={delkontrakt.nr}
+        post={delkontrakt.delkontraktData.sortNr}
         mutateDelkontrakter={mutateDelkontrakter}
       />
       <EditProducstVariantsModal
@@ -132,99 +133,99 @@ export const Delkontrakt = ({ delkontrakt, produkter, agreementId, mutateDelkont
         mutateDelkontrakt={mutateDelkontrakter}
       />
 
-      <ExpansionCard size="medium" key={delkontrakt.nr} aria-label="delkontrakt">
+      <ExpansionCard size="medium" key={delkontrakt.delkontraktData.sortNr} aria-label="delkontrakt">
         <ExpansionCard.Header>
-          <ExpansionCard.Title size="small">{delkontrakt.title}</ExpansionCard.Title>
+          <ExpansionCard.Title size="small">{delkontrakt.delkontraktData.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: "auto" }}>
           <VStack gap="3">
             <b>Beskrivelse:</b>
-            {delkontrakt.description}
-            {produkter.length > 0 && (
-              <VStack gap="2">
-                <RowBoxTable size="small">
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.HeaderCell scope="col">Produkter</Table.HeaderCell>
-                      <Table.HeaderCell scope="col">Artikler.</Table.HeaderCell>
-                      <Table.HeaderCell scope="col">Rangering</Table.HeaderCell>
-                      <Table.HeaderCell scope="col"></Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {produkter.map((produkt, i) => {
-                      return (
-                        <Table.Row key={i} shadeOnHover={false}>
-                          <Table.DataCell>
-                            {produkt.serieIdentifier ? (
-                              <a
-                                href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {produkt.produktTittel}
-                              </a>
-                            ) : (
-                              produkt.produktTittel
-                            )}
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <Button
-                              iconPosition="right"
-                              variant={"tertiary"}
-                              icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
-                              onClick={() => {
-                                onClickVariants(produkt.produktvarianter);
-                                setSelectedSeriesId(produkt.produktserie!!);
-                              }}
-                            >
-                              {produkt.produktvarianter.length}
-                            </Button>
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            {updatingRank ? (
-                              <Loader></Loader>
-                            ) : (
-                              <Select
-                                id="rangering"
-                                name="rangering"
-                                label={""}
-                                value={produkt.rangering}
-                                onChange={(e) => {
-                                  onChangeRangering(
-                                    produkt.produktvarianter.map((variant) => variant.id),
-                                    e.target.value,
-                                  );
-                                }}
-                                style={{ width: "4em" }}
-                              >
-                                {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
-                                  <option key={it} value={it}>
-                                    {it}
-                                  </option>
-                                ))}
-                              </Select>
-                            )}
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <Button
-                              iconPosition="right"
-                              variant={"tertiary"}
-                              icon={<TrashIcon title="Slett" fontSize="1.5rem" />}
-                              onClick={() => {
-                                setProduktserieToDelete(produkt.produktvarianter);
-                                setProduktserieToDeleteTitle(produkt.produktTittel);
-                                setDeleteProduktserieModalIsOpen(true);
-                              }}
-                            />
-                          </Table.DataCell>
-                        </Table.Row>
-                      );
-                    })}
-                  </Table.Body>
-                </RowBoxTable>
-              </VStack>
-            )}
+            {delkontrakt.delkontraktData.description}
+            {/*{produkter.length > 0 && (*/}
+            {/*  <VStack gap="2">*/}
+            {/*    <RowBoxTable size="small">*/}
+            {/*      <Table.Header>*/}
+            {/*        <Table.Row>*/}
+            {/*          <Table.HeaderCell scope="col">Produkter</Table.HeaderCell>*/}
+            {/*          <Table.HeaderCell scope="col">Artikler.</Table.HeaderCell>*/}
+            {/*          <Table.HeaderCell scope="col">Rangering</Table.HeaderCell>*/}
+            {/*          <Table.HeaderCell scope="col"></Table.HeaderCell>*/}
+            {/*        </Table.Row>*/}
+            {/*      </Table.Header>*/}
+            {/*      <Table.Body>*/}
+            {/*        {produkter.map((produkt, i) => {*/}
+            {/*          return (*/}
+            {/*            <Table.Row key={i} shadeOnHover={false}>*/}
+            {/*              <Table.DataCell>*/}
+            {/*                {produkt.serieIdentifier ? (*/}
+            {/*                  <a*/}
+            {/*                    href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}*/}
+            {/*                    target="_blank"*/}
+            {/*                    rel="noreferrer"*/}
+            {/*                  >*/}
+            {/*                    {produkt.produktTittel}*/}
+            {/*                  </a>*/}
+            {/*                ) : (*/}
+            {/*                  produkt.produktTittel*/}
+            {/*                )}*/}
+            {/*              </Table.DataCell>*/}
+            {/*              <Table.DataCell>*/}
+            {/*                <Button*/}
+            {/*                  iconPosition="right"*/}
+            {/*                  variant={"tertiary"}*/}
+            {/*                  icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}*/}
+            {/*                  onClick={() => {*/}
+            {/*                    onClickVariants(produkt.produktvarianter);*/}
+            {/*                    setSelectedSeriesId(produkt.produktserie!!);*/}
+            {/*                  }}*/}
+            {/*                >*/}
+            {/*                  {produkt.produktvarianter.length}*/}
+            {/*                </Button>*/}
+            {/*              </Table.DataCell>*/}
+            {/*              <Table.DataCell>*/}
+            {/*                {updatingRank ? (*/}
+            {/*                  <Loader></Loader>*/}
+            {/*                ) : (*/}
+            {/*                  <Select*/}
+            {/*                    id="rangering"*/}
+            {/*                    name="rangering"*/}
+            {/*                    label={""}*/}
+            {/*                    value={produkt.rangering}*/}
+            {/*                    onChange={(e) => {*/}
+            {/*                      onChangeRangering(*/}
+            {/*                        produkt.produktvarianter.map((variant) => variant.id),*/}
+            {/*                        e.target.value,*/}
+            {/*                      );*/}
+            {/*                    }}*/}
+            {/*                    style={{ width: "4em" }}*/}
+            {/*                  >*/}
+            {/*                    {range(MIN_RANGERING, MAX_RANGERING).map((it) => (*/}
+            {/*                      <option key={it} value={it}>*/}
+            {/*                        {it}*/}
+            {/*                      </option>*/}
+            {/*                    ))}*/}
+            {/*                  </Select>*/}
+            {/*                )}*/}
+            {/*              </Table.DataCell>*/}
+            {/*              <Table.DataCell>*/}
+            {/*                <Button*/}
+            {/*                  iconPosition="right"*/}
+            {/*                  variant={"tertiary"}*/}
+            {/*                  icon={<TrashIcon title="Slett" fontSize="1.5rem" />}*/}
+            {/*                  onClick={() => {*/}
+            {/*                    setProduktserieToDelete(produkt.produktvarianter);*/}
+            {/*                    setProduktserieToDeleteTitle(produkt.produktTittel);*/}
+            {/*                    setDeleteProduktserieModalIsOpen(true);*/}
+            {/*                  }}*/}
+            {/*                />*/}
+            {/*              </Table.DataCell>*/}
+            {/*            </Table.Row>*/}
+            {/*          );*/}
+            {/*        })}*/}
+            {/*      </Table.Body>*/}
+            {/*    </RowBoxTable>*/}
+            {/*  </VStack>*/}
+            {/*)}*/}
 
             <HStack>
               <Button

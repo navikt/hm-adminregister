@@ -1,23 +1,14 @@
 import { Alert, Button, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
-import { AgreementPostDTO } from "utils/types/response-types";
 import { Fragment, useState } from "react";
 import { Avstand } from "felleskomponenter/Avstand";
 import NewDelkontraktModal from "./NewDelkontraktModal";
-import { useProductVariantsByAgreementId } from "utils/swr-hooks";
+import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
 import { Delkontrakt } from "../delkontraktdetaljer/Delkontrakt";
 import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
 import { reorderPosts } from "api/AgreementApi";
 import styled from "styled-components";
 
-const DelkontrakterTab = ({
-  posts,
-  agreementId,
-  mutateAgreement,
-}: {
-  posts: AgreementPostDTO[];
-  agreementId: string;
-  mutateAgreement: () => void;
-}) => {
+const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: string; mutateAgreement: () => void }) => {
   const reorderDelkontrakt = (post1: number, post2: number) => {
     reorderPosts(agreementId, post1, post2)
       .then((r) => {
@@ -30,9 +21,10 @@ const DelkontrakterTab = ({
     data: delkontrakter,
     isLoading: delkontrakterIsLoading,
     mutate: mutateDelkontrakter,
-  } = useProductVariantsByAgreementId(agreementId);
+  } = useDelkontrakterByAgreementId(agreementId);
+
   const [nyRammeavtaleModalIsOpen, setNyRammeavtaleModalIsOpen] = useState(false);
-  const isFirstTime = posts.length === 0;
+  const isFirstTime = delkontrakter && delkontrakter.length === 0;
 
   if (delkontrakterIsLoading)
     return (
@@ -64,13 +56,12 @@ const DelkontrakterTab = ({
             </HGrid>
             <Avstand marginBottom={3} />
             <HGrid columns="auto 60px" gap="4">
-              {posts.length > 0 &&
-                posts.map((post, i) => (
+              {delkontrakter!.length > 0 &&
+                delkontrakter!.map((delkontrakt, i) => (
                   <Fragment key={i}>
                     <Delkontrakt
                       key={i}
-                      delkontrakt={post}
-                      produkter={delkontrakter?.filter((produkt) => produkt.delkontraktNr === post.nr) || []}
+                      delkontrakt={delkontrakt}
                       agreementId={agreementId}
                       mutateDelkontrakter={mutateDelkontrakter}
                       mutateAgreement={mutateAgreement}
@@ -83,18 +74,24 @@ const DelkontrakterTab = ({
                           variant="tertiary"
                           icon={<ChevronUpIcon />}
                           onClick={() => {
-                            reorderDelkontrakt(post.nr, posts[i - 1].nr);
+                            reorderDelkontrakt(
+                              delkontrakt.delkontraktData.sortNr,
+                              delkontrakter![i - 1].delkontraktData.sortNr,
+                            );
                           }}
                         />
                       )}
-                      {i !== posts.length - 1 && (
+                      {i !== delkontrakter!.length - 1 && (
                         <Button
                           aria-label="sorter-ned"
                           size={"small"}
                           variant="tertiary"
                           icon={<ChevronDownIcon />}
                           onClick={() => {
-                            reorderDelkontrakt(post.nr, posts[i + 1].nr);
+                            reorderDelkontrakt(
+                              delkontrakt.delkontraktData.sortNr,
+                              delkontrakter![i + 1].delkontraktData.sortNr,
+                            );
                           }}
                         />
                       )}

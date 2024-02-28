@@ -364,6 +364,7 @@ export interface components {
       createdBy: string;
       updatedBy: string;
       agreementData: components["schemas"]["AgreementData"];
+      delkontraktList: components["schemas"]["DelkontraktRegistrationDTO"][];
       /** Format: int64 */
       version?: number | null;
     };

@@ -9,13 +9,13 @@ import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
 import { updateDelkontrakt } from "api/AgreementApi";
 import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
-import { AgreementPostDTO } from "utils/types/response-types";
+import { AgreementPostDTO, DelkontraktRegistrationDTO } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   modalIsOpen: boolean;
   oid: string;
-  delkontrakt: AgreementPostDTO;
+  delkontrakt: DelkontraktRegistrationDTO;
   setModalIsOpen: (open: boolean) => void;
   mutateAgreement: () => void;
 }
@@ -70,7 +70,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
             <VStack style={{ width: "100%" }}>
               <TextField
                 {...register("tittel", { required: true })}
-                defaultValue={delkontrakt.title || ""}
+                defaultValue={delkontrakt.delkontraktData.title || ""}
                 label={labelRequired("Tittel")}
                 id="tittel"
                 name="tittel"
@@ -80,7 +80,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
               <Avstand marginBottom={5} />
               <Textarea
                 {...register("beskrivelse", { required: true })}
-                defaultValue={delkontrakt.description || ""}
+                defaultValue={delkontrakt.delkontraktData.description || ""}
                 label={labelRequired("Beskrivelse")}
                 id="beskrivelse"
                 name="beskrivelse"

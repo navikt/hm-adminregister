@@ -54,6 +54,7 @@ export type MediaInfo = components["schemas"]["MediaInfo"];
 export type ProductDraftWithDTO = components["schemas"]["ProductDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
+export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 
 // Path params
 //type EndpointParams = paths['/my/endpoint']['parameters']
