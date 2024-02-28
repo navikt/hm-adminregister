@@ -4,6 +4,7 @@ import { EditDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktdet
 import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";
 import { NyDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal";
+import { updateAgreement } from "api/AgreementApi";
 
 export const getDelkontrakt = async (delkontraktId: string): Promise<DelkontraktRegistrationDTO> => {
   const response = await fetch(
@@ -127,4 +128,37 @@ export const updateDelkontraktinfo = async (
   };
 
   return await updateDelkontrakt(oppdatertDelkontrakt.id, oppdatertDelkontrakt);
+};
+
+export const reorderDelkontrakter = async (delkontrakt1: string, delkontrakt2: string): Promise<void> => {
+  const delkontrakt1ToUpdate = await getDelkontrakt(delkontrakt1);
+  const delkontrakt2ToUpdate = await getDelkontrakt(delkontrakt2);
+
+  console.log("dk1 to update", delkontrakt1ToUpdate);
+  console.log("dk2 to update", delkontrakt2ToUpdate);
+
+  const delkontrakt1Updated: DelkontraktRegistrationDTO = {
+    ...delkontrakt1ToUpdate,
+    delkontraktData: {
+      ...delkontrakt1ToUpdate.delkontraktData,
+      sortNr: delkontrakt2ToUpdate.delkontraktData.sortNr,
+    },
+  };
+
+  const delkontrakt2Updated: DelkontraktRegistrationDTO = {
+    ...delkontrakt2ToUpdate,
+    delkontraktData: {
+      ...delkontrakt2ToUpdate.delkontraktData,
+      sortNr: delkontrakt1ToUpdate.delkontraktData.sortNr,
+    },
+  };
+
+  // todo: should probably do this in one back end transaction
+  const dk1 = await updateDelkontrakt(delkontrakt1Updated.id, delkontrakt1Updated);
+  const dk2 = await updateDelkontrakt(delkontrakt2Updated.id, delkontrakt2Updated);
+
+  console.log("dk1 after", dk1);
+  console.log("dk2 after", dk2);
+
+  return;
 };

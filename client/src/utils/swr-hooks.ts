@@ -125,7 +125,6 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/${agreementId}`;
 
-  console.log("henter delkontrakter");
   const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO[]>(path, fetcherGET);
 
   useEffect(() => {

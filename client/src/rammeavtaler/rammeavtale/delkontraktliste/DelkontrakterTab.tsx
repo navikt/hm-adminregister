@@ -5,19 +5,11 @@ import NewDelkontraktModal from "./NewDelkontraktModal";
 import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
 import { Delkontrakt } from "../delkontraktdetaljer/Delkontrakt";
 import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
-import { reorderPosts } from "api/AgreementApi";
 import styled from "styled-components";
+import { reorderDelkontrakter } from "api/DelkontraktApi";
 
 const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
   const [newSortNr, setNewSortNr] = useState<number>(1);
-
-  const reorderDelkontrakt = (post1: number, post2: number) => {
-    reorderPosts(agreementId, post1, post2)
-      .then((r) => {
-        //mutateAgreement();
-      })
-      .catch((_) => {});
-  };
 
   const {
     data: delkontrakter,
@@ -39,6 +31,16 @@ const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
         <Loader size="large" />
       </Tabs.Panel>
     );
+
+  const reorderDelkontrakt = (delkontrakt1Id: string, delkontrakt2Id: string) => {
+    reorderDelkontrakter(delkontrakt1Id, delkontrakt2Id)
+      .then((_) => {
+        mutateDelkontrakter();
+      })
+      .catch((error) => {
+        console.error("Reorder delkontrakt failed", error);
+      });
+  };
 
   return (
     <>
@@ -80,10 +82,7 @@ const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
                           variant="tertiary"
                           icon={<ChevronUpIcon />}
                           onClick={() => {
-                            reorderDelkontrakt(
-                              delkontrakt.delkontraktData.sortNr,
-                              delkontrakter![i - 1].delkontraktData.sortNr,
-                            );
+                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i - 1].id);
                           }}
                         />
                       )}
@@ -94,10 +93,7 @@ const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
                           variant="tertiary"
                           icon={<ChevronDownIcon />}
                           onClick={() => {
-                            reorderDelkontrakt(
-                              delkontrakt.delkontraktData.sortNr,
-                              delkontrakter![i + 1].delkontraktData.sortNr,
-                            );
+                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i + 1].id);
                           }}
                         />
                       )}
