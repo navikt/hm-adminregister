@@ -1,20 +1,14 @@
-import {
-  AgreementPostDTO,
-  DelkontraktRegistrationDTO,
-  ProductAgreementRegistrationDTOList,
-  ProduktvarianterForDelkontrakterDTOList,
-} from "utils/types/response-types";
-import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from "@navikt/ds-react";
-import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import React, { useEffect, useState } from "react";
+import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
+import { Button, Dropdown, ExpansionCard, HStack, VStack } from "@navikt/ds-react";
+import { MenuElipsisVerticalIcon, PlusCircleIcon } from "@navikt/aksel-icons";
+import React, { useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
 import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
 import { changeRankOnProductAgreements, deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { deleteDelkontrakt } from "api/AgreementApi";
 import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
-import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { deleteDelkontrakt } from "api/DelkontraktApi";
 
 interface Props {
   delkontrakt: DelkontraktRegistrationDTO;
@@ -53,7 +47,7 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
   };
 
   const onConfirmDeleteDelkontrakt = () => {
-    deleteDelkontrakt(agreementId, delkontrakt.identifier)
+    deleteDelkontrakt(delkontrakt.id)
       .then(() => {
         mutateAgreement();
       })

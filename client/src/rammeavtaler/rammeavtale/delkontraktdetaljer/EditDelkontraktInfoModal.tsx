@@ -10,7 +10,7 @@ import { Avstand } from "felleskomponenter/Avstand";
 import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
 import Content from "felleskomponenter/styledcomponents/Content";
 import { DelkontraktRegistrationDTO } from "utils/types/response-types";
-import { updateDelkontrakt } from "api/DelkontraktApi";
+import { updateDelkontrakt, updateDelkontraktinfo } from "api/DelkontraktApi";
 
 interface Props {
   modalIsOpen: boolean;
@@ -43,7 +43,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
   async function onSubmit(data: EditDelkontraktFormData) {
     setIsSaving(true);
 
-    updateDelkontrakt(delkontrakt.id, data)
+    updateDelkontraktinfo(delkontrakt.id, data)
       .then(() => {
         setIsSaving(false);
         mutateDelkontrakter();

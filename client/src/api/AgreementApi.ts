@@ -206,16 +206,6 @@ export const updateAgreementWithNewDelkontrakt = async (
   return await updateAgreement(updatedAgreement.id, updatedAgreement);
 };
 
-export const deleteDelkontrakt = async (
-  agreementId: string,
-  delkontraktId: string,
-): Promise<AgreementRegistrationDTO> => {
-  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId);
-  const updatedAgreement = getAgreeementWithoutDeletedDelkontraktDTO(agreementToUpdate, delkontraktId);
-
-  return await updateAgreement(updatedAgreement.id, updatedAgreement);
-};
-
 export const deleteAttachmentGroup = async (
   agreementId: string,
   attachmentId: string,
