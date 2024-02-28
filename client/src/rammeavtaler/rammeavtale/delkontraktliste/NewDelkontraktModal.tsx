@@ -14,21 +14,13 @@ interface Props {
   modalIsOpen: boolean;
   oid: string;
   setModalIsOpen: (open: boolean) => void;
-  mutateAgreement: () => void;
   mutateDelkontrakter: () => void;
   newSortNr: number;
 }
 
 export type NyDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>;
 
-const NewDelkontraktModal = ({
-  modalIsOpen,
-  oid,
-  setModalIsOpen,
-  mutateAgreement,
-  mutateDelkontrakter,
-  newSortNr,
-}: Props) => {
+const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontrakter, newSortNr }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const {
     handleSubmit,
@@ -56,7 +48,6 @@ const NewDelkontraktModal = ({
     createDelkontrakt(oid, data, newSortNr)
       .then((_) => {
         setIsSaving(false);
-        mutateAgreement();
         mutateDelkontrakter();
       })
       .catch((error) => {

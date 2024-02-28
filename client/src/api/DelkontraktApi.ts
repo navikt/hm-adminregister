@@ -98,7 +98,7 @@ export const deleteDelkontrakt = async (delkontraktId: string): Promise<void> =>
   );
 
   if (response.ok) {
-    return await response.json();
+    return;
   } else {
     const error = await response.json();
     return Promise.reject(error);

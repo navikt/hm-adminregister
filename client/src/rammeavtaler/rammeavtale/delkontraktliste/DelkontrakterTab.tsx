@@ -8,13 +8,13 @@ import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-
 import { reorderPosts } from "api/AgreementApi";
 import styled from "styled-components";
 
-const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: string; mutateAgreement: () => void }) => {
+const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
   const [newSortNr, setNewSortNr] = useState<number>(1);
 
   const reorderDelkontrakt = (post1: number, post2: number) => {
     reorderPosts(agreementId, post1, post2)
       .then((r) => {
-        mutateAgreement();
+        //mutateAgreement();
       })
       .catch((_) => {});
   };
@@ -46,7 +46,6 @@ const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: strin
         modalIsOpen={nyRammeavtaleModalIsOpen}
         setModalIsOpen={setNyRammeavtaleModalIsOpen}
         oid={agreementId}
-        mutateAgreement={mutateAgreement}
         mutateDelkontrakter={mutateDelkontrakter}
         newSortNr={newSortNr}
       />
@@ -69,10 +68,9 @@ const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: strin
                   <Fragment key={i}>
                     <Delkontrakt
                       key={i}
-                      delkontrakt={delkontrakt}
+                      delkontraktId={delkontrakt.id}
                       agreementId={agreementId}
                       mutateDelkontrakter={mutateDelkontrakter}
-                      mutateAgreement={mutateAgreement}
                     />
                     <VStack gap="1" style={{ alignItems: "center" }}>
                       {i !== 0 && (

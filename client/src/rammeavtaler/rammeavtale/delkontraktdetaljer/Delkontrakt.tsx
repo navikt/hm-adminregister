@@ -1,4 +1,4 @@
-import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
+import { ProductAgreementRegistrationDTOList } from "utils/types/response-types";
 import { Button, Dropdown, ExpansionCard, HStack, VStack } from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import React, { useState } from "react";
@@ -9,22 +9,27 @@ import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { deleteDelkontrakt } from "api/DelkontraktApi";
+import { useDelkontraktByDelkontraktId } from "utils/swr-hooks";
 
 interface Props {
-  delkontrakt: DelkontraktRegistrationDTO;
+  delkontraktId: string;
   //produkter: ProduktvarianterForDelkontrakterDTOList; todo: hente via swr når endept er klart
   agreementId: string;
   mutateDelkontrakter: () => void;
-  mutateAgreement: () => void;
 }
 
-export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mutateAgreement }: Props) => {
+export const Delkontrakt = ({ delkontraktId, agreementId, mutateDelkontrakter }: Props) => {
+  const {
+    data: delkontrakt,
+    isLoading: delkontraktIsLoading,
+    mutate: mutateDelkontrakt,
+  } = useDelkontraktByDelkontraktId(delkontraktId);
+
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([]);
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
   const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
-
   const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false);
   const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
   const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null);
@@ -47,9 +52,9 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
   };
 
   const onConfirmDeleteDelkontrakt = () => {
-    deleteDelkontrakt(delkontrakt.id)
+    deleteDelkontrakt(delkontraktId)
       .then(() => {
-        mutateAgreement();
+        mutateDelkontrakter();
       })
       .catch((error) => {
         setGlobalError(error.message);
@@ -86,17 +91,18 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
       });
   };
 
+  if (delkontraktIsLoading) return <div>Loading...</div>;
+
   return (
     <>
       <EditDelkontraktInfoModal
         modalIsOpen={editDelkontraktModalIsOpen}
         setModalIsOpen={setEditDelkontraktModalIsOpen}
-        oid={agreementId}
-        delkontrakt={delkontrakt}
-        mutateDelkontrakter={mutateDelkontrakter}
+        delkontrakt={delkontrakt!}
+        mutateDelkontrakt={mutateDelkontrakt}
       />
       <ConfirmModal
-        title={`Slett '${delkontrakt.delkontraktData.title}'`}
+        title={`Slett '${delkontrakt!.delkontraktData.title}'`}
         text="Er du sikker på at du vil slette delkontrakten?"
         onClick={onConfirmDeleteDelkontrakt}
         onClose={() => {
@@ -117,7 +123,7 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
         modalIsOpen={nyttProduktModalIsOpen}
         setModalIsOpen={setNyttProduktModalIsOpen}
         agreementId={agreementId}
-        post={delkontrakt.delkontraktData.sortNr}
+        post={delkontrakt!.delkontraktData.sortNr}
         mutateDelkontrakter={mutateDelkontrakter}
       />
       <EditProducstVariantsModal
@@ -127,14 +133,14 @@ export const Delkontrakt = ({ delkontrakt, agreementId, mutateDelkontrakter, mut
         mutateDelkontrakt={mutateDelkontrakter}
       />
 
-      <ExpansionCard size="medium" key={delkontrakt.delkontraktData.sortNr} aria-label="delkontrakt">
+      <ExpansionCard size="medium" key={delkontrakt!.delkontraktData.sortNr} aria-label="delkontrakt">
         <ExpansionCard.Header>
-          <ExpansionCard.Title size="small">{delkontrakt.delkontraktData.title}</ExpansionCard.Title>
+          <ExpansionCard.Title size="small">{delkontrakt!.delkontraktData.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: "auto" }}>
           <VStack gap="3">
             <b>Beskrivelse:</b>
-            {delkontrakt.delkontraktData.description}
+            {delkontrakt!.delkontraktData.description}
             {/*{produkter.length > 0 && (*/}
             {/*  <VStack gap="2">*/}
             {/*    <RowBoxTable size="small">*/}

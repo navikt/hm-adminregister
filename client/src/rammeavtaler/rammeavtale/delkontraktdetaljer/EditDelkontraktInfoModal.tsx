@@ -10,19 +10,18 @@ import { Avstand } from "felleskomponenter/Avstand";
 import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
 import Content from "felleskomponenter/styledcomponents/Content";
 import { DelkontraktRegistrationDTO } from "utils/types/response-types";
-import { updateDelkontrakt, updateDelkontraktinfo } from "api/DelkontraktApi";
+import { updateDelkontraktinfo } from "api/DelkontraktApi";
 
 interface Props {
   modalIsOpen: boolean;
-  oid: string;
   delkontrakt: DelkontraktRegistrationDTO;
   setModalIsOpen: (open: boolean) => void;
-  mutateDelkontrakter: () => void;
+  mutateDelkontrakt: () => void;
 }
 
 export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>;
 
-const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpen, mutateDelkontrakter }: Props) => {
+const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mutateDelkontrakt }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const {
     handleSubmit,
@@ -46,7 +45,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, oid, delkontrakt, setModalIsOpe
     updateDelkontraktinfo(delkontrakt.id, data)
       .then(() => {
         setIsSaving(false);
-        mutateDelkontrakter();
+        mutateDelkontrakt();
       })
       .catch((error) => {
         setGlobalError(error.message);

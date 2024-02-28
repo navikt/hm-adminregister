@@ -1,23 +1,12 @@
 import { HM_REGISTER_URL } from "environments";
-import {
-  AgreementAttachment,
-  AgreementDraftWithDTO,
-  AgreementPostDTO,
-  AgreementRegistrationDTO,
-} from "utils/types/response-types";
+import { AgreementAttachment, AgreementDraftWithDTO, AgreementRegistrationDTO } from "utils/types/response-types";
 import { EditCommonInfoAgreement } from "rammeavtaler/rammeavtale/Rammeavtale";
-import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";
-import { NyDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal";
-import { EditDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal";
 import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
 import { EditAttachmentGroupFormData } from "rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal";
 import {
   getAgreeementWithNewAttachmentGroup,
-  getAgreeementWithNewDelkontraktDTO,
   getAgreeementWithoutDeletedAttachmentDTO,
-  getAgreeementWithoutDeletedDelkontraktDTO,
-  getAgreeementWithUpdatedDelkontraktDTO,
   getEditedAgreementDTO,
   getEditedAgreementDTORemoveFiles,
   getEditedAgreementWithNewAttachmentGroupInfo,

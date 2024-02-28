@@ -125,7 +125,29 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/${agreementId}`;
 
+  console.log("henter delkontrakter");
   const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO[]>(path, fetcherGET);
+
+  useEffect(() => {
+    if (error) {
+      setGlobalError(error.status, error.message);
+    }
+  }, [error, setGlobalError]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
+export function useDelkontraktByDelkontraktId(delkontraktId: string) {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`;
+
+  const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO>(path, fetcherGET);
 
   useEffect(() => {
     if (error) {
