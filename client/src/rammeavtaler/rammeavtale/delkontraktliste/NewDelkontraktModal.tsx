@@ -7,8 +7,8 @@ import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
-import { updateAgreementWithNewDelkontrakt } from "api/AgreementApi";
 import Content from "felleskomponenter/styledcomponents/Content";
+import { createDelkontrakt } from "api/DelkontraktApi";
 
 interface Props {
   modalIsOpen: boolean;
@@ -16,11 +16,19 @@ interface Props {
   setModalIsOpen: (open: boolean) => void;
   mutateAgreement: () => void;
   mutateDelkontrakter: () => void;
+  newSortNr: number;
 }
 
 export type NyDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>;
 
-const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, mutateDelkontrakter }: Props) => {
+const NewDelkontraktModal = ({
+  modalIsOpen,
+  oid,
+  setModalIsOpen,
+  mutateAgreement,
+  mutateDelkontrakter,
+  newSortNr,
+}: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const {
     handleSubmit,
@@ -45,8 +53,8 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement
   async function onSubmit(data: NyDelkontraktFormData) {
     setIsSaving(true);
 
-    updateAgreementWithNewDelkontrakt(oid, data)
-      .then((agreement) => {
+    createDelkontrakt(oid, data, newSortNr)
+      .then((_) => {
         setIsSaving(false);
         mutateAgreement();
         mutateDelkontrakter();

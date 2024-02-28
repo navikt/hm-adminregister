@@ -1,5 +1,5 @@
 import { Alert, Button, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Avstand } from "felleskomponenter/Avstand";
 import NewDelkontraktModal from "./NewDelkontraktModal";
 import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
@@ -9,6 +9,8 @@ import { reorderPosts } from "api/AgreementApi";
 import styled from "styled-components";
 
 const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: string; mutateAgreement: () => void }) => {
+  const [newSortNr, setNewSortNr] = useState<number>(1);
+
   const reorderDelkontrakt = (post1: number, post2: number) => {
     reorderPosts(agreementId, post1, post2)
       .then((r) => {
@@ -22,6 +24,11 @@ const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: strin
     isLoading: delkontrakterIsLoading,
     mutate: mutateDelkontrakter,
   } = useDelkontrakterByAgreementId(agreementId);
+
+  useEffect(() => {
+    const newSortNr = delkontrakter?.length ? delkontrakter[delkontrakter.length - 1].delkontraktData.sortNr + 1 : 1;
+    setNewSortNr(newSortNr);
+  }, [delkontrakter]);
 
   const [nyRammeavtaleModalIsOpen, setNyRammeavtaleModalIsOpen] = useState(false);
   const isFirstTime = delkontrakter && delkontrakter.length === 0;
@@ -41,6 +48,7 @@ const DelkontrakterTab = ({ agreementId, mutateAgreement }: { agreementId: strin
         oid={agreementId}
         mutateAgreement={mutateAgreement}
         mutateDelkontrakter={mutateDelkontrakter}
+        newSortNr={newSortNr}
       />
 
       <DelkontrakterTabsPanel value="delkontrakter">

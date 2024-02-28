@@ -187,25 +187,6 @@ export const updateAgreementWithNewAttachmentGroup = async (
   return await updateAgreement(updatedAgreement.id, updatedAgreement);
 };
 
-export const updateAgreementWithNewDelkontrakt = async (
-  agreementId: string,
-  data: NyDelkontraktFormData,
-): Promise<AgreementRegistrationDTO> => {
-  const agreementToUpdate: AgreementRegistrationDTO = await getAgreement(agreementId);
-
-  const nyDelkontrakt: AgreementPostDTO = {
-    identifier: uuidv4(),
-    nr: Math.max(...agreementToUpdate.agreementData.posts.map((post) => post.nr)) + 1,
-    title: data.tittel,
-    description: data.beskrivelse,
-    created: todayTimestamp(),
-  };
-
-  const updatedAgreement = getAgreeementWithNewDelkontraktDTO(agreementToUpdate, nyDelkontrakt);
-
-  return await updateAgreement(updatedAgreement.id, updatedAgreement);
-};
-
 export const deleteAttachmentGroup = async (
   agreementId: string,
   attachmentId: string,
