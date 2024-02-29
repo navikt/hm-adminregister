@@ -70,7 +70,7 @@ const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
                   <Fragment key={i}>
                     <Delkontrakt
                       key={i}
-                      delkontraktId={delkontrakt.id}
+                      delkontrakt={delkontrakt}
                       agreementId={agreementId}
                       mutateDelkontrakter={mutateDelkontrakter}
                     />

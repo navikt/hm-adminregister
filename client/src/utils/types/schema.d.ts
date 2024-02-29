@@ -14,6 +14,7 @@ export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations/{id}": {
     get: operations["findByDelkontraktId"];
     put: operations["updateDelkontrakt"];
+    delete: operations["deleteDelkontraktById"];
   };
   "/admreg/admin/api/v1/agreement/registrations": {
     get: operations["findAgreements"];
@@ -35,7 +36,7 @@ export interface paths {
   };
   "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
     get: operations["getDelkontraktById"];
-    delete: operations["deleteDelkontraktById"];
+    delete: operations["deleteDelkontraktById_1"];
   };
   "/admreg/admin/api/v1/bestillingsordning/registrations": {
     post: operations["createBestillingsordning"];
@@ -93,6 +94,9 @@ export interface paths {
   };
   "/admreg/admin/api/v1/product-agreement/ids": {
     delete: operations["deleteProductAgreementByIds"];
+  };
+  "/admreg/admin/api/v1/product-agreement/variants/delkontrakt/{id}": {
+    get: operations["getProductVariantsByDelkontraktId"];
   };
   "/admreg/admin/api/v1/product-agreement/variants/{id}": {
     get: operations["getProductVariantsByAgreementId"];
@@ -624,6 +628,8 @@ export interface components {
       post: number;
       /** Format: int32 */
       rank: number;
+      /** Format: uuid */
+      postId?: string | null;
       status: components["schemas"]["ProductAgreementStatus"];
       createdBy: string;
       /** Format: date-time */
@@ -723,6 +729,16 @@ export interface components {
       agreements: components["schemas"]["AgreementInfo"][];
       /** Format: int64 */
       version?: number | null;
+    };
+    ProductVariantsForDelkontraktDto: {
+      /** Format: uuid */
+      postId: string;
+      /** Format: uuid */
+      productSeries?: string | null;
+      productTitle: string;
+      /** Format: int32 */
+      rank: number;
+      productVariants: components["schemas"]["ProductAgreementRegistrationDTO"][];
     };
     /** @enum {string} */
     Produkttype: "Hovedprodukt" | "Tilbehoer" | "Del";
@@ -930,6 +946,7 @@ export interface components {
       /** Format: date-time */
       updated: string;
     };
+    Unit: Record<string, never>;
     UserDTO: {
       /** Format: uuid */
       id: string;
@@ -978,9 +995,7 @@ export interface operations {
   createDelkontrakt: {
     requestBody: {
       content: {
-        "application/json": {
-          dto: components["schemas"]["DelkontraktRegistrationDTO"];
-        };
+        "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
       };
     };
     responses: {
@@ -1030,9 +1045,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": {
-          dto: components["schemas"]["DelkontraktRegistrationDTO"];
-        };
+        "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
       };
     };
     responses: {
@@ -1040,6 +1053,21 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["DelkontraktRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteDelkontraktById: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description deleteDelkontraktById 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Unit"];
         };
       };
     };
@@ -1189,7 +1217,7 @@ export interface operations {
       };
     };
   };
-  deleteDelkontraktById: {
+  deleteDelkontraktById_1: {
     parameters: {
       path: {
         id: string;
@@ -1197,7 +1225,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description deleteDelkontraktById 200 response */
+      /** @description deleteDelkontraktById_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["AgreementRegistrationDTO"];
@@ -1578,6 +1606,21 @@ export interface operations {
       200: {
         content: {
           "application/json": string;
+        };
+      };
+    };
+  };
+  getProductVariantsByDelkontraktId: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getProductVariantsByDelkontraktId 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductVariantsForDelkontraktDto"][];
         };
       };
     };

@@ -4,6 +4,7 @@ import {
   DelkontraktRegistrationDTO,
   IsoCategoryDTO,
   ProductRegistrationDTO,
+  ProductVariantsForDelkontraktDto,
   ProduktvarianterForDelkontrakterDTOList,
   SeriesChunk,
   SupplierChunk,
@@ -99,27 +100,6 @@ export function usePagedAgreements({ page, pageSize }: { page: number; pageSize:
   };
 }
 
-export function useProductVariantsByAgreementId(agreementId: string) {
-  const { setGlobalError } = useHydratedErrorStore();
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/${agreementId}`;
-
-  const { data, error, isLoading, mutate } = useSWR<ProduktvarianterForDelkontrakterDTOList>(path, fetcherGET);
-
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message);
-    }
-  }, [error, setGlobalError]);
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  };
-}
-
 export function useDelkontrakterByAgreementId(agreementId: string) {
   const { setGlobalError } = useHydratedErrorStore();
 
@@ -159,6 +139,29 @@ export function useDelkontraktByDelkontraktId(delkontraktId: string) {
     isLoading,
     error,
     mutate,
+  };
+}
+
+export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}`;
+
+  const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
+    delkontraktId ? path : null,
+    fetcherGET,
+  );
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    mutateProductAgreements: mutate,
+    error,
   };
 }
 

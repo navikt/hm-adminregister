@@ -16,9 +16,9 @@ import Content from "felleskomponenter/styledcomponents/Content";
 interface Props {
   modalIsOpen: boolean;
   setModalIsOpen: (open: boolean) => void;
-  agreementId: string;
+  delkontraktId: string;
   post: number;
-  mutateDelkontrakter: () => void;
+  mutateProductAgreements: () => void;
 }
 
 export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>;
@@ -26,8 +26,8 @@ export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDel
 const NewProductOnDelkontraktModal = ({
   modalIsOpen,
   setModalIsOpen,
-  mutateDelkontrakter,
-  agreementId,
+  mutateProductAgreements,
+  delkontraktId,
   post,
 }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -66,12 +66,12 @@ const NewProductOnDelkontraktModal = ({
     setIsSaving(true);
 
     addProductsToAgreement(
-      agreementId,
+      delkontraktId,
       post,
       variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!!)) || [],
     )
       .then((agreement) => {
-        mutateDelkontrakter();
+        mutateProductAgreements();
         setIsSaving(false);
       })
       .catch((error) => {

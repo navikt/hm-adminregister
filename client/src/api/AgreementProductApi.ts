@@ -1,4 +1,5 @@
 import {
+  DelkontraktRegistrationDTO,
   ProductAgreementRegistrationDTO,
   ProductAgreementRegistrationDTOList,
   ProductRegistrationDTO,
@@ -8,6 +9,7 @@ import { CustomError } from "utils/swr-hooks";
 import { v4 as uuidv4 } from "uuid";
 import { todayTimestamp } from "utils/date-util";
 import { getAgreement } from "api/AgreementApi";
+import { getDelkontrakt } from "api/DelkontraktApi";
 
 export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
   const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, {
@@ -20,7 +22,7 @@ export const deleteProductsFromAgreement = async (agreementProductIds: string[])
   });
 
   if (response.ok) {
-    return await response.json();
+    return await response.text();
   } else {
     const error = await response.json();
     return Promise.reject(error);
@@ -71,11 +73,12 @@ export const changeRankOnProductAgreements = async (productAgreementIds: string[
 };
 
 export const addProductsToAgreement = async (
-  agreementId: string,
+  delkontraktId: string,
   post: number,
   productsToAdd: ProductRegistrationDTO[],
 ): Promise<ProductAgreementRegistrationDTOList> => {
-  const agreementToUpdate = await getAgreement(agreementId);
+  const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId);
+  const agreementToUpdate = await getAgreement(delkontraktToUpdate.agreementId);
 
   const productAgreementsToAdd: ProductAgreementRegistrationDTO[] = [];
 
@@ -89,14 +92,15 @@ export const addProductsToAgreement = async (
       supplierRef: product.supplierRef,
       supplierId: product.supplierId,
       hmsArtNr: product.hmsArtNr,
-      agreementId: agreementId,
+      agreementId: delkontraktToUpdate.agreementId,
       reference: product.supplierRef,
       status: product.registrationStatus,
       createdBy: "REGISTER",
       created: agreementToUpdate.created,
       updated: todayTimestamp(),
-      rank: 1, //todo
+      rank: 1,
       post: post,
+      postId: delkontraktToUpdate.id,
       published: agreementToUpdate.published,
       expired: agreementToUpdate.expired,
       updatedByUser: agreementToUpdate.updatedByUser, // todo: get from user?
@@ -117,7 +121,6 @@ export const addProductsToAgreement = async (
     return await response.json();
   } else {
     const error = await response.json();
-    console.log(error);
     return Promise.reject(error);
   }
 };
