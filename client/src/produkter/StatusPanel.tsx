@@ -1,6 +1,5 @@
-import React from "react";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { BodyLong, Box, Button, Heading, Label, Textarea, VStack } from "@navikt/ds-react";
+import { BodyLong, Box, Button, Heading, Textarea, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
 
@@ -53,6 +52,13 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
       {sendtTilGodkjenning && <StatusBox title="Sendt til godkjenning" date={product.created} />}
 
       <StatusBox title="Endret" date={product.updated} />
+
+      <Box>
+        <BodyLong size="small" weight="semibold">
+          Endret av
+        </BodyLong>
+        <BodyLong size="small">{product.updatedByUser}</BodyLong>
+      </Box>
 
       <StatusBox title="Opprettet" date={product.created} />
     </VStack>
