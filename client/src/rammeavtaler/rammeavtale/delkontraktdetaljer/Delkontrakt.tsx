@@ -159,9 +159,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter }: Props) => {
                       return (
                         <Table.Row key={i} shadeOnHover={false}>
                           <Table.DataCell>
-                            {produkt.productSeries ? (
+                            {produkt.serieIdentifier ? (
                               <a
-                                href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.productSeries}`}
+                                href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
                                 target="_blank"
                                 rel="noreferrer"
                               >

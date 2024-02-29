@@ -736,6 +736,7 @@ export interface components {
       /** Format: uuid */
       productSeries?: string | null;
       productTitle: string;
+      serieIdentifier?: string | null;
       /** Format: int32 */
       rank: number;
       productVariants: components["schemas"]["ProductAgreementRegistrationDTO"][];
