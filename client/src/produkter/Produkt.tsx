@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import useSWR from "swr";
 
@@ -49,70 +49,14 @@ const ProductPage = () => {
     mutate: mutateProducts,
   } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
 
-  const {
-    data: isoCategory,
-    error: isoError,
-    isLoading: isoIsLoading,
-  } = useSWR<IsoCategoryDTO>(
+  const { data: isoCategory } = useSWR<IsoCategoryDTO>(
     products && products[0].isoCategory && products[0].isoCategory !== "0"
       ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${products[0].isoCategory}`
       : null,
     fetcherGET,
   );
 
-  const updateUrlOnTabChange = (value: string) => {
-    navigate(`${pathname}?tab=${value}`);
-  };
-
   const formMethods = useForm<EditCommonInfoProduct>();
-
-  async function onSubmit(data: EditCommonInfoProduct) {
-    updateProduct(products!![0].id, data)
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
-
-  async function onSendTilGodkjenning() {
-    sendTilGodkjenning(products!![0].id)
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
-
-  async function onPublish() {
-    const validationResult = productIsValid();
-    setIsValid(validationResult);
-    if (!validationResult) {
-      setModalIsOpen(true);
-    }
-  }
-
-  const numberOfImages = () => {
-    return products!![0].productData.media.filter((media) => media.type == "IMAGE").length;
-  };
-
-  const numberOfDocuments = () => {
-    return products!![0].productData.media.filter((media) => media.type == "PDF").length;
-  };
-
-  const numberOfVariants = () => {
-    if (isUUID(products!![0].supplierRef)) {
-      return 0;
-    }
-    return products!!.length;
-  };
-
-  const productIsValid = () => {
-    return !(
-      !products!![0].productData.attributes.text ||
-      numberOfImages() === 0 ||
-      numberOfDocuments() === 0 ||
-      numberOfVariants() === 0
-    );
-  };
 
   if (error) {
     return (
@@ -138,8 +82,62 @@ const ProductPage = () => {
     );
   }
 
-  const isDraft = products[0].draftStatus === "DRAFT";
-  const isPending = products[0].adminStatus === "PENDING";
+  const product = products[0];
+
+  const updateUrlOnTabChange = (value: string) => {
+    navigate(`${pathname}?tab=${value}`);
+  };
+
+  async function onSubmit(data: EditCommonInfoProduct) {
+    updateProduct(product.id, data)
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+  }
+
+  async function onSendTilGodkjenning() {
+    sendTilGodkjenning(product.id)
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+  }
+
+  async function onPublish() {
+    const validationResult = productIsValid();
+    setIsValid(validationResult);
+    if (!validationResult) {
+      setModalIsOpen(true);
+    }
+  }
+
+  const numberOfImages = () => {
+    return product.productData.media.filter((media) => media.type == "IMAGE").length;
+  };
+
+  const numberOfDocuments = () => {
+    return product.productData.media.filter((media) => media.type == "PDF").length;
+  };
+
+  const numberOfVariants = () => {
+    if (isUUID(product.supplierRef)) {
+      return 0;
+    }
+    return products.length;
+  };
+
+  const productIsValid = () => {
+    return !(
+      !product.productData.attributes.text ||
+      numberOfImages() === 0 ||
+      numberOfDocuments() === 0 ||
+      numberOfVariants() === 0
+    );
+  };
+
+  const isDraft = product.draftStatus === "DRAFT";
+  const isPending = product.adminStatus === "PENDING";
 
   const InvalidProductModal = () => {
     return (
@@ -148,7 +146,7 @@ const ProductPage = () => {
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
           <ul className="product-error-text">
-            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
+            {!product.productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
             {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
             {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
@@ -223,7 +221,7 @@ const ProductPage = () => {
             <VStack gap="1">
               <Label>Produktnavn</Label>
               <Heading level="1" size="xlarge">
-                {products[0].title ?? products[0].title}
+                {product.title ?? product.title}
               </Heading>
             </VStack>
             <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
@@ -233,7 +231,7 @@ const ProductPage = () => {
                   label={
                     <>
                       Om produktet
-                      {!products!![0].productData.attributes.text && !isValid && (
+                      {!product.productData.attributes.text && !isValid && (
                         <ExclamationmarkTriangleIcon className="product-error-text" />
                       )}
                     </>
@@ -249,7 +247,7 @@ const ProductPage = () => {
                   label={<TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} />}
                 />
               </Tabs.List>
-              <AboutTab product={products[0]} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
+              <AboutTab product={product} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
               <FileTab
                 products={products}
                 mutateProducts={mutateProducts}
@@ -279,7 +277,7 @@ const ProductPage = () => {
                 }}
               />
             )}
-            <StatusPanel product={products[0]} isAdmin={loggedInUser?.isAdmin || false} />
+            <StatusPanel product={product} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>
         </HGrid>
       </FormProvider>
@@ -297,7 +295,7 @@ const PublishButton = ({
   isAdmin: boolean;
   isPending: boolean;
   isDraft: boolean;
-  onClick: any;
+  onClick: () => void;
 }) => {
   if (isAdmin) {
     return (
