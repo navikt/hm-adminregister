@@ -103,25 +103,27 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
                 </ol>
               )}
               {sortedPdfs.length === 0 && (
-                <Alert variant={showInputError ? "error" : "info"}>Produktet trenger dokumenter før det kan sendes til
-                  godkjenning</Alert>
+                <Alert variant={showInputError ? "error" : "info"}>
+                  Produktet trenger dokumenter før det kan sendes til godkjenning
+                </Alert>
               )}
             </>
           )}
-
-          <Button
-            className="fit-content"
-            variant="tertiary"
-            icon={
-              <PlusCircleIcon
-                title={fileType === "images" ? "Legg til bilde" : "Legg til dokument"}
-                fontSize="1.5rem"
-              />
-            }
-            onClick={() => setModalIsOpen(true)}
-          >
-            {fileType === "images" ? "  Legg til bilder" : "Legg til dokumenter"}
-          </Button>
+          {products[0].draftStatus === "DRAFT" && (
+            <Button
+              className="fit-content"
+              variant="tertiary"
+              icon={
+                <PlusCircleIcon
+                  title={fileType === "images" ? "Legg til bilde" : "Legg til dokument"}
+                  fontSize="1.5rem"
+                />
+              }
+              onClick={() => setModalIsOpen(true)}
+            >
+              {fileType === "images" ? "  Legg til bilder" : "Legg til dokumenter"}
+            </Button>
+          )}
         </VStack>
       </Tabs.Panel>
     </>

@@ -92,14 +92,16 @@ const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => 
                         <div>
                           {isoCategory?.isoTitle} ({isoCategory?.isoCode})
                         </div>
-                        <Button
-                          className="fit-content"
-                          variant="tertiary"
-                          icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
-                          onClick={() => setShowEditIsoMode(true)}
-                        >
-                          Endre ISO-kategori
-                        </Button>
+                        {product.draftStatus === "DRAFT" && (
+                          <Button
+                            className="fit-content"
+                            variant="tertiary"
+                            icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
+                            onClick={() => setShowEditIsoMode(true)}
+                          >
+                            Endre ISO-kategori
+                          </Button>
+                        )}
                       </>
                     )}
                   </>
@@ -143,8 +145,9 @@ const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => 
               <>
                 {!product.productData.attributes.text ? (
                   <>
-                    <Alert variant={showInputError ? "error" : "info"}>Produktet trenger en beskrivelse før det kan
-                      sendes til godkjenning</Alert>
+                    <Alert variant={showInputError ? "error" : "info"}>
+                      Produktet trenger en beskrivelse før det kan sendes til godkjenning
+                    </Alert>
                     <Button
                       className="fit-content"
                       variant="tertiary"
@@ -157,14 +160,16 @@ const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => 
                 ) : (
                   <>
                     <pre className="pre">{product.productData.attributes.text}</pre>
-                    <Button
-                      className="fit-content"
-                      variant="tertiary"
-                      icon={<PencilWritingIcon title="Endre beskrivelse" fontSize="1.5rem" />}
-                      onClick={() => setShowEditDescriptionMode(true)}
-                    >
-                      Endre beskrivelse
-                    </Button>
+                    {product.draftStatus === "DRAFT" && (
+                      <Button
+                        className="fit-content"
+                        variant="tertiary"
+                        icon={<PencilWritingIcon title="Endre beskrivelse" fontSize="1.5rem" />}
+                        onClick={() => setShowEditDescriptionMode(true)}
+                      >
+                        Endre beskrivelse
+                      </Button>
+                    )}
                   </>
                 )}
               </>

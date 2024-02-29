@@ -5,7 +5,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 
-const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[], showInputError: boolean }) => {
+const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[]; showInputError: boolean }) => {
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
@@ -41,25 +41,27 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
           <VStack gap="4">
             <div className="variant-table">
               <Table>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell scope="row"></Table.HeaderCell>
-                    {paginatedVariants.map((product, i) => (
-                      <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
-                        <Link to={`${pathname}/rediger-variant/${product.id}?page=${page}`}>
-                          <Button
-                            as="a"
-                            title="Rediger artikkel"
-                            variant="tertiary-neutral"
-                            size="small"
-                            icon={<PencilWritingIcon aria-hidden title="rediger artikkel" />}
-                            iconPosition="right"
-                          />
-                        </Link>
-                      </Table.HeaderCell>
-                    ))}
-                  </Table.Row>
-                </Table.Header>
+                {products[0].draftStatus === "DRAFT" && (
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell scope="row"></Table.HeaderCell>
+                      {paginatedVariants.map((product, i) => (
+                        <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
+                          <Link to={`${pathname}/rediger-variant/${product.id}?page=${page}`}>
+                            <Button
+                              as="a"
+                              title="Rediger artikkel"
+                              variant="tertiary-neutral"
+                              size="small"
+                              icon={<PencilWritingIcon aria-hidden title="rediger artikkel" />}
+                              iconPosition="right"
+                            />
+                          </Link>
+                        </Table.HeaderCell>
+                      ))}
+                    </Table.Row>
+                  </Table.Header>
+                )}
                 <Table.Body>
                   <Table.Row>
                     <Table.HeaderCell scope="row">Artikkelnavn:</Table.HeaderCell>
@@ -96,7 +98,7 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
           </VStack>
         </Box>
       )}
-      {products[0] && (
+      {products[0].draftStatus === "DRAFT" && (
         //Sender med siste siden
         <Link to={`${pathname}/opprett-variant/${products[0].id}?page=${totalPages + 1}`}>
           <Button
