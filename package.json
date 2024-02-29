@@ -18,7 +18,8 @@
     "clean:client": "npm run --prefix client clean",
     "clean:server": "npm run --prefix server clean",
     "clean": "run-p clean:*",
-    "prettier": "npm run --prefix client prettier"
+    "prettier": "npm run --prefix client prettier",
+    "lint": "npm run --prefix client lint"
   },
   "dependencies": {
   }

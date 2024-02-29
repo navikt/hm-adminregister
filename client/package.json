@@ -10,7 +10,8 @@
     "build:prod": "tsc && vite build --mode=prod",
     "preview": "vite preview",
     "clean": "rimraf dist",
-    "prettier": "prettier -w src"
+    "prettier": "prettier -w src",
+    "lint": "eslint --ext .ts,.tsx ."
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
@@ -18,8 +19,13 @@
     "@navikt/ds-css": "^5.11.4",
     "@navikt/ds-react": "^5.11.4",
     "@navikt/ds-tokens": "^5.11.4",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
     "amplitude-js": "^8.19.0",
     "classnames": "^2.3.2",
+    "eslint": "^8.57.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -53,6 +59,24 @@
     "vite": "^4.5.2",
     "vite-tsconfig-paths": "^4.3.1",
     "vitest": "^0.22.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:jsx-a11y/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "warn"
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
   },
   "msw": {
     "workerDirectory": "public"
