@@ -8,7 +8,7 @@ import { useState } from "react";
 
 const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[]; showInputError: boolean }) => {
   const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
   const columnsPerPage = 5;
   const totalPages = Math.ceil(products.length / columnsPerPage);
@@ -94,7 +94,16 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
               </Table>
             </div>
             {totalPages > 1 && (
-              <Pagination page={pageState} onPageChange={(x) => setPageState(x)} count={totalPages} size="small" />
+              <Pagination
+                page={pageState}
+                onPageChange={(x) => {
+                  searchParams.set("page", x.toString());
+                  setSearchParams(searchParams);
+                  setPageState(x);
+                }}
+                count={totalPages}
+                size="small"
+              />
             )}
           </VStack>
         </Box>
