@@ -4,15 +4,15 @@ import { ProductRegistrationDTO } from "utils/types/response-types";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
+import { useState } from "react";
 
 const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[]; showInputError: boolean }) => {
   const { pathname } = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
   const columnsPerPage = 5;
   const totalPages = Math.ceil(products.length / columnsPerPage);
-  const pageInUrl = Number(searchParams.get("page")) || 1;
-  const page = pageInUrl > totalPages ? totalPages : pageInUrl;
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
 
   const isFirstTime = products.length === 1 && isUUID(products[0].supplierRef);
 
@@ -24,8 +24,7 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
     return undefined;
   };
 
-  let paginatedVariants = products;
-  paginatedVariants = paginatedVariants.slice((page - 1) * columnsPerPage, page * columnsPerPage);
+  const paginatedVariants = products.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
 
   return (
     <Tabs.Panel value="variants" className="tab-panel">
@@ -47,7 +46,7 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
-                          <Link to={`${pathname}/rediger-variant/${product.id}?page=${page}`}>
+                          <Link to={`${pathname}/rediger-variant/${product.id}?page=${pageState}`}>
                             <Button
                               as="a"
                               title="Rediger artikkel"
@@ -94,13 +93,17 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
                 </Table.Body>
               </Table>
             </div>
-            {totalPages > 1 && <Pagination page={page} count={totalPages} size="small" />}
+            {totalPages > 1 && (
+              <Pagination page={pageState} onPageChange={(x) => setPageState(x)} count={totalPages} size="small" />
+            )}
           </VStack>
         </Box>
       )}
       {products[0].draftStatus === "DRAFT" && (
         //Sender med siste siden
-        <Link to={`${pathname}/opprett-variant/${products[0].id}?page=${totalPages + 1}`}>
+        <Link
+          to={`${pathname}/opprett-variant/${products[0].id}?page=${Math.floor(products.length / columnsPerPage) + 1}`}
+        >
           <Button
             as="a"
             className="fit-content"
