@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Alert, Button, Heading, LinkPanel, Loader, Pagination, Search } from "@navikt/ds-react";
-import { PlusIcon } from "@navikt/aksel-icons";
+import { Alert, Button, Dropdown, Heading, HStack, LinkPanel, Loader, Pagination, Search } from "@navikt/ds-react";
+import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
 import { AgreementGroupDto } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
@@ -51,7 +51,7 @@ const Rammeavtaler = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <div className="search-panel__add-new-button">
+            <HStack gap="2" className="search-panel__add-new-button">
               <Button
                 variant="secondary"
                 size="medium"
@@ -61,7 +61,27 @@ const Rammeavtaler = () => {
               >
                 Ny rammeavtale
               </Button>
-            </div>
+              <Dropdown>
+                <Button
+                  style={{ marginLeft: "auto" }}
+                  variant="tertiary"
+                  icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                  as={Dropdown.Toggle}
+                ></Button>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.GroupedList>
+                    <Dropdown.Menu.GroupedList.Item
+                      onClick={() => {
+                        navigate("/rammeavtaler/importer-katalogfil");
+                      }}
+                    >
+                      <FileExcelIcon aria-hidden />
+                      Importer katalogfil
+                    </Dropdown.Menu.GroupedList.Item>
+                  </Dropdown.Menu.GroupedList>
+                </Dropdown.Menu>
+              </Dropdown>
+            </HStack>
           </div>
 
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
