@@ -28,6 +28,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
   const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([]);
+  const [clickedSeriesId, setClickedSeriesId] = useState<string | null>(null);
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
   const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
   const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false);
@@ -36,15 +37,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
 
   const [updatingRank, setUpdatingRank] = useState<boolean>(false);
 
-  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>(undefined);
-
   const { setGlobalError } = useHydratedErrorStore();
-
-  // useEffect(() => {
-  //   if (selectedSeriesId !== undefined) {
-  //     setVarianter(produkter.find((it) => it.produktserie === selectedSeriesId)?.produktvarianter || []);
-  //   }
-  // }, [produkter]);
 
   const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
     setVarianter(valgtVariantListe);
@@ -130,8 +123,8 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
       <EditProducstVariantsModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        varianter={varianter}
-        mutateDelkontrakt={mutateDelkontrakter}
+        variants={productAgreements?.find((it) => it.productSeries === clickedSeriesId)?.productVariants ?? []}
+        mutateProductAgreements={mutateProductAgreements}
       />
 
       <ExpansionCard size="medium" key={delkontrakt!.delkontraktData.sortNr} aria-label="delkontrakt">
@@ -176,8 +169,8 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                               variant={"tertiary"}
                               icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
                               onClick={() => {
-                                onClickVariants(produkt.productVariants);
-                                setSelectedSeriesId(produkt.productSeries!!);
+                                setClickedSeriesId(produkt.productSeries ? produkt.productSeries : null);
+                                setModalIsOpen(true);
                               }}
                             >
                               {produkt.productVariants.length}

@@ -1,6 +1,6 @@
-import { Button, Checkbox, HStack, Modal, Table, VStack } from "@navikt/ds-react";
+import { Button, Checkbox, Modal, Table, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
-import { ProductAgreementRegistrationDTOList } from "utils/types/response-types";
+import { ProductAgreementRegistrationDTO, ProductVariantsForDelkontraktDto } from "utils/types/response-types";
 import { deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import Content from "felleskomponenter/styledcomponents/Content";
@@ -8,11 +8,11 @@ import Content from "felleskomponenter/styledcomponents/Content";
 interface Props {
   modalIsOpen: boolean;
   setModalIsOpen: (open: boolean) => void;
-  varianter: ProductAgreementRegistrationDTOList;
-  mutateDelkontrakt: () => void;
+  variants: ProductAgreementRegistrationDTO[];
+  mutateProductAgreements: () => void;
 }
 
-const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mutateDelkontrakt }: Props) => {
+const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, mutateProductAgreements }: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { setGlobalError } = useHydratedErrorStore();
 
@@ -24,7 +24,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
     deleteProductsFromAgreement(selectedRows)
       .then(() => {
-        mutateDelkontrakt();
+        mutateProductAgreements();
         setSelectedRows([]);
       })
       .catch((error) => {
@@ -44,7 +44,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
     >
       <Modal.Body>
         <Content>
-          {varianter.length > 0 && (
+          {variants.length > 0 && (
             <VStack gap="2" style={{ width: "100%" }}>
               <Table>
                 <Table.Header>
@@ -54,9 +54,9 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
                     <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
                     <Table.DataCell>
                       <Checkbox
-                        checked={selectedRows.length === varianter.length}
+                        checked={selectedRows.length === variants.length}
                         onChange={() => {
-                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(varianter.map(({ id }) => id!!));
+                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!!));
                         }}
                         hideLabel
                       >
@@ -66,7 +66,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, varianter, mut
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {varianter.map((variant, i) => {
+                  {variants.map((variant, i) => {
                     return (
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName}</Table.DataCell>
