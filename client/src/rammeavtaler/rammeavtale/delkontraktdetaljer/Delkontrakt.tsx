@@ -9,17 +9,16 @@ import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { deleteDelkontrakt } from "api/DelkontraktApi";
-import { useDelkontraktByDelkontraktId, useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
+import { useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 
 interface Props {
+  agreementDraftStatus: string;
   delkontrakt: DelkontraktRegistrationDTO;
-  //produkter: ProduktvarianterForDelkontrakterDTOList; todo: hente via swr når endept er klart
-  agreementId: string;
   mutateDelkontrakter: () => void;
 }
 
-export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter }: Props) => {
+export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftStatus }: Props) => {
   const {
     data: productAgreements,
     isLoading: productAgreementsIsLoading,
@@ -260,6 +259,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter }: Props) => {
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
+                      disabled={agreementDraftStatus !== "DRAFT"}
                       onClick={() => {
                         setDeleteDelkontraktIsOpen(true);
                       }}

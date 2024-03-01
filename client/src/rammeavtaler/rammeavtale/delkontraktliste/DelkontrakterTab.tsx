@@ -8,7 +8,13 @@ import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-
 import styled from "styled-components";
 import { reorderDelkontrakter } from "api/DelkontraktApi";
 
-const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
+const DelkontrakterTab = ({
+  agreementId,
+  agreementDraftStatus,
+}: {
+  agreementId: string;
+  agreementDraftStatus: string;
+}) => {
   const [newSortNr, setNewSortNr] = useState<number>(1);
 
   const {
@@ -71,7 +77,7 @@ const DelkontrakterTab = ({ agreementId }: { agreementId: string }) => {
                     <Delkontrakt
                       key={i}
                       delkontrakt={delkontrakt}
-                      agreementId={agreementId}
+                      agreementDraftStatus={agreementDraftStatus}
                       mutateDelkontrakter={mutateDelkontrakter}
                     />
                     <VStack gap="1" style={{ alignItems: "center" }}>
