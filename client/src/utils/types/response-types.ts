@@ -56,6 +56,7 @@ export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
 export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
+export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 
 // Path params
 //type EndpointParams = paths['/my/endpoint']['parameters']

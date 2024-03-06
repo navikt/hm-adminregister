@@ -101,33 +101,6 @@ export const getEditedAgreementWithNewInfoDTO = (
   };
 };
 
-export const getAgreeementWithUpdatedDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  updatedPost: AgreementPostDTO,
-): AgreementRegistrationDTO => {
-  const index = agreementToEdit.agreementData.posts.findIndex((post) => post.identifier === updatedPost.identifier);
-  agreementToEdit.agreementData.posts[index] = updatedPost;
-
-  return {
-    ...agreementToEdit,
-  };
-};
-
-export const getAgreeementWithNewDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  newPost: AgreementPostDTO,
-): AgreementRegistrationDTO => {
-  const updatedPosts = [...agreementToEdit.agreementData.posts, newPost];
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      posts: updatedPosts,
-    },
-  };
-};
-
 export const getAgreeementWithNewAttachmentGroup = (
   agreementToEdit: AgreementRegistrationDTO,
   newAttachment: AgreementAttachment,
@@ -139,20 +112,6 @@ export const getAgreeementWithNewAttachmentGroup = (
     agreementData: {
       ...agreementToEdit.agreementData,
       attachments: updatedAttachments,
-    },
-  };
-};
-export const getAgreeementWithoutDeletedDelkontraktDTO = (
-  agreementToEdit: AgreementRegistrationDTO,
-  delkontraktId: string,
-): AgreementRegistrationDTO => {
-  const updatedPosts = agreementToEdit.agreementData.posts.filter((post) => post.identifier !== delkontraktId);
-
-  return {
-    ...agreementToEdit,
-    agreementData: {
-      ...agreementToEdit.agreementData,
-      posts: updatedPosts,
     },
   };
 };

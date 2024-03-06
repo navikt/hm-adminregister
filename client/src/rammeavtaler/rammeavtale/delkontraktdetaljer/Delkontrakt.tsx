@@ -27,7 +27,6 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
-  const [varianter, setVarianter] = useState<ProductAgreementRegistrationDTOList>([]);
   const [clickedSeriesId, setClickedSeriesId] = useState<string | null>(null);
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
   const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
@@ -38,11 +37,6 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
   const [updatingRank, setUpdatingRank] = useState<boolean>(false);
 
   const { setGlobalError } = useHydratedErrorStore();
-
-  const onClickVariants = (valgtVariantListe: ProductAgreementRegistrationDTOList) => {
-    setVarianter(valgtVariantListe);
-    setModalIsOpen(true);
-  };
 
   const onConfirmDeleteDelkontrakt = () => {
     deleteDelkontrakt(delkontrakt.id)
@@ -169,7 +163,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                               variant={"tertiary"}
                               icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
                               onClick={() => {
-                                setClickedSeriesId(produkt.productSeries ? produkt.productSeries : null);
+                                setClickedSeriesId(produkt.productSeries ? produkt.productSeries : "");
                                 setModalIsOpen(true);
                               }}
                             >

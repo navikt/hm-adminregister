@@ -1,0 +1,43 @@
+@use "../../styles/_mixins";
+
+@import '@navikt/ds-tokens/dist/tokens';
+
+
+.variants-table {
+
+  thead tr {
+    background-color: $a-surface-selected;
+  }
+
+  thead tr > th:first-child {
+    background-color: $a-surface-selected;
+  }
+}
+
+
+.import-products {
+  margin-top: $a-spacing-16;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-8;
+    margin-bottom: $a-spacing-16;
+  }
+
+  h1 {
+    text-align: left;
+  }
+}
+
+.product-series-info {
+  p {
+    margin-bottom: $a-spacing-1;
+    margin-top: $a-spacing-1;
+
+  }
+}
+

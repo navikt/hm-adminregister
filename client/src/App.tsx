@@ -27,6 +27,7 @@ import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
+import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 
 export function App() {
   return (
@@ -200,6 +201,16 @@ export function App() {
             </>
           }
         />
+
+        <Route
+          path="/rammeavtaler/importer-katalogfil"
+          element={
+            <>
+              <ImporterOgValiderKatalogfil />
+            </>
+          }
+        />
+
         <Route
           path="/rammeavtaler/opprett"
           element={
