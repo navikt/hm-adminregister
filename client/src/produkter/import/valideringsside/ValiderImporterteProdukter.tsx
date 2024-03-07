@@ -88,7 +88,7 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
             <Heading level="1" size="large" align="center">
               Importer produkter
             </Heading>
-            <Alert variant="error">Noe gikk galt ved importering. Sjekk at filen er riktig satt opp.</Alert>
+            <Alert variant="error">{error.message}</Alert>
             <Button
               className="fit-content"
               size="medium"
