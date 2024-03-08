@@ -4,28 +4,12 @@ import { EditDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktdet
 import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";
 import { NyDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal";
+import { fetchAPI } from "api/fetch";
 
-export const getDelkontrakt = async (delkontraktId: string): Promise<DelkontraktRegistrationDTO> => {
-  const response = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+export const getDelkontrakt = (delkontraktId: string): Promise<DelkontraktRegistrationDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "GET");
 
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
-
-export const createDelkontrakt = async (
+export const createDelkontrakt = (
   agreementId: string,
   data: NyDelkontraktFormData,
   sortnr: number,
@@ -44,66 +28,25 @@ export const createDelkontrakt = async (
     },
   };
 
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(newDelkontrakt),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
+  return fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/`,
+    "POST",
+    newDelkontrakt,
+  );
 };
 
-export const updateDelkontrakt = async (
+export const updateDelkontrakt = (
   delkontraktId: string,
   updatedDelkontrakt: DelkontraktRegistrationDTO,
-): Promise<DelkontraktRegistrationDTO> => {
-  const response = await fetch(
+): Promise<DelkontraktRegistrationDTO> =>
+  fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(updatedDelkontrakt),
-    },
+    "PUT",
+    updatedDelkontrakt,
   );
 
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
-
-export const deleteDelkontrakt = async (delkontraktId: string): Promise<void> => {
-  const response = await fetch(
-    `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    },
-  );
-
-  if (response.ok) {
-    return;
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
+export const deleteDelkontrakt = (delkontraktId: string): Promise<void> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "DELETE");
 
 export const updateDelkontraktinfo = async (
   delkontraktId: string,

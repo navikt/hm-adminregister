@@ -13,84 +13,27 @@ import {
   getEditedAgreementWithNewInfoDTO,
 } from "utils/agreement-util";
 import { NyAttachmentGroupFormData } from "rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal";
+import { fetchAPI, getPath } from "api/fetch";
 
-export const getAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const getAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "GET");
 
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
-export const updateAgreement = async (
+export const updateAgreement = (
   agreementId: string,
   updatedAgreement: AgreementRegistrationDTO,
-): Promise<AgreementRegistrationDTO> => {
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(updatedAgreement),
-  });
+): Promise<AgreementRegistrationDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "PUT", updatedAgreement);
 
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
+export const deleteAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "DELETE");
 
-export const deleteAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
-
-export const postAgreementDraft = async (
-  isAdmin: Boolean,
+export const postAgreementDraft = (
+  isAdmin: boolean,
   agreementDraft: AgreementDraftWithDTO,
 ): Promise<AgreementRegistrationDTO> => {
-  const createAgreementPath = () =>
-    isAdmin
-      ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/draft/reference`
-      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/draft/reference`;
+  const createAgreementPath = () => getPath(isAdmin, "/api/v1/agreement/registrations/draft/reference");
 
-  const response = await fetch(createAgreementPath(), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(agreementDraft),
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
+  return fetchAPI(createAgreementPath(), "POST", agreementDraft);
 };
 
 export const publishAgreement = async (agreementId: string): Promise<AgreementRegistrationDTO> => {

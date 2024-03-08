@@ -5,71 +5,32 @@ import {
   ProductRegistrationDTO,
 } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
-import { CustomError } from "utils/swr-hooks";
 import { v4 as uuidv4 } from "uuid";
 import { todayTimestamp } from "utils/date-util";
 import { getAgreement } from "api/AgreementApi";
 import { getDelkontrakt } from "api/DelkontraktApi";
+import { fetchAPI } from "api/fetch";
 
-export const deleteProductsFromAgreement = async (agreementProductIds: string[]) => {
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(agreementProductIds),
-  });
-
-  if (response.ok) {
-    return await response.text();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
+export const deleteProductsFromAgreement = (agreementProductIds: string[]) =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, "DELETE", agreementProductIds);
 
 export const changeRankOnProductAgreements = async (productAgreementIds: string[], newRank: number) => {
-  const productAgreementsToUpdate: ProductAgreementRegistrationDTO[] = await fetch(
+  const productAgreementsToUpdate: ProductAgreementRegistrationDTO[] = await fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/get-by-ids`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(productAgreementIds),
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status);
-      });
-    }
-    return res.json();
-  });
+    "POST",
+    productAgreementIds,
+  );
 
   const updatedProductAgreements: ProductAgreementRegistrationDTO[] = getEditedProductAgreements(
     productAgreementsToUpdate,
     newRank,
   );
 
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(updatedProductAgreements),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    console.log(error);
-    return Promise.reject(error);
-  }
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
+    "PUT",
+    updatedProductAgreements,
+  );
 };
 
 export const addProductsToAgreement = async (
@@ -80,49 +41,34 @@ export const addProductsToAgreement = async (
   const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId);
   const agreementToUpdate = await getAgreement(delkontraktToUpdate.agreementId);
 
-  const productAgreementsToAdd: ProductAgreementRegistrationDTO[] = [];
+  const productAgreementsToAdd: ProductAgreementRegistrationDTO[] = productsToAdd.map((product) => ({
+    id: uuidv4(),
+    productId: product.id,
+    seriesUuid: product.seriesUUID,
+    title: product.title,
+    articleName: product.articleName,
+    supplierRef: product.supplierRef,
+    supplierId: product.supplierId,
+    hmsArtNr: product.hmsArtNr,
+    agreementId: delkontraktToUpdate.agreementId,
+    reference: product.supplierRef,
+    status: product.registrationStatus,
+    createdBy: "REGISTER",
+    created: agreementToUpdate.created,
+    updated: todayTimestamp(),
+    rank: 1,
+    post: post,
+    postId: delkontraktToUpdate.id,
+    published: agreementToUpdate.published,
+    expired: agreementToUpdate.expired,
+    updatedByUser: agreementToUpdate.updatedByUser,
+  }));
 
-  productsToAdd.forEach((product) => {
-    const productAgreement: ProductAgreementRegistrationDTO = {
-      id: uuidv4(),
-      productId: product.id,
-      seriesUuid: product.seriesUUID,
-      title: product.title,
-      articleName: product.articleName,
-      supplierRef: product.supplierRef,
-      supplierId: product.supplierId,
-      hmsArtNr: product.hmsArtNr,
-      agreementId: delkontraktToUpdate.agreementId,
-      reference: product.supplierRef,
-      status: product.registrationStatus,
-      createdBy: "REGISTER",
-      created: agreementToUpdate.created,
-      updated: todayTimestamp(),
-      rank: 1,
-      post: post,
-      postId: delkontraktToUpdate.id,
-      published: agreementToUpdate.published,
-      expired: agreementToUpdate.expired,
-      updatedByUser: agreementToUpdate.updatedByUser, // todo: get from user?
-    };
-    productAgreementsToAdd.push(productAgreement);
-  });
-
-  const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(productAgreementsToAdd),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
+    "POST",
+    productAgreementsToAdd,
+  );
 };
 
 const getEditedProductAgreements = (

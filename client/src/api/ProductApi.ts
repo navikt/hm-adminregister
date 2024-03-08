@@ -1,58 +1,20 @@
 import { EditCommonInfoProduct } from "produkter/Produkt";
 import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
-import { CustomError } from "utils/swr-hooks";
-
-const registrationsDraftPath = (isAdmin: boolean, productId: string): string =>
-  isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draft/variant/${productId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draft/variant/${productId}`;
+import { fetchAPI, getPath } from "api/fetch";
 
 export const registrationsPath = (isAdmin: boolean, productId: string) =>
-  isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/${productId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`;
+  getPath(isAdmin, `/api/v1/product/registrations/${productId}`);
 
-export const getProductByHmsNr = async (hmsArtNr: string): Promise<ProductRegistrationDTO> => {
-  return await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status);
-      });
-    }
-    return res.json();
-  });
-};
+export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistrationDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`, "GET");
 
 export const updateProduct = async (
   productId: string,
   commonInfoProduct: EditCommonInfoProduct,
 ): Promise<ProductRegistrationDTO> => {
-  const productToUpdate: ProductRegistrationDTO = await fetch(
-    `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  ).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status);
-      });
-    }
-    return res.json();
-  });
+  const productToUpdate = await fetchAPI(getPath(true, `/api/v1/product/registrations/${productId}`), "GET");
 
-  //Iso can be undefined when not chosen from the combobox
   const isoCode = commonInfoProduct.isoCode ? commonInfoProduct.isoCode : productToUpdate.isoCategory;
   const description = commonInfoProduct.description
     ? commonInfoProduct.description
@@ -62,68 +24,21 @@ export const updateProduct = async (
 
   const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description);
 
-  const response = await fetch(
-    `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    },
-  );
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
+  return await fetchAPI(getPath(true, `/api/v1/product/registrations/${productToUpdate.id}`), "PUT", editedProductDTO);
 };
 
 export const updateProductVariant = async (
   isAdmin: boolean,
   updatedProduct: ProductRegistrationDTO,
-): Promise<ProductRegistrationDTO> => {
-  const response = await fetch(registrationsPath(isAdmin, updatedProduct.id), {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(updatedProduct),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
+): Promise<ProductRegistrationDTO> =>
+  fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${updatedProduct.id}`), "PUT", updatedProduct);
 
 export const draftProductVariant = async (
   isAdmin: boolean,
   productId: string,
   newVariant: DraftVariantDTO,
-): Promise<ProductRegistrationDTO> => {
-  const response = await fetch(registrationsDraftPath(isAdmin, productId), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(newVariant),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
-};
+): Promise<ProductRegistrationDTO> =>
+  fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/draft/variant/${productId}`), "POST", newVariant);
 
 const getEditedProductDTO = (
   productToEdit: ProductRegistrationDTO,
@@ -144,39 +59,12 @@ const getEditedProductDTO = (
 };
 
 export const sendTilGodkjenning = async (productId: string): Promise<ProductRegistrationDTO> => {
-  const productToEdit: ProductRegistrationDTO = await fetch(registrationsPath(false, productId), {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => {
-    if (!res.ok) {
-      return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status);
-      });
-    }
-    return res.json();
-  });
+  const productToEdit = await fetchAPI(getPath(false, `/api/v1/product/registrations/${productId}`), "GET");
 
   const editedProductDTO: ProductRegistrationDTO = {
     ...productToEdit,
     draftStatus: "DONE",
   };
 
-  const response = await fetch(registrationsPath(false, productId), {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(editedProductDTO),
-  });
-
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const error = await response.json();
-    return Promise.reject(error);
-  }
+  return await fetchAPI(getPath(false, `/api/v1/product/registrations/${productId}`), "PUT", editedProductDTO);
 };
