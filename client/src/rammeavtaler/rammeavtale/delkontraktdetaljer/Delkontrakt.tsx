@@ -192,6 +192,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                                     {it}
                                   </option>
                                 ))}
+                                <option key={99} value={99}>
+                                  -
+                                </option>
                               </Select>
                             )}
                           </Table.DataCell>
