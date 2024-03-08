@@ -63,6 +63,7 @@ const AgreementPage = () => {
   };
 
   const handlePublishRammeavtale = () => {
+    setPubliserRammeavtaleModalIsOpen(false);
     publishAgreement(agreementId!)
       .then(() => {
         mutateAgreement();
