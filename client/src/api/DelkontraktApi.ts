@@ -4,7 +4,7 @@ import { EditDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktdet
 import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";
 import { NyDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal";
-import { fetchAPI } from "api/fetch";
+import { fetchAPI, httpDelete } from "api/fetch";
 
 export const getDelkontrakt = (delkontraktId: string): Promise<DelkontraktRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "GET");
@@ -46,7 +46,7 @@ export const updateDelkontrakt = (
   );
 
 export const deleteDelkontrakt = (delkontraktId: string): Promise<void> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "DELETE");
+  httpDelete(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "DELETE");
 
 export const updateDelkontraktinfo = async (
   delkontraktId: string,

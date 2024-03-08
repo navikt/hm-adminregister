@@ -21,6 +21,24 @@ export const fetchAPI = async (url: string, method: string, body?: any): Promise
   }
 };
 
+export const httpDelete = async (url: string, method: string, body?: any): Promise<any> => {
+  const response = await fetch(url, {
+    method,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (response.ok) {
+    return response.ok;
+  } else {
+    const error = await response.json();
+    return Promise.reject(error);
+  }
+};
+
 export const fetchAPIWithHeaders = async (url: string, method: string, body?: any, headers?: any): Promise<any> => {
   const response = await fetch(url, {
     method,
