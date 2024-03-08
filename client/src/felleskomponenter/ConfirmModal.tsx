@@ -5,12 +5,14 @@ import Content from "felleskomponenter/styledcomponents/Content";
 interface Props {
   title: string;
   text: string;
+  confirmButtonText: string;
   onClick: () => void;
   onClose: () => void;
   isModalOpen: boolean;
+  variant?: "danger" | "primary";
 }
 
-const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => {
+const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButtonText, variant }: Props) => {
   return (
     <Modal
       open={isModalOpen}
@@ -27,8 +29,8 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen }: Props) => 
         <Button variant="tertiary" onClick={onClose}>
           Avbryt
         </Button>
-        <Button onClick={onClick} variant="danger">
-          Slett
+        <Button onClick={onClick} variant={variant ?? "primary"}>
+          {confirmButtonText}
         </Button>
       </Modal.Footer>
     </Modal>

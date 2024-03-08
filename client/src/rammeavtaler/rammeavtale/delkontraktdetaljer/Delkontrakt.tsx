@@ -97,6 +97,8 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
           setDeleteDelkontraktIsOpen(false);
         }}
         isModalOpen={deleteDelkontraktIsOpen}
+        confirmButtonText={"Slett"}
+        variant="danger"
       />
       <ConfirmModal
         title={`Slett produktserie '${produktserieToDeleteTitle}'`}
@@ -106,6 +108,8 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
           setDeleteProduktserieModalIsOpen(false);
         }}
         isModalOpen={deleteProduktserieModalIsOpen}
+        confirmButtonText="Slett"
+        variant="danger"
       />
       <NewProductOnDelkontraktModal
         modalIsOpen={nyttProduktModalIsOpen}

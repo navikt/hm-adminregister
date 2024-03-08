@@ -44,6 +44,7 @@ const AgreementPage = () => {
   const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false);
 
   const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false);
+  const [publiserRammeavtaleModalIsOpen, setPubliserRammeavtaleModalIsOpen] = useState<boolean>(false);
 
   const handleSlettRammeavtale = () => {
     setSlettRammeavtaleModalIsOpen(false);
@@ -127,6 +128,16 @@ const AgreementPage = () => {
         onClick={() => handleSlettRammeavtale()}
         onClose={() => setSlettRammeavtaleModalIsOpen(false)}
         isModalOpen={slettRammeavtaleModalIsOpen}
+        confirmButtonText={"Slett"}
+        variant={"danger"}
+      />
+      <ConfirmModal
+        title={"Publiser rammeavtale"}
+        text={`Er du sikker på at du vil publisere rammeavtale "${agreement?.title}"`}
+        onClick={() => handlePublishRammeavtale()}
+        onClose={() => setPubliserRammeavtaleModalIsOpen(false)}
+        isModalOpen={publiserRammeavtaleModalIsOpen}
+        confirmButtonText={"Publiser"}
       />
 
       <main className="show-menu">
@@ -190,7 +201,7 @@ const AgreementPage = () => {
                 Status
               </Heading>
 
-              {isDraft && <PublishButton onClick={handlePublishRammeavtale} />}
+              {isDraft && <PublishButton onClick={() => setPubliserRammeavtaleModalIsOpen(true)} />}
               <StatusTagAgreement publiseringsdato={agreement.published} isDraft={isDraft} />
 
               <div>

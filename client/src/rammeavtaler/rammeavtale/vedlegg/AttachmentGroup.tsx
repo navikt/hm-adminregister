@@ -66,6 +66,8 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
           setDeleteAttachmentIsOpen(false);
         }}
         isModalOpen={deleteAttachmentIsOpen}
+        confirmButtonText="Slett"
+        variant="danger"
       />
       <ExpansionCard size="small" key={attachment.id} aria-label="default-demo">
         <ExpansionCard.Header>
