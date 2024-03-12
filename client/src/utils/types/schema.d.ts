@@ -32,7 +32,7 @@ export interface paths {
   "/admreg/admin/api/v1/agreement/registrations/{id}": {
     get: operations["getAgreementById"];
     put: operations["updateAgreement"];
-    delete: operations["deleteAgreeent"];
+    delete: operations["deleteAgreement"];
   };
   "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
     get: operations["getDelkontraktById"];
@@ -247,6 +247,10 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup_1"];
   };
+  "/admreg/vendor/api/v1/product/registrations/series/grouped/{seriesId}": {
+    get: operations["getProductSeriesWithVariants"];
+    put: operations["updateProductSeriesWithVariants"];
+  };
   "/admreg/vendor/api/v1/product/registrations/series/{seriesId}": {
     get: operations["findBySeriesIdAndSupplierId_1"];
   };
@@ -384,6 +388,7 @@ export interface components {
       url?: string | null;
       bestillingsordning?: boolean | null;
       digitalSoknad?: boolean | null;
+      sortimentKategori?: string | null;
       pakrevdGodkjenningskurs?: components["schemas"]["PakrevdGodkjenningskurs"] | null;
       produkttype?: components["schemas"]["Produkttype"] | null;
       tenderId?: string | null;
@@ -602,6 +607,10 @@ export interface components {
       /** Format: int32 */
       kursId: number;
     };
+    ProductAgreementDeletedResponse: {
+      /** Format: uuid */
+      id: string;
+    };
     ProductAgreementImportDTO: {
       dryRun: boolean;
       /** Format: int32 */
@@ -644,6 +653,9 @@ export interface components {
     };
     /** @enum {string} */
     ProductAgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    ProductAgreementsDeletedResponse: {
+      ids: string[];
+    };
     ProductData: {
       attributes: components["schemas"]["Attributes"];
       accessory: boolean;
@@ -729,6 +741,35 @@ export interface components {
       agreements: components["schemas"]["AgreementInfo"][];
       /** Format: int64 */
       version?: number | null;
+    };
+    ProductSeriesWithVariantsDTO: {
+      /** Format: uuid */
+      id: string;
+      adminStatus: components["schemas"]["AdminStatus"];
+      /** Format: date-time */
+      created: string;
+      createdBy: string;
+      createdByAdmin: boolean;
+      createdByUser: string;
+      draftStatus: components["schemas"]["DraftStatus"];
+      /** Format: date-time */
+      expired?: string | null;
+      isoCategory: string;
+      productData: components["schemas"]["ProductData"];
+      /** Format: date-time */
+      published?: string | null;
+      registrationStatus: components["schemas"]["RegistrationStatus"];
+      /** Format: uuid */
+      seriesUUID?: string | null;
+      seriesId: string;
+      /** Format: uuid */
+      supplierId: string;
+      title: string;
+      /** Format: date-time */
+      updated: string;
+      updatedBy: string;
+      updatedByUser: string;
+      variants: components["schemas"]["ProductRegistrationDTO"][];
     };
     ProductVariantsForDelkontraktDto: {
       /** Format: uuid */
@@ -1187,14 +1228,14 @@ export interface operations {
       };
     };
   };
-  deleteAgreeent: {
+  deleteAgreement: {
     parameters: {
       path: {
         id: string;
       };
     };
     responses: {
-      /** @description deleteAgreeent 200 response */
+      /** @description deleteAgreement 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["AgreementRegistrationDTO"];
@@ -1606,7 +1647,7 @@ export interface operations {
       /** @description deleteProductAgreementByIds 200 response */
       200: {
         content: {
-          "application/json": string;
+          "application/json": components["schemas"]["ProductAgreementsDeletedResponse"];
         };
       };
     };
@@ -1665,7 +1706,9 @@ export interface operations {
     responses: {
       /** @description deleteProductAgreementById 200 response */
       200: {
-        content: never;
+        content: {
+          "application/json": components["schemas"]["ProductAgreementDeletedResponse"];
+        };
       };
     };
   };
@@ -2563,6 +2606,41 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["SeriesGroupDTO"][];
+        };
+      };
+    };
+  };
+  getProductSeriesWithVariants: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
+    responses: {
+      /** @description getProductSeriesWithVariants 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductSeriesWithVariantsDTO"];
+        };
+      };
+    };
+  };
+  updateProductSeriesWithVariants: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProductSeriesWithVariantsDTO"];
+      };
+    };
+    responses: {
+      /** @description updateProductSeriesWithVariants 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
