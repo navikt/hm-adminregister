@@ -8,9 +8,10 @@ import { smallImageLoader } from "utils/image-util";
 interface Props {
   mediaInfo: MediaInfo;
   handleDeleteFile: (uri: string) => void;
+  showMenuButton?: boolean;
 }
 
-export const ImageCard = ({ mediaInfo, handleDeleteFile }: Props) => {
+export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }: Props) => {
   return (
     <li className="image-card">
       <VStack gap="2">
@@ -19,9 +20,11 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile }: Props) => {
           <Label>Tittel</Label> <span>{mediaInfo.text ?? "OBS mangler beskrivelse"}</span>
         </VStack>
       </VStack>
-      <div className="image-card__more-menu-container">
-        <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} fileType="image" />
-      </div>
+      {showMenuButton && (
+        <div className="image-card__more-menu-container">
+          <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} fileType="image" />
+        </div>
+      )}
     </li>
   );
 };

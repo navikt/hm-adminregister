@@ -75,7 +75,12 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
               {sortedImages.length > 0 && (
                 <ol className="images">
                   {sortedImages.map((image) => (
-                    <ImageCard mediaInfo={image} key={image.uri} handleDeleteFile={handleDeleteFile} />
+                    <ImageCard
+                      mediaInfo={image}
+                      key={image.uri}
+                      handleDeleteFile={handleDeleteFile}
+                      showMenuButton={products[0].draftStatus === "DRAFT"}
+                    />
                   ))}
                 </ol>
               )}
@@ -93,11 +98,13 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
                     <li className="document" key={pdf.uri}>
                       <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                         <FilePdfIcon fontSize="2rem" />
-                        <a href={pdf.sourceUri} target="_blank" className="document-type">
+                        <a href={pdf.sourceUri} target="_blank" className="document-type" rel="noreferrer">
                           {pdf.text || pdf.uri.split("/").pop()}
                         </a>
                       </HStack>
-                      <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType="document" />
+                      {products[0].draftStatus === "DRAFT" && (
+                        <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType="document" />
+                      )}
                     </li>
                   ))}
                 </ol>
