@@ -1,5 +1,5 @@
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { BodyLong, Box, Button, Heading, Textarea, VStack } from "@navikt/ds-react";
+import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
 
@@ -9,10 +9,6 @@ interface Props {
 }
 
 const StatusPanel = ({ product, isAdmin }: Props) => {
-  const handleSendMelding = () => {
-    // product.message må settes?
-    alert("klikk");
-  };
 
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
@@ -26,15 +22,6 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
       </Heading>
 
       <StatusTag isPending={isPending} isDraft={isDraft} />
-
-      {isAdmin && (
-        <VStack gap="2" align="start">
-          <Textarea label={"Melding til leverandør"} description={"Unngå personopplysninger i meldingen"} />
-          <Button variant="secondary" size="small" onClick={handleSendMelding}>
-            Send melding
-          </Button>
-        </VStack>
-      )}
 
       {!isAdmin && product.message && (
         <Box>
