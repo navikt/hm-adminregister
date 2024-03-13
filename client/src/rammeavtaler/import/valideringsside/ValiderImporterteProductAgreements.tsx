@@ -64,8 +64,9 @@ export const ValiderImporterteProductAgreements = ({ upload, reseetUpload }: Pro
             </Heading>
             <p>
               <BodyShort>
-                Importeringen var vellykket. Du kan nå gå til <a href={baseUrl("/produkter")}>produktoversikten</a> for
-                å se de importerte produktene.
+                Importeringen var vellykket. Du kan nå gå til{" "}
+                <a href={baseUrl(`/rammeavtaler/${productAgreementsToValidate[0].agreementId}`)}>rammeavtalen</a>{" "}
+                {productAgreementsToValidate[0].title} for å se de importerte produktene.
               </BodyShort>
             </p>
           </div>
