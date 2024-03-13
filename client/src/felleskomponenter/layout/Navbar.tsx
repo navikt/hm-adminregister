@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import ProfileMenu from "./ProfileMenu";
 import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from "@navikt/aksel-icons";
@@ -49,10 +49,10 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         <>
           <Link
             to="/leverandor"
-            className={classNames("page-link", { "page-link--active": pathname === "/leverandor" })}
-            aria-selected={pathname === "/leverandor"}
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
+            aria-selected={pathname.startsWith("/leverandor")}
           >
-            {pathname === "/leverandor" && <div className="active" />}
+            {pathname.startsWith("/leverandor") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <Buldings3Icon fontSize={"1.5rem"} />
@@ -61,10 +61,10 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           </Link>
           <Link
             to="/rammeavtaler"
-            className={classNames("page-link", { "page-link--active": pathname === "/rammeavtaler" })}
-            aria-selected={pathname === "/rammeavtaler"}
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/rammeavtaler") })}
+            aria-selected={pathname.startsWith("/rammeavtaler")}
           >
-            {pathname === "/rammeavtaler" && <div className="active" />}
+            {pathname.startsWith("/rammeavtaler") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <PencilLineIcon title="a11y-title" fontSize="1.5rem" />
@@ -76,10 +76,10 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
 
       <Link
         to="/produkter"
-        className={classNames("page-link", { "page-link--active": pathname === "/produkter" })}
-        aria-selected={pathname === "/produkter"}
+        className={classNames("page-link", { "page-link--active": pathname.startsWith("/produkter") })}
+        aria-selected={pathname.startsWith("/produkter")}
       >
-        {pathname === "/produkter" && <div className="active" />}
+        {pathname.startsWith("/produkter") && <div className="active" />}
         <div className="line" />
         <HStack gap="4" style={{ paddingLeft: "16px" }}>
           <PackageFillIcon fontSize={"1.5rem"} />
