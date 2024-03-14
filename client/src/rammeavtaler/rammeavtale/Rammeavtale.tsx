@@ -165,6 +165,7 @@ const AgreementPage = () => {
                 <AboutTab agreement={agreement} onSubmit={onSubmit} />
                 <FileTab agreement={agreement} mutateAgreement={mutateAgreement} />
                 <DelkontrakterTab agreementId={agreement.id} agreementDraftStatus={agreement.draftStatus} />
+                <DelkontrakterTab agreementId={agreement.id} agreementDraftStatus={agreement.draftStatus} />
               </Tabs>
             </VStack>
 
@@ -189,6 +190,7 @@ const AgreementPage = () => {
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
+                      disabled={agreement.draftStatus !== "DRAFT"}
                       onClick={() => {
                         setSlettRammeavtaleModalIsOpen(true);
                       }}
