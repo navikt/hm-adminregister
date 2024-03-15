@@ -131,6 +131,7 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
                 </HStack>
               </div>
               <TextField
+                disabled={agreement.draftStatus !== "DRAFT"}
                 {...register("anbudsnummer", { required: true })}
                 label={labelRequired("Anbudsnummer")}
                 id="anbudsnummer"
