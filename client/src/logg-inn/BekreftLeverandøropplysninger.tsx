@@ -1,18 +1,18 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Buldings3Icon, ComponentIcon } from "@navikt/aksel-icons";
 import { BodyShort, Button, Heading, Label, Loader, TextField } from "@navikt/ds-react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { HM_REGISTER_URL } from "environments";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useSupplier } from "utils/swr-hooks";
-import { SupplierRegistrationDTO } from "utils/types/response-types";
 import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
+import { useSupplier } from "utils/swr-hooks";
+import { SupplierRegistrationDTO } from "utils/types/response-types";
 import { supplierInfoUpdate } from "utils/zodSchema/login";
-import { HM_REGISTER_URL } from "environments";
 
 type FormData = z.infer<typeof supplierInfoUpdate>;
 
@@ -187,7 +187,7 @@ const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegist
       </Button>
       {error?.name && (
         <p>
-          <span className="auth-dialog-box__erorr-message">{error?.message}</span>
+          <span className="auth-dialog-box__error-message">{error?.message}</span>
         </p>
       )}
     </form>

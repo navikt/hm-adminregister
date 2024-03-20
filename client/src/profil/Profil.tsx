@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
-import { useNavigate } from "react-router-dom";
-import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
-import { useAuthStore } from "utils/store/useAuthStore";
+import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
-import { HM_REGISTER_URL } from "environments";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { Supplier, SupplierUser, mapSupplier } from "utils/supplier-util";
 
 export default function Profil() {
   const [error, setError] = useState<Error | null>(null);
@@ -58,7 +58,7 @@ export default function Profil() {
   if (error)
     return (
       <div>
-        <span className="auth-dialog-box__erorr-message">{error?.message}</span>
+        <span className="auth-dialog-box__error-message">{error?.message}</span>
       </div>
     );
 

@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PersonPencilIcon } from "@navikt/aksel-icons";
 import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { HM_REGISTER_URL } from "environments";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { UserDTO } from "utils/types/response-types";
 import { useNavigate } from "react-router-dom";
-import { userInfoUpdate } from "utils/zodSchema/login";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
-import { HM_REGISTER_URL } from "environments";
+import { UserDTO } from "utils/types/response-types";
+import { userInfoUpdate } from "utils/zodSchema/login";
+import { z } from "zod";
 
 type FormData = z.infer<typeof userInfoUpdate>;
 
@@ -187,7 +187,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
           onFocus={() => handleFieldFocus("confirmPassword")}
           error={blurredFields.confirmPassword && errors?.confirmPassword?.message}
         />
-        {error?.name && <span className="auth-dialog-box__erorr-message">{error?.message}</span>}
+        {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
         <Button type="submit" disabled={!isValid || isSubmitting}>
           Lagre
         </Button>

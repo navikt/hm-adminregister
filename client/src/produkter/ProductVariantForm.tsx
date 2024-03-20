@@ -3,11 +3,11 @@ import { Alert, Button, HStack, TextField } from "@navikt/ds-react";
 import classNames from "classnames";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-import { productVariantSchema } from "utils/zodSchema/newProduct";
-import { ProductRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, labelRequired } from "utils/string-util";
+import { ProductRegistrationDTO } from "utils/types/response-types";
+import { productVariantSchema } from "utils/zodSchema/newProduct";
+import { z } from "zod";
 
 type FormData = z.infer<typeof productVariantSchema>;
 
@@ -165,7 +165,7 @@ const ProductVariantForm = ({
       </div>
       {error?.name && (
         <p>
-          <span className="auth-dialog-box__erorr-message">{error?.message}</span>
+          <span className="auth-dialog-box__error-message">{error?.message}</span>
         </p>
       )}
     </form>

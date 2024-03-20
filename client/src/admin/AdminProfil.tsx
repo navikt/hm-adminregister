@@ -1,11 +1,10 @@
-import React from "react";
 import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from "@navikt/ds-react";
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useAdminUsers, useUser } from "utils/swr-hooks";
 import { formatPhoneNumber } from "utils/string-util";
+import { useAdminUsers, useUser } from "utils/swr-hooks";
 
 export default function AdminProfil() {
   const navigate = useNavigate();
@@ -16,8 +15,6 @@ export default function AdminProfil() {
   if (userIsLoading) {
     return <Loader size="3xlarge" title="Henter brukerinformasjon..."></Loader>;
   }
-
-  if (user?.name === "") navigate("/admin/adminopplysninger");
 
   const handleCreateNewAdminUser = () => {
     navigate("/admin/opprett-admin");

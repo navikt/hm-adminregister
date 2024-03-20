@@ -1,18 +1,18 @@
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PersonPencilIcon } from "@navikt/aksel-icons";
 import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import { adminInfoUpdate } from "utils/zodSchema/login";
+import { HM_REGISTER_URL } from "environments";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { useUser } from "utils/swr-hooks";
 import { UserDTO } from "utils/types/response-types";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
-import { useNavigate } from "react-router-dom";
-import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { mapLoggedInUser } from "utils/user-util";
-import { HM_REGISTER_URL } from "environments";
+import { adminInfoUpdate } from "utils/zodSchema/login";
+import { z } from "zod";
 
 type FormData = z.infer<typeof adminInfoUpdate>;
 
@@ -162,7 +162,7 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
       </div>
       {error?.name && (
         <p>
-          <span className="auth-dialog-box__erorr-message">{error?.message}</span>
+          <span className="auth-dialog-box__error-message">{error?.message}</span>
         </p>
       )}
     </form>
