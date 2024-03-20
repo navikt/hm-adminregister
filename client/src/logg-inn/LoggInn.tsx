@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
-import React, { useState } from "react";
 import { ComponentIcon } from "@navikt/aksel-icons";
+import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { HM_REGISTER_URL } from "environments";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { loginSchema } from "utils/zodSchema/login";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { mapLoggedInUser } from "utils/user-util";
-import { HM_REGISTER_URL } from "environments";
+import { loginSchema } from "utils/zodSchema/login";
+import { z } from "zod";
 
 type FormData = z.infer<typeof loginSchema>;
 
@@ -136,7 +136,7 @@ export default function LoggInn() {
             onBlur={() => handleFieldBlur("password")}
             onFocus={() => handleFieldFocus("password")}
           />
-          {error?.name && <span className="auth-dialog-box__erorr-message">{error?.message}</span>}
+          {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
           <Button type="submit">
             {isSubmitting ? (
               <div role="status">
