@@ -1,9 +1,45 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import react from "@vitejs/plugin-react";
+import { defineConfig, HtmlTagDescriptor, Plugin } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
+
+function htmlPlugin({ development }: { development?: boolean }): Plugin {
+  return {
+    name: "html-transform",
+    transformIndexHtml(html) {
+      const tags: HtmlTagDescriptor[] = [];
+      if (development) {
+        tags.push({
+          tag: "script",
+          children: `window.appSettings = {
+            GIT_COMMIT: 'unknown',
+            USE_MSW: true,
+          }`,
+        });
+      } else {
+        tags.push(
+          {
+            tag: "script",
+            children: `window.appSettings = {}`,
+          },
+          {
+            tag: "script",
+            attrs: {
+              src: "/settings.js",
+            },
+          },
+        );
+      }
+      return {
+        html,
+        tags,
+      };
+    },
+  };
+}
+
 export default defineConfig((env) => ({
-  base: env.mode === 'development' ? '/' : '/adminregister',
-  plugins: [tsconfigPaths(), react()],
-}))
+  base: env.mode === "development" ? "/" : "/adminregister",
+  plugins: [htmlPlugin({ development: env.mode === "test" || env.mode === "development" }), tsconfigPaths(), react()],
+}));

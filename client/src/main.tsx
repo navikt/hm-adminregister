@@ -5,12 +5,15 @@ import { BrowserRouter } from "react-router-dom";
 import { App } from "App";
 import "./styles/globals.scss";
 import { baseUrl } from "utils/swr-hooks";
+import { initMsw } from "mocks/initMsw";
 
-const container = document.getElementById("root")!;
-createRoot(container).render(
-  <>
-    <BrowserRouter basename={baseUrl()}>
-      <App />
-    </BrowserRouter>
-  </>,
-);
+initMsw().then(() => {
+  const container = document.getElementById("root")!;
+  createRoot(container).render(
+    <>
+      <BrowserRouter basename={baseUrl()}>
+        <App />
+      </BrowserRouter>
+    </>,
+  );
+});

@@ -1,6 +1,8 @@
 interface Window {
+  msw: any;
   appSettings: {
+    USE_MSW?: boolean;
     GIT_COMMIT?: string;
-    MILJO?: "labs-gcp" | "dev-gcp" | "prod-gcp";
+    MILJO?: "local" | "dev-gcp" | "prod-gcp" | string;
   };
 }
