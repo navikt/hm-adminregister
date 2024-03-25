@@ -12,8 +12,9 @@ export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistration
 export const updateProduct = async (
   productId: string,
   commonInfoProduct: EditCommonInfoProduct,
+  isAdmin: boolean,
 ): Promise<ProductRegistrationDTO> => {
-  const productToUpdate = await fetchAPI(getPath(true, `/api/v1/product/registrations/${productId}`), "GET");
+  const productToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${productId}`), "GET");
 
   const isoCode = commonInfoProduct.isoCode ? commonInfoProduct.isoCode : productToUpdate.isoCategory;
   const description = commonInfoProduct.description
@@ -24,7 +25,11 @@ export const updateProduct = async (
 
   const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description);
 
-  return await fetchAPI(getPath(true, `/api/v1/product/registrations/${productToUpdate.id}`), "PUT", editedProductDTO);
+  return await fetchAPI(
+    getPath(isAdmin, `/api/v1/product/registrations/${productToUpdate.id}`),
+    "PUT",
+    editedProductDTO,
+  );
 };
 
 export const updateProductVariant = async (

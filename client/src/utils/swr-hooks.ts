@@ -5,7 +5,6 @@ import {
   IsoCategoryDTO,
   ProductRegistrationDTO,
   ProductVariantsForDelkontraktDto,
-  ProduktvarianterForDelkontrakterDTOList,
   SeriesChunk,
   SupplierChunk,
   SupplierRegistrationDTO,
@@ -65,6 +64,27 @@ export function useProducts() {
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/group`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/group`;
+
+  const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
+export function useProductsTilGodkjenning() {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const { loggedInUser } = useAuthStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations?adminStatus=PENDING&registrationStatus=ACTIVE&draft=DONE`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 

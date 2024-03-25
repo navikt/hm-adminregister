@@ -1,0 +1,23 @@
+@use "../styles/_mixins";
+@import "@navikt/ds-tokens/dist/tokens";
+
+.search-button {
+  .navds-search {
+    &__button-search {
+      background-color: #3a4583;
+      color: white;
+      border-radius: 0;
+      border-bottom-right-radius: var(--a-border-radius-medium);
+      border-top-right-radius: var(--a-border-radius-medium);
+      flex-shrink: 0;
+      min-height: 2rem;
+      min-width: 4rem;
+
+      &:active,
+      &:hover {
+        background-color: #8269a2;
+        color: white;
+      }
+    }
+  }
+}

@@ -28,6 +28,7 @@ import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
+import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 
 export function App() {
   return (
@@ -84,6 +85,16 @@ export function App() {
           element={
             <>
               <OpprettProduktVariant />
+            </>
+          }
+        />
+
+        <Route
+          path="/til-godkjenning"
+          element={
+            <>
+              <Navbar />
+              <TilGodkjenning />
             </>
           }
         />

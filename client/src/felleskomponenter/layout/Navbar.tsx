@@ -1,7 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import ProfileMenu from "./ProfileMenu";
-import { Buldings3Icon, MenuHamburgerIcon, PackageFillIcon, PencilLineIcon, XMarkIcon } from "@navikt/aksel-icons";
+import {
+  Buldings3Icon,
+  FileCheckmarkFillIcon,
+  MenuHamburgerIcon,
+  PackageFillIcon,
+  PencilLineIcon,
+  XMarkIcon,
+} from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Link, useLocation } from "react-router-dom";
@@ -48,18 +55,6 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
       {loggedInUser && loggedInUser.isAdmin && (
         <>
           <Link
-            to="/leverandor"
-            className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
-            aria-selected={pathname.startsWith("/leverandor")}
-          >
-            {pathname.startsWith("/leverandor") && <div className="active" />}
-            <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <Buldings3Icon fontSize={"1.5rem"} />
-              <span>Leverandører</span>
-            </HStack>
-          </Link>
-          <Link
             to="/rammeavtaler"
             className={classNames("page-link", { "page-link--active": pathname.startsWith("/rammeavtaler") })}
             aria-selected={pathname.startsWith("/rammeavtaler")}
@@ -67,8 +62,20 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/rammeavtaler") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <PencilLineIcon title="a11y-title" fontSize="1.5rem" />
+              <PencilLineIcon fontSize="1.5rem" />
               <span>Rammeavtaler</span>
+            </HStack>
+          </Link>
+          <Link
+            to="/til-godkjenning"
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/til-godkjenning") })}
+            aria-selected={pathname.startsWith("/til-godkjenning")}
+          >
+            {pathname.startsWith("/til-godkjenning") && <div className="active" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <FileCheckmarkFillIcon fontSize="1.5rem" />
+              <span>Til godkjenning</span>
             </HStack>
           </Link>
         </>
@@ -86,19 +93,21 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <span>Produkter</span>
         </HStack>
       </Link>
-      {/* todo: Legg til tilbehør */}
-      {/*<Link*/}
-      {/*  to='/tilbehor'*/}
-      {/*  className={classNames('page-link', { 'page-link--active': pathname === '/tilbehor' })}*/}
-      {/*  aria-selected={pathname === '/tilbehor'}*/}
-      {/*>*/}
-      {/*  {pathname === '/tilbehor' && <div className='active' />}*/}
-      {/*  <div className='line' />*/}
-      {/*  <HStack gap='4' style={{ paddingLeft: '16px' }}>*/}
-      {/*    <WrenchIcon fontSize={'1.5rem'} />*/}
-      {/*    <span>Tilbehør</span>*/}
-      {/*  </HStack>*/}
-      {/*</Link>*/}
+
+      {loggedInUser && loggedInUser.isAdmin && (
+        <Link
+          to="/leverandor"
+          className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
+          aria-selected={pathname.startsWith("/leverandor")}
+        >
+          {pathname.startsWith("/leverandor") && <div className="active" />}
+          <div className="line" />
+          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <Buldings3Icon fontSize={"1.5rem"} />
+            <span>Leverandører</span>
+          </HStack>
+        </Link>
+      )}
     </VStack>
   );
 };

@@ -89,7 +89,7 @@ const ProductPage = () => {
   };
 
   async function onSubmit(data: EditCommonInfoProduct) {
-    updateProduct(product.id, data)
+    updateProduct(product.id, data, loggedInUser?.isAdmin || false)
       .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error.status, error.message);
