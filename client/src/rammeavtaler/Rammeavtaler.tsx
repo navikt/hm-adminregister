@@ -38,8 +38,8 @@ const Rammeavtaler = () => {
         </Heading>
 
         <div className="page__content-container">
-          <div className="search-panel">
-            <form className="search-panel__search-box" onSubmit={handleSubmit}>
+          <HStack justify="space-between" wrap gap="4">
+            <form className="search-box" onSubmit={handleSubmit}>
               <Search
                 className="search-button"
                 label="Søk etter et produkt"
@@ -51,8 +51,9 @@ const Rammeavtaler = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <HStack gap="2" className="search-panel__add-new-button">
+            <HStack gap="2">
               <Button
+                style={{ marginLeft: "auto" }}
                 variant="secondary"
                 size="medium"
                 icon={<PlusIcon aria-hidden />}
@@ -63,11 +64,10 @@ const Rammeavtaler = () => {
               </Button>
               <Dropdown>
                 <Button
-                  style={{ marginLeft: "auto" }}
                   variant="tertiary"
                   icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
                   as={Dropdown.Toggle}
-                ></Button>
+                />
                 <Dropdown.Menu>
                   <Dropdown.Menu.GroupedList>
                     <Dropdown.Menu.GroupedList.Item
@@ -82,7 +82,7 @@ const Rammeavtaler = () => {
                 </Dropdown.Menu>
               </Dropdown>
             </HStack>
-          </div>
+          </HStack>
 
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
             <Alert variant="info">Ingen rammeavtaler funnet.</Alert>

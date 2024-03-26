@@ -174,19 +174,9 @@ main:not(.show-menu) {
   }
 }
 
-.search-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $a-spacing-2;
-
-  &__search-box {
-    width: 80%;
-    max-width: 35rem;
-  }
-
-  &__add-new-button {
-    align-self: flex-end;
-  }
+.search-box {
+  width: 80%;
+  max-width: 35rem;
 }
 
 .panel-list {
