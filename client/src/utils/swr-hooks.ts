@@ -101,6 +101,27 @@ export function useProductsTilGodkjenning() {
   };
 }
 
+export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: number; pageSize: number }) {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const { loggedInUser } = useAuthStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/til-godkjenning?page=${page}&size=${pageSize}`;
+
+  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
 export function usePagedAgreements({ page, pageSize }: { page: number; pageSize: number }) {
   const { setGlobalError } = useHydratedErrorStore();
   const { loggedInUser } = useAuthStore();
