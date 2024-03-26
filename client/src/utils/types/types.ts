@@ -61,3 +61,13 @@ export interface ComparingData {
 export interface TechDataRange {
   [key: string]: { minValue: string; maxValue: string | null; unit: string };
 }
+
+export interface ProduktTilGodkjenning {
+  title: string;
+  seriesId: string;
+  count: number;
+  status: string;
+  supplierName: string;
+  agreementId?: string;
+  delkontrakttittel?: string;
+}
