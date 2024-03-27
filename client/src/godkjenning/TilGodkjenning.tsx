@@ -1,10 +1,9 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, Pagination, Search } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, HStack, Pagination, Search, Select } from "@navikt/ds-react";
 import React, { useState } from "react";
-import { usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
+import { useAgreements, usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
 import { ProductTable } from "godkjenning/ProductTable";
 import { ProduktTilGodkjenning } from "utils/types/types";
-import { Avstand } from "felleskomponenter/Avstand";
 
 export const TilGodkjenning = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -15,6 +14,8 @@ export const TilGodkjenning = () => {
 
   const { data: allData, isLoading: allDataIsLoading } = useProductsTilGodkjenning();
   const { data, isLoading } = usePagedProductsTilGodkjenning({ page: pageState - 1, pageSize });
+
+  const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -43,17 +44,31 @@ export const TilGodkjenning = () => {
           Godkjenning av produkter
         </Heading>
         <div className="page__content-container">
-          <form className="search-box" onSubmit={handleSubmit}>
-            <Search
-              className="search-button"
-              label="Søk etter et produkt"
-              variant="primary"
-              clearButton={true}
-              placeholder="Søk etter produktnavn"
-              size="medium"
-              value={searchTerm}
-              onChange={(value) => handleSearch(value)}
-            />
+          <form onSubmit={handleSubmit}>
+            <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
+              <Search
+                label="Søk etter et produkt"
+                hideLabel={false}
+                clearButton={true}
+                size="medium"
+                value={searchTerm}
+                onChange={(value) => handleSearch(value)}
+              />
+              <Select
+                size="medium"
+                id="rammeavtale"
+                name="rammeavtale"
+                label={"Filtrer på rammeavtale"}
+                onChange={(e) => {}}
+              >
+                <option></option>
+                {agreements?.content.map((agreement) => (
+                  <option key={agreement.id} value={agreement.id}>
+                    {agreement.title}
+                  </option>
+                ))}
+              </Select>
+            </HGrid>
           </form>
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
             <Alert variant="info">Ingen produkter funnet.</Alert>
