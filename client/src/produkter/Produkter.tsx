@@ -33,8 +33,8 @@ const Produkter = () => {
 
   const exportProductsForSupplier = () => {
     exportProducts(loggedInUser?.isAdmin || false).then((response) => {
-      var bytes = new Uint8Array(response); // pass your byte response to this constructor
-      var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const bytes = new Uint8Array(response); // pass your byte response to this constructor
+      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -51,8 +51,8 @@ const Produkter = () => {
           Produkter
         </Heading>
         <div className="page__content-container">
-          <div className="search-panel">
-            <form className="search-panel__search-box" onSubmit={handleSubmit}>
+          <HStack justify="space-between" wrap gap="4">
+            <form className="search-box" onSubmit={handleSubmit}>
               <Search
                 className="search-button"
                 label="Søk etter et produkt"
@@ -65,7 +65,7 @@ const Produkter = () => {
               />
             </form>
             {loggedInUser && !loggedInUser.isAdmin && (
-              <HStack gap="2" className="search-panel__add-new-button">
+              <HStack gap="2">
                 <Button
                   variant="secondary"
                   size="medium"
@@ -108,7 +108,7 @@ const Produkter = () => {
                 </Dropdown>
               </HStack>
             )}
-          </div>
+          </HStack>
         </div>
         <Avstand marginBottom={4} />
         <VStack className="products-page__products">

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Heading, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { useState } from "react";
+import { Button, HStack, Heading, LinkPanel, Loader, Search } from "@navikt/ds-react";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
@@ -34,8 +34,8 @@ const Leverandører = () => {
         </Heading>
 
         <div className="page__content-container">
-          <div className="search-panel">
-            <form className="search-panel__search-box ">
+          <HStack justify="space-between" wrap gap="4">
+            <form className="search-box ">
               <Search
                 className="search-button"
                 label="Søk etter en leverandør"
@@ -47,18 +47,16 @@ const Leverandører = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <div className="search-panel__add-new-button">
-              <Button
-                variant="secondary"
-                size="medium"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={handleCreateNewSupplier}
-              >
-                Opprett ny leverandør
-              </Button>
-            </div>
-          </div>
+            <Button
+              variant="secondary"
+              size="medium"
+              icon={<PlusIcon aria-hidden />}
+              iconPosition="left"
+              onClick={handleCreateNewSupplier}
+            >
+              Opprett ny leverandør
+            </Button>
+          </HStack>
 
           <div className="panel-list__container">
             {isLoading && <Loader size="3xlarge" title="venter..." />}
