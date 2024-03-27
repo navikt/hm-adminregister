@@ -21,6 +21,7 @@ export const TilGodkjenning = () => {
     const filteredProducts = allData?.content.filter((product) =>
       product.title.toLowerCase().includes(value.toLowerCase()),
     );
+
     setFilteredData(filteredProducts);
     if (value.length == 0) {
       setFilteredData(undefined);
@@ -42,21 +43,18 @@ export const TilGodkjenning = () => {
           Godkjenning av produkter
         </Heading>
         <div className="page__content-container">
-          <div className="search-panel">
-            <form className="search-panel__search-box" onSubmit={handleSubmit}>
-              <Search
-                className="search-button"
-                label="Søk etter et produkt"
-                variant="primary"
-                clearButton={true}
-                placeholder="Søk etter produktnavn"
-                size="medium"
-                value={searchTerm}
-                onChange={(value) => handleSearch(value)}
-              />
-            </form>
-          </div>
-
+          <form className="search-box" onSubmit={handleSubmit}>
+            <Search
+              className="search-button"
+              label="Søk etter et produkt"
+              variant="primary"
+              clearButton={true}
+              placeholder="Søk etter produktnavn"
+              size="medium"
+              value={searchTerm}
+              onChange={(value) => handleSearch(value)}
+            />
+          </form>
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
             <Alert variant="info">Ingen produkter funnet.</Alert>
           ) : filteredData && filteredData.length > 0 ? (
