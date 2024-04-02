@@ -1,5 +1,5 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, HStack, Pagination, Search, Select } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, Pagination, Search, Select } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useAgreements, usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
 import { ProductTable } from "godkjenning/ProductTable";
@@ -31,7 +31,22 @@ export const TilGodkjenning = () => {
     }
   };
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : allData?.content;
+  const handleAgreementFilter = (value: string) => {
+    console.log(value);
+    if (searchTerm.length > 0 && filteredData) {
+      const filteredProducts = filteredData.filter((product) => product.agreementId === value);
+      setFilteredData(filteredProducts);
+    } else {
+      const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
+      console.log("filteredProducts", filteredProducts);
+      setFilteredData(filteredProducts);
+      if (value.length == 0) {
+        setFilteredData(undefined);
+      }
+    }
+  };
+
+  const renderData = filteredData ? filteredData : allData?.content;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
@@ -59,7 +74,9 @@ export const TilGodkjenning = () => {
                 id="rammeavtale"
                 name="rammeavtale"
                 label={"Filtrer på rammeavtale"}
-                onChange={(e) => {}}
+                onChange={(e) => {
+                  handleAgreementFilter(e.target.value);
+                }}
               >
                 <option></option>
                 {agreements?.content.map((agreement) => (
@@ -70,7 +87,7 @@ export const TilGodkjenning = () => {
               </Select>
             </HGrid>
           </form>
-          {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
+          {filteredData && filteredData.length === 0 ? (
             <Alert variant="info">Ingen produkter funnet.</Alert>
           ) : filteredData && filteredData.length > 0 ? (
             <ProductTable products={renderData || []} />
@@ -78,7 +95,7 @@ export const TilGodkjenning = () => {
             <ProductTable products={data?.content || []} />
           )}
 
-          {data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
+          {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
             <Pagination
               page={pageState}
               onPageChange={(x) => setPageState(x)}

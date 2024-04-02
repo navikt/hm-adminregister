@@ -8,7 +8,7 @@ export const tilGodkjenningLangListe: ProdukterTilGodkjenningChunk = {
       count: 1,
       status: "NEW",
       supplierName: "Ullvotten AS",
-      agreementId: "1",
+      agreementId: "4f87-4181-4d63-8d19-09bed94abb83",
       delkontrakttittel: "DK1: Hansker og votter",
     },
     {
