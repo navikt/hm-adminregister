@@ -106,7 +106,7 @@ export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: numbe
 
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning?page=${page}&size=${pageSize}`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning?page=${page}&size=${pageSize}&sort=created,desc`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
 
