@@ -29,10 +29,12 @@ import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderPr
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
+import ErrorModal from "felleskomponenter/ErrorModal";
 
 export function App() {
   return (
     <FeilGrense>
+      <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
         <Route path="/logg-inn" element={<LoggInn />} />

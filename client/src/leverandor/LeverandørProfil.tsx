@@ -8,12 +8,13 @@ import { useParams } from "react-router-dom";
 import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
+import { useHydratedErrorStore } from "utils/store/useErrorStore";
 
 const LeverandørProfil = () => {
-  const [error, setError] = useState<Error | null>(null);
   const [supplier, setSupplier] = useState<Supplier>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
+  const { setGlobalError } = useHydratedErrorStore();
 
   const { id } = useParams();
 
@@ -26,9 +27,11 @@ const LeverandørProfil = () => {
       credentials: "include",
     })
       .then((res) => {
-        return res.json();
+        if (!res.ok) setGlobalError(res.status, res.statusText);
+        else return res.json();
       })
       .then((data) => {
+        if (!data) return;
         setSupplier(mapSupplier(data));
         if (data) {
           fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users/supplierId/` + id, {
@@ -45,10 +48,6 @@ const LeverandørProfil = () => {
               setLoading(false);
             });
         }
-      })
-      .catch((e) => {
-        setError(e);
-        setLoading(false);
       });
 
     setLoading(false);

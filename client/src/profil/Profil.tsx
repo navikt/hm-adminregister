@@ -5,6 +5,7 @@ import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { Supplier, SupplierUser, mapSupplier } from "utils/supplier-util";
 
 export default function Profil() {
@@ -14,6 +15,8 @@ export default function Profil() {
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { loggedInUser } = useAuthStore();
+
+  const { setGlobalError } = useHydratedErrorStore();
 
   useEffect(() => {
     if (loggedInUser?.isAdmin) {
@@ -29,9 +32,11 @@ export default function Profil() {
       credentials: "include",
     })
       .then((res) => {
-        return res.json();
+        if (!res.ok) setGlobalError(res.status, res.statusText);
+        else return res.json();
       })
       .then((data) => {
+        if (!data) return;
         setSupplier(mapSupplier(data));
 
         fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`, {
@@ -52,7 +57,7 @@ export default function Profil() {
         setError(e);
         setLoading(false);
       });
-  }, []);
+  }, [setGlobalError]);
 
   if (isLoading) return <Loader size="3xlarge" title="Henter brukeropplysninger" />;
   if (error)
