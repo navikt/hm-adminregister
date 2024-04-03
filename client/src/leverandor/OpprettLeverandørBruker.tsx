@@ -6,7 +6,7 @@ import { z } from "zod";
 import { PersonIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Checkbox, Heading, TextField } from "@navikt/ds-react";
 import { newSupplierUserSchema } from "utils/zodSchema/newUser";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { SupplierUserDTO } from "utils/supplier-util";
 import { labelRequired } from "utils/string-util";
@@ -20,7 +20,7 @@ interface BlurredFields {
 }
 
 export default function OpprettLeverandørBruker() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     email: false,
     password: false,

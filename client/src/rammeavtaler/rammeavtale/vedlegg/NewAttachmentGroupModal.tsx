@@ -1,7 +1,7 @@
 import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
@@ -30,7 +30,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
     resolver: zodResolver(createNewAttachmentGroupSchema),
     mode: "onSubmit",
   });
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onSubmitContinue(data: NyAttachmentGroupFormData) {
     await onSubmit(data);

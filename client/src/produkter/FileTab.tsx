@@ -5,7 +5,7 @@ import "./product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "utils/product-util";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { HM_REGISTER_URL } from "environments";
@@ -20,7 +20,7 @@ interface Props {
 const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images, pdfs } = mapImagesAndPDFfromMedia(products);
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const sortedImages = images.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
   const sortedPdfs = pdfs.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());

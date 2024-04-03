@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { useUser } from "utils/swr-hooks";
 import { UserDTO } from "utils/types/response-types";
@@ -46,7 +46,7 @@ const RedigerBrukerprofil = () => {
 export default RedigerBrukerprofil;
 
 const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     name: false,
     phone: false,

@@ -5,7 +5,7 @@ import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { Supplier, SupplierUser, mapSupplier } from "utils/supplier-util";
 
 export default function Profil() {
@@ -16,7 +16,7 @@ export default function Profil() {
   const [isLoading, setLoading] = useState(false);
   const { loggedInUser } = useAuthStore();
 
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   useEffect(() => {
     if (loggedInUser?.isAdmin) {

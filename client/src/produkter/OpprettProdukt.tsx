@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./create-product.scss";
 import { createNewProductSchema } from "utils/zodSchema/newProduct";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
 import { ProductDraftWithDTO } from "utils/types/response-types";
@@ -15,7 +15,7 @@ import Combobox from "felleskomponenter/Combobox";
 type FormData = z.infer<typeof createNewProductSchema>;
 
 export default function OpprettProdukt() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const { isoCategories, isoError } = useIsoCategories();
   const navigate = useNavigate();
   const {

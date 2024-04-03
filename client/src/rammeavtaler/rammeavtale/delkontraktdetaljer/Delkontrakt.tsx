@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
 import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
 import { changeRankOnProductAgreements, deleteProductsFromAgreement } from "api/AgreementProductApi";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import EditProducstVariantsModal from "./EditProductVariantsOnDelkontraktModal";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { deleteDelkontrakt } from "api/DelkontraktApi";
@@ -36,7 +36,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
 
   const [updatingRank, setUpdatingRank] = useState<boolean>(false);
 
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const onConfirmDeleteDelkontrakt = () => {
     deleteDelkontrakt(delkontrakt.id)

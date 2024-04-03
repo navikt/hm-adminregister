@@ -9,7 +9,7 @@ type Error = {
   clearError: () => void;
 };
 
-export const useHydratedErrorStore = create<Error>((set) => ({
+export const useErrorStore = create<Error>((set) => ({
   errorCode: undefined,
   errorMessage: undefined,
   setGlobalError: (errorCode, errorMessage) => set({ errorCode, errorMessage }),

@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import AboutTab from "./AboutTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
@@ -29,7 +29,7 @@ const AgreementPage = () => {
   const { agreementId } = useParams();
 
   const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const agreementPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`;

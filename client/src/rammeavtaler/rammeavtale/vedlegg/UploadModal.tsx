@@ -2,7 +2,7 @@ import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from "@navikt/a
 import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
 import { AgreementRegistrationDTO, MediaDTO } from "utils/types/response-types";
 import { getEditedAgreementDTOAddFiles } from "utils/agreement-util";
@@ -29,7 +29,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
   const [fileTypeError, setFileTypeError] = useState("");
 
   const { handleSubmit } = useForm();
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onSubmit() {
     setIsUploading(true);

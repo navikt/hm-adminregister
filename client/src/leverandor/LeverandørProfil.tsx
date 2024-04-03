@@ -8,13 +8,13 @@ import { useParams } from "react-router-dom";
 import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 const LeverandørProfil = () => {
   const [supplier, setSupplier] = useState<Supplier>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const { id } = useParams();
 

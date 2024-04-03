@@ -3,7 +3,7 @@ import { Button, DatePicker, Heading, HStack, Label, Loader, TextField, useDatep
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import React, { useState } from "react";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { AgreementDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
@@ -16,7 +16,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 type FormData = z.infer<typeof createNewAgreementSchema>;
 
 export default function OpprettRammeavtale() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const {
