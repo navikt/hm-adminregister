@@ -139,6 +139,9 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/series/{seriesId}": {
     get: operations["findBySeriesIdAndSupplierId"];
   };
+  "/admreg/admin/api/v1/product/registrations/til-godkjenning": {
+    get: operations["findProductsPendingApprove"];
+  };
   "/admreg/admin/api/v1/product/registrations/{id}": {
     get: operations["getProductById"];
     put: operations["updateProduct"];
@@ -443,6 +446,10 @@ export interface components {
       articleName: string;
       supplierRef: string;
     };
+    Information: {
+      message: string;
+      type: components["schemas"]["Type"];
+    };
     IsoCategoryDTO: {
       isoCode: string;
       isoTitle: string;
@@ -583,6 +590,12 @@ export interface components {
       /** Format: int32 */
       totalPages?: number;
     };
+    Page_ProductToApproveDto_: components["schemas"]["Slice_ProductToApproveDto_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
     Page_SeriesRegistrationDTO_: components["schemas"]["Slice_SeriesRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
@@ -601,6 +614,10 @@ export interface components {
       /** Format: int32 */
       totalPages?: number;
     };
+    "Pair_ProductAgreementRegistrationDTO.List_Information__": {
+      first: components["schemas"]["ProductAgreementRegistrationDTO"];
+      second: components["schemas"]["Information"][];
+    };
     PakrevdGodkjenningskurs: {
       tittel: string;
       isokode: string;
@@ -616,6 +633,7 @@ export interface components {
       /** Format: int32 */
       count: number;
       productAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
     };
     ProductAgreementRegistrationDTO: {
       /** Format: uuid */
@@ -771,6 +789,16 @@ export interface components {
       updatedByUser: string;
       variants: components["schemas"]["ProductRegistrationDTO"][];
     };
+    ProductToApproveDto: {
+      title: string;
+      /** Format: uuid */
+      seriesId: string;
+      status: string;
+      supplierName: string;
+      /** Format: uuid */
+      agreementId?: string | null;
+      delkontrakttittel?: string | null;
+    };
     ProductVariantsForDelkontraktDto: {
       /** Format: uuid */
       postId: string;
@@ -864,6 +892,19 @@ export interface components {
     };
     Slice_ProductRegistrationDTO_: {
       content: components["schemas"]["ProductRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_ProductToApproveDto_: {
+      content: components["schemas"]["ProductToApproveDto"][];
       pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -988,6 +1029,8 @@ export interface components {
       /** Format: date-time */
       updated: string;
     };
+    /** @enum {string} */
+    Type: "INFO" | "WARNING";
     Unit: Record<string, never>;
     UserDTO: {
       /** Format: uuid */
@@ -1918,6 +1961,24 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  findProductsPendingApprove: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description findProductsPendingApprove 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_ProductToApproveDto_"];
         };
       };
     };

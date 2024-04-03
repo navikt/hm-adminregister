@@ -1,18 +1,11 @@
-import { http, HttpResponse, RequestHandler } from "msw";
+import { RequestHandler } from "msw";
 import { setupWorker } from "msw/browser";
+import { tilGodkjenningHandlers } from "mocks/handlers/tilGodkjenningHandler";
 
 export function apiPath(url: string = "") {
   return `http://localhost:8080/admreg/${url}`;
 }
 
-interface Params {
-  param: string;
-}
-
-const handlers: RequestHandler[] = [
-  http.get(apiPath(`admin/api/v1/test/`), async ({ params }) => {
-    return HttpResponse.json();
-  }),
-];
+const handlers: RequestHandler[] = [...tilGodkjenningHandlers];
 
 export const worker = setupWorker(...handlers);

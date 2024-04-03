@@ -5,6 +5,7 @@ import {
   IsoCategoryDTO,
   ProductRegistrationDTO,
   ProductVariantsForDelkontraktDto,
+  ProdukterTilGodkjenningChunk,
   SeriesChunk,
   SupplierChunk,
   SupplierRegistrationDTO,
@@ -84,9 +85,30 @@ export function useProductsTilGodkjenning() {
 
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations?adminStatus=PENDING&registrationStatus=ACTIVE&draft=DONE`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning`;
 
-  const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
+export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: number; pageSize: number }) {
+  const { setGlobalError } = useHydratedErrorStore();
+
+  const { loggedInUser } = useAuthStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning?page=${page}&size=${pageSize}&sort=created,desc`;
+
+  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
 
   if (error) {
     setGlobalError(error.status, error.message);
