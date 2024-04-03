@@ -15,7 +15,7 @@ import { useHydratedErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { sendTilGodkjenning, updateProduct } from "api/ProductApi";
+import { publishProduct, sendTilGodkjenning, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
@@ -107,7 +107,13 @@ const ProductPage = () => {
   async function onPublish() {
     const validationResult = productIsValid();
     setIsValid(validationResult);
-    if (!validationResult) {
+    if(validationResult) {
+      publishProduct(product.id)
+        .then(() => mutateProducts())
+        .catch((error) => {
+          setGlobalError(error.status, error.message);
+        });
+    } else {
       setModalIsOpen(true);
     }
   }
@@ -265,7 +271,7 @@ const ProductPage = () => {
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin ? (
-              <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
+              product.adminStatus !== "APPROVED" && <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
             ) : (
               <PublishButton
                 isAdmin={false}
@@ -316,6 +322,6 @@ const PublishButton = ({
       </Button>
     );
   } else {
-    return <Button style={{ marginTop: "20px" }}>Publiser</Button>;
+    return <></>
   }
 };
