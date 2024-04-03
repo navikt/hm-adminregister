@@ -2,6 +2,7 @@ import { Link, SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
 import { ProductToApproveDto } from "utils/types/response-types";
 import { ChevronRightIcon } from "@navikt/aksel-icons";
+import { baseUrl } from "utils/swr-hooks";
 
 interface ProductTableProps {
   products: ProductToApproveDto[];
@@ -69,7 +70,7 @@ export const ProductTable = ({ products }: ProductTableProps) => {
                 <Table.DataCell>{supplierName}</Table.DataCell>
                 <Table.DataCell>
                   {" "}
-                  <Link href={`/produkter/${seriesId}`}>
+                  <Link href={baseUrl(`/produkter/${seriesId}`)}>
                     <ChevronRightIcon title="gå til produkt" fontSize="1.5rem" />
                   </Link>
                 </Table.DataCell>
