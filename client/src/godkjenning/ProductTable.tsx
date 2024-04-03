@@ -1,6 +1,7 @@
-import { SortState, Table, Tag } from "@navikt/ds-react";
+import { Link, SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
 import { ProductToApproveDto } from "utils/types/response-types";
+import { ChevronRightIcon } from "@navikt/aksel-icons";
 
 interface ProductTableProps {
   products: ProductToApproveDto[];
@@ -55,16 +56,23 @@ export const ProductTable = ({ products }: ProductTableProps) => {
             <Table.ColumnHeader sortKey="supplierName" sortable>
               Leverandør
             </Table.ColumnHeader>
+            <Table.ColumnHeader></Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {sortedData.map(({ title, status, delkontrakttittel, supplierName }, i) => {
+          {sortedData.map(({ title, status, delkontrakttittel, supplierName, seriesId }, i) => {
             return (
               <Table.Row key={i + title}>
                 <Table.HeaderCell scope="row">{title}</Table.HeaderCell>
                 <Table.DataCell>{<StatusTag status={status} />}</Table.DataCell>
                 <Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>
                 <Table.DataCell>{supplierName}</Table.DataCell>
+                <Table.DataCell>
+                  {" "}
+                  <Link href={`/produkter/${seriesId}`}>
+                    <ChevronRightIcon title="gå til produkt" fontSize="1.5rem" />
+                  </Link>
+                </Table.DataCell>
               </Table.Row>
             );
           })}
