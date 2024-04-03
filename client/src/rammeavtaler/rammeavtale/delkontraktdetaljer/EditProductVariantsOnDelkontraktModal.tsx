@@ -2,7 +2,7 @@ import { Button, Checkbox, Modal, Table, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
 import { deleteProductsFromAgreement } from "api/AgreementProductApi";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, mutateProductAgreements }: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>

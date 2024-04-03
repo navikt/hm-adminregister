@@ -3,21 +3,19 @@ import { Button, Heading, TextField } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./create-product.scss";
-import React from "react";
 import { createNewProductSchema } from "utils/zodSchema/newProduct";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
 import { ProductDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { HM_REGISTER_URL } from "environments";
-import { useAuthStore } from "utils/store/useAuthStore";
 import Combobox from "felleskomponenter/Combobox";
 
 type FormData = z.infer<typeof createNewProductSchema>;
 
 export default function OpprettProdukt() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const { isoCategories, isoError } = useIsoCategories();
   const navigate = useNavigate();
   const {
@@ -29,12 +27,6 @@ export default function OpprettProdukt() {
     resolver: zodResolver(createNewProductSchema),
     mode: "onSubmit",
   });
-  const { loggedInUser } = useAuthStore();
-
-  const createProductDraftPath = () =>
-    loggedInUser?.isAdmin
-      ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/draftWith`
-      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draftWith`;
 
   async function onSubmit(data: FormData) {
     const newProduct: ProductDraftWithDTO = {
@@ -43,7 +35,7 @@ export default function OpprettProdukt() {
       isoCategory: data.isoCategory,
     };
 
-    const response = await fetch(createProductDraftPath(), {
+    const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draftWith`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

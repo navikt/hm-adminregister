@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import ProductVariantForm from "./ProductVariantForm";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 
 const RedigerProduktVariant = () => {
   const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const { productId } = useParams();
 

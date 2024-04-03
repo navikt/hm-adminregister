@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AgreementAttachment } from "utils/types/response-types";
 import { editAttachmentGroupInfoSchema } from "utils/zodSchema/editAttachmentGroupInfo";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
 import { updateAgreementAttachmentGroup } from "api/AgreementApi";
@@ -32,7 +32,7 @@ const EditAttachmentGroupModal = ({ modalIsOpen, oid, attachment, setModalIsOpen
     resolver: zodResolver(editAttachmentGroupInfoSchema),
     mode: "onSubmit",
   });
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onSubmit(data: EditAttachmentGroupFormData) {
     setIsSaving(true);

@@ -1,7 +1,7 @@
 import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
 import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
     resolver: zodResolver(createNewDelkontraktSchema),
     mode: "onSubmit",
   });
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onSubmitContinue(data: NyDelkontraktFormData) {
     await onSubmit(data);

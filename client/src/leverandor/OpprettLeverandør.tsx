@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { newSupplierSchema } from "utils/zodSchema/newSupplier";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { SupplierDTOBody } from "utils/supplier-util";
@@ -22,7 +22,7 @@ interface BlurredFields {
 }
 
 export default function OpprettLeverandør() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     name: false,
     email: false,

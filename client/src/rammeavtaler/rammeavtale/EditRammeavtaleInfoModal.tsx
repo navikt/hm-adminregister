@@ -2,7 +2,7 @@ import { Button, DatePicker, HStack, Label, Loader, Modal, TextField, useDatepic
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from "utils/zodSchema/editAgreement";
 import { updateAgreementInfo } from "api/AgreementApi";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
@@ -55,7 +55,7 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
       },
     });
 
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onSubmitClose(data: EditAgreementFormData) {
     await onSubmit(data);

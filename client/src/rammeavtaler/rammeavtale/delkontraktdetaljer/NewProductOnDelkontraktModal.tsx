@@ -1,7 +1,7 @@
 import { Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
@@ -45,7 +45,7 @@ const NewProductOnDelkontraktModal = ({
     resolver: zodResolver(createNewProductOnDelkontraktSchema),
     mode: "onSubmit",
   });
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
     if (!productToAdd || productToAdd.hmsArtNr !== data.hmsNummer) {

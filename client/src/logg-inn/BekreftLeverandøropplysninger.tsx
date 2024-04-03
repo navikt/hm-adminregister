@@ -8,7 +8,7 @@ import { HM_REGISTER_URL } from "environments";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { useSupplier } from "utils/swr-hooks";
 import { SupplierRegistrationDTO } from "utils/types/response-types";
@@ -62,7 +62,7 @@ const BekreftLeverandøropplysninger = () => {
 export default BekreftLeverandøropplysninger;
 
 const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegistrationDTO; mutate: any }) => {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     homepage: false,
     email: false,

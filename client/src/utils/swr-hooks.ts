@@ -12,7 +12,7 @@ import {
   UserDTO,
 } from "./types/response-types";
 import { mapSuppliers } from "./supplier-util";
-import { useHydratedErrorStore } from "./store/useErrorStore";
+import { useErrorStore } from "./store/useErrorStore";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore";
 import useSWR, { Fetcher } from "swr";
@@ -58,7 +58,7 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
   });
 
 export function useProducts() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
@@ -81,7 +81,7 @@ export function useProducts() {
 }
 
 export function useProductsTilGodkjenning() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
@@ -123,7 +123,7 @@ export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: numbe
 }
 
 export function usePagedAgreements({ page, pageSize }: { page: number; pageSize: number }) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}&excludedAgreementStatus=DELETED`;
@@ -143,7 +143,7 @@ export function usePagedAgreements({ page, pageSize }: { page: number; pageSize:
 }
 
 export function useDelkontrakterByAgreementId(agreementId: string) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/${agreementId}`;
 
@@ -164,7 +164,7 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
 }
 
 export function useDelkontraktByDelkontraktId(delkontraktId: string) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`;
 
@@ -185,7 +185,7 @@ export function useDelkontraktByDelkontraktId(delkontraktId: string) {
 }
 
 export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}`;
 
@@ -208,7 +208,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 }
 
 export function useProductVariantsBySeriesId(seriesId?: string) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`;
 
@@ -227,7 +227,7 @@ export function useProductVariantsBySeriesId(seriesId?: string) {
 }
 
 export function useAgreements() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?excludedAgreementStatus=DELETED`;
@@ -247,7 +247,7 @@ export function useAgreements() {
 }
 
 export function useUser(loggedInUser: LoggedInUser | undefined) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`;
@@ -274,7 +274,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
 }
 
 export function useSupplier(isAdmin: boolean | undefined, id?: string) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const path = isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations/${id}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/supplier/registrations`;
@@ -298,7 +298,7 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
 }
 
 export function useSuppliers() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations`;
   const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET);
@@ -329,7 +329,7 @@ export function useIsoCategories() {
 }
 
 export function useAdminUsers() {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
   const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET);

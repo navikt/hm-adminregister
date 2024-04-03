@@ -11,7 +11,7 @@ import VariantsTab from "./VariantsTab";
 import FileTab from "./FileTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
@@ -37,7 +37,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
 
   const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
   const seriesIdPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;

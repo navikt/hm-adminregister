@@ -1,10 +1,10 @@
 import { Button, Modal } from "@navikt/ds-react";
 import "./error-modal.scss";
 import { useNavigate } from "react-router-dom";
-import { useHydratedErrorStore } from "utils/store/useErrorStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 const ErrorModal = () => {
-  const { errorCode, errorMessage, clearError } = useHydratedErrorStore();
+  const { errorCode, errorMessage, clearError } = useErrorStore();
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -20,7 +20,7 @@ const ErrorModal = () => {
 
   const getUserErrorMessage = () => {
     if (errorCode === 401) {
-      return "Du er ikke lenger logget inn. Du må logge inn på nytt dersom du ønsker å fortsette";
+      return "Du må logge inn på nytt dersom du ønsker å fortsette";
     }
     if (errorCode === 403) {
       return "Du har ikke tilgang til å utføre denne operasjonen";
@@ -33,11 +33,17 @@ const ErrorModal = () => {
     return `${errorCode}: ${errorMessage} 😣 Beklager, her skjedde det noe som ikke skal skje. Våre utviklere er på saken.`;
   };
 
+  const heading = () => {
+    if (errorCode === 401) return "Du er ikke lenger logget inn";
+    else if (errorCode === 403) return "Du har ikke tilgang";
+    else return "Ups, det skjedde en feil 😱";
+  };
+
   return (
     <Modal
       open={errorCode ? true : false}
       header={{
-        heading: "Ups, det skjedde en feil 😱",
+        heading: heading(),
         closeButton: true,
       }}
       onClose={handleClose}
