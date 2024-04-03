@@ -85,7 +85,7 @@ export function useProductsTilGodkjenning() {
 
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/til-godkjenning`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
 
@@ -106,7 +106,7 @@ export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: numbe
 
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/til-godkjenning?page=${page}&size=${pageSize}`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning?page=${page}&size=${pageSize}`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
 

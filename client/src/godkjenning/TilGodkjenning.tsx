@@ -1,13 +1,13 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, Pagination, Search, Select } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, Loader, Pagination, Search, Select } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useAgreements, usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
 import { ProductTable } from "godkjenning/ProductTable";
-import { ProduktTilGodkjenning } from "utils/types/types";
+import { ProductToApproveDto } from "utils/types/response-types";
 
 export const TilGodkjenning = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<ProduktTilGodkjenning[] | undefined>();
+  const [filteredData, setFilteredData] = useState<ProductToApproveDto[] | undefined>();
 
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
@@ -59,50 +59,57 @@ export const TilGodkjenning = () => {
           Godkjenning av produkter
         </Heading>
         <div className="page__content-container">
-          <form onSubmit={handleSubmit}>
-            <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
-              <Search
-                label="Søk etter et produkt"
-                hideLabel={false}
-                clearButton={true}
-                size="medium"
-                value={searchTerm}
-                onChange={(value) => handleSearch(value)}
-              />
-              <Select
-                size="medium"
-                id="rammeavtale"
-                name="rammeavtale"
-                label={"Filtrer på rammeavtale"}
-                onChange={(e) => {
-                  handleAgreementFilter(e.target.value);
-                }}
-              >
-                <option></option>
-                {agreements?.content.map((agreement) => (
-                  <option key={agreement.id} value={agreement.id}>
-                    {agreement.title}
-                  </option>
-                ))}
-              </Select>
-            </HGrid>
-          </form>
-          {filteredData && filteredData.length === 0 ? (
-            <Alert variant="info">Ingen produkter funnet.</Alert>
-          ) : filteredData && filteredData.length > 0 ? (
-            <ProductTable products={renderData || []} />
+          {allDataIsLoading || agreementsIsLoading ? (
+            <Loader size="3xlarge" />
           ) : (
-            <ProductTable products={data?.content || []} />
-          )}
+            <>
+              <form onSubmit={handleSubmit}>
+                <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
+                  <Search
+                    className="search-button"
+                    label="Søk etter et produkt"
+                    hideLabel={false}
+                    clearButton={true}
+                    size="medium"
+                    value={searchTerm}
+                    onChange={(value) => handleSearch(value)}
+                  />
+                  <Select
+                    size="medium"
+                    id="rammeavtale"
+                    name="rammeavtale"
+                    label={"Filtrer på rammeavtale"}
+                    onChange={(e) => {
+                      handleAgreementFilter(e.target.value);
+                    }}
+                  >
+                    <option></option>
+                    {agreements?.content.map((agreement) => (
+                      <option key={agreement.id} value={agreement.id}>
+                        {agreement.title}
+                      </option>
+                    ))}
+                  </Select>
+                </HGrid>
+              </form>
+              {filteredData && filteredData.length === 0 ? (
+                <Alert variant="info">Ingen produkter funnet.</Alert>
+              ) : filteredData && filteredData.length > 0 ? (
+                <ProductTable products={renderData || []} />
+              ) : (
+                <ProductTable products={data?.content || []} />
+              )}
 
-          {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
-            <Pagination
-              page={pageState}
-              onPageChange={(x) => setPageState(x)}
-              count={data.totalPages}
-              size="small"
-              prevNextTexts
-            />
+              {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
+                <Pagination
+                  page={pageState}
+                  onPageChange={(x) => setPageState(x)}
+                  count={data.totalPages}
+                  size="small"
+                  prevNextTexts
+                />
+              )}
+            </>
           )}
         </div>
       </div>

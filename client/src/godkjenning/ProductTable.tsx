@@ -1,9 +1,9 @@
 import { SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
-import { ProduktTilGodkjenning } from "utils/types/types";
+import { ProductToApproveDto } from "utils/types/response-types";
 
 interface ProductTableProps {
-  products: ProduktTilGodkjenning[];
+  products: ProductToApproveDto[];
 }
 
 export const ProductTable = ({ products }: ProductTableProps) => {
