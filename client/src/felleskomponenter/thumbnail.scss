@@ -1,0 +1,10 @@
+@use "../styles/_mixins";
+@import "@navikt/ds-tokens/dist/tokens";
+
+.thumbnail {
+  height: 30px;
+  display: none;
+  @include mixins.for-size(tablet-up) {
+    display: flex;
+  }
+}

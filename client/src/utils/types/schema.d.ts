@@ -798,6 +798,7 @@ export interface components {
       /** Format: uuid */
       agreementId?: string | null;
       delkontrakttittel?: string | null;
+      thumbnail?: components["schemas"]["MediaInfo"] | null;
     };
     ProductVariantsForDelkontraktDto: {
       /** Format: uuid */

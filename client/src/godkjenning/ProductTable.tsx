@@ -1,8 +1,9 @@
-import { Link, SortState, Table, Tag } from "@navikt/ds-react";
+import { HStack, Link, SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
 import { ProductToApproveDto } from "utils/types/response-types";
 import { ChevronRightIcon } from "@navikt/aksel-icons";
 import { baseUrl } from "utils/swr-hooks";
+import { Thumbnail } from "felleskomponenter/Thumbnail";
 
 interface ProductTableProps {
   products: ProductToApproveDto[];
@@ -61,10 +62,15 @@ export const ProductTable = ({ products }: ProductTableProps) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {sortedData.map(({ title, status, delkontrakttittel, supplierName, seriesId }, i) => {
+          {sortedData.map(({ title, status, delkontrakttittel, supplierName, seriesId, thumbnail }, i) => {
             return (
               <Table.Row key={i + title}>
-                <Table.HeaderCell scope="row">{title}</Table.HeaderCell>
+                <Table.HeaderCell scope="row">
+                  <HStack justify="space-evenly" style={{ alignItems: "center" }}>
+                    {thumbnail && <Thumbnail mediaInfo={thumbnail} />}
+                    <div>{title}</div>
+                  </HStack>
+                </Table.HeaderCell>
                 <Table.DataCell>{<StatusTag status={status} />}</Table.DataCell>
                 <Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>
                 <Table.DataCell>{supplierName}</Table.DataCell>
@@ -84,16 +90,10 @@ export const ProductTable = ({ products }: ProductTableProps) => {
 };
 
 const StatusTag = ({ status }: { status: string }) => {
-  if (status === "NEW") {
+  if (status === "NEW" || status === "EXISTING") {
     return (
       <Tag size="small" variant="warning">
         Nytt produkt
-      </Tag>
-    );
-  } else if (status === "EXISTING") {
-    return (
-      <Tag size="small" variant="alt1">
-        Endring av produkt
       </Tag>
     );
   } else {
