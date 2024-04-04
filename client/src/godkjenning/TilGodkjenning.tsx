@@ -96,11 +96,13 @@ export const TilGodkjenning = () => {
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
                 <ProductTable products={renderData || []} />
+              ) : data?.content && data.content.length > 0 && <ProductTable products={data?.content} /> ? (
+                <ProductTable products={data?.content} />
               ) : (
-                <ProductTable products={data?.content || []} />
+                <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
               )}
 
-              {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
+              {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 ? (
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => setPageState(x)}
@@ -108,6 +110,8 @@ export const TilGodkjenning = () => {
                   size="small"
                   prevNextTexts
                 />
+              ) : (
+                <div></div>
               )}
             </>
           )}
