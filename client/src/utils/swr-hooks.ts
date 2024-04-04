@@ -102,7 +102,7 @@ export function useProductsTilGodkjenning() {
 }
 
 export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: number; pageSize: number }) {
-  const { setGlobalError } = useHydratedErrorStore();
+  const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
