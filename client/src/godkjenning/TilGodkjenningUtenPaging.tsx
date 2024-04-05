@@ -1,27 +1,21 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, Loader, Pagination, Search, Select } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, Loader, Search, Select } from "@navikt/ds-react";
 import React, { useState } from "react";
-import { useAgreements, usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
+import { useAgreements, useUnpagedProductsTilGodkjenning } from "utils/swr-hooks";
 import { ProductTable } from "godkjenning/ProductTable";
 import { ProductToApproveDto } from "utils/types/response-types";
 
-export const TilGodkjenning = () => {
+export const TilGodkjenningUtenPaging = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<ProductToApproveDto[] | undefined>();
 
-  const [pageState, setPageState] = useState(1);
-  const pageSize = 10;
-
-  const { data: allData, isLoading: allDataIsLoading } = useProductsTilGodkjenning();
-  const { data, isLoading } = usePagedProductsTilGodkjenning({ page: pageState - 1, pageSize });
+  const { data, isLoading: allDataIsLoading } = useUnpagedProductsTilGodkjenning();
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filteredProducts = allData?.content.filter((product) =>
-      product.title.toLowerCase().includes(value.toLowerCase()),
-    );
+    const filteredProducts = data?.filter((product) => product.title.toLowerCase().includes(value.toLowerCase()));
 
     setFilteredData(filteredProducts);
     if (value.length == 0) {
@@ -37,7 +31,7 @@ export const TilGodkjenning = () => {
       const filteredProducts = filteredData.filter((product) => product.agreementId === value);
       setFilteredData(filteredProducts);
     } else {
-      const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
+      const filteredProducts = data?.filter((product) => product.agreementId === value);
       console.log("filteredProducts", filteredProducts);
       setFilteredData(filteredProducts);
       if (value.length == 0) {
@@ -46,7 +40,7 @@ export const TilGodkjenning = () => {
     }
   };
 
-  const renderData = filteredData ? filteredData : allData?.content;
+  const renderData = filteredData ? filteredData : data;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
@@ -96,22 +90,10 @@ export const TilGodkjenning = () => {
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
                 <ProductTable products={renderData || []} />
-              ) : data?.content && data.content.length > 0 && <ProductTable products={data?.content} /> ? (
-                <ProductTable products={data?.content} />
+              ) : data && data.length > 0 && <ProductTable products={data} /> ? (
+                <ProductTable products={data} />
               ) : (
                 <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
-              )}
-
-              {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 ? (
-                <Pagination
-                  page={pageState}
-                  onPageChange={(x) => setPageState(x)}
-                  count={data.totalPages}
-                  size="small"
-                  prevNextTexts
-                />
-              ) : (
-                <div></div>
               )}
             </>
           )}

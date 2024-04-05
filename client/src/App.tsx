@@ -28,8 +28,8 @@ import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import ErrorModal from "felleskomponenter/ErrorModal";
+import { TilGodkjenningUtenPaging } from "godkjenning/TilGodkjenningUtenPaging";
 
 export function App() {
   return (
@@ -96,7 +96,7 @@ export function App() {
           element={
             <>
               <Navbar />
-              <TilGodkjenning />
+              <TilGodkjenningUtenPaging />
             </>
           }
         />

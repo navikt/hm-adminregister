@@ -1,3 +1,5 @@
+import { components } from "utils/types/schema";
+
 export interface Product {
   id?: string;
   title: string;
@@ -13,6 +15,18 @@ export interface Product {
   supplierId: string;
   agreements: AgreementInfo[];
   /** expired from backend is a Date data field like 2043-06-01T14:19:30.505665648*/
+}
+
+export interface ProductToApprove {
+  title: string;
+  /** Format: uuid */
+  seriesId: string;
+  status: string;
+  supplierName: string;
+  /** Format: uuid */
+  agreementId?: string | null;
+  delkontrakttittel?: string | null;
+  thumbnail?: components["schemas"]["MediaInfo"] | null;
 }
 
 export interface ProductVariant {

@@ -1,5 +1,5 @@
-import { MediaDTO, MediaInfo, ProductRegistrationDTO, TechData } from "./types/response-types";
-import { Product } from "utils/types/types";
+import { MediaDTO, MediaInfo, ProductRegistrationDTO, ProductToApproveDto, TechData } from "./types/response-types";
+import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
 
 export const mapImagesAndPDFfromMedia = (
@@ -84,11 +84,35 @@ export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
   }));
 };
 
+export const mapProductToApproveDtoToProductToApprove = (
+  productToApproveDtos: ProductToApproveDto[],
+): ProductToApprove[] => {
+  const groupedBySeries = _.groupBy(productToApproveDtos, "seriesId");
+
+  const mappedProductsToApprove: ProductToApprove[] = [];
+
+  Object.entries(groupedBySeries).forEach(([key, dtos]) => {
+    if (dtos.length > 0) {
+      const productToApprove: ProductToApprove = {
+        seriesId: key,
+        title: dtos[0].title,
+        agreementId: dtos[0].agreementId,
+        delkontrakttittel: dtos[0].delkontrakttittel,
+        status: dtos[0].status,
+        supplierName: dtos[0].supplierName,
+        thumbnail: dtos[0].thumbnail,
+      };
+      mappedProductsToApprove.push(productToApprove);
+    }
+  });
+
+  return mappedProductsToApprove;
+};
+
 export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: ProductRegistrationDTO[]): Product[] => {
   const groupedBySeries = _.groupBy(productRegistrationDtos, "seriesUUID");
 
-  // eslint-disable-next-line prefer-const
-  let mappedProducts: Product[] = [];
+  const mappedProducts: Product[] = [];
 
   Object.entries(groupedBySeries).forEach(([_, dtos]) => {
     if (dtos.length > 0) {

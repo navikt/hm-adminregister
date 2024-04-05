@@ -15,7 +15,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { publishProduct, sendTilGodkjenning, updateProduct } from "api/ProductApi";
+import { publishProducts, sendFlereTilGodkjenning, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
@@ -98,7 +98,7 @@ const ProductPage = () => {
   }
 
   async function onSendTilGodkjenning() {
-    sendTilGodkjenning(product.id)
+    sendFlereTilGodkjenning(products?.map((product) => product.id) || [])
       .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error.status, error.message);
@@ -109,7 +109,7 @@ const ProductPage = () => {
     const validationResult = productIsValid();
     setIsValid(validationResult);
     if (validationResult) {
-      publishProduct(product.id)
+      publishProducts(products?.map((product) => product.id) || [])
         .then(() => mutateProducts())
         .catch((error) => {
           setGlobalError(error.status, error.message);
