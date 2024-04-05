@@ -4,7 +4,7 @@ import { useState } from "react";
 import "./product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTORemoveFiles, mapImagesAndPDFfromMedia } from "utils/product-util";
+import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/product-util";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
@@ -42,7 +42,7 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTORemoveFiles(productToUpdate, uri);
+    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, uri);
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",

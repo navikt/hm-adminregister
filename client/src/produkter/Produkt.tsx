@@ -19,6 +19,7 @@ import { publishProduct, sendTilGodkjenning, updateProduct } from "api/ProductAp
 import StatusPanel from "produkter/StatusPanel";
 import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
+import VideosTab from "./VideosTab";
 
 export type EditCommonInfoProduct = {
   description: string;
@@ -107,7 +108,7 @@ const ProductPage = () => {
   async function onPublish() {
     const validationResult = productIsValid();
     setIsValid(validationResult);
-    if(validationResult) {
+    if (validationResult) {
       publishProduct(product.id)
         .then(() => mutateProducts())
         .catch((error) => {
@@ -124,6 +125,10 @@ const ProductPage = () => {
 
   const numberOfDocuments = () => {
     return product.productData.media.filter((media) => media.type == "PDF").length;
+  };
+
+  const numberOfVideos = () => {
+    return product.productData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
   };
 
   const numberOfVariants = () => {
@@ -248,6 +253,7 @@ const ProductPage = () => {
                   value="documents"
                   label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} />}
                 />
+                <Tabs.Tab value="videos" label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} />} />
                 <Tabs.Tab
                   value="variants"
                   label={<TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} />}
@@ -266,12 +272,15 @@ const ProductPage = () => {
                 fileType="documents"
                 showInputError={!isValid}
               />
+              <VideosTab products={products} mutateProducts={mutateProducts} />
               <VariantsTab products={products} showInputError={!isValid} />
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin ? (
-              product.adminStatus !== "APPROVED" && <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
+              product.adminStatus !== "APPROVED" && (
+                <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
+              )
             ) : (
               <PublishButton
                 isAdmin={false}
@@ -322,6 +331,6 @@ const PublishButton = ({
       </Button>
     );
   } else {
-    return <></>
+    return <></>;
   }
 };

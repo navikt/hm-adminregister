@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { MediaDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTOAddFiles, mapToMediaInfo } from "utils/product-util";
+import { getEditedProductDTOAddMedia, mapToMediaInfo } from "utils/product-util";
 import { ImageContainer } from "felleskomponenter/ImageCard";
 import { HM_REGISTER_URL } from "environments";
 import { fileToUri } from "utils/file-util";
@@ -66,15 +66,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO =
-      mediaDTOs &&
-      getEditedProductDTOAddFiles(
-        productToUpdate,
-        mapToMediaInfo(
-          mediaDTOs,
-          uploads.map((up) => up.file),
-        ),
-      );
+    const editedProductDTO = mediaDTOs && getEditedProductDTOAddMedia(productToUpdate, mapToMediaInfo(mediaDTOs));
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",

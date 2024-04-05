@@ -22,5 +22,6 @@
     "lint": "npm run --prefix client lint"
   },
   "dependencies": {
+    "react-player": "^2.15.1"
   }
 }

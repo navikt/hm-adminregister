@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -524,7 +523,7 @@ export interface components {
       text?: string | null;
       source: components["schemas"]["MediaSourceType"];
       /** Format: date-time */
-      updated: string;
+      updated?: string;
     };
     /** @enum {string} */
     MediaSourceType: "HMDB" | "REGISTER" | "EXTERNALURL" | "IMPORT" | "UNKNOWN";
@@ -1076,7 +1075,6 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-
   createDelkontrakt: {
     requestBody: {
       content: {

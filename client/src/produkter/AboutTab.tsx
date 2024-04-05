@@ -36,7 +36,7 @@ const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => 
 
   return (
     <Tabs.Panel value="about" className="tab-panel">
-      <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef} role="legg til produktinfo">
+      <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>
         <VStack gap="14">
           <VStack gap="2">
             <Heading level="2" size="small">
