@@ -68,15 +68,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 
     const agreementToUpdate: AgreementRegistrationDTO = await res.json();
     const editedAgreementDTO =
-      mediaDTOs &&
-      getEditedAgreementDTOAddFiles(
-        agreementToUpdate,
-        agreementAttachmentId,
-        mapToMediaInfo(
-          mediaDTOs,
-          uploads.map((up) => up.file),
-        ),
-      );
+      mediaDTOs && getEditedAgreementDTOAddFiles(agreementToUpdate, agreementAttachmentId, mapToMediaInfo(mediaDTOs));
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
       method: "PUT",
