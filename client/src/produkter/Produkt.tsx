@@ -19,6 +19,7 @@ import { publishProducts, sendFlereTilGodkjenning, updateProduct } from "api/Pro
 import StatusPanel from "produkter/StatusPanel";
 import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
+import VideosTab from "./VideosTab";
 
 export type EditCommonInfoProduct = {
   description: string;
@@ -124,6 +125,10 @@ const ProductPage = () => {
 
   const numberOfDocuments = () => {
     return product.productData.media.filter((media) => media.type == "PDF").length;
+  };
+
+  const numberOfVideos = () => {
+    return product.productData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
   };
 
   const numberOfVariants = () => {
@@ -248,6 +253,7 @@ const ProductPage = () => {
                   value="documents"
                   label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} />}
                 />
+                <Tabs.Tab value="videos" label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} />} />
                 <Tabs.Tab
                   value="variants"
                   label={<TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} />}
@@ -266,6 +272,7 @@ const ProductPage = () => {
                 fileType="documents"
                 showInputError={!isValid}
               />
+              <VideosTab products={products} mutateProducts={mutateProducts} />
               <VariantsTab products={products} showInputError={!isValid} />
             </Tabs>
           </VStack>

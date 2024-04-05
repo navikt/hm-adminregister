@@ -21,7 +21,7 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }
         </VStack>
       </VStack>
       {showMenuButton && (
-        <div className="image-card__more-menu-container">
+        <div className="more-menu-container">
           <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} fileType="image" />
         </div>
       )}

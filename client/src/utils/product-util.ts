@@ -4,18 +4,22 @@ import * as _ from "lodash";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],
-): { images: MediaInfo[]; pdfs: MediaInfo[] } => {
+): { images: MediaInfo[]; pdfs: MediaInfo[]; videos: MediaInfo[] } => {
   const seen: { [uri: string]: boolean } = {};
   const pdfs: MediaInfo[] = [];
   const images: MediaInfo[] = [];
+  const videos: MediaInfo[] = [];
   products
     .flatMap((product: ProductRegistrationDTO) => product.productData.media)
     .map((media: MediaInfo) => {
-      if (media.type == "IMAGE" && media.uri && !seen[media.uri]) {
+      if (media.type === "IMAGE" && media.uri && !seen[media.uri]) {
         images.push(media);
       }
-      if (media.type == "PDF" && media.uri && !seen[media.uri]) {
+      if (media.type === "PDF" && media.uri && !seen[media.uri]) {
         pdfs.push(media);
+      }
+      if (media.type === "VIDEO" && media.source === "EXTERNALURL" && media.uri && !seen[media.uri]) {
+        videos.push(media);
       }
       seen[media.uri] = true;
     });
@@ -23,6 +27,7 @@ export const mapImagesAndPDFfromMedia = (
   return {
     images: images,
     pdfs: pdfs,
+    videos: videos,
   };
 };
 
@@ -35,11 +40,12 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): st
   return Array.from(uniqueKeys);
 }
 
-export const getEditedProductDTOAddFiles = (
+export const getEditedProductDTOAddMedia = (
   productToEdit: ProductRegistrationDTO,
-  files: MediaInfo[],
+  media: MediaInfo[],
 ): ProductRegistrationDTO => {
-  const oldAndNewfiles = productToEdit.productData.media.concat(files);
+  const oldAndNewfiles = productToEdit.productData.media.concat(media);
+
   return {
     ...productToEdit,
     productData: {
@@ -49,21 +55,21 @@ export const getEditedProductDTOAddFiles = (
   };
 };
 
-export const getEditedProductDTORemoveFiles = (
+export const getEditedProductDTORemoveMedia = (
   productToEdit: ProductRegistrationDTO,
-  fileToRemoveUri: string,
+  uriToRemove: string,
 ): ProductRegistrationDTO => {
-  const filteredFiles = productToEdit.productData.media.filter((file) => file.uri !== fileToRemoveUri);
+  const filteredMedia = productToEdit.productData.media.filter((file) => file.uri !== uriToRemove);
   return {
     ...productToEdit,
     productData: {
       ...productToEdit.productData,
-      media: filteredFiles,
+      media: filteredMedia,
     },
   };
 };
 
-export const mapToMediaInfo = (mediaDTO: MediaDTO[], files: File[]): MediaInfo[] => {
+export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
   return mediaDTO.map((media, i) => ({
     sourceUri: media.sourceUri,
     uri: media.uri,
@@ -108,7 +114,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
 
   const mappedProducts: Product[] = [];
 
-  Object.entries(groupedBySeries).forEach(([key, dtos]) => {
+  Object.entries(groupedBySeries).forEach(([_, dtos]) => {
     if (dtos.length > 0) {
       const firstProduct = dtos[0];
       const product: Product = {

@@ -11,7 +11,7 @@ export const MoreMenu = ({
 }: {
   mediaInfo: MediaInfo;
   handleDeleteFile: (uri: string) => void;
-  fileType: "image" | "document";
+  fileType: "image" | "document" | "videoLink";
 }) => {
   const buttonRef = useRef<SVGSVGElement>(null);
   const [openPopover, setOpenPopover] = useState(false);
