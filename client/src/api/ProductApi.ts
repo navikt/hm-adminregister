@@ -74,7 +74,14 @@ export const sendTilGodkjenning = async (productId: string): Promise<ProductRegi
   return await fetchAPI(getPath(false, `/api/v1/product/registrations/${productId}`), "PUT", editedProductDTO);
 };
 
-
 export const publishProduct = async (productId: string): Promise<ProductRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/product/registrations/approve/${productId}`), "PUT");
+};
+
+export const sendFlereTilGodkjenning = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
+  return await fetchAPI(getPath(false, `/api/v1/product/registrations/til-godkjenning`), "PUT", productIds);
+};
+
+export const publishProducts = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
+  return await fetchAPI(getPath(true, `/api/v1/product/registrations/approve`), "PUT", productIds);
 };
