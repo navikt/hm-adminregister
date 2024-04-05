@@ -94,6 +94,7 @@ const StatusTag = ({ status }: { status: string }) => {
     return (
       <Tag size="small" variant="warning">
         Nytt produkt
+        {/*todo: handle other statuses when they are implemented*/}
       </Tag>
     );
   } else {

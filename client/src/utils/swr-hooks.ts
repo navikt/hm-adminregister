@@ -18,6 +18,8 @@ import { useAuthStore } from "./store/useAuthStore";
 import useSWR, { Fetcher } from "swr";
 import { HM_REGISTER_URL } from "environments";
 import { LoggedInUser } from "./user-util";
+import { ProductToApprove } from "utils/types/types";
+import { mapProductToApproveDtoToProductToApprove } from "utils/product-util";
 
 export function baseUrl(url: string = "") {
   if (process.env.NODE_ENV === "production") {
@@ -109,6 +111,33 @@ export function usePagedProductsTilGodkjenning({ page, pageSize }: { page: numbe
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning?page=${page}&size=${pageSize}&sort=created,desc`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
+export function useUnpagedProductsTilGodkjenning() {
+  const { setGlobalError } = useErrorStore();
+
+  const { loggedInUser } = useAuthStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/til-godkjenning`;
+
+  const {
+    data: allArticles,
+    error,
+    isLoading,
+  } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+
+  const data: ProductToApprove[] = mapProductToApproveDtoToProductToApprove(allArticles?.content || []);
 
   if (error) {
     setGlobalError(error.status, error.message);
