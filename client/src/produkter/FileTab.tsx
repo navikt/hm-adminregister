@@ -22,8 +22,17 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
   const { images, pdfs } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useErrorStore();
 
-  const sortedImages = images.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
-  const sortedPdfs = pdfs.sort((a, b) => new Date(a.updated).getTime() - new Date(b.updated).getTime());
+  const sortedImages = images.sort((a, b) => {
+    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
+    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
+    return dateA - dateB;
+  });
+
+  const sortedPdfs = pdfs.sort((a, b) => {
+    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
+    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
+    return dateA - dateB;
+  });
 
   const handleDeleteFile = async (uri: string) => {
     const oid = products[0].id;
