@@ -10,9 +10,7 @@ import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
-import ReactPlayerU from "react-player";
-
-const ReactPlayer: any = ReactPlayerU; // eslint-disable-line
+import ReactPlayer from "react-player";
 
 const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationDTO[]; mutateProducts: () => void }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
