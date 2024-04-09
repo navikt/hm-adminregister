@@ -160,7 +160,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
             className="images-tab__upload-container"
           >
             <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
-            <BodyShort className="images-tab__text">Slipp bildet her eller</BodyShort>
+            <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
             <Button
               size="small"
               variant="secondary"
