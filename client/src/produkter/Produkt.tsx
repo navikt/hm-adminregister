@@ -208,11 +208,19 @@ const ProductPage = () => {
     );
   };
 
-  const TabLabel = ({ title, numberOfElementsFn }: { title: string; numberOfElementsFn: () => number }) => {
+  const TabLabel = ({
+    title,
+    numberOfElementsFn,
+    showAlert,
+  }: {
+    title: string;
+    numberOfElementsFn: () => number;
+    showAlert: boolean;
+  }) => {
     return (
       <>
         {title}
-        {numberOfElementsFn() === 0 && !isValid ? (
+        {numberOfElementsFn() === 0 && !isValid && showAlert ? (
           <span className="product-error-text product-tab-tabel">
             ({numberOfElementsFn()})<ExclamationmarkTriangleIcon />
           </span>
@@ -248,15 +256,23 @@ const ProductPage = () => {
                     </>
                   }
                 />
-                <Tabs.Tab value="images" label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} />} />
+                <Tabs.Tab
+                  value="images"
+                  label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} showAlert={true} />}
+                />
                 <Tabs.Tab
                   value="documents"
-                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} />}
+                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} showAlert={true} />}
                 />
-                <Tabs.Tab value="videos" label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} />} />
+                <Tabs.Tab
+                  value="videos"
+                  label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} showAlert={false} />}
+                />
                 <Tabs.Tab
                   value="variants"
-                  label={<TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} />}
+                  label={
+                    <TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} showAlert={true} />
+                  }
                 />
               </Tabs.List>
               <AboutTab product={product} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
