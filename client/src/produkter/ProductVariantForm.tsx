@@ -42,6 +42,7 @@ const ProductVariantForm = ({
     mode: "onChange",
     defaultValues: {
       articleName,
+      hmsArtNr: product.hmsArtNr ?? "",
       supplierRef: isUUID(supplierRef) ? "" : supplierRef,
       techData: product.productData.techData,
     },
