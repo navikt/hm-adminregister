@@ -65,7 +65,7 @@ const Rammeavtaler = () => {
         </Heading>
 
         <div className="page__content-container">
-          <HStack justify="space-between" wrap gap="4">
+          <HStack wrap gap="4">
             <form className="search-box" onSubmit={handleSubmit}>
               <Search
                 className="search-button"
@@ -78,17 +78,7 @@ const Rammeavtaler = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </form>
-            <HStack gap="2">
-              <Button
-                style={{ marginLeft: "auto" }}
-                variant="secondary"
-                size="medium"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/rammeavtaler/opprett")}
-              >
-                Ny rammeavtale
-              </Button>
+            <HStack gap="1">
               <Dropdown>
                 <Button
                   variant="tertiary"
@@ -97,6 +87,14 @@ const Rammeavtaler = () => {
                 />
                 <Dropdown.Menu>
                   <Dropdown.Menu.GroupedList>
+                    <Dropdown.Menu.GroupedList.Item
+                      onClick={() => {
+                        navigate("/rammeavtaler/opprett");
+                      }}
+                    >
+                      <PlusIcon aria-hidden />
+                      Ny rammeavtale
+                    </Dropdown.Menu.GroupedList.Item>
                     <Dropdown.Menu.GroupedList.Item
                       onClick={() => {
                         navigate("/rammeavtaler/importer-katalogfil");
