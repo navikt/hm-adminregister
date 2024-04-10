@@ -29,6 +29,8 @@ export default function Combobox({ defaultValue, options, setValue, label, error
     setFilteredOptions(filtered);
   }, [inputValue, options]);
 
+  console.log("errorMessage", errorMessage);
+
   return (
     <UNSAFE_Combobox
       label={label || ""}

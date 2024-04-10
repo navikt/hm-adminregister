@@ -83,13 +83,13 @@ export default function OpprettProdukt() {
               options={isoCodesAndTitles}
               setValue={handleSetFormValueIso}
               label={labelRequired("Iso-kategori (kode)")}
-              errorMessage={errors?.productName?.message}
+              errorMessage={errors?.isoCategory && "Du må velge en isokategori"}
             />
             <div className="button-container">
               <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type="submit" size="medium">
+              <Button type="submit" size="medium" disabled={isSubmitting}>
                 Opprett
               </Button>
             </div>
