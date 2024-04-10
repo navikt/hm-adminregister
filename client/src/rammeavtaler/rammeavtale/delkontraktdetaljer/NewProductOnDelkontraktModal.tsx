@@ -68,7 +68,7 @@ const NewProductOnDelkontraktModal = ({
     addProductsToAgreement(
       delkontraktId,
       post,
-      variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!!)) || [],
+      variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!)) || [],
     )
       .then((agreement) => {
         mutateProductAgreements();
@@ -88,6 +88,9 @@ const NewProductOnDelkontraktModal = ({
   return (
     <Modal
       open={modalIsOpen}
+      onCancel={(e) => {
+        console.log(e);
+      }}
       header={{
         heading: "Legg til produkt",
         closeButton: false,
@@ -105,6 +108,17 @@ const NewProductOnDelkontraktModal = ({
                 name="hmsNummer"
                 type="text"
                 error={errors?.hmsNummer?.message}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    console.log("Enter pushed");
+                    onClickGetProduct({ hmsNummer: e.currentTarget.value });
+                  }
+                }}
               />
               <Button
                 onClick={handleSubmit(onClickGetProduct)}
