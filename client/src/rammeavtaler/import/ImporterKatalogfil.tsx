@@ -129,7 +129,6 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
                   variant="tertiary"
                   icon={<TrashIcon />}
                   title="slett"
-                  fontSize="1.5rem"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
               </li>

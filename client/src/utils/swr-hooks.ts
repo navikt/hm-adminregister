@@ -20,6 +20,7 @@ import { HM_REGISTER_URL } from "environments";
 import { LoggedInUser } from "./user-util";
 import { ProductToApprove } from "utils/types/types";
 import { mapProductToApproveDtoToProductToApprove } from "utils/product-util";
+import { AgreementFilterOption } from "rammeavtaler/Rammeavtaler";
 
 export function baseUrl(url: string = "") {
   if (process.env.NODE_ENV === "production") {
@@ -151,11 +152,24 @@ export function useUnpagedProductsTilGodkjenning() {
   };
 }
 
-export function usePagedAgreements({ page, pageSize }: { page: number; pageSize: number }) {
+export function usePagedAgreements({
+  page,
+  pageSize,
+  filter,
+}: {
+  page: number;
+  pageSize: number;
+  filter: AgreementFilterOption;
+}) {
   const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}&excludedAgreementStatus=DELETED`;
+  let queryParamFilter = "";
+  if (filter !== AgreementFilterOption.ALL) {
+    queryParamFilter = `&filter=${filter}`;
+  }
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}&excludedAgreementStatus=DELETED${queryParamFilter}`;
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET);
 

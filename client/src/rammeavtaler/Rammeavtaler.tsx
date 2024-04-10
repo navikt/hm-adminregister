@@ -1,18 +1,45 @@
 import React, { useState } from "react";
-import { Alert, Button, Dropdown, Heading, HStack, LinkPanel, Loader, Pagination, Search } from "@navikt/ds-react";
+import {
+  Alert,
+  Button,
+  Dropdown,
+  Heading,
+  HStack,
+  LinkPanel,
+  Loader,
+  Pagination,
+  Search,
+  ToggleGroup,
+} from "@navikt/ds-react";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
 import { AgreementGroupDto } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 
+export enum AgreementFilterOption {
+  ALL = "ALL",
+  ACTIVE = "ACTIVE",
+  FUTURE = "FUTURE",
+  EXPIRED = "EXPIRED",
+}
+
 const Rammeavtaler = () => {
+  const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(AgreementFilterOption.ALL);
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
   const { data: allData, isLoading: allDataIsLoading } = useAgreements();
-  const { data, isLoading } = usePagedAgreements({ page: pageState - 1, pageSize });
+  const { data, isLoading } = usePagedAgreements({ page: pageState - 1, pageSize, filter: selectedFilterOption });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>();
   const navigate = useNavigate();
+
+  const showPageNavigator = data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0;
+  const inSearchMode = searchTerm.length > 0;
+
+  const handeFilterChange = (filter: AgreementFilterOption) => {
+    setSelectedFilterOption(filter);
+    setPageState(1);
+  };
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -84,6 +111,22 @@ const Rammeavtaler = () => {
             </HStack>
           </HStack>
 
+          {!inSearchMode && (
+            <ToggleGroup
+              value={selectedFilterOption}
+              onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
+              size="small"
+              defaultChecked={true}
+            >
+              <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
+                Alle
+              </ToggleGroup.Item>
+              <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
+              <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
+              <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+            </ToggleGroup>
+          )}
+
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
             <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
           ) : filteredData && filteredData.length > 0 ? (
@@ -106,13 +149,13 @@ const Rammeavtaler = () => {
                         {rammeavtale.title || "Ukjent produktnavn"}
                       </LinkPanel.Title>
                     </LinkPanel>
-                    <div></div>
                   </>
                 ))}
             </div>
           ) : (
             <div className="panel-list__container">
               {isLoading && <Loader size="3xlarge" title="venter..." />}
+              {data?.content && data?.content.length === 0 && <Alert variant="info">Ingen rammeavtaler funnet.</Alert>}
               {data?.content &&
                 data?.content.map((rammeavtale, i) => (
                   <LinkPanel
@@ -122,18 +165,18 @@ const Rammeavtaler = () => {
                     key={i}
                   >
                     <LinkPanel.Title className="panel-list__title panel-list__width">
-                      {rammeavtale.title || "Ukjent produktnavn"}
+                      {rammeavtale.title || "Ukjent avtalenavn"}
                     </LinkPanel.Title>
                   </LinkPanel>
                 ))}
             </div>
           )}
 
-          {data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 && (
+          {showPageNavigator && (
             <Pagination
               page={pageState}
               onPageChange={(x) => setPageState(x)}
-              count={data.totalPages}
+              count={data.totalPages!}
               size="small"
               prevNextTexts
             />

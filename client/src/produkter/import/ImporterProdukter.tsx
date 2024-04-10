@@ -126,10 +126,9 @@ export default function ImporterProdukter({ validerImporterteProdukter }: Props)
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
-                  variant="tertiary"
+                  variant={"tertiary"}
                   icon={<TrashIcon />}
                   title="slett"
-                  fontSize="1.5rem"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
               </li>

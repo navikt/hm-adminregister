@@ -207,7 +207,6 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
                   variant="tertiary"
                   icon={<TrashIcon />}
                   title="slett"
-                  fontSize="1.5rem"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
               </li>
