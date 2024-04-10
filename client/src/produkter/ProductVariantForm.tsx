@@ -87,10 +87,6 @@ const ProductVariantForm = ({
     }
   }
 
-  // if (isSubmitting) {
-  //   return <Loader size="large" />
-  // }
-
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
       <TextField
@@ -102,8 +98,6 @@ const ProductVariantForm = ({
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
         defaultValue={product.articleName}
-        // onBlur={() => setBlurredField(true)}
-        // onFocus={() => setBlurredField(false)}
         error={errors?.articleName?.message}
       />
       <TextField
@@ -150,7 +144,7 @@ const ProductVariantForm = ({
                 className="readonly"
                 id={`techData.${index}.unit`}
                 name={`techData.${index}.unit`}
-                // error={errorForField}
+                tabIndex={-1}
               />
             }
           </HStack>
