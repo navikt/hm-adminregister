@@ -42,7 +42,7 @@ const RedigerProduktVariant = () => {
       <HStack justify="center">
         <VStack gap="8" className="spacing-bottom--xlarge">
           <Heading level="1" size="large" align="start">
-            Endre artikkelinformasjon
+            Artikkelinformasjon
           </Heading>
           <ProductVariantForm
             product={product}

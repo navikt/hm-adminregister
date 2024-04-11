@@ -1,26 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import useSWR from "swr";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { newProductVariantSchema } from "utils/zodSchema/newProduct";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { isUUID, labelRequired } from "utils/string-util";
-import ProductVariantForm from "./ProductVariantForm";
 import { HM_REGISTER_URL } from "environments";
-import { draftProductVariant, registrationsPath, updateProductVariant } from "api/ProductApi";
+import { draftProductVariant, updateProductVariant } from "api/ProductApi";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
 const OpprettProduktVariant = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
-  const [newProduct, setNewProduct] = useState<ProductRegistrationDTO | null>(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const { seriesId, productId } = useParams();
 
@@ -51,7 +50,11 @@ const OpprettProduktVariant = () => {
       };
 
       updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct)
-        .then((product) => setNewProduct(product))
+        .then((product) =>
+          navigate(
+            `/produkter/${products[0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`,
+          ),
+        )
         .catch((error) => {
           setGlobalError(error.status, error.message);
         });
@@ -62,7 +65,11 @@ const OpprettProduktVariant = () => {
       };
 
       draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant)
-        .then((product) => setNewProduct(product))
+        .then((product) =>
+          navigate(
+            `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`,
+          ),
+        )
         .catch((error) => {
           setGlobalError(error.status, error.message);
         });
@@ -74,46 +81,36 @@ const OpprettProduktVariant = () => {
       <HStack justify="center" className="create-variant-page">
         <VStack gap="8">
           <Heading level="1" size="large" align="start">
-            {!newProduct ? "Legg til artikkel" : "Legg til teknisk data"}
+            Legg til artikkel
           </Heading>
-          {!newProduct && (
-            <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
-              <TextField
-                {...register("articleName", { required: true })}
-                label={labelRequired("Artikkelnavn")}
-                id="articleName"
-                name="articleName"
-                type="text"
-                error={errors?.articleName?.message}
-              />
-              <TextField
-                {...register("supplierRef", { required: true })}
-                label={labelRequired("Leverandør artikkelnummer")}
-                id="supplierRef"
-                name="supplierRef"
-                type="text"
-                error={errors?.supplierRef?.message}
-              />
 
-              <div className="button-container">
-                <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
-                  Avbryt
-                </Button>
-                <Button type="submit" size="medium">
-                  Opprett og legg til mer info
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {newProduct && (
-            <ProductVariantForm
-              product={newProduct}
-              registrationPath={registrationsPath(loggedInUser?.isAdmin || false, newProduct.id)}
-              mutate={mutate}
-              firstTime={true}
+          <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              {...register("articleName", { required: true })}
+              label={labelRequired("Artikkelnavn")}
+              id="articleName"
+              name="articleName"
+              type="text"
+              error={errors?.articleName?.message}
             />
-          )}
+            <TextField
+              {...register("supplierRef", { required: true })}
+              label={labelRequired("Leverandør artikkelnummer")}
+              id="supplierRef"
+              name="supplierRef"
+              type="text"
+              error={errors?.supplierRef?.message}
+            />
+
+            <div className="button-container">
+              <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
+                Avbryt
+              </Button>
+              <Button type="submit" size="medium">
+                Opprett og legg til mer info
+              </Button>
+            </div>
+          </form>
         </VStack>
       </HStack>
     </main>
