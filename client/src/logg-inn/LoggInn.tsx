@@ -121,7 +121,6 @@ export default function LoggInn() {
             {...register("username", { required: true })}
             label="E-post*"
             type="email"
-            placeholder="example@mail.com"
             autoComplete="on"
             error={blurredFields.email && errors?.username?.message}
             onBlur={() => handleFieldBlur("email")}
@@ -131,7 +130,6 @@ export default function LoggInn() {
             {...register("password", { required: true })}
             label="Passord*"
             type="password"
-            placeholder="********"
             error={blurredFields.password && errors?.password?.message}
             onBlur={() => handleFieldBlur("password")}
             onFocus={() => handleFieldFocus("password")}
