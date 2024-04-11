@@ -1,0 +1,61 @@
+name: Deploy to prod
+
+on:
+  push:
+    branches:
+      - main
+
+run-name: Bygg og deploy til prod
+
+env:
+  BUILD_ENV: prod
+  CLUSTER: prod-gcp
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+jobs:
+  build:
+    name: Build and push docker container
+    permissions:
+      contents: 'read'
+      packages: 'write'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.docker-build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}
+          build-args: |
+            BUILD_ENV=${{ env.BUILD_ENV }}
+            CLUSTER=${{ env.CLUSTER }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          secrets: |
+            "NODE_AUTH_TOKEN=${{ secrets.READER_TOKEN }}"
+
+
+  deploy-prod:
+    name: Deploy prod
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: ${{ env.CLUSTER }}
+          RESOURCE: .nais/nais.yaml
+          VAR: image=${{ env.IMAGE }}
+          VARS: .nais/nais-${{ env.BUILD_ENV }}.json
+
+

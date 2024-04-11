@@ -15,8 +15,6 @@ function htmlPlugin({ development }: { development?: boolean }): Plugin {
           children: `window.appSettings = {
             GIT_COMMIT: 'unknown',
             USE_MSW: true,
-            VITE_HM_REGISTER_URL: 'http://localhost:8080',
-            VITE_IMAGE_PROXY_URL: 'http://localhost:8082/imageproxy',
           }`,
         });
       } else {
