@@ -3,7 +3,7 @@ name: Deploy to dev
 on:
   push:
     branches:
-      - main
+      - mainz
 
 run-name: Bygg og deploy til dev
 
