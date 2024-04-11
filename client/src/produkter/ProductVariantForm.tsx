@@ -30,7 +30,7 @@ const ProductVariantForm = ({
     productData: { techData },
   } = product;
   const [error, setError] = useState<Error | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
   const {
@@ -143,7 +143,12 @@ const ProductVariantForm = ({
         );
       })}
       <div className="button-container">
-        <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
+        <Button
+          type="reset"
+          variant="tertiary"
+          size="medium"
+          onClick={() => navigate(`/produkter/${product.seriesId}?tab=variants&page=${page}`)}
+        >
           {firstTime ? "Hopp over" : "Avbryt"}
         </Button>
         <Button type="submit" size="medium" disabled={!isSubmittable}>
