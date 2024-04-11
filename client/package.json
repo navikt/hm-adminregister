@@ -6,6 +6,8 @@
     "dev": "vite",
     "test": "vitest run --dir src",
     "build": "tsc && vite build",
+    "build:dev": "tsc && vite build --mode=dev",
+    "build:prod": "tsc && vite build --mode=prod",
     "preview": "vite preview",
     "clean": "rimraf dist",
     "prettier": "prettier -w src",

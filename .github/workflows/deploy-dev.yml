@@ -5,11 +5,11 @@ on:
     branches:
       - main
 
-run-name: Bygg og deploy til prod
+run-name: Bygg og deploy til dev
 
 env:
-  BUILD_ENV: prod
-  CLUSTER: prod-gcp
+  BUILD_ENV: dev
+  CLUSTER: dev-gcp
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
@@ -44,8 +44,8 @@ jobs:
             "NODE_AUTH_TOKEN=${{ secrets.READER_TOKEN }}"
 
 
-  deploy-prod:
-    name: Deploy prod
+  deploy-dev:
+    name: Deploy dev
     needs: build
     runs-on: ubuntu-latest
     steps:
