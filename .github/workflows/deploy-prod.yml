@@ -1,4 +1,4 @@
-name: Manually deploy to NAIS (ENV)
+name: Deploy to prod
 
 on:
   push:
