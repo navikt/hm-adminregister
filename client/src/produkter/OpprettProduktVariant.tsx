@@ -20,7 +20,6 @@ type FormData = z.infer<typeof newProductVariantSchema>;
 const OpprettProduktVariant = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
-  const [blurredField, setBlurredField] = useState(false);
   const [newProduct, setNewProduct] = useState<ProductRegistrationDTO | null>(null);
 
   const { seriesId, productId } = useParams();
@@ -62,7 +61,7 @@ const OpprettProduktVariant = () => {
         supplierRef: data.supplierRef,
       };
 
-      draftProductVariant(loggedInUser?.isAdmin || false, productId!!, newVariant)
+      draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant)
         .then((product) => setNewProduct(product))
         .catch((error) => {
           setGlobalError(error.status, error.message);
@@ -85,8 +84,6 @@ const OpprettProduktVariant = () => {
                 id="articleName"
                 name="articleName"
                 type="text"
-                onBlur={() => setBlurredField(true)}
-                onFocus={() => setBlurredField(false)}
                 error={errors?.articleName?.message}
               />
               <TextField
@@ -95,8 +92,6 @@ const OpprettProduktVariant = () => {
                 id="supplierRef"
                 name="supplierRef"
                 type="text"
-                onBlur={() => setBlurredField(true)}
-                onFocus={() => setBlurredField(false)}
                 error={errors?.supplierRef?.message}
               />
 
