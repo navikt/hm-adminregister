@@ -129,7 +129,7 @@ const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationD
   return (
     <Tabs.Panel value="videos" className="tab-panel">
       <VStack gap="8">
-        {videos.length !== 0 && (
+        {videos.length === 0 && (
           <Alert variant="info">
             Produktet har ingen videolenker. Det er kun mulig å legge til lenker fra YouTube og Vimeo.
           </Alert>
