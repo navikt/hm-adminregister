@@ -129,11 +129,20 @@ const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationD
   return (
     <Tabs.Panel value="videos" className="tab-panel">
       <VStack gap="8">
-        {videos.length === 0 && (
+        {videos.length !== 0 && (
           <Alert variant="info">
             Produktet har ingen videolenker. Det er kun mulig å legge til lenker fra YouTube og Vimeo.
           </Alert>
         )}
+
+        <Alert variant="warning">
+          Sørg for at videoen som lenkes til er tekstet og at kravene til universell utforming følges. De som ikke kan
+          høre lyd skal få presentert lydinnholdet på en alternativ måte. Dette er lovpålagt.
+          <Link href="https://www.uutilsynet.no/veiledning/video-og-lydopptak/232#videoopptak_med_lyd">
+            Ytterligere informasjon om teksting av videoer finnes på nettsidene til Tilsynet for universell utforming av
+            ikt
+          </Link>
+        </Alert>
 
         {videos.length > 0 && (
           <HStack as="ol" className="videos" gap="4">
