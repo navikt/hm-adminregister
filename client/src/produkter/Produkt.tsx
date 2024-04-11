@@ -294,7 +294,9 @@ const ProductPage = () => {
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin ? (
-              product.adminStatus !== "APPROVED" && (
+              product.adminStatus !== "APPROVED" &&
+              product.registrationStatus !== "INACTIVE" &&
+              product.registrationStatus !== "DELETED" && (
                 <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
               )
             ) : (
