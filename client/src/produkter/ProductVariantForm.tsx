@@ -8,6 +8,7 @@ import { isUUID, labelRequired } from "utils/string-util";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { productVariantSchema } from "utils/zodSchema/newProduct";
 import { z } from "zod";
+import styles from "./ProductVariantForm.module.scss";
 
 type FormData = z.infer<typeof productVariantSchema>;
 
@@ -128,7 +129,7 @@ const ProductVariantForm = ({
       {techDataFields.map((key, index) => {
         const errorForField = errors?.techData?.[index]?.value;
         return (
-          <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2">
+          <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2" wrap={false}>
             <TextField
               {...register(`techData.${index}.value`, { required: false })}
               label={labelRequired(`${key.key}`)}
@@ -137,16 +138,7 @@ const ProductVariantForm = ({
               type="text"
               error={errorForField?.message}
             />
-            {
-              <input
-                {...register(`techData.${index}.unit`, { required: false })}
-                readOnly
-                className="readonly"
-                id={`techData.${index}.unit`}
-                name={`techData.${index}.unit`}
-                tabIndex={-1}
-              />
-            }
+            <span className={styles.techDataUnit}>{techData?.[index]?.unit}</span>
           </HStack>
         );
       })}
