@@ -1,0 +1,14 @@
+{
+  "ingress": [
+    "https://finnhjelpemiddel.nav.no/adminregister",
+    "https://finnhjelpemiddel.nav.no/adminregister"
+  ],
+  "cluster": "prod-gcp",
+  "runtime_env": "prod",
+  "public_origin": "https://finnhjelpemiddel.nav.no/adminregister",
+  "replicas": {
+    "min": 1,
+    "max": 2
+  },
+  "app_name": "hm-adminregister"
+}
