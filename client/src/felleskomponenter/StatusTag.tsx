@@ -1,8 +1,22 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon } from "@navikt/aksel-icons";
 import TagWithIcon, { colors } from "./TagWithIcon";
 
-const StatusTag = ({ isPending, isDraft }: { isPending: boolean; isDraft: boolean }) => {
-  if (isDraft) {
+const StatusTag = ({
+  isPending,
+  isDraft,
+  isDeleted,
+  isInactive,
+}: {
+  isPending: boolean;
+  isDraft: boolean;
+  isDeleted: boolean;
+  isInactive: boolean;
+}) => {
+  if (isDeleted) {
+    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Slettet" color={colors.RED} />;
+  } else if (isInactive) {
+    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Inaktiv" color={colors.RED} />;
+  } else if (isDraft) {
     return (
       <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Ikke publisert" color={colors.GREY} />
     );
