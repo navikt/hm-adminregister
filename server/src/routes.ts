@@ -13,7 +13,11 @@ export const routes = {
       .get("/metrics", async (req, res) => {
         res.set("Content-Type", metrics.contentType);
         res.end(await metrics.metrics());
-      })
+      });
+  },
+  public(): Router {
+    return Router()
+      .use(cookieParser())
       .get("/settings.js", (_, res) => {
         const appSettings = {
           VITE_HM_REGISTER_URL: process.env.VITE_HM_REGISTER_URL,
@@ -21,11 +25,7 @@ export const routes = {
         };
         res.type(".js");
         res.send(`window.appSettings = ${JSON.stringify(appSettings)}`);
-      });
-  },
-  public(): Router {
-    return Router()
-      .use(cookieParser())
+      })
       .get("*", express.static(config.build_path))
       .get("*", function (req, res) {
         res.sendFile("index.html", { root: path.join(__dirname, "../../client/dist/") });
