@@ -4,6 +4,7 @@ export const HM_REGISTER_URL = () => {
   } else {
     const fraSettings = window.appSettings.VITE_HM_REGISTER_URL;
     console.log("fraSettings", fraSettings);
+    console.log("appSettings", window.appSettings);
     return import.meta.env.VITE_HM_REGISTER_URL;
   }
 };
