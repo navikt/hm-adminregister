@@ -66,7 +66,7 @@ export function useProducts() {
   const { loggedInUser } = useAuthStore();
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED&page=1&size=20000`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
