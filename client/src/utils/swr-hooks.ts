@@ -66,8 +66,8 @@ export function useProducts() {
   const { loggedInUser } = useAuthStore();
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/group?page=0&size=2000`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/group`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=0&size=2000`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 

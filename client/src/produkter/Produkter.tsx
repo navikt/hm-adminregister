@@ -3,7 +3,7 @@ import { Alert, Button, Dropdown, Heading, HStack, LinkPanel, Loader, Search, VS
 import "./products.scss";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useProducts } from "utils/swr-hooks";
-import { SeriesGroupDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
@@ -13,7 +13,7 @@ const Produkter = () => {
   const { loggedInUser } = useAuthStore();
   const { data, isLoading } = useProducts();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<SeriesGroupDTO | undefined>();
+  const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
   const handleSearch = (value: string) => {
@@ -120,12 +120,7 @@ const Produkter = () => {
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
                 {renderData &&
                   renderData.map((product, i) => (
-                    <LinkPanel
-                      as={Link}
-                      to={`/produkter/${product.seriesId}`}
-                      className="panel-list__name-panel"
-                      key={i}
-                    >
+                    <LinkPanel as={Link} to={`/produkter/${product.id}`} className="panel-list__name-panel" key={i}>
                       <LinkPanel.Title className="panel-list__title panel-list__width">
                         {product.title || "Ukjent produktnavn"}
                       </LinkPanel.Title>

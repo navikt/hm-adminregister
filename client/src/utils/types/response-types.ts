@@ -10,19 +10,7 @@ export type SupplierStatus = components["schemas"]["SupplierStatus"];
 export type DraftStatus = components["schemas"]["DraftStatus"];
 export type SupplierChunk = components["schemas"]["Page_SupplierRegistrationDTO_"];
 export type SupplierUserChunk = components["schemas"]["Page_UserDTO_"];
-export type SeriesChunk = {
-  content: components["schemas"]["SeriesGroupDTO"][];
-  pageable: components["schemas"]["OpenApiPageable"];
-  /** Format: int32 */
-  pageNumber?: number;
-  /** Format: int64 */
-  offset?: number;
-  /** Format: int32 */
-  size?: number;
-  empty?: boolean;
-  /** Format: int32 */
-  numberOfElements?: number;
-};
+
 export type AgreementsChunk = {
   content: components["schemas"]["AgreementBasicInformationDto"][];
   pageable: components["schemas"]["OpenApiPageable"];
@@ -74,9 +62,25 @@ export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegis
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 export type ProductToApproveDto = components["schemas"]["ProductToApproveDto"];
+export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
 
 export type ProdukterTilGodkjenningChunk = {
   content: ProductToApproveDto[];
+  pageable: components["schemas"]["OpenApiPageable"];
+  /** Format: int32 */
+  pageNumber?: number;
+  /** Format: int64 */
+  offset?: number;
+  /** Format: int32 */
+  size?: number;
+  totalPages?: number;
+  empty?: boolean;
+  /** Format: int32 */
+  numberOfElements?: number;
+};
+
+export type SeriesChunk = {
+  content: SeriesRegistrationDTO[];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;
