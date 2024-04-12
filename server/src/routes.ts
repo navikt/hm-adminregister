@@ -22,6 +22,8 @@ export const routes = {
         const appSettings = {
           VITE_HM_REGISTER_URL: process.env.VITE_HM_REGISTER_URL,
           VITE_IMAGE_PROXY_URL: process.env.VITE_IMAGE_PROXY_URL,
+          USE_MSW: process.env.USE_MSW === "true",
+          MILJO: process.env.NAIS_CLUSTER_NAME,
         };
         res.type(".js");
         res.send(`window.appSettings = ${JSON.stringify(appSettings)}`);
