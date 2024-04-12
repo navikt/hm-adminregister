@@ -66,8 +66,31 @@ export function useProducts() {
   const { loggedInUser } = useAuthStore();
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/group?page=0&size=2000`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/group`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
+
+  const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
+export function usePagedProducts({ page, pageSize }: { page: number; pageSize: number }) {
+  const { setGlobalError } = useErrorStore();
+
+  const { loggedInUser } = useAuthStore();
+
+  const path = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&excludedStatus=DELETED`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 
