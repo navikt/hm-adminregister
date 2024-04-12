@@ -1,17 +1,24 @@
-import { MediaDTO, MediaInfo, ProductRegistrationDTO, ProductToApproveDto, TechData } from "./types/response-types";
+import {
+  MediaDTO,
+  MediaInfo,
+  MediaInfoDTO,
+  ProductRegistrationDTO,
+  ProductToApproveDto,
+  TechData,
+} from "./types/response-types";
 import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],
-): { images: MediaInfo[]; pdfs: MediaInfo[]; videos: MediaInfo[] } => {
+): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
   const seen: { [uri: string]: boolean } = {};
-  const pdfs: MediaInfo[] = [];
-  const images: MediaInfo[] = [];
-  const videos: MediaInfo[] = [];
+  const pdfs: MediaInfoDTO[] = [];
+  const images: MediaInfoDTO[] = [];
+  const videos: MediaInfoDTO[] = [];
   products
     .flatMap((product: ProductRegistrationDTO) => product.productData.media)
-    .map((media: MediaInfo) => {
+    .map((media: MediaInfoDTO) => {
       if (media.type === "IMAGE" && media.uri && !seen[media.uri]) {
         images.push(media);
       }
@@ -42,7 +49,7 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): st
 
 export const getEditedProductDTOAddMedia = (
   productToEdit: ProductRegistrationDTO,
-  media: MediaInfo[],
+  media: MediaInfoDTO[],
 ): ProductRegistrationDTO => {
   const oldAndNewfiles = productToEdit.productData.media.concat(media);
 
@@ -96,6 +103,7 @@ export const mapProductToApproveDtoToProductToApprove = (
       const productToApprove: ProductToApprove = {
         seriesId: key,
         title: dtos[0].title,
+        articleName: dtos[0].articleName,
         agreementId: dtos[0].agreementId,
         delkontrakttittel: dtos[0].delkontrakttittel,
         status: dtos[0].status,

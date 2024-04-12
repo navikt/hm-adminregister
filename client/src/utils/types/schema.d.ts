@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -150,6 +149,9 @@ export interface paths {
     put: operations["updateProduct"];
     delete: operations["deleteProduct"];
   };
+  "/admreg/admin/api/v1/series": {
+    get: operations["getSeries"];
+  };
   "/admreg/admin/api/v1/supplier/registrations": {
     get: operations["findSuppliers"];
     post: operations["createSupplier"];
@@ -269,7 +271,7 @@ export interface paths {
     delete: operations["deleteProduct_1"];
   };
   "/admreg/vendor/api/v1/series": {
-    get: operations["getSeries"];
+    get: operations["getSeries_1"];
     post: operations["createSeries"];
   };
   "/admreg/vendor/api/v1/series/{id}": {
@@ -1109,7 +1111,6 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-
   createDelkontrakt: {
     requestBody: {
       content: {
@@ -2081,6 +2082,24 @@ export interface operations {
       };
     };
   };
+  getSeries: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description getSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_SeriesRegistrationDTO_"];
+        };
+      };
+    };
+  };
   findSuppliers: {
     parameters: {
       query: {
@@ -2834,7 +2853,7 @@ export interface operations {
       };
     };
   };
-  getSeries: {
+  getSeries_1: {
     parameters: {
       query: {
         params?: {
@@ -2844,7 +2863,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description getSeries 200 response */
+      /** @description getSeries_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["Page_SeriesRegistrationDTO_"];

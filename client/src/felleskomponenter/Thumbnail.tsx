@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { MediaInfo } from "utils/types/response-types";
+import { MediaInfo, MediaInfoDTO } from "utils/types/response-types";
 import { smallImageLoader } from "utils/image-util";
 import "./thumbnail.scss";
 
 interface Props {
-  mediaInfo: MediaInfo;
+  mediaInfo: MediaInfoDTO;
 }
 
 export const Thumbnail = ({ mediaInfo }: Props) => {
