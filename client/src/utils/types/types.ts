@@ -19,6 +19,7 @@ export interface Product {
 
 export interface ProductToApprove {
   title: string;
+  articleName: string;
   /** Format: uuid */
   seriesId: string;
   status: string;
@@ -26,7 +27,7 @@ export interface ProductToApprove {
   /** Format: uuid */
   agreementId?: string | null;
   delkontrakttittel?: string | null;
-  thumbnail?: components["schemas"]["MediaInfo"] | null;
+  thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
 }
 
 export interface ProductVariant {

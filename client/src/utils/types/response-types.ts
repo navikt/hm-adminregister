@@ -67,6 +67,7 @@ export type AgreementAttachment = components["schemas"]["AgreementAttachment"];
 export type AgreementDraftWithDTO = components["schemas"]["AgreementDraftWithDTO"];
 export type MediaDTO = components["schemas"]["MediaDTO"];
 export type MediaInfo = components["schemas"]["MediaInfo"];
+export type MediaInfoDTO = components["schemas"]["MediaInfoDTO"];
 export type ProductDraftWithDTO = components["schemas"]["ProductDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
