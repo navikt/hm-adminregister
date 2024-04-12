@@ -10,7 +10,7 @@ run-name: Bygg og deploy til dev
 env:
   BUILD_ENV: dev
   CLUSTER: dev-gcp
-  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}_dev
 
 jobs:
   build:
