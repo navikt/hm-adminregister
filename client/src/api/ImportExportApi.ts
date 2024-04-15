@@ -1,9 +1,9 @@
 import { ProductAgreementImportDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { Upload } from "produkter/import/ImporterProdukter";
-import { fetchAPIWithHeaders, getPath } from "api/fetch";
+import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from "api/fetch";
 
 export const exportProducts = async (isAdmin: boolean): Promise<any> => {
-  return await fetchAPIWithHeaders(
+  return await fetchAPIWithHeadersAndArrayBufferResponse(
     getPath(isAdmin, "/api/v1/product/registrations/excel/export/supplier"),
     "POST",
     undefined,

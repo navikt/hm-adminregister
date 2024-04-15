@@ -54,3 +54,24 @@ export const fetchAPIWithHeaders = async (url: string, method: string, body?: an
     return Promise.reject(error);
   }
 };
+
+export const fetchAPIWithHeadersAndArrayBufferResponse = async (
+  url: string,
+  method: string,
+  body?: any,
+  headers?: any,
+): Promise<any> => {
+  const response = await fetch(url, {
+    method,
+    credentials: "include",
+    headers: headers,
+    body: body ? body : undefined,
+  });
+
+  if (response.ok) {
+    return await response.arrayBuffer();
+  } else {
+    const error = await response.json();
+    return Promise.reject(error);
+  }
+};
