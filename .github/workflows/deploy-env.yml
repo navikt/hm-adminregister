@@ -1,4 +1,4 @@
-name: Manually deploy to NAIS (ENV)
+name: Manuell deploy til NAIS (ENV)
 
 on:
   workflow_dispatch:

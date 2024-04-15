@@ -26,6 +26,14 @@ spec:
       value: {{public_origin}}
     - name: PORT
       value: '3000'
+    - name: VITE_HM_REGISTER_URL
+      value: {{hm_register_url}}
+    - name: VITE_IMAGE_PROXY_URL
+      value: {{image_proxy_url}}
+    - name: VITE_HM_REGISTER_EXTERNAL_URL
+      value: {{hm_register_external_url}}
+    - name: VITE_IMAGE_PROXY_EXTERNAL_URL
+      value: {{image_proxy_external_url}}
 
   replicas:
     min: {{replicas.min}}

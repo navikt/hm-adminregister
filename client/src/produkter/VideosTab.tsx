@@ -1,5 +1,5 @@
 import { Alert, Button, Tabs, VStack, Link, Modal, TextField, HStack } from "@navikt/ds-react";
-import { MediaInfo, ProductRegistrationDTO } from "utils/types/response-types";
+import { MediaInfo, MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import {
   getEditedProductDTOAddMedia,
@@ -38,7 +38,7 @@ const VideoTab = ({ products, mutateProducts, isEditable }: { products: ProductR
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
 
-    const newVideo: MediaInfo[] = [
+    const newVideo: MediaInfoDTO[] = [
       {
         sourceUri: "",
         uri: url,

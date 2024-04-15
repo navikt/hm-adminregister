@@ -1,15 +1,13 @@
-name: Deploy to prod
+name: Bygg og deploy til dev og prod
 
 on:
   push:
     branches:
       - main
 
-run-name: Bygg og deploy til prod
+run-name: Bygg og deploy til dev og prod
 
 env:
-  BUILD_ENV: prod
-  CLUSTER: prod-gcp
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
@@ -35,13 +33,25 @@ jobs:
           context: .
           push: true
           tags: ${{ env.IMAGE }}
-          build-args: |
-            BUILD_ENV=${{ env.BUILD_ENV }}
-            CLUSTER=${{ env.CLUSTER }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           secrets: |
             "NODE_AUTH_TOKEN=${{ secrets.READER_TOKEN }}"
+
+
+  deploy-dev:
+    name: Deploy dev
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/nais.yaml
+          VAR: image=${{ env.IMAGE }}
+          VARS: .nais/nais-dev.json
 
 
   deploy-prod:
@@ -53,9 +63,9 @@ jobs:
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: ${{ env.CLUSTER }}
+          CLUSTER: prod-gcp
           RESOURCE: .nais/nais.yaml
           VAR: image=${{ env.IMAGE }}
-          VARS: .nais/nais-${{ env.BUILD_ENV }}.json
+          VARS: .nais/nais-prod.json
 
 

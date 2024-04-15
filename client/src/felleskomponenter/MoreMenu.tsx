@@ -2,14 +2,14 @@ import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
 import { Button, Popover, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import "./more-menu.scss";
-import { MediaInfo } from "utils/types/response-types";
+import { MediaInfo, MediaInfoDTO } from "utils/types/response-types";
 
 export const MoreMenu = ({
   mediaInfo,
   handleDeleteFile,
   fileType,
 }: {
-  mediaInfo: MediaInfo;
+  mediaInfo: MediaInfoDTO;
   handleDeleteFile: (uri: string) => void;
   fileType: "image" | "document" | "videoLink";
 }) => {

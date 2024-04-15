@@ -9,13 +9,7 @@ COPY client .
 ARG CLUSTER
 ENV CLUSTER ${CLUSTER}
 
-RUN if [ "$CLUSTER" = "dev-gcp" ] ; then \
-       npm run && npm run build:dev ; \
-    elif [ "$CLUSTER" = "prod-gcp" ]; then \
-       npm run && npm run build:prod ; \
-    else \
-        echo "No valid cluster specified"; \
-    fi
+RUN npm run && npm run build
 
 FROM node:16.15.0-alpine as server-builder
 WORKDIR /app

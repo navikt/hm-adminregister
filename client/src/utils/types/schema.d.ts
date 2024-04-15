@@ -108,6 +108,9 @@ export interface paths {
     get: operations["findProducts"];
     post: operations["createProduct"];
   };
+  "/admreg/admin/api/v1/product/registrations/approve": {
+    put: operations["approveProducts"];
+  };
   "/admreg/admin/api/v1/product/registrations/approve/{id}": {
     put: operations["approveProduct"];
   };
@@ -145,6 +148,9 @@ export interface paths {
     get: operations["getProductById"];
     put: operations["updateProduct"];
     delete: operations["deleteProduct"];
+  };
+  "/admreg/admin/api/v1/series": {
+    get: operations["getSeries"];
   };
   "/admreg/admin/api/v1/supplier/registrations": {
     get: operations["findSuppliers"];
@@ -256,13 +262,21 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/series/{seriesId}": {
     get: operations["findBySeriesIdAndSupplierId_1"];
   };
+  "/admreg/vendor/api/v1/product/registrations/til-godkjenning": {
+    put: operations["setProductsToBeApproved"];
+  };
   "/admreg/vendor/api/v1/product/registrations/{id}": {
     get: operations["getProductById_1"];
     put: operations["updateProduct_1"];
     delete: operations["deleteProduct_1"];
   };
   "/admreg/vendor/api/v1/series": {
-    get: operations["getSeries"];
+    get: operations["getSeries_1"];
+    post: operations["createSeries"];
+  };
+  "/admreg/vendor/api/v1/series/{id}": {
+    get: operations["readSeries"];
+    put: operations["updateSeries"];
   };
   "/admreg/vendor/api/v1/supplier/registrations": {
     get: operations["getById_1"];
@@ -341,6 +355,7 @@ export interface components {
       expired: string;
       /** Format: date-time */
       published?: string | null;
+      status: components["schemas"]["ProductAgreementStatus"];
     };
     AgreementPost: {
       identifier: string;
@@ -523,7 +538,19 @@ export interface components {
       text?: string | null;
       source: components["schemas"]["MediaSourceType"];
       /** Format: date-time */
-      updated?: string;
+      updated: string;
+    };
+    MediaInfoDTO: {
+      sourceUri: string;
+      filename?: string | null;
+      uri: string;
+      /** Format: int32 */
+      priority: number;
+      type: components["schemas"]["MediaType"];
+      text?: string | null;
+      source: components["schemas"]["MediaSourceType"];
+      /** Format: date-time */
+      updated?: string | null;
     };
     /** @enum {string} */
     MediaSourceType: "HMDB" | "REGISTER" | "EXTERNALURL" | "IMPORT" | "UNKNOWN";
@@ -678,7 +705,7 @@ export interface components {
       accessory: boolean;
       sparePart: boolean;
       techData: components["schemas"]["TechData"][];
-      media: components["schemas"]["MediaInfo"][];
+      media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
     };
@@ -695,7 +722,7 @@ export interface components {
       supplierRef: string;
       hmsArtNr?: string | null;
       /** Format: uuid */
-      seriesUUID?: string | null;
+      seriesUUID: string;
       /** @deprecated */
       seriesId: string;
       isoCategory: string;
@@ -790,6 +817,7 @@ export interface components {
     };
     ProductToApproveDto: {
       title: string;
+      articleName: string;
       /** Format: uuid */
       seriesId: string;
       status: string;
@@ -797,7 +825,7 @@ export interface components {
       /** Format: uuid */
       agreementId?: string | null;
       delkontrakttittel?: string | null;
-      thumbnail?: components["schemas"]["MediaInfo"] | null;
+      thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
     };
     ProductVariantsForDelkontraktDto: {
       /** Format: uuid */
@@ -831,6 +859,9 @@ export interface components {
     };
     /** @enum {string} */
     RegistrationStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    SeriesData: {
+      media: components["schemas"]["MediaInfoDTO"][];
+    };
     SeriesGroupDTO: {
       title: string;
       seriesId: string;
@@ -847,7 +878,9 @@ export interface components {
       text: string;
       isoCategory: string;
       draftStatus: components["schemas"]["DraftStatus"];
+      adminStatus: components["schemas"]["AdminStatus"];
       status: components["schemas"]["SeriesStatus"];
+      seriesData: components["schemas"]["SeriesData"];
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -859,11 +892,13 @@ export interface components {
       updatedByUser: string;
       createdByUser: string;
       createdByAdmin: boolean;
+      /** Format: int32 */
+      count: number;
       /** Format: int64 */
       version?: number | null;
     };
     /** @enum {string} */
-    SeriesStatus: "ACTIVE" | "INACTIVE" | "PENDING" | "REJECTED";
+    SeriesStatus: "ACTIVE" | "INACTIVE" | "DELETED";
     Slice_AgreementBasicInformationDto_: {
       content: components["schemas"]["AgreementBasicInformationDto"][];
       pageable: components["schemas"]["OpenApiPageable"];
@@ -1787,6 +1822,21 @@ export interface operations {
       };
     };
   };
+  approveProducts: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description approveProducts 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
   approveProduct: {
     parameters: {
       path: {
@@ -2028,6 +2078,24 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getSeries: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description getSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_SeriesRegistrationDTO_"];
         };
       };
     };
@@ -2720,6 +2788,21 @@ export interface operations {
       };
     };
   };
+  setProductsToBeApproved: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description setProductsToBeApproved 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
   getProductById_1: {
     parameters: {
       path: {
@@ -2770,7 +2853,7 @@ export interface operations {
       };
     };
   };
-  getSeries: {
+  getSeries_1: {
     parameters: {
       query: {
         params?: {
@@ -2780,10 +2863,60 @@ export interface operations {
       };
     };
     responses: {
-      /** @description getSeries 200 response */
+      /** @description getSeries_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["Page_SeriesRegistrationDTO_"];
+        };
+      };
+    };
+  };
+  createSeries: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SeriesRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description createSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  readSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description readSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SeriesRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description updateSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
         };
       };
     };

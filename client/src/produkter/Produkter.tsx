@@ -1,28 +1,48 @@
 import React, { useState } from "react";
-import { Alert, Button, Dropdown, Heading, HStack, LinkPanel, Loader, Search, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  Button,
+  Dropdown,
+  Heading,
+  HStack,
+  LinkPanel,
+  Loader,
+  Pagination,
+  Search,
+  VStack,
+} from "@navikt/ds-react";
 import "./products.scss";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
-import { useProducts } from "utils/swr-hooks";
-import { SeriesGroupDTO } from "utils/types/response-types";
+import { usePagedProducts, useProducts } from "utils/swr-hooks";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { Link, useNavigate } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 
 const Produkter = () => {
+  const [pageState, setPageState] = useState(1);
+  const pageSize = 10;
   const { loggedInUser } = useAuthStore();
-  const { data, isLoading } = useProducts();
+  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize });
+  const { data: allData, isLoading: allDataIsLoading } = useProducts();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<SeriesGroupDTO | undefined>();
+  const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
+
+  const showPageNavigator = data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0;
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filteredProducts = data?.content.filter((product) =>
+    const filteredProducts = allData?.content.filter((product) =>
       product.title.toLowerCase().includes(value.toLowerCase()),
     );
 
-    setFilteredData(filteredProducts);
+    if (value.length == 0) {
+      setFilteredData(undefined);
+    } else {
+      setFilteredData(filteredProducts);
+    }
   };
 
   const renderData = filteredData && filteredData.length > 0 ? filteredData : data?.content;
@@ -119,13 +139,9 @@ const Produkter = () => {
               <div className="panel-list__container">
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
                 {renderData &&
+                  renderData.length > 0 &&
                   renderData.map((product, i) => (
-                    <LinkPanel
-                      as={Link}
-                      to={`/produkter/${product.seriesId}`}
-                      className="panel-list__name-panel"
-                      key={i}
-                    >
+                    <LinkPanel as={Link} to={`/produkter/${product.id}`} className="panel-list__name-panel" key={i}>
                       <LinkPanel.Title className="panel-list__title panel-list__width">
                         {product.title || "Ukjent produktnavn"}
                       </LinkPanel.Title>
@@ -135,6 +151,15 @@ const Produkter = () => {
                     </LinkPanel>
                   ))}
               </div>
+            )}
+            {showPageNavigator === true && data && (
+              <Pagination
+                page={pageState}
+                onPageChange={(x) => setPageState(x)}
+                count={data.totalPages!}
+                size="small"
+                prevNextTexts
+              />
             )}
           </div>
         </VStack>
