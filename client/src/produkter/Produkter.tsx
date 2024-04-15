@@ -152,7 +152,7 @@ const Produkter = () => {
                   ))}
               </div>
             )}
-            {showPageNavigator && (
+            {showPageNavigator === true && data && (
               <Pagination
                 page={pageState}
                 onPageChange={(x) => setPageState(x)}
