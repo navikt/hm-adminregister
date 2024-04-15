@@ -90,7 +90,7 @@ export function usePagedProducts({ page, pageSize }: { page: number; pageSize: n
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&excludedStatus=DELETED`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&excludedStatus=DELETED`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 
