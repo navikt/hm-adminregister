@@ -51,7 +51,7 @@ const ProductPage = () => {
   } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
 
   const { data: isoCategory } = useSWR<IsoCategoryDTO>(
-    products && products[0].isoCategory && products[0].isoCategory !== "0"
+    products && products[0]?.isoCategory && products[0].isoCategory !== "0"
       ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${products[0].isoCategory}`
       : null,
     fetcherGET,
@@ -77,9 +77,11 @@ const ProductPage = () => {
 
   if (!products || products.length === 0) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
-        <Alert variant="info">Ingen data funnet.</Alert>
-      </HGrid>
+      <main className="show-menu">
+        <HGrid gap="12" columns="minmax(16rem, 55rem)">
+          <Alert variant="info">Ingen data funnet.</Alert>
+        </HGrid>
+      </main>
     );
   }
 
