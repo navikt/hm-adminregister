@@ -139,6 +139,7 @@ const Produkter = () => {
               <div className="panel-list__container">
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
                 {renderData &&
+                  renderData.length > 0 &&
                   renderData.map((product, i) => (
                     <LinkPanel as={Link} to={`/produkter/${product.id}`} className="panel-list__name-panel" key={i}>
                       <LinkPanel.Title className="panel-list__title panel-list__width">
