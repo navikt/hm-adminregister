@@ -10,10 +10,11 @@ interface Props {
   product: ProductRegistrationDTO;
   onSubmit: SubmitHandler<EditCommonInfoProduct>;
   isoCategory?: IsoCategoryDTO;
+  isEditable: boolean;
   showInputError: boolean;
 }
 
-const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => {
+const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
   const formMethods = useFormContext<EditCommonInfoProduct>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -72,7 +73,7 @@ const AboutTab = ({ product, onSubmit, isoCategory, showInputError }: Props) => 
                 ) : (
                   <>
                     <pre className="pre">{product.productData.attributes.text}</pre>
-                    {product.draftStatus === "DRAFT" && (
+                    {isEditable && (
                       <Button
                         className="fit-content"
                         variant="tertiary"

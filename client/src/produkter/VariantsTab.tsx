@@ -6,7 +6,15 @@ import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useState } from "react";
 
-const VariantsTab = ({ products, showInputError }: { products: ProductRegistrationDTO[]; showInputError: boolean }) => {
+const VariantsTab = ({
+  products,
+  isEditable,
+  showInputError,
+}: {
+  products: ProductRegistrationDTO[];
+  isEditable: boolean;
+  showInputError: boolean;
+}) => {
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
@@ -40,7 +48,7 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
           <VStack gap="4">
             <div className="variant-table">
               <Table>
-                {products[0].draftStatus === "DRAFT" && (
+                {isEditable && (
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
@@ -108,7 +116,7 @@ const VariantsTab = ({ products, showInputError }: { products: ProductRegistrati
           </VStack>
         </Box>
       )}
-      {products[0].draftStatus === "DRAFT" && (
+      {isEditable && (
         //Sender med siste siden
         <Link
           to={`${pathname}/opprett-variant/${products[0].id}?page=${Math.floor(products.length / columnsPerPage) + 1}`}

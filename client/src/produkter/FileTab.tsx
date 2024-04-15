@@ -14,10 +14,11 @@ interface Props {
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
   fileType: "images" | "documents";
+  isEditable: boolean;
   showInputError: boolean;
 }
 
-const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) => {
+const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images, pdfs } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useErrorStore();
@@ -88,7 +89,7 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
                       mediaInfo={image}
                       key={image.uri}
                       handleDeleteFile={handleDeleteFile}
-                      showMenuButton={products[0].draftStatus === "DRAFT"}
+                      showMenuButton={isEditable}
                     />
                   ))}
                 </ol>
@@ -111,7 +112,7 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
                           {pdf.text || pdf.uri.split("/").pop()}
                         </a>
                       </HStack>
-                      {products[0].draftStatus === "DRAFT" && (
+                      {isEditable && (
                         <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType="document" />
                       )}
                     </li>
@@ -125,7 +126,7 @@ const FileTab = ({ products, mutateProducts, fileType, showInputError }: Props) 
               )}
             </>
           )}
-          {products[0].draftStatus === "DRAFT" && (
+          {isEditable && (
             <Button
               className="fit-content"
               variant="tertiary"

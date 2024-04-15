@@ -149,6 +149,7 @@ const ProductPage = () => {
 
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
+  const isEditable = product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false);
 
   const InvalidProductModal = () => {
     return (
@@ -275,21 +276,29 @@ const ProductPage = () => {
                   }
                 />
               </Tabs.List>
-              <AboutTab product={product} onSubmit={onSubmit} isoCategory={isoCategory} showInputError={!isValid} />
+              <AboutTab
+                product={product}
+                onSubmit={onSubmit}
+                isoCategory={isoCategory}
+                isEditable={isEditable}
+                showInputError={!isValid}
+              />
               <FileTab
                 products={products}
                 mutateProducts={mutateProducts}
                 fileType="images"
+                isEditable={isEditable}
                 showInputError={!isValid}
               />
               <FileTab
                 products={products}
                 mutateProducts={mutateProducts}
                 fileType="documents"
+                isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <VideosTab products={products} mutateProducts={mutateProducts} />
-              <VariantsTab products={products} showInputError={!isValid} />
+              <VideosTab products={products} mutateProducts={mutateProducts} isEditable={isEditable} />
+              <VariantsTab products={products} isEditable={isEditable} showInputError={!isValid} />
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>

@@ -12,7 +12,7 @@ import { HM_REGISTER_URL } from "environments";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import ReactPlayer from "react-player";
 
-const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationDTO[]; mutateProducts: () => void }) => {
+const VideoTab = ({ products, mutateProducts, isEditable }: { products: ProductRegistrationDTO[]; mutateProducts: () => void; isEditable: boolean }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { videos } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useErrorStore();
@@ -145,7 +145,7 @@ const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationD
                   </Link>
                   <ReactPlayer url={video.uri} controls={true} width="100%" height="fit-content" />
                 </VStack>
-                {products[0].draftStatus === "DRAFT" && (
+                {isEditable && (
                   <div className="more-menu-container">
                     <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} fileType="videoLink" />
                   </div>
@@ -155,7 +155,7 @@ const VideoTab = ({ products, mutateProducts }: { products: ProductRegistrationD
           </HStack>
         )}
 
-        {products[0].draftStatus === "DRAFT" && (
+        {isEditable && (
           <Button
             className="fit-content"
             variant="tertiary"
