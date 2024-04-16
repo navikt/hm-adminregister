@@ -14,7 +14,6 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
   const isRejected = product.adminStatus === "REJECTED";
   const isDeleted = product.registrationStatus === "DELETED";
   const isInactive = product.registrationStatus === "INACTIVE";
-  const sendtTilGodkjenning = !isDraft && isPending;
   const publisert = !isDraft && product.adminStatus === "APPROVED";
 
   return (
@@ -43,8 +42,6 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
       {publisert && product.published && <StatusBox title="Publisert" date={product.published} />}
 
       {publisert && product.published && <StatusBox title="Endringer publisert" date={product.published} />}
-
-      {sendtTilGodkjenning && <StatusBox title="Sendt til godkjenning" date={product.created} />}
 
       <StatusBox title="Endret" date={product.updated} />
 
