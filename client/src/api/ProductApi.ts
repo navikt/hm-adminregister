@@ -89,3 +89,7 @@ export const rejectProducts = async (productIds: string[]): Promise<ProductRegis
 export const publishProducts = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
   return await fetchAPI(getPath(true, `/api/v1/product/registrations/approve`), "PUT", productIds);
 };
+
+export const deleteProducts = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
+  return await fetchAPI(getPath(true, `/api/v1/product/registrations/delete`), "DELETE", productIds);
+};

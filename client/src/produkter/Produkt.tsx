@@ -28,7 +28,13 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { publishProducts, rejectProducts, sendFlereTilGodkjenning, updateProduct } from "api/ProductApi";
+import {
+  deleteProducts,
+  publishProducts,
+  rejectProducts,
+  sendFlereTilGodkjenning,
+  updateProduct,
+} from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import { CogIcon, ExclamationmarkTriangleIcon, RocketIcon, TrashIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
@@ -122,6 +128,14 @@ const ProductPage = () => {
 
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || [])
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+  }
+
+  async function onDelete() {
+    deleteProducts(products?.map((product) => product.id) || [])
       .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error.status, error.message);
@@ -346,7 +360,7 @@ const ProductPage = () => {
                       </Dropdown.Menu.GroupedList>
                       <Dropdown.Menu.Divider />
                       <Dropdown.Menu.List>
-                        <Dropdown.Menu.List.Item onClick={() => {}}>
+                        <Dropdown.Menu.List.Item onClick={onDelete}>
                           <TrashIcon aria-hidden />
                           Slett
                         </Dropdown.Menu.List.Item>
