@@ -2,7 +2,20 @@ import { useState } from "react";
 
 import useSWR from "swr";
 
-import { Alert, BodyLong, Button, Heading, HGrid, Label, Loader, Modal, Tabs, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  BodyLong,
+  Button,
+  Dropdown,
+  Heading,
+  HGrid,
+  HStack,
+  Label,
+  Loader,
+  Modal,
+  Tabs,
+  VStack,
+} from "@navikt/ds-react";
 
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
@@ -15,9 +28,9 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { publishProducts, sendFlereTilGodkjenning, updateProduct } from "api/ProductApi";
+import { publishProducts, rejectProducts, sendFlereTilGodkjenning, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
-import { ExclamationmarkTriangleIcon, RocketIcon } from "@navikt/aksel-icons";
+import { CogIcon, ExclamationmarkTriangleIcon, RocketIcon, TrashIcon } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
 import VideosTab from "./VideosTab";
 
@@ -101,6 +114,14 @@ const ProductPage = () => {
 
   async function onSendTilGodkjenning() {
     sendFlereTilGodkjenning(products?.map((product) => product.id) || [])
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+  }
+
+  async function onRejectApproval() {
+    rejectProducts(products?.map((product) => product.id) || [])
       .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error.status, error.message);
@@ -308,7 +329,31 @@ const ProductPage = () => {
               product.adminStatus !== "APPROVED" &&
               product.registrationStatus !== "INACTIVE" &&
               product.registrationStatus !== "DELETED" && (
-                <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
+                <HStack align={"end"} gap="2">
+                  <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
+                  <Dropdown>
+                    <Button
+                      variant="secondary"
+                      icon={<CogIcon title="Avslå eller slett" />}
+                      as={Dropdown.Toggle}
+                    ></Button>
+                    <Dropdown.Menu>
+                      <Dropdown.Menu.GroupedList>
+                        <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
+                          <ExclamationmarkTriangleIcon aria-hidden />
+                          Avslå
+                        </Dropdown.Menu.GroupedList.Item>
+                      </Dropdown.Menu.GroupedList>
+                      <Dropdown.Menu.Divider />
+                      <Dropdown.Menu.List>
+                        <Dropdown.Menu.List.Item onClick={() => {}}>
+                          <TrashIcon aria-hidden />
+                          Slett
+                        </Dropdown.Menu.List.Item>
+                      </Dropdown.Menu.List>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </HStack>
               )
             ) : (
               <PublishButton

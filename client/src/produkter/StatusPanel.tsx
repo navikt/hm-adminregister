@@ -11,6 +11,7 @@ interface Props {
 const StatusPanel = ({ product, isAdmin }: Props) => {
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
+  const isRejected = product.adminStatus === "REJECTED";
   const isDeleted = product.registrationStatus === "DELETED";
   const isInactive = product.registrationStatus === "INACTIVE";
   const sendtTilGodkjenning = !isDraft && isPending;
@@ -22,7 +23,13 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
         Status
       </Heading>
 
-      <StatusTag isPending={isPending} isDraft={isDraft} isDeleted={isDeleted} isInactive={isInactive} />
+      <StatusTag
+        isPending={isPending}
+        isDraft={isDraft}
+        isDeleted={isDeleted}
+        isInactive={isInactive}
+        isRejected={isRejected}
+      />
 
       {!isAdmin && product.message && (
         <Box>
