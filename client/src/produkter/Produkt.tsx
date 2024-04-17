@@ -208,7 +208,6 @@ const ProductPage = () => {
           <ul className="product-error-text">
             {!product.productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
-            {numberOfDocuments() === 0 && <li>Produktet mangler dokumenter</li>}
             {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
           </ul>
         </Modal.Body>

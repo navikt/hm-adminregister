@@ -119,11 +119,7 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
                   ))}
                 </ol>
               )}
-              {sortedPdfs.length === 0 && (
-                <Alert variant={showInputError ? "error" : "info"}>
-                  Produktet trenger dokumenter før det kan sendes til godkjenning
-                </Alert>
-              )}
+              {sortedPdfs.length === 0 && <Alert variant={"info"}>Produktet har ingen dokumenter.</Alert>}
             </>
           )}
           {isEditable && (
