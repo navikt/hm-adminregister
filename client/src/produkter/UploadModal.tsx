@@ -145,7 +145,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     <Modal
       open={modalIsOpen}
       header={{
-        heading: "Legg til bilder",
+        heading: fileType === "images" ? "Legg til bilder" : "Legg til dokumenter",
         closeButton: true,
       }}
       onClose={() => setModalIsOpen(false)}
