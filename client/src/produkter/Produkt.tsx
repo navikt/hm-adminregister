@@ -179,7 +179,6 @@ const ProductPage = () => {
     return !(
       !product.productData.attributes.text ||
       numberOfImages() === 0 ||
-      numberOfDocuments() === 0 ||
       numberOfVariants() === 0
     );
   };
@@ -300,7 +299,7 @@ const ProductPage = () => {
                 />
                 <Tabs.Tab
                   value="documents"
-                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} showAlert={true} />}
+                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} showAlert={false} />}
                 />
                 <Tabs.Tab
                   value="videos"
