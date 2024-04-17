@@ -16,6 +16,7 @@ export const updateProduct = async (
 ): Promise<ProductRegistrationDTO> => {
   const productToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${productId}`), "GET");
 
+  const title = commonInfoProduct.title ? commonInfoProduct.title : productToUpdate.title;
   const isoCode = commonInfoProduct.isoCode ? commonInfoProduct.isoCode : productToUpdate.isoCategory;
   const description = commonInfoProduct.description
     ? commonInfoProduct.description
@@ -23,7 +24,7 @@ export const updateProduct = async (
       ? productToUpdate.productData.attributes.text
       : "";
 
-  const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description);
+  const editedProductDTO = getEditedProductDTO(productToUpdate, isoCode, description, title);
 
   return await fetchAPI(
     getPath(isAdmin, `/api/v1/product/registrations/${productToUpdate.id}`),
@@ -49,9 +50,11 @@ const getEditedProductDTO = (
   productToEdit: ProductRegistrationDTO,
   newIsoCategory: string,
   newDescription: string,
+  newTitle: string,
 ): ProductRegistrationDTO => {
   return {
     ...productToEdit,
+    title: newTitle,
     isoCategory: newIsoCategory,
     productData: {
       ...productToEdit.productData,

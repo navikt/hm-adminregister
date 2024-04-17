@@ -14,6 +14,7 @@ import {
   Loader,
   Modal,
   Tabs,
+  TextField,
   VStack,
 } from "@navikt/ds-react";
 
@@ -36,11 +37,19 @@ import {
   updateProduct,
 } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
-import { CogIcon, ExclamationmarkTriangleIcon, RocketIcon, TrashIcon } from "@navikt/aksel-icons";
+import {
+  CogIcon,
+  ExclamationmarkTriangleIcon,
+  FloppydiskIcon,
+  PencilWritingIcon,
+  RocketIcon,
+  TrashIcon,
+} from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
 import VideosTab from "./VideosTab";
 
 export type EditCommonInfoProduct = {
+  title: string;
   description: string;
   isoCode: string;
 };
@@ -51,6 +60,13 @@ const ProductPage = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
+
+  const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
+
+  const handleSaveDescription = () => {
+    setShowEditProductTitleMode(false);
+    formMethods.handleSubmit(onSubmit)();
+  };
 
   const { seriesId } = useParams();
 
@@ -176,11 +192,7 @@ const ProductPage = () => {
   };
 
   const productIsValid = () => {
-    return !(
-      !product.productData.attributes.text ||
-      numberOfImages() === 0 ||
-      numberOfVariants() === 0
-    );
+    return !(!product.productData.attributes.text || numberOfImages() === 0 || numberOfVariants() === 0);
   };
 
   const isDraft = product.draftStatus === "DRAFT";
@@ -276,9 +288,43 @@ const ProductPage = () => {
           <VStack gap={{ xs: "4", md: "8" }}>
             <VStack gap="1">
               <Label>Produktnavn</Label>
-              <Heading level="1" size="xlarge">
-                {product.title ?? product.title}
-              </Heading>
+
+              <HStack gap="1">
+                {!showEditProductTitleMode && (
+                  <Heading level="1" size="xlarge">
+                    {product.title ?? product.title}
+                  </Heading>
+                )}
+
+                {showEditProductTitleMode && (
+                  <>
+                    <TextField
+                      defaultValue={product.title ?? (product.title || "")}
+                      label={""}
+                      id="title"
+                      name="title"
+                      onChange={(event) => formMethods.setValue("title", event.currentTarget.value)}
+                    />
+                    <Button
+                      className="fit-content"
+                      variant="tertiary"
+                      icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
+                      onClick={handleSaveDescription}
+                    >
+                      Lagre
+                    </Button>
+                  </>
+                )}
+
+                {isEditable && !showEditProductTitleMode && (
+                  <Button
+                    className="fit-content"
+                    variant="tertiary"
+                    icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
+                    onClick={() => setShowEditProductTitleMode(true)}
+                  ></Button>
+                )}
+              </HStack>
             </VStack>
             <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
               <Tabs.List>
