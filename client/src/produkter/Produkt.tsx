@@ -307,7 +307,7 @@ const ProductPage = () => {
                     <Button
                       className="fit-content"
                       variant="tertiary"
-                      icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
+                      icon={<FloppydiskIcon title="Lagre tittel" fontSize="1.5rem" />}
                       onClick={handleSaveDescription}
                     >
                       Lagre
