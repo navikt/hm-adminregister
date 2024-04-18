@@ -41,8 +41,6 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
 
       {publisert && product.published && <StatusBox title="Publisert" date={product.published} />}
 
-      {publisert && product.published && <StatusBox title="Endringer publisert" date={product.published} />}
-
       <StatusBox title="Endret" date={product.updated} />
 
       <Box>
