@@ -32,13 +32,11 @@ export const TilGodkjenning = () => {
   };
 
   const handleAgreementFilter = (value: string) => {
-    console.log(value);
     if (searchTerm.length > 0 && filteredData) {
       const filteredProducts = filteredData.filter((product) => product.agreementId === value);
       setFilteredData(filteredProducts);
     } else {
       const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
-      console.log("filteredProducts", filteredProducts);
       setFilteredData(filteredProducts);
       if (value.length == 0) {
         setFilteredData(undefined);

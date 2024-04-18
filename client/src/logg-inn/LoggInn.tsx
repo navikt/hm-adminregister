@@ -83,7 +83,6 @@ export default function LoggInn() {
             }
           } else {
             if (loggedInUser.isAdmin) {
-              console.log("admin -> navigate to /admin/profil");
               navigate("/admin/profil");
             } else {
               navigate("/produkter");

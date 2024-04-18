@@ -12,7 +12,15 @@ import { HM_REGISTER_URL } from "environments";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import ReactPlayer from "react-player";
 
-const VideoTab = ({ products, mutateProducts, isEditable }: { products: ProductRegistrationDTO[]; mutateProducts: () => void; isEditable: boolean }) => {
+const VideoTab = ({
+  products,
+  mutateProducts,
+  isEditable,
+}: {
+  products: ProductRegistrationDTO[];
+  mutateProducts: () => void;
+  isEditable: boolean;
+}) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { videos } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useErrorStore();
@@ -108,7 +116,6 @@ const VideoTab = ({ products, mutateProducts, isEditable }: { products: ProductR
     setErrorMessage("");
     const parsedUrl = parseUrl(url);
     if (parsedUrl) {
-      console.log("hei");
       const isValidDomain = validateDomain(new URL(parsedUrl));
       if (isValidDomain) {
         handleSaveVideoLink();

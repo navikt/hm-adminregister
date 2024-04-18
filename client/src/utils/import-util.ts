@@ -20,7 +20,6 @@ export const generateImportData = (productAgreements: ProductAgreementRegistrati
   let numberOfProductAgreementsWithoutProductId = 0;
 
   Object.entries(groupedBySeries).forEach(([key, variants]) => {
-    console.log("key", key);
     if (key === "undefined" || !key) {
       productAgreementsWithNoSeries = productAgreementsWithNoSeries.concat(variants);
     } else if (variants.length > 0) {

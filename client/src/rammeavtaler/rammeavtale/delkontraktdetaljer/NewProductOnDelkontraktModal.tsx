@@ -1,5 +1,5 @@
 import { Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
@@ -88,9 +88,7 @@ const NewProductOnDelkontraktModal = ({
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {
-        console.log(e);
-      }}
+      onCancel={(e) => {}}
       header={{
         heading: "Legg til produkt",
         closeButton: false,
@@ -115,7 +113,6 @@ const NewProductOnDelkontraktModal = ({
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    console.log("Enter pushed");
                     onClickGetProduct({ hmsNummer: e.currentTarget.value });
                   }
                 }}
