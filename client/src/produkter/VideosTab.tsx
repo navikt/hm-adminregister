@@ -142,6 +142,16 @@ const VideoTab = ({
           </Alert>
         )}
 
+        <Alert variant="warning">
+          Sørg for at videoen som lenkes til er tekstet, har synstolking og at kravene til universell utforming følges.
+          De som ikke kan høre lyd skal for eksempel få presentert lydinnholdet på en alternativ måte. Dette er
+          lovpålagt.
+          <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743">
+            Ytterligere informasjon om teksting av videoer finnes på nettsidene til Tilsynet for universell utforming av
+            ikt
+          </Link>
+        </Alert>
+
         {videos.length > 0 && (
           <HStack as="ol" className="videos" gap="4">
             {videos.map((video, i) => (
