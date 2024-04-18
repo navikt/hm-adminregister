@@ -86,7 +86,7 @@ export default function LoggInn() {
               console.log("admin -> navigate to /admin/profil");
               navigate("/admin/profil");
             } else {
-              navigate("/profil");
+              navigate("/produkter");
             }
           }
         } else {
