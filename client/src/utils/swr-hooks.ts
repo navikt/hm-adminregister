@@ -66,7 +66,7 @@ export function useProducts() {
   const { loggedInUser } = useAuthStore();
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED&page=1&size=20000`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=INACTIVE&page=1&size=20000`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
@@ -83,14 +83,24 @@ export function useProducts() {
   };
 }
 
-export function usePagedProducts({ page, pageSize }: { page: number; pageSize: number }) {
+export function usePagedProducts({
+  page,
+  pageSize,
+  statusFilters,
+}: {
+  page: number;
+  pageSize: number;
+  statusFilters: string[];
+}) {
   const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
+  const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
+
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 

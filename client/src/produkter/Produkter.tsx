@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import {
   Alert,
   Button,
+  Checkbox,
+  CheckboxGroup,
   Dropdown,
   Heading,
   HStack,
@@ -24,7 +26,8 @@ const Produkter = () => {
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
   const { loggedInUser } = useAuthStore();
-  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize });
+  const [statusFilters, setStatusFilters] = useState([""]);
+  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize, statusFilters });
   const { data: allData, isLoading: allDataIsLoading } = useProducts();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
@@ -130,6 +133,12 @@ const Produkter = () => {
             )}
           </HStack>
         </div>
+        <Avstand marginBottom={4} />
+        <HStack gap="4">
+          <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
+            <Checkbox value="includeInactive">Vis utgåtte</Checkbox>
+          </CheckboxGroup>
+        </HStack>
         <Avstand marginBottom={4} />
         <VStack className="products-page__products">
           <div className="page__content-container">
