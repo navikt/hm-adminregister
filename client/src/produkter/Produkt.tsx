@@ -57,7 +57,8 @@ export type EditCommonInfoProduct = {
 const ProductPage = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [godkjenningModalIsOpen, setGodkjenningModalIsOpen] = useState(false);
+  const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
@@ -168,7 +169,7 @@ const ProductPage = () => {
           setGlobalError(error.status, error.message);
         });
     } else {
-      setModalIsOpen(true);
+      setGodkjenningModalIsOpen(true);
     }
   }
 
@@ -201,7 +202,11 @@ const ProductPage = () => {
 
   const InvalidProductModal = () => {
     return (
-      <Modal open={modalIsOpen} header={{ heading: "Produktet mangler data" }} onClose={() => setModalIsOpen(false)}>
+      <Modal
+        open={godkjenningModalIsOpen}
+        header={{ heading: "Produktet mangler data" }}
+        onClose={() => setGodkjenningModalIsOpen(false)}
+      >
         <Modal.Body>
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
@@ -212,7 +217,7 @@ const ProductPage = () => {
           </ul>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+          <Button variant="secondary" onClick={() => setGodkjenningModalIsOpen(false)}>
             Lukk
           </Button>
         </Modal.Footer>
@@ -223,9 +228,9 @@ const ProductPage = () => {
   const GodkjenningModal = () => {
     return isValid ? (
       <Modal
-        open={modalIsOpen}
+        open={godkjenningModalIsOpen}
         header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
-        onClose={() => setModalIsOpen(false)}
+        onClose={() => setGodkjenningModalIsOpen(false)}
       >
         <Modal.Body>
           <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
@@ -241,18 +246,41 @@ const ProductPage = () => {
         <Modal.Footer>
           <Button
             onClick={() => {
-              onSendTilGodkjenning().then(() => setModalIsOpen(false));
+              onSendTilGodkjenning().then(() => setGodkjenningModalIsOpen(false));
             }}
           >
             Send til godkjenning
           </Button>
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)}>
+          <Button variant="secondary" onClick={() => setGodkjenningModalIsOpen(false)}>
             Avbryt
           </Button>
         </Modal.Footer>
       </Modal>
     ) : (
       <InvalidProductModal />
+    );
+  };
+
+  const DeleteConfirmationModal = () => {
+    return (
+      <Modal
+        open={deleteConfirmationModalIsOpen}
+        header={{ heading: "Er du sikker på du vil slette produktet?" }}
+        onClose={() => setDeleteConfirmationModalIsOpen(false)}
+      >
+        <Modal.Footer>
+          <Button
+            onClick={() => {
+              onDelete().then(() => setDeleteConfirmationModalIsOpen(false));
+            }}
+          >
+            Slett
+          </Button>
+          <Button variant="secondary" onClick={() => setDeleteConfirmationModalIsOpen(false)}>
+            Avbryt
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   };
 
@@ -283,6 +311,7 @@ const ProductPage = () => {
     <main className="show-menu">
       <FormProvider {...formMethods}>
         <GodkjenningModal />
+        <DeleteConfirmationModal />
         <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
           <VStack gap={{ xs: "4", md: "8" }}>
             <VStack gap="1">
@@ -398,17 +427,17 @@ const ProductPage = () => {
                     <Dropdown.Menu>
                       {isPending && (
                         <>
-                        <Dropdown.Menu.GroupedList>
-                          <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
-                            <ExclamationmarkTriangleIcon aria-hidden />
-                            Avslå
-                          </Dropdown.Menu.GroupedList.Item>
-                        </Dropdown.Menu.GroupedList>
-                        <Dropdown.Menu.Divider />
+                          <Dropdown.Menu.GroupedList>
+                            <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
+                              <ExclamationmarkTriangleIcon aria-hidden />
+                              Avslå
+                            </Dropdown.Menu.GroupedList.Item>
+                          </Dropdown.Menu.GroupedList>
+                          <Dropdown.Menu.Divider />
                         </>
                       )}
                       <Dropdown.Menu.List>
-                        <Dropdown.Menu.List.Item onClick={onDelete}>
+                        <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                           <TrashIcon aria-hidden />
                           Slett
                         </Dropdown.Menu.List.Item>
@@ -424,7 +453,7 @@ const ProductPage = () => {
                 isDraft={isDraft}
                 onClick={() => {
                   setIsValid(productIsValid());
-                  setModalIsOpen(true);
+                  setGodkjenningModalIsOpen(true);
                 }}
               />
             )}
