@@ -396,13 +396,17 @@ const ProductPage = () => {
                       as={Dropdown.Toggle}
                     ></Button>
                     <Dropdown.Menu>
-                      <Dropdown.Menu.GroupedList>
-                        <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
-                          <ExclamationmarkTriangleIcon aria-hidden />
-                          Avslå
-                        </Dropdown.Menu.GroupedList.Item>
-                      </Dropdown.Menu.GroupedList>
-                      <Dropdown.Menu.Divider />
+                      {isPending && (
+                        <>
+                        <Dropdown.Menu.GroupedList>
+                          <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
+                            <ExclamationmarkTriangleIcon aria-hidden />
+                            Avslå
+                          </Dropdown.Menu.GroupedList.Item>
+                        </Dropdown.Menu.GroupedList>
+                        <Dropdown.Menu.Divider />
+                        </>
+                      )}
                       <Dropdown.Menu.List>
                         <Dropdown.Menu.List.Item onClick={onDelete}>
                           <TrashIcon aria-hidden />
