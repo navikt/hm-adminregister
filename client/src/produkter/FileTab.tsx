@@ -96,7 +96,7 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
               )}
               {sortedImages.length === 0 && (
                 <Alert variant={showInputError ? "error" : "info"}>
-                  Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre eller brukermanual.
+                  Produktet har ingen bilder.
                 </Alert>
               )}
             </>
