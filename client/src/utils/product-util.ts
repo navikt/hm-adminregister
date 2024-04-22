@@ -8,7 +8,7 @@ import {
 } from "./types/response-types";
 import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
-import { DocumentType } from "produkter/DocumentsTab";
+import { DocumentType } from "produkter/tabs/DocumentsTab";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],

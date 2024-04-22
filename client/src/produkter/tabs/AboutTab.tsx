@@ -2,7 +2,7 @@ import { Alert, Button, Heading, Tabs, Textarea, VStack } from "@navikt/ds-react
 import { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { EditCommonInfoProduct } from "./Produkt";
+import { EditCommonInfoProduct } from "../Produkt";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 

@@ -20,8 +20,8 @@ import {
 
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
-import AboutTab from "./AboutTab";
-import VariantsTab from "./VariantsTab";
+import AboutTab from "./tabs/AboutTab";
+import VariantsTab from "./tabs/VariantsTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -45,9 +45,9 @@ import {
   TrashIcon,
 } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
-import VideosTab from "./VideosTab";
-import ImageTab from "./ImagesTab";
-import DocumentTab from "./DocumentsTab";
+import VideosTab from "./tabs/VideosTab";
+import ImageTab from "./tabs/ImagesTab";
+import DocumentTab from "./tabs/DocumentsTab";
 
 export type EditCommonInfoProduct = {
   title: string;
