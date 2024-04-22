@@ -8,7 +8,7 @@ import { isUUID, labelRequired } from "utils/string-util";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { productVariantSchema } from "utils/zodSchema/newProduct";
 import { z } from "zod";
-import styles from "./ProductVariantForm.module.scss";
+import styles from "../ProductVariantForm.module.scss";
 
 type FormData = z.infer<typeof productVariantSchema>;
 
