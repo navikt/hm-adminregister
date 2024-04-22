@@ -22,7 +22,6 @@ import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
 import AboutTab from "./AboutTab";
 import VariantsTab from "./VariantsTab";
-import FileTab from "./FileTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -47,6 +46,8 @@ import {
 } from "@navikt/aksel-icons";
 import { isUUID } from "utils/string-util";
 import VideosTab from "./VideosTab";
+import ImageTab from "./ImagesTab";
+import DocumentTab from "./DocumentsTab";
 
 export type EditCommonInfoProduct = {
   title: string;
@@ -364,17 +365,15 @@ const ProductPage = () => {
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <FileTab
+              <ImageTab
                 products={products}
                 mutateProducts={mutateProducts}
-                fileType="images"
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <FileTab
+              <DocumentTab
                 products={products}
                 mutateProducts={mutateProducts}
-                fileType="documents"
                 isEditable={isEditable}
                 showInputError={!isValid}
               />

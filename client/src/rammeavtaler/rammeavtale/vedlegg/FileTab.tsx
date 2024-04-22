@@ -1,5 +1,5 @@
-import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
+import { Alert, Button, VStack } from "@navikt/ds-react";
+import { useState } from "react";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { AttachmentGroup } from "./AttachmentGroup";
 import { AgreementRegistrationDTO } from "utils/types/response-types";

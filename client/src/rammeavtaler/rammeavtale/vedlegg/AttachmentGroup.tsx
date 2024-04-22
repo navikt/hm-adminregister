@@ -1,6 +1,6 @@
 import { Button, Dropdown, ExpansionCard, HStack } from "@navikt/ds-react";
 import { FilePdfIcon, MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import UploadModal from "./UploadModal";
 import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
 import { AgreementAttachment } from "utils/types/response-types";
@@ -81,7 +81,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
               <li key={pdf.uri}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                   <FilePdfIcon fontSize="2rem" />
-                  <a href={pdf.sourceUri} target="_blank" className="document-type">
+                  <a href={pdf.sourceUri} target="_blank" rel="noreferrer">
                     {pdf.text || pdf.uri.split("/").pop()}
                   </a>
                 </HStack>

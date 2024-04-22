@@ -8,6 +8,7 @@ import {
 } from "./types/response-types";
 import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
+import { DocumentType } from "produkter/DocumentsTab";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],
@@ -76,14 +77,19 @@ export const getEditedProductDTORemoveMedia = (
   };
 };
 
-export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
+export const mapToMediaInfo = (mediaDTO: MediaDTO[], documentType?: DocumentType): MediaInfo[] => {
   return mediaDTO.map((media, i) => ({
     sourceUri: media.sourceUri,
     uri: media.uri,
-    //La brukeren sette prioritet selv senere
-    //Legge til text også når brukeren kan skrive inn bildebeskrivelse
-    text: media.filename,
+    //Text-feltet brukes foreløpig til tittelen vi ønsker å vise i GUI. Bør lage et eget felt for alt-text på bilder
+    text:
+      media.type === "IMAGE" || (media.type === "PDF" && documentType === "other")
+        ? media.filename
+        : documentType === "brochure"
+          ? "Brosjyre"
+          : "Bruksanvisning",
     filename: media.filename,
+    //La brukeren sette prioritet selv senere
     priority: i + 1,
     type: media.type,
     source: media.source,

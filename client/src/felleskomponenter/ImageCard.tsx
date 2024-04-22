@@ -1,4 +1,4 @@
-import { Label, VStack } from "@navikt/ds-react";
+import { BodyShort, Label, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import classNames from "classnames";
 import { MoreMenu } from "./MoreMenu";
@@ -15,9 +15,10 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }
   return (
     <li className="image-card">
       <VStack gap="2">
-        <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} />
+        <ImageContainer uri={mediaInfo.uri} text={mediaInfo.filename} />
         <VStack gap="1" align="center">
-          <Label>Tittel</Label> <span>{mediaInfo.text ?? "OBS mangler beskrivelse"}</span>
+          <Label>Tittel</Label>
+          <BodyShort className="text-overflow-hidden">{mediaInfo.filename}</BodyShort>
         </VStack>
       </VStack>
       {showMenuButton && (
