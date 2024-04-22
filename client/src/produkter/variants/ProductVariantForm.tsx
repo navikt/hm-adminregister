@@ -132,7 +132,7 @@ const ProductVariantForm = ({
           <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2" wrap={false}>
             <TextField
               {...register(`techData.${index}.value`, { required: false })}
-              label={labelRequired(`${key.key}`)}
+              label={`${key.key}`}
               id={`techData.${index}.value`}
               name={`techData.${index}.value`}
               type="text"
