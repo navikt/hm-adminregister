@@ -198,6 +198,7 @@ const ProductPage = () => {
 
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
+  const isActive = product.registrationStatus === "ACTIVE";
   const isEditable = product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false);
 
   const InvalidProductModal = () => {
@@ -412,50 +413,49 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
-            {loggedInUser?.isAdmin ? (
-              product.adminStatus !== "APPROVED" &&
-              product.registrationStatus !== "INACTIVE" &&
-              product.registrationStatus !== "DELETED" && (
-                <HStack align={"end"} gap="2">
-                  <PublishButton isAdmin={true} isPending={isPending} isDraft={isDraft} onClick={onPublish} />
-                  <Dropdown>
-                    <Button
-                      variant="secondary"
-                      icon={<CogIcon title="Avslå eller slett" />}
-                      as={Dropdown.Toggle}
-                    ></Button>
-                    <Dropdown.Menu>
-                      {isPending && (
-                        <>
-                          <Dropdown.Menu.GroupedList>
-                            <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
-                              <ExclamationmarkTriangleIcon aria-hidden />
-                              Avslå
-                            </Dropdown.Menu.GroupedList.Item>
-                          </Dropdown.Menu.GroupedList>
-                          <Dropdown.Menu.Divider />
-                        </>
-                      )}
-                      <Dropdown.Menu.List>
-                        <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                          <TrashIcon aria-hidden />
-                          Slett
-                        </Dropdown.Menu.List.Item>
-                      </Dropdown.Menu.List>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </HStack>
-              )
-            ) : (
-              <PublishButton
-                isAdmin={false}
-                isPending={isPending}
-                isDraft={isDraft}
+            {loggedInUser?.isAdmin && product.adminStatus !== "APPROVED" && isActive && (
+              <HStack align={"end"} gap="2">
+                <Button style={{ marginTop: "20px" }} onClick={onPublish}>
+                  Publiser
+                </Button>
+                <Dropdown>
+                  <Button
+                    variant="secondary"
+                    icon={<CogIcon title="Avslå eller slett" />}
+                    as={Dropdown.Toggle}
+                  ></Button>
+                  <Dropdown.Menu>
+                    {isPending && (
+                      <>
+                        <Dropdown.Menu.GroupedList>
+                          <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
+                            <ExclamationmarkTriangleIcon aria-hidden />
+                            Avslå
+                          </Dropdown.Menu.GroupedList.Item>
+                        </Dropdown.Menu.GroupedList>
+                        <Dropdown.Menu.Divider />
+                      </>
+                    )}
+                    <Dropdown.Menu.List>
+                      <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                        <TrashIcon aria-hidden />
+                        Slett
+                      </Dropdown.Menu.List.Item>
+                    </Dropdown.Menu.List>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </HStack>
+            )}
+            {!loggedInUser?.isAdmin && isDraft && isActive && (
+              <Button
+                style={{ marginTop: "20px" }}
                 onClick={() => {
                   setIsValid(productIsValid());
                   setGodkjenningModalIsOpen(true);
                 }}
-              />
+              >
+                Send til godkjenning
+              </Button>
             )}
             <StatusPanel product={product} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>
@@ -465,37 +465,3 @@ const ProductPage = () => {
   );
 };
 export default ProductPage;
-
-const PublishButton = ({
-  isAdmin,
-  isPending,
-  isDraft,
-  onClick,
-}: {
-  isAdmin: boolean;
-  isPending: boolean;
-  isDraft: boolean;
-  onClick: () => void;
-}) => {
-  if (isAdmin) {
-    return (
-      <Button style={{ marginTop: "20px" }} onClick={onClick}>
-        Publiser
-      </Button>
-    );
-  } else if (isDraft) {
-    return (
-      <Button style={{ marginTop: "20px" }} onClick={onClick}>
-        Send til godkjenning
-      </Button>
-    );
-  } else if (isPending) {
-    return (
-      <Button style={{ marginTop: "20px" }} disabled={true}>
-        Send til godkjenning
-      </Button>
-    );
-  } else {
-    return <></>;
-  }
-};
