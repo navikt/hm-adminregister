@@ -199,7 +199,7 @@ const ProductPage = () => {
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
   const isActive = product.registrationStatus === "ACTIVE";
-  const isEditable = product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false);
+  const isEditable = (product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
 
   const InvalidProductModal = () => {
     return (
