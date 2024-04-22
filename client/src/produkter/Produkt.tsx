@@ -4,7 +4,6 @@ import useSWR from "swr";
 
 import {
   Alert,
-  BodyLong,
   Button,
   Dropdown,
   Heading,
@@ -29,24 +28,18 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import {
-  deleteProducts,
-  publishProducts,
-  rejectProducts,
-  sendFlereTilGodkjenning,
-  updateProduct,
-} from "api/ProductApi";
+import { deleteProducts, publishProducts, rejectProducts, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import {
   CogIcon,
   ExclamationmarkTriangleIcon,
   FloppydiskIcon,
   PencilWritingIcon,
-  RocketIcon,
   TrashIcon,
 } from "@navikt/aksel-icons";
-import { isUUID } from "utils/string-util";
 import VideosTab from "./VideosTab";
+import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } from "produkter/productUtils";
+import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 
 export type EditCommonInfoProduct = {
   title: string;
@@ -57,7 +50,7 @@ export type EditCommonInfoProduct = {
 const ProductPage = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
-  const [godkjenningModalIsOpen, setGodkjenningModalIsOpen] = useState(false);
+  const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
@@ -135,14 +128,6 @@ const ProductPage = () => {
       });
   }
 
-  async function onSendTilGodkjenning() {
-    sendFlereTilGodkjenning(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
-
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || [])
       .then(() => mutateProducts())
@@ -169,98 +154,22 @@ const ProductPage = () => {
           setGlobalError(error.status, error.message);
         });
     } else {
-      setGodkjenningModalIsOpen(true);
+      setApprovalModalIsOpen(true);
     }
   }
 
-  const numberOfImages = () => {
-    return product.productData.media.filter((media) => media.type == "IMAGE").length;
-  };
-
-  const numberOfDocuments = () => {
-    return product.productData.media.filter((media) => media.type == "PDF").length;
-  };
-
-  const numberOfVideos = () => {
-    return product.productData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
-  };
-
-  const numberOfVariants = () => {
-    if (isUUID(product.supplierRef)) {
-      return 0;
-    }
-    return products.length;
-  };
-
   const productIsValid = () => {
-    return !(!product.productData.attributes.text || numberOfImages() === 0 || numberOfVariants() === 0);
+    return !(
+      !product.productData.attributes.text ||
+      numberOfImages(products) === 0 ||
+      numberOfVariants(products) === 0
+    );
   };
 
   const isDraft = product.draftStatus === "DRAFT";
   const isPending = product.adminStatus === "PENDING";
   const isActive = product.registrationStatus === "ACTIVE";
   const isEditable = (product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
-
-  const InvalidProductModal = () => {
-    return (
-      <Modal
-        open={godkjenningModalIsOpen}
-        header={{ heading: "Produktet mangler data" }}
-        onClose={() => setGodkjenningModalIsOpen(false)}
-      >
-        <Modal.Body>
-          <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
-          <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
-          <ul className="product-error-text">
-            {!product.productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {numberOfImages() === 0 && <li>Produktet mangler bilder</li>}
-            {!numberOfVariants() && <li>Produktet mangler teknisk data</li>}
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setGodkjenningModalIsOpen(false)}>
-            Lukk
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  };
-
-  const GodkjenningModal = () => {
-    return isValid ? (
-      <Modal
-        open={godkjenningModalIsOpen}
-        header={{ icon: <RocketIcon aria-hidden />, heading: "Klar for godkjenning?" }}
-        onClose={() => setGodkjenningModalIsOpen(false)}
-      >
-        <Modal.Body>
-          <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
-          <ul>
-            <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
-            <li>tekniske data er korrekte.</li>
-            <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
-          </ul>
-          <BodyLong>
-            <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.
-          </BodyLong>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            onClick={() => {
-              onSendTilGodkjenning().then(() => setGodkjenningModalIsOpen(false));
-            }}
-          >
-            Send til godkjenning
-          </Button>
-          <Button variant="secondary" onClick={() => setGodkjenningModalIsOpen(false)}>
-            Avbryt
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    ) : (
-      <InvalidProductModal />
-    );
-  };
 
   const DeleteConfirmationModal = () => {
     return (
@@ -291,18 +200,18 @@ const ProductPage = () => {
     showAlert,
   }: {
     title: string;
-    numberOfElementsFn: () => number;
+    numberOfElementsFn: (products: ProductRegistrationDTO[]) => number;
     showAlert: boolean;
   }) => {
     return (
       <>
         {title}
-        {numberOfElementsFn() === 0 && !isValid && showAlert ? (
+        {numberOfElementsFn(products) === 0 && !isValid && showAlert ? (
           <span className="product-error-text product-tab-tabel">
-            ({numberOfElementsFn()})<ExclamationmarkTriangleIcon />
+            ({numberOfElementsFn(products)})<ExclamationmarkTriangleIcon />
           </span>
         ) : (
-          <span>({numberOfElementsFn()})</span>
+          <span>({numberOfElementsFn(products)})</span>
         )}
       </>
     );
@@ -311,7 +220,13 @@ const ProductPage = () => {
   return (
     <main className="show-menu">
       <FormProvider {...formMethods}>
-        <GodkjenningModal />
+        <RequestApprovalModal
+          products={products}
+          mutateProducts={mutateProducts}
+          isValid={isValid}
+          isOpen={approvalModalIsOpen}
+          setIsOpen={setApprovalModalIsOpen}
+        />
         <DeleteConfirmationModal />
         <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
           <VStack gap={{ xs: "4", md: "8" }}>
@@ -451,7 +366,7 @@ const ProductPage = () => {
                 style={{ marginTop: "20px" }}
                 onClick={() => {
                   setIsValid(productIsValid());
-                  setGodkjenningModalIsOpen(true);
+                  setApprovalModalIsOpen(true);
                 }}
               >
                 Send til godkjenning
