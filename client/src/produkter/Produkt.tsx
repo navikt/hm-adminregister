@@ -11,7 +11,6 @@ import {
   HStack,
   Label,
   Loader,
-  Modal,
   Tabs,
   TextField,
   VStack,
@@ -28,7 +27,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { deleteProducts, publishProducts, rejectProducts, updateProduct } from "api/ProductApi";
+import { publishProducts, rejectProducts, updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import {
   CogIcon,
@@ -40,6 +39,7 @@ import {
 import VideosTab from "./VideosTab";
 import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } from "produkter/productUtils";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
+import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 
 export type EditCommonInfoProduct = {
   title: string;
@@ -136,14 +136,6 @@ const ProductPage = () => {
       });
   }
 
-  async function onDelete() {
-    deleteProducts(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
-
   async function onPublish() {
     const validationResult = productIsValid();
     setIsValid(validationResult);
@@ -170,29 +162,6 @@ const ProductPage = () => {
   const isPending = product.adminStatus === "PENDING";
   const isActive = product.registrationStatus === "ACTIVE";
   const isEditable = (product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
-
-  const DeleteConfirmationModal = () => {
-    return (
-      <Modal
-        open={deleteConfirmationModalIsOpen}
-        header={{ heading: "Er du sikker på du vil slette produktet?" }}
-        onClose={() => setDeleteConfirmationModalIsOpen(false)}
-      >
-        <Modal.Footer>
-          <Button
-            onClick={() => {
-              onDelete().then(() => setDeleteConfirmationModalIsOpen(false));
-            }}
-          >
-            Slett
-          </Button>
-          <Button variant="secondary" onClick={() => setDeleteConfirmationModalIsOpen(false)}>
-            Avbryt
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  };
 
   const TabLabel = ({
     title,
@@ -227,7 +196,12 @@ const ProductPage = () => {
           isOpen={approvalModalIsOpen}
           setIsOpen={setApprovalModalIsOpen}
         />
-        <DeleteConfirmationModal />
+        <DeleteConfirmationModal
+          products={products}
+          mutateProducts={mutateProducts}
+          isOpen={deleteConfirmationModalIsOpen}
+          setIsOpen={setDeleteConfirmationModalIsOpen}
+        />
         <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
           <VStack gap={{ xs: "4", md: "8" }}>
             <VStack gap="1">
