@@ -26,7 +26,7 @@ const VariantsTab = ({
 
   const techValue = (product: ProductRegistrationDTO, key: string): string | undefined => {
     const data = product.productData.techData.find((data) => data.key === key);
-    if (data) {
+    if (data && data.value) {
       return toValueAndUnit(data.value, data.unit);
     }
     return undefined;
