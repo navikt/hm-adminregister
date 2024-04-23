@@ -1,7 +1,7 @@
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
 import { useState } from "react";
-import "./product-page.scss";
+import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/product-util";
