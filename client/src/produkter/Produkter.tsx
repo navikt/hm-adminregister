@@ -7,20 +7,22 @@ import {
   Dropdown,
   Heading,
   HStack,
-  LinkPanel,
   Loader,
   Pagination,
   Search,
+  Table,
   VStack,
 } from "@navikt/ds-react";
 import "./products.scss";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { usePagedProducts, useProducts } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { ProductTable } from "felleskomponenter/styledcomponents/ProductTable";
+import { StatusTagProductList } from "felleskomponenter/StatusTagProductList";
 
 const Produkter = () => {
   const [pageState, setPageState] = useState(1);
@@ -147,18 +149,39 @@ const Produkter = () => {
             ) : (
               <div className="panel-list__container">
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
-                {renderData &&
-                  renderData.length > 0 &&
-                  renderData.map((product, i) => (
-                    <LinkPanel as={Link} to={`/produkter/${product.id}`} className="panel-list__name-panel" key={i}>
-                      <LinkPanel.Title className="panel-list__title panel-list__width">
-                        {product.title || "Ukjent produktnavn"}
-                      </LinkPanel.Title>
-                      <LinkPanel.Description className="panel-list__description">
-                        Antall artikler: {product.count}
-                      </LinkPanel.Description>
-                    </LinkPanel>
-                  ))}
+                {renderData && renderData.length > 0 && !isLoading && (
+                  <ProductTable size="medium">
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
+                        <Table.HeaderCell scope="col">Status</Table.HeaderCell>
+                        <Table.HeaderCell scope="col">Antall artikler</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {renderData.map((product, i) => (
+                        <Table.Row
+                          key={i + product.id}
+                          onClick={() => {
+                            navigate(`/produkter/${product.id}`);
+                          }}
+                        >
+                          <Table.DataCell scope="row">
+                            <b>{product.title}</b>
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            <StatusTagProductList
+                              adminStatus={product.adminStatus}
+                              draftStatus={product.draftStatus}
+                              seriesStatus={product.status}
+                            />
+                          </Table.DataCell>
+                          <Table.DataCell>{product.count}</Table.DataCell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </ProductTable>
+                )}
               </div>
             )}
             {showPageNavigator === true && data && (
