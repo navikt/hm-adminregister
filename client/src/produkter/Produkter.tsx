@@ -29,7 +29,7 @@ const Produkter = () => {
   const [statusFilters, setStatusFilters] = useState([""]);
   const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize, statusFilters });
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const { data: allData, isLoading: allDataIsLoading } = useProducts(searchTerm);
+  const { data: allData, isLoading: allDataIsLoading } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
@@ -37,21 +37,12 @@ const Produkter = () => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-
-    // const filteredProducts = allData?.content.filter((product) =>
-    //   product.title.toLowerCase().includes(value.toLowerCase()),
-    // );
-    //
     if (value.length == 0) {
       setFilteredData(undefined);
     }
-    // else {
-    //   setFilteredData(filteredProducts);
-    // }
   };
 
   useEffect(() => {
-    console.log("alldataChanged", allData?.content.length);
     if (allData && allData.content) {
       setFilteredData(allData.content);
     }

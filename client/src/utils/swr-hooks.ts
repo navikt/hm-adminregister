@@ -60,16 +60,18 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     return res.json();
   });
 
-export function useProducts(titleSearchTerm?: string) {
+export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTerm: string; statusFilters: string[] }) {
   const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
+  const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
+
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED${titleSearchParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?excludedStatus=DELETED${titleSearchParam}`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED${titleSearchParam}&status=${status}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?excludedStatus=DELETED${titleSearchParam}&status=${status}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(
     loggedInUser && titleSearchTerm && titleSearchParam !== "" ? path : null,
