@@ -60,16 +60,24 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     return res.json();
   });
 
-export function useProducts() {
+export function useProducts(titleSearchTerm?: string) {
   const { setGlobalError } = useErrorStore();
 
   const { loggedInUser } = useAuthStore();
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=INACTIVE&page=1&size=20000`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series`;
+  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+  const path = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED${titleSearchParam}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?excludedStatus=DELETED${titleSearchParam}`;
+
+  const { data, error, isLoading } = useSWR<SeriesChunk>(
+    loggedInUser && titleSearchTerm && titleSearchParam !== "" ? path : null,
+    fetcherGET,
+  );
+
+  console.log(titleSearchParam);
+  console.log(data?.content.length);
 
   if (error) {
     setGlobalError(error.status, error.message);
@@ -99,8 +107,8 @@ export function usePagedProducts({
   const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 
