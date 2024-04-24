@@ -8,7 +8,7 @@ import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
-import { HM_REGISTER_URL } from "environments";
+import { HM_REGISTER_URL, IMAGE_PROXY_URL } from "environments";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -95,9 +95,7 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
                 </ol>
               )}
               {sortedImages.length === 0 && (
-                <Alert variant={showInputError ? "error" : "info"}>
-                  Produktet har ingen bilder.
-                </Alert>
+                <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder.</Alert>
               )}
             </>
           ) : (
@@ -108,7 +106,12 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
                     <li className="document" key={pdf.uri}>
                       <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                         <FilePdfIcon fontSize="2rem" />
-                        <a href={pdf.sourceUri} target="_blank" className="document-type" rel="noreferrer">
+                        <a
+                          href={`${IMAGE_PROXY_URL}/file/${pdf.sourceUri}`}
+                          target="_blank"
+                          className="document-type"
+                          rel="noreferrer"
+                        >
                           {pdf.text || pdf.uri.split("/").pop()}
                         </a>
                       </HStack>
