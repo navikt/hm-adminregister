@@ -107,7 +107,7 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
                       <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                         <FilePdfIcon fontSize="2rem" />
                         <a
-                          href={`${IMAGE_PROXY_URL}/file/${pdf.sourceUri}`}
+                          href={`${IMAGE_PROXY_URL()}/file/${pdf.sourceUri}`}
                           target="_blank"
                           className="document-type"
                           rel="noreferrer"
