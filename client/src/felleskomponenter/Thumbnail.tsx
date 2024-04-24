@@ -10,10 +10,10 @@ interface Props {
 
 export const Thumbnail = ({ mediaInfo }: Props) => {
   const [imageLoadingError, setImageLoadingError] = useState(false);
-  const [imageModalIsopen, setImageModalIsopen] = useState<boolean>(false);
+  const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
   return (
     <>
-      <ImageModal mediaInfo={mediaInfo} onClose={() => setImageModalIsopen(false)} isModalOpen={imageModalIsopen} />
+      <ImageModal mediaInfo={mediaInfo} onClose={() => setImageModalIsOpen(false)} isModalOpen={imageModalIsOpen} />
       <div className="thumbnail">
         {imageLoadingError || !mediaInfo.uri ? (
           <></>
@@ -24,7 +24,7 @@ export const Thumbnail = ({ mediaInfo }: Props) => {
               setImageLoadingError(true);
             }}
             alt={mediaInfo.text ?? "OBS mangler alt-tekst"}
-            onClick={() => setImageModalIsopen(true)}
+            onClick={() => setImageModalIsOpen(true)}
           />
         )}
       </div>
