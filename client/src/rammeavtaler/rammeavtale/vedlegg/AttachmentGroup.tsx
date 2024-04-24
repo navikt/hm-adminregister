@@ -8,7 +8,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { deleteAttachmentGroup, deleteFileFromAttachmentGroup } from "api/AgreementApi";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { DocumentList } from "felleskomponenter/styledcomponents/DocumentList";
-import { IMAGE_PROXY_URL } from "environments";
+import { uriForMediaFile } from "utils/file-util";
 
 interface Props {
   agreementId: string;
@@ -82,12 +82,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
               <li key={pdf.uri}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                   <FilePdfIcon fontSize="2rem" />
-                  <a
-                    href={`${IMAGE_PROXY_URL()}/file/${pdf.uri}`}
-                    target="_blank"
-                    className="document-type"
-                    rel="noreferrer"
-                  >
+                  <a href={uriForMediaFile(pdf)} target="_blank" className="document-type" rel="noreferrer">
                     {pdf.text || pdf.uri.split("/").pop()}
                   </a>
                 </HStack>

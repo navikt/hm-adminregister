@@ -8,7 +8,8 @@ import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
-import { HM_REGISTER_URL, IMAGE_PROXY_URL } from "environments";
+import { HM_REGISTER_URL } from "environments";
+import { uriForMediaFile } from "utils/file-util";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -106,12 +107,7 @@ const FileTab = ({ products, mutateProducts, fileType, isEditable, showInputErro
                     <li className="document" key={pdf.uri}>
                       <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                         <FilePdfIcon fontSize="2rem" />
-                        <a
-                          href={`${IMAGE_PROXY_URL()}/file/${pdf.uri}`}
-                          target="_blank"
-                          className="document-type"
-                          rel="noreferrer"
-                        >
+                        <a href={uriForMediaFile(pdf)} target="_blank" className="document-type" rel="noreferrer">
                           {pdf.text || pdf.uri.split("/").pop()}
                         </a>
                       </HStack>
