@@ -1,7 +1,8 @@
 import { Modal } from "@navikt/ds-react";
 import "./error-modal.scss";
 import { MediaInfoDTO } from "utils/types/response-types";
-import { largeImageLoader, mediumImageLoader } from "utils/image-util";
+import { mediumImageLoader } from "utils/image-util";
+import styles from "./ImageModal.module.scss";
 
 interface Props {
   mediaInfo: MediaInfoDTO;
@@ -12,6 +13,8 @@ interface Props {
 const ImageModal = ({ mediaInfo, onClose, isModalOpen }: Props) => {
   return (
     <Modal
+      className={styles.imageModal}
+      width="100%"
       open={isModalOpen}
       header={{
         heading: "",

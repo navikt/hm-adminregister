@@ -1,0 +1,12 @@
+@use "../styles/_mixins";
+
+.imageModal {
+  width: 100vw;
+  height: 100vh;
+
+  @include mixins.for-size(tablet-up) {
+    max-height: 90% !important;
+    max-width: 90% !important;
+  }
+
+}
