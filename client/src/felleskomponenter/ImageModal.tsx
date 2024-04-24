@@ -1,7 +1,7 @@
 import { Modal } from "@navikt/ds-react";
 import "./error-modal.scss";
 import { MediaInfoDTO } from "utils/types/response-types";
-import { largeImageLoader } from "utils/image-util";
+import { largeImageLoader, mediumImageLoader } from "utils/image-util";
 
 interface Props {
   mediaInfo: MediaInfoDTO;
@@ -21,7 +21,7 @@ const ImageModal = ({ mediaInfo, onClose, isModalOpen }: Props) => {
     >
       <Modal.Body>
         <img
-          src={largeImageLoader({ src: mediaInfo.uri, width: 1600 })}
+          src={mediumImageLoader({ src: mediaInfo.uri, width: 800 })}
           onError={() => {}}
           alt={mediaInfo.text ?? "OBS mangler alt-tekst"}
         />
