@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -114,6 +115,9 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/approve/{id}": {
     put: operations["approveProduct"];
   };
+  "/admreg/admin/api/v1/product/registrations/delete": {
+    delete: operations["deleteProducts"];
+  };
   "/admreg/admin/api/v1/product/registrations/draft/supplier/{supplierId}": {
     post: operations["draftProduct"];
   };
@@ -135,11 +139,14 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
     get: operations["getProductByHmsArtNr"];
   };
+  "/admreg/admin/api/v1/product/registrations/reject": {
+    put: operations["rejectProducts"];
+  };
   "/admreg/admin/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup"];
   };
-  "/admreg/admin/api/v1/product/registrations/series/{seriesId}": {
-    get: operations["findBySeriesIdAndSupplierId"];
+  "/admreg/admin/api/v1/product/registrations/series/{seriesUUID}": {
+    get: operations["findBySeriesUUIDAndSupplierId"];
   };
   "/admreg/admin/api/v1/product/registrations/til-godkjenning": {
     get: operations["findProductsPendingApprove"];
@@ -255,12 +262,12 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup_1"];
   };
-  "/admreg/vendor/api/v1/product/registrations/series/grouped/{seriesId}": {
+  "/admreg/vendor/api/v1/product/registrations/series/grouped/{seriesUUID}": {
     get: operations["getProductSeriesWithVariants"];
     put: operations["updateProductSeriesWithVariants"];
   };
-  "/admreg/vendor/api/v1/product/registrations/series/{seriesId}": {
-    get: operations["findBySeriesIdAndSupplierId_1"];
+  "/admreg/vendor/api/v1/product/registrations/series/{seriesUUID}": {
+    get: operations["findBySeriesUUIDAndSupplierId_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/til-godkjenning": {
     put: operations["setProductsToBeApproved"];
@@ -859,7 +866,7 @@ export interface components {
     };
     /** @enum {string} */
     RegistrationStatus: "ACTIVE" | "INACTIVE" | "DELETED";
-    SeriesData: {
+    SeriesDataDTO: {
       media: components["schemas"]["MediaInfoDTO"][];
     };
     SeriesGroupDTO: {
@@ -880,7 +887,7 @@ export interface components {
       draftStatus: components["schemas"]["DraftStatus"];
       adminStatus: components["schemas"]["AdminStatus"];
       status: components["schemas"]["SeriesStatus"];
-      seriesData: components["schemas"]["SeriesData"];
+      seriesData: components["schemas"]["SeriesDataDTO"];
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -1003,7 +1010,6 @@ export interface components {
       /** Format: uuid */
       id: string;
       status: components["schemas"]["SupplierStatus"];
-      draftStatus: components["schemas"]["DraftStatus"];
       name: string;
       supplierData: components["schemas"]["SupplierData"];
       identifier: string;
@@ -1035,6 +1041,7 @@ export interface components {
       unit?: string | null;
       /** Format: int32 */
       sort: number;
+      options: string[];
       createdBy: string;
       updatedBy: string;
       /** Format: date-time */
@@ -1054,6 +1061,7 @@ export interface components {
       unit?: string | null;
       /** Format: int32 */
       sort: number;
+      options: string[];
       isActive: boolean;
       createdBy: string;
       updatedBy: string;
@@ -1111,6 +1119,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   createDelkontrakt: {
     requestBody: {
       content: {
@@ -1852,6 +1861,21 @@ export interface operations {
       };
     };
   };
+  deleteProducts: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description deleteProducts 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
   draftProduct: {
     parameters: {
       query: {
@@ -1981,6 +2005,21 @@ export interface operations {
       };
     };
   };
+  rejectProducts: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description rejectProducts 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
   findSeriesGroup: {
     parameters: {
       query: {
@@ -1999,14 +2038,14 @@ export interface operations {
       };
     };
   };
-  findBySeriesIdAndSupplierId: {
+  findBySeriesUUIDAndSupplierId: {
     parameters: {
       path: {
-        seriesId: string;
+        seriesUUID: string;
       };
     };
     responses: {
-      /** @description findBySeriesIdAndSupplierId 200 response */
+      /** @description findBySeriesUUIDAndSupplierId 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
@@ -2741,7 +2780,7 @@ export interface operations {
   getProductSeriesWithVariants: {
     parameters: {
       path: {
-        seriesId: string;
+        seriesUUID: string;
       };
     };
     responses: {
@@ -2756,7 +2795,7 @@ export interface operations {
   updateProductSeriesWithVariants: {
     parameters: {
       path: {
-        seriesId: string;
+        seriesUUID: string;
       };
     };
     requestBody: {
@@ -2773,14 +2812,14 @@ export interface operations {
       };
     };
   };
-  findBySeriesIdAndSupplierId_1: {
+  findBySeriesUUIDAndSupplierId_1: {
     parameters: {
       path: {
-        seriesId: string;
+        seriesUUID: string;
       };
     };
     responses: {
-      /** @description findBySeriesIdAndSupplierId_1 200 response */
+      /** @description findBySeriesUUIDAndSupplierId_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
