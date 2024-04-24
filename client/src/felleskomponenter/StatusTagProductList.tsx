@@ -1,4 +1,4 @@
-import { ClockDashedIcon, EyeClosedIcon, EyeIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
+import { ClockDashedIcon, EyeClosedIcon, EyeIcon, QuestionmarkIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import TagWithIcon, { colors } from "./TagWithIcon";
 import { AdminStatus, DraftStatus, SeriesStatus } from "utils/types/response-types";
 
@@ -9,7 +9,6 @@ interface StatusProps {
 }
 
 export const StatusTagProductList = ({ draftStatus, adminStatus, seriesStatus }: StatusProps) => {
-  console.log(draftStatus, adminStatus, seriesStatus);
   if (draftStatus === "DRAFT" && adminStatus === "REJECTED") {
     return (
       <TagWithIcon icon={<XMarkOctagonIcon aria-hidden fontSize={"1.5rem"} />} text="Avslått" color={colors.RED} />
@@ -31,6 +30,8 @@ export const StatusTagProductList = ({ draftStatus, adminStatus, seriesStatus }:
   } else if (draftStatus === "DONE" && seriesStatus === "DELETED") {
     return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Slettet" color={colors.RED} />;
   } else {
-    return <>hei</>;
+    return (
+      <TagWithIcon icon={<QuestionmarkIcon aria-hidden fontSize={"1.5rem"} />} text={"Ukjent"} color={colors.GREY} />
+    );
   }
 };

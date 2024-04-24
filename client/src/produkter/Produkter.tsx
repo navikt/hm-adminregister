@@ -21,8 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { ProductTable } from "felleskomponenter/styledcomponents/ProductTable";
-import { StatusTagProductList } from "felleskomponenter/StatusTagProductList";
+import styles from "produkter/ProductTable.module.scss";
 
 const Produkter = () => {
   const [pageState, setPageState] = useState(1);
@@ -150,37 +149,39 @@ const Produkter = () => {
               <div className="panel-list__container">
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
                 {renderData && renderData.length > 0 && !isLoading && (
-                  <ProductTable size="medium">
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
-                        <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-                        <Table.HeaderCell scope="col">Antall artikler</Table.HeaderCell>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {renderData.map((product, i) => (
-                        <Table.Row
-                          key={i + product.id}
-                          onClick={() => {
-                            navigate(`/produkter/${product.id}`);
-                          }}
-                        >
-                          <Table.DataCell scope="row">
-                            <b>{product.title}</b>
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <StatusTagProductList
-                              adminStatus={product.adminStatus}
-                              draftStatus={product.draftStatus}
-                              seriesStatus={product.status}
-                            />
-                          </Table.DataCell>
-                          <Table.DataCell>{product.count}</Table.DataCell>
+                  <div className={styles.productTable}>
+                    <Table>
+                      <Table.Header>
+                        <Table.Row>
+                          <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
+                          {/*<Table.HeaderCell scope="col">Status</Table.HeaderCell>*/}
+                          <Table.HeaderCell scope="col">Antall artikler</Table.HeaderCell>
                         </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </ProductTable>
+                      </Table.Header>
+                      <Table.Body>
+                        {renderData.map((product, i) => (
+                          <Table.Row
+                            key={i + product.id}
+                            onClick={() => {
+                              navigate(`/produkter/${product.id}`);
+                            }}
+                          >
+                            <Table.DataCell scope="row">
+                              <b>{product.title}</b>
+                            </Table.DataCell>
+                            {/*<Table.DataCell>*/}
+                            {/*  <StatusTagProductList*/}
+                            {/*    adminStatus={product.adminStatus}*/}
+                            {/*    draftStatus={product.draftStatus}*/}
+                            {/*    seriesStatus={product.status}*/}
+                            {/*  />*/}
+                            {/*</Table.DataCell>*/}
+                            <Table.DataCell>{product.count}</Table.DataCell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  </div>
                 )}
               </div>
             )}

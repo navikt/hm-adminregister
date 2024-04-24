@@ -1,16 +1,32 @@
-import styled from "styled-components";
-import { Table } from "@navikt/ds-react";
+.productTable {
 
-export const ProductTable = styled(Table)`
-  border-collapse: separate;
-  border-spacing: 0 5px;
+  table {
+    border-collapse: separate;
+    border-spacing: 0 5px;
+  }
 
   th {
     border: 0;
   }
 
+
+  tbody tr {
+    background-color: var(--a-white);
+    transition: background-color 0.2s;
+    border: 0;
+
+
+    &:hover {
+      background-color: var(--a-gray-100);
+      cursor: pointer;
+    }
+
+  }
+
   td {
+    padding: 10px 15px;
     border: 1px solid var(--a-gray-300);
+
   }
 
   td:first-child {
@@ -29,4 +45,7 @@ export const ProductTable = styled(Table)`
     border-left: 0;
     border-right: 0;
   }
-`;
+
+
+
+}
