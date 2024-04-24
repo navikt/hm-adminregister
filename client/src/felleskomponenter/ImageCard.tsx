@@ -17,7 +17,7 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }
       <VStack gap="2">
         <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} />
         <VStack gap="1" align="center">
-          <Label>Tittel</Label> <span>{mediaInfo.text ?? "OBS mangler beskrivelse"}</span>
+          <i>Filnavn</i> <span>{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
         </VStack>
       </VStack>
       {showMenuButton && (
