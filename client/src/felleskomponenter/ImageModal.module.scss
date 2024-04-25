@@ -1,0 +1,36 @@
+@use "../styles/_mixins";
+
+.imageModal {
+  width: 100vw;
+  height: 100vh;
+
+  @include mixins.for-size(tablet-up) {
+    max-height: 90% !important;
+    max-width: 90% !important;
+  }
+
+  @include mixins.for-size(desktop-up) {
+    max-height: 80% !important;
+    max-width: 60% !important;
+  }
+
+  &ModalBody {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        position: relative !important;
+        border-radius: var(--a-border-radius-medium);
+        object-fit: contain;
+
+      }
+
+
+
+  }
+
+
+}

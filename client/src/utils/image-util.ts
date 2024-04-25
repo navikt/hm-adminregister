@@ -27,5 +27,5 @@ const imageLoaderAdvanced = ({ src, size }: ImageOptions) => {
 };
 
 export const smallImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.SMALL });
-export const mediumImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.MEDIUM });
-export const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoader({ src, size: Size.LARGE });
+export const mediumImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.MEDIUM });
+export const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.LARGE });

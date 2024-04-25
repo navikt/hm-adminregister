@@ -6,8 +6,12 @@ export type AdminUserChunk = components["schemas"]["Page_UserDTO_"];
 export type SupplierRegistrationDTO = components["schemas"]["SupplierRegistrationDTO"];
 export type UserRegistrationDTO = components["schemas"]["UserRegistrationDTO"];
 export type LoggedInUserResponse = components["schemas"]["RegistrationAuthentication"];
+
 export type SupplierStatus = components["schemas"]["SupplierStatus"];
 export type DraftStatus = components["schemas"]["DraftStatus"];
+export type SeriesStatus = components["schemas"]["SeriesStatus"];
+export type AdminStatus = components["schemas"]["AdminStatus"];
+
 export type SupplierChunk = components["schemas"]["Page_SupplierRegistrationDTO_"];
 export type SupplierUserChunk = components["schemas"]["Page_UserDTO_"];
 

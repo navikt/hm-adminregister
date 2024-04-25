@@ -8,7 +8,7 @@ import { isUUID, labelRequired } from "utils/string-util";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { productVariantSchema } from "utils/zodSchema/newProduct";
 import { z } from "zod";
-import styles from "./ProductVariantForm.module.scss";
+import styles from "../ProductVariantForm.module.scss";
 
 type FormData = z.infer<typeof productVariantSchema>;
 
@@ -132,7 +132,7 @@ const ProductVariantForm = ({
           <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2" wrap={false}>
             <TextField
               {...register(`techData.${index}.value`, { required: false })}
-              label={labelRequired(`${key.key}`)}
+              label={`${key.key}`}
               id={`techData.${index}.value`}
               name={`techData.${index}.value`}
               type="text"

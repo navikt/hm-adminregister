@@ -81,6 +81,10 @@ pre {
   display: flex;
   justify-content: center;
   position: relative;
+  :hover{
+    cursor: pointer;
+    opacity: 0.7;
+  }
 
   .image {
     width: 130px;

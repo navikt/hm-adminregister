@@ -10,7 +10,6 @@ import {
 export interface Supplier {
   id: string;
   status: SupplierStatus;
-  draftStatus: DraftStatus;
   name: string;
   address?: string | null;
   postNr?: string | null;
@@ -37,7 +36,6 @@ export const mapSupplier = (_source: SupplierRegistrationDTO): Supplier => {
   return {
     id: _source.id,
     status: _source.status,
-    draftStatus: _source.draftStatus,
     name: _source.name,
     address: _source.supplierData.address,
     postNr: _source.supplierData.postNr,
