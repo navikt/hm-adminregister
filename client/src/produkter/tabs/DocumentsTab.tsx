@@ -1,6 +1,6 @@
 import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
@@ -132,14 +132,15 @@ const DocumentListItem = ({
   handleUpdateFileName: (uri: string, text: string) => void;
 }) => {
   const [editedFileText, setEditedFileText] = useState(file.filename || "");
-  const [editFileNameMode, setEditFileNameMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const containerRef = useRef<HTMLInputElement>(null);
 
   const handleEditFileName = () => {
-    setEditFileNameMode(true);
+    setEditMode(true);
   };
 
   const handleSaveFileName = () => {
-    setEditFileNameMode(false);
+    setEditMode(false);
     handleUpdateFileName(file.uri, editedFileText);
   };
 
@@ -148,16 +149,23 @@ const DocumentListItem = ({
   return (
     <>
       <HStack as="li" justify="space-between" align="center">
-        {editFileNameMode ? (
+        {editMode ? (
           <HStack style={{ width: "100%" }} justify="space-between">
             <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
               <FilePdfIcon fontSize="2rem" />
               <TextField
+                ref={containerRef}
                 className="inputfield"
                 style={{ width: `${textLength}ch`, maxWidth: "550px" }}
                 label=""
                 value={editedFileText}
                 onChange={(event) => setEditedFileText(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleSaveFileName();
+                  }
+                }}
               />
             </HStack>
             <Button
