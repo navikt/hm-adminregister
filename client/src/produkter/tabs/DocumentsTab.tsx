@@ -1,14 +1,14 @@
 import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { Alert, Button, HStack, Heading, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTOEditedTextOnFile, mapImagesAndPDFfromMedia } from "utils/product-util";
+import { editFileTextOnProduct, mapImagesAndPDFfromMedia } from "utils/product-util";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
-import { useDeleteFileFromProduct } from "./ImagesTab";
+import { useDeleteFileFromProduct } from "api/ProductApi";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -47,7 +47,7 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTOEditedTextOnFile(productToUpdate, editedText, uri);
+    const editedProductDTO = editFileTextOnProduct(productToUpdate, editedText, uri);
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",

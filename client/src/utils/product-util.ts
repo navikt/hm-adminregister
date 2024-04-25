@@ -62,7 +62,7 @@ export const getEditedProductDTOAddMedia = (
   };
 };
 
-export const getEditedProductDTORemoveMedia = (
+export const removeFileFromProduct = (
   productToEdit: ProductRegistrationDTO,
   uriToRemove: string,
 ): ProductRegistrationDTO => {
@@ -76,7 +76,7 @@ export const getEditedProductDTORemoveMedia = (
   };
 };
 
-export const getEditedProductDTOEditedTextOnFile = (
+export const editFileTextOnProduct = (
   productToEdit: ProductRegistrationDTO,
   editedText: string,
   uri: string,

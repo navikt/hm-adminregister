@@ -4,10 +4,9 @@ import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/product-util";
+import { mapImagesAndPDFfromMedia } from "utils/product-util";
 import { ImageCard } from "felleskomponenter/ImageCard";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { HM_REGISTER_URL } from "environments";
+import { useDeleteFileFromProduct } from "api/ProductApi";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -79,40 +78,3 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
 };
 
 export default ImagesTab;
-
-export function useDeleteFileFromProduct(productId: string) {
-  const { setGlobalError } = useErrorStore();
-
-  //Denne bør trekkes ut til en felles funksjon. Sjekk hva som finnes fra før.
-  return async (fileURI: string) => {
-    //Fetch latest version of product
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, fileURI);
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-  };
-}
