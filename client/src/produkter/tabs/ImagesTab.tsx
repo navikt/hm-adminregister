@@ -1,12 +1,12 @@
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/product-util";
-import { useErrorStore } from "utils/store/useErrorStore";
 import { ImageCard } from "felleskomponenter/ImageCard";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
 
 interface Props {
@@ -19,48 +19,15 @@ interface Props {
 const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(products);
-  const { setGlobalError } = useErrorStore();
+  const deleteFile = useDeleteFileFromProduct(products[0].id);
+
+  console.log(images);
 
   const sortedImages = images.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
     const dateB = b.updated ? new Date(b.updated).getTime() : 0;
     return dateA - dateB;
   });
-
-  //Denne bør trekkes ut til en felles funksjon. Sjekk hva som finnes fra før.
-  const handleDeleteFile = async (uri: string) => {
-    const oid = products[0].id;
-    //Fetch latest version of product
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${oid}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, uri);
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    mutateProducts();
-  };
 
   return (
     <>
@@ -70,7 +37,6 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
         oid={products[0].id}
         fileType="images"
         mutateProducts={mutateProducts}
-        documentType={"other"}
       />
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
@@ -81,7 +47,9 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
                   <ImageCard
                     mediaInfo={image}
                     key={image.uri}
-                    handleDeleteFile={handleDeleteFile}
+                    handleDeleteFile={(fileURI) => {
+                      deleteFile(fileURI).then(mutateProducts);
+                    }}
                     showMenuButton={isEditable}
                   />
                 ))}
@@ -113,3 +81,40 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
 };
 
 export default ImagesTab;
+
+export function useDeleteFileFromProduct(productId: string) {
+  const { setGlobalError } = useErrorStore();
+
+  //Denne bør trekkes ut til en felles funksjon. Sjekk hva som finnes fra før.
+  return async (fileURI: string) => {
+    //Fetch latest version of product
+    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      setGlobalError(res.status, res.statusText);
+      return;
+    }
+
+    const productToUpdate: ProductRegistrationDTO = await res.json();
+    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, fileURI);
+
+    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(editedProductDTO),
+    });
+    if (!res.ok) {
+      setGlobalError(res.status, res.statusText);
+      return;
+    }
+  };
+}

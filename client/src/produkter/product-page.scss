@@ -45,13 +45,14 @@ pre {
 }
 
 .documents-conatainer {
-  padding: $a-spacing-4 $a-spacing-4;
-  background-color: #f6f7fc;
-  box-shadow: $a-shadow-small;
-  border-radius: $a-border-radius-medium;
   .document-list-container {
     li {
+      width: 100%;
       padding: $a-spacing-4 $a-spacing-4;
+
+      .navds-form-field {
+        gap: 0;
+      }
     }
   }
 }

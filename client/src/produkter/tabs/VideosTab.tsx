@@ -155,7 +155,7 @@ const VideoTab = ({
                 </VStack>
                 {isEditable && (
                   <div className="more-menu-container">
-                    <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} fileType="videoLink" />
+                    <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} />
                   </div>
                 )}
               </HStack>

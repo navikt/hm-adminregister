@@ -8,13 +8,11 @@ import { getEditedProductDTOAddMedia, mapToMediaInfo } from "utils/product-util"
 import { ImageContainer } from "felleskomponenter/ImageCard";
 import { HM_REGISTER_URL } from "environments";
 import { fileToUri } from "utils/file-util";
-import { DocumentType } from "./DocumentsTab";
 
 interface Props {
   modalIsOpen: boolean;
   oid: string;
   fileType: "images" | "documents";
-  documentType?: DocumentType;
   setModalIsOpen: (open: boolean) => void;
   mutateProducts: () => void;
 }
@@ -24,7 +22,7 @@ interface Upload {
   previewUrl?: string;
 }
 
-const UploadModal = ({ modalIsOpen, oid, fileType, documentType, setModalIsOpen, mutateProducts }: Props) => {
+const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProducts }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = useState<Upload[]>([]);
@@ -68,8 +66,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, documentType, setModalIsOpen,
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO =
-      mediaDTOs && getEditedProductDTOAddMedia(productToUpdate, mapToMediaInfo(mediaDTOs, documentType));
+    const editedProductDTO = mediaDTOs && getEditedProductDTOAddMedia(productToUpdate, mapToMediaInfo(mediaDTOs));
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",

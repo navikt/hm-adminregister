@@ -8,7 +8,6 @@ import {
 } from "./types/response-types";
 import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
-import { DocumentType } from "produkter/tabs/DocumentsTab";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],
@@ -77,17 +76,42 @@ export const getEditedProductDTORemoveMedia = (
   };
 };
 
-export const mapToMediaInfo = (mediaDTO: MediaDTO[], documentType?: DocumentType): MediaInfo[] => {
+export const getEditedProductDTOEditedTextOnFile = (
+  productToEdit: ProductRegistrationDTO,
+  editedText: string,
+  uri: string,
+): ProductRegistrationDTO => {
+  const mediaIndex = productToEdit.productData.media.findIndex((media) => media.uri === uri);
+
+  if (mediaIndex !== -1) {
+    const updatedMedia = [
+      ...productToEdit.productData.media.slice(0, mediaIndex), // Keep media before the updated one
+      {
+        ...productToEdit.productData.media[mediaIndex],
+        text: editedText, // Update the text property
+      },
+      ...productToEdit.productData.media.slice(mediaIndex + 1), // Keep media after the updated one
+    ];
+
+    // Return a new ProductRegistrationDTO object with updated media
+    return {
+      ...productToEdit,
+      productData: {
+        ...productToEdit.productData,
+        media: updatedMedia,
+      },
+    };
+  } else {
+    return productToEdit;
+  }
+};
+
+export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
   return mediaDTO.map((media, i) => ({
     sourceUri: media.sourceUri,
     uri: media.uri,
     //Text-feltet brukes foreløpig til tittelen vi ønsker å vise i GUI. Bør lage et eget felt for alt-text på bilder
-    text:
-      media.type === "IMAGE" || (media.type === "PDF" && documentType === "other")
-        ? media.filename
-        : documentType === "brochure"
-          ? "Brosjyre"
-          : "Bruksanvisning",
+    text: media.filename,
     filename: media.filename,
     //La brukeren sette prioritet selv senere
     priority: i + 1,

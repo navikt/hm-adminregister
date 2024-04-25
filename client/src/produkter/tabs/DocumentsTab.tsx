@@ -1,13 +1,14 @@
-import { FilePdfIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { Alert, Button, HStack, Heading, Tabs, VStack } from "@navikt/ds-react";
+import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
+import { Alert, Button, HStack, Heading, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
-import { ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTORemoveMedia, mapImagesAndPDFfromMedia } from "utils/product-util";
-import { useErrorStore } from "utils/store/useErrorStore";
+import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { getEditedProductDTOEditedTextOnFile, mapImagesAndPDFfromMedia } from "utils/product-util";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
+import { useDeleteFileFromProduct } from "./ImagesTab";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -16,15 +17,11 @@ interface Props {
   showInputError: boolean;
 }
 
-const documentType = ["brochure", "manual", "other"] as const;
-
-export type DocumentType = (typeof documentType)[number];
-
 const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(products);
   const { setGlobalError } = useErrorStore();
-  const [documentType, setDocumentType] = useState<DocumentType>("other");
+  const deleteFile = useDeleteFileFromProduct(products[0].id);
 
   const allPdfsSorted = pdfs.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
@@ -33,14 +30,7 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
     return dateA - dateB;
   });
 
-  const manualPdfs = allPdfsSorted.filter((pdf) => pdf.text?.trim().toLowerCase() === "bruksanvisning");
-  const brochurePdfs = allPdfsSorted.filter((pdf) => pdf.text?.trim().toLowerCase() === "brosjyre");
-  const otherPdfs = allPdfsSorted.filter(
-    (pdf) => pdf.text?.trim().toLowerCase() !== "brosjyre" && pdf.text?.trim().toLowerCase() !== "bruksanvisning",
-  );
-
-  //Dra ut denne i en felles funksjon
-  const handleDeleteFile = async (uri: string) => {
+  const handleEditFileName = async (uri: string, editedText: string) => {
     const oid = products[0].id;
     //Fetch latest version of product
     let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${oid}`, {
@@ -57,7 +47,7 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, uri);
+    const editedProductDTO = getEditedProductDTOEditedTextOnFile(productToUpdate, editedText, uri);
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",
@@ -82,7 +72,6 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
         oid={products[0].id}
         fileType="documents"
         mutateProducts={mutateProducts}
-        documentType={documentType}
       />
       <Tabs.Panel value="documents" className="tab-panel">
         <VStack gap="10">
@@ -93,117 +82,38 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
             </Alert>
           )}
 
-          <VStack gap="10">
-            <VStack gap="1" className="documents-conatainer">
-              <Heading level="2" size="medium">
-                Brosjyr(er)
-              </Heading>
-              {brochurePdfs.length > 0 && (
-                <VStack as="ol" gap="3" className="document-list-container">
-                  {brochurePdfs.map((brochure) => (
-                    <HStack as="li" justify="space-between" align="center" key={brochure.uri}>
-                      <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                        <FilePdfIcon fontSize="2rem" />
-                        <a href={brochure.sourceUri} target="_blank" rel="noreferrer">
-                          {brochure.text || brochure.uri.split("/").pop()}
-                        </a>
-                      </HStack>
-                      {isEditable && (
-                        <MoreMenu mediaInfo={brochure} handleDeleteFile={handleDeleteFile} fileType="document" />
-                      )}
-                    </HStack>
-                  ))}
-                </VStack>
-              )}
+          <VStack gap="1" className="documents-conatainer">
+            <Heading level="2" size="medium">
+              Dokumenter
+            </Heading>
+            {allPdfsSorted.length > 0 && (
+              <VStack as="ol" gap="3" className="document-list-container">
+                {allPdfsSorted.map((pdf) => (
+                  <DocumentListItem
+                    key={pdf.uri}
+                    isEditable={isEditable}
+                    file={pdf}
+                    handleDeleteFile={(fileURI) => {
+                      deleteFile(fileURI).then(mutateProducts);
+                    }}
+                    handleUpdateFileName={handleEditFileName}
+                  />
+                ))}
+              </VStack>
+            )}
 
-              {isEditable && (
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<PlusCircleIcon title={"Legg til brosjyre"} fontSize="1.5rem" />}
-                  onClick={() => {
-                    setDocumentType("brochure");
-                    setModalIsOpen(true);
-                  }}
-                >
-                  Legg til brosjyre
-                </Button>
-              )}
-            </VStack>
-
-            <VStack gap="1" className="documents-conatainer">
-              <Heading level="2" size="medium">
-                Bruksanvisning(er)
-              </Heading>
-              {manualPdfs.length > 0 && (
-                <VStack as="ol" gap="3" className="document-list-container">
-                  {manualPdfs.map((manual) => (
-                    <HStack as="li" justify="space-between" align="center" key={manual.uri}>
-                      <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                        <FilePdfIcon fontSize="2rem" />
-                        <a href={manual.sourceUri} target="_blank" rel="noreferrer">
-                          {manual.text || manual.uri.split("/").pop()}
-                        </a>
-                      </HStack>
-                      {isEditable && (
-                        <MoreMenu mediaInfo={manual} handleDeleteFile={handleDeleteFile} fileType="document" />
-                      )}
-                    </HStack>
-                  ))}
-                </VStack>
-              )}
-
-              {isEditable && (
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<PlusCircleIcon title={"Legg til bruksanvisning"} fontSize="1.5rem" />}
-                  onClick={() => {
-                    setDocumentType("manual");
-                    setModalIsOpen(true);
-                  }}
-                >
-                  {"Legg til bruksanvisning"}
-                </Button>
-              )}
-            </VStack>
-
-            <VStack gap="1" className="documents-conatainer">
-              <Heading level="2" size="medium">
-                Andre dokumenter
-              </Heading>
-              {otherPdfs.length > 0 && (
-                <VStack as="ol" gap="3" className="document-list-container">
-                  {otherPdfs.map((pdf) => (
-                    <HStack as="li" justify="space-between" align="center" key={pdf.uri}>
-                      <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                        <FilePdfIcon fontSize="2rem" />
-                        <a href={pdf.sourceUri} target="_blank" rel="noreferrer">
-                          {pdf.text || pdf.uri.split("/").pop()}
-                        </a>
-                      </HStack>
-                      {isEditable && (
-                        <MoreMenu mediaInfo={pdf} handleDeleteFile={handleDeleteFile} fileType="document" />
-                      )}
-                    </HStack>
-                  ))}
-                </VStack>
-              )}
-
-              {isEditable && (
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<PlusCircleIcon title={"Legg til andre dokument"} fontSize="1.5rem" />}
-                  onClick={() => {
-                    setDocumentType("other");
-                    setModalIsOpen(true);
-                  }}
-                >
-                  {"Legg til andre dokumenter"}
-                </Button>
-              )}
-            </VStack>
+            {isEditable && (
+              <Button
+                className="fit-content"
+                variant="tertiary"
+                icon={<PlusCircleIcon title={"Legg til dokumenter"} fontSize="1.5rem" />}
+                onClick={() => {
+                  setModalIsOpen(true);
+                }}
+              >
+                Legg til dokumenter
+              </Button>
+            )}
           </VStack>
         </VStack>
       </Tabs.Panel>
@@ -212,3 +122,70 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
 };
 
 export default DocumentsTab;
+
+const DocumentListItem = ({
+  isEditable,
+  file,
+  handleDeleteFile,
+  handleUpdateFileName,
+}: {
+  isEditable: boolean;
+  file: MediaInfoDTO;
+  handleDeleteFile: (uri: string) => void;
+  handleUpdateFileName: (uri: string, text: string) => void;
+}) => {
+  const [editedFileText, setEditedFileText] = useState(file.filename || "");
+  const [editFileNameMode, setEditFileNameMode] = useState(false);
+
+  const handleEditFileName = () => {
+    setEditFileNameMode(true);
+  };
+
+  const handleSaveFileName = () => {
+    setEditFileNameMode(false);
+    handleUpdateFileName(file.uri, editedFileText);
+  };
+
+  const textLength = editedFileText.length + 4;
+
+  return (
+    <>
+      <HStack as="li" justify="space-between" align="center">
+        {editFileNameMode ? (
+          <HStack style={{ width: "100%" }} justify="space-between">
+            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+              <FilePdfIcon fontSize="2rem" />
+              <TextField
+                className="inputfield"
+                style={{ width: `${textLength}ch`, maxWidth: "550px" }}
+                label=""
+                value={editedFileText}
+                onChange={(event) => setEditedFileText(event.currentTarget.value)}
+              />
+            </HStack>
+            <Button
+              size="xsmall"
+              variant="tertiary"
+              onClick={handleSaveFileName}
+              icon={<FloppydiskIcon title="Lagre" fontSize="2rem" />}
+            >
+              Lagre
+            </Button>
+          </HStack>
+        ) : (
+          <>
+            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
+              <FilePdfIcon fontSize="2rem" />
+              <a href={file.sourceUri} target="_blank" rel="noreferrer">
+                {file.text || file.uri.split("/").pop()}
+              </a>
+            </HStack>
+            {isEditable && (
+              <MoreMenu mediaInfo={file} handleDeleteFile={handleDeleteFile} handleEditFileName={handleEditFileName} />
+            )}
+          </>
+        )}
+      </HStack>
+    </>
+  );
+};
