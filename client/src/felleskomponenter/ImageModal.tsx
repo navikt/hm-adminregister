@@ -14,7 +14,6 @@ const ImageModal = ({ mediaInfo, onClose, isModalOpen }: Props) => {
   return (
     <Modal
       className={styles.imageModal}
-      width="100%"
       open={isModalOpen}
       header={{
         heading: "",
@@ -22,7 +21,7 @@ const ImageModal = ({ mediaInfo, onClose, isModalOpen }: Props) => {
       }}
       onClose={onClose}
     >
-      <Modal.Body>
+      <Modal.Body className={styles.imageModalModalBody}>
         <img
           src={mediumImageLoader({ src: mediaInfo.uri, width: 800 })}
           onError={() => {}}
