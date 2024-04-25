@@ -17,14 +17,15 @@ import "./products.scss";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import { usePagedProducts, useProducts } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "produkter/ProductTable.module.scss";
 
 const Produkter = () => {
-  const [pageState, setPageState] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const pageSize = 10;
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
@@ -188,7 +189,11 @@ const Produkter = () => {
             {showPageNavigator === true && data && (
               <Pagination
                 page={pageState}
-                onPageChange={(x) => setPageState(x)}
+                onPageChange={(x) => {
+                  searchParams.set("page", x.toString());
+                  setSearchParams(searchParams);
+                  setPageState(x);
+                }}
                 count={data.totalPages!}
                 size="small"
                 prevNextTexts
