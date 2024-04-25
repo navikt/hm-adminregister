@@ -83,9 +83,6 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
           )}
 
           <VStack gap="1" className="documents-conatainer">
-            <Heading level="2" size="medium">
-              Dokumenter
-            </Heading>
             {allPdfsSorted.length > 0 && (
               <VStack as="ol" gap="3" className="document-list-container">
                 {allPdfsSorted.map((pdf) => (

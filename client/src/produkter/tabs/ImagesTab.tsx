@@ -1,6 +1,6 @@
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { ProductRegistrationDTO } from "utils/types/response-types";
@@ -20,8 +20,6 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(products);
   const deleteFile = useDeleteFileFromProduct(products[0].id);
-
-  console.log(images);
 
   const sortedImages = images.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
