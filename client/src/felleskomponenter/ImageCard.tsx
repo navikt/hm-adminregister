@@ -44,7 +44,7 @@ export const ImageContainer = ({
   uri?: string;
   text?: string | null;
   size?: string;
-  onClick: () => void;
+  onClick?: () => void;
 }) => {
   const [imageLoadingError, setImageLoadingError] = useState(false);
 
