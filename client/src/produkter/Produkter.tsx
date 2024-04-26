@@ -209,21 +209,23 @@ const Produkter = () => {
                   prevNextTexts
                 />
               )}
-              <Select
-                className={styles.pageSize}
-                label="Antall produkter per side"
-                size="small"
-                defaultValue={pageSizeState}
-                onChange={(e) => {
-                  searchParams.set("size", e.target.value);
-                  setSearchParams(searchParams);
-                  setPageSizeState(parseInt(e.target.value));
-                }}
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={100}>100</option>
-              </Select>
+              {searchTerm.length == 0 && (
+                <Select
+                  className={styles.pageSize}
+                  label="Antall produkter per side"
+                  size="small"
+                  defaultValue={pageSizeState}
+                  onChange={(e) => {
+                    searchParams.set("size", e.target.value);
+                    setSearchParams(searchParams);
+                    setPageSizeState(parseInt(e.target.value));
+                  }}
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={100}>100</option>
+                </Select>
+              )}
             </HStack>
           </div>
         </VStack>
