@@ -19,7 +19,7 @@ import {
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
 import AboutTab from "./tabs/AboutTab";
-import VariantsTab from "./tabs/VariantsTab";
+import VariantsTab from "./variants/VariantsTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
