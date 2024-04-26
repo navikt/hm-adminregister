@@ -1,5 +1,5 @@
 import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal } from "@navikt/ds-react";
+import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -191,9 +191,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
           )}
 
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
-          <ol className="images-inline">
+          <VStack as="ol" gap="3" className="images-inline">
             {uploads.map((upload, i) => (
-              <li key={`pdf-${i}`}>
+              <HStack as="li" justify="space-between" align="center" key={`upload-${i}`}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                   {fileType === "images" ? (
                     <ImageContainer uri={upload.previewUrl} size="xsmall" />
@@ -209,9 +209,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
-              </li>
+              </HStack>
             ))}
-          </ol>
+          </VStack>
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" variant="primary">

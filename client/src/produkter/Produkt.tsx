@@ -18,9 +18,8 @@ import {
 
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
-import AboutTab from "./AboutTab";
-import VariantsTab from "./variants/VariantsTab";
-import FileTab from "./FileTab";
+import AboutTab from "./tabs/AboutTab";
+import VariantsTab from "./tabs/VariantsTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -36,7 +35,9 @@ import {
   PencilWritingIcon,
   TrashIcon,
 } from "@navikt/aksel-icons";
-import VideosTab from "./VideosTab";
+import VideosTab from "./tabs/VideosTab";
+import ImageTab from "./tabs/ImagesTab";
+import DocumentTab from "./tabs/DocumentsTab";
 import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } from "produkter/productUtils";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
@@ -283,17 +284,15 @@ const ProductPage = () => {
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <FileTab
+              <ImageTab
                 products={products}
                 mutateProducts={mutateProducts}
-                fileType="images"
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <FileTab
+              <DocumentTab
                 products={products}
                 mutateProducts={mutateProducts}
-                fileType="documents"
                 isEditable={isEditable}
                 showInputError={!isValid}
               />

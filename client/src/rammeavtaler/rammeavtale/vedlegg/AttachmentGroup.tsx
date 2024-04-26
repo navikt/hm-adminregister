@@ -1,6 +1,6 @@
 import { Button, Dropdown, ExpansionCard, HStack } from "@navikt/ds-react";
 import { FilePdfIcon, MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import UploadModal from "./UploadModal";
 import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
 import { AgreementAttachment } from "utils/types/response-types";

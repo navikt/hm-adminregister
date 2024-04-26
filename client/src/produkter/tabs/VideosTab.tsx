@@ -1,16 +1,13 @@
 import { Alert, Button, Tabs, VStack, Link, Modal, TextField, HStack } from "@navikt/ds-react";
-import { MediaInfo, MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
-import {
-  getEditedProductDTOAddMedia,
-  getEditedProductDTORemoveMedia,
-  mapImagesAndPDFfromMedia,
-} from "utils/product-util";
+
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import ReactPlayer from "react-player";
+import { getEditedProductDTOAddMedia, mapImagesAndPDFfromMedia, removeFileFromProduct } from "utils/product-util";
 
 const VideoTab = ({
   products,
@@ -95,7 +92,7 @@ const VideoTab = ({
     }
 
     const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = getEditedProductDTORemoveMedia(productToUpdate, uri);
+    const editedProductDTO = removeFileFromProduct(productToUpdate, uri);
 
     res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
       method: "PUT",
@@ -164,7 +161,7 @@ const VideoTab = ({
                 </VStack>
                 {isEditable && (
                   <div className="more-menu-container">
-                    <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} fileType="videoLink" />
+                    <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} />
                   </div>
                 )}
               </HStack>

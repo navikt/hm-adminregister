@@ -2,6 +2,8 @@ import { EditCommonInfoProduct } from "produkter/Produkt";
 import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, getPath } from "api/fetch";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { removeFileFromProduct } from "utils/product-util";
 
 export const registrationsPath = (isAdmin: boolean, productId: string) =>
   getPath(isAdmin, `/api/v1/product/registrations/${productId}`);
@@ -96,3 +98,39 @@ export const publishProducts = async (productIds: string[]): Promise<ProductRegi
 export const deleteProducts = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
   return await fetchAPI(getPath(true, `/api/v1/product/registrations/delete`), "DELETE", productIds);
 };
+
+export function useDeleteFileFromProduct(productId: string) {
+  const { setGlobalError } = useErrorStore();
+
+  return async (fileURI: string) => {
+    //Fetch latest version of product
+    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      setGlobalError(res.status, res.statusText);
+      return;
+    }
+
+    const productToUpdate: ProductRegistrationDTO = await res.json();
+    const editedProductDTO = removeFileFromProduct(productToUpdate, fileURI);
+
+    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(editedProductDTO),
+    });
+    if (!res.ok) {
+      setGlobalError(res.status, res.statusText);
+      return;
+    }
+  };
+}

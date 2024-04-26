@@ -1,10 +1,10 @@
 import { VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import { MoreMenu } from "./MoreMenu";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { smallImageLoader } from "utils/image-util";
-import ImageModal from "felleskomponenter/ImageModal";
+import ImageModal from "./ImageModal";
 
 interface Props {
   mediaInfo: MediaInfoDTO;
@@ -22,12 +22,13 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }
         <VStack gap="2">
           <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} onClick={() => setImageModalIsOpen(true)} />
           <VStack gap="1" align="center">
-            <i>Filnavn</i> <span>{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
+            <i>Filnavn</i>{" "}
+            <span className="text-overflow-hidden">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
           </VStack>
         </VStack>
         {showMenuButton && (
           <div className="more-menu-container">
-            <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} fileType="image" />
+            <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} />
           </div>
         )}
       </li>

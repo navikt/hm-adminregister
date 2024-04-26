@@ -1,4 +1,4 @@
-import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader } from "@navikt/ds-react";
+import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader, VStack } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import { fileToUri } from "utils/file-util";
@@ -118,8 +118,8 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
           {moreThanOnefileError && <BodyLong>{moreThanOnefileError}</BodyLong>}
 
           {upload && (
-            <ol className="images-inline">
-              <li key={`xlxs}`}>
+            <VStack as="ol" gap="3" className="images-inline">
+              <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
                   <FileExcelIcon fontSize="1.5rem" />
 
@@ -131,8 +131,8 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />
-              </li>
-            </ol>
+              </HStack>
+            </VStack>
           )}
 
           <HStack justify="end" gap="4">

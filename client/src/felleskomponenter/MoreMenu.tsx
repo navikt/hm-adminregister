@@ -1,24 +1,23 @@
-import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
+import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Popover, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import "./more-menu.scss";
-import { MediaInfo, MediaInfoDTO } from "utils/types/response-types";
+import { MediaInfoDTO } from "utils/types/response-types";
 
 export const MoreMenu = ({
   mediaInfo,
   handleDeleteFile,
-  fileType,
+  handleEditFileName,
 }: {
   mediaInfo: MediaInfoDTO;
   handleDeleteFile: (uri: string) => void;
-  fileType: "image" | "document" | "videoLink";
+  handleEditFileName?: (uri: string) => void;
 }) => {
   const buttonRef = useRef<SVGSVGElement>(null);
   const [openPopover, setOpenPopover] = useState(false);
   return (
     <>
       <MenuElipsisVerticalIcon
-        className="more-menu__button"
         title="meny"
         aria-expanded={openPopover}
         ref={buttonRef}
@@ -26,7 +25,7 @@ export const MoreMenu = ({
         fontSize="1.5rem"
       />
       <Popover
-        className="more-menu__popover"
+        className="more-menu"
         open={openPopover}
         onClose={() => setOpenPopover(false)}
         anchorEl={buttonRef.current}
@@ -37,11 +36,22 @@ export const MoreMenu = ({
       >
         <Popover.Content>
           <VStack>
+            {handleEditFileName && (
+              <Button
+                size="small"
+                variant="tertiary"
+                onClick={() => handleEditFileName(mediaInfo.uri)}
+                icon={<PencilWritingIcon title="rediger" fontSize="1.5rem" />}
+              >
+                Rediger filnavn
+              </Button>
+            )}
+
             <Button
-              className="more-menu__inside-button"
-              size="xsmall"
+              size="small"
               variant="tertiary"
               onClick={() => handleDeleteFile(mediaInfo.uri)}
+              icon={<TrashIcon title="slett" fontSize="1.5rem" />}
             >
               Slett
             </Button>

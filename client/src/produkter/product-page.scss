@@ -31,29 +31,29 @@ pre {
   }
 }
 
-.documents,
+.document-list-container,
 .images-inline {
   list-style: none;
   padding-left: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $a-spacing-3;
 
   li {
     padding: $a-spacing-2 $a-spacing-4;
     background-color: #ffffff;
     box-shadow: $a-shadow-xsmall;
     border-radius: $a-border-radius-medium;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 }
 
-.documents {
-  li {
-    padding: $a-spacing-4 $a-spacing-4;
+.documents-conatainer {
+  .document-list-container {
+    li {
+      width: 100%;
+      padding: $a-spacing-4 $a-spacing-4;
+
+      .navds-form-field {
+        gap: 0;
+      }
+    }
   }
 }
 
@@ -80,7 +80,6 @@ pre {
 .image-container {
   display: flex;
   justify-content: center;
-  // width: 100%;
   position: relative;
   :hover{
     cursor: pointer;
