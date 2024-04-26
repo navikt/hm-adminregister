@@ -10,6 +10,7 @@ import {
   Loader,
   Pagination,
   Search,
+  Select,
   Table,
   VStack,
 } from "@navikt/ds-react";
@@ -26,10 +27,10 @@ import styles from "produkter/ProductTable.module.scss";
 const Produkter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const pageSize = 10;
+  const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
-  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize, statusFilters });
+  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize: pageSizeState, statusFilters });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { data: allData, isLoading: allDataIsLoading } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
@@ -49,6 +50,14 @@ const Produkter = () => {
       setFilteredData(allData.content);
     }
   }, [allData]);
+
+  useEffect(() => {
+    if (data?.totalPages && data?.totalPages < pageState) {
+      searchParams.set("page", String(data.totalPages));
+      setSearchParams(searchParams);
+      setPageState(data.totalPages);
+    }
+  }, [data]);
 
   const renderData = filteredData && filteredData.length > 0 ? filteredData : data?.content;
 
@@ -186,19 +195,36 @@ const Produkter = () => {
                 )}
               </div>
             )}
-            {showPageNavigator === true && data && (
-              <Pagination
-                page={pageState}
-                onPageChange={(x) => {
-                  searchParams.set("page", x.toString());
-                  setSearchParams(searchParams);
-                  setPageState(x);
-                }}
-                count={data.totalPages!}
+            <HStack gap="8">
+              {showPageNavigator === true && data && (
+                <Pagination
+                  page={pageState}
+                  onPageChange={(x) => {
+                    searchParams.set("page", x.toString());
+                    setSearchParams(searchParams);
+                    setPageState(x);
+                  }}
+                  count={data.totalPages!}
+                  size="small"
+                  prevNextTexts
+                />
+              )}
+              <Select
+                className={styles.pageSize}
+                label="Antall produkter per side"
                 size="small"
-                prevNextTexts
-              />
-            )}
+                defaultValue={pageSizeState}
+                onChange={(e) => {
+                  searchParams.set("size", e.target.value);
+                  setSearchParams(searchParams);
+                  setPageSizeState(parseInt(e.target.value));
+                }}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={100}>100</option>
+              </Select>
+            </HStack>
           </div>
         </VStack>
       </div>
