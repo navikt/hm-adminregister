@@ -9,6 +9,9 @@ import { ProductRegistrationDTO } from "utils/types/response-types";
 import { productVariantSchema } from "utils/zodSchema/newProduct";
 import { z } from "zod";
 import styles from "../ProductVariantForm.module.scss";
+import { updateProductVariant } from "api/ProductApi";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 type FormData = z.infer<typeof productVariantSchema>;
 
@@ -32,6 +35,9 @@ const ProductVariantForm = ({
   const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
+  const { loggedInUser } = useAuthStore();
+  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
+  const { setGlobalError } = useErrorStore();
 
   const {
     handleSubmit,
@@ -51,10 +57,8 @@ const ProductVariantForm = ({
 
   const { fields: techDataFields, append, remove } = useFieldArray({ name: "techData", control });
 
-  const isSubmittable = !!isValid;
-
   async function onSubmit(data: FormData) {
-    const productRegistrationUpdated = JSON.stringify({
+    const productRegistrationUpdated = {
       ...product,
       articleName: firstTime ? product.articleName : data.articleName,
       supplierRef: firstTime ? product.supplierRef : data.supplierRef,
@@ -63,29 +67,20 @@ const ProductVariantForm = ({
         ...product.productData,
         techData: data.techData,
       },
-    });
+    };
 
-    try {
-      const setProductVariantResponse = await fetch(registrationPath, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: productRegistrationUpdated,
-      });
-
-      if (!setProductVariantResponse.ok) {
-        throw Error(setProductVariantResponse.statusText);
-      }
-
-      if (setProductVariantResponse.ok) {
+    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+      .then((product) => {
+        navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`);
         mutate();
-        navigate(`/produkter/${product.seriesId}?tab=variants&page=${page}`);
-      }
-    } catch (e: any) {
-      setError(e);
-    }
+      })
+      .catch((error) => {
+        if (error.message === "supplierIdRefId already exists") {
+          setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+        } else {
+          setGlobalError(error.status, error.message);
+        }
+      });
   }
 
   return (
@@ -109,7 +104,8 @@ const ProductVariantForm = ({
         type="text"
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
-        error={errors?.supplierRef?.message}
+        onChange={() => setSupplierRefExistsMessage(undefined)}
+        error={errors?.supplierRef?.message || supplierRefExistsMessage}
       />
       <TextField
         {...register("hmsArtNr")}
@@ -151,7 +147,7 @@ const ProductVariantForm = ({
         >
           {firstTime ? "Hopp over" : "Avbryt"}
         </Button>
-        <Button type="submit" size="medium" disabled={!isSubmittable}>
+        <Button type="submit" size="medium" disabled={!isValid}>
           Lagre
         </Button>
       </div>

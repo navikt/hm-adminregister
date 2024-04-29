@@ -12,6 +12,7 @@ import { fetcherGET } from "utils/swr-hooks";
 import { isUUID, labelRequired } from "utils/string-util";
 import { HM_REGISTER_URL } from "environments";
 import { draftProductVariant, updateProductVariant } from "api/ProductApi";
+import { useState } from "react";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -22,6 +23,8 @@ const OpprettProduktVariant = () => {
   const navigate = useNavigate();
 
   const { seriesId, productId } = useParams();
+
+  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
 
   const seriesIdPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
@@ -56,7 +59,11 @@ const OpprettProduktVariant = () => {
           ),
         )
         .catch((error) => {
-          setGlobalError(error.status, error.message);
+          if (error.message === "supplierIdRefId already exists") {
+            setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+          } else {
+            setGlobalError(error.status, error.message);
+          }
         });
     } else {
       const newVariant: DraftVariantDTO = {
@@ -71,7 +78,11 @@ const OpprettProduktVariant = () => {
           ),
         )
         .catch((error) => {
-          setGlobalError(error.status, error.message);
+          if (error.message === "supplierIdRefId already exists") {
+            setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+          } else {
+            setGlobalError(error.status, error.message);
+          }
         });
     }
   }
@@ -99,7 +110,8 @@ const OpprettProduktVariant = () => {
               id="supplierRef"
               name="supplierRef"
               type="text"
-              error={errors?.supplierRef?.message}
+              onChange={() => setSupplierRefExistsMessage(undefined)}
+              error={errors?.supplierRef?.message || supplierRefExistsMessage}
             />
 
             <div className="button-container">
