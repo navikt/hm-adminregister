@@ -1,37 +1,24 @@
-import { ClockDashedIcon, EyeClosedIcon, EyeIcon, QuestionmarkIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
+import { QuestionmarkIcon } from "@navikt/aksel-icons";
 import TagWithIcon, { colors } from "./TagWithIcon";
-import { AdminStatus, DraftStatus, SeriesStatus } from "utils/types/response-types";
+import UniformTag from "felleskomponenter/UniformTag";
 
 interface StatusProps {
-  draftStatus: DraftStatus;
-  adminStatus: AdminStatus;
-  seriesStatus: SeriesStatus;
+  countDrafts: number;
+  countPublished: number;
+  countPending: number;
+  countDeclined: number;
 }
 
-export const StatusTagProductList = ({ draftStatus, adminStatus, seriesStatus }: StatusProps) => {
-  if (draftStatus === "DRAFT" && adminStatus === "REJECTED") {
-    return (
-      <TagWithIcon icon={<XMarkOctagonIcon aria-hidden fontSize={"1.5rem"} />} text="Avslått" color={colors.RED} />
-    );
-  } else if (draftStatus === "DRAFT") {
-    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Utkast" color={colors.GREY} />;
-  } else if (draftStatus === "DONE" && adminStatus === "APPROVED" && seriesStatus === "INACTIVE") {
-    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Utgått" color={colors.RED} />;
-  } else if (draftStatus === "DONE" && adminStatus === "APPROVED" && seriesStatus === "ACTIVE") {
-    return <TagWithIcon icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />} text="Publisert" color={colors.GREEN} />;
-  } else if (draftStatus === "DONE" && adminStatus === "PENDING" && seriesStatus === "INACTIVE") {
-    return (
-      <TagWithIcon
-        icon={<ClockDashedIcon aria-hidden fontSize={"1.5rem"} />}
-        text="Venter på godkjenning"
-        color={colors.ORANGE}
-      />
-    );
-  } else if (draftStatus === "DONE" && seriesStatus === "DELETED") {
-    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Slettet" color={colors.RED} />;
+export const StatusTagProductList = ({ countDrafts, countPublished, countPending, countDeclined }: StatusProps) => {
+  if (countDeclined > 0) {
+    return <UniformTag text="Avslått" color={colors.RED} />;
+  } else if (countDrafts > 0) {
+    return <UniformTag text="Utkast" color={colors.GREY} />;
+  } else if (countPublished > 0) {
+    return <UniformTag text="Publisert" color={colors.GREEN} />;
+  } else if (countPending > 0) {
+    return <UniformTag text="Venter på godkjenning" color={colors.ORANGE} />;
   } else {
-    return (
-      <TagWithIcon icon={<QuestionmarkIcon aria-hidden fontSize={"1.5rem"} />} text={"Ukjent"} color={colors.GREY} />
-    );
+    return <UniformTag text={"Utgått"} color={colors.GREY} />;
   }
 };

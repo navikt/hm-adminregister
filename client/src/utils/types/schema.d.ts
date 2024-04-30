@@ -281,6 +281,9 @@ export interface paths {
     get: operations["getSeries_1"];
     post: operations["createSeries"];
   };
+  "/admreg/vendor/api/v1/series/draft": {
+    post: operations["createDraftSeries"];
+  };
   "/admreg/vendor/api/v1/series/{id}": {
     get: operations["readSeries"];
     put: operations["updateSeries"];
@@ -712,6 +715,7 @@ export interface components {
       accessory: boolean;
       sparePart: boolean;
       techData: components["schemas"]["TechData"][];
+      /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
@@ -732,7 +736,9 @@ export interface components {
       seriesUUID: string;
       /** @deprecated */
       seriesId: string;
+      /** @deprecated */
       isoCategory: string;
+      /** @deprecated */
       title: string;
       articleName: string;
       draftStatus: components["schemas"]["DraftStatus"];
@@ -901,6 +907,14 @@ export interface components {
       createdByAdmin: boolean;
       /** Format: int32 */
       count: number;
+      /** Format: int32 */
+      countDrafts: number;
+      /** Format: int32 */
+      countPublished: number;
+      /** Format: int32 */
+      countPending: number;
+      /** Format: int32 */
+      countDeclined: number;
       /** Format: int64 */
       version?: number | null;
     };
@@ -2918,6 +2932,16 @@ export interface operations {
     };
     responses: {
       /** @description createSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  createDraftSeries: {
+    responses: {
+      /** @description createDraftSeries 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
