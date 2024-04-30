@@ -41,6 +41,7 @@ import DocumentTab from "./tabs/DocumentsTab";
 import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } from "produkter/productUtils";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
+import AdminActions from "produkter/AdminActions";
 
 export type EditCommonInfoProduct = {
   title: string;
@@ -129,27 +130,7 @@ const ProductPage = () => {
       });
   }
 
-  async function onRejectApproval() {
-    rejectProducts(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
 
-  async function onPublish() {
-    const validationResult = productIsValid();
-    setIsValid(validationResult);
-    if (validationResult) {
-      publishProducts(products?.map((product) => product.id) || [])
-        .then(() => mutateProducts())
-        .catch((error) => {
-          setGlobalError(error.status, error.message);
-        });
-    } else {
-      setApprovalModalIsOpen(true);
-    }
-  }
 
   const productIsValid = () => {
     return !(
@@ -302,37 +283,14 @@ const ProductPage = () => {
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin && product.adminStatus !== "APPROVED" && isActive && (
-              <HStack align={"end"} gap="2">
-                <Button style={{ marginTop: "20px" }} onClick={onPublish}>
-                  Publiser
-                </Button>
-                <Dropdown>
-                  <Button
-                    variant="secondary"
-                    icon={<CogIcon title="Avslå eller slett" />}
-                    as={Dropdown.Toggle}
-                  ></Button>
-                  <Dropdown.Menu>
-                    {isPending && (
-                      <>
-                        <Dropdown.Menu.GroupedList>
-                          <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
-                            <ExclamationmarkTriangleIcon aria-hidden />
-                            Avslå
-                          </Dropdown.Menu.GroupedList.Item>
-                        </Dropdown.Menu.GroupedList>
-                        <Dropdown.Menu.Divider />
-                      </>
-                    )}
-                    <Dropdown.Menu.List>
-                      <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                        <TrashIcon aria-hidden />
-                        Slett
-                      </Dropdown.Menu.List.Item>
-                    </Dropdown.Menu.List>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </HStack>
+              <AdminActions
+                products={products}
+                mutateProducts={mutateProducts}
+                setIsValid={setIsValid}
+                productIsValid={productIsValid}
+                setApprovalModalIsOpen={setApprovalModalIsOpen}
+                setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+              />
             )}
             {!loggedInUser?.isAdmin && isDraft && isActive && (
               <Button
