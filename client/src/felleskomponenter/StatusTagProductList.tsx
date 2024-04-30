@@ -1,5 +1,4 @@
-import { QuestionmarkIcon } from "@navikt/aksel-icons";
-import TagWithIcon, { colors } from "./TagWithIcon";
+import { colors } from "./TagWithIcon";
 import UniformTag from "felleskomponenter/UniformTag";
 
 interface StatusProps {
