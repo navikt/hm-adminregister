@@ -282,7 +282,7 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
-            {loggedInUser?.isAdmin && product.adminStatus !== "APPROVED" && isActive && (
+            {loggedInUser?.isAdmin && isActive && (
               <AdminActions
                 products={products}
                 mutateProducts={mutateProducts}

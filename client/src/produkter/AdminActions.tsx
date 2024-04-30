@@ -19,6 +19,7 @@ const AdminActions = ({
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
 }) => {
   const isPending = products[0].adminStatus === "PENDING";
+  const shouldPublish = products[0].adminStatus !== "APPROVED";
 
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
@@ -35,9 +36,11 @@ const AdminActions = ({
 
   return (
     <HStack align={"end"} gap="2">
-      <Button style={{ marginTop: "20px" }} onClick={onPublish}>
-        Publiser
-      </Button>
+      {shouldPublish && (
+        <Button style={{ marginTop: "20px" }} onClick={onPublish}>
+          Publiser
+        </Button>
+      )}
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
