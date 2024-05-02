@@ -6,9 +6,7 @@
     &__button-search {
       background-color: #3a4583;
       color: white;
-      border-radius: 0;
-      border-bottom-right-radius: var(--a-border-radius-medium);
-      border-top-right-radius: var(--a-border-radius-medium);
+      border-radius: 0 var(--a-border-radius-medium) var(--a-border-radius-medium) 0;
       flex-shrink: 0;
       min-height: 2rem;
       min-width: 4rem;
