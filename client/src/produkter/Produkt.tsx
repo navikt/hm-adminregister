@@ -130,8 +130,6 @@ const ProductPage = () => {
       });
   }
 
-
-
   const productIsValid = () => {
     return !(
       !product.productData.attributes.text ||
@@ -293,15 +291,28 @@ const ProductPage = () => {
               />
             )}
             {!loggedInUser?.isAdmin && isDraft && isActive && (
-              <Button
-                style={{ marginTop: "20px" }}
-                onClick={() => {
-                  setIsValid(productIsValid());
-                  setApprovalModalIsOpen(true);
-                }}
-              >
-                Send til godkjenning
-              </Button>
+              <HStack align={"end"} gap="2">
+                <Button
+                  style={{ marginTop: "20px" }}
+                  onClick={() => {
+                    setIsValid(productIsValid());
+                    setApprovalModalIsOpen(true);
+                  }}
+                >
+                  Send til godkjenning
+                </Button>
+                <Dropdown>
+                  <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.List>
+                      <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                        <TrashIcon aria-hidden />
+                        Slett
+                      </Dropdown.Menu.List.Item>
+                    </Dropdown.Menu.List>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </HStack>
             )}
             <StatusPanel product={product} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>

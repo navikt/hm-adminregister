@@ -1,6 +1,7 @@
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { deleteProducts } from "api/ProductApi";
 import { Button, Modal } from "@navikt/ds-react";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const DeleteConfirmationModal = ({
   products,
@@ -13,8 +14,11 @@ export const DeleteConfirmationModal = ({
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
+  const { loggedInUser } = useAuthStore();
   async function onDelete() {
-    deleteProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
+    deleteProducts(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || []).then(() =>
+      mutateProducts(),
+    );
   }
 
   return (
