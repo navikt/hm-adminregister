@@ -46,6 +46,7 @@ import AdminActions from "produkter/AdminActions";
 export type EditCommonInfoProduct = {
   title: string;
   description: string;
+  descriptionFormatted: string;
   isoCode: string;
 };
 
@@ -129,8 +130,6 @@ const ProductPage = () => {
         setGlobalError(error.status, error.message);
       });
   }
-
-
 
   const productIsValid = () => {
     return !(

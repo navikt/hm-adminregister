@@ -1,10 +1,14 @@
-import { Alert, Button, Heading, Tabs, Textarea, VStack } from "@navikt/ds-react";
+import { Alert, Button, Heading, Tabs, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { EditCommonInfoProduct } from "../Produkt";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
+import { RichTextEditor } from "produkter/RichTextEditor";
+import DOMPurify from "dompurify";
+import draftToHtml from "draftjs-to-html";
+import { RawDraftContentState } from "draft-js";
 
 interface Props {
   product: ProductRegistrationDTO;
@@ -18,6 +22,15 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
   const formMethods = useFormContext<EditCommonInfoProduct>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+
+  function createMarkup(html: RawDraftContentState) {
+    console.log(html);
+    const html2 = draftToHtml(html);
+
+    return {
+      __html: DOMPurify.sanitize(html2),
+    };
+  }
 
   const getDescription = () => (
     <>
@@ -72,6 +85,15 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
                   </>
                 ) : (
                   <>
+                    {formMethods.getValues("descriptionFormatted") && (
+                      <div
+                        className="preview"
+                        dangerouslySetInnerHTML={createMarkup(
+                          JSON.parse(formMethods.getValues("descriptionFormatted")),
+                        )}
+                      ></div>
+                    )}
+
                     <pre className="pre">{product.productData.attributes.text}</pre>
                     {isEditable && (
                       <Button
@@ -90,13 +112,15 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
 
             {showEditDescriptionMode && (
               <>
-                <Textarea
-                  defaultValue={product.productData.attributes.text ?? (product.productData.attributes.text || "")}
-                  label={""}
+                <RichTextEditor
                   description={getDescription()}
-                  id="description"
-                  name="description"
-                  onChange={(event) => formMethods.setValue("description", event.currentTarget.value)}
+                  onChange={(description) => {
+                    formMethods.setValue("description", description);
+                  }}
+                  onChangeFormatted={(description) => {
+                    formMethods.setValue("descriptionFormatted", description);
+                  }}
+                  textContent={product.productData.attributes.text || ""}
                 />
                 <Button
                   className="fit-content"
