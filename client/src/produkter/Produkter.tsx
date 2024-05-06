@@ -118,17 +118,18 @@ const Produkter = () => {
                     as={Dropdown.Toggle}
                   ></Button>
                   <Dropdown.Menu>
-                    <Dropdown.Menu.GroupedList>
-                      <Dropdown.Menu.GroupedList.Item
-                        onClick={() => {
-                          navigate("/produkter/importer-produkter");
-                        }}
-                      >
-                        <FileExcelIcon aria-hidden />
-                        Importer produkter
-                      </Dropdown.Menu.GroupedList.Item>
-                    </Dropdown.Menu.GroupedList>
-                    <Dropdown.Menu.Divider />
+                    {/*todo: Disable import until we have a working import with validation*/}
+                    {/*<Dropdown.Menu.GroupedList>*/}
+                    {/*  <Dropdown.Menu.GroupedList.Item*/}
+                    {/*    onClick={() => {*/}
+                    {/*      navigate("/produkter/importer-produkter");*/}
+                    {/*    }}*/}
+                    {/*  >*/}
+                    {/*    <FileExcelIcon aria-hidden />*/}
+                    {/*    Importer produkter*/}
+                    {/*  </Dropdown.Menu.GroupedList.Item>*/}
+                    {/*</Dropdown.Menu.GroupedList>*/}
+                    {/*<Dropdown.Menu.Divider />*/}
                     <Dropdown.Menu.List>
                       <Dropdown.Menu.List.Item
                         onClick={() => {
