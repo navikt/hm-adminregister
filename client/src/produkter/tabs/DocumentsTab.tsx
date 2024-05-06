@@ -9,6 +9,7 @@ import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { HM_REGISTER_URL } from "environments";
 import { useDeleteFileFromProduct } from "api/ProductApi";
+import { uriForMediaFile } from "utils/file-util";
 
 interface Props {
   products: ProductRegistrationDTO[];
@@ -181,7 +182,7 @@ const DocumentListItem = ({
           <>
             <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
               <FilePdfIcon fontSize="2rem" />
-              <a href={file.sourceUri} target="_blank" rel="noreferrer">
+              <a href={uriForMediaFile(file)} target="_blank" rel="noreferrer">
                 {file.text || file.uri.split("/").pop()}
               </a>
             </HStack>
