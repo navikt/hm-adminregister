@@ -166,7 +166,7 @@ const Produkter = () => {
                       <Table.Header>
                         <Table.Row>
                           <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
-                          {/*<Table.HeaderCell scope="col">Status</Table.HeaderCell>*/}
+                          <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                           <Table.HeaderCell scope="col">Antall artikler</Table.HeaderCell>
                         </Table.Row>
                       </Table.Header>
