@@ -24,19 +24,16 @@ const OpprettProduktVariant = () => {
 
   const { seriesId, productId } = useParams();
 
-  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
-
   const seriesIdPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
-
-  ///PROBLEM den skriver over uansett nå, yey
 
   const { data: products, mutate } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isValid},
+    setError
   } = useForm<FormData>({
     resolver: zodResolver(newProductVariantSchema),
     mode: "onSubmit",
@@ -60,7 +57,7 @@ const OpprettProduktVariant = () => {
         )
         .catch((error) => {
           if (error.message === "supplierIdRefId already exists") {
-            setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+            setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
           } else {
             setGlobalError(error.status, error.message);
           }
@@ -79,7 +76,7 @@ const OpprettProduktVariant = () => {
         )
         .catch((error) => {
           if (error.message === "supplierIdRefId already exists") {
-            setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+            setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
           } else {
             setGlobalError(error.status, error.message);
           }
@@ -110,15 +107,14 @@ const OpprettProduktVariant = () => {
               id="supplierRef"
               name="supplierRef"
               type="text"
-              onChange={() => setSupplierRefExistsMessage(undefined)}
-              error={errors?.supplierRef?.message || supplierRefExistsMessage}
+              error={errors?.supplierRef?.message}
             />
 
             <div className="button-container">
               <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type="submit" size="medium">
+              <Button type="submit" size="medium" disabled={!isValid}>
                 Opprett og legg til mer info
               </Button>
             </div>
