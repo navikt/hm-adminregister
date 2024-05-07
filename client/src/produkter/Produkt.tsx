@@ -2,18 +2,7 @@ import { useState } from "react";
 
 import useSWR from "swr";
 
-import {
-  Alert,
-  Button,
-  Heading,
-  HGrid,
-  HStack,
-  Label,
-  Loader,
-  Tabs,
-  TextField,
-  VStack,
-} from "@navikt/ds-react";
+import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
@@ -27,11 +16,7 @@ import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 import { updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
-import {
-  ExclamationmarkTriangleIcon,
-  FloppydiskIcon,
-  PencilWritingIcon,
-} from "@navikt/aksel-icons";
+import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import VideosTab from "./tabs/VideosTab";
 import ImageTab from "./tabs/ImagesTab";
 import DocumentTab from "./tabs/DocumentsTab";
@@ -236,6 +221,17 @@ const ProductPage = () => {
                   }
                 />
                 <Tabs.Tab
+                  value="variants"
+                  label={
+                    <>
+                      Egenskaper
+                      {numberOfVariants(products) === 0 && !isValid && (
+                        <ExclamationmarkTriangleIcon className="product-error-text" />
+                      )}
+                    </>
+                  }
+                />
+                <Tabs.Tab
                   value="images"
                   label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} showAlert={true} />}
                 />
@@ -246,12 +242,6 @@ const ProductPage = () => {
                 <Tabs.Tab
                   value="videos"
                   label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} showAlert={false} />}
-                />
-                <Tabs.Tab
-                  value="variants"
-                  label={
-                    <TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} showAlert={true} />
-                  }
                 />
               </Tabs.List>
               <AboutTab

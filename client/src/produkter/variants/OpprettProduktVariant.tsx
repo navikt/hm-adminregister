@@ -12,7 +12,6 @@ import { fetcherGET } from "utils/swr-hooks";
 import { isUUID, labelRequired } from "utils/string-util";
 import { HM_REGISTER_URL } from "environments";
 import { draftProductVariant, updateProductVariant } from "api/ProductApi";
-import { useState } from "react";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -89,13 +88,13 @@ const OpprettProduktVariant = () => {
       <HStack justify="center" className="create-variant-page">
         <VStack gap="8">
           <Heading level="1" size="large" align="start">
-            Legg til artikkel
+            Legg til variant
           </Heading>
 
           <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("articleName", { required: true })}
-              label={labelRequired("Artikkelnavn")}
+              label={labelRequired("Variantnavn")}
               id="articleName"
               name="articleName"
               type="text"
