@@ -3,18 +3,17 @@ import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal, VStack } fro
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { MediaDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { getEditedProductDTOAddMedia, mapToMediaInfo } from "utils/product-util";
 import { ImageContainer } from "felleskomponenter/ImageCard";
-import { HM_REGISTER_URL } from "environments";
 import { fileToUri } from "utils/file-util";
+import { uploadFilesToSeries } from "api/MediaApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
   oid: string;
   fileType: "images" | "documents";
   setModalIsOpen: (open: boolean) => void;
-  mutateProducts: () => void;
+  mutateSeries: () => void;
 }
 
 interface Upload {
@@ -22,12 +21,12 @@ interface Upload {
   previewUrl?: string;
 }
 
-const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProducts }: Props) => {
+const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [fileTypeError, setFileTypeError] = useState("");
-
+  const { loggedInUser } = useAuthStore();
   const { handleSubmit } = useForm();
   const { setGlobalError } = useErrorStore();
 
@@ -37,53 +36,18 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateProduct
     for (const upload of uploads) {
       formData.append("files", upload.file);
     }
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/media/product/files/${oid}`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-      },
-      credentials: "include",
-      body: formData,
-    });
 
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    const mediaDTOs: MediaDTO[] = await res.json();
-    //Fetch produkt to update the latest version
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${oid}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = mediaDTOs && getEditedProductDTOAddMedia(productToUpdate, mapToMediaInfo(mediaDTOs));
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    setIsUploading(false);
-    mutateProducts();
-    setUploads([]);
-    setModalIsOpen(false);
+    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, formData)
+      .then(() => {
+        setIsUploading(false);
+        mutateSeries();
+        setUploads([]);
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setIsUploading(false);
+        setGlobalError(error);
+      });
   }
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {

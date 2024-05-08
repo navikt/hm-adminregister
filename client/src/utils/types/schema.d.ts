@@ -56,17 +56,14 @@ export interface paths {
     get: operations["getCategoryByIsocode"];
     put: operations["updateCategoryByIsocode"];
   };
-  "/admreg/admin/api/v1/media/agreement/files/{oid}": {
-    post: operations["uploadAgreementFiles"];
-  };
-  "/admreg/admin/api/v1/media/product/files/{oid}": {
-    post: operations["uploadProductFiles"];
-  };
   "/admreg/admin/api/v1/media/{oid}": {
     get: operations["getMediaList"];
   };
   "/admreg/admin/api/v1/media/{oid}/{uri}": {
     delete: operations["deleteFile"];
+  };
+  "/admreg/admin/api/v1/media/{type}/files/{oid}": {
+    post: operations["uploadProductFiles"];
   };
   "/admreg/admin/api/v1/news": {
     get: operations["getNews"];
@@ -159,6 +156,10 @@ export interface paths {
   "/admreg/admin/api/v1/series": {
     get: operations["getSeries"];
   };
+  "/admreg/admin/api/v1/series/{id}": {
+    get: operations["readSeries"];
+    put: operations["updateSeries"];
+  };
   "/admreg/admin/api/v1/supplier/registrations": {
     get: operations["findSuppliers"];
     post: operations["createSupplier"];
@@ -225,18 +226,29 @@ export interface paths {
   "/admreg/vendor/api/v1/agreement/registrations": {
     get: operations["findAgreements_1"];
   };
-  "/admreg/vendor/api/v1/media/product/files/{oid}": {
-    post: operations["uploadFiles"];
-  };
   "/admreg/vendor/api/v1/media/{oid}": {
+    /** @deprecated */
     get: operations["getMediaList_1"];
   };
   "/admreg/vendor/api/v1/media/{oid}/{uri}": {
+    /** @deprecated */
     delete: operations["deleteFile_1"];
+  };
+  "/admreg/vendor/api/v1/media/{type}/files/{oid}": {
+    post: operations["uploadFiles"];
+  };
+  "/admreg/vendor/api/v1/media/{type}/{oid}": {
+    get: operations["getMediaList_2"];
+  };
+  "/admreg/vendor/api/v1/media/{type}/{oid}/{uri}": {
+    delete: operations["deleteFiles"];
   };
   "/admreg/vendor/api/v1/product/registrations": {
     get: operations["findProducts_1"];
     post: operations["createProduct_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/delete": {
+    delete: operations["deleteProducts_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/draft": {
     post: operations["draftProduct_1"];
@@ -246,6 +258,9 @@ export interface paths {
   };
   "/admreg/vendor/api/v1/product/registrations/draftWith": {
     post: operations["draftProductWith_1"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/draftWithV2/{seriesUUID}/": {
+    post: operations["draftProductWithV2"];
   };
   "/admreg/vendor/api/v1/product/registrations/excel/export": {
     post: operations["createExport_1"];
@@ -284,9 +299,12 @@ export interface paths {
   "/admreg/vendor/api/v1/series/draft": {
     post: operations["createDraftSeries"];
   };
+  "/admreg/vendor/api/v1/series/draftWith": {
+    post: operations["draftSeriesWith"];
+  };
   "/admreg/vendor/api/v1/series/{id}": {
-    get: operations["readSeries"];
-    put: operations["updateSeries"];
+    get: operations["readSeries_1"];
+    put: operations["updateSeries_1"];
   };
   "/admreg/vendor/api/v1/supplier/registrations": {
     get: operations["getById_1"];
@@ -521,8 +539,6 @@ export interface components {
     };
     MediaDTO: {
       /** Format: uuid */
-      id: string;
-      /** Format: uuid */
       oid: string;
       uri: string;
       sourceUri: string;
@@ -533,6 +549,7 @@ export interface components {
       md5: string;
       status: string;
       source: components["schemas"]["MediaSourceType"];
+      objectType?: components["schemas"]["ObjectType"] | null;
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -589,6 +606,8 @@ export interface components {
     };
     /** @enum {string} */
     NewsStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    /** @enum {string} */
+    ObjectType: "SERIES" | "PRODUCT" | "AGREEMENT";
     OpenApiPageable: {
       /**
        * Format: int32
@@ -875,6 +894,10 @@ export interface components {
     SeriesDataDTO: {
       media: components["schemas"]["MediaInfoDTO"][];
     };
+    SeriesDraftWithDTO: {
+      title: string;
+      isoCategory: string;
+    };
     SeriesGroupDTO: {
       title: string;
       seriesId: string;
@@ -917,6 +940,7 @@ export interface components {
       countDeclined: number;
       /** Format: int64 */
       version?: number | null;
+      titleLowercase: string;
     };
     /** @enum {string} */
     SeriesStatus: "ACTIVE" | "INACTIVE" | "DELETED";
@@ -1503,50 +1527,6 @@ export interface operations {
       };
     };
   };
-  uploadAgreementFiles: {
-    parameters: {
-      path: {
-        oid: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          files: string[];
-        };
-      };
-    };
-    responses: {
-      /** @description uploadAgreementFiles 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["MediaDTO"][];
-        };
-      };
-    };
-  };
-  uploadProductFiles: {
-    parameters: {
-      path: {
-        oid: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          files: string[];
-        };
-      };
-    };
-    responses: {
-      /** @description uploadProductFiles 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["MediaDTO"][];
-        };
-      };
-    };
-  };
   getMediaList: {
     parameters: {
       path: {
@@ -1574,6 +1554,30 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["MediaDTO"];
+        };
+      };
+    };
+  };
+  uploadProductFiles: {
+    parameters: {
+      path: {
+        /** @example series, product or agreement */
+        type: string;
+        oid: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          files: string[];
+        };
+      };
+    };
+    responses: {
+      /** @description uploadProductFiles 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["MediaDTO"][];
         };
       };
     };
@@ -2153,6 +2157,41 @@ export interface operations {
       };
     };
   };
+  readSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description readSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SeriesRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description updateSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
   findSuppliers: {
     parameters: {
       query: {
@@ -2569,9 +2608,44 @@ export interface operations {
       };
     };
   };
+  /** @deprecated */
+  getMediaList_1: {
+    parameters: {
+      path: {
+        oid: string;
+      };
+    };
+    responses: {
+      /** @description getMediaList_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["MediaDTO"][];
+        };
+      };
+    };
+  };
+  /** @deprecated */
+  deleteFile_1: {
+    parameters: {
+      path: {
+        oid: string;
+        uri: string;
+      };
+    };
+    responses: {
+      /** @description deleteFile_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["MediaDTO"];
+        };
+      };
+    };
+  };
   uploadFiles: {
     parameters: {
       path: {
+        /** @example series or product */
+        type: string;
         oid: string;
       };
     };
@@ -2591,14 +2665,15 @@ export interface operations {
       };
     };
   };
-  getMediaList_1: {
+  getMediaList_2: {
     parameters: {
       path: {
+        type: string;
         oid: string;
       };
     };
     responses: {
-      /** @description getMediaList_1 200 response */
+      /** @description getMediaList_2 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["MediaDTO"][];
@@ -2606,15 +2681,16 @@ export interface operations {
       };
     };
   };
-  deleteFile_1: {
+  deleteFiles: {
     parameters: {
       path: {
+        type: string;
         oid: string;
         uri: string;
       };
     };
     responses: {
-      /** @description deleteFile_1 200 response */
+      /** @description deleteFiles 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["MediaDTO"];
@@ -2651,6 +2727,21 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteProducts_1: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description deleteProducts_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
         };
       };
     };
@@ -2705,6 +2796,26 @@ export interface operations {
     };
     responses: {
       /** @description draftProductWith_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  draftProductWithV2: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DraftVariantDTO"];
+      };
+    };
+    responses: {
+      /** @description draftProductWithV2 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
@@ -2949,14 +3060,14 @@ export interface operations {
       };
     };
   };
-  readSeries: {
-    parameters: {
-      path: {
-        id: string;
+  draftSeriesWith: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SeriesDraftWithDTO"];
       };
     };
     responses: {
-      /** @description readSeries 200 response */
+      /** @description draftSeriesWith 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
@@ -2964,7 +3075,22 @@ export interface operations {
       };
     };
   };
-  updateSeries: {
+  readSeries_1: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description readSeries_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  updateSeries_1: {
     parameters: {
       path: {
         id: string;
@@ -2976,7 +3102,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description updateSeries 200 response */
+      /** @description updateSeries_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

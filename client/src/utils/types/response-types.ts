@@ -61,6 +61,7 @@ export type MediaDTO = components["schemas"]["MediaDTO"];
 export type MediaInfo = components["schemas"]["MediaInfo"];
 export type MediaInfoDTO = components["schemas"]["MediaInfoDTO"];
 export type ProductDraftWithDTO = components["schemas"]["ProductDraftWithDTO"];
+export type SeriesDraftWithDTO = components["schemas"]["SeriesDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
 export type TechLabelDto = components["schemas"]["TechLabelDTO"];

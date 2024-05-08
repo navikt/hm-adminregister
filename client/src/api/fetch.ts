@@ -21,6 +21,21 @@ export const fetchAPI = async (url: string, method: string, body?: any): Promise
   }
 };
 
+export const fetchAPIAttachment = async (url: string, method: string, body?: any): Promise<any> => {
+  const response = await fetch(url, {
+    method,
+    credentials: "include",
+    body: body ? body : undefined,
+  });
+
+  if (response.ok) {
+    return await response.json();
+  } else {
+    const error = await response.json();
+    return Promise.reject(error);
+  }
+};
+
 export const httpDelete = async (url: string, method: string, body?: any): Promise<any> => {
   const response = await fetch(url, {
     method,

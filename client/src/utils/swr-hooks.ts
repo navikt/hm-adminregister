@@ -7,6 +7,7 @@ import {
   ProductVariantsForDelkontraktDto,
   ProdukterTilGodkjenningChunk,
   SeriesChunk,
+  SeriesRegistrationDTO,
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
@@ -21,6 +22,7 @@ import { LoggedInUser } from "./user-util";
 import { ProductToApprove } from "utils/types/types";
 import { mapProductToApproveDtoToProductToApprove } from "utils/product-util";
 import { AgreementFilterOption } from "rammeavtaler/Rammeavtaler";
+import { getPath } from "api/fetch";
 
 export function baseUrl(url: string = "") {
   if (process.env.NODE_ENV === "production") {
@@ -60,6 +62,47 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     return res.json();
   });
 
+export function useSeries(seriesUUID: string) {
+  const { loggedInUser } = useAuthStore();
+
+  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/${seriesUUID}`);
+
+  const {
+    data: series,
+    error: errorSeries,
+    isLoading: isLoadingSeries,
+    mutate: mutateSeries,
+  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
+
+  return {
+    series,
+    isLoadingSeries,
+    errorSeries,
+    mutateSeries,
+  };
+}
+
+export function userProductVariantsBySeriesId(seriesId: string) {
+  const { loggedInUser } = useAuthStore();
+  const seriesIdPath = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
+
+  const {
+    data: variants,
+    error: errorVariants,
+    isLoading: isLoadingVariants,
+    mutate: mutateVariants,
+  } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
+
+  return {
+    variants,
+    isLoadingVariants,
+    errorVariants,
+    mutateVariants,
+  };
+}
+
 export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTerm: string; statusFilters: string[] }) {
   const { setGlobalError } = useErrorStore();
 
@@ -77,9 +120,6 @@ export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTer
     loggedInUser && titleSearchTerm && titleSearchParam !== "" ? path : null,
     fetcherGET,
   );
-
-  console.log(titleSearchParam);
-  console.log(data?.content.length);
 
   if (error) {
     setGlobalError(error.status, error.message);
@@ -234,27 +274,6 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/${agreementId}`;
 
   const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO[]>(path, fetcherGET);
-
-  useEffect(() => {
-    if (error) {
-      setGlobalError(error.status, error.message);
-    }
-  }, [error, setGlobalError]);
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  };
-}
-
-export function useDelkontraktByDelkontraktId(delkontraktId: string) {
-  const { setGlobalError } = useErrorStore();
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`;
-
-  const { data, error, isLoading, mutate } = useSWR<DelkontraktRegistrationDTO>(path, fetcherGET);
 
   useEffect(() => {
     if (error) {

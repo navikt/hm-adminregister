@@ -1,20 +1,20 @@
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
 
 interface Props {
-  product: ProductRegistrationDTO;
+  series: SeriesRegistrationDTO;
   isAdmin: boolean;
 }
 
-const StatusPanel = ({ product, isAdmin }: Props) => {
-  const isDraft = product.draftStatus === "DRAFT";
-  const isPending = product.adminStatus === "PENDING";
-  const isRejected = product.adminStatus === "REJECTED";
-  const isDeleted = product.registrationStatus === "DELETED";
-  const isInactive = product.registrationStatus === "INACTIVE";
-  const publisert = !isDraft && product.adminStatus === "APPROVED";
+const StatusPanel = ({ series, isAdmin }: Props) => {
+  const isDraft = series.draftStatus === "DRAFT";
+  const isPending = series.adminStatus === "PENDING";
+  const isRejected = series.adminStatus === "REJECTED";
+  const isDeleted = series.status === "DELETED";
+  const isInactive = series.status === "INACTIVE";
+  const publisert = !isDraft && series.adminStatus === "APPROVED";
 
   return (
     <VStack gap="4">
@@ -30,27 +30,19 @@ const StatusPanel = ({ product, isAdmin }: Props) => {
         isRejected={isRejected}
       />
 
-      {!isAdmin && product.message && (
-        <Box>
-          <BodyLong size="small" weight="semibold">
-            Melding til leverandør
-          </BodyLong>
-          <BodyLong size="small">{product.message}</BodyLong>
-        </Box>
-      )}
+      {/*todo: punlushed missing on series*/}
+      {/*{publisert && series.published && <StatusBox title="Publisert" date={series.published} />}*/}
 
-      {publisert && product.published && <StatusBox title="Publisert" date={product.published} />}
-
-      <StatusBox title="Endret" date={product.updated} />
+      <StatusBox title="Endret" date={series.updated} />
 
       <Box>
         <BodyLong size="small" weight="semibold">
           Endret av
         </BodyLong>
-        <BodyLong size="small">{product.updatedByUser}</BodyLong>
+        <BodyLong size="small">{series.updatedByUser}</BodyLong>
       </Box>
 
-      <StatusBox title="Opprettet" date={product.created} />
+      <StatusBox title="Opprettet" date={series.created} />
     </VStack>
   );
 };

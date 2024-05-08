@@ -1,16 +1,18 @@
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
-import { numberOfImages, numberOfVariants } from "produkter/productUtils";
+import { numberOfImages } from "produkter/seriesUtils";
 
 export const RequestApprovalModal = ({
+  series,
   products,
   mutateProducts,
   isValid,
   isOpen,
   setIsOpen,
 }: {
+  series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
   isValid: boolean;
@@ -29,8 +31,8 @@ export const RequestApprovalModal = ({
           <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
           <ul className="product-error-text">
             {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {numberOfImages(products) === 0 && <li>Produktet mangler bilder</li>}
-            {!numberOfVariants(products) && <li>Produktet mangler teknisk data</li>}
+            {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
+            {series.count === 0 && <li>Produktet mangler teknisk data</li>}
           </ul>
         </Modal.Body>
         <Modal.Footer>
