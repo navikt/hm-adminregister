@@ -62,7 +62,7 @@ const ProductPage = () => {
     error,
     isLoading,
     mutate: mutateProducts,
-  } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
+  } = useSWR<ProductRegistrationDTO[]>(seriesIdPath, fetcherGET);
 
   const { data: isoCategory } = useSWR<IsoCategoryDTO>(
     products && products[0]?.isoCategory && products[0].isoCategory !== "0"
