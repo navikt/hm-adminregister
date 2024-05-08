@@ -26,7 +26,8 @@ const OpprettProduktVariant = () => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isValid},
+    setError
   } = useForm<FormData>({
     resolver: zodResolver(createNewProductSchema),
     mode: "onSubmit",
@@ -44,7 +45,7 @@ const OpprettProduktVariant = () => {
       )
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {
-          setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+          setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
         } else {
           setGlobalError(error.status, error.message);
         }
@@ -56,13 +57,13 @@ const OpprettProduktVariant = () => {
       <HStack justify="center" className="create-variant-page">
         <VStack gap="8">
           <Heading level="1" size="large" align="start">
-            Legg til artikkel
+            Legg til variant
           </Heading>
 
           <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("articleName", { required: true })}
-              label={labelRequired("Artikkelnavn")}
+              label={labelRequired("Variantnavn")}
               id="articleName"
               name="articleName"
               type="text"
@@ -74,15 +75,14 @@ const OpprettProduktVariant = () => {
               id="supplierRef"
               name="supplierRef"
               type="text"
-              onChange={() => setSupplierRefExistsMessage(undefined)}
-              error={errors?.supplierRef?.message || supplierRefExistsMessage}
+              error={errors?.supplierRef?.message}
             />
 
             <div className="button-container">
               <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
                 Avbryt
               </Button>
-              <Button type="submit" size="medium">
+              <Button type="submit" size="medium" disabled={!isValid}>
                 Opprett og legg til mer info
               </Button>
             </div>

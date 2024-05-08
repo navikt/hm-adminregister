@@ -40,8 +40,8 @@ const VariantsTab = ({
     <Tabs.Panel value="variants" className="tab-panel">
       {hasNoVariants && (
         <Alert variant={showInputError ? "error" : "info"}>
-          Produktet trenger en eller flere artikler. Her kan man legge inn artikler som varierer for eksempel i
-          størrelse eller farge. Alle artiklene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
+          Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
+          størrelse eller farge. Alle variantene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
           fra leverandør og teknisk data.
         </Alert>
       )}
@@ -59,10 +59,10 @@ const VariantsTab = ({
                           <Link to={`${pathname}/rediger-variant/${product.id}?page=${pageState}`}>
                             <Button
                               as="a"
-                              title="Rediger artikkel"
+                              title="Rediger variant"
                               variant="tertiary-neutral"
                               size="small"
-                              icon={<PencilWritingIcon aria-hidden title="rediger artikkel" />}
+                              icon={<PencilWritingIcon aria-hidden/>}
                               iconPosition="right"
                             />
                           </Link>
@@ -73,7 +73,7 @@ const VariantsTab = ({
                 )}
                 <Table.Body>
                   <Table.Row>
-                    <Table.HeaderCell scope="row">Artikkelnavn:</Table.HeaderCell>
+                    <Table.HeaderCell scope="row">Variantnavn:</Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.DataCell key={`articleName-${i}`}>{product.articleName || "-"}</Table.DataCell>
                     ))}
@@ -128,7 +128,7 @@ const VariantsTab = ({
             icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
             style={{ marginTop: "16px" }}
           >
-            Legg til ny artikkel
+            Legg til ny variant
           </Button>
         </Link>
       )}

@@ -205,6 +205,10 @@ const ProductPage = () => {
                   }
                 />
                 <Tabs.Tab
+                  value="variants"
+                  label={<TabLabel title="Egenskaper" numberOfElements={series.count} showAlert={true} />}
+                />
+                <Tabs.Tab
                   value="images"
                   label={<TabLabel title="Bilder" numberOfElements={series.count} showAlert={true} />}
                 />
@@ -215,10 +219,6 @@ const ProductPage = () => {
                 <Tabs.Tab
                   value="videos"
                   label={<TabLabel title="Videolenker" numberOfElements={series.count} showAlert={false} />}
-                />
-                <Tabs.Tab
-                  value="variants"
-                  label={<TabLabel title="Tekniske data / artikler" numberOfElements={series.count} showAlert={true} />}
                 />
               </Tabs.List>
               <AboutTab

@@ -1,6 +1,5 @@
 import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
 import classNames from "classnames";
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, labelRequired } from "utils/string-util";
@@ -41,11 +40,9 @@ const ProductVariantForm = ({
     supplierRef,
     productData: { techData },
   } = product;
-  const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const { loggedInUser } = useAuthStore();
-  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
   const { setGlobalError } = useErrorStore();
 
   const { data: techLabels, isLoading: isLoadingTechLabels } = useSWR<TechLabelDto[]>(
@@ -58,6 +55,7 @@ const ProductVariantForm = ({
     register,
     formState: { errors, isValid },
     control,
+    setError,
   } = useForm<FormData>({
     mode: "onTouched",
     defaultValues: {
@@ -89,7 +87,7 @@ const ProductVariantForm = ({
       })
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {
-          setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+          setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
         } else {
           setGlobalError(error.status, error.message);
         }
@@ -127,17 +125,18 @@ const ProductVariantForm = ({
         type="text"
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
-        onChange={() => setSupplierRefExistsMessage(undefined)}
-        error={errors?.supplierRef?.message || supplierRefExistsMessage}
+        error={errors?.supplierRef?.message}
       />
-      <TextField
-        {...register("hmsArtNr")}
-        label={"HMS nummer"}
-        id="hmsArtNr"
-        name="hmsArtNr"
-        type="text"
-        error={errors?.hmsArtNr?.message}
-      />
+      {loggedInUser?.isAdmin && (
+        <TextField
+          {...register("hmsArtNr")}
+          label={"HMS nummer"}
+          id="hmsArtNr"
+          name="hmsArtNr"
+          type="text"
+          error={errors?.hmsArtNr?.message}
+        />
+      )}
       {techDataFields.length > 0 && (
         <Alert variant="info">
           {firstTime
@@ -212,11 +211,6 @@ const ProductVariantForm = ({
           Lagre
         </Button>
       </div>
-      {error?.name && (
-        <p>
-          <span className="auth-dialog-box__error-message">{error?.message}</span>
-        </p>
-      )}
     </form>
   );
 };
