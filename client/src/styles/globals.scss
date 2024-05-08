@@ -142,7 +142,14 @@ main:not(.show-menu) {
   width: fit-content;
 }
 
-.text-overflow-hidden {
+.text-overflow-hidden-small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.text-overflow-hidden-large {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

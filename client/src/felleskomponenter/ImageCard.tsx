@@ -23,7 +23,7 @@ export const ImageCard = ({ mediaInfo, handleDeleteFile, showMenuButton = true }
           <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} onClick={() => setImageModalIsOpen(true)} />
           <VStack gap="1" align="center">
             <i>Filnavn</i>{" "}
-            <span className="text-overflow-hidden">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
+            <span className="text-overflow-hidden-small">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
           </VStack>
         </VStack>
         {showMenuButton && (

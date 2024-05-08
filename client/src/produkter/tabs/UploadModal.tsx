@@ -322,10 +322,10 @@ const Upload = ({
             ) : (
               <FilePdfIcon fontSize="1.5rem" />
             )}
-            <Label className="text-overflow-hidden">{fileName}</Label>
+            <Label className="text-overflow-hidden-large">{fileName}</Label>
           </HStack>
 
-          <HStack>
+          <HStack wrap={false}>
             {fileType === "documents" && (
               <Button
                 variant="tertiary"
