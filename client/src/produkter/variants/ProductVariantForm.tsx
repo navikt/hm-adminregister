@@ -55,7 +55,7 @@ const ProductVariantForm = ({
     register,
     formState: { errors, isValid },
     control,
-    setError
+    setError,
   } = useForm<FormData>({
     mode: "onTouched",
     defaultValues: {
@@ -127,14 +127,16 @@ const ProductVariantForm = ({
         className={classNames({ readonly: firstTime })}
         error={errors?.supplierRef?.message}
       />
-      <TextField
-        {...register("hmsArtNr")}
-        label={"HMS nummer"}
-        id="hmsArtNr"
-        name="hmsArtNr"
-        type="text"
-        error={errors?.hmsArtNr?.message}
-      />
+      {loggedInUser?.isAdmin && (
+        <TextField
+          {...register("hmsArtNr")}
+          label={"HMS nummer"}
+          id="hmsArtNr"
+          name="hmsArtNr"
+          type="text"
+          error={errors?.hmsArtNr?.message}
+        />
+      )}
       {techDataFields.length > 0 && (
         <Alert variant="info">
           {firstTime
