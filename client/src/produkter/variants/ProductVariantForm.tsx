@@ -1,19 +1,27 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, HStack, TextField } from "@navikt/ds-react";
+import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
 import classNames from "classnames";
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, labelRequired } from "utils/string-util";
-import { ProductRegistrationDTO } from "utils/types/response-types";
-import { productVariantSchema } from "utils/zodSchema/newProduct";
-import { z } from "zod";
-import styles from "../ProductVariantForm.module.scss";
+import { ProductRegistrationDTO, TechLabelDto } from "utils/types/response-types";
 import { updateProductVariant } from "api/ProductApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import styles from "../ProductVariantForm.module.scss";
+import useSWR from "swr";
+import { HM_REGISTER_URL } from "environments";
+import { fetcherGET } from "utils/swr-hooks";
 
-type FormData = z.infer<typeof productVariantSchema>;
+type FormData = {
+  articleName: string;
+  supplierRef: string;
+  hmsArtNr: string;
+  techData: Array<{
+    key: string;
+    value: string;
+    unit: string;
+  }>;
+};
 
 const ProductVariantForm = ({
   product,
@@ -32,21 +40,24 @@ const ProductVariantForm = ({
     supplierRef,
     productData: { techData },
   } = product;
-  const [error, setError] = useState<Error | null>(null);
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const { loggedInUser } = useAuthStore();
-  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
   const { setGlobalError } = useErrorStore();
+
+  const { data: techLabels, isLoading: isLoadingTechLabels } = useSWR<TechLabelDto[]>(
+    `${HM_REGISTER_URL()}/admreg/api/v1/techlabels/${product.isoCategory}`,
+    fetcherGET,
+  );
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isValid },
     control,
+    setError
   } = useForm<FormData>({
-    resolver: zodResolver(productVariantSchema),
-    mode: "onChange",
+    mode: "onTouched",
     defaultValues: {
       articleName,
       hmsArtNr: product.hmsArtNr ?? "",
@@ -55,7 +66,7 @@ const ProductVariantForm = ({
     },
   });
 
-  const { fields: techDataFields, append, remove } = useFieldArray({ name: "techData", control });
+  const { fields: techDataFields } = useFieldArray({ name: "techData", control });
 
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
@@ -76,12 +87,22 @@ const ProductVariantForm = ({
       })
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {
-          setSupplierRefExistsMessage("Artikkelnummeret finnes allerede på en annen variant");
+          setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
         } else {
           setGlobalError(error.status, error.message);
         }
       });
   }
+
+  if (isLoadingTechLabels || !techLabels) {
+    return (
+      <VStack gap="8">
+        <Loader />
+      </VStack>
+    );
+  }
+
+  const techLabelsMap = new Map(techLabels.map((x) => [x.label, x]));
 
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
@@ -104,8 +125,7 @@ const ProductVariantForm = ({
         type="text"
         readOnly={firstTime}
         className={classNames({ readonly: firstTime })}
-        onChange={() => setSupplierRefExistsMessage(undefined)}
-        error={errors?.supplierRef?.message || supplierRefExistsMessage}
+        error={errors?.supplierRef?.message}
       />
       <TextField
         {...register("hmsArtNr")}
@@ -124,16 +144,54 @@ const ProductVariantForm = ({
       )}
       {techDataFields.map((key, index) => {
         const errorForField = errors?.techData?.[index]?.value;
+        const techDataType = techLabelsMap.get(key.key);
+
+        const label = techDataType?.definition ? (
+          <HStack gap="1">
+            {key.key} <HelpText>{techDataType?.definition}</HelpText>{" "}
+          </HStack>
+        ) : (
+          key.key
+        );
+
         return (
           <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2" wrap={false}>
-            <TextField
-              {...register(`techData.${index}.value`, { required: false })}
-              label={`${key.key}`}
-              id={`techData.${index}.value`}
-              name={`techData.${index}.value`}
-              type="text"
-              error={errorForField?.message}
-            />
+            {techDataType?.type === "N" && `${key.key}` ? (
+              <TextField
+                {...register(`techData.${index}.value`, {
+                  validate: (value) => value === "" || /^\d+([.,]\d+)?$/.test(value) || "Må være tall",
+                })}
+                label={label}
+                id={`techData.${index}.value`}
+                name={`techData.${index}.value`}
+                type="text"
+                error={errorForField?.message}
+              />
+            ) : techDataType?.type === "L" ? (
+              <Select {...register(`techData.${index}.value`)} label={label}>
+                <option value="">Velg</option>
+                <option value="Ja">Ja</option>
+                <option value="Nei">Nei</option>
+              </Select>
+            ) : techDataType?.type === "C" && techDataType?.options?.length > 0 ? (
+              <Select {...register(`techData.${index}.value`)} label={label}>
+                <option value="">Velg</option>
+                {techDataType.options.map((option) => (
+                  <option value={option} key={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <TextField
+                {...register(`techData.${index}.value`)}
+                label={label}
+                id={`techData.${index}.value`}
+                name={`techData.${index}.value`}
+                type="text"
+                error={errorForField?.message}
+              />
+            )}
             <span className={styles.techDataUnit}>{techData?.[index]?.unit}</span>
           </HStack>
         );
@@ -151,11 +209,6 @@ const ProductVariantForm = ({
           Lagre
         </Button>
       </div>
-      {error?.name && (
-        <p>
-          <span className="auth-dialog-box__error-message">{error?.message}</span>
-        </p>
-      )}
     </form>
   );
 };

@@ -2,19 +2,7 @@ import { useState } from "react";
 
 import useSWR from "swr";
 
-import {
-  Alert,
-  Button,
-  Dropdown,
-  Heading,
-  HGrid,
-  HStack,
-  Label,
-  Loader,
-  Tabs,
-  TextField,
-  VStack,
-} from "@navikt/ds-react";
+import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
 import "./product-page.scss";
 import { FormProvider, useForm } from "react-hook-form";
@@ -28,13 +16,7 @@ import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
 import { updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
-import {
-  CogIcon,
-  ExclamationmarkTriangleIcon,
-  FloppydiskIcon,
-  PencilWritingIcon,
-  TrashIcon,
-} from "@navikt/aksel-icons";
+import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import VideosTab from "./tabs/VideosTab";
 import ImageTab from "./tabs/ImagesTab";
 import DocumentTab from "./tabs/DocumentsTab";
@@ -42,6 +24,7 @@ import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } f
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import AdminActions from "produkter/AdminActions";
+import SupplierActions from "produkter/SupplierActions";
 
 export type EditCommonInfoProduct = {
   title: string;
@@ -238,6 +221,17 @@ const ProductPage = () => {
                   }
                 />
                 <Tabs.Tab
+                  value="variants"
+                  label={
+                    <>
+                      Egenskaper
+                      {numberOfVariants(products) === 0 && !isValid && (
+                        <ExclamationmarkTriangleIcon className="product-error-text" />
+                      )}
+                    </>
+                  }
+                />
+                <Tabs.Tab
                   value="images"
                   label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} showAlert={true} />}
                 />
@@ -248,12 +242,6 @@ const ProductPage = () => {
                 <Tabs.Tab
                   value="videos"
                   label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} showAlert={false} />}
-                />
-                <Tabs.Tab
-                  value="variants"
-                  label={
-                    <TabLabel title="Tekniske data / artikler" numberOfElementsFn={numberOfVariants} showAlert={true} />
-                  }
                 />
               </Tabs.List>
               <AboutTab
@@ -291,28 +279,12 @@ const ProductPage = () => {
               />
             )}
             {!loggedInUser?.isAdmin && isDraft && isActive && (
-              <HStack align={"end"} gap="2">
-                <Button
-                  style={{ marginTop: "20px" }}
-                  onClick={() => {
-                    setIsValid(productIsValid());
-                    setApprovalModalIsOpen(true);
-                  }}
-                >
-                  Send til godkjenning
-                </Button>
-                <Dropdown>
-                  <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
-                  <Dropdown.Menu>
-                    <Dropdown.Menu.List>
-                      <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                        <TrashIcon aria-hidden />
-                        Slett
-                      </Dropdown.Menu.List.Item>
-                    </Dropdown.Menu.List>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </HStack>
+              <SupplierActions
+                setIsValid={setIsValid}
+                productIsValid={productIsValid}
+                setApprovalModalIsOpen={setApprovalModalIsOpen}
+                setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+              />
             )}
             <StatusPanel product={product} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>
