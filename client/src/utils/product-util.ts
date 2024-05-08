@@ -8,6 +8,7 @@ import {
 } from "./types/response-types";
 import { Product, ProductToApprove } from "utils/types/types";
 import * as _ from "lodash";
+import { Upload } from "produkter/tabs/UploadModal";
 
 export const mapImagesAndPDFfromMedia = (
   products: ProductRegistrationDTO[],
@@ -16,8 +17,10 @@ export const mapImagesAndPDFfromMedia = (
   const pdfs: MediaInfoDTO[] = [];
   const images: MediaInfoDTO[] = [];
   const videos: MediaInfoDTO[] = [];
+
   products
     .flatMap((product: ProductRegistrationDTO) => product.productData.media)
+    .filter((media: MediaInfoDTO | null) => media !== null) // Filter out null media
     .map((media: MediaInfoDTO) => {
       if (media.type === "IMAGE" && media.uri && !seen[media.uri]) {
         images.push(media);
@@ -66,7 +69,7 @@ export const removeFileFromProduct = (
   productToEdit: ProductRegistrationDTO,
   uriToRemove: string,
 ): ProductRegistrationDTO => {
-  const filteredMedia = productToEdit.productData.media.filter((file) => file.uri !== uriToRemove);
+  const filteredMedia = productToEdit.productData.media.filter((file) => file && file.uri && file.uri !== uriToRemove);
   return {
     ...productToEdit,
     productData: {
@@ -106,19 +109,29 @@ export const editFileTextOnProduct = (
   }
 };
 
-export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
-  return mediaDTO.map((media, i) => ({
-    sourceUri: media.sourceUri,
-    uri: media.uri,
-    //Text-feltet brukes foreløpig til tittelen vi ønsker å vise i GUI. Bør lage et eget felt for alt-text på bilder
-    text: media.filename,
-    filename: media.filename,
-    //La brukeren sette prioritet selv senere
-    priority: i + 1,
-    type: media.type,
-    source: media.source,
-    updated: media.updated,
-  }));
+export const mapToMediaInfo = (mediaDTO: MediaDTO[], uploads?: Upload[]): MediaInfo[] => {
+  return mediaDTO.map((media, i) => {
+    //Text is either the original filename, else its the edited filename chose by the user.
+    let text = media.filename;
+
+    if (uploads) {
+      const matchingUpload = uploads.find((upload) => upload.file.name === media.filename);
+      if (matchingUpload && matchingUpload.editedFileName) {
+        text = matchingUpload.editedFileName;
+      }
+    }
+
+    return {
+      sourceUri: media.sourceUri,
+      uri: media.uri,
+      text: text,
+      filename: media.filename,
+      priority: i + 1,
+      type: media.type,
+      source: media.source,
+      updated: media.updated,
+    };
+  });
 };
 
 export const mapProductToApproveDtoToProductToApprove = (

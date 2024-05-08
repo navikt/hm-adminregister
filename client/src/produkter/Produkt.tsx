@@ -26,7 +26,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetcherGET } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { publishProducts, rejectProducts, updateProduct } from "api/ProductApi";
+import { updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import {
   CogIcon,

@@ -43,7 +43,7 @@ export const MoreMenu = ({
                 onClick={() => handleEditFileName(mediaInfo.uri)}
                 icon={<PencilWritingIcon title="rediger" fontSize="1.5rem" />}
               >
-                Rediger filnavn
+                Endre filnavn
               </Button>
             )}
 
