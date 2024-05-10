@@ -3,11 +3,13 @@ import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "produkter/seriesUtils";
+import { sendSeriesToApproval } from "api/SeriesApi";
 
 export const RequestApprovalModal = ({
   series,
   products,
   mutateProducts,
+  mutateSeries,
   isValid,
   isOpen,
   setIsOpen,
@@ -15,11 +17,13 @@ export const RequestApprovalModal = ({
   series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
+  mutateSeries: () => void;
   isValid: boolean;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
   async function onSendTilGodkjenning() {
+    sendSeriesToApproval(series.id).then(() => mutateSeries());
     sendFlereTilGodkjenning(products?.map((product) => product.id) || []).then(() => mutateProducts());
   }
 

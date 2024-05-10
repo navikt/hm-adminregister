@@ -3,13 +3,12 @@ import { Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { createNewProductSchema, newProductVariantSchema } from "utils/zodSchema/newProduct";
+import { newProductVariantSchema } from "utils/zodSchema/newProduct";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { DraftVariantDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { draftProductVariantV2 } from "api/ProductApi";
-import { useState } from "react";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -21,15 +20,13 @@ const OpprettProduktVariant = () => {
 
   const { seriesId } = useParams();
 
-  const [supplierRefExistsMessage, setSupplierRefExistsMessage] = useState<string | undefined>(undefined);
-
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid},
-    setError
+    formState: { errors, isValid },
+    setError,
   } = useForm<FormData>({
-    resolver: zodResolver(createNewProductSchema),
+    resolver: zodResolver(newProductVariantSchema),
     mode: "onSubmit",
   });
 

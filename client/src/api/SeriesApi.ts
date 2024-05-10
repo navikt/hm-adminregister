@@ -2,6 +2,10 @@ import { EditSeriesInfo } from "produkter/Produkt";
 import { SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { fetchAPI, getPath } from "api/fetch";
 
+export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
+};
+
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
 };

@@ -19,7 +19,7 @@ import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "
 import VideosTab from "./tabs/VideosTab";
 import ImageTab from "./tabs/ImagesTab";
 import DocumentTab from "./tabs/DocumentsTab";
-import { numberOfImages } from "produkter/seriesUtils";
+import { numberOfDocuments, numberOfImages, numberOfVideos } from "produkter/seriesUtils";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import AdminActions from "produkter/AdminActions";
@@ -51,8 +51,8 @@ const ProductPage = () => {
   const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
 
   const { data: isoCategory } = useSWR<IsoCategoryDTO>(
-    variants && variants[0]?.isoCategory && variants[0].isoCategory !== "0"
-      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${variants[0].isoCategory}`
+    series?.isoCategory && series.isoCategory !== "0"
+      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${series.isoCategory}`
       : null,
     fetcherGET,
   );
@@ -141,6 +141,7 @@ const ProductPage = () => {
           series={series}
           products={variants ?? []}
           mutateProducts={mutateVariants}
+          mutateSeries={mutateSeries}
           isValid={isValid}
           isOpen={approvalModalIsOpen}
           setIsOpen={setApprovalModalIsOpen}
@@ -210,15 +211,15 @@ const ProductPage = () => {
                 />
                 <Tabs.Tab
                   value="images"
-                  label={<TabLabel title="Bilder" numberOfElements={series.count} showAlert={true} />}
+                  label={<TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={true} />}
                 />
                 <Tabs.Tab
                   value="documents"
-                  label={<TabLabel title="Dokumenter" numberOfElements={series.count} showAlert={false} />}
+                  label={<TabLabel title="Dokumenter" numberOfElements={numberOfDocuments(series)} showAlert={false} />}
                 />
                 <Tabs.Tab
                   value="videos"
-                  label={<TabLabel title="Videolenker" numberOfElements={series.count} showAlert={false} />}
+                  label={<TabLabel title="Videolenker" numberOfElements={numberOfVideos(series)} showAlert={false} />}
                 />
               </Tabs.List>
               <AboutTab
