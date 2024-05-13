@@ -34,7 +34,7 @@ export const RequestApprovalModal = ({
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
           <ul className="product-error-text">
-            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
+            {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
             {series.count === 0 && <li>Produktet mangler teknisk data</li>}
           </ul>
