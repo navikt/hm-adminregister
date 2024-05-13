@@ -30,6 +30,7 @@ const OpprettProduktVariant = () => {
     mode: "onSubmit",
   });
 
+
   async function onSubmit(data: FormData) {
     const newVariant: DraftVariantDTO = {
       articleName: data.articleName,
@@ -80,7 +81,7 @@ const OpprettProduktVariant = () => {
                 Avbryt
               </Button>
               <Button type="submit" size="medium" disabled={!isValid}>
-                Opprett og legg til mer info
+                "Opprett"
               </Button>
             </div>
           </form>
