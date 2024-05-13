@@ -37,7 +37,7 @@ pre {
   padding-left: 0;
 
   li {
-    padding: $a-spacing-2 $a-spacing-4;
+    padding: $a-spacing-4 $a-spacing-4;
     background-color: #ffffff;
     box-shadow: $a-shadow-xsmall;
     border-radius: $a-border-radius-medium;
@@ -49,10 +49,6 @@ pre {
     li {
       width: 100%;
       padding: $a-spacing-4 $a-spacing-4;
-
-      .navds-form-field {
-        gap: 0;
-      }
     }
   }
 }
@@ -81,7 +77,7 @@ pre {
   display: flex;
   justify-content: center;
   position: relative;
-  :hover{
+  :hover {
     cursor: pointer;
     opacity: 0.7;
   }

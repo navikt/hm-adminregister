@@ -49,10 +49,6 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     },
   }).then((res) => {
     if (!res.ok) {
-      if (res.status === 401) {
-        window.location.href = `${baseUrl("/logg-inn")}`;
-        return res.json();
-      }
       return res.json().then((data) => {
         throw new CustomError(data.errorMessage || res.statusText, res.status);
       });

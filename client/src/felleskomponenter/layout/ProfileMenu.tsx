@@ -49,7 +49,7 @@ const ProfileMenu = () => {
               <Buldings3Icon title="Building icon" fontSize="2.25rem" />
             )}
             <VStack align={"start"}>
-              <BodyShort className="text-overflow-hidden">
+              <BodyShort className="text-overflow-hidden-small">
                 {loggedInUser?.isAdmin ? "Administrator" : loggedInUser?.supplierName}
               </BodyShort>
               <BodyShort size="small">{loggedInUser?.userName}</BodyShort>
