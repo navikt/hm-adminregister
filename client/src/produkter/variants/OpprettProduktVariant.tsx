@@ -41,9 +41,10 @@ const OpprettProduktVariant = () => {
     };
 
     draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant)
-      .then((product) =>
-        navigate(`/produkter/${seriesId}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`),
-      )
+      .then((product) => {
+        console.log("product", product.id);
+        navigate(`/produkter/${seriesId}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`);
+      })
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {
           setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
