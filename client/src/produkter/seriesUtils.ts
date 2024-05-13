@@ -12,6 +12,10 @@ export const numberOfVideos = (series: SeriesRegistrationDTO) => {
   return series.seriesData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
 };
 
+export const mapThumbnail = (series: SeriesRegistrationDTO): MediaInfoDTO | null => {
+  return series.seriesData.media.find((media) => media.type == "IMAGE") ?? null;
+};
+
 export const mapImagesAndPDFfromMedia = (
   series: SeriesRegistrationDTO,
 ): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {

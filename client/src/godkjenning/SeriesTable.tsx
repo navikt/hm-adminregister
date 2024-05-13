@@ -1,15 +1,15 @@
 import { HStack, Link, SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
-import { ProductToApproveDto } from "utils/types/response-types";
+import { SeriesToApproveDto } from "utils/types/response-types";
 import { ChevronRightIcon } from "@navikt/aksel-icons";
 import { baseUrl } from "utils/swr-hooks";
 import { Thumbnail } from "felleskomponenter/Thumbnail";
 
-interface ProductTableProps {
-  products: ProductToApproveDto[];
+interface SeriesTableProps {
+  series: SeriesToApproveDto[];
 }
 
-export const ProductTable = ({ products }: ProductTableProps) => {
+export const SeriesTable = ({ series }: SeriesTableProps) => {
   const [sort, setSort] = useState<SortState | undefined>();
 
   const handleSort = (sortKey: string | undefined) => {
@@ -36,7 +36,7 @@ export const ProductTable = ({ products }: ProductTableProps) => {
     return 0;
   };
 
-  const sortedData = products.slice().sort((a, b) => {
+  const sortedData = series.slice().sort((a, b) => {
     if (sort) {
       return sort.direction === "ascending" ? comparator(b, a, sort.orderBy) : comparator(a, b, sort.orderBy);
     }
@@ -52,9 +52,9 @@ export const ProductTable = ({ products }: ProductTableProps) => {
             <Table.ColumnHeader sortKey="status" sortable>
               Status
             </Table.ColumnHeader>
-            <Table.ColumnHeader sortKey="delkontrakttittel" sortable>
-              Delkontrakt
-            </Table.ColumnHeader>
+            {/*<Table.ColumnHeader sortKey="delkontrakttittel" sortable>*/}
+            {/*  Delkontrakt*/}
+            {/*</Table.ColumnHeader>*/}
             <Table.ColumnHeader sortKey="supplierName" sortable>
               Leverandør
             </Table.ColumnHeader>
@@ -62,21 +62,22 @@ export const ProductTable = ({ products }: ProductTableProps) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {sortedData.map(({ title, status, delkontrakttittel, supplierName, seriesId, thumbnail }, i) => {
+          {sortedData.map((series, i) => {
             return (
-              <Table.Row key={i + title}>
+              <Table.Row key={i + series.title}>
                 <Table.HeaderCell scope="row">
                   <HStack justify="space-evenly" style={{ alignItems: "center" }}>
-                    {thumbnail && <Thumbnail mediaInfo={thumbnail} />}
-                    <div>{title}</div>
+                    {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
+                    <div>{series.title}</div>
                   </HStack>
                 </Table.HeaderCell>
-                <Table.DataCell>{<StatusTag status={status} />}</Table.DataCell>
-                <Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>
-                <Table.DataCell>{supplierName}</Table.DataCell>
+                {/*todo: handle other statuses when they are implemented*/}
+                <Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>
+                {/*<Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>*/}
+                <Table.DataCell>{series.supplierName}</Table.DataCell>
                 <Table.DataCell>
                   {" "}
-                  <Link href={baseUrl(`/produkter/${seriesId}`)}>
+                  <Link href={baseUrl(`/produkter/${series.seriesUUID}`)}>
                     <ChevronRightIcon title="gå til produkt" fontSize="1.5rem" />
                   </Link>
                 </Table.DataCell>

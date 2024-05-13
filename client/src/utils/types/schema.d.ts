@@ -156,9 +156,16 @@ export interface paths {
   "/admreg/admin/api/v1/series": {
     get: operations["getSeries"];
   };
+  "/admreg/admin/api/v1/series/approve/{id}": {
+    put: operations["approveSeries"];
+  };
+  "/admreg/admin/api/v1/series/to-approve": {
+    get: operations["findSeriesPendingApprove"];
+  };
   "/admreg/admin/api/v1/series/{id}": {
     get: operations["readSeries"];
     put: operations["updateSeries"];
+    delete: operations["deleteSeries"];
   };
   "/admreg/admin/api/v1/supplier/registrations": {
     get: operations["findSuppliers"];
@@ -301,6 +308,9 @@ export interface paths {
   };
   "/admreg/vendor/api/v1/series/draftWith": {
     post: operations["draftSeriesWith"];
+  };
+  "/admreg/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
+    put: operations["setSeriesToBeApproved"];
   };
   "/admreg/vendor/api/v1/series/{id}": {
     get: operations["readSeries_1"];
@@ -657,6 +667,12 @@ export interface components {
       /** Format: int32 */
       totalPages?: number;
     };
+    Page_SeriesToApproveDTO_: components["schemas"]["Slice_SeriesToApproveDTO_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
     Page_SupplierRegistrationDTO_: components["schemas"]["Slice_SupplierRegistrationDTO_"] & {
       /** Format: int64 */
       totalSize: number;
@@ -944,6 +960,14 @@ export interface components {
     };
     /** @enum {string} */
     SeriesStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    SeriesToApproveDTO: {
+      title: string;
+      /** Format: uuid */
+      seriesUUID: string;
+      status: string;
+      supplierName: string;
+      thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
+    };
     Slice_AgreementBasicInformationDto_: {
       content: components["schemas"]["AgreementBasicInformationDto"][];
       pageable: components["schemas"]["OpenApiPageable"];
@@ -998,6 +1022,19 @@ export interface components {
     };
     Slice_SeriesRegistrationDTO_: {
       content: components["schemas"]["SeriesRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_SeriesToApproveDTO_: {
+      content: components["schemas"]["SeriesToApproveDTO"][];
       pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -2157,6 +2194,39 @@ export interface operations {
       };
     };
   };
+  approveSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description approveSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  findSeriesPendingApprove: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description findSeriesPendingApprove 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_SeriesToApproveDTO_"];
+        };
+      };
+    };
+  };
   readSeries: {
     parameters: {
       path: {
@@ -2185,6 +2255,21 @@ export interface operations {
     };
     responses: {
       /** @description updateSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description deleteSeries 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
@@ -3068,6 +3153,21 @@ export interface operations {
     };
     responses: {
       /** @description draftSeriesWith 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  setSeriesToBeApproved: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setSeriesToBeApproved 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

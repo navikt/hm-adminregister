@@ -147,8 +147,10 @@ const ProductPage = () => {
           setIsOpen={setApprovalModalIsOpen}
         />
         <DeleteConfirmationModal
+          series={series}
           products={variants ?? []}
           mutateProducts={mutateVariants}
+          mutateSeries={mutateSeries}
           isOpen={deleteConfirmationModalIsOpen}
           setIsOpen={setDeleteConfirmationModalIsOpen}
         />
@@ -248,8 +250,10 @@ const ProductPage = () => {
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin && isActive && (
               <AdminActions
+                series={series}
                 products={variants || []}
                 mutateProducts={mutateVariants}
+                mutateSeries={mutateSeries}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}

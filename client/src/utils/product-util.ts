@@ -1,42 +1,6 @@
-import {
-  MediaDTO,
-  MediaInfo,
-  MediaInfoDTO,
-  ProductRegistrationDTO,
-  ProductToApproveDto,
-  TechData,
-} from "./types/response-types";
-import { Product, ProductToApprove } from "utils/types/types";
+import { MediaDTO, MediaInfo, ProductRegistrationDTO, TechData } from "./types/response-types";
+import { Product } from "utils/types/types";
 import * as _ from "lodash";
-
-export const mapImagesAndPDFfromMedia = (
-  products: ProductRegistrationDTO[],
-): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
-  const seen: { [uri: string]: boolean } = {};
-  const pdfs: MediaInfoDTO[] = [];
-  const images: MediaInfoDTO[] = [];
-  const videos: MediaInfoDTO[] = [];
-  products
-    .flatMap((product: ProductRegistrationDTO) => product.productData.media)
-    .map((media: MediaInfoDTO) => {
-      if (media.type === "IMAGE" && media.uri && !seen[media.uri]) {
-        images.push(media);
-      }
-      if (media.type === "PDF" && media.uri && !seen[media.uri]) {
-        pdfs.push(media);
-      }
-      if (media.type === "VIDEO" && media.source === "EXTERNALURL" && media.uri && !seen[media.uri]) {
-        videos.push(media);
-      }
-      seen[media.uri] = true;
-    });
-
-  return {
-    images: images,
-    pdfs: pdfs,
-    videos: videos,
-  };
-};
 
 export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): string[] {
   const uniqueKeys = new Set<string>();
@@ -46,65 +10,6 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): st
 
   return Array.from(uniqueKeys);
 }
-
-export const getEditedProductDTOAddMedia = (
-  productToEdit: ProductRegistrationDTO,
-  media: MediaInfoDTO[],
-): ProductRegistrationDTO => {
-  const oldAndNewfiles = productToEdit.productData.media.concat(media);
-
-  return {
-    ...productToEdit,
-    productData: {
-      ...productToEdit.productData,
-      media: oldAndNewfiles,
-    },
-  };
-};
-
-export const removeFileFromProduct = (
-  productToEdit: ProductRegistrationDTO,
-  uriToRemove: string,
-): ProductRegistrationDTO => {
-  const filteredMedia = productToEdit.productData.media.filter((file) => file.uri !== uriToRemove);
-  return {
-    ...productToEdit,
-    productData: {
-      ...productToEdit.productData,
-      media: filteredMedia,
-    },
-  };
-};
-
-export const editFileTextOnProduct = (
-  productToEdit: ProductRegistrationDTO,
-  editedText: string,
-  uri: string,
-): ProductRegistrationDTO => {
-  const mediaIndex = productToEdit.productData.media.findIndex((media) => media.uri === uri);
-
-  if (mediaIndex !== -1) {
-    const updatedMedia = [
-      ...productToEdit.productData.media.slice(0, mediaIndex), // Keep media before the updated one
-      {
-        ...productToEdit.productData.media[mediaIndex],
-        text: editedText, // Update the text property
-      },
-      ...productToEdit.productData.media.slice(mediaIndex + 1), // Keep media after the updated one
-    ];
-
-    // Return a new ProductRegistrationDTO object with updated media
-    return {
-      ...productToEdit,
-      productData: {
-        ...productToEdit.productData,
-        media: updatedMedia,
-      },
-    };
-  } else {
-    return productToEdit;
-  }
-};
 
 export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
   return mediaDTO.map((media, i) => ({
@@ -119,32 +24,6 @@ export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
     source: media.source,
     updated: media.updated,
   }));
-};
-
-export const mapProductToApproveDtoToProductToApprove = (
-  productToApproveDtos: ProductToApproveDto[],
-): ProductToApprove[] => {
-  const groupedBySeries = _.groupBy(productToApproveDtos, "seriesId");
-
-  const mappedProductsToApprove: ProductToApprove[] = [];
-
-  Object.entries(groupedBySeries).forEach(([key, dtos]) => {
-    if (dtos.length > 0) {
-      const productToApprove: ProductToApprove = {
-        seriesId: key,
-        title: dtos[0].title,
-        articleName: dtos[0].articleName,
-        agreementId: dtos[0].agreementId,
-        delkontrakttittel: dtos[0].delkontrakttittel,
-        status: dtos[0].status,
-        supplierName: dtos[0].supplierName,
-        thumbnail: dtos[0].thumbnail,
-      };
-      mappedProductsToApprove.push(productToApprove);
-    }
-  });
-
-  return mappedProductsToApprove;
 };
 
 export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: ProductRegistrationDTO[]): Product[] => {

@@ -1,19 +1,19 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, Loader, Pagination, Search, Select } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, Loader, Pagination, Search } from "@navikt/ds-react";
 import React, { useState } from "react";
-import { useAgreements, usePagedProductsTilGodkjenning, useProductsTilGodkjenning } from "utils/swr-hooks";
-import { ProductTable } from "godkjenning/ProductTable";
-import { ProductToApproveDto } from "utils/types/response-types";
+import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
+import { SeriesTable } from "godkjenning/SeriesTable";
+import { SeriesToApproveDto } from "utils/types/response-types";
 
 export const TilGodkjenning = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<ProductToApproveDto[] | undefined>();
+  const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
 
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
 
-  const { data: allData, isLoading: allDataIsLoading } = useProductsTilGodkjenning();
-  const { data, isLoading } = usePagedProductsTilGodkjenning({ page: pageState - 1, pageSize });
+  const { data: allData, isLoading: allDataIsLoading } = useSeriesToApprove();
+  const { data, isLoading } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
@@ -31,18 +31,18 @@ export const TilGodkjenning = () => {
     }
   };
 
-  const handleAgreementFilter = (value: string) => {
-    if (searchTerm.length > 0 && filteredData) {
-      const filteredProducts = filteredData.filter((product) => product.agreementId === value);
-      setFilteredData(filteredProducts);
-    } else {
-      const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
-      setFilteredData(filteredProducts);
-      if (value.length == 0) {
-        setFilteredData(undefined);
-      }
-    }
-  };
+  // const handleAgreementFilter = (value: string) => {
+  //   if (searchTerm.length > 0 && filteredData) {
+  //     const filteredProducts = filteredData.filter((product) => product.agreementId === value);
+  //     setFilteredData(filteredProducts);
+  //   } else {
+  //     const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
+  //     setFilteredData(filteredProducts);
+  //     if (value.length == 0) {
+  //       setFilteredData(undefined);
+  //     }
+  //   }
+  // };
 
   const renderData = filteredData ? filteredData : allData?.content;
 
@@ -72,30 +72,30 @@ export const TilGodkjenning = () => {
                     value={searchTerm}
                     onChange={(value) => handleSearch(value)}
                   />
-                  <Select
-                    size="medium"
-                    id="rammeavtale"
-                    name="rammeavtale"
-                    label={"Filtrer på rammeavtale"}
-                    onChange={(e) => {
-                      handleAgreementFilter(e.target.value);
-                    }}
-                  >
-                    <option></option>
-                    {agreements?.content.map((agreement) => (
-                      <option key={agreement.id} value={agreement.id}>
-                        {agreement.title}
-                      </option>
-                    ))}
-                  </Select>
+                  {/*<Select*/}
+                  {/*  size="medium"*/}
+                  {/*  id="rammeavtale"*/}
+                  {/*  name="rammeavtale"*/}
+                  {/*  label={"Filtrer på rammeavtale"}*/}
+                  {/*  onChange={(e) => {*/}
+                  {/*    handleAgreementFilter(e.target.value);*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  <option></option>*/}
+                  {/*  {agreements?.content.map((agreement) => (*/}
+                  {/*    <option key={agreement.id} value={agreement.id}>*/}
+                  {/*      {agreement.title}*/}
+                  {/*    </option>*/}
+                  {/*  ))}*/}
+                  {/*</Select>*/}
                 </HGrid>
               </form>
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
-                <ProductTable products={renderData || []} />
-              ) : data?.content && data.content.length > 0 && <ProductTable products={data?.content} /> ? (
-                <ProductTable products={data?.content} />
+                <SeriesTable series={renderData || []} />
+              ) : data?.content && data.content.length > 0 && <SeriesTable series={data?.content} /> ? (
+                <SeriesTable series={data?.content} />
               ) : (
                 <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
               )}

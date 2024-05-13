@@ -29,7 +29,7 @@ import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderPr
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 import ErrorModal from "felleskomponenter/ErrorModal";
-import { TilGodkjenningUtenPaging } from "godkjenning/TilGodkjenningUtenPaging";
+import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 
 export function App() {
   return (
@@ -96,7 +96,7 @@ export function App() {
           element={
             <>
               <Navbar />
-              <TilGodkjenningUtenPaging />
+              <TilGodkjenning />
             </>
           }
         />

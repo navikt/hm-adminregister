@@ -6,6 +6,10 @@ export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRe
   return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
 };
 
+export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/series/approve/${seriesUUID}`), "PUT");
+};
+
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
 };
@@ -67,4 +71,8 @@ export const changeFilenameOnAttachedFile = async (
     }
     return series;
   });
+};
+
+export const deleteSeries = async (isAdmin: boolean, seriesUUID: string): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "DELETE");
 };
