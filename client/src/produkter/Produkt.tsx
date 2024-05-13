@@ -74,11 +74,8 @@ const ProductPage = () => {
   const formMethods = useForm<EditCommonInfoProduct>();
 
   if (error) {
-    return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
-        Error
-      </HGrid>
-    );
+    setGlobalError(error.status, error.message);
+    throw error;
   }
 
   if (isLoading) {
