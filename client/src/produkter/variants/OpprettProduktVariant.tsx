@@ -9,6 +9,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { DraftVariantDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { draftProductVariantV2 } from "api/ProductApi";
+import { useSeries } from "utils/swr-hooks";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -30,7 +31,9 @@ const OpprettProduktVariant = () => {
     mode: "onSubmit",
   });
 
+  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
 
+  const hasTechData = series?.isoCategory || false;
   async function onSubmit(data: FormData) {
     const newVariant: DraftVariantDTO = {
       articleName: data.articleName,
@@ -81,7 +84,7 @@ const OpprettProduktVariant = () => {
                 Avbryt
               </Button>
               <Button type="submit" size="medium" disabled={!isValid}>
-                "Opprett"
+                {hasTechData ? "Opprett og legg til mer info" : "Opprett"}
               </Button>
             </div>
           </form>
