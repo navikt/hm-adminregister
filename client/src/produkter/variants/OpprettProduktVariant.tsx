@@ -47,57 +47,45 @@ const OpprettProduktVariant = () => {
 
   const hasTechData = products![0].productData.techData.length > 0;
 
-  const isFirstProductInSeries = products?.length === 1 && isUUID(products[0].supplierRef);
-
   async function onSubmit(data: FormData) {
-    const navigateFn = (product: ProductRegistrationDTO) => {
-      if (hasTechData) {
-        navigate(
-          `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`,
-        );
+    const isFirstProductInSeries = products?.length === 1 && isUUID(products[0].supplierRef);
+
+    const createVariant = () => {
+      if (isFirstProductInSeries) {
+        const updatedProduct = {
+          ...products[0],
+          articleName: data.articleName,
+          supplierRef: data.supplierRef,
+        };
+
+        return updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct);
       } else {
-        navigate(`/produkter/${products![0].id}?tab=variants&page=${Number(searchParams.get("page"))}`);
+        const newVariant: DraftVariantDTO = {
+          articleName: data.articleName,
+          supplierRef: data.supplierRef,
+        };
+        return draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant);
       }
     };
 
-    if (isFirstProductInSeries) {
-      const updatedProduct = {
-        ...products[0],
-        articleName: data.articleName,
-        supplierRef: data.supplierRef,
-      };
-
-      updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct)
-        .then(() => navigateFn(products![0]))
-        .catch((error) => {
-          if (error.message === "supplierIdRefId already exists") {
-            setError("supplierRef", {
-              type: "custom",
-              message: "Artikkelnummeret finnes allerede på en annen variant",
-            });
-          } else {
-            setGlobalError(error.status, error.message);
-          }
-        });
-    } else {
-      const newVariant: DraftVariantDTO = {
-        articleName: data.articleName,
-        supplierRef: data.supplierRef,
-      };
-
-      draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant)
-        .then(() => navigateFn(products![0]))
-        .catch((error) => {
-          if (error.message === "supplierIdRefId already exists") {
-            setError("supplierRef", {
-              type: "custom",
-              message: "Artikkelnummeret finnes allerede på en annen variant",
-            });
-          } else {
-            setGlobalError(error.status, error.message);
-          }
-        });
-    }
+    createVariant()
+      .then((product) =>
+        navigate(
+          hasTechData
+            ? `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`
+            : `/produkter/${products![0].id}?tab=variants&page=${Number(searchParams.get("page"))}`,
+        ),
+      )
+      .catch((error) => {
+        if (error.message === "supplierIdRefId already exists") {
+          setError("supplierRef", {
+            type: "custom",
+            message: "Artikkelnummeret finnes allerede på en annen variant",
+          });
+        } else {
+          setGlobalError(error.status, error.message);
+        }
+      });
   }
 
   return (
