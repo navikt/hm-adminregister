@@ -27,60 +27,65 @@ const OpprettProduktVariant = () => {
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
 
-  const { data: products, mutate } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
+  const { data: products, isLoading: isLoading } = useSWR<ProductRegistrationDTO[]>(
+    loggedInUser ? seriesIdPath : null,
+    fetcherGET,
+  );
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid},
-    setError
+    formState: { errors, isValid },
+    setError,
   } = useForm<FormData>({
     resolver: zodResolver(newProductVariantSchema),
     mode: "onSubmit",
   });
 
-  const isFirstProductInSeries = products?.length === 1 && isUUID(products[0].supplierRef);
+  if (isLoading) {
+    return <></>;
+  }
+
+  const hasTechData = products![0].productData.techData.length > 0;
 
   async function onSubmit(data: FormData) {
-    if (isFirstProductInSeries) {
-      const updatedProduct = {
-        ...products[0],
-        articleName: data.articleName,
-        supplierRef: data.supplierRef,
-      };
+    const isFirstProductInSeries = products?.length === 1 && isUUID(products[0].supplierRef);
 
-      updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct)
-        .then((product) =>
-          navigate(
-            `/produkter/${products[0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`,
-          ),
-        )
-        .catch((error) => {
-          if (error.message === "supplierIdRefId already exists") {
-            setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
-          } else {
-            setGlobalError(error.status, error.message);
-          }
-        });
-    } else {
-      const newVariant: DraftVariantDTO = {
-        articleName: data.articleName,
-        supplierRef: data.supplierRef,
-      };
+    const createVariant = () => {
+      if (isFirstProductInSeries) {
+        const updatedProduct = {
+          ...products[0],
+          articleName: data.articleName,
+          supplierRef: data.supplierRef,
+        };
 
-      draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant)
-        .then((product) =>
-          navigate(
-            `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`,
-          ),
-        )
-        .catch((error) => {
-          if (error.message === "supplierIdRefId already exists") {
-            setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
-          } else {
-            setGlobalError(error.status, error.message);
-          }
-        });
-    }
+        return updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct);
+      } else {
+        const newVariant: DraftVariantDTO = {
+          articleName: data.articleName,
+          supplierRef: data.supplierRef,
+        };
+        return draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant);
+      }
+    };
+
+    createVariant()
+      .then((product) =>
+        navigate(
+          hasTechData
+            ? `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`
+            : `/produkter/${products![0].id}?tab=variants&page=${Number(searchParams.get("page"))}`,
+        ),
+      )
+      .catch((error) => {
+        if (error.message === "supplierIdRefId already exists") {
+          setError("supplierRef", {
+            type: "custom",
+            message: "Artikkelnummeret finnes allerede på en annen variant",
+          });
+        } else {
+          setGlobalError(error.status, error.message);
+        }
+      });
   }
 
   return (
@@ -114,7 +119,7 @@ const OpprettProduktVariant = () => {
                 Avbryt
               </Button>
               <Button type="submit" size="medium" disabled={!isValid}>
-                Opprett og legg til mer info
+                {hasTechData ? "Opprett og legg til mer info" : "Opprett"}
               </Button>
             </div>
           </form>
