@@ -11,28 +11,30 @@ import VariantsTab from "./variants/VariantsTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { fetcherGET } from "utils/swr-hooks";
+import { IsoCategoryDTO } from "utils/types/response-types";
+import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
 import { HM_REGISTER_URL } from "environments";
-import { updateProduct } from "api/ProductApi";
 import StatusPanel from "produkter/StatusPanel";
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import VideosTab from "./tabs/VideosTab";
 import ImageTab from "./tabs/ImagesTab";
 import DocumentTab from "./tabs/DocumentsTab";
-import { numberOfDocuments, numberOfImages, numberOfVariants, numberOfVideos } from "produkter/productUtils";
+import { numberOfDocuments, numberOfImages, numberOfVideos } from "produkter/seriesUtils";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import AdminActions from "produkter/AdminActions";
 import SupplierActions from "produkter/SupplierActions";
+import { updateSeries } from "api/SeriesApi";
 
-export type EditCommonInfoProduct = {
+export type EditSeriesInfo = {
   title: string;
   description: string;
   isoCode: string;
 };
 
 const ProductPage = () => {
+  const { seriesId } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
@@ -42,43 +44,32 @@ const ProductPage = () => {
 
   const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
 
-  const handleSaveDescription = () => {
-    setShowEditProductTitleMode(false);
-    formMethods.handleSubmit(onSubmit)();
-  };
-
-  const { seriesId } = useParams();
-
-  const navigate = useNavigate();
-
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
-  const seriesIdPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
 
-  const {
-    data: products,
-    error,
-    isLoading,
-    mutate: mutateProducts,
-  } = useSWR<ProductRegistrationDTO[]>(seriesIdPath, fetcherGET);
+  const { variants, isLoadingVariants, errorVariants, mutateVariants } = userProductVariantsBySeriesId(seriesId!);
+  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
 
   const { data: isoCategory } = useSWR<IsoCategoryDTO>(
-    products && products[0]?.isoCategory && products[0].isoCategory !== "0"
-      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${products[0].isoCategory}`
+    series?.isoCategory && series.isoCategory !== "0"
+      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${series.isoCategory}`
       : null,
     fetcherGET,
   );
 
-  const formMethods = useForm<EditCommonInfoProduct>();
+  const formMethods = useForm<EditSeriesInfo>();
 
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
+  if (errorSeries) {
+    setGlobalError(errorSeries.status, errorSeries.message);
+    throw errorSeries;
   }
 
-  if (isLoading) {
+  if (errorVariants) {
+    setGlobalError(errorVariants.status, errorVariants.message);
+    throw errorVariants;
+  }
+
+  if (isLoadingSeries || isLoadingVariants) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -86,7 +77,7 @@ const ProductPage = () => {
     );
   }
 
-  if (!products || products.length === 0) {
+  if (!series) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -96,51 +87,50 @@ const ProductPage = () => {
     );
   }
 
-  const product = products[0];
-
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`);
   };
 
-  async function onSubmit(data: EditCommonInfoProduct) {
-    updateProduct(product.id, data, loggedInUser?.isAdmin || false)
-      .then(() => mutateProducts())
+  async function onSubmit(data: EditSeriesInfo) {
+    updateSeries(series!.id, data, loggedInUser?.isAdmin || false)
+      .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
       });
   }
 
   const productIsValid = () => {
-    return !(
-      !product.productData.attributes.text ||
-      numberOfImages(products) === 0 ||
-      numberOfVariants(products) === 0
-    );
+    return !(!series.text || numberOfImages(series) === 0 || series.count === 0);
   };
 
-  const isDraft = product.draftStatus === "DRAFT";
-  const isPending = product.adminStatus === "PENDING";
-  const isActive = product.registrationStatus === "ACTIVE";
-  const isEditable = (product.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
+  const handleSaveDescription = () => {
+    setShowEditProductTitleMode(false);
+    formMethods.handleSubmit(onSubmit)();
+  };
+
+  const isDraft = series.draftStatus === "DRAFT";
+  const isPending = series.adminStatus === "PENDING";
+  const isActive = series.status === "ACTIVE";
+  const isEditable = (series.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
 
   const TabLabel = ({
     title,
-    numberOfElementsFn,
+    numberOfElements,
     showAlert,
   }: {
     title: string;
-    numberOfElementsFn: (products: ProductRegistrationDTO[]) => number;
+    numberOfElements: number;
     showAlert: boolean;
   }) => {
     return (
       <>
         {title}
-        {numberOfElementsFn(products) === 0 && !isValid && showAlert ? (
+        {numberOfElements === 0 && !isValid && showAlert ? (
           <span className="product-error-text product-tab-tabel">
-            ({numberOfElementsFn(products)})<ExclamationmarkTriangleIcon />
+            ({numberOfElements})<ExclamationmarkTriangleIcon />
           </span>
         ) : (
-          <span>({numberOfElementsFn(products)})</span>
+          <span>({numberOfElements})</span>
         )}
       </>
     );
@@ -150,15 +140,19 @@ const ProductPage = () => {
     <main className="show-menu">
       <FormProvider {...formMethods}>
         <RequestApprovalModal
-          products={products}
-          mutateProducts={mutateProducts}
+          series={series}
+          products={variants ?? []}
+          mutateProducts={mutateVariants}
+          mutateSeries={mutateSeries}
           isValid={isValid}
           isOpen={approvalModalIsOpen}
           setIsOpen={setApprovalModalIsOpen}
         />
         <DeleteConfirmationModal
-          products={products}
-          mutateProducts={mutateProducts}
+          series={series}
+          products={variants ?? []}
+          mutateProducts={mutateVariants}
+          mutateSeries={mutateSeries}
           isOpen={deleteConfirmationModalIsOpen}
           setIsOpen={setDeleteConfirmationModalIsOpen}
         />
@@ -170,14 +164,14 @@ const ProductPage = () => {
               <HStack gap="1">
                 {!showEditProductTitleMode && (
                   <Heading level="1" size="xlarge">
-                    {product.title ?? product.title}
+                    {series.title ?? ""}
                   </Heading>
                 )}
 
                 {showEditProductTitleMode && (
                   <>
                     <TextField
-                      defaultValue={product.title ?? (product.title || "")}
+                      defaultValue={series.title ?? ""}
                       label={""}
                       id="title"
                       name="title"
@@ -211,64 +205,57 @@ const ProductPage = () => {
                   label={
                     <>
                       Om produktet
-                      {!product.productData.attributes.text && !isValid && (
-                        <ExclamationmarkTriangleIcon className="product-error-text" />
-                      )}
+                      {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
                     </>
                   }
                 />
                 <Tabs.Tab
                   value="variants"
-                  label={
-                    <>
-                      Egenskaper
-                      {numberOfVariants(products) === 0 && !isValid && (
-                        <ExclamationmarkTriangleIcon className="product-error-text" />
-                      )}
-                    </>
-                  }
+                  label={<TabLabel title="Egenskaper" numberOfElements={series.count} showAlert={true} />}
                 />
                 <Tabs.Tab
                   value="images"
-                  label={<TabLabel title="Bilder" numberOfElementsFn={numberOfImages} showAlert={true} />}
+                  label={<TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={true} />}
                 />
                 <Tabs.Tab
                   value="documents"
-                  label={<TabLabel title="Dokumenter" numberOfElementsFn={numberOfDocuments} showAlert={false} />}
+                  label={<TabLabel title="Dokumenter" numberOfElements={numberOfDocuments(series)} showAlert={false} />}
                 />
                 <Tabs.Tab
                   value="videos"
-                  label={<TabLabel title="Videolenker" numberOfElementsFn={numberOfVideos} showAlert={false} />}
+                  label={<TabLabel title="Videolenker" numberOfElements={numberOfVideos(series)} showAlert={false} />}
                 />
               </Tabs.List>
               <AboutTab
-                product={product}
+                series={series}
                 onSubmit={onSubmit}
                 isoCategory={isoCategory}
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <ImageTab
-                products={products}
-                mutateProducts={mutateProducts}
-                isEditable={isEditable}
-                showInputError={!isValid}
-              />
+              <ImageTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} showInputError={!isValid} />
               <DocumentTab
-                products={products}
-                mutateProducts={mutateProducts}
+                series={series}
+                mutateSeries={mutateSeries}
                 isEditable={isEditable}
                 showInputError={!isValid}
               />
-              <VideosTab products={products} mutateProducts={mutateProducts} isEditable={isEditable} />
-              <VariantsTab products={products} isEditable={isEditable} showInputError={!isValid} />
+              <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
+              <VariantsTab
+                seriesUUID={series.id}
+                products={variants || []}
+                isEditable={isEditable}
+                showInputError={!isValid}
+              />
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
             {loggedInUser?.isAdmin && isActive && (
               <AdminActions
-                products={products}
-                mutateProducts={mutateProducts}
+                series={series}
+                products={variants || []}
+                mutateProducts={mutateVariants}
+                mutateSeries={mutateSeries}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
@@ -283,7 +270,7 @@ const ProductPage = () => {
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               />
             )}
-            <StatusPanel product={product} isAdmin={loggedInUser?.isAdmin || false} />
+            <StatusPanel series={series} isAdmin={loggedInUser?.isAdmin || false} />
           </VStack>
         </HGrid>
       </FormProvider>

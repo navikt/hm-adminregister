@@ -2,20 +2,20 @@ import { Alert, Button, Heading, Tabs, Textarea, VStack } from "@navikt/ds-react
 import { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { EditCommonInfoProduct } from "../Produkt";
-import { IsoCategoryDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { EditSeriesInfo } from "../Produkt";
+import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 
 interface Props {
-  product: ProductRegistrationDTO;
-  onSubmit: SubmitHandler<EditCommonInfoProduct>;
+  series: SeriesRegistrationDTO;
+  onSubmit: SubmitHandler<EditSeriesInfo>;
   isoCategory?: IsoCategoryDTO;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
-  const formMethods = useFormContext<EditCommonInfoProduct>();
+const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
+  const formMethods = useFormContext<EditSeriesInfo>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -56,7 +56,7 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
 
             {!showEditDescriptionMode && (
               <>
-                {!product.productData.attributes.text ? (
+                {!series.text ? (
                   <>
                     <Alert variant={showInputError ? "error" : "info"}>
                       Produktet trenger en beskrivelse før det kan sendes til godkjenning
@@ -72,7 +72,7 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
                   </>
                 ) : (
                   <>
-                    <pre className="pre">{product.productData.attributes.text}</pre>
+                    <pre className="pre">{series.text}</pre>
                     {isEditable && (
                       <Button
                         className="fit-content"
@@ -91,7 +91,7 @@ const AboutTab = ({ product, onSubmit, isoCategory, isEditable, showInputError }
             {showEditDescriptionMode && (
               <>
                 <Textarea
-                  defaultValue={product.productData.attributes.text ?? (product.productData.attributes.text || "")}
+                  defaultValue={series.text ?? (series.text || "")}
                   label={""}
                   description={getDescription()}
                   id="description"

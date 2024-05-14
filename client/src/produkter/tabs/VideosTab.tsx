@@ -1,25 +1,27 @@
-import { Alert, Button, Tabs, VStack, Link, Modal, TextField, HStack } from "@navikt/ds-react";
-import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { Alert, Button, HStack, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { HM_REGISTER_URL } from "environments";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import ReactPlayer from "react-player";
-import { getEditedProductDTOAddMedia, mapImagesAndPDFfromMedia, removeFileFromProduct } from "utils/product-util";
+import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 const VideoTab = ({
-  products,
-  mutateProducts,
+  series,
+  mutateSeries,
   isEditable,
 }: {
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTO;
+  mutateSeries: () => void;
   isEditable: boolean;
 }) => {
+  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { videos } = mapImagesAndPDFfromMedia(products);
+  const { videos } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -27,87 +29,24 @@ const VideoTab = ({
   const [url, setUrl] = useState("");
 
   async function handleSaveVideoLink() {
-    //Get latest version of product
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${products[0].id}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+    saveVideoToSeries(series.id, loggedInUser?.isAdmin || false, url, title).then(
+      () => {
+        mutateSeries();
+        setModalIsOpen(false);
       },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-
-    const newVideo: MediaInfoDTO[] = [
-      {
-        sourceUri: "",
-        uri: url,
-        priority: 0,
-        type: "VIDEO",
-        text: title,
-        source: "EXTERNALURL",
+      (error) => {
+        setGlobalError(error.status, error.statusText);
       },
-    ];
-
-    const editedProductDTO = productToUpdate && getEditedProductDTOAddMedia(productToUpdate, newVideo);
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    } else {
-      setModalIsOpen(false);
-      setTitle("");
-      setUrl("");
-      mutateProducts();
-    }
+    );
   }
 
-  const handleDeleteVideoLink = async (uri: string) => {
-    const oid = products[0].id;
-    //Fetch latest version of product
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${oid}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = removeFileFromProduct(productToUpdate, uri);
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    mutateProducts();
-  };
+  async function handleDeleteVideoLink(uri: string) {
+    deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, uri)
+      .then(mutateSeries)
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
 
   const validateUrl = () => {
     setErrorMessage("");

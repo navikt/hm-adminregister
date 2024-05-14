@@ -1,23 +1,29 @@
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
-import { numberOfImages, numberOfVariants } from "produkter/productUtils";
+import { numberOfImages } from "produkter/seriesUtils";
+import { sendSeriesToApproval } from "api/SeriesApi";
 
 export const RequestApprovalModal = ({
+  series,
   products,
   mutateProducts,
+  mutateSeries,
   isValid,
   isOpen,
   setIsOpen,
 }: {
+  series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
+  mutateSeries: () => void;
   isValid: boolean;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
   async function onSendTilGodkjenning() {
+    sendSeriesToApproval(series.id).then(() => mutateSeries());
     sendFlereTilGodkjenning(products?.map((product) => product.id) || []).then(() => mutateProducts());
   }
 
@@ -28,9 +34,9 @@ export const RequestApprovalModal = ({
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
           <ul className="product-error-text">
-            {!products[0].productData.attributes.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {numberOfImages(products) === 0 && <li>Produktet mangler bilder</li>}
-            {!numberOfVariants(products) && <li>Produktet mangler teknisk data</li>}
+            {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
+            {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
+            {series.count === 0 && <li>Produktet mangler teknisk data</li>}
           </ul>
         </Modal.Body>
         <Modal.Footer>

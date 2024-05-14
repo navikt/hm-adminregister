@@ -3,16 +3,16 @@ import { Button, Heading, TextField } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./create-product.scss";
-import { createNewProductSchema } from "utils/zodSchema/newProduct";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
-import { ProductDraftWithDTO } from "utils/types/response-types";
+import { SeriesDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
-import { HM_REGISTER_URL } from "environments";
 import Combobox from "felleskomponenter/Combobox";
+import { createNewSeriesSchema } from "utils/zodSchema/newSeries";
+import { draftNewSeries } from "api/SeriesApi";
 
-type FormData = z.infer<typeof createNewProductSchema>;
+type FormData = z.infer<typeof createNewSeriesSchema>;
 
 export default function OpprettProdukt() {
   const { setGlobalError } = useErrorStore();
@@ -24,33 +24,23 @@ export default function OpprettProdukt() {
     formState: { errors, isSubmitting, isDirty, isValid },
     setValue,
   } = useForm<FormData>({
-    resolver: zodResolver(createNewProductSchema),
+    resolver: zodResolver(createNewSeriesSchema),
     mode: "onSubmit",
   });
 
   async function onSubmit(data: FormData) {
-    const newProduct: ProductDraftWithDTO = {
+    const newSeries: SeriesDraftWithDTO = {
       title: data.productName,
-      text: "",
       isoCategory: data.isoCategory,
     };
 
-    const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/draftWith`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(newProduct),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      const id = responseData.id;
-      if (id) navigate(`/produkter/${id}`);
-    } else {
-      const responsData = await response.json();
-      setGlobalError(response.status, responsData.message);
-    }
+    draftNewSeries(newSeries)
+      .then((newSeries) => {
+        navigate(`/produkter/${newSeries.id}`);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
   }
 
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);

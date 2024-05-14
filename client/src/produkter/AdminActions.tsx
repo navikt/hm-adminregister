@@ -1,18 +1,23 @@
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { publishProducts, rejectProducts } from "api/ProductApi";
+import { approveSeries } from "api/SeriesApi";
 
 const AdminActions = ({
+  series,
   products,
   mutateProducts,
+  mutateSeries,
   setIsValid,
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
 }: {
+  series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
+  mutateSeries: () => void;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
@@ -29,6 +34,7 @@ const AdminActions = ({
     setIsValid(productIsValid());
     if (productIsValid()) {
       publishProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
+      approveSeries(series.id).then(() => mutateSeries());
     } else {
       setApprovalModalIsOpen(true);
     }

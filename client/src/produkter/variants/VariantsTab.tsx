@@ -7,10 +7,12 @@ import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useState } from "react";
 
 const VariantsTab = ({
+  seriesUUID,
   products,
   isEditable,
   showInputError,
 }: {
+  seriesUUID: string;
   products: ProductRegistrationDTO[];
   isEditable: boolean;
   showInputError: boolean;
@@ -22,7 +24,7 @@ const VariantsTab = ({
   const totalPages = Math.ceil(products.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
 
-  const isFirstTime = products.length === 1 && isUUID(products[0].supplierRef);
+  const hasNoVariants = products.length === 0;
 
   const techValue = (product: ProductRegistrationDTO, key: string): string | undefined => {
     const data = product.productData.techData.find((data) => data.key === key);
@@ -36,14 +38,14 @@ const VariantsTab = ({
 
   return (
     <Tabs.Panel value="variants" className="tab-panel">
-      {isFirstTime && (
+      {hasNoVariants && (
         <Alert variant={showInputError ? "error" : "info"}>
           Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
           størrelse eller farge. Alle variantene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
           fra leverandør og teknisk data.
         </Alert>
       )}
-      {!isFirstTime && (
+      {!hasNoVariants && (
         <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
           <VStack gap="4">
             <div className="variant-table">
@@ -118,9 +120,7 @@ const VariantsTab = ({
       )}
       {isEditable && (
         //Sender med siste siden
-        <Link
-          to={`${pathname}/opprett-variant/${products[0].id}?page=${Math.floor(products.length / columnsPerPage) + 1}`}
-        >
+        <Link to={`${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`}>
           <Button
             as="a"
             className="fit-content"

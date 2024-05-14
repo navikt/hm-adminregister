@@ -1,30 +1,39 @@
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { deleteProducts } from "api/ProductApi";
 import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { deleteSeries } from "api/SeriesApi";
 
 export const DeleteConfirmationModal = ({
+  series,
   products,
   mutateProducts,
+  mutateSeries,
   isOpen,
   setIsOpen,
 }: {
+  series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
   mutateProducts: () => void;
+  mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
   const { loggedInUser } = useAuthStore();
+
   async function onDelete() {
     deleteProducts(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || []).then(() =>
       mutateProducts(),
     );
+    deleteSeries(loggedInUser?.isAdmin ?? true, series.id).then(() => {
+      mutateSeries();
+    });
   }
 
   return (
     <Modal
       open={isOpen}
-      header={{ heading: "Er du sikker på du vil slette produktet?" }}
+      header={{ heading: "Er du sikker på at du vil slette produktet?" }}
       onClose={() => setIsOpen(false)}
     >
       <Modal.Footer>

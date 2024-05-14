@@ -2,16 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import useSWR from "swr";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { newProductVariantSchema } from "utils/zodSchema/newProduct";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { fetcherGET } from "utils/swr-hooks";
-import { isUUID, labelRequired } from "utils/string-util";
-import { HM_REGISTER_URL } from "environments";
-import { draftProductVariant, updateProductVariant } from "api/ProductApi";
+import { DraftVariantDTO } from "utils/types/response-types";
+import { labelRequired } from "utils/string-util";
+import { draftProductVariantV2 } from "api/ProductApi";
+import { useSeries } from "utils/swr-hooks";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -21,16 +19,8 @@ const OpprettProduktVariant = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const { seriesId, productId } = useParams();
+  const { seriesId } = useParams();
 
-  const seriesIdPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
-
-  const { data: products, isLoading: isLoading } = useSWR<ProductRegistrationDTO[]>(
-    loggedInUser ? seriesIdPath : null,
-    fetcherGET,
-  );
   const {
     handleSubmit,
     register,
@@ -41,47 +31,23 @@ const OpprettProduktVariant = () => {
     mode: "onSubmit",
   });
 
-  if (isLoading) {
-    return <></>;
-  }
+  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
 
-  const hasTechData = products![0].productData.techData.length > 0;
-
+  const hasTechData = series?.isoCategory || false;
   async function onSubmit(data: FormData) {
-    const isFirstProductInSeries = products?.length === 1 && isUUID(products[0].supplierRef);
-
-    const createVariant = () => {
-      if (isFirstProductInSeries) {
-        const updatedProduct = {
-          ...products[0],
-          articleName: data.articleName,
-          supplierRef: data.supplierRef,
-        };
-
-        return updateProductVariant(loggedInUser?.isAdmin || false, updatedProduct);
-      } else {
-        const newVariant: DraftVariantDTO = {
-          articleName: data.articleName,
-          supplierRef: data.supplierRef,
-        };
-        return draftProductVariant(loggedInUser?.isAdmin || false, productId!, newVariant);
-      }
+    const newVariant: DraftVariantDTO = {
+      articleName: data.articleName,
+      supplierRef: data.supplierRef,
     };
 
-    createVariant()
-      .then((product) =>
-        navigate(
-          hasTechData
-            ? `/produkter/${products![0].id}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`
-            : `/produkter/${products![0].id}?tab=variants&page=${Number(searchParams.get("page"))}`,
-        ),
-      )
+    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant)
+      .then((product) => {
+        console.log("product", product.id);
+        navigate(`/produkter/${seriesId}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`);
+      })
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {
-          setError("supplierRef", {
-            type: "custom",
-            message: "Artikkelnummeret finnes allerede på en annen variant",
-          });
+          setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
         } else {
           setGlobalError(error.status, error.message);
         }
