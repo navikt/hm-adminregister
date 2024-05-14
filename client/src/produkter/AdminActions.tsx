@@ -2,7 +2,7 @@ import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { publishProducts, rejectProducts } from "api/ProductApi";
-import { approveSeries } from "api/SeriesApi";
+import { approveSeries, rejectSeries } from "api/SeriesApi";
 
 const AdminActions = ({
   series,
@@ -28,6 +28,7 @@ const AdminActions = ({
 
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
+    rejectSeries(series.id).then(() => mutateSeries());
   }
 
   async function onPublish() {
