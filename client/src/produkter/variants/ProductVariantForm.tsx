@@ -1,5 +1,4 @@
 import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
-import classNames from "classnames";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, labelRequired } from "utils/string-util";
@@ -23,17 +22,7 @@ type FormData = {
   }>;
 };
 
-const ProductVariantForm = ({
-  product,
-  registrationPath,
-  mutate,
-  firstTime,
-}: {
-  product: ProductRegistrationDTO;
-  registrationPath: string;
-  mutate: () => void;
-  firstTime: boolean;
-}) => {
+const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTO; mutate: () => void }) => {
   const navigate = useNavigate();
   const {
     articleName,
@@ -71,8 +60,8 @@ const ProductVariantForm = ({
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
       ...product,
-      articleName: firstTime ? product.articleName : data.articleName,
-      supplierRef: firstTime ? product.supplierRef : data.supplierRef,
+      articleName: data.articleName,
+      supplierRef: data.supplierRef,
       hmsArtNr: data.hmsArtNr,
       productData: {
         ...product.productData,
@@ -112,8 +101,6 @@ const ProductVariantForm = ({
         id="articleName"
         name="articleName"
         type="text"
-        readOnly={firstTime}
-        className={classNames({ readonly: firstTime })}
         defaultValue={product.articleName}
         error={errors?.articleName?.message}
       />
@@ -123,8 +110,6 @@ const ProductVariantForm = ({
         id="supplierRef"
         name="supplierRef"
         type="text"
-        readOnly={firstTime}
-        className={classNames({ readonly: firstTime })}
         error={errors?.supplierRef?.message}
       />
       {loggedInUser?.isAdmin && (
@@ -139,9 +124,7 @@ const ProductVariantForm = ({
       )}
       {techDataFields.length > 0 && (
         <Alert variant="info">
-          {firstTime
-            ? `Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`
-            : "Teknisk data hentet inn fra tidligere opprettet artikkel."}
+          {`Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`}
         </Alert>
       )}
       {techDataFields.map((key, index) => {
@@ -205,7 +188,7 @@ const ProductVariantForm = ({
           size="medium"
           onClick={() => navigate(`/produkter/${product.seriesId}?tab=variants&page=${page}`)}
         >
-          {firstTime ? "Hopp over" : "Avbryt"}
+          Avbryt
         </Button>
         <Button type="submit" size="medium" disabled={!isValid}>
           Lagre

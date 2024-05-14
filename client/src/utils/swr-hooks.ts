@@ -279,6 +279,26 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
   };
 }
 
+export function useProductByProductId(productId: string) {
+  const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore();
+  const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/${productId}`);
+
+  const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTO>(path, fetcherGET);
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    product,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
 export function useProductVariantsBySeriesId(seriesId?: string) {
   const { setGlobalError } = useErrorStore();
 
