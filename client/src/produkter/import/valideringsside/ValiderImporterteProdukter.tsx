@@ -1,5 +1,5 @@
 import { Alert, BodyShort, Button, ExpansionCard, Heading, HStack, Loader } from "@navikt/ds-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
@@ -7,7 +7,6 @@ import { Upload } from "produkter/import/ImporterProdukter";
 import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSeriesInfo";
 import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
 import { baseUrl, useIsoCategories } from "utils/swr-hooks";
-import { useNavigate } from "react-router-dom";
 import { importProducts } from "api/ImportExportApi";
 
 interface Props {
@@ -20,9 +19,8 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
   const [productsToValidate, setProductsToValidate] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { isoCategories, isoError } = useIsoCategories();
+  const { isoCategories } = useIsoCategories();
   const [importSuccessful, setImportSuccessful] = useState(false);
-  const navigate = useNavigate();
 
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoCode + " - " + cat.isoTitle);
@@ -133,7 +131,7 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
                     size="medium"
                     variant="primary"
                     iconPosition="right"
-                    onClick={(event) => {
+                    onClick={() => {
                       importer();
                     }}
                   >
@@ -143,24 +141,22 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
 
                 {productsToValidate.map((product, i) => {
                   return (
-                    <div>
-                      <ExpansionCard
-                        key={i}
-                        aria-label="Produktserie med varianter"
-                        style={{ width: "90vw" }}
-                        size="small"
-                      >
-                        <ExpansionCard.Header>
-                          <ExpansionCard.Title>{product.title}</ExpansionCard.Title>
-                          <ExpansionCard.Description>
-                            <ProductSeriesInfo product={product} />
-                          </ExpansionCard.Description>
-                        </ExpansionCard.Header>
-                        <ExpansionCard.Content>
-                          <VariantsTable product={product} />
-                        </ExpansionCard.Content>
-                      </ExpansionCard>
-                    </div>
+                    <ExpansionCard
+                      key={i}
+                      aria-label="Produktserie med varianter"
+                      style={{ width: "90vw" }}
+                      size="small"
+                    >
+                      <ExpansionCard.Header>
+                        <ExpansionCard.Title>{product.title}</ExpansionCard.Title>
+                        <ExpansionCard.Description>
+                          <ProductSeriesInfo product={product} />
+                        </ExpansionCard.Description>
+                      </ExpansionCard.Header>
+                      <ExpansionCard.Content>
+                        <VariantsTable product={product} />
+                      </ExpansionCard.Content>
+                    </ExpansionCard>
                   );
                 })}
               </HStack>

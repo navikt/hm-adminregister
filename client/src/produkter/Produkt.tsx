@@ -59,12 +59,14 @@ const ProductPage = () => {
 
   const formMethods = useForm<EditSeriesInfo>();
 
-  if (errorSeries || errorVariants) {
-    return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
-        Error
-      </HGrid>
-    );
+  if (errorSeries) {
+    setGlobalError(errorSeries.status, errorSeries.message);
+    throw errorSeries;
+  }
+
+  if (errorVariants) {
+    setGlobalError(errorVariants.status, errorVariants.message);
+    throw errorVariants;
   }
 
   if (isLoadingSeries || isLoadingVariants) {

@@ -128,50 +128,46 @@ const DocumentListItem = ({
   const textLength = editedFileText.length + 4;
 
   return (
-    <>
-      <HStack as="li" justify="space-between" align="center">
-        {editMode ? (
-          <HStack style={{ width: "100%" }} justify="space-between">
-            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
-              <FilePdfIcon fontSize="2rem" />
-              <TextField
-                ref={containerRef}
-                className="inputfield"
-                style={{ width: `${textLength}ch`, maxWidth: "550px" }}
-                label=""
-                value={editedFileText}
-                onChange={(event) => setEditedFileText(event.currentTarget.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSaveFileName();
-                  }
-                }}
-              />
-            </HStack>
+    <HStack as="li" justify="space-between" wrap={false}>
+      {editMode ? (
+        <>
+          <TextField
+            ref={containerRef}
+            style={{ width: `${textLength}ch`, maxWidth: "550px", minWidth: "450px" }}
+            label="Endre filnavn"
+            value={editedFileText}
+            onChange={(event) => setEditedFileText(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSaveFileName();
+              }
+            }}
+          />
+          <HStack align="end">
             <Button
-              size="xsmall"
               variant="tertiary"
+              title="Lagre"
               onClick={handleSaveFileName}
-              icon={<FloppydiskIcon title="Lagre" fontSize="2rem" />}
-            >
-              Lagre
-            </Button>
+              icon={<FloppydiskIcon fontSize="2rem" />}
+            />
           </HStack>
-        ) : (
-          <>
-            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-              <FilePdfIcon fontSize="2rem" />
-              <a href={uriForMediaFile(file)} target="_blank" rel="noreferrer">
-                {file.text || file.uri.split("/").pop()}
-              </a>
-            </HStack>
-            {isEditable && (
+        </>
+      ) : (
+        <>
+          <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+            <FilePdfIcon fontSize="2rem" />
+            <a href={uriForMediaFile(file)} target="_blank" rel="noreferrer" className="text-overflow-hidden-large">
+              {file.text || file.uri.split("/").pop()}
+            </a>
+          </HStack>
+          {isEditable && (
+            <HStack>
               <MoreMenu mediaInfo={file} handleDeleteFile={handleDeleteFile} handleEditFileName={handleEditFileName} />
-            )}
-          </>
-        )}
-      </HStack>
-    </>
+            </HStack>
+          )}
+        </>
+      )}
+    </HStack>
   );
 };
