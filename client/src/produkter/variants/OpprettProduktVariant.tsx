@@ -34,16 +34,21 @@ const OpprettProduktVariant = () => {
   const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
 
   const hasTechData = series?.isoCategory || false;
+
   async function onSubmit(data: FormData) {
     const newVariant: DraftVariantDTO = {
       articleName: data.articleName,
       supplierRef: data.supplierRef,
     };
 
-    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant)
+    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, series!.supplierId, newVariant)
       .then((product) => {
-        console.log("product", product.id);
-        navigate(`/produkter/${seriesId}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`);
+        const hasTechData = product.productData.techData.length > 0;
+        if (hasTechData) {
+          navigate(`/produkter/${seriesId}/rediger-variant/${product.id}?page=${Number(searchParams.get("page"))}`);
+        } else {
+          navigate(`/produkter/${seriesId}?tab=variants&page=${Number(searchParams.get("page"))}`);
+        }
       })
       .catch((error) => {
         if (error.message === "supplierIdRefId already exists") {

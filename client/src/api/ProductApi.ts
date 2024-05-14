@@ -14,10 +14,11 @@ export const updateProductVariant = async (
 export const draftProductVariantV2 = async (
   isAdmin: boolean,
   seriesUUID: string,
+  supplierId: string,
   newVariant: DraftVariantDTO,
 ): Promise<ProductRegistrationDTO> => {
   return await fetchAPI(
-    getPath(isAdmin, `/api/v1/product/registrations/draftWithV2/${seriesUUID}`),
+    getPath(isAdmin, `/api/v1/product/registrations/draftWithV2/${seriesUUID}/supplierId/${supplierId}`),
     "POST",
     newVariant,
   );
