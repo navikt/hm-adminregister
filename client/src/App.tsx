@@ -28,13 +28,11 @@ import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import ErrorModal from "felleskomponenter/ErrorModal";
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 
 export function App() {
   return (
     <FeilGrense>
-      <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
         <Route path="/logg-inn" element={<LoggInn />} />

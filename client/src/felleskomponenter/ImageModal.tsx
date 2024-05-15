@@ -1,5 +1,4 @@
 import { Modal } from "@navikt/ds-react";
-import "./error-modal.scss";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { mediumImageLoader } from "utils/image-util";
 import styles from "./ImageModal.module.scss";
