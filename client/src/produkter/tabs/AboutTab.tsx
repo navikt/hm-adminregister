@@ -24,7 +24,6 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const formRef = useRef<HTMLFormElement>(null);
 
   function createMarkup(html: RawDraftContentState) {
-    console.log(html);
     const html2 = draftToHtml(html);
 
     return {
