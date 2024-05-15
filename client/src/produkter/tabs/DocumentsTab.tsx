@@ -3,25 +3,26 @@ import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react
 import { useRef, useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
-import { MediaInfoDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { editFileTextOnProduct, mapImagesAndPDFfromMedia } from "utils/product-util";
+import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { HM_REGISTER_URL } from "environments";
-import { useDeleteFileFromProduct } from "api/ProductApi";
+import { uriForMediaFile } from "utils/file-util";
+import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { changeFilenameOnAttachedFile, deleteFileFromSeries } from "api/SeriesApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTO;
+  mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: Props) => {
+const DocumentsTab = ({ series, mutateSeries, isEditable, showInputError }: Props) => {
+  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { pdfs } = mapImagesAndPDFfromMedia(products);
+  const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
-  const deleteFile = useDeleteFileFromProduct(products[0].id);
 
   const allPdfsSorted = pdfs.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
@@ -30,38 +31,20 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
     return dateA - dateB;
   });
 
+  async function handleDeleteFile(uri: string) {
+    deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, uri)
+      .then(mutateSeries)
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   const handleEditFileName = async (uri: string, editedText: string) => {
-    const oid = products[0].id;
-    //Fetch latest version of product
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${oid}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const productToUpdate: ProductRegistrationDTO = await res.json();
-    const editedProductDTO = editFileTextOnProduct(productToUpdate, editedText, uri);
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/${productToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedProductDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    mutateProducts();
+    changeFilenameOnAttachedFile(series.id, loggedInUser?.isAdmin || false, uri, editedText)
+      .then(mutateSeries)
+      .catch((error) => {
+        setGlobalError(error);
+      });
   };
 
   return (
@@ -69,9 +52,9 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        oid={products[0].id}
+        oid={series.id}
         fileType="documents"
-        mutateProducts={mutateProducts}
+        mutateSeries={mutateSeries}
       />
       <Tabs.Panel value="documents" className="tab-panel">
         <VStack gap="10">
@@ -90,9 +73,7 @@ const DocumentsTab = ({ products, mutateProducts, isEditable, showInputError }: 
                     key={pdf.uri}
                     isEditable={isEditable}
                     file={pdf}
-                    handleDeleteFile={(fileURI) => {
-                      deleteFile(fileURI).then(mutateProducts);
-                    }}
+                    handleDeleteFile={handleDeleteFile}
                     handleUpdateFileName={handleEditFileName}
                   />
                 ))}
@@ -147,50 +128,46 @@ const DocumentListItem = ({
   const textLength = editedFileText.length + 4;
 
   return (
-    <>
-      <HStack as="li" justify="space-between" align="center">
-        {editMode ? (
-          <HStack style={{ width: "100%" }} justify="space-between">
-            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
-              <FilePdfIcon fontSize="2rem" />
-              <TextField
-                ref={containerRef}
-                className="inputfield"
-                style={{ width: `${textLength}ch`, maxWidth: "550px" }}
-                label=""
-                value={editedFileText}
-                onChange={(event) => setEditedFileText(event.currentTarget.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSaveFileName();
-                  }
-                }}
-              />
-            </HStack>
+    <HStack as="li" justify="space-between" wrap={false}>
+      {editMode ? (
+        <>
+          <TextField
+            ref={containerRef}
+            style={{ width: `${textLength}ch`, maxWidth: "550px", minWidth: "450px" }}
+            label="Endre filnavn"
+            value={editedFileText}
+            onChange={(event) => setEditedFileText(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSaveFileName();
+              }
+            }}
+          />
+          <HStack align="end">
             <Button
-              size="xsmall"
               variant="tertiary"
+              title="Lagre"
               onClick={handleSaveFileName}
-              icon={<FloppydiskIcon title="Lagre" fontSize="2rem" />}
-            >
-              Lagre
-            </Button>
+              icon={<FloppydiskIcon fontSize="2rem" />}
+            />
           </HStack>
-        ) : (
-          <>
-            <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-              <FilePdfIcon fontSize="2rem" />
-              <a href={file.sourceUri} target="_blank" rel="noreferrer">
-                {file.text || file.uri.split("/").pop()}
-              </a>
-            </HStack>
-            {isEditable && (
+        </>
+      ) : (
+        <>
+          <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+            <FilePdfIcon fontSize="2rem" />
+            <a href={uriForMediaFile(file)} target="_blank" rel="noreferrer" className="text-overflow-hidden-large">
+              {file.text || file.uri.split("/").pop()}
+            </a>
+          </HStack>
+          {isEditable && (
+            <HStack>
               <MoreMenu mediaInfo={file} handleDeleteFile={handleDeleteFile} handleEditFileName={handleEditFileName} />
-            )}
-          </>
-        )}
-      </HStack>
-    </>
+            </HStack>
+          )}
+        </>
+      )}
+    </HStack>
   );
 };

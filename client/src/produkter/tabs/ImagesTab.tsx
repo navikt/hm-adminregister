@@ -3,22 +3,25 @@ import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
-import { ProductRegistrationDTO } from "utils/types/response-types";
-import { mapImagesAndPDFfromMedia } from "utils/product-util";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
-import { useDeleteFileFromProduct } from "api/ProductApi";
+import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { deleteFileFromSeries } from "api/SeriesApi";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTO;
+  mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Props) => {
+const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) => {
+  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { images } = mapImagesAndPDFfromMedia(products);
-  const deleteFile = useDeleteFileFromProduct(products[0].id);
+  const { images } = mapImagesAndPDFfromMedia(series);
+  const { setGlobalError } = useErrorStore();
 
   const sortedImages = images.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
@@ -26,14 +29,22 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
     return dateA - dateB;
   });
 
+  async function handleDeleteFile(fileURI: string) {
+    deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)
+      .then(mutateSeries)
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   return (
     <>
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        oid={products[0].id}
+        oid={series.id}
         fileType="images"
-        mutateProducts={mutateProducts}
+        mutateSeries={mutateSeries}
       />
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
@@ -44,9 +55,7 @@ const ImagesTab = ({ products, mutateProducts, isEditable, showInputError }: Pro
                   <ImageCard
                     mediaInfo={image}
                     key={image.uri}
-                    handleDeleteFile={(fileURI) => {
-                      deleteFile(fileURI).then(mutateProducts);
-                    }}
+                    handleDeleteFile={handleDeleteFile}
                     showMenuButton={isEditable}
                   />
                 ))}

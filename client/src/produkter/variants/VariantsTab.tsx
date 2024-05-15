@@ -1,20 +1,23 @@
 import { PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from "@navikt/ds-react";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useState } from "react";
 
 const VariantsTab = ({
+  seriesUUID,
   products,
   isEditable,
   showInputError,
 }: {
+  seriesUUID: string;
   products: ProductRegistrationDTO[];
   isEditable: boolean;
   showInputError: boolean;
 }) => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
@@ -22,7 +25,7 @@ const VariantsTab = ({
   const totalPages = Math.ceil(products.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
 
-  const isFirstTime = products.length === 1 && isUUID(products[0].supplierRef);
+  const hasNoVariants = products.length === 0;
 
   const techValue = (product: ProductRegistrationDTO, key: string): string | undefined => {
     const data = product.productData.techData.find((data) => data.key === key);
@@ -36,14 +39,14 @@ const VariantsTab = ({
 
   return (
     <Tabs.Panel value="variants" className="tab-panel">
-      {isFirstTime && (
+      {hasNoVariants && (
         <Alert variant={showInputError ? "error" : "info"}>
-          Produktet trenger en eller flere artikler. Her kan man legge inn artikler som varierer for eksempel i
-          størrelse eller farge. Alle artiklene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
+          Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
+          størrelse eller farge. Alle variantene skal ha eget navn som skiller variantene fra hverandre, artikkelnummer
           fra leverandør og teknisk data.
         </Alert>
       )}
-      {!isFirstTime && (
+      {!hasNoVariants && (
         <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
           <VStack gap="4">
             <div className="variant-table">
@@ -54,16 +57,17 @@ const VariantsTab = ({
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
-                          <Link to={`${pathname}/rediger-variant/${product.id}?page=${pageState}`}>
-                            <Button
-                              as="a"
-                              title="Rediger artikkel"
-                              variant="tertiary-neutral"
-                              size="small"
-                              icon={<PencilWritingIcon aria-hidden title="rediger artikkel" />}
-                              iconPosition="right"
-                            />
-                          </Link>
+                          <Button
+                            as="a"
+                            title="Rediger variant"
+                            variant="tertiary-neutral"
+                            size="small"
+                            icon={<PencilWritingIcon aria-hidden />}
+                            iconPosition="right"
+                            onClick={() => {
+                              navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
+                            }}
+                          />
                         </Table.HeaderCell>
                       ))}
                     </Table.Row>
@@ -71,7 +75,7 @@ const VariantsTab = ({
                 )}
                 <Table.Body>
                   <Table.Row>
-                    <Table.HeaderCell scope="row">Artikkelnavn:</Table.HeaderCell>
+                    <Table.HeaderCell scope="row">Variantnavn:</Table.HeaderCell>
                     {paginatedVariants.map((product, i) => (
                       <Table.DataCell key={`articleName-${i}`}>{product.articleName || "-"}</Table.DataCell>
                     ))}
@@ -118,19 +122,20 @@ const VariantsTab = ({
       )}
       {isEditable && (
         //Sender med siste siden
-        <Link
-          to={`${pathname}/opprett-variant/${products[0].id}?page=${Math.floor(products.length / columnsPerPage) + 1}`}
+        <Button
+          as="a"
+          className="fit-content"
+          variant="tertiary"
+          icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+          style={{ marginTop: "16px" }}
+          onClick={() => {
+            navigate(
+              `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`,
+            );
+          }}
         >
-          <Button
-            as="a"
-            className="fit-content"
-            variant="tertiary"
-            icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
-            style={{ marginTop: "16px" }}
-          >
-            Legg til ny artikkel
-          </Button>
-        </Link>
+          Legg til ny variant
+        </Button>
       )}
     </Tabs.Panel>
   );

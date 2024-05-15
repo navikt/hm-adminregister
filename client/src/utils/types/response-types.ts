@@ -61,16 +61,18 @@ export type MediaDTO = components["schemas"]["MediaDTO"];
 export type MediaInfo = components["schemas"]["MediaInfo"];
 export type MediaInfoDTO = components["schemas"]["MediaInfoDTO"];
 export type ProductDraftWithDTO = components["schemas"]["ProductDraftWithDTO"];
+export type SeriesDraftWithDTO = components["schemas"]["SeriesDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
+export type TechLabelDto = components["schemas"]["TechLabelDTO"];
 export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
-export type ProductToApproveDto = components["schemas"]["ProductToApproveDto"];
+export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
 
 export type ProdukterTilGodkjenningChunk = {
-  content: ProductToApproveDto[];
+  content: SeriesToApproveDto[];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;
