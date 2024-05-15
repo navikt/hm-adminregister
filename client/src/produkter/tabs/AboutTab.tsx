@@ -85,16 +85,17 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                   </>
                 ) : (
                   <>
-                    {formMethods.getValues("descriptionFormatted") && (
+                    {formMethods.getValues("descriptionFormatted") ? (
                       <div
                         className="preview"
                         dangerouslySetInnerHTML={createMarkup(
                           JSON.parse(formMethods.getValues("descriptionFormatted")),
                         )}
                       ></div>
+                    ) : (
+                      <pre className="pre">{series.text}</pre>
                     )}
 
-                    <pre className="pre">{series.text}</pre>
                     {isEditable && (
                       <Button
                         className="fit-content"
