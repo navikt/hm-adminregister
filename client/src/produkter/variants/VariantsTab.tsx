@@ -1,7 +1,7 @@
 import { PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Pagination, Table, Tabs, VStack } from "@navikt/ds-react";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useState } from "react";
@@ -17,6 +17,7 @@ const VariantsTab = ({
   isEditable: boolean;
   showInputError: boolean;
 }) => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const techKeys = getAllUniqueTechDataKeys(products);
@@ -56,16 +57,17 @@ const VariantsTab = ({
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
-                          <Link to={`${pathname}/rediger-variant/${product.id}?page=${pageState}`}>
-                            <Button
-                              as="a"
-                              title="Rediger variant"
-                              variant="tertiary-neutral"
-                              size="small"
-                              icon={<PencilWritingIcon aria-hidden/>}
-                              iconPosition="right"
-                            />
-                          </Link>
+                          <Button
+                            as="a"
+                            title="Rediger variant"
+                            variant="tertiary-neutral"
+                            size="small"
+                            icon={<PencilWritingIcon aria-hidden />}
+                            iconPosition="right"
+                            onClick={() => {
+                              navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
+                            }}
+                          />
                         </Table.HeaderCell>
                       ))}
                     </Table.Row>
@@ -120,17 +122,20 @@ const VariantsTab = ({
       )}
       {isEditable && (
         //Sender med siste siden
-        <Link to={`${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`}>
-          <Button
-            as="a"
-            className="fit-content"
-            variant="tertiary"
-            icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
-            style={{ marginTop: "16px" }}
-          >
-            Legg til ny variant
-          </Button>
-        </Link>
+        <Button
+          as="a"
+          className="fit-content"
+          variant="tertiary"
+          icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+          style={{ marginTop: "16px" }}
+          onClick={() => {
+            navigate(
+              `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`,
+            );
+          }}
+        >
+          Legg til ny variant
+        </Button>
       )}
     </Tabs.Panel>
   );
