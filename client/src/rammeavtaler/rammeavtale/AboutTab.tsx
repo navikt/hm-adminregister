@@ -1,4 +1,4 @@
-import { Alert, Button, Heading, Textarea, VStack } from "@navikt/ds-react";
+import { Alert, Button, Heading, VStack } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
@@ -6,6 +6,8 @@ import { AgreementRegistrationDTO } from "utils/types/response-types";
 import { EditCommonInfoAgreement } from "./Rammeavtale";
 import { labelRequired } from "utils/string-util";
 import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
+import parse from "html-react-parser";
+import { AgreementDescriptionRTE } from "rammeavtaler/rammeavtale/AgreementDescriptionRTE";
 
 interface Props {
   agreement: AgreementRegistrationDTO;
@@ -49,7 +51,7 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
                   </>
                 ) : (
                   <>
-                    <pre className="pre">{agreement.agreementData.text}</pre>
+                    <div className="preview">{parse(agreement.agreementData.text)}</div>
                     <Button
                       className="fit-content"
                       variant="tertiary"
@@ -65,12 +67,11 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
 
             {showEditDescriptionMode && (
               <>
-                <Textarea
-                  defaultValue={agreement.agreementData.text || ""}
-                  label={""}
-                  id="description"
-                  name="description"
-                  onChange={(event) => formMethods.setValue("description", event.currentTarget.value)}
+                <AgreementDescriptionRTE
+                  onChange={(description: string) => {
+                    formMethods.setValue("description", description);
+                  }}
+                  textContent={agreement.agreementData.text || ""}
                 />
                 <Button
                   className="fit-content"
