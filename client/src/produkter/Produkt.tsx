@@ -109,7 +109,6 @@ const ProductPage = () => {
   };
 
   const isDraft = series.draftStatus === "DRAFT";
-  const isPending = series.adminStatus === "PENDING";
   const isActive = series.status === "ACTIVE";
   const isEditable = (series.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
 
