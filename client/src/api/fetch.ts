@@ -32,7 +32,8 @@ export const fetchAPIAttachment = async (url: string, method: string, body?: any
   if (response.ok) {
     return await response.json();
   } else {
-    const error = await response.json();
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };
@@ -50,7 +51,8 @@ export const httpDelete = async (url: string, method: string, body?: any): Promi
   if (response.ok) {
     return response.ok;
   } else {
-    const error = await response.json();
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };
@@ -66,7 +68,8 @@ export const fetchAPIWithHeaders = async (url: string, method: string, body?: an
   if (response.ok) {
     return await response.json();
   } else {
-    const error = await response.json();
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };
@@ -87,7 +90,8 @@ export const fetchAPIWithHeadersAndArrayBufferResponse = async (
   if (response.ok) {
     return await response.arrayBuffer();
   } else {
-    const error = await response.json();
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };
