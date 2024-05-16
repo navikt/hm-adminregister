@@ -3,6 +3,7 @@ import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-i
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { publishProducts, rejectProducts } from "api/ProductApi";
 import { approveSeries, rejectSeries } from "api/SeriesApi";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 const AdminActions = ({
   series,
@@ -23,19 +24,36 @@ const AdminActions = ({
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
 }) => {
+  const { setGlobalError } = useErrorStore();
   const isPending = products[0].adminStatus === "PENDING";
   const shouldPublish = products[0].adminStatus !== "APPROVED";
 
   async function onRejectApproval() {
-    rejectProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
-    rejectSeries(series.id).then(() => mutateSeries());
+    rejectProducts(products?.map((product) => product.id) || [])
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+    rejectSeries(series.id)
+      .then(() => mutateSeries())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
   }
 
   async function onPublish() {
     setIsValid(productIsValid());
     if (productIsValid()) {
-      publishProducts(products?.map((product) => product.id) || []).then(() => mutateProducts());
-      approveSeries(series.id).then(() => mutateSeries());
+      publishProducts(products?.map((product) => product.id) || [])
+        .then(() => mutateProducts())
+        .catch((error) => {
+          setGlobalError(error.status, error.message);
+        });
+      approveSeries(series.id)
+        .then(() => mutateSeries())
+        .catch((error) => {
+          setGlobalError(error.status, error.message);
+        });
     } else {
       setApprovalModalIsOpen(true);
     }

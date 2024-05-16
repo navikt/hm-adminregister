@@ -16,7 +16,8 @@ export const fetchAPI = async (url: string, method: string, body?: any): Promise
   if (response.ok) {
     return await response.json();
   } else {
-    const error = await response.json();
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };
