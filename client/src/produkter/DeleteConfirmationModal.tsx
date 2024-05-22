@@ -3,6 +3,7 @@ import { deleteProducts } from "api/ProductApi";
 import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { deleteSeries } from "api/SeriesApi";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 export const DeleteConfirmationModal = ({
   series,
@@ -20,13 +21,18 @@ export const DeleteConfirmationModal = ({
   setIsOpen: (newState: boolean) => void;
 }) => {
   const { loggedInUser } = useAuthStore();
+  const { setGlobalError } = useErrorStore();
 
   async function onDelete() {
-    deleteProducts(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || []).then(() =>
-      mutateProducts(),
-    );
+    deleteProducts(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || [])
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error);
+      });
     deleteSeries(loggedInUser?.isAdmin ?? true, series.id).then(() => {
       mutateSeries();
+    }).catch((error) => {
+      setGlobalError(error);
     });
   }
 

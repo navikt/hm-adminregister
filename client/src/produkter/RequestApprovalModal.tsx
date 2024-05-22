@@ -4,6 +4,7 @@ import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "produkter/seriesUtils";
 import { sendSeriesToApproval } from "api/SeriesApi";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 export const RequestApprovalModal = ({
   series,
@@ -22,9 +23,19 @@ export const RequestApprovalModal = ({
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
+  const { setGlobalError } = useErrorStore();
+
   async function onSendTilGodkjenning() {
-    sendSeriesToApproval(series.id).then(() => mutateSeries());
-    sendFlereTilGodkjenning(products?.map((product) => product.id) || []).then(() => mutateProducts());
+    sendSeriesToApproval(series.id)
+      .then(() => mutateSeries())
+      .catch((error) => {
+        setGlobalError(error);
+      });
+    sendFlereTilGodkjenning(products?.map((product) => product.id) || [])
+      .then(() => mutateProducts())
+      .catch((error) => {
+        setGlobalError(error);
+      });
   }
 
   const InvalidProductModal = () => {
