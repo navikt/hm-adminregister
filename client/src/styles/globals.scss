@@ -190,7 +190,7 @@ main:not(.show-menu) {
   &__container {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-4;
+    gap: $a-spacing-2;
   }
 
   &__name-panel {
