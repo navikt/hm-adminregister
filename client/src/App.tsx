@@ -29,7 +29,7 @@ import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderPr
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
-import { AuthenticationWrapper } from "Authenticated";
+import { LoginWrapper } from "LoginWrapper";
 
 export function App() {
   return (
@@ -38,7 +38,7 @@ export function App() {
         <Route path="/" element={<Startside />} />
         <Route path="/logg-inn" element={<LoggInn />} />
 
-        <Route element={<AuthenticationWrapper />}>
+        <Route element={<LoginWrapper />}>
           <Route
             path="/produkter/importer-produkter"
             element={

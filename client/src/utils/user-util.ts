@@ -6,6 +6,7 @@ export interface LoggedInUser {
   supplierId: string | undefined;
   userName: string | undefined;
   supplierName: string | undefined;
+  exp: string | undefined;
 }
 
 export const mapLoggedInUser = (_source: LoggedInUserResponse): LoggedInUser => {
@@ -17,5 +18,6 @@ export const mapLoggedInUser = (_source: LoggedInUserResponse): LoggedInUser => 
     supplierId: String(_source.attributes["supplierId"]) ?? undefined,
     userName: String(_source.attributes["userName"]) ?? undefined,
     supplierName: String(_source.attributes["supplierName"]) ?? undefined,
+    exp: String(_source.attributes["exp"]) ?? undefined,
   };
 };
