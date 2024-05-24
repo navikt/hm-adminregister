@@ -37,9 +37,6 @@ export const updateSeries = async (
     series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
     series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
     series.text = editSeriesInfo.description ? editSeriesInfo.description : series.text;
-    series.formattedText = editSeriesInfo.descriptionFormatted
-      ? editSeriesInfo.descriptionFormatted
-      : series.formattedText;
     return series;
   });
 };

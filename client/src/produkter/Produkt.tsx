@@ -29,7 +29,6 @@ import { updateSeries } from "api/SeriesApi";
 export type EditSeriesInfo = {
   title: string;
   description: string;
-  descriptionFormatted: string;
   isoCode: string;
 };
 

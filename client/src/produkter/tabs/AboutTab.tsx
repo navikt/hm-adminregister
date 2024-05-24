@@ -1,14 +1,12 @@
 import { Alert, Button, Heading, Tabs, VStack } from "@navikt/ds-react";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { EditSeriesInfo } from "../Produkt";
 import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { RichTextEditor } from "produkter/RichTextEditor";
-import DOMPurify from "dompurify";
-import draftToHtml from "draftjs-to-html";
-import { RawDraftContentState } from "draft-js";
+import parse from "html-react-parser";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -22,14 +20,6 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const formMethods = useFormContext<EditSeriesInfo>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
-  function createMarkup(contentState: RawDraftContentState) {
-    const html = draftToHtml(contentState);
-
-    return {
-      __html: DOMPurify.sanitize(html),
-    };
-  }
 
   const getDescription = () => (
     <>
@@ -68,7 +58,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
 
             {!showEditDescriptionMode && (
               <>
-                {!series.text && !series.formattedText ? (
+                {!series.text ? (
                   <>
                     <Alert variant={showInputError ? "error" : "info"}>
                       Produktet trenger en beskrivelse før det kan sendes til godkjenning
@@ -84,14 +74,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                   </>
                 ) : (
                   <>
-                    {series.formattedText ? (
-                      <div
-                        className="preview"
-                        dangerouslySetInnerHTML={createMarkup(JSON.parse(series.formattedText))}
-                      ></div>
-                    ) : (
-                      <pre className="pre">{series.text}</pre>
-                    )}
+                    <div className="preview">{parse(series.text)}</div>
 
                     {isEditable && (
                       <Button
@@ -115,11 +98,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                   onChange={(description: string) => {
                     formMethods.setValue("description", description);
                   }}
-                  onChangeFormatted={(description: string) => {
-                    formMethods.setValue("descriptionFormatted", description);
-                  }}
                   textContent={series.text || ""}
-                  formattedContent={series.formattedText || undefined}
                 />
                 <Button
                   className="fit-content"
