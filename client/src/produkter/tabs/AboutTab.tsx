@@ -68,7 +68,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
 
             {!showEditDescriptionMode && (
               <>
-                {!series.text ? (
+                {!series.text && !series.formattedText ? (
                   <>
                     <Alert variant={showInputError ? "error" : "info"}>
                       Produktet trenger en beskrivelse før det kan sendes til godkjenning
@@ -84,12 +84,10 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                   </>
                 ) : (
                   <>
-                    {formMethods.getValues("descriptionFormatted") ? (
+                    {series.formattedText ? (
                       <div
                         className="preview"
-                        dangerouslySetInnerHTML={createMarkup(
-                          JSON.parse(formMethods.getValues("descriptionFormatted")),
-                        )}
+                        dangerouslySetInnerHTML={createMarkup(JSON.parse(series.formattedText))}
                       ></div>
                     ) : (
                       <pre className="pre">{series.text}</pre>
@@ -121,6 +119,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                     formMethods.setValue("descriptionFormatted", description);
                   }}
                   textContent={series.text || ""}
+                  formattedContent={series.formattedText || undefined}
                 />
                 <Button
                   className="fit-content"

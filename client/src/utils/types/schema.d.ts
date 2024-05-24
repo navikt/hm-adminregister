@@ -124,6 +124,9 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/draftWith/supplier/{supplierId}": {
     post: operations["draftProductWith"];
   };
+  "/admreg/admin/api/v1/product/registrations/draftWithV2/{seriesUUID}/supplierId/{supplierId}": {
+    post: operations["draftProductWithV2"];
+  };
   "/admreg/admin/api/v1/product/registrations/excel/export": {
     post: operations["createExport"];
   };
@@ -158,6 +161,9 @@ export interface paths {
   };
   "/admreg/admin/api/v1/series/approve/{id}": {
     put: operations["approveSeries"];
+  };
+  "/admreg/admin/api/v1/series/reject/{id}": {
+    put: operations["rejectSeries"];
   };
   "/admreg/admin/api/v1/series/to-approve": {
     get: operations["findSeriesPendingApprove"];
@@ -266,8 +272,8 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/draftWith": {
     post: operations["draftProductWith_1"];
   };
-  "/admreg/vendor/api/v1/product/registrations/draftWithV2/{seriesUUID}/": {
-    post: operations["draftProductWithV2"];
+  "/admreg/vendor/api/v1/product/registrations/draftWithV2/{seriesUUID}/supplierId/{supplierId}": {
+    post: operations["draftProductWithV2_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/excel/export": {
     post: operations["createExport_1"];
@@ -315,6 +321,9 @@ export interface paths {
   "/admreg/vendor/api/v1/series/{id}": {
     get: operations["readSeries_1"];
     put: operations["updateSeries_1"];
+  };
+  "/admreg/vendor/api/v1/series/{seriesUUID}": {
+    delete: operations["deleteSeries_1"];
   };
   "/admreg/vendor/api/v1/supplier/registrations": {
     get: operations["getById_1"];
@@ -928,6 +937,7 @@ export interface components {
       identifier: string;
       title: string;
       text: string;
+      formattedText?: string | null;
       isoCategory: string;
       draftStatus: components["schemas"]["DraftStatus"];
       adminStatus: components["schemas"]["AdminStatus"];
@@ -1176,8 +1186,8 @@ export interface components {
       };
     };
     UsernamePasswordCredentials: {
-      username: string | null;
-      password: string | null;
+      username: string;
+      password: string;
       identity?: string | null;
       secret?: string | null;
     };
@@ -1994,6 +2004,27 @@ export interface operations {
       };
     };
   };
+  draftProductWithV2: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+        supplierId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DraftVariantDTO"];
+      };
+    };
+    responses: {
+      /** @description draftProductWithV2 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
   createExport: {
     requestBody: {
       content: {
@@ -2202,6 +2233,21 @@ export interface operations {
     };
     responses: {
       /** @description approveSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  rejectSeries: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description rejectSeries 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
@@ -2888,10 +2934,11 @@ export interface operations {
       };
     };
   };
-  draftProductWithV2: {
+  draftProductWithV2_1: {
     parameters: {
       path: {
         seriesUUID: string;
+        supplierId: string;
       };
     };
     requestBody: {
@@ -2900,7 +2947,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description draftProductWithV2 200 response */
+      /** @description draftProductWithV2_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
@@ -3203,6 +3250,21 @@ export interface operations {
     };
     responses: {
       /** @description updateSeries_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  deleteSeries_1: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description deleteSeries_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

@@ -101,7 +101,7 @@ const ProductPage = () => {
   }
 
   const productIsValid = () => {
-    return !(!series.text || numberOfImages(series) === 0 || series.count === 0);
+    return !(!series.text || series.formattedText || numberOfImages(series) === 0 || series.count === 0);
   };
 
   const handleSaveDescription = () => {
@@ -206,7 +206,9 @@ const ProductPage = () => {
                   label={
                     <>
                       Om produktet
-                      {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
+                      {!series.text && !series.formattedText && !isValid && (
+                        <ExclamationmarkTriangleIcon className="product-error-text" />
+                      )}
                     </>
                   }
                 />
