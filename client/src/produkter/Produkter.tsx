@@ -31,13 +31,17 @@ const Produkter = () => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
-  const { data, isLoading } = usePagedProducts({ page: pageState - 1, pageSize: pageSizeState, statusFilters });
+  const { data: pagedData, isLoading } = usePagedProducts({
+    page: pageState - 1,
+    pageSize: pageSizeState,
+    statusFilters,
+  });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { data: allData, isLoading: allDataIsLoading } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0;
+  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -53,14 +57,14 @@ const Produkter = () => {
   }, [allData]);
 
   useEffect(() => {
-    if (data?.totalPages && data?.totalPages < pageState) {
-      searchParams.set("page", String(data.totalPages));
+    if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
+      searchParams.set("page", String(pagedData.totalPages));
       setSearchParams(searchParams);
-      setPageState(data.totalPages);
+      setPageState(pagedData.totalPages);
     }
-  }, [data]);
+  }, [pagedData]);
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : data?.content;
+  const renderData = filteredData && filteredData.length > 0 ? filteredData : pagedData?.content;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
@@ -199,7 +203,7 @@ const Produkter = () => {
               </div>
             )}
             <HStack gap="8">
-              {showPageNavigator === true && data && (
+              {showPageNavigator === true && pagedData && (
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => {
@@ -207,7 +211,7 @@ const Produkter = () => {
                     setSearchParams(searchParams);
                     setPageState(x);
                   }}
-                  count={data.totalPages!}
+                  count={pagedData.totalPages!}
                   size="small"
                   prevNextTexts
                 />
