@@ -30,10 +30,12 @@ import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import { LoginWrapper } from "LoginWrapper";
+import ErrorModal from "error/ErrorModal";
 
 export function App() {
   return (
     <FeilGrense>
+      <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
         <Route path="/logg-inn" element={<LoggInn />} />
