@@ -82,7 +82,7 @@ const Produkter = () => {
   return (
     <main className="show-menu">
       <div className="page__background-container">
-        <Heading level="1" size="medium" spacing>
+        <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
         <div className="page__content-container">

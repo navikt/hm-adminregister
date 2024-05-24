@@ -53,7 +53,7 @@ export const TilGodkjenning = () => {
   return (
     <main className="show-menu">
       <div>
-        <Heading level="1" size="medium" spacing>
+        <Heading level="1" size="large" spacing>
           Godkjenning av produkter
         </Heading>
         <div className="page__content-container">
