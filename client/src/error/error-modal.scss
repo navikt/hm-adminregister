@@ -1,0 +1,16 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.error-modal {
+  width: 100%;
+  height: fit-content;
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-8;
+  }
+
+  &__button {
+    width: fit-content;
+  }
+}
