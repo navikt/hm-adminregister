@@ -44,4 +44,12 @@ function htmlPlugin({ development }: { development?: boolean }): Plugin {
 export default defineConfig((env) => ({
   base: env.mode === "development" ? "/" : "/adminregister",
   plugins: [htmlPlugin({ development: env.mode === "test" || env.mode === "development" }), tsconfigPaths(), react()],
+  test: {
+    global: true,
+    environment: "jsdom",
+    deps: {
+      inline: ["@testing-library/user-event"],
+    },
+    setupFiles: ["vitest-setup.ts"],
+  },
 }));
