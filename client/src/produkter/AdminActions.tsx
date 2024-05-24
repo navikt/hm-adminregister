@@ -25,8 +25,8 @@ const AdminActions = ({
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
-  const isPending = products[0].adminStatus === "PENDING";
-  const shouldPublish = products[0].adminStatus !== "APPROVED";
+  const isPending = series.adminStatus === "PENDING";
+  const shouldPublish = series.adminStatus !== "APPROVED";
 
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || [])
