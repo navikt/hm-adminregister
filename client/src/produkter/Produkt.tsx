@@ -100,7 +100,7 @@ const ProductPage = () => {
   }
 
   const productIsValid = () => {
-    return !(!series.text || numberOfImages(series) === 0 || series.count === 0);
+    return !(!series.text || series.formattedText || numberOfImages(series) === 0 || series.count === 0);
   };
 
   const handleSaveDescription = () => {
@@ -109,6 +109,7 @@ const ProductPage = () => {
   };
 
   const isDraft = series.draftStatus === "DRAFT";
+  const isPending = series.adminStatus === "PENDING";
   const isActive = series.status === "ACTIVE";
   const isEditable = (series.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
 
@@ -204,7 +205,9 @@ const ProductPage = () => {
                   label={
                     <>
                       Om produktet
-                      {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
+                      {!series.text && !series.formattedText && !isValid && (
+                        <ExclamationmarkTriangleIcon className="product-error-text" />
+                      )}
                     </>
                   }
                 />
