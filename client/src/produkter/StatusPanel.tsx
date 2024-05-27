@@ -2,6 +2,7 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
+import { seriesStatus } from "produkter/seriesUtils";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -9,26 +10,13 @@ interface Props {
 }
 
 const StatusPanel = ({ series, isAdmin }: Props) => {
-  const isDraft = series.draftStatus === "DRAFT";
-  const isPending = series.adminStatus === "PENDING";
-  const isRejected = series.adminStatus === "REJECTED";
-  const isDeleted = series.status === "DELETED";
-  const isInactive = series.status === "INACTIVE";
-  const publisert = !isDraft && series.adminStatus === "APPROVED";
-
   return (
     <VStack gap="4">
       <Heading level="1" size="medium">
         Status
       </Heading>
 
-      <StatusTag
-        isPending={isPending}
-        isDraft={isDraft}
-        isDeleted={isDeleted}
-        isInactive={isInactive}
-        isRejected={isRejected}
-      />
+      <StatusTag seriesStatus={seriesStatus(series)} />
 
       {/*todo: punlushed missing on series*/}
       {/*{publisert && series.published && <StatusBox title="Publisert" date={series.published} />}*/}

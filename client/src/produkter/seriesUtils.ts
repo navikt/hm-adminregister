@@ -1,4 +1,5 @@
 import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesStatus } from "utils/types/types";
 
 export const numberOfImages = (series: SeriesRegistrationDTO) => {
   return series.seriesData.media.filter((media) => media.type == "IMAGE").length;
@@ -41,4 +42,26 @@ export const mapImagesAndPDFfromMedia = (
     pdfs: pdfs,
     videos: videos,
   };
+};
+
+export const seriesStatus = (series: SeriesRegistrationDTO) => {
+  const isDraft = series.draftStatus === "DRAFT";
+  const isPending = series.adminStatus === "PENDING";
+  const isRejected = series.adminStatus === "REJECTED";
+  const isDeleted = series.status === "DELETED";
+  const isInactive = series.status === "INACTIVE";
+
+  if (isDeleted) {
+    return SeriesStatus.DELETED;
+  } else if (isInactive) {
+    return SeriesStatus.INACTIVE;
+  } else if (isRejected) {
+    return SeriesStatus.REJECTED;
+  } else if (isDraft && !isRejected) {
+    return SeriesStatus.DRAFT;
+  } else if (isPending) {
+    return SeriesStatus.PENDING;
+  } else {
+    return SeriesStatus.PUBLISHED;
+  }
 };

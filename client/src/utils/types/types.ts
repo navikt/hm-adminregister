@@ -76,3 +76,13 @@ export interface ComparingData {
 export interface TechDataRange {
   [key: string]: { minValue: string; maxValue: string | null; unit: string };
 }
+
+export enum SeriesStatus {
+  DRAFT = "DRAFT",
+  PENDING = "PENDING",
+  REJECTED = "REJECTED",
+  DELETED = "DELETED",
+  INACTIVE = "INACTIVE",
+  APPROVED = "APPROVED",
+  PUBLISHED = "PUBLISHED",
+}
