@@ -171,7 +171,7 @@ const Produkter = () => {
                         <Table.Row>
                           <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
                           <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">Antall artikler</Table.HeaderCell>
+                          <Table.HeaderCell scope="col">Antall varianter</Table.HeaderCell>
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
