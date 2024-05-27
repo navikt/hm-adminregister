@@ -2,20 +2,20 @@ import { colors } from "./TagWithIcon";
 import UniformTag from "felleskomponenter/UniformTag";
 
 interface StatusProps {
-  countDrafts: number;
-  countPublished: number;
-  countPending: number;
-  countDeclined: number;
+  isDraft: boolean;
+  isPublished: boolean;
+  isPending: boolean;
+  isRejected: boolean;
 }
 
-export const StatusTagProductList = ({ countDrafts, countPublished, countPending, countDeclined }: StatusProps) => {
-  if (countDeclined > 0) {
+export const StatusTagProductList = ({ isDraft, isPublished, isPending, isRejected }: StatusProps) => {
+  if (isRejected) {
     return <UniformTag text="Avslått" color={colors.RED} />;
-  } else if (countDrafts > 0) {
+  } else if (isDraft ) {
     return <UniformTag text="Utkast" color={colors.GREY} />;
-  } else if (countPublished > 0) {
+  } else if (isPublished) {
     return <UniformTag text="Publisert" color={colors.GREEN} />;
-  } else if (countPending > 0) {
+  } else if (isPending) {
     return <UniformTag text="Venter på godkjenning" color={colors.ORANGE} />;
   } else {
     return <UniformTag text={"Utgått"} color={colors.GREY} />;

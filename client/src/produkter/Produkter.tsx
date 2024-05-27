@@ -187,10 +187,10 @@ const Produkter = () => {
                             </Table.DataCell>
                             <Table.DataCell>
                               <StatusTagProductList
-                                countDrafts={product.countDrafts}
-                                countPublished={product.countPublished}
-                                countPending={product.countPending}
-                                countDeclined={product.countDeclined}
+                                isDraft={product.draftStatus === "DRAFT"}
+                                isPublished={product.adminStatus === "APPROVED"}
+                                isPending={product.adminStatus === "PENDING"}
+                                isRejected={product.adminStatus === "REJECTED"}
                               />
                             </Table.DataCell>
                             <Table.DataCell>{product.count}</Table.DataCell>
