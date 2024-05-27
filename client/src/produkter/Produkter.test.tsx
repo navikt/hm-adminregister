@@ -87,9 +87,7 @@ test("List ut produkter", async () => {
 
   const { container } = render(
     <MemoryRouter>
-      <SWRConfig value={{ provider: () => new Map() }}>
         <Produkter />
-      </SWRConfig>
     </MemoryRouter>,
   );
 
@@ -97,5 +95,5 @@ test("List ut produkter", async () => {
   expect(await screen.findAllByRole("row")).toHaveLength(5); //header + 4 produkter
   expect(await screen.findByRole("row", {name: /Utkast/}))
 
-  //expect(await axe(container)).toHaveNoViolations();
+  expect(await axe(container)).toHaveNoViolations();
 });

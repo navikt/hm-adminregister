@@ -182,9 +182,9 @@ const Produkter = () => {
                               navigate(`/produkter/${product.id}`);
                             }}
                           >
-                            <Table.DataCell scope="row">
+                            <Table.HeaderCell scope="row">
                               <b>{product.title}</b>
-                            </Table.DataCell>
+                            </Table.HeaderCell>
                             <Table.DataCell>
                               <StatusTagProductList
                                 isDraft={product.draftStatus === "DRAFT"}

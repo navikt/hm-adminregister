@@ -5,7 +5,7 @@
     border-spacing: 0 6px;
   }
 
-  th {
+  thead th {
     border: 0;
   }
 
@@ -22,14 +22,17 @@
         color: var(--a-text-action);
       }
     }
+  }
 
-
+  tbody th {
+    padding: 15px 25px;
+    border:  1px solid var(--a-gray-300);
+    border-right: 0;
   }
 
   td {
     padding: 15px 25px;
     border: 1px solid var(--a-gray-300);
-
   }
 
   td:first-child {
