@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import { SWRConfig } from "swr";
 import { expect, test, vi } from "vitest";
 import Produkter from "produkter/Produkter";
 import { MemoryRouter } from "react-router-dom";
@@ -16,8 +15,7 @@ vi.mock("environments", () => ({
 const dummyProduct = (
   title: string,
   draftStatus: string = "DRAFT",
-  adminStatus: string = "PENDING",
-  status: string = "ACTIVE",
+  adminStatus: string = "PENDING"
 ) => {
   return {
     id: uuidv4(),
@@ -28,7 +26,7 @@ const dummyProduct = (
     isoCategory: "18100601",
     draftStatus: draftStatus,
     adminStatus: adminStatus,
-    status: status,
+    status: "ACTIVE",
     seriesData: {
       media: [],
     },
@@ -40,7 +38,7 @@ const dummyProduct = (
     updatedByUser: "system",
     createdByUser: "system",
     createdByAdmin: false,
-    count: 1,
+    count: 23,
     countDrafts: 1,
     countPublished: 0,
     countPending: 0,
@@ -50,15 +48,15 @@ const dummyProduct = (
   };
 };
 
-test("List ut produkter", async () => {
+test("Flere produkter", async () => {
   server.use(
     http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, () => {
       return HttpResponse.json({
         content: [
-          dummyProduct("p1", "DRAFT", "PENDING", "ACTIVE"), //Utkast
-          dummyProduct("p2", "DONE", "PENDING", "ACTIVE"), //Venter på godkjenning
-          dummyProduct("p3", "DRAFT", "REJECTED", "ACTIVE"), //Avslått
-          dummyProduct("p4", "DONE", "APPROVED", "ACTIVE"), //Publisert
+          dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
+          dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
+          dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
+          dummyProduct("p4", "DONE", "APPROVED"), //Publisert
           ],
         pageable: {
           number: 0,
@@ -91,9 +89,13 @@ test("List ut produkter", async () => {
     </MemoryRouter>,
   );
 
-  expect(await screen.findAllByRole("table")).toHaveLength(1);
+  expect(await screen.findByRole("row", {name: /p1/})).toHaveTextContent(/23/) //antall varianter
+
   expect(await screen.findAllByRole("row")).toHaveLength(5); //header + 4 produkter
   expect(await screen.findByRole("row", {name: /Utkast/}))
+  expect(await screen.findByRole("row", {name: /Avslått/}))
+  expect(await screen.findByRole("row", {name: /Venter på godkjenning/}))
+  expect(await screen.findByRole("row", {name: /Publisert/}))
 
   expect(await axe(container)).toHaveNoViolations();
 });
