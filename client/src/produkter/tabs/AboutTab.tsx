@@ -1,4 +1,4 @@
-import { Alert, Button, Heading, Tabs, VStack } from "@navikt/ds-react";
+import { Alert, Button, Heading, Tabs, TextField, VStack } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
@@ -7,6 +7,7 @@ import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-type
 import { labelRequired } from "utils/string-util";
 import { RichTextEditor } from "produkter/RichTextEditor";
 import parse from "html-react-parser";
+import { isValidUrl } from "produkter/seriesUtils";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -19,7 +20,9 @@ interface Props {
 const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
   const formMethods = useFormContext<EditSeriesInfo>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
+  const [showEditUrlMode, setShowEditUrlMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
 
   const getDescription = () => (
     <>
@@ -34,6 +37,12 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
 
   const handleSaveDescription = () => {
     setShowEditDescriptionMode(false);
+    formRef.current?.requestSubmit();
+  };
+
+  const handleSaveUrl = () => {
+    setUrlFormatError(undefined);
+    setShowEditUrlMode(false);
     formRef.current?.requestSubmit();
   };
 
@@ -105,6 +114,76 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                   variant="tertiary"
                   icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
                   onClick={handleSaveDescription}
+                >
+                  Lagre
+                </Button>
+              </>
+            )}
+          </VStack>
+          <VStack gap="2">
+            <Heading level="2" size="xsmall">
+              {"URL til produsentens produktside"}
+            </Heading>
+            {!showEditUrlMode && (
+              <>
+                {!series.seriesData.attributes.url ? (
+                  <>
+                    {isEditable ? (
+                      <Button
+                        className="fit-content"
+                        variant="tertiary"
+                        icon={<PlusCircleIcon title="Legg til URL til produsentens produktside" fontSize="1.5rem" />}
+                        onClick={() => setShowEditUrlMode(true)}
+                      >
+                        Legg til URL til produsentens produktside
+                      </Button>
+                    ) : (
+                      "-"
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <a href={series.seriesData.attributes.url} target="_blank" className="preview" rel="noreferrer">
+                      {series.seriesData.attributes.url}
+                    </a>
+                    {isEditable && (
+                      <Button
+                        className="fit-content"
+                        variant="tertiary"
+                        icon={<PencilWritingIcon title="Endre url" fontSize="1.5rem" />}
+                        onClick={() => setShowEditUrlMode(true)}
+                      >
+                        Endre URL
+                      </Button>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {showEditUrlMode && (
+              <>
+                <TextField
+                  defaultValue={series.seriesData.attributes.url || ""}
+                  label={""}
+                  id="url"
+                  name="url"
+                  type="text"
+                  onChange={(e) => {
+                    if (e.target.value.length > 0 && !isValidUrl(e.target.value)) {
+                      setUrlFormatError("Ugyldig URL-format");
+                    } else {
+                      formMethods.setValue("url", e.target.value);
+                      setUrlFormatError(undefined);
+                    }
+                  }}
+                  error={urlFormatError}
+                />
+                <Button
+                  className="fit-content"
+                  variant="tertiary"
+                  icon={<FloppydiskIcon title="Lagre URL" fontSize="1.5rem" />}
+                  onClick={handleSaveUrl}
                 >
                   Lagre
                 </Button>
