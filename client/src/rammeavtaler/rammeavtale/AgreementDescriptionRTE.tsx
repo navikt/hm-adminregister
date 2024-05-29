@@ -29,7 +29,7 @@ export const AgreementDescriptionRTE = ({ onChange, textContent }: Props) => {
           options: ["inline", "list", "link"],
           inline: {
             inDropdown: false,
-            options: ["bold", "italic"],
+            options: ["bold", "italic", "underline"],
           },
           list: {
             inDropdown: false,
