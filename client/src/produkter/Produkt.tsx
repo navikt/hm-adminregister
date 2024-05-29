@@ -33,6 +33,7 @@ export type EditSeriesInfo = {
   description: string;
   isoCode: string;
   url?: string;
+  keywords?: string[];
 };
 
 const ProductPage = () => {

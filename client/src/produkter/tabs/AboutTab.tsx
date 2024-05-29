@@ -1,4 +1,4 @@
-import { Alert, Button, Heading, Tabs, TextField, VStack } from "@navikt/ds-react";
+import {Alert, BodyShort, Button, Heading, Tabs, TextField, VStack} from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
@@ -7,7 +7,7 @@ import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-type
 import { labelRequired } from "utils/string-util";
 import { RichTextEditor } from "produkter/RichTextEditor";
 import parse from "html-react-parser";
-import { isValidUrl } from "produkter/seriesUtils";
+import {isValidKeyword, isValidUrl} from "produkter/seriesUtils";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -20,9 +20,11 @@ interface Props {
 const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
   const formMethods = useFormContext<EditSeriesInfo>();
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
+  const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [showEditUrlMode, setShowEditUrlMode] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
+  const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
 
   const getDescription = () => (
     <>
@@ -43,6 +45,12 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const handleSaveUrl = () => {
     setUrlFormatError(undefined);
     setShowEditUrlMode(false);
+    formRef.current?.requestSubmit();
+  };
+
+  const handleSaveKeywords = () => {
+    setKeywordFormatError(undefined);
+    setShowEditKeywordsMode(false);
     formRef.current?.requestSubmit();
   };
 
@@ -190,6 +198,80 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
               </>
             )}
           </VStack>
+          <VStack gap="2">
+            <Heading level="2" size="xsmall">
+              Nøkkelord
+            </Heading>
+            <BodyShort>Nøkkelord vil bli brukt til søket, så her kan dere legge ord som dere mener bør gi treff på dette hjelpemiddelet.</BodyShort>
+            {!showEditKeywordsMode && (
+                <>
+                  {!series.seriesData.attributes.keywords ? (
+                      <>
+                        {isEditable ? (
+                            <Button
+                                className="fit-content"
+                                variant="tertiary"
+                                icon={<PlusCircleIcon title="Legg til URL til produsentens produktside" fontSize="1.5rem" />}
+                                onClick={() => setShowEditKeywordsMode(true)}
+                            >
+                              Legg til nøkkelord
+                            </Button>
+                        ) : (
+                            "-"
+                        )}
+                      </>
+                  ) : (
+                      <>
+                        <BodyShort>
+                          {series.seriesData.attributes.keywords.join(", ")}
+                        </BodyShort>
+                        {isEditable && (
+                            <Button
+                                className="fit-content"
+                                variant="tertiary"
+                                icon={<PencilWritingIcon title="Endre url" fontSize="1.5rem" />}
+                                onClick={() => setShowEditKeywordsMode(true)}
+                            >
+                              Endre nøkkelord
+                            </Button>
+                        )}
+                      </>
+                  )}
+                </>
+            )}
+
+            {showEditKeywordsMode && (
+                <>
+                  <TextField
+                      defaultValue={series.seriesData.attributes.keywords?.join(",") || ""}
+                      label={""}
+                      id="keywords"
+                      name="keywords"
+                      type="text"
+                      onChange={(e) => {
+                        if (e.target.value.length > 0 && !isValidKeyword(e.target.value)) {
+                          setKeywordFormatError("Ugyldig keyword-format");
+                        } else if (e.target.value.split(",").length > 3) {
+                          setKeywordFormatError("Maks tre nøkkelord");
+                        } else {
+                          formMethods.setValue("keywords", e.target.value.split(","));
+                          setKeywordFormatError(undefined);
+                        }
+                      }}
+                      error={keywordFormatError}
+                  />
+                  <Button
+                      className="fit-content"
+                      variant="tertiary"
+                      icon={<FloppydiskIcon title="Lagre nøkkelord" fontSize="1.5rem" />}
+                      onClick={handleSaveKeywords}
+                  >
+                    Lagre
+                  </Button>
+                </>
+            )}
+          </VStack>
+
         </VStack>
       </form>
     </Tabs.Panel>

@@ -48,6 +48,12 @@ export const updateSeries = async (
       series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
     }
 
+    if (editSeriesInfo.keywords?.length === 0) {
+      series.seriesData.attributes.keywords = undefined;
+    } else {
+      series.seriesData.attributes.keywords = editSeriesInfo.keywords ? editSeriesInfo.keywords : series.seriesData.attributes.keywords;
+    }
+
     return series;
   });
 };
