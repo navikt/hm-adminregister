@@ -122,7 +122,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
           </VStack>
           <VStack gap="2">
             <Heading level="2" size="xsmall">
-              {"URL til produsentens produktside"}
+              {"URL til leverandørs produktside"}
             </Heading>
             {!showEditUrlMode && (
               <>
@@ -132,10 +132,10 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                       <Button
                         className="fit-content"
                         variant="tertiary"
-                        icon={<PlusCircleIcon title="Legg til URL til produsentens produktside" fontSize="1.5rem" />}
+                        icon={<PlusCircleIcon title="Legg til URL til leverandørs produktside" fontSize="1.5rem" />}
                         onClick={() => setShowEditUrlMode(true)}
                       >
-                        Legg til URL til produsentens produktside
+                        Legg til URL til leverandørs produktside
                       </Button>
                     ) : (
                       "-"
