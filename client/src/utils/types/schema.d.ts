@@ -916,8 +916,13 @@ export interface components {
     };
     /** @enum {string} */
     RegistrationStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    SeriesAttributesDTO: {
+      keywords?: string[] | null;
+      url?: string | null;
+    };
     SeriesDataDTO: {
       media: components["schemas"]["MediaInfoDTO"][];
+      attributes: components["schemas"]["SeriesAttributesDTO"];
     };
     SeriesDraftWithDTO: {
       title: string;

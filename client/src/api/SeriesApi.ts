@@ -33,10 +33,18 @@ export const updateSeries = async (
   editSeriesInfo: EditSeriesInfo,
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
+  console.log("updateSeries", editSeriesInfo);
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
     series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
     series.text = editSeriesInfo.description ? editSeriesInfo.description : series.text;
+
+    if (editSeriesInfo.url?.length === 0) {
+      series.seriesData.attributes.url = undefined;
+    } else {
+      series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
+    }
+
     return series;
   });
 };

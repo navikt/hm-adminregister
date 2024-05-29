@@ -18,7 +18,7 @@ const StatusPanel = ({ series, isAdmin }: Props) => {
 
       <StatusTag seriesStatus={seriesStatus(series)} />
 
-      {/*todo: punlushed missing on series*/}
+      {/*todo: published missing on series*/}
       {/*{publisert && series.published && <StatusBox title="Publisert" date={series.published} />}*/}
 
       <StatusBox title="Endret" date={series.updated} />
