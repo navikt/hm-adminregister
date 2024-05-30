@@ -284,7 +284,7 @@ const ProductPage = () => {
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               />
             )}
-            {!loggedInUser?.isAdmin && !isEditable && (
+            {!loggedInUser?.isAdmin && !isEditable && !isPending && (
               <ChangePublishedProductAction setEditProductModalIsOpen={setEditProductModalIsOpen} />
             )}
             <StatusPanel series={series} />
