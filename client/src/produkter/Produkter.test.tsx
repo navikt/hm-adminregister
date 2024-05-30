@@ -12,11 +12,7 @@ vi.mock("environments", () => ({
   VITE_HM_REGISTER_URL: vi.fn(() => "http://localhost:8082/imageproxy"),
 }));
 
-const dummyProduct = (
-  title: string,
-  draftStatus: string = "DRAFT",
-  adminStatus: string = "PENDING"
-) => {
+const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
     id: uuidv4(),
     supplierId: uuidv4(),
@@ -57,7 +53,7 @@ test("Flere produkter", async () => {
           dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
           dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
           dummyProduct("p4", "DONE", "APPROVED"), //Publisert
-          ],
+        ],
         pageable: {
           number: 0,
           sort: {
@@ -85,17 +81,17 @@ test("Flere produkter", async () => {
 
   const { container } = render(
     <MemoryRouter>
-        <Produkter />
+      <Produkter />
     </MemoryRouter>,
   );
 
-  expect(await screen.findByRole("row", {name: /p1/})).toHaveTextContent(/23/) //antall varianter
+  expect(await screen.findByRole("row", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
 
   expect(await screen.findAllByRole("row")).toHaveLength(5); //header + 4 produkter
-  expect(await screen.findByRole("row", {name: /Utkast/}))
-  expect(await screen.findByRole("row", {name: /Avslått/}))
-  expect(await screen.findByRole("row", {name: /Venter på godkjenning/}))
-  expect(await screen.findByRole("row", {name: /Publisert/}))
+  expect(await screen.findByRole("row", { name: /Ikke publisert/ }));
+  expect(await screen.findByRole("row", { name: /Avslått/ }));
+  expect(await screen.findByRole("row", { name: /Venter på godkjenning/ }));
+  expect(await screen.findByRole("row", { name: /Publisert/ }));
 
   expect(await axe(container)).toHaveNoViolations();
 });
