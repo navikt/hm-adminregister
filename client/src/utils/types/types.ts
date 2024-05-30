@@ -85,4 +85,5 @@ export enum SeriesStatus {
   INACTIVE = "INACTIVE",
   APPROVED = "APPROVED",
   PUBLISHED = "PUBLISHED",
+  DRAFT_CHANGE = "DRAFT_CHANGE",
 }

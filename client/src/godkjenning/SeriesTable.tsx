@@ -48,31 +48,32 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
       <Table className="products-table" sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
         <Table.Header>
           <Table.Row>
+            <Table.ColumnHeader> </Table.ColumnHeader>
             <Table.ColumnHeader>Produkt</Table.ColumnHeader>
-            <Table.ColumnHeader sortKey="status" sortable>
-              Status
-            </Table.ColumnHeader>
+            {/*<Table.ColumnHeader sortKey="status" sortable>*/}
+            {/*  Status*/}
+            {/*</Table.ColumnHeader>*/}
             {/*<Table.ColumnHeader sortKey="delkontrakttittel" sortable>*/}
             {/*  Delkontrakt*/}
             {/*</Table.ColumnHeader>*/}
             <Table.ColumnHeader sortKey="supplierName" sortable>
               Leverandør
             </Table.ColumnHeader>
-            <Table.ColumnHeader></Table.ColumnHeader>
+            <Table.ColumnHeader> </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {sortedData.map((series, i) => {
             return (
               <Table.Row key={i + series.title}>
+                <Table.DataCell style={{ padding: "8px" }}>
+                  {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
+                </Table.DataCell>
                 <Table.HeaderCell scope="row">
-                  <HStack justify="space-evenly" style={{ alignItems: "center" }}>
-                    {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
-                    <div>{series.title}</div>
-                  </HStack>
+                  <div>{series.title}</div>
                 </Table.HeaderCell>
                 {/*todo: handle other statuses when they are implemented*/}
-                <Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>
+                {/*<Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>*/}
                 {/*<Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>*/}
                 <Table.DataCell>{series.supplierName}</Table.DataCell>
                 <Table.DataCell>

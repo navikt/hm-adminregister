@@ -23,7 +23,8 @@ import { Avstand } from "felleskomponenter/Avstand";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "produkter/ProductTable.module.scss";
-import { StatusTagProductList } from "felleskomponenter/StatusTagProductList";
+import StatusTag from "felleskomponenter/StatusTag";
+import { seriesStatus } from "produkter/seriesUtils";
 
 const Produkter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -186,12 +187,7 @@ const Produkter = () => {
                               <b>{product.title}</b>
                             </Table.HeaderCell>
                             <Table.DataCell>
-                              <StatusTagProductList
-                                isDraft={product.draftStatus === "DRAFT"}
-                                isPublished={product.adminStatus === "APPROVED"}
-                                isPending={product.adminStatus === "PENDING"}
-                                isRejected={product.adminStatus === "REJECTED"}
-                              />
+                              <StatusTag seriesStatus={seriesStatus(product)} />
                             </Table.DataCell>
                             <Table.DataCell>{product.count}</Table.DataCell>
                           </Table.Row>

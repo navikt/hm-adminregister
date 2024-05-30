@@ -25,6 +25,8 @@ import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import AdminActions from "produkter/AdminActions";
 import SupplierActions from "produkter/SupplierActions";
 import { updateSeries } from "api/SeriesApi";
+import ChangePublishedProductAction from "produkter/ChangePublishedProductAction";
+import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
 
 export type EditSeriesInfo = {
   title: string;
@@ -40,6 +42,7 @@ const ProductPage = () => {
   const { pathname } = useLocation();
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
@@ -157,10 +160,17 @@ const ProductPage = () => {
           isOpen={deleteConfirmationModalIsOpen}
           setIsOpen={setDeleteConfirmationModalIsOpen}
         />
+        <EditPublishedProductConfirmationModal
+          series={series}
+          mutateProducts={mutateVariants}
+          mutateSeries={mutateSeries}
+          isOpen={editProductModalIsOpen}
+          setIsOpen={setEditProductModalIsOpen}
+        />
         <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
           <VStack gap={{ xs: "4", md: "8" }}>
             <VStack gap="1">
-              <Label>Produktnavn</Label>
+              <Label> Produktnavn</Label>
 
               <HStack gap="1">
                 {!showEditProductTitleMode && (
@@ -267,13 +277,17 @@ const ProductPage = () => {
             )}
             {!loggedInUser?.isAdmin && isDraft && isActive && (
               <SupplierActions
+                seriesIsPublished={!!series.published}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               />
             )}
-            <StatusPanel series={series} isAdmin={loggedInUser?.isAdmin || false} />
+            {!loggedInUser?.isAdmin && !isEditable && (
+              <ChangePublishedProductAction setEditProductModalIsOpen={setEditProductModalIsOpen} />
+            )}
+            <StatusPanel series={series} />
           </VStack>
         </HGrid>
       </FormProvider>

@@ -6,10 +6,9 @@ import { seriesStatus } from "produkter/seriesUtils";
 
 interface Props {
   series: SeriesRegistrationDTO;
-  isAdmin: boolean;
 }
 
-const StatusPanel = ({ series, isAdmin }: Props) => {
+const StatusPanel = ({ series }: Props) => {
   return (
     <VStack gap="4">
       <Heading level="1" size="medium">
@@ -18,8 +17,7 @@ const StatusPanel = ({ series, isAdmin }: Props) => {
 
       <StatusTag seriesStatus={seriesStatus(series)} />
 
-      {/*todo: published missing on series*/}
-      {/*{publisert && series.published && <StatusBox title="Publisert" date={series.published} />}*/}
+      {series.published && <StatusBox title="Publisert" date={series.published} />}
 
       <StatusBox title="Endret" date={series.updated} />
 

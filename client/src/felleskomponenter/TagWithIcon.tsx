@@ -7,6 +7,7 @@ export enum colors {
   "ORANGE",
   "GREEN",
   "RED",
+  "BLUE",
 }
 
 const TagWithIcon = ({ icon, text, color }: { icon: ReactNode; text: string; color: colors }) => {
@@ -17,6 +18,7 @@ const TagWithIcon = ({ icon, text, color }: { icon: ReactNode; text: string; col
         "tag-with-icon--orange": color === colors.ORANGE,
         "tag-with-icon--green": color === colors.GREEN,
         "tag-with-icon--red": color === colors.RED,
+        "tag-with-icon--blue": color === colors.BLUE,
       })}
     >
       {icon}
