@@ -258,19 +258,9 @@ export interface paths {
   };
   "/admreg/vendor/api/v1/product/registrations": {
     get: operations["findProducts_1"];
-    post: operations["createProduct_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/delete": {
     delete: operations["deleteProducts_1"];
-  };
-  "/admreg/vendor/api/v1/product/registrations/draft": {
-    post: operations["draftProduct_1"];
-  };
-  "/admreg/vendor/api/v1/product/registrations/draft/variant/{id}": {
-    post: operations["createProductVariant_1"];
-  };
-  "/admreg/vendor/api/v1/product/registrations/draftWith": {
-    post: operations["draftProductWith_1"];
   };
   "/admreg/vendor/api/v1/product/registrations/draftWithV2/{seriesUUID}/supplierId/{supplierId}": {
     post: operations["draftProductWithV2_1"];
@@ -287,13 +277,6 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun": {
     post: operations["importExcelDryrun_1"];
   };
-  "/admreg/vendor/api/v1/product/registrations/series/group": {
-    get: operations["findSeriesGroup_1"];
-  };
-  "/admreg/vendor/api/v1/product/registrations/series/grouped/{seriesUUID}": {
-    get: operations["getProductSeriesWithVariants"];
-    put: operations["updateProductSeriesWithVariants"];
-  };
   "/admreg/vendor/api/v1/product/registrations/series/{seriesUUID}": {
     get: operations["findBySeriesUUIDAndSupplierId_1"];
   };
@@ -303,7 +286,6 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/{id}": {
     get: operations["getProductById_1"];
     put: operations["updateProduct_1"];
-    delete: operations["deleteProduct_1"];
   };
   "/admreg/vendor/api/v1/series": {
     get: operations["getSeries_1"];
@@ -843,35 +825,6 @@ export interface components {
       /** Format: int64 */
       version?: number | null;
     };
-    ProductSeriesWithVariantsDTO: {
-      /** Format: uuid */
-      id: string;
-      adminStatus: components["schemas"]["AdminStatus"];
-      /** Format: date-time */
-      created: string;
-      createdBy: string;
-      createdByAdmin: boolean;
-      createdByUser: string;
-      draftStatus: components["schemas"]["DraftStatus"];
-      /** Format: date-time */
-      expired?: string | null;
-      isoCategory: string;
-      productData: components["schemas"]["ProductData"];
-      /** Format: date-time */
-      published?: string | null;
-      registrationStatus: components["schemas"]["RegistrationStatus"];
-      /** Format: uuid */
-      seriesUUID?: string | null;
-      seriesId: string;
-      /** Format: uuid */
-      supplierId: string;
-      title: string;
-      /** Format: date-time */
-      updated: string;
-      updatedBy: string;
-      updatedByUser: string;
-      variants: components["schemas"]["ProductRegistrationDTO"][];
-    };
     ProductToApproveDto: {
       title: string;
       articleName: string;
@@ -954,6 +907,8 @@ export interface components {
       updated: string;
       /** Format: date-time */
       expired: string;
+      /** Format: date-time */
+      published?: string | null;
       createdBy: string;
       updatedBy: string;
       updatedByUser: string;
@@ -2852,21 +2807,6 @@ export interface operations {
       };
     };
   };
-  createProduct_1: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ProductRegistrationDTO"];
-      };
-    };
-    responses: {
-      /** @description createProduct_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
-        };
-      };
-    };
-  };
   deleteProducts_1: {
     requestBody: {
       content: {
@@ -2878,63 +2818,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
-        };
-      };
-    };
-  };
-  draftProduct_1: {
-    parameters: {
-      query: {
-        isAccessory: boolean;
-        isSparePart: boolean;
-      };
-    };
-    responses: {
-      /** @description draftProduct_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
-        };
-      };
-    };
-  };
-  createProductVariant_1: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["DraftVariantDTO"];
-      };
-    };
-    responses: {
-      /** @description createProductVariant_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
-        };
-      };
-    };
-  };
-  draftProductWith_1: {
-    parameters: {
-      query: {
-        isAccessory: boolean;
-        isSparePart: boolean;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ProductDraftWithDTO"];
-      };
-    };
-    responses: {
-      /** @description draftProductWith_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
         };
       };
     };
@@ -3021,59 +2904,6 @@ export interface operations {
       };
     };
   };
-  findSeriesGroup_1: {
-    parameters: {
-      query: {
-        params?: {
-          [key: string]: string;
-        } | null;
-        pageable: components["schemas"]["OpenApiPageable"];
-      };
-    };
-    responses: {
-      /** @description findSeriesGroup_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SeriesGroupDTO"][];
-        };
-      };
-    };
-  };
-  getProductSeriesWithVariants: {
-    parameters: {
-      path: {
-        seriesUUID: string;
-      };
-    };
-    responses: {
-      /** @description getProductSeriesWithVariants 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductSeriesWithVariantsDTO"];
-        };
-      };
-    };
-  };
-  updateProductSeriesWithVariants: {
-    parameters: {
-      path: {
-        seriesUUID: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ProductSeriesWithVariantsDTO"];
-      };
-    };
-    responses: {
-      /** @description updateProductSeriesWithVariants 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
-        };
-      };
-    };
-  };
   findBySeriesUUIDAndSupplierId_1: {
     parameters: {
       path: {
@@ -3132,21 +2962,6 @@ export interface operations {
     };
     responses: {
       /** @description updateProduct_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"];
-        };
-      };
-    };
-  };
-  deleteProduct_1: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description deleteProduct_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];

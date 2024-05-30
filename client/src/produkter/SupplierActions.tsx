@@ -2,11 +2,13 @@ import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { CogIcon, TrashIcon } from "@navikt/aksel-icons";
 
 const SupplierActions = ({
+  seriesIsPublished,
   setIsValid,
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
 }: {
+  seriesIsPublished: boolean;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
@@ -23,17 +25,20 @@ const SupplierActions = ({
       >
         Send til godkjenning
       </Button>
-      <Dropdown>
-        <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
-        <Dropdown.Menu>
-          <Dropdown.Menu.List>
-            <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-              <TrashIcon aria-hidden />
-              Slett
-            </Dropdown.Menu.List.Item>
-          </Dropdown.Menu.List>
-        </Dropdown.Menu>
-      </Dropdown>
+
+      {!seriesIsPublished && (
+        <Dropdown>
+          <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
+          <Dropdown.Menu>
+            <Dropdown.Menu.List>
+              <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                <TrashIcon aria-hidden />
+                Slett
+              </Dropdown.Menu.List.Item>
+            </Dropdown.Menu.List>
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
     </HStack>
   );
 };
