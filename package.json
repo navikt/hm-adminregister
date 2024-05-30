@@ -11,6 +11,7 @@
   "scripts": {
     "postinstall": "npm --prefix client install && npm --prefix server install",
     "dev": "npm run --prefix client dev",
+    "test": "npm run --prefix client test",
     "start": "npm run --prefix server start",
     "build:client": "npm run --prefix client build",
     "build:server": "npm run --prefix server build",
