@@ -1,5 +1,5 @@
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
+import { PencilIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 
 const ChangePublishedProductAction = ({
   setEditProductModalIsOpen,
@@ -13,7 +13,7 @@ const ChangePublishedProductAction = ({
         <Dropdown.Menu>
           <Dropdown.Menu.List>
             <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
-              <TrashIcon aria-hidden />
+              <PencilIcon aria-hidden />
               Endre produkt
             </Dropdown.Menu.List.Item>
           </Dropdown.Menu.List>
