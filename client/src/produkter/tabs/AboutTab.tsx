@@ -1,4 +1,4 @@
-import {Alert, BodyShort, Button, Heading, Tabs, TextField, VStack} from "@navikt/ds-react";
+import {Alert, BodyShort, Button, Heading, Tabs, TextField, UNSAFE_Combobox, VStack} from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
@@ -8,6 +8,7 @@ import { labelRequired } from "utils/string-util";
 import { RichTextEditor } from "produkter/RichTextEditor";
 import parse from "html-react-parser";
 import {isValidKeyword, isValidUrl} from "produkter/seriesUtils";
+
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -25,6 +26,12 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const formRef = useRef<HTMLFormElement>(null);
   const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
+  const comboBoxInitialOptions = ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]  // to be deleted
+  const [inputValue, setInputValue] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : []);
+
+  const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
+
 
   const getDescription = () => (
     <>
@@ -51,7 +58,10 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const handleSaveKeywords = () => {
     setKeywordFormatError(undefined);
     setShowEditKeywordsMode(false);
-    formRef.current?.requestSubmit();
+    if (selectedOptions.length < 3) {
+      formMethods.setValue("keywords", selectedOptions)
+      formRef.current?.requestSubmit();
+    } else setKeywordFormatError("Du kan maksimalt velge 3 nøkkelord");
   };
 
   return (
@@ -242,22 +252,29 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
 
             {showEditKeywordsMode && (
                 <>
-                  <TextField
-                      defaultValue={series.seriesData.attributes.keywords?.join(",") || ""}
-                      label={""}
+                  <UNSAFE_Combobox
                       id="keywords"
-                      name="keywords"
-                      type="text"
-                      onChange={(e) => {
-                        if (e.target.value.length > 0 && !isValidKeyword(e.target.value)) {
-                          setKeywordFormatError("Ugyldig keyword-format");
-                        } else if (e.target.value.split(",").length > 3) {
-                          setKeywordFormatError("Maks tre nøkkelord");
-                        } else {
-                          formMethods.setValue("keywords", e.target.value.split(","));
-                          setKeywordFormatError(undefined);
+                      label=""
+                      // options={options}
+                      isMultiSelect={true}
+                      clearButton={true}
+                      options={[...comboBoxInitialOptions]}
+                      selectedOptions={selectedOptions || []}
+                      maxSelected={{limit: 3}}
+                      shouldShowSelectedOptions={true}
+                      shouldAutocomplete={true}
+                      onToggleSelected={(option: string, isSelected: boolean) =>
+                          (isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue) && inputValue.length > 0)
+                              ? setSelectedOptions([...selectedOptions, option])
+                              : setSelectedOptions(selectedOptions.filter((o) => o !== option))
+                      }
+                      /*onKeyDownCapture={(event) => {
+                        if(selectedOptions.length < 3) {
+                          if (event.key === 'Enter' && isValidKeyword(inputValue) && inputValue.length > 0) {
+                            event.preventDefault()
+                          }
                         }
-                      }}
+                      }}*/
                       error={keywordFormatError}
                   />
                   <Button
