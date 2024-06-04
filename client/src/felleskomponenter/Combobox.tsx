@@ -7,24 +7,19 @@ type Props = {
   setValue?(value: string): void;
   label?: JSX.Element;
   errorMessage?: string;
-  description?: string;
-  typeCombobox?: string;
-  selectedOption?: string[];
 };
 
-export default function Combobox({ defaultValue, options, setValue, label, errorMessage, selectedOption, description, typeCombobox = "default" }: Props) {
+export default function Combobox({ defaultValue, options, setValue, label, errorMessage }: Props) {
   const [inputValue, setInputValue] = useState("");
-/*  const [inputValueArray, setInputValueArray] = useState([""]);*/
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultValue ? [defaultValue] : selectedOption || []);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultValue ? [defaultValue] : []);
   const [filteredOptions, setFilteredOptions] = useState<string[]>();
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    console.log(`option = ${option}, isSelected ${isSelected}`)
     if (isSelected) {
-      setSelectedOptions([...selectedOptions, option])
+      setSelectedOptions([option]);
       setValue && setValue(option);
     } else {
-      setSelectedOptions(selectedOptions.filter((o) => o !== option))
+      setSelectedOptions([]);
       setValue && setValue("");
     }
   };
@@ -35,34 +30,6 @@ export default function Combobox({ defaultValue, options, setValue, label, error
   }, [inputValue, options]);
 
   return (
-      <>
-        {(typeCombobox ===  "maxSelectedLimit") && (
-            <UNSAFE_Combobox
-                id="keywords"
-                label="Nøkkelord"
-                description={description || ""}
-                // options={options}
-                isMultiSelect
-                shouldAutocomplete={false}
-                clearButton={true}
-                shouldShowSelectedOptions
-                options={["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]}
-                selectedOptions={selectedOptions}
-                maxSelected={{ limit: 3 }}
-/*                onToggleSelected={onToggleSelected}*/
-                  onToggleSelected={(option: string, isSelected: boolean) => /*console.log(`option = ${option}, isSelected ${isSelected}`)}*/
-                   isSelected
-                        ? setSelectedOptions([...selectedOptions, option])
-                        : setSelectedOptions(selectedOptions.filter((o) => o !== option))
-                }
-/*                onChange={(event) => {
-                  setInputValueArray(...event?.target.value || "");
-                }}*/
-                error={errorMessage && errorMessage}
-            />
-        )}
-
-      {(typeCombobox ===  "default") && (
     <UNSAFE_Combobox
       label={label || ""}
       description={"Velg isokategori produktet passer best inn i"}
@@ -77,7 +44,5 @@ export default function Combobox({ defaultValue, options, setValue, label, error
       onToggleSelected={onToggleSelected}
       error={errorMessage && errorMessage}
     />
-      )}
-      </>
   );
 }
