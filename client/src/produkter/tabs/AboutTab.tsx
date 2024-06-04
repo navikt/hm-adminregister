@@ -58,7 +58,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
   const handleSaveKeywords = () => {
     setKeywordFormatError(undefined);
     setShowEditKeywordsMode(false);
-    if (selectedOptions.length < 3) {
+    if (selectedOptions.length <= 3) {
       formMethods.setValue("keywords", selectedOptions)
       formRef.current?.requestSubmit();
     } else setKeywordFormatError("Du kan maksimalt velge 3 nøkkelord");
@@ -264,7 +264,7 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
                       shouldShowSelectedOptions={true}
                       shouldAutocomplete={true}
                       onToggleSelected={(option: string, isSelected: boolean) =>
-                          (isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue) && inputValue.length > 0)
+                          (isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue))
                               ? setSelectedOptions([...selectedOptions, option])
                               : setSelectedOptions(selectedOptions.filter((o) => o !== option))
                       }
