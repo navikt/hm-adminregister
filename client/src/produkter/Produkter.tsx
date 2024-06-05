@@ -46,7 +46,7 @@ const Produkter = () => {
   const {
     data: allData,
     isLoading: allDataIsLoading,
-    error: errorProduct,
+    error: errorProducts,
   } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
