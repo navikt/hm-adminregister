@@ -1,4 +1,4 @@
-import { HStack, Link, SortState, Table, Tag } from "@navikt/ds-react";
+import { Link, SortState, Table, Tag } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import { ChevronRightIcon } from "@navikt/aksel-icons";
@@ -50,9 +50,9 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
           <Table.Row>
             <Table.ColumnHeader> </Table.ColumnHeader>
             <Table.ColumnHeader>Produkt</Table.ColumnHeader>
-            {/*<Table.ColumnHeader sortKey="status" sortable>*/}
-            {/*  Status*/}
-            {/*</Table.ColumnHeader>*/}
+            <Table.ColumnHeader sortKey="status" sortable>
+              Status
+            </Table.ColumnHeader>
             {/*<Table.ColumnHeader sortKey="delkontrakttittel" sortable>*/}
             {/*  Delkontrakt*/}
             {/*</Table.ColumnHeader>*/}
@@ -72,8 +72,7 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
                 <Table.HeaderCell scope="row">
                   <div>{series.title}</div>
                 </Table.HeaderCell>
-                {/*todo: handle other statuses when they are implemented*/}
-                {/*<Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>*/}
+                <Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>
                 {/*<Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>*/}
                 <Table.DataCell>{series.supplierName}</Table.DataCell>
                 <Table.DataCell>
@@ -92,14 +91,19 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
 };
 
 const StatusTag = ({ status }: { status: string }) => {
-  if (status === "NEW" || status === "EXISTING") {
+  if (status === "NEW") {
     return (
       <Tag size="small" variant="warning">
         Nytt produkt
-        {/*todo: handle other statuses when they are implemented*/}
+      </Tag>
+    );
+  } else if (status === "CHANGE") {
+    return (
+      <Tag size="small" variant="warning">
+        Nytt produkt
       </Tag>
     );
   } else {
-    return <></>;
+    return <> </>;
   }
 };
