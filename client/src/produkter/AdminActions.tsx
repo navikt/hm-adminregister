@@ -26,7 +26,7 @@ const AdminActions = ({
 }) => {
   const { setGlobalError } = useErrorStore();
   const isPending = series.adminStatus === "PENDING";
-  const shouldPublish = series.adminStatus !== "APPROVED";
+  const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
 
   async function onRejectApproval() {
     rejectProducts(products?.map((product) => product.id) || [])
@@ -69,7 +69,7 @@ const AdminActions = ({
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
-          {isPending && (
+          {isPending && shouldPublish && (
             <>
               <Dropdown.Menu.GroupedList>
                 <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
