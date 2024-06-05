@@ -63,16 +63,6 @@ const ProductPage = () => {
 
   const formMethods = useForm<EditSeriesInfo>();
 
-  if (errorSeries) {
-    setGlobalError(errorSeries.status, errorSeries.message);
-    throw errorSeries;
-  }
-
-  if (errorVariants) {
-    setGlobalError(errorVariants.status, errorVariants.message);
-    throw errorVariants;
-  }
-
   if (isLoadingSeries || isLoadingVariants) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -81,11 +71,17 @@ const ProductPage = () => {
     );
   }
 
-  if (!series) {
+  if (!series || errorVariants || errorSeries) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="info">Ingen data funnet.</Alert>
+          <Alert variant="error">
+            Kunne ikke vise produkt. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan du sende
+            oss en e-post{" "}
+            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
+              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
+            </a>
+          </Alert>
         </HGrid>
       </main>
     );
