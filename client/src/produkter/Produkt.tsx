@@ -4,29 +4,29 @@ import useSWR from "swr";
 
 import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
-import "./product-page.scss";
+import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { updateSeries } from "api/SeriesApi";
+import { HM_REGISTER_URL } from "environments";
+import AdminActions from "produkter/AdminActions";
+import ChangePublishedProductAction from "produkter/ChangePublishedProductAction";
+import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
+import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
+import { RequestApprovalModal } from "produkter/RequestApprovalModal";
+import { numberOfDocuments, numberOfImages, numberOfVideos } from "produkter/seriesUtils";
+import StatusPanel from "produkter/StatusPanel";
+import SupplierActions from "produkter/SupplierActions";
 import { FormProvider, useForm } from "react-hook-form";
-import AboutTab from "./tabs/AboutTab";
-import VariantsTab from "./variants/VariantsTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { IsoCategoryDTO } from "utils/types/response-types";
 import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
-import { HM_REGISTER_URL } from "environments";
-import StatusPanel from "produkter/StatusPanel";
-import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import VideosTab from "./tabs/VideosTab";
-import ImageTab from "./tabs/ImagesTab";
+import { IsoCategoryDTO } from "utils/types/response-types";
+import "./product-page.scss";
+import AboutTab from "./tabs/AboutTab";
 import DocumentTab from "./tabs/DocumentsTab";
-import { numberOfDocuments, numberOfImages, numberOfVideos } from "produkter/seriesUtils";
-import { RequestApprovalModal } from "produkter/RequestApprovalModal";
-import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
-import AdminActions from "produkter/AdminActions";
-import SupplierActions from "produkter/SupplierActions";
-import { updateSeries } from "api/SeriesApi";
-import ChangePublishedProductAction from "produkter/ChangePublishedProductAction";
-import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
+import ImageTab from "./tabs/ImagesTab";
+import VideosTab from "./tabs/VideosTab";
+import VariantsTab from "./variants/VariantsTab";
 
 export type EditSeriesInfo = {
   title: string;
