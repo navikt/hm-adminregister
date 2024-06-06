@@ -37,7 +37,6 @@ export const updateSeries = async (
   editSeriesInfo: EditSeriesInfo,
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
-  console.log("updateSeries", editSeriesInfo);
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
     series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
