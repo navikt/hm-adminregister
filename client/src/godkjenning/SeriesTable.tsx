@@ -72,7 +72,7 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
                 <Table.HeaderCell scope="row">
                   <div>{series.title}</div>
                 </Table.HeaderCell>
-                <Table.DataCell>{<StatusTag status={"NEW"} />}</Table.DataCell>
+                <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
                 {/*<Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>*/}
                 <Table.DataCell>{series.supplierName}</Table.DataCell>
                 <Table.DataCell>
@@ -93,14 +93,14 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
 const StatusTag = ({ status }: { status: string }) => {
   if (status === "NEW") {
     return (
-      <Tag size="small" variant="warning">
+      <Tag size="small" variant="success">
         Nytt produkt
       </Tag>
     );
   } else if (status === "CHANGE") {
     return (
       <Tag size="small" variant="warning">
-        Nytt produkt
+        Endret produkt
       </Tag>
     );
   } else {
