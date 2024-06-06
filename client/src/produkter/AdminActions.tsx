@@ -81,9 +81,6 @@ const AdminActions = ({
             </>
           )}
           <Dropdown.Menu.List>
-            {/* <Dropdown.Menu.List.Item onClick={() => setExpiredConfirmationModalIsOpen(true)}>
-              Marker som utgått
-            </Dropdown.Menu.List.Item> */}
             <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
               Slett
               <TrashIcon aria-hidden />
