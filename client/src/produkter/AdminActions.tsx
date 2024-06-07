@@ -1,9 +1,9 @@
-import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts, rejectProducts } from "api/ProductApi";
 import { approveSeries, rejectSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 const AdminActions = ({
   series,
@@ -82,8 +82,8 @@ const AdminActions = ({
           )}
           <Dropdown.Menu.List>
             <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-              <TrashIcon aria-hidden />
               Slett
+              <TrashIcon aria-hidden />
             </Dropdown.Menu.List.Item>
           </Dropdown.Menu.List>
         </Dropdown.Menu>
