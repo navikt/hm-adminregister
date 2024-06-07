@@ -98,8 +98,6 @@ export function userProductVariantsBySeriesId(seriesId: string) {
 }
 
 export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTerm: string; statusFilters: string[] }) {
-  const { setGlobalError } = useErrorStore();
-
   const { loggedInUser } = useAuthStore();
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
@@ -114,11 +112,6 @@ export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTer
     titleSearchTerm && titleSearchParam !== "" ? path : null,
     fetcherGET,
   );
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,
@@ -136,8 +129,6 @@ export function usePagedProducts({
   pageSize: number;
   statusFilters: string[];
 }) {
-  const { setGlobalError } = useErrorStore();
-
   const { loggedInUser } = useAuthStore();
 
   const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
@@ -147,11 +138,6 @@ export function usePagedProducts({
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,

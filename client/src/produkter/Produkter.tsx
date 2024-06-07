@@ -6,6 +6,7 @@ import {
   CheckboxGroup,
   Dropdown,
   Heading,
+  HGrid,
   HStack,
   Loader,
   Pagination,
@@ -32,13 +33,21 @@ const Produkter = () => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
-  const { data: pagedData, isLoading } = usePagedProducts({
+  const {
+    data: pagedData,
+    isLoading,
+    error: errorPaged,
+  } = usePagedProducts({
     page: pageState - 1,
     pageSize: pageSizeState,
     statusFilters,
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const { data: allData, isLoading: allDataIsLoading } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
+  const {
+    data: allData,
+    isLoading: allDataIsLoading,
+    error: errorProducts,
+  } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
@@ -66,6 +75,21 @@ const Produkter = () => {
   }, [pagedData]);
 
   const renderData = filteredData && filteredData.length > 0 ? filteredData : pagedData?.content;
+
+  if (errorPaged || errorProducts) {
+    return (
+      <main className="show-menu">
+        <HGrid gap="12" columns="minmax(16rem, 55rem)">
+          <Alert variant="error">
+            Kunne ikke vise produkter. Prøv å laste siden på nytt. Hvis problemet vedvarer, kan du sende oss en e-post{" "}
+            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
+              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
+            </a>
+          </Alert>
+        </HGrid>
+      </main>
+    );
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
