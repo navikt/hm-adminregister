@@ -14,6 +14,7 @@ const AdminActions = ({
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
+  setExpiredSeriesModalIsOpen,
 }: {
   series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
@@ -23,6 +24,7 @@ const AdminActions = ({
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
+  setExpiredSeriesModalIsOpen: (newState: boolean) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
   const isPending = series.adminStatus === "PENDING";
@@ -85,6 +87,14 @@ const AdminActions = ({
               Slett
               <TrashIcon aria-hidden />
             </Dropdown.Menu.List.Item>
+            {series.published && (
+              <Dropdown.Menu.List.Item
+                disabled={series.status === "INACTIVE"}
+                onClick={() => setExpiredSeriesModalIsOpen(true)}
+              >
+                Marker som utgått
+              </Dropdown.Menu.List.Item>
+            )}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
       </Dropdown>

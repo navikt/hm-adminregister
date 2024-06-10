@@ -22,6 +22,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
 import { IsoCategoryDTO } from "utils/types/response-types";
 import "./product-page.scss";
+import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import AboutTab from "./tabs/AboutTab";
 import DocumentTab from "./tabs/DocumentsTab";
 import ImageTab from "./tabs/ImagesTab";
@@ -43,6 +44,7 @@ const ProductPage = () => {
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
+  const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState(false);
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
@@ -155,6 +157,12 @@ const ProductPage = () => {
           mutateSeries={mutateSeries}
           isOpen={deleteConfirmationModalIsOpen}
           setIsOpen={setDeleteConfirmationModalIsOpen}
+        />
+        <SetExpiredSeriesConfirmationModal
+          series={series}
+          mutateSeries={mutateSeries}
+          isOpen={expiredSeriesModalIsOpen}
+          setIsOpen={setExpiredSeriesModalIsOpen}
         />
         <EditPublishedProductConfirmationModal
           series={series}
@@ -269,15 +277,18 @@ const ProductPage = () => {
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+                setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               />
             )}
             {!loggedInUser?.isAdmin && isDraft && isActive && (
               <SupplierActions
                 seriesIsPublished={!!series.published}
+                seriesIsExpired={series.status === "INACTIVE"}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+                setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               />
             )}
             {!loggedInUser?.isAdmin && !isEditable && !isPending && (
