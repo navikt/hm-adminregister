@@ -147,18 +147,11 @@ export function usePagedProducts({
 }
 
 export function useSeriesToApprove() {
-  const { setGlobalError } = useErrorStore();
-
   const { loggedInUser } = useAuthStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,
@@ -168,18 +161,11 @@ export function useSeriesToApprove() {
 }
 
 export function usePagedSeriesToApprove({ page, pageSize }: { page: number; pageSize: number }) {
-  const { setGlobalError } = useErrorStore();
-
   const { loggedInUser } = useAuthStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc`;
 
   const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,

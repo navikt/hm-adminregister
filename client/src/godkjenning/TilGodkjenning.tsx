@@ -12,10 +12,26 @@ export const TilGodkjenning = () => {
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
 
-  const { data: allData, isLoading: allDataIsLoading } = useSeriesToApprove();
-  const { data, isLoading } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
+  const { data: allData, isLoading: allDataIsLoading, error: allDataError } = useSeriesToApprove();
+  const { data: pagedData, isLoading, error: pagedDataError } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
+
+  if (allDataError || pagedDataError) {
+    return (
+      <main className="show-menu">
+        <HGrid gap="12" columns="minmax(16rem, 55rem)">
+          <Alert variant="error">
+            Kunne ikke vise produkter til godkjenning. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet
+            vedvarer, kan du sende oss en e-post{" "}
+            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
+              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
+            </a>
+          </Alert>
+        </HGrid>
+      </main>
+    );
+  }
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -43,8 +59,6 @@ export const TilGodkjenning = () => {
   //     }
   //   }
   // };
-
-  const renderData = filteredData ? filteredData : allData?.content;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
@@ -93,18 +107,22 @@ export const TilGodkjenning = () => {
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
-                <SeriesTable series={renderData || []} />
-              ) : data?.content && data.content.length > 0 && <SeriesTable series={data?.content} /> ? (
-                <SeriesTable series={data?.content} />
+                <SeriesTable series={filteredData || []} />
+              ) : pagedData?.content && pagedData.content.length > 0 ? (
+                <SeriesTable series={pagedData?.content} />
               ) : (
                 <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
               )}
 
-              {!filteredData && data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0 ? (
+              {!filteredData &&
+              pagedData &&
+              pagedData.totalPages &&
+              pagedData.totalPages > 1 &&
+              searchTerm.length == 0 ? (
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => setPageState(x)}
-                  count={data.totalPages}
+                  count={pagedData.totalPages}
                   size="small"
                   prevNextTexts
                 />
