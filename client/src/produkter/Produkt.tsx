@@ -252,6 +252,7 @@ const ProductPage = () => {
               <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
               <VariantsTab
                 seriesUUID={series.id}
+                mutateSeries={mutateSeries}
                 products={variants || []}
                 isEditable={isEditable}
                 showInputError={!isValid}

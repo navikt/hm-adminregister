@@ -1,4 +1,4 @@
-import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon } from "@navikt/aksel-icons";
+import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { SetExpiredConfirmationModal } from "produkter/SetExpiredConfirmationModal";
 import { useState } from "react";
@@ -7,21 +7,29 @@ import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTO } from "utils/types/response-types";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { deleteDraftProducts } from "api/ProductApi";
+import { DeleteVariantConfirmationModal } from "produkter/variants/DeleteVariantConfirmationModal";
 
 const VariantsTab = ({
   seriesUUID,
   products,
   isEditable,
   showInputError,
+  mutateSeries,
 }: {
   seriesUUID: string;
   products: ProductRegistrationDTO[];
   isEditable: boolean;
   showInputError: boolean;
+  mutateSeries: () => void;
 }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { loggedInUser } = useAuthStore();
+  const { setGlobalError } = useErrorStore();
   const techKeys = getAllUniqueTechDataKeys(products);
   const columnsPerPage = 5;
   const totalPages = Math.ceil(products.length / columnsPerPage);
@@ -32,6 +40,14 @@ const VariantsTab = ({
   }>({
     open: false,
     product: undefined,
+  });
+
+  const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
+    open: boolean;
+    variantId: string | undefined;
+  }>({
+    open: false,
+    variantId: undefined,
   });
 
   const { mutateVariants } = userProductVariantsBySeriesId(seriesUUID!);
@@ -46,6 +62,25 @@ const VariantsTab = ({
     return undefined;
   };
 
+  async function onDelete(productId: string) {
+    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [productId])
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+
+        const deletingSingleVariantOnPage =
+          pageState > 1 && pageState == totalPages && products.length % columnsPerPage == 1;
+        if (deletingSingleVariantOnPage) {
+          searchParams.set("page", (pageState - 1).toString());
+          setSearchParams(searchParams);
+          setPageState(pageState - 1);
+        }
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   const paginatedVariants = products.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
 
   const anyExpired = products.some((product) => product.registrationStatus === "INACTIVE");
@@ -57,6 +92,11 @@ const VariantsTab = ({
         params={expiredConfirmationModalIsOpen}
         setParams={setExpiredConfirmationModalIsOpen}
       />
+      <DeleteVariantConfirmationModal
+        onDelete={onDelete}
+        params={deleteVariantConfirmationModalIsOpen}
+        setParams={setDeleteVariantConfirmationModalIsOpen}
+      ></DeleteVariantConfirmationModal>
       <Tabs.Panel value="variants" className="tab-panel">
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
@@ -94,14 +134,31 @@ const VariantsTab = ({
                                     <PencilIcon aria-hidden />
                                   </Dropdown.Menu.List.Item>
                                 )}
-                                {
+                                {product.draftStatus === "DRAFT" && product.published == null ? (
+                                  <Dropdown.Menu.List.Item
+                                    onClick={() =>
+                                      setDeleteVariantConfirmationModalIsOpen({
+                                        open: true,
+                                        variantId: product.id,
+                                      })
+                                    }
+                                  >
+                                    Slett
+                                    <TrashIcon aria-hidden />
+                                  </Dropdown.Menu.List.Item>
+                                ) : (
                                   <Dropdown.Menu.List.Item
                                     disabled={product.registrationStatus === "INACTIVE"}
-                                    onClick={() => setExpiredConfirmationModalIsOpen({ open: true, product: product })}
+                                    onClick={() =>
+                                      setExpiredConfirmationModalIsOpen({
+                                        open: true,
+                                        product: product,
+                                      })
+                                    }
                                   >
                                     Marker som utgått
                                   </Dropdown.Menu.List.Item>
-                                }
+                                )}
                               </Dropdown.Menu.List>
                             </Dropdown.Menu>
                           </Dropdown>

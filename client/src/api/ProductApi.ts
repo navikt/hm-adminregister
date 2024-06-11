@@ -36,6 +36,10 @@ export const publishProducts = async (productIds: string[]): Promise<ProductRegi
   return await fetchAPI(getPath(true, `/api/v1/product/registrations/approve`), "PUT", productIds);
 };
 
-export const deleteProducts = async (isAdmin: boolean, productIds: string[]): Promise<ProductRegistrationDTO[]> => {
+export const markProductsAsDeleted = async (isAdmin: boolean, productIds: string[]): Promise<ProductRegistrationDTO[]> => {
   return await fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/delete`), "DELETE", productIds);
+};
+
+export const deleteDraftProducts = async (isAdmin: boolean, productIds: string[]): Promise<ProductRegistrationDTO[]> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/draft/delete`), "DELETE", productIds);
 };
