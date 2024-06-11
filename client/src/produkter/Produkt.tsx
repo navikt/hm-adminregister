@@ -171,7 +171,13 @@ const ProductPage = () => {
               <HStack gap="1">
                 {!showEditProductTitleMode && (
                   <Heading level="1" size="xlarge">
-                    {series.title ?? ""}
+                    {loggedInUser?.isAdmin && series.published ? (
+                      <a href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`} className="heading-link">
+                        {series.title ?? ""}
+                      </a>
+                    ) : (
+                      <>{series.title ?? ""} (utkast)</>
+                    )}
                   </Heading>
                 )}
 
