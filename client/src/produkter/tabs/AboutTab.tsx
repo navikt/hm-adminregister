@@ -26,7 +26,6 @@ const AboutTab = ({series, onSubmit, isoCategory, isEditable, showInputError}: P
     const formRef = useRef<HTMLFormElement>(null);
     const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
     const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
-    const comboBoxInitialOptions = ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]  // to be deleted
     const [inputValue, setInputValue] = useState("");
     const [selectedOptions, setSelectedOptions] = useState<string[]>(series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : []);
 
@@ -258,9 +257,10 @@ const AboutTab = ({series, onSubmit, isoCategory, isEditable, showInputError}: P
                                 <UNSAFE_Combobox
                                     id="keywords"
                                     label=""
+                                    allowNewValues={true}
                                     isMultiSelect={true}
                                     clearButton={true}
-                                    options={[...comboBoxInitialOptions]}
+                                    options={[]}
                                     selectedOptions={selectedOptions || []}
                                     maxSelected={{limit: 3}}
                                     shouldShowSelectedOptions={true}
