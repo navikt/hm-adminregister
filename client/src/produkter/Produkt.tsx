@@ -172,7 +172,12 @@ const ProductPage = () => {
                 {!showEditProductTitleMode && (
                   <Heading level="1" size="xlarge">
                     {loggedInUser?.isAdmin && series.published ? (
-                      <a href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`} className="heading-link">
+                      <a
+                        href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`}
+                        target="_blank"
+                        className="heading-link"
+                        rel="noreferrer"
+                      >
                         {series.title ?? ""}
                       </a>
                     ) : (
