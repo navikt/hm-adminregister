@@ -176,7 +176,7 @@ const ProductPage = () => {
                         {series.title ?? ""}
                       </a>
                     ) : (
-                      <>{series.title ?? ""} (utkast)</>
+                      <>{series.title ?? ""}</>
                     )}
                   </Heading>
                 )}
