@@ -28,12 +28,16 @@ const Rammeavtaler = () => {
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
   const { data: allData, isLoading: allDataIsLoading } = useAgreements();
-  const { data, isLoading } = usePagedAgreements({ page: pageState - 1, pageSize, filter: selectedFilterOption });
+  const { data: pagedData, isLoading } = usePagedAgreements({
+    page: pageState - 1,
+    pageSize,
+    filter: selectedFilterOption,
+  });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = data && data.totalPages && data.totalPages > 1 && searchTerm.length == 0;
+  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
   const inSearchMode = searchTerm.length > 0;
 
   const handeFilterChange = (filter: AgreementFilterOption) => {
@@ -153,9 +157,11 @@ const Rammeavtaler = () => {
           ) : (
             <div className="panel-list__container">
               {isLoading && <Loader size="3xlarge" title="venter..." />}
-              {data?.content && data?.content.length === 0 && <Alert variant="info">Ingen rammeavtaler funnet.</Alert>}
-              {data?.content &&
-                data?.content.map((rammeavtale, i) => (
+              {pagedData?.content && pagedData?.content.length === 0 && (
+                <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
+              )}
+              {pagedData?.content &&
+                pagedData?.content.map((rammeavtale, i) => (
                   <LinkPanel
                     as={Link}
                     to={`/rammeavtaler/${rammeavtale.id}`}
@@ -174,7 +180,7 @@ const Rammeavtaler = () => {
             <Pagination
               page={pageState}
               onPageChange={(x) => setPageState(x)}
-              count={data.totalPages!}
+              count={pagedData.totalPages!}
               size="small"
               prevNextTexts
             />
