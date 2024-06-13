@@ -4,6 +4,7 @@ import {
   Button,
   Dropdown,
   Heading,
+  HGrid,
   HStack,
   LinkPanel,
   Loader,
@@ -27,8 +28,12 @@ const Rammeavtaler = () => {
   const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(AgreementFilterOption.ALL);
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
-  const { data: allData, isLoading: allDataIsLoading } = useAgreements();
-  const { data: pagedData, isLoading } = usePagedAgreements({
+  const { data: allData, isLoading: allDataIsLoading, error: allError } = useAgreements();
+  const {
+    data: pagedData,
+    isLoading,
+    error: pagedError,
+  } = usePagedAgreements({
     page: pageState - 1,
     pageSize,
     filter: selectedFilterOption,
@@ -39,6 +44,22 @@ const Rammeavtaler = () => {
 
   const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
   const inSearchMode = searchTerm.length > 0;
+
+  if (allError || pagedError) {
+    return (
+      <main className="show-menu">
+        <HGrid gap="12" columns="minmax(16rem, 55rem)">
+          <Alert variant="error">
+            Kunne ikke vise rammeavtaler. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan du
+            sende oss en e-post{" "}
+            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
+              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
+            </a>
+          </Alert>
+        </HGrid>
+      </main>
+    );
+  }
 
   const handeFilterChange = (filter: AgreementFilterOption) => {
     setSelectedFilterOption(filter);

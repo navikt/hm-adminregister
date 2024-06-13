@@ -183,7 +183,6 @@ export function usePagedAgreements({
   pageSize: number;
   filter: AgreementFilterOption;
 }) {
-  const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
   let queryParamFilter = "";
@@ -194,11 +193,6 @@ export function usePagedAgreements({
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?page=${page}&size=${pageSize}&excludedAgreementStatus=DELETED${queryParamFilter}`;
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,
