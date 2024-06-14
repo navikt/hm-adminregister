@@ -3,29 +3,19 @@ import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
 import { RichTextEditor } from "produkter/RichTextEditor";
-import React, { useRef, useState } from "react";
-import { SubmitHandler, useFormContext } from "react-hook-form";
+import React, { useState } from "react";
 import { EditSeriesInfo } from "produkter/Produkt";
-import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 interface Props {
-  series: SeriesRegistrationDTO;
-  onSubmit: SubmitHandler<EditSeriesInfo>;
-  isEditable: boolean;
+  description: string;
+  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
   showInputError: boolean;
-  // handleSaveDescription: () => void;
+  isEditable: boolean;
 }
 
-export const AboutTabDescription = ({
-  series,
-  onSubmit,
-  isEditable,
-  showInputError,
-}: // handleSaveDescription,
-Props) => {
-  const formMethods = useFormContext<EditSeriesInfo>();
+export const AboutTabDescription = ({ description, updateSeriesInfo, showInputError, isEditable }: Props) => {
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [updatedDescription, setUpdatedDescription] = useState<string>(description);
 
   const getDescription = () => (
     <>
@@ -38,14 +28,13 @@ Props) => {
     </>
   );
 
-  const handleSaveDescription = () => {
+  const handleSaveDescription = (updatedDescription: string) => {
+    updateSeriesInfo({ description: updatedDescription });
     setShowEditDescriptionMode(false);
-    formRef.current?.requestSubmit();
   };
 
   return (
     <>
-      {/*<form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>*/}
       <VStack gap="2">
         <Heading level="2" size="small">
           {labelRequired("Produktbeskrivelse")}
@@ -53,7 +42,7 @@ Props) => {
 
         {!showEditDescriptionMode && (
           <>
-            {!series.text ? (
+            {!description ? (
               <>
                 <Alert variant={showInputError ? "error" : "info"}>
                   Produktet trenger en beskrivelse før det kan sendes til godkjenning
@@ -69,7 +58,7 @@ Props) => {
               </>
             ) : (
               <>
-                <div className="preview">{parse(series.text)}</div>
+                <div className="preview">{parse(description)}</div>
 
                 {isEditable && (
                   <Button
@@ -91,22 +80,23 @@ Props) => {
             <RichTextEditor
               description={getDescription()}
               onChange={(description: string) => {
-                formMethods.setValue("description", description);
+                setUpdatedDescription(description);
               }}
-              textContent={series.text || ""}
+              textContent={updatedDescription}
             />
             <Button
               className="fit-content"
               variant="tertiary"
               icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
-              onClick={handleSaveDescription}
+              onClick={() => {
+                handleSaveDescription(updatedDescription);
+              }}
             >
               Lagre
             </Button>
           </>
         )}
       </VStack>
-      {/*</form>*/}
     </>
   );
 };

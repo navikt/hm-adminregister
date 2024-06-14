@@ -10,12 +10,13 @@ import AboutTabKeywords from "produkter/tabs/AboutTabKeywords";
 interface Props {
   series: SeriesRegistrationDTO;
   onSubmit: SubmitHandler<EditSeriesInfo>;
+  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
   isoCategory?: IsoCategoryDTO;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }: Props) => {
+const AboutTab = ({ series, updateSeriesInfo, isoCategory, isEditable, showInputError, onSubmit }: Props) => {
   const formMethods = useFormContext<EditSeriesInfo>();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -34,11 +35,10 @@ const AboutTab = ({ series, onSubmit, isoCategory, isEditable, showInputError }:
           </VStack>
 
           <AboutTabDescription
-            series={series}
-            isEditable={isEditable}
+            description={series.text}
+            updateSeriesInfo={updateSeriesInfo}
             showInputError={showInputError}
-            onSubmit={onSubmit}
-            /*            handleSaveDescription={handleSaveDescription}*/
+            isEditable={isEditable}
           />
 
           <AboutTabKeywords
