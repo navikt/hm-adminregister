@@ -96,7 +96,9 @@ const VariantsTab = ({
                                 )}
                                 {
                                   <Dropdown.Menu.List.Item
-                                    disabled={product.registrationStatus === "INACTIVE"}
+                                    disabled={
+                                      product.registrationStatus === "INACTIVE" || product.draftStatus === "DRAFT"
+                                    }
                                     onClick={() => setExpiredConfirmationModalIsOpen({ open: true, product: product })}
                                   >
                                     Marker som utgått
