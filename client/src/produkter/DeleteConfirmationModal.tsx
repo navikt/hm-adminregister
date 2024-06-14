@@ -1,5 +1,5 @@
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { deleteProducts } from "api/ProductApi";
+import { markProductsAsDeleted } from "api/ProductApi";
 import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { deleteSeries } from "api/SeriesApi";
@@ -24,7 +24,7 @@ export const DeleteConfirmationModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onDelete() {
-    deleteProducts(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || [])
+    markProductsAsDeleted(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || [])
       .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error);

@@ -75,8 +75,8 @@ const AdminActions = ({
             <>
               <Dropdown.Menu.GroupedList>
                 <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
-                  <ExclamationmarkTriangleIcon aria-hidden />
                   Avslå
+                  <ExclamationmarkTriangleIcon aria-hidden />
                 </Dropdown.Menu.GroupedList.Item>
               </Dropdown.Menu.GroupedList>
               <Dropdown.Menu.Divider />

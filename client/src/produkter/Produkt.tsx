@@ -179,7 +179,18 @@ const ProductPage = () => {
               <HStack gap="1">
                 {!showEditProductTitleMode && (
                   <Heading level="1" size="xlarge">
-                    {series.title ?? ""}
+                    {loggedInUser?.isAdmin && series.published ? (
+                      <a
+                        href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`}
+                        target="_blank"
+                        className="heading-link"
+                        rel="noreferrer"
+                      >
+                        {series.title ?? ""}
+                      </a>
+                    ) : (
+                      <>{series.title ?? ""}</>
+                    )}
                   </Heading>
                 )}
 
@@ -260,6 +271,7 @@ const ProductPage = () => {
               <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
               <VariantsTab
                 seriesUUID={series.id}
+                mutateSeries={mutateSeries}
                 products={variants || []}
                 isEditable={isEditable}
                 showInputError={!isValid}
