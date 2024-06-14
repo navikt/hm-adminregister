@@ -1,30 +1,21 @@
-import { Alert, BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
-import { labelRequired } from "utils/string-util";
+import { BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import parse from "html-react-parser";
-import { RichTextEditor } from "produkter/RichTextEditor";
-import React, { useRef, useState } from "react";
-import { SubmitHandler, useFormContext } from "react-hook-form";
+import React, { useState } from "react";
 import { EditSeriesInfo } from "produkter/Produkt";
-import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { isValidKeyword } from "produkter/seriesUtils";
 
 interface Props {
-  series: SeriesRegistrationDTO;
-  onSubmit: SubmitHandler<EditSeriesInfo>;
+  keywords: string[];
+  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-export const AboutTabKeywords = ({ series, onSubmit, isEditable, showInputError }: Props) => {
-  const formMethods = useFormContext<EditSeriesInfo>();
-  const formRef = useRef<HTMLFormElement>(null);
+export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, isEditable }: Props) => {
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
   const [inputValue, setInputValue] = useState("");
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : []
-  );
+  const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : []);
 
   const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
 
@@ -33,27 +24,32 @@ export const AboutTabKeywords = ({ series, onSubmit, isEditable, showInputError 
   const handleSaveKeywords = () => {
     setKeywordFormatError(undefined);
     setShowEditKeywordsMode(false);
-    if (selectedOptions.length <= 3) {
-      formMethods.setValue("keywords", selectedOptions);
-      formRef.current?.requestSubmit();
+    if (updatedKeywords.length <= 3) {
+      if (
+        updatedKeywords.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword)).every(Boolean)
+      ) {
+        updateSeriesInfo({ keywords: updatedKeywords });
+        setShowEditKeywordsMode(false);
+      } else
+        setKeywordFormatError("Blir ikke lagret, nøkkelord kan bare inneholde norske bokstaver, tall og underscore");
     } else setKeywordFormatError("Du kan maksimalt velge 3 nøkkelord");
   };
 
   /*
-  const handleSaveKeywords = () => {
-    setKeywordFormatError(undefined);
-    setShowEditKeywordsMode(false);
-    if (selectedOptions.length == 0) setKeywordFormatError("Ingen nøkkelordå lagre?");
-    else if (selectedOptions.length > 3) setKeywordFormatError("Maksimalt 3 nøkkelord velges!");
-    else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => !isValidKeyword(keyword) || notValidKeywordLetters.test(keyword)).every(Boolean)) {
-      setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
-    }
-    /!*      else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword) || !notValidKeywordLetters.test(keyword)).every(Boolean))  {
-              formMethods.setValue("keywords", selectedOptions)
-              formRef.current?.requestSubmit();
-          } *!/else setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
-  };
-*/
+      const handleSaveKeywords = () => {
+        setKeywordFormatError(undefined);
+        setShowEditKeywordsMode(false);
+        if (selectedOptions.length == 0) setKeywordFormatError("Ingen nøkkelordå lagre?");
+        else if (selectedOptions.length > 3) setKeywordFormatError("Maksimalt 3 nøkkelord velges!");
+        else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => !isValidKeyword(keyword) || notValidKeywordLetters.test(keyword)).every(Boolean)) {
+          setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
+        }
+        /!*      else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword) || !notValidKeywordLetters.test(keyword)).every(Boolean))  {
+                  formMethods.setValue("keywords", selectedOptions)
+                  formRef.current?.requestSubmit();
+              } *!/else setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
+      };
+    */
 
   return (
     <>
@@ -68,7 +64,7 @@ export const AboutTabKeywords = ({ series, onSubmit, isEditable, showInputError 
         </BodyShort>
         {!showEditKeywordsMode && (
           <>
-            {!series.seriesData.attributes.keywords ? (
+            {!keywords ? (
               <>
                 {isEditable ? (
                   <Button
@@ -86,12 +82,12 @@ export const AboutTabKeywords = ({ series, onSubmit, isEditable, showInputError 
             ) : (
               <>
                 <HStack gap="4">
-                  {selectedOptions.map((keyword, index) => (
+                  {updatedKeywords.map((keyword, index) => (
                     <>
                       <Tag variant="info-moderate" key={index}>
                         {keyword}
                       </Tag>
-                      {index < selectedOptions.length - 1 ? "  " : ""}
+                      {index < updatedKeywords.length - 1 ? "  " : ""}
                     </>
                   ))}
                 </HStack>
@@ -119,14 +115,14 @@ export const AboutTabKeywords = ({ series, onSubmit, isEditable, showInputError 
               isMultiSelect={true}
               clearButton={true}
               options={[]}
-              selectedOptions={selectedOptions || []}
+              selectedOptions={updatedKeywords || []}
               maxSelected={{ limit: 3 }}
               shouldShowSelectedOptions={true}
               shouldAutocomplete={true}
               onToggleSelected={(option: string, isSelected: boolean) =>
                 isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue)
-                  ? setSelectedOptions([...selectedOptions, option])
-                  : setSelectedOptions(selectedOptions.filter((o) => o !== option))
+                  ? setUpdatedKeywords([...updatedKeywords, option])
+                  : setUpdatedKeywords(updatedKeywords.filter((o) => o !== option))
               }
               error={keywordFormatError}
             />

@@ -42,13 +42,18 @@ const AboutTab = ({ series, updateSeriesInfo, isoCategory, isEditable, showInput
           />
 
           <AboutTabKeywords
-            series={series}
-            isEditable={isEditable}
+            keywords={series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : []}
+            updateSeriesInfo={updateSeriesInfo}
             showInputError={showInputError}
-            onSubmit={onSubmit}
+            isEditable={isEditable}
           />
 
-          <AboutTabURL series={series} isEditable={isEditable} showInputError={showInputError} onSubmit={onSubmit} />
+          <AboutTabURL
+            url={series.seriesData.attributes.url ? series.seriesData.attributes.url : ""}
+            updateSeriesInfo={updateSeriesInfo}
+            showInputError={showInputError}
+            isEditable={isEditable}
+          />
         </VStack>
       </form>
     </Tabs.Panel>
