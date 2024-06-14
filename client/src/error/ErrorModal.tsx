@@ -33,7 +33,7 @@ const ErrorModal = () => {
 
   const heading = () => {
     if (errorCode === 403) return "Du har ikke tilgang";
-    else return "Ups, det skjedde en feil 😱";
+    else return "Det har skjedd en feil";
   };
 
   return (
