@@ -92,11 +92,11 @@ const VariantsTab = ({
         params={expiredConfirmationModalIsOpen}
         setParams={setExpiredConfirmationModalIsOpen}
       />
-      <DeleteVariantConfirmationModal
+      {/*      <DeleteVariantConfirmationModal
         onDelete={onDelete}
         params={deleteVariantConfirmationModalIsOpen}
         setParams={setDeleteVariantConfirmationModalIsOpen}
-      ></DeleteVariantConfirmationModal>
+      ></DeleteVariantConfirmationModal>*/}
       <Tabs.Panel value="variants" className="tab-panel">
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
@@ -234,7 +234,7 @@ const VariantsTab = ({
             style={{ marginTop: "16px" }}
             onClick={() => {
               navigate(
-                `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`,
+                `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`
               );
             }}
           >
