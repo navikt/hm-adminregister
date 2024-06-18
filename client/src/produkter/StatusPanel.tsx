@@ -17,6 +17,15 @@ const StatusPanel = ({ series }: Props) => {
 
       <StatusTag seriesStatus={seriesStatus(series)} />
 
+      {series.message && (
+        <Box>
+          <BodyLong size="small" weight="semibold">
+            Melding til leverandør
+          </BodyLong>
+          <BodyLong size="small">{series.message}</BodyLong>
+        </Box>
+      )}
+
       {series.published && <StatusBox title="Publisert" date={series.published} />}
 
       <StatusBox title="Endret" date={series.updated} />

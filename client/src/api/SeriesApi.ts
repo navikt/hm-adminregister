@@ -1,5 +1,5 @@
 import { EditSeriesInfo } from "produkter/Produkt";
-import { SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { fetchAPI, getPath } from "api/fetch";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
@@ -14,8 +14,8 @@ export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrat
   return await fetchAPI(getPath(true, `/api/v1/series/approve/${seriesUUID}`), "PUT");
 };
 
-export const rejectSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/reject/${seriesUUID}`), "PUT");
+export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/series/reject/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {

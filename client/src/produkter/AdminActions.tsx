@@ -1,9 +1,11 @@
 import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { publishProducts, rejectProducts } from "api/ProductApi";
-import { approveSeries, rejectSeries } from "api/SeriesApi";
+import { publishProducts } from "api/ProductApi";
+import { approveSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { RejectApprovalModal } from "produkter/RejectApprovalModal";
+import { useState } from "react";
 
 const AdminActions = ({
   series,
@@ -25,21 +27,10 @@ const AdminActions = ({
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
+  const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
+
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
-
-  async function onRejectApproval() {
-    rejectProducts(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-    rejectSeries(series.id)
-      .then(() => mutateSeries())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  }
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -61,6 +52,14 @@ const AdminActions = ({
 
   return (
     <HStack align={"end"} gap="2">
+      <RejectApprovalModal
+        series={series}
+        products={products}
+        mutateProducts={mutateProducts}
+        mutateSeries={mutateSeries}
+        isOpen={rejectApprovalModalIsOpen}
+        setIsOpen={setRejectApprovalModalIsOpen}
+      />
       {shouldPublish && (
         <Button style={{ marginTop: "20px" }} onClick={onPublish}>
           Publiser
@@ -72,7 +71,7 @@ const AdminActions = ({
           {isPending && shouldPublish && (
             <>
               <Dropdown.Menu.GroupedList>
-                <Dropdown.Menu.GroupedList.Item onClick={onRejectApproval}>
+                <Dropdown.Menu.GroupedList.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
                   Avslå
                   <ExclamationmarkTriangleIcon aria-hidden />
                 </Dropdown.Menu.GroupedList.Item>
