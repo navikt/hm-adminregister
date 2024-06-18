@@ -3,6 +3,7 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import React, { useState } from "react";
 import { EditSeriesInfo } from "produkter/Produkt";
 import { isValidKeyword } from "produkter/seriesUtils";
+import "./about-tab-keywords.scss";
 
 interface Props {
   keywords: string[];
@@ -26,7 +27,9 @@ export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, i
     setShowEditKeywordsMode(false);
     if (updatedKeywords.length <= 3) {
       if (
-        updatedKeywords.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword)).every(Boolean)
+        updatedKeywords
+          .map((keyword, index) => isValidKeyword(keyword) && validKeywordLetters.test(keyword))
+          .every(Boolean)
       ) {
         updateSeriesInfo({ keywords: updatedKeywords });
         setShowEditKeywordsMode(false);
@@ -35,25 +38,8 @@ export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, i
     } else setKeywordFormatError("Du kan maksimalt velge 3 nøkkelord");
   };
 
-  /*
-      const handleSaveKeywords = () => {
-        setKeywordFormatError(undefined);
-        setShowEditKeywordsMode(false);
-        if (selectedOptions.length == 0) setKeywordFormatError("Ingen nøkkelordå lagre?");
-        else if (selectedOptions.length > 3) setKeywordFormatError("Maksimalt 3 nøkkelord velges!");
-        else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => !isValidKeyword(keyword) || notValidKeywordLetters.test(keyword)).every(Boolean)) {
-          setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
-        }
-        /!*      else if(selectedOptions.length <= 3 && selectedOptions.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword) || !notValidKeywordLetters.test(keyword)).every(Boolean))  {
-                  formMethods.setValue("keywords", selectedOptions)
-                  formRef.current?.requestSubmit();
-              } *!/else setKeywordFormatError("Nøkkelord kan kun inneholde norske bokstaver, tall og underscore");
-      };
-    */
-
   return (
     <>
-      {/*<form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>*/}
       <VStack gap="2">
         <Heading level="2" size="xsmall">
           Nøkkelord
@@ -83,12 +69,10 @@ export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, i
               <>
                 <HStack gap="4">
                   {updatedKeywords.map((keyword, index) => (
-                    <>
-                      <Tag variant="info-moderate" key={index}>
-                        {keyword}
-                      </Tag>
+                    <span className="keywords-static" key={index}>
+                      <Tag variant="alt3">{keyword}</Tag>
                       {index < updatedKeywords.length - 1 ? "  " : ""}
-                    </>
+                    </span>
                   ))}
                 </HStack>
                 {isEditable && (
@@ -137,7 +121,6 @@ export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, i
           </>
         )}
       </VStack>
-      {/*</form>*/}
     </>
   );
 };
