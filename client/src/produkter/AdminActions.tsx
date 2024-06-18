@@ -24,9 +24,16 @@ const AdminActions = ({
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
-  setExpiredSeriesModalIsOpen: (newState: boolean) => void;
+  setExpiredSeriesModalIsOpen: ({
+    open,
+    newStatus,
+  }: {
+    open: boolean;
+    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+  }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
+  const canSetStatus = series.draftStatus === "DONE" && !!series.published;
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
 
@@ -87,14 +94,20 @@ const AdminActions = ({
               Slett
               <TrashIcon aria-hidden />
             </Dropdown.Menu.List.Item>
-            {series.published && (
-              <Dropdown.Menu.List.Item
-                disabled={series.status === "INACTIVE"}
-                onClick={() => setExpiredSeriesModalIsOpen(true)}
-              >
-                Marker som utgått
-              </Dropdown.Menu.List.Item>
-            )}
+            {canSetStatus &&
+              (series.status === "ACTIVE" ? (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                >
+                  Marker som utgått
+                </Dropdown.Menu.List.Item>
+              ) : (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                >
+                  Fjern utgått markering
+                </Dropdown.Menu.List.Item>
+              ))}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
       </Dropdown>

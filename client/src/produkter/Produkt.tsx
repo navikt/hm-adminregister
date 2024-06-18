@@ -8,7 +8,6 @@ import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "
 import { updateSeries } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import AdminActions from "produkter/AdminActions";
-import ChangePublishedProductAction from "produkter/ChangePublishedProductAction";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
@@ -44,7 +43,14 @@ const ProductPage = () => {
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
-  const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState(false);
+  const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
+    open: boolean;
+    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+  }>({
+    open: false,
+    newStatus: undefined,
+  });
+
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
@@ -110,10 +116,7 @@ const ProductPage = () => {
     formMethods.handleSubmit(onSubmit)();
   };
 
-  const isDraft = series.draftStatus === "DRAFT";
-  const isPending = series.adminStatus === "PENDING";
-  const isActive = series.status === "ACTIVE";
-  const isEditable = (series.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
+  const isEditable = series.draftStatus === "DRAFT" && series.status !== "DELETED";
 
   const TabLabel = ({
     title,
@@ -161,8 +164,8 @@ const ProductPage = () => {
         <SetExpiredSeriesConfirmationModal
           series={series}
           mutateSeries={mutateSeries}
-          isOpen={expiredSeriesModalIsOpen}
-          setIsOpen={setExpiredSeriesModalIsOpen}
+          params={expiredSeriesModalIsOpen}
+          setParams={setExpiredSeriesModalIsOpen}
         />
         <EditPublishedProductConfirmationModal
           series={series}
@@ -279,7 +282,7 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
-            {loggedInUser?.isAdmin && isActive && (
+            {loggedInUser?.isAdmin && (
               <AdminActions
                 series={series}
                 products={variants || []}
@@ -292,19 +295,17 @@ const ProductPage = () => {
                 setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               />
             )}
-            {!loggedInUser?.isAdmin && isDraft && isActive && (
+            {!loggedInUser?.isAdmin && (
               <SupplierActions
-                seriesIsPublished={!!series.published}
-                seriesIsExpired={series.status === "INACTIVE"}
+                series={series}
+                isAdmin={loggedInUser?.isAdmin ?? false}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
                 setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
+                setEditProductModalIsOpen={setEditProductModalIsOpen}
               />
-            )}
-            {!loggedInUser?.isAdmin && !isEditable && !isPending && (
-              <ChangePublishedProductAction setEditProductModalIsOpen={setEditProductModalIsOpen} />
             )}
             <StatusPanel series={series} />
           </VStack>

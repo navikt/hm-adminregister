@@ -1,23 +1,37 @@
-import { CogIcon, TrashIcon } from "@navikt/aksel-icons";
+import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
 
 const SupplierActions = ({
-  seriesIsPublished,
-  seriesIsExpired,
+  series,
+  isAdmin,
   setIsValid,
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
+  setEditProductModalIsOpen,
 }: {
-  seriesIsPublished: boolean;
-  seriesIsExpired: boolean;
+  series: SeriesRegistrationDTO;
+  isAdmin: boolean;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
-  setExpiredSeriesModalIsOpen: (newState: boolean) => void;
+  setExpiredSeriesModalIsOpen: ({
+    open,
+    newStatus,
+  }: {
+    open: boolean;
+    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+  }) => void;
+  setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
+  const canDelete = series.draftStatus === "DRAFT" || isAdmin;
+  const canSetStatus = series.draftStatus === "DONE" && !!series.published;
+  const canSetToEditMode =
+    series.status !== "DELETED" && ((series.draftStatus === "DONE" && series.adminStatus !== "PENDING") || isAdmin);
+
   return (
     <HStack align={"end"} gap="2">
       <Button
@@ -34,15 +48,31 @@ const SupplierActions = ({
         <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
           <Dropdown.Menu.List>
-            {!seriesIsPublished && (
+            {canDelete && (
               <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                 <TrashIcon aria-hidden />
                 Slett
               </Dropdown.Menu.List.Item>
             )}
-            {seriesIsPublished && (
-              <Dropdown.Menu.List.Item disabled={seriesIsExpired} onClick={() => setExpiredSeriesModalIsOpen(true)}>
-                Marker som utgått
+            {canSetStatus &&
+              (series.status === "ACTIVE" ? (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                >
+                  Marker som utgått
+                </Dropdown.Menu.List.Item>
+              ) : (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                >
+                  Fjern utgått markering
+                </Dropdown.Menu.List.Item>
+              ))}
+
+            {canSetToEditMode && (
+              <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                <PencilIcon aria-hidden />
+                Endre produkt
               </Dropdown.Menu.List.Item>
             )}
           </Dropdown.Menu.List>

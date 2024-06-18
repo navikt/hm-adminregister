@@ -1,6 +1,6 @@
+import { fetchAPI, getPath } from "api/fetch";
 import { EditSeriesInfo } from "produkter/Produkt";
 import { SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { fetchAPI, getPath } from "api/fetch";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
@@ -8,6 +8,14 @@ export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRe
 
 export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
+};
+
+export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-inactive/${seriesUUID}`), "PUT");
+};
+
+export const setSeriesToActive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-active/${seriesUUID}`), "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
