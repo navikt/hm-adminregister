@@ -25,7 +25,7 @@ export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promi
 const updateSeriesData = async (
   seriesUUID: string,
   isAdmin: boolean,
-  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
+  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO
 ): Promise<SeriesRegistrationDTO> => {
   const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
   const updatedSeriesData = modifySeriesData(seriesToUpdate);
@@ -35,7 +35,7 @@ const updateSeriesData = async (
 export const updateSeries = async (
   seriesUUID: string,
   editSeriesInfo: EditSeriesInfo,
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
@@ -46,6 +46,12 @@ export const updateSeries = async (
       series.seriesData.attributes.url = undefined;
     } else {
       series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
+    }
+
+    if (editSeriesInfo.keywords?.length === 0) {
+      series.seriesData.attributes.keywords = undefined;
+    } else {
+      series.seriesData.attributes.keywords = editSeriesInfo.keywords || series.seriesData.attributes.keywords;
     }
 
     return series;
@@ -77,7 +83,7 @@ export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
   isAdmin: boolean,
   uri: string,
-  editedText: string,
+  editedText: string
 ) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     const mediaIndex = series.seriesData.media.findIndex((media) => media.uri === uri);

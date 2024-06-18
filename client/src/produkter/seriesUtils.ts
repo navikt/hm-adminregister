@@ -77,3 +77,12 @@ export function isValidUrl(url: string) {
     return false;
   }
 }
+
+export function isValidKeyword(keyword: string) {
+  try {
+    new Text(keyword);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
