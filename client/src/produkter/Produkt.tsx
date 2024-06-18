@@ -29,10 +29,11 @@ import VideosTab from "./tabs/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
 
 export type EditSeriesInfo = {
-  title: string;
-  description: string;
-  isoCode: string;
+  title?: string;
+  description?: string;
+  isoCode?: string;
   url?: string;
+  keywords?: string[];
 };
 
 const ProductPage = () => {
@@ -260,6 +261,7 @@ const ProductPage = () => {
               </Tabs.List>
               <AboutTab
                 series={series}
+                updateSeriesInfo={onSubmit}
                 onSubmit={onSubmit}
                 isoCategory={isoCategory}
                 isEditable={isEditable}
