@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
-  Dropdown,
   Heading,
   HGrid,
   HStack,
@@ -12,20 +11,17 @@ import {
   Pagination,
   Search,
   Select,
-  Table,
   VStack,
 } from "@navikt/ds-react";
 import "./products.scss";
-import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
+import { PlusIcon } from "@navikt/aksel-icons";
 import { usePagedProducts, useProducts } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
-import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "produkter/ProductTable.module.scss";
-import StatusTag from "felleskomponenter/StatusTag";
-import { seriesStatus } from "produkter/seriesUtils";
+import { SeriesTable } from "produkter/SeriesTable";
 
 const Produkter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,19 +91,6 @@ const Produkter = () => {
     event.preventDefault(); // Prevent form submission and page reload
   };
 
-  const exportProductsForSupplier = () => {
-    exportProducts(loggedInUser?.isAdmin || false).then((response) => {
-      const bytes = new Uint8Array(response); // pass your byte response to this constructor
-      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "products.xlsx");
-      document.body.appendChild(link);
-      link.click();
-    });
-  };
-
   return (
     <main className="show-menu">
       <div className="page__background-container">
@@ -157,37 +140,7 @@ const Produkter = () => {
             ) : (
               <div className="panel-list__container">
                 {isLoading && <Loader size="3xlarge" title="venter..." />}
-                {renderData && renderData.length > 0 && !isLoading && (
-                  <div className={styles.productTable}>
-                    <Table>
-                      <Table.Header>
-                        <Table.Row>
-                          <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">Antall varianter</Table.HeaderCell>
-                        </Table.Row>
-                      </Table.Header>
-                      <Table.Body>
-                        {renderData.map((product, i) => (
-                          <Table.Row
-                            key={i + product.id}
-                            onClick={() => {
-                              navigate(`/produkter/${product.id}`);
-                            }}
-                          >
-                            <Table.HeaderCell scope="row">
-                              <b>{product.title}</b>
-                            </Table.HeaderCell>
-                            <Table.DataCell>
-                              <StatusTag seriesStatus={seriesStatus(product)} />
-                            </Table.DataCell>
-                            <Table.DataCell>{product.count}</Table.DataCell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table>
-                  </div>
-                )}
+                {renderData && renderData.length > 0 && !isLoading && <SeriesTable seriesList={renderData} />}
               </div>
             )}
             <HStack gap="8">
