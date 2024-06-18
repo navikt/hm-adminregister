@@ -139,38 +139,6 @@ const Produkter = () => {
                 >
                   Nytt produkt
                 </Button>
-                <Dropdown>
-                  <Button
-                    style={{ marginLeft: "auto" }}
-                    variant="tertiary"
-                    icon={<MenuElipsisVerticalIcon title="Importer eller eksporter produkter" fontSize="1.5rem" />}
-                    as={Dropdown.Toggle}
-                  ></Button>
-                  <Dropdown.Menu>
-                    {/*todo: Disable import until we have a working import with validation*/}
-                    {/*<Dropdown.Menu.GroupedList>*/}
-                    {/*  <Dropdown.Menu.GroupedList.Item*/}
-                    {/*    onClick={() => {*/}
-                    {/*      navigate("/produkter/importer-produkter");*/}
-                    {/*    }}*/}
-                    {/*  >*/}
-                    {/*    <FileExcelIcon aria-hidden />*/}
-                    {/*    Importer produkter*/}
-                    {/*  </Dropdown.Menu.GroupedList.Item>*/}
-                    {/*</Dropdown.Menu.GroupedList>*/}
-                    {/*<Dropdown.Menu.Divider />*/}
-                    <Dropdown.Menu.List>
-                      <Dropdown.Menu.List.Item
-                        onClick={() => {
-                          exportProductsForSupplier();
-                        }}
-                      >
-                        <FileExcelIcon aria-hidden />
-                        Eksporter produkter
-                      </Dropdown.Menu.List.Item>
-                    </Dropdown.Menu.List>
-                  </Dropdown.Menu>
-                </Dropdown>
               </HStack>
             )}
           </HStack>
