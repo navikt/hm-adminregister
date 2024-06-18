@@ -63,6 +63,7 @@ const VariantsTab = ({
 
         const deletingSingleVariantOnPage =
           pageState > 1 && pageState == totalPages && products.length % columnsPerPage == 1;
+
         if (deletingSingleVariantOnPage) {
           searchParams.set("page", (pageState - 1).toString());
           setSearchParams(searchParams);
@@ -130,7 +131,7 @@ const VariantsTab = ({
                     <Table.Row>
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
-                        <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
+                        <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
                           <Dropdown>
                             <Button
                               variant="tertiary"
@@ -192,8 +193,8 @@ const VariantsTab = ({
                     {anyExpired && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
-                        {paginatedVariants.map((product) => (
-                          <Table.DataCell>
+                        {paginatedVariants.map((product, i) => (
+                          <Table.DataCell key={`expired-${i}`}>
                             {product.registrationStatus === "INACTIVE" && <Tag variant="warning-moderate">Utgått</Tag>}
                           </Table.DataCell>
                         ))}
