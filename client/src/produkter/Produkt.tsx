@@ -164,6 +164,7 @@ const ProductPage = () => {
         <SetExpiredSeriesConfirmationModal
           series={series}
           mutateSeries={mutateSeries}
+          mutateProducts={mutateVariants}
           params={expiredSeriesModalIsOpen}
           setParams={setExpiredSeriesModalIsOpen}
         />

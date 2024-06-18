@@ -1,10 +1,10 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
-import { deleteDraftProducts } from "api/ProductApi";
-import { SetExpiredConfirmationModal } from "produkter/SetExpiredConfirmationModal";
+import { deleteDraftProducts, updateProductVariant } from "api/ProductApi";
 import { DeleteVariantConfirmationModal } from "produkter/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { tenYearsFromTodayTimestamp, todayTimestamp } from "utils/date-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -34,13 +34,6 @@ const VariantsTab = ({
   const columnsPerPage = 5;
   const totalPages = Math.ceil(products.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [expiredConfirmationModalIsOpen, setExpiredConfirmationModalIsOpen] = useState<{
-    open: boolean;
-    product: ProductRegistrationDTO | undefined;
-  }>({
-    open: false,
-    product: undefined,
-  });
 
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
     open: boolean;
@@ -85,13 +78,36 @@ const VariantsTab = ({
 
   const anyExpired = products.some((product) => product.registrationStatus === "INACTIVE");
 
+  const setAsExpired = (product: ProductRegistrationDTO) => {
+    const productRegistrationUpdated: ProductRegistrationDTO = {
+      ...product,
+      registrationStatus: "INACTIVE",
+      expired: todayTimestamp(),
+    };
+
+    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+      .then(() => mutateVariants())
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  };
+
+  const setAsActive = (product: ProductRegistrationDTO) => {
+    const productRegistrationUpdated: ProductRegistrationDTO = {
+      ...product,
+      registrationStatus: "ACTIVE",
+      expired: tenYearsFromTodayTimestamp(),
+    };
+
+    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+      .then(() => mutateVariants())
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  };
+
   return (
     <>
-      <SetExpiredConfirmationModal
-        mutateProducts={mutateVariants}
-        params={expiredConfirmationModalIsOpen}
-        setParams={setExpiredConfirmationModalIsOpen}
-      />
       <DeleteVariantConfirmationModal
         onDelete={onDelete}
         params={deleteVariantConfirmationModalIsOpen}
@@ -146,19 +162,16 @@ const VariantsTab = ({
                                     Slett
                                     <TrashIcon aria-hidden />
                                   </Dropdown.Menu.List.Item>
-                                ) : (
+                                ) : product.registrationStatus === "ACTIVE" ? (
                                   <Dropdown.Menu.List.Item
-                                    disabled={
-                                      product.registrationStatus === "INACTIVE" || product.draftStatus === "DRAFT"
-                                    }
-                                    onClick={() =>
-                                      setExpiredConfirmationModalIsOpen({
-                                        open: true,
-                                        product: product,
-                                      })
-                                    }
+                                    disabled={product.draftStatus === "DRAFT"}
+                                    onClick={() => setAsExpired(product)}
                                   >
                                     Marker som utgått
+                                  </Dropdown.Menu.List.Item>
+                                ) : (
+                                  <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
+                                    Marker som aktiv
                                   </Dropdown.Menu.List.Item>
                                 )}
                               </Dropdown.Menu.List>

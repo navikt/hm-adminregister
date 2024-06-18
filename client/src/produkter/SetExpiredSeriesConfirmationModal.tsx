@@ -7,11 +7,13 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 export const SetExpiredSeriesConfirmationModal = ({
   series,
   mutateSeries,
+  mutateProducts,
   params,
   setParams,
 }: {
   series: SeriesRegistrationDTO;
   mutateSeries: () => void;
+  mutateProducts: () => void;
   params: { open: boolean; newStatus: "ACTIVE" | "INACTIVE" | undefined };
   setParams: (params: { open: boolean; newStatus: "ACTIVE" | "INACTIVE" | undefined }) => void;
 }) => {
@@ -19,45 +21,47 @@ export const SetExpiredSeriesConfirmationModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onSetExpired() {
-    switch (params.newStatus) {
-      case "ACTIVE":
-        setSeriesToActive(series.id, loggedInUser?.isAdmin || false)
-          .then(() => {
-            mutateSeries();
-          })
-          .catch((error) => {
-            setGlobalError(error);
-          });
-      case "INACTIVE":
-        setSeriesToInactive(series.id, loggedInUser?.isAdmin || false)
-          .then(() => {
-            mutateSeries();
-          })
-          .catch((error) => {
-            setGlobalError(error);
-          });
-      case undefined:
-        console.log("Produktet som skal settes som utgått ble ikke funnet.");
-        return;
+    if (params.newStatus === "ACTIVE") {
+      setSeriesToActive(series.id, loggedInUser?.isAdmin || false)
+        .then(() => {
+          mutateSeries();
+          mutateProducts();
+        })
+        .catch((error) => {
+          setGlobalError(error);
+        });
+    } else if (params.newStatus === "INACTIVE") {
+      setSeriesToInactive(series.id, loggedInUser?.isAdmin || false)
+        .then(() => {
+          mutateSeries();
+          mutateProducts();
+        })
+        .catch((error) => {
+          setGlobalError(error);
+        });
+    } else {
+      console.log("Produktet som skal settes som utgått ble ikke funnet.");
     }
   }
 
   const headingText =
     params.newStatus === "ACTIVE"
-      ? "Er du sikker på at du vil ta bort utgått markering på produktet og alle variantene?"
-      : "Er du sikker på at du vil sette produktet og alle variantene som utgått?";
+      ? "Bekreft handling: Sett produkt og varianter som aktive"
+      : "Bekreft handling: Sett produkt og varianter som utgått";
 
   return (
     <Modal
       open={params.open}
       header={{
-        heading: `Er du sikker på at du vil sette produktet og alle variantene som utgått?`,
+        heading: headingText,
       }}
       onClose={() => setParams({ open: false, newStatus: undefined })}
     >
       <Modal.Body>
         {params.newStatus === "INACTIVE" && (
-          <Alert variant="warning">Dersom du reverserer dette senere, så settes alle variantene som ikke utgått.</Alert>
+          <Alert variant="warning">
+            Dersom du reverserer denne handlingen senere, vil alle varianter settes som aktive igjen.
+          </Alert>
         )}
       </Modal.Body>
       <Modal.Footer>
@@ -66,7 +70,7 @@ export const SetExpiredSeriesConfirmationModal = ({
             onSetExpired().then(() => setParams({ open: false, newStatus: undefined }));
           }}
         >
-          {params.newStatus === "ACTIVE" ? "Fjern utgått markering" : "Sett som utgått"}
+          {params.newStatus === "ACTIVE" ? "Sett som aktiv" : "Sett som utgått"}
         </Button>
         <Button variant="secondary" onClick={() => setParams({ open: false, newStatus: undefined })}>
           Avbryt
