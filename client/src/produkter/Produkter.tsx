@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
-  Dropdown,
   Heading,
   HGrid,
   HStack,
@@ -12,20 +11,17 @@ import {
   Pagination,
   Search,
   Select,
-  Table,
   VStack,
 } from "@navikt/ds-react";
 import "./products.scss";
-import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
-import { usePagedProducts, useProducts } from "utils/swr-hooks";
+import { PlusIcon } from "@navikt/aksel-icons";
+import { usePagedProducts, useProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
-import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "produkter/ProductTable.module.scss";
-import StatusTag from "felleskomponenter/StatusTag";
-import { seriesStatus } from "produkter/seriesUtils";
+import { SeriesTable } from "produkter/SeriesTable";
 
 const Produkter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +31,7 @@ const Produkter = () => {
   const [statusFilters, setStatusFilters] = useState([""]);
   const {
     data: pagedData,
-    isLoading,
+    isLoading: isLoadingPagedData,
     error: errorPaged,
   } = usePagedProducts({
     page: pageState - 1,
@@ -44,14 +40,15 @@ const Produkter = () => {
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
-    data: allData,
-    isLoading: allDataIsLoading,
+    data: searchResults,
+    isLoading: isLoadingSearchResults,
     error: errorProducts,
   } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
+  const { seriesByHmsNr } = useSeriesByHmsNr(searchTerm);
+  const { seriesBySupplierRef } = useSeriesBySupplierRef(searchTerm);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -61,10 +58,10 @@ const Produkter = () => {
   };
 
   useEffect(() => {
-    if (allData && allData.content) {
-      setFilteredData(allData.content);
+    if (searchResults && searchResults.content) {
+      setFilteredData(searchResults.content);
     }
-  }, [allData]);
+  }, [searchResults]);
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -74,7 +71,10 @@ const Produkter = () => {
     }
   }, [pagedData]);
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : pagedData?.content;
+  const isSearch = searchTerm.length > 0;
+  const isSearchResults = filteredData && filteredData.length > 0;
+
+  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && !isSearch;
 
   if (errorPaged || errorProducts) {
     return (
@@ -93,19 +93,6 @@ const Produkter = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
-  };
-
-  const exportProductsForSupplier = () => {
-    exportProducts(loggedInUser?.isAdmin || false).then((response) => {
-      const bytes = new Uint8Array(response); // pass your byte response to this constructor
-      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "products.xlsx");
-      document.body.appendChild(link);
-      link.click();
-    });
   };
 
   return (
@@ -139,38 +126,6 @@ const Produkter = () => {
                 >
                   Nytt produkt
                 </Button>
-                <Dropdown>
-                  <Button
-                    style={{ marginLeft: "auto" }}
-                    variant="tertiary"
-                    icon={<MenuElipsisVerticalIcon title="Importer eller eksporter produkter" fontSize="1.5rem" />}
-                    as={Dropdown.Toggle}
-                  ></Button>
-                  <Dropdown.Menu>
-                    {/*todo: Disable import until we have a working import with validation*/}
-                    {/*<Dropdown.Menu.GroupedList>*/}
-                    {/*  <Dropdown.Menu.GroupedList.Item*/}
-                    {/*    onClick={() => {*/}
-                    {/*      navigate("/produkter/importer-produkter");*/}
-                    {/*    }}*/}
-                    {/*  >*/}
-                    {/*    <FileExcelIcon aria-hidden />*/}
-                    {/*    Importer produkter*/}
-                    {/*  </Dropdown.Menu.GroupedList.Item>*/}
-                    {/*</Dropdown.Menu.GroupedList>*/}
-                    {/*<Dropdown.Menu.Divider />*/}
-                    <Dropdown.Menu.List>
-                      <Dropdown.Menu.List.Item
-                        onClick={() => {
-                          exportProductsForSupplier();
-                        }}
-                      >
-                        <FileExcelIcon aria-hidden />
-                        Eksporter produkter
-                      </Dropdown.Menu.List.Item>
-                    </Dropdown.Menu.List>
-                  </Dropdown.Menu>
-                </Dropdown>
               </HStack>
             )}
           </HStack>
@@ -184,44 +139,18 @@ const Produkter = () => {
         <Avstand marginBottom={4} />
         <VStack className="products-page__products">
           <div className="page__content-container">
-            {filteredData?.length === 0 && searchTerm.length ? (
-              <Alert variant="info">Ingen produkter funnet.</Alert>
-            ) : (
-              <div className="panel-list__container">
-                {isLoading && <Loader size="3xlarge" title="venter..." />}
-                {renderData && renderData.length > 0 && !isLoading && (
-                  <div className={styles.productTable}>
-                    <Table>
-                      <Table.Header>
-                        <Table.Row>
-                          <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">Antall varianter</Table.HeaderCell>
-                        </Table.Row>
-                      </Table.Header>
-                      <Table.Body>
-                        {renderData.map((product, i) => (
-                          <Table.Row
-                            key={i + product.id}
-                            onClick={() => {
-                              navigate(`/produkter/${product.id}`);
-                            }}
-                          >
-                            <Table.HeaderCell scope="row">
-                              <b>{product.title}</b>
-                            </Table.HeaderCell>
-                            <Table.DataCell>
-                              <StatusTag seriesStatus={seriesStatus(product)} />
-                            </Table.DataCell>
-                            <Table.DataCell>{product.count}</Table.DataCell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table>
-                  </div>
-                )}
-              </div>
+            {isSearch && isLoadingSearchResults && <Loader size="3xlarge" />}
+            {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
+
+            {isSearch && seriesByHmsNr && <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />}
+            {isSearch && seriesBySupplierRef && (
+              <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
             )}
+            {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} />}
+            {isSearch && !isSearchResults && !seriesByHmsNr && !seriesBySupplierRef && !isLoadingSearchResults && (
+              <Alert variant="info">Ingen produkter funnet.</Alert>
+            )}
+            {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />}
             <HStack gap="8">
               {showPageNavigator === true && pagedData && (
                 <Pagination
