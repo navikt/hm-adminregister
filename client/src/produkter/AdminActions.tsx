@@ -2,10 +2,10 @@ import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-i
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { RejectApprovalModal } from "produkter/RejectApprovalModal";
 import { useState } from "react";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 const AdminActions = ({
   series,
@@ -16,6 +16,7 @@ const AdminActions = ({
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
+  setExpiredSeriesModalIsOpen,
 }: {
   series: SeriesRegistrationDTO;
   products: ProductRegistrationDTO[];
@@ -25,8 +26,16 @@ const AdminActions = ({
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
+  setExpiredSeriesModalIsOpen: ({
+    open,
+    newStatus,
+  }: {
+    open: boolean;
+    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+  }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
+  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
 
   const isPending = series.adminStatus === "PENDING";
@@ -68,22 +77,34 @@ const AdminActions = ({
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
-          {isPending && shouldPublish && (
-            <>
-              <Dropdown.Menu.GroupedList>
-                <Dropdown.Menu.GroupedList.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
+          <Dropdown.Menu.List>
+            {isPending && shouldPublish && (
+              <>
+                <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
                   Avslå
                   <ExclamationmarkTriangleIcon aria-hidden />
-                </Dropdown.Menu.GroupedList.Item>
-              </Dropdown.Menu.GroupedList>
-              <Dropdown.Menu.Divider />
-            </>
-          )}
-          <Dropdown.Menu.List>
+                </Dropdown.Menu.List.Item>
+                <Dropdown.Menu.Divider />
+              </>
+            )}
             <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
               Slett
               <TrashIcon aria-hidden />
             </Dropdown.Menu.List.Item>
+            {canSetExpiredStatus &&
+              (series.status === "ACTIVE" ? (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                >
+                  Marker som utgått
+                </Dropdown.Menu.List.Item>
+              ) : (
+                <Dropdown.Menu.List.Item
+                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                >
+                  Marker som aktiv
+                </Dropdown.Menu.List.Item>
+              ))}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
       </Dropdown>

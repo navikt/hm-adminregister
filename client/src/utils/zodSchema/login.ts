@@ -68,30 +68,6 @@ export const supplierUserInfoUpdate = z.object({
     ),
 });
 
-export const adminProfileUpdate = z
-  .object({
-    name: z.string().min(1, "Du må fylle inn navn"),
-    phone: z
-      .string()
-      .transform((value) => value.trim())
-      .refine(
-        (value) => {
-          if (value === "") {
-            return true;
-          }
-          return /^[+\s\d]+$/.test(value.trim());
-        },
-        { message: "Telefonnummer må være på +47 xxxxxxxx format" },
-      ),
-    oldPassword: z.string().min(12, "Passord må inneholde minst 12 tegn."),
-    password: z.string().min(12, "Passord må inneholde minst 12 tegn."),
-    confirmPassword: z.string().min(12, "Passord må inneholde minst 12 tegn."),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passordene er ikke like",
-  });
-
 export const adminInfoUpdate = z.object({
   name: z.string().min(1, "Du må fylle inn navn"),
   phone: z
