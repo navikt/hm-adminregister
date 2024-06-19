@@ -28,7 +28,7 @@ const SupplierActions = ({
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
   const canDelete = series.draftStatus === "DRAFT" || isAdmin;
-  const canSetStatus = series.draftStatus === "DONE" && !!series.published;
+  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const canSetToEditMode =
     series.status !== "DELETED" && ((series.draftStatus === "DONE" && series.adminStatus !== "PENDING") || isAdmin);
 
@@ -44,7 +44,7 @@ const SupplierActions = ({
         Send til godkjenning
       </Button>
 
-      {(canDelete || canSetStatus || canSetStatus) && (
+      {(canDelete || canSetToEditMode || canSetExpiredStatus) && (
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
@@ -61,7 +61,7 @@ const SupplierActions = ({
                   <PencilIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
               )}
-              {canSetStatus &&
+              {canSetExpiredStatus &&
                 (series.status === "ACTIVE" ? (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}

@@ -35,7 +35,7 @@ const AdminActions = ({
   }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
-  const canSetStatus = series.draftStatus === "DONE" && !!series.published;
+  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
 
   const isPending = series.adminStatus === "PENDING";
@@ -91,7 +91,7 @@ const AdminActions = ({
               Slett
               <TrashIcon aria-hidden />
             </Dropdown.Menu.List.Item>
-            {canSetStatus &&
+            {canSetExpiredStatus &&
               (series.status === "ACTIVE" ? (
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
