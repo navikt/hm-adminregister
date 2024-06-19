@@ -168,11 +168,11 @@ const VariantsTab = ({
                                     disabled={product.draftStatus === "DRAFT"}
                                     onClick={() => setAsExpired(product)}
                                   >
-                                    Marker som utgått
+                                    Sett som utgått
                                   </Dropdown.Menu.List.Item>
                                 ) : (
                                   <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
-                                    Marker som aktiv
+                                    Sett som aktiv
                                   </Dropdown.Menu.List.Item>
                                 )}
                               </Dropdown.Menu.List>

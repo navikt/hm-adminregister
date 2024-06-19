@@ -59,13 +59,13 @@ const SupplierActions = ({
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
                 >
-                  Marker som utgått
+                  Sett som utgått
                 </Dropdown.Menu.List.Item>
               ) : (
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
                 >
-                  Fjern utgått markering
+                  Sett som aktiiv
                 </Dropdown.Menu.List.Item>
               ))}
 
