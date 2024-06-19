@@ -87,7 +87,10 @@ const VariantsTab = ({
     };
 
     updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
-      .then(() => mutateVariants())
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+      })
       .catch((error) => {
         setGlobalError(error);
       });
@@ -101,7 +104,10 @@ const VariantsTab = ({
     };
 
     updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
-      .then(() => mutateVariants())
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+      })
       .catch((error) => {
         setGlobalError(error);
       });

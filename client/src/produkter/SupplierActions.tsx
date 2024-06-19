@@ -54,6 +54,12 @@ const SupplierActions = ({
                 Slett
               </Dropdown.Menu.List.Item>
             )}
+            {canSetToEditMode && (
+              <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                Endre produkt
+                <PencilIcon aria-hidden />
+              </Dropdown.Menu.List.Item>
+            )}
             {canSetStatus &&
               (series.status === "ACTIVE" ? (
                 <Dropdown.Menu.List.Item
@@ -65,16 +71,9 @@ const SupplierActions = ({
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
                 >
-                  Sett som aktiiv
+                  Sett som aktiv
                 </Dropdown.Menu.List.Item>
               ))}
-
-            {canSetToEditMode && (
-              <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
-                <PencilIcon aria-hidden />
-                Endre produkt
-              </Dropdown.Menu.List.Item>
-            )}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
       </Dropdown>
