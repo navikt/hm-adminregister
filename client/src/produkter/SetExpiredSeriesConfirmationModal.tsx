@@ -1,4 +1,4 @@
-import { Alert, Button, Modal } from "@navikt/ds-react";
+import { Button, Modal } from "@navikt/ds-react";
 import { setSeriesToActive, setSeriesToInactive } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -45,7 +45,9 @@ export const SetExpiredSeriesConfirmationModal = ({
   }
 
   const headingText =
-    params.newStatus === "ACTIVE" ? "Marker produkt og varianter som aktive" : "Marker produkt og varianter som utgått";
+    params.newStatus === "ACTIVE"
+      ? "Ønsker du å markere dette produktet og alle dens varianter som aktiv?"
+      : "Ønsker du å markere dette produktet og alle dens varianter som utgått?";
 
   return (
     <Modal
@@ -55,13 +57,6 @@ export const SetExpiredSeriesConfirmationModal = ({
       }}
       onClose={() => setParams({ open: false, newStatus: undefined })}
     >
-      <Modal.Body>
-        {params.newStatus === "INACTIVE" && (
-          <Alert variant="warning">
-            Dersom du reverserer denne handlingen senere, vil alle varianter markeres som aktive igjen.
-          </Alert>
-        )}
-      </Modal.Body>
       <Modal.Footer>
         <Button
           onClick={() => {
