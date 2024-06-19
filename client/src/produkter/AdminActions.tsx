@@ -98,13 +98,13 @@ const AdminActions = ({
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
                 >
-                  Sett som utgått
+                  Marker som utgått
                 </Dropdown.Menu.List.Item>
               ) : (
                 <Dropdown.Menu.List.Item
                   onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
                 >
-                  Sett som aktiv
+                  Marker som aktiv
                 </Dropdown.Menu.List.Item>
               ))}
           </Dropdown.Menu.List>

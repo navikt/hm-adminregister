@@ -46,8 +46,8 @@ export const SetExpiredSeriesConfirmationModal = ({
 
   const headingText =
     params.newStatus === "ACTIVE"
-      ? "Bekreft handling: Sett produkt og varianter som aktive"
-      : "Bekreft handling: Sett produkt og varianter som utgått";
+      ? "Bekreft handling: Marker produkt og varianter som aktive"
+      : "Bekreft handling: Marker produkt og varianter som utgått";
 
   return (
     <Modal
@@ -60,7 +60,7 @@ export const SetExpiredSeriesConfirmationModal = ({
       <Modal.Body>
         {params.newStatus === "INACTIVE" && (
           <Alert variant="warning">
-            Dersom du reverserer denne handlingen senere, vil alle varianter settes som aktive igjen.
+            Dersom du reverserer denne handlingen senere, vil alle varianter markeres som aktive igjen.
           </Alert>
         )}
       </Modal.Body>
@@ -70,7 +70,7 @@ export const SetExpiredSeriesConfirmationModal = ({
             onSetExpired().then(() => setParams({ open: false, newStatus: undefined }));
           }}
         >
-          {params.newStatus === "ACTIVE" ? "Sett som aktiv" : "Sett som utgått"}
+          {params.newStatus === "ACTIVE" ? "Marker som aktiv" : "Marker som utgått"}
         </Button>
         <Button variant="secondary" onClick={() => setParams({ open: false, newStatus: undefined })}>
           Avbryt
