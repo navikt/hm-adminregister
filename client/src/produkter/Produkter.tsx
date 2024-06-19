@@ -15,7 +15,7 @@ import {
 } from "@navikt/ds-react";
 import "./products.scss";
 import { PlusIcon } from "@navikt/aksel-icons";
-import { usePagedProducts, useProducts } from "utils/swr-hooks";
+import { usePagedProducts, useProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Avstand } from "felleskomponenter/Avstand";
@@ -31,7 +31,7 @@ const Produkter = () => {
   const [statusFilters, setStatusFilters] = useState([""]);
   const {
     data: pagedData,
-    isLoading,
+    isLoading: isLoadingPagedData,
     error: errorPaged,
   } = usePagedProducts({
     page: pageState - 1,
@@ -40,14 +40,15 @@ const Produkter = () => {
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
-    data: allData,
-    isLoading: allDataIsLoading,
+    data: searchResults,
+    isLoading: isLoadingSearchResults,
     error: errorProducts,
   } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
   const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
+  const { seriesByHmsNr } = useSeriesByHmsNr(searchTerm);
+  const { seriesBySupplierRef } = useSeriesBySupplierRef(searchTerm);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -57,10 +58,10 @@ const Produkter = () => {
   };
 
   useEffect(() => {
-    if (allData && allData.content) {
-      setFilteredData(allData.content);
+    if (searchResults && searchResults.content) {
+      setFilteredData(searchResults.content);
     }
-  }, [allData]);
+  }, [searchResults]);
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -70,7 +71,10 @@ const Produkter = () => {
     }
   }, [pagedData]);
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : pagedData?.content;
+  const isSearch = searchTerm.length > 0;
+  const isSearchResults = filteredData && filteredData.length > 0;
+
+  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && !isSearch;
 
   if (errorPaged || errorProducts) {
     return (
@@ -135,14 +139,18 @@ const Produkter = () => {
         <Avstand marginBottom={4} />
         <VStack className="products-page__products">
           <div className="page__content-container">
-            {filteredData?.length === 0 && searchTerm.length ? (
-              <Alert variant="info">Ingen produkter funnet.</Alert>
-            ) : (
-              <div className="panel-list__container">
-                {isLoading && <Loader size="3xlarge" title="venter..." />}
-                {renderData && renderData.length > 0 && !isLoading && <SeriesTable seriesList={renderData} />}
-              </div>
+            {isSearch && isLoadingSearchResults && <Loader size="3xlarge" />}
+            {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
+
+            {isSearch && seriesByHmsNr && <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />}
+            {isSearch && seriesBySupplierRef && (
+              <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
             )}
+            {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} />}
+            {isSearch && !isSearchResults && !seriesByHmsNr && !seriesBySupplierRef && !isLoadingSearchResults && (
+              <Alert variant="info">Ingen produkter funnet.</Alert>
+            )}
+            {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />}
             <HStack gap="8">
               {showPageNavigator === true && pagedData && (
                 <Pagination

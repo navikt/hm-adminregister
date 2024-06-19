@@ -76,6 +76,42 @@ export function useSeries(seriesUUID: string) {
   };
 }
 
+export function useSeriesByHmsNr(hmsNr: string) {
+  const { loggedInUser } = useAuthStore();
+
+  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, hmsNr.length > 0 ? `/api/v1/series/hmsNr/${hmsNr}` : "");
+
+  const {
+    data: seriesByHmsNr,
+    error: errorSeriesByHmsNr,
+    isLoading: isLoadingSeriesByHmsNr,
+  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
+
+  return {
+    seriesByHmsNr,
+    errorSeriesByHmsNr,
+    isLoadingSeriesByHmsNr,
+  };
+}
+
+export function useSeriesBySupplierRef(supplierRef: string) {
+  const { loggedInUser } = useAuthStore();
+
+  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/supplierRef/${supplierRef}`);
+
+  const {
+    data: seriesBySupplierRef,
+    error: errorSeriesBySupplierRef,
+    isLoading: isLoadingSeriesBySupplierRef,
+  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
+
+  return {
+    seriesBySupplierRef,
+    errorSeriesBySupplierRef,
+    isLoadingSeriesBySupplierRef,
+  };
+}
+
 export function userProductVariantsBySeriesId(seriesId: string) {
   const { loggedInUser } = useAuthStore();
   const seriesIdPath = loggedInUser?.isAdmin
@@ -250,7 +286,6 @@ export function useProductByProductId(productId: string) {
   const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/${productId}`);
 
   const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTO>(path, fetcherGET);
-
 
   return {
     product,

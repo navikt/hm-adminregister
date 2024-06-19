@@ -1,5 +1,5 @@
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { Table } from "@navikt/ds-react";
+import { Heading, Table } from "@navikt/ds-react";
 import styles from "produkter/ProductTable.module.scss";
 import StatusTag from "felleskomponenter/StatusTag";
 import { seriesStatus } from "produkter/seriesUtils";
@@ -8,13 +8,15 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   seriesList: SeriesRegistrationDTO[];
+  heading?: string;
 }
 
-export const SeriesTable = ({ seriesList }: Props) => {
+export const SeriesTable = ({ seriesList, heading }: Props) => {
   const navigate = useNavigate();
 
   return (
     <div className={styles.productTable}>
+      {heading && <Heading size="medium">{heading}</Heading>}
       <Table>
         <Table.Header>
           <Table.Row>
