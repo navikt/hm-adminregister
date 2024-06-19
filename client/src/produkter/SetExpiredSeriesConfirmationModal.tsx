@@ -1,8 +1,9 @@
-import { Button, Modal } from "@navikt/ds-react";
+import { Button, Heading, Modal } from "@navikt/ds-react";
 import { setSeriesToActive, setSeriesToInactive } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
+import styles from "./SetExpiredSeriesConfirmationModal.module.scss";
 
 export const SetExpiredSeriesConfirmationModal = ({
   series,
@@ -50,13 +51,18 @@ export const SetExpiredSeriesConfirmationModal = ({
       : "Ønsker du å markere dette produktet og alle dens varianter som utgått?";
 
   return (
-    <Modal
-      open={params.open}
-      header={{
-        heading: headingText,
-      }}
-      onClose={() => setParams({ open: false, newStatus: undefined })}
-    >
+    <Modal open={params.open} aria-label={headingText} onClose={() => setParams({ open: false, newStatus: undefined })}>
+      <Modal.Header className={styles.modal_header}>
+        {params.newStatus === "ACTIVE" ? (
+          <Heading level="1" size="medium">
+            Ønsker du å markere dette produktet og alle dens varianter som aktiv?
+          </Heading>
+        ) : (
+          <Heading level="1" size="medium" style={{ whiteSpace: "pre" }}>
+            {`Ønsker du å markere dette produktet \n og alle dens varianter som utgått?`}
+          </Heading>
+        )}
+      </Modal.Header>
       <Modal.Footer>
         <Button
           onClick={() => {

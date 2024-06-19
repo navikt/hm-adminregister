@@ -1,15 +1,15 @@
 import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
+import { updateProductVariant } from "api/ProductApi";
+import { HM_REGISTER_URL } from "environments";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { isUUID, labelRequired } from "utils/string-util";
-import { ProductRegistrationDTO, TechLabelDto } from "utils/types/response-types";
-import { updateProductVariant } from "api/ProductApi";
+import useSWR from "swr";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import styles from "../ProductVariantForm.module.scss";
-import useSWR from "swr";
-import { HM_REGISTER_URL } from "environments";
+import { isUUID, labelRequired } from "utils/string-util";
 import { fetcherGET } from "utils/swr-hooks";
+import { ProductRegistrationDTO, TechLabelDto } from "utils/types/response-types";
+import styles from "./ProductVariantForm.module.scss";
 
 type FormData = {
   articleName: string;
