@@ -44,39 +44,41 @@ const SupplierActions = ({
         Send til godkjenning
       </Button>
 
-      <Dropdown>
-        <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
-        <Dropdown.Menu>
-          <Dropdown.Menu.List>
-            {canDelete && (
-              <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                <TrashIcon aria-hidden />
-                Slett
-              </Dropdown.Menu.List.Item>
-            )}
-            {canSetToEditMode && (
-              <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
-                Endre produkt
-                <PencilIcon aria-hidden />
-              </Dropdown.Menu.List.Item>
-            )}
-            {canSetStatus &&
-              (series.status === "ACTIVE" ? (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                >
-                  Marker som utgått
+      {(canDelete || canSetStatus || canSetStatus) && (
+        <Dropdown>
+          <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
+          <Dropdown.Menu>
+            <Dropdown.Menu.List>
+              {canDelete && (
+                <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                  <TrashIcon aria-hidden />
+                  Slett
                 </Dropdown.Menu.List.Item>
-              ) : (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
-                >
-                  Marker som aktiv
+              )}
+              {canSetToEditMode && (
+                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                  Endre produkt
+                  <PencilIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
-              ))}
-          </Dropdown.Menu.List>
-        </Dropdown.Menu>
-      </Dropdown>
+              )}
+              {canSetStatus &&
+                (series.status === "ACTIVE" ? (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                  >
+                    Marker som utgått
+                  </Dropdown.Menu.List.Item>
+                ) : (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                  >
+                    Marker som aktiv
+                  </Dropdown.Menu.List.Item>
+                ))}
+            </Dropdown.Menu.List>
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
     </HStack>
   );
 };

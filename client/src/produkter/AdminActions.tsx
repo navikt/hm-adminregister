@@ -77,18 +77,16 @@ const AdminActions = ({
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
-          {isPending && shouldPublish && (
-            <>
-              <Dropdown.Menu.GroupedList>
-                <Dropdown.Menu.GroupedList.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
+          <Dropdown.Menu.List>
+            {isPending && shouldPublish && (
+              <>
+                <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
                   Avslå
                   <ExclamationmarkTriangleIcon aria-hidden />
-                </Dropdown.Menu.GroupedList.Item>
-              </Dropdown.Menu.GroupedList>
-              <Dropdown.Menu.Divider />
-            </>
-          )}
-          <Dropdown.Menu.List>
+                </Dropdown.Menu.List.Item>
+                <Dropdown.Menu.Divider />
+              </>
+            )}
             <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
               Slett
               <TrashIcon aria-hidden />
