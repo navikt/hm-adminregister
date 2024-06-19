@@ -45,9 +45,7 @@ export const SetExpiredSeriesConfirmationModal = ({
   }
 
   const headingText =
-    params.newStatus === "ACTIVE"
-      ? "Bekreft handling: Marker produkt og varianter som aktive"
-      : "Bekreft handling: Marker produkt og varianter som utgått";
+    params.newStatus === "ACTIVE" ? "Marker produkt og varianter som aktive" : "Marker produkt og varianter som utgått";
 
   return (
     <Modal
