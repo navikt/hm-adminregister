@@ -138,7 +138,7 @@ const VariantsTab = ({
                   <Table.Header>
                     <Table.Row>
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
+                      {paginatedVariants.map((product) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
                           <Dropdown>
                             <Button
@@ -250,9 +250,7 @@ const VariantsTab = ({
           </Box>
         )}
         {isEditable && (
-          //Sender med siste siden
           <Button
-            as="a"
             className="fit-content"
             variant="tertiary"
             icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
