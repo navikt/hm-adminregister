@@ -117,7 +117,9 @@ const ProductPage = () => {
     formMethods.handleSubmit(onSubmit)();
   };
 
-  const isEditable = series.draftStatus === "DRAFT" && series.status !== "DELETED";
+  const isEditable =
+    (series.draftStatus === "DRAFT" && series.status !== "DELETED") ||
+    (loggedInUser?.isAdmin === true && series.status === "ACTIVE");
 
   const TabLabel = ({
     title,
