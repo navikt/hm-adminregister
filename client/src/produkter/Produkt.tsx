@@ -27,6 +27,7 @@ import DocumentTab from "./tabs/DocumentsTab";
 import ImageTab from "./tabs/ImagesTab";
 import VideosTab from "./tabs/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
+import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 
 export type EditSeriesInfo = {
   title?: string;
@@ -69,6 +70,8 @@ const ProductPage = () => {
       : null,
     fetcherGET,
   );
+
+  const { data: isInAgreement } = useIsSeriesInAgreement(seriesId!);
 
   const formMethods = useForm<EditSeriesInfo>();
 
@@ -283,6 +286,7 @@ const ProductPage = () => {
                 products={variants || []}
                 isEditable={isEditable}
                 showInputError={!isValid}
+                isInAgreement={isInAgreement ?? false}
               />
             </Tabs>
           </VStack>
@@ -303,9 +307,9 @@ const ProductPage = () => {
             {!loggedInUser?.isAdmin && (
               <SupplierActions
                 series={series}
-                isAdmin={loggedInUser?.isAdmin ?? false}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
+                isInAgreement={isInAgreement ?? false}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
                 setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}

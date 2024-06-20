@@ -4,18 +4,18 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 
 const SupplierActions = ({
   series,
-  isAdmin,
   setIsValid,
   productIsValid,
+  isInAgreement,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
   series: SeriesRegistrationDTO;
-  isAdmin: boolean;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
+  isInAgreement: boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
   setExpiredSeriesModalIsOpen: ({
@@ -30,7 +30,7 @@ const SupplierActions = ({
   const isDraft = series.draftStatus === "DRAFT";
   const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const canSetToEditMode =
-    series.status !== "DELETED" && ((series.draftStatus === "DONE" && series.adminStatus !== "PENDING") || isAdmin);
+    series.status !== "DELETED" && series.draftStatus === "DONE" && series.adminStatus !== "PENDING";
 
   return (
     <HStack align={"end"} gap="2">
@@ -52,13 +52,16 @@ const SupplierActions = ({
           <Dropdown.Menu>
             <Dropdown.Menu.List>
               {isDraft && (
-                <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                <Dropdown.Menu.List.Item
+                  onClick={() => setDeleteConfirmationModalIsOpen(true)}
+                  disabled={isInAgreement}
+                >
                   <TrashIcon aria-hidden />
                   Slett
                 </Dropdown.Menu.List.Item>
               )}
               {canSetToEditMode && (
-                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)} disabled={isInAgreement}>
                   Endre produkt
                   <PencilIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
@@ -67,6 +70,7 @@ const SupplierActions = ({
                 (series.status === "ACTIVE" ? (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                    disabled={isInAgreement}
                   >
                     Marker som utgått
                   </Dropdown.Menu.List.Item>
@@ -77,6 +81,11 @@ const SupplierActions = ({
                     Marker som aktiv
                   </Dropdown.Menu.List.Item>
                 ))}
+              {isInAgreement && (
+                <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>
+                  Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå
+                </Dropdown.Menu.GroupedList.Heading>
+              )}
             </Dropdown.Menu.List>
           </Dropdown.Menu>
         </Dropdown>

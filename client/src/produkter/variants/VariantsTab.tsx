@@ -18,12 +18,14 @@ const VariantsTab = ({
   isEditable,
   showInputError,
   mutateSeries,
+  isInAgreement,
 }: {
   seriesUUID: string;
   products: ProductRegistrationDTO[];
   isEditable: boolean;
   showInputError: boolean;
   mutateSeries: () => void;
+  isInAgreement: boolean;
 }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -152,6 +154,7 @@ const VariantsTab = ({
                                     onClick={() => {
                                       navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
                                     }}
+                                    disabled={isInAgreement}
                                   >
                                     Endre
                                     <PencilIcon aria-hidden />
@@ -171,7 +174,7 @@ const VariantsTab = ({
                                   </Dropdown.Menu.List.Item>
                                 ) : product.registrationStatus === "ACTIVE" ? (
                                   <Dropdown.Menu.List.Item
-                                    disabled={product.draftStatus === "DRAFT"}
+                                    disabled={product.draftStatus === "DRAFT" || isInAgreement}
                                     onClick={() => setAsExpired(product)}
                                   >
                                     Marker variant som utgått
