@@ -286,6 +286,7 @@ const ProductPage = () => {
                 products={variants || []}
                 isEditable={isEditable}
                 showInputError={!isValid}
+                isInAgreement={isInAgreement ?? false}
               />
             </Tabs>
           </VStack>
@@ -306,17 +307,14 @@ const ProductPage = () => {
             {!loggedInUser?.isAdmin && (
               <SupplierActions
                 series={series}
-                isAdmin={loggedInUser?.isAdmin ?? false}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
+                isInAgreement={isInAgreement ?? false}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
                 setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
                 setEditProductModalIsOpen={setEditProductModalIsOpen}
               />
-            )}
-            {!loggedInUser?.isAdmin && !isEditable && !isPending && !isInAgreement && (
-              <ChangePublishedProductAction setEditProductModalIsOpen={setEditProductModalIsOpen} />
             )}
             <StatusPanel series={series} />
           </VStack>
