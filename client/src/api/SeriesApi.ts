@@ -1,6 +1,6 @@
+import { fetchAPI, getPath } from "api/fetch";
 import { EditSeriesInfo } from "produkter/Produkt";
 import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { fetchAPI, getPath } from "api/fetch";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
@@ -10,11 +10,22 @@ export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<Ser
   return await fetchAPI(getPath(false, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
 };
 
+export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-inactive/${seriesUUID}`), "PUT");
+};
+
+export const setSeriesToActive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-active/${seriesUUID}`), "PUT");
+};
+
 export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/series/approve/${seriesUUID}`), "PUT");
 };
 
-export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<SeriesRegistrationDTO> => {
+export const rejectSeries = async (
+  seriesUUID: string,
+  rejectSeriesDTO: RejectSeriesDTO,
+): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/series/reject/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
@@ -25,7 +36,7 @@ export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promi
 const updateSeriesData = async (
   seriesUUID: string,
   isAdmin: boolean,
-  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO
+  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
 ): Promise<SeriesRegistrationDTO> => {
   const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
   const updatedSeriesData = modifySeriesData(seriesToUpdate);
@@ -35,7 +46,7 @@ const updateSeriesData = async (
 export const updateSeries = async (
   seriesUUID: string,
   editSeriesInfo: EditSeriesInfo,
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
@@ -83,7 +94,7 @@ export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
   isAdmin: boolean,
   uri: string,
-  editedText: string
+  editedText: string,
 ) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     const mediaIndex = series.seriesData.media.findIndex((media) => media.uri === uri);

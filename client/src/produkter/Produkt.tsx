@@ -8,7 +8,6 @@ import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "
 import { updateSeries } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import AdminActions from "produkter/AdminActions";
-import ChangePublishedProductAction from "produkter/ChangePublishedProductAction";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
 import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
 import { RequestApprovalModal } from "produkter/RequestApprovalModal";
@@ -22,6 +21,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
 import { IsoCategoryDTO } from "utils/types/response-types";
 import "./product-page.scss";
+import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import AboutTab from "./tabs/AboutTab";
 import DocumentTab from "./tabs/DocumentsTab";
 import ImageTab from "./tabs/ImagesTab";
@@ -45,6 +45,14 @@ const ProductPage = () => {
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
+  const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
+    open: boolean;
+    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+  }>({
+    open: false,
+    newStatus: undefined,
+  });
+
   const [isValid, setIsValid] = useState(true);
   const activeTab = searchParams.get("tab");
 
@@ -112,10 +120,9 @@ const ProductPage = () => {
     formMethods.handleSubmit(onSubmit)();
   };
 
-  const isDraft = series.draftStatus === "DRAFT";
-  const isPending = series.adminStatus === "PENDING";
-  const isActive = series.status === "ACTIVE";
-  const isEditable = (series.draftStatus === "DRAFT" || (loggedInUser?.isAdmin ?? false)) && isActive;
+  const isEditable =
+    (series.draftStatus === "DRAFT" && series.status !== "DELETED") ||
+    (loggedInUser?.isAdmin === true && series.status === "ACTIVE");
 
   const TabLabel = ({
     title,
@@ -159,6 +166,13 @@ const ProductPage = () => {
           mutateSeries={mutateSeries}
           isOpen={deleteConfirmationModalIsOpen}
           setIsOpen={setDeleteConfirmationModalIsOpen}
+        />
+        <SetExpiredSeriesConfirmationModal
+          series={series}
+          mutateSeries={mutateSeries}
+          mutateProducts={mutateVariants}
+          params={expiredSeriesModalIsOpen}
+          setParams={setExpiredSeriesModalIsOpen}
         />
         <EditPublishedProductConfirmationModal
           series={series}
@@ -276,7 +290,7 @@ const ProductPage = () => {
             </Tabs>
           </VStack>
           <VStack gap={{ xs: "2", md: "4" }}>
-            {loggedInUser?.isAdmin && isActive && (
+            {loggedInUser?.isAdmin && (
               <AdminActions
                 series={series}
                 products={variants || []}
@@ -286,15 +300,19 @@ const ProductPage = () => {
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+                setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               />
             )}
-            {!loggedInUser?.isAdmin && isDraft && isActive && (
+            {!loggedInUser?.isAdmin && (
               <SupplierActions
-                seriesIsPublished={!!series.published}
+                series={series}
+                isAdmin={loggedInUser?.isAdmin ?? false}
                 setIsValid={setIsValid}
                 productIsValid={productIsValid}
                 setApprovalModalIsOpen={setApprovalModalIsOpen}
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
+                setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
+                setEditProductModalIsOpen={setEditProductModalIsOpen}
               />
             )}
             {!loggedInUser?.isAdmin && !isEditable && !isPending && !isInAgreement && (

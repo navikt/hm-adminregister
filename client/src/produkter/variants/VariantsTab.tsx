@@ -1,16 +1,16 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
-import { SetExpiredConfirmationModal } from "produkter/SetExpiredConfirmationModal";
+import { deleteDraftProducts, updateProductVariant } from "api/ProductApi";
+import { DeleteVariantConfirmationModal } from "produkter/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { tenYearsFromTodayTimestamp, todayTimestamp } from "utils/date-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTO } from "utils/types/response-types";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { deleteDraftProducts } from "api/ProductApi";
-import { DeleteVariantConfirmationModal } from "produkter/variants/DeleteVariantConfirmationModal";
 
 const VariantsTab = ({
   seriesUUID,
@@ -34,13 +34,6 @@ const VariantsTab = ({
   const columnsPerPage = 5;
   const totalPages = Math.ceil(products.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [expiredConfirmationModalIsOpen, setExpiredConfirmationModalIsOpen] = useState<{
-    open: boolean;
-    product: ProductRegistrationDTO | undefined;
-  }>({
-    open: false,
-    product: undefined,
-  });
 
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
     open: boolean;
@@ -70,6 +63,7 @@ const VariantsTab = ({
 
         const deletingSingleVariantOnPage =
           pageState > 1 && pageState == totalPages && products.length % columnsPerPage == 1;
+
         if (deletingSingleVariantOnPage) {
           searchParams.set("page", (pageState - 1).toString());
           setSearchParams(searchParams);
@@ -85,18 +79,47 @@ const VariantsTab = ({
 
   const anyExpired = products.some((product) => product.registrationStatus === "INACTIVE");
 
+  const setAsExpired = (product: ProductRegistrationDTO) => {
+    const productRegistrationUpdated: ProductRegistrationDTO = {
+      ...product,
+      registrationStatus: "INACTIVE",
+      expired: todayTimestamp(),
+    };
+
+    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  };
+
+  const setAsActive = (product: ProductRegistrationDTO) => {
+    const productRegistrationUpdated: ProductRegistrationDTO = {
+      ...product,
+      registrationStatus: "ACTIVE",
+      expired: tenYearsFromTodayTimestamp(),
+    };
+
+    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  };
+
   return (
     <>
-      <SetExpiredConfirmationModal
-        mutateProducts={mutateVariants}
-        params={expiredConfirmationModalIsOpen}
-        setParams={setExpiredConfirmationModalIsOpen}
-      />
-      {/*      <DeleteVariantConfirmationModal
+      <DeleteVariantConfirmationModal
         onDelete={onDelete}
         params={deleteVariantConfirmationModalIsOpen}
         setParams={setDeleteVariantConfirmationModalIsOpen}
-      ></DeleteVariantConfirmationModal>*/}
+      ></DeleteVariantConfirmationModal>
       <Tabs.Panel value="variants" className="tab-panel">
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
@@ -114,7 +137,7 @@ const VariantsTab = ({
                     <Table.Row>
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
-                        <Table.HeaderCell scope="row" key={`edit-${product.id}`}>
+                        <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
                           <Dropdown>
                             <Button
                               variant="tertiary"
@@ -146,17 +169,16 @@ const VariantsTab = ({
                                     Slett
                                     <TrashIcon aria-hidden />
                                   </Dropdown.Menu.List.Item>
-                                ) : (
+                                ) : product.registrationStatus === "ACTIVE" ? (
                                   <Dropdown.Menu.List.Item
-                                    disabled={product.registrationStatus === "INACTIVE"}
-                                    onClick={() =>
-                                      setExpiredConfirmationModalIsOpen({
-                                        open: true,
-                                        product: product,
-                                      })
-                                    }
+                                    disabled={product.draftStatus === "DRAFT"}
+                                    onClick={() => setAsExpired(product)}
                                   >
-                                    Marker som utgått
+                                    Marker variant som utgått
+                                  </Dropdown.Menu.List.Item>
+                                ) : (
+                                  <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
+                                    Marker variant som aktiv
                                   </Dropdown.Menu.List.Item>
                                 )}
                               </Dropdown.Menu.List>
@@ -177,8 +199,8 @@ const VariantsTab = ({
                     {anyExpired && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
-                        {paginatedVariants.map((product) => (
-                          <Table.DataCell>
+                        {paginatedVariants.map((product, i) => (
+                          <Table.DataCell key={`expired-${i}`}>
                             {product.registrationStatus === "INACTIVE" && <Tag variant="warning-moderate">Utgått</Tag>}
                           </Table.DataCell>
                         ))}
@@ -234,7 +256,7 @@ const VariantsTab = ({
             style={{ marginTop: "16px" }}
             onClick={() => {
               navigate(
-                `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`
+                `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`,
               );
             }}
           >
