@@ -79,13 +79,13 @@ export function useSeries(seriesUUID: string) {
 export function useSeriesByHmsNr(hmsNr: string) {
   const { loggedInUser } = useAuthStore();
 
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, hmsNr.length > 0 ? `/api/v1/series/hmsNr/${hmsNr}` : "");
+  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/hmsNr/${hmsNr}`);
 
   const {
     data: seriesByHmsNr,
     error: errorSeriesByHmsNr,
     isLoading: isLoadingSeriesByHmsNr,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
+  } = useSWR<SeriesRegistrationDTO>(loggedInUser?.isAdmin && hmsNr.length > 0 ? seriesIdPath : null, fetcherGET);
 
   return {
     seriesByHmsNr,
@@ -103,7 +103,7 @@ export function useSeriesBySupplierRef(supplierRef: string) {
     data: seriesBySupplierRef,
     error: errorSeriesBySupplierRef,
     isLoading: isLoadingSeriesBySupplierRef,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
+  } = useSWR<SeriesRegistrationDTO>(loggedInUser?.isAdmin && supplierRef.length > 0 ? seriesIdPath : null, fetcherGET);
 
   return {
     seriesBySupplierRef,

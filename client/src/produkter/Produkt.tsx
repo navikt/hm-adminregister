@@ -27,6 +27,7 @@ import DocumentTab from "./tabs/DocumentsTab";
 import ImageTab from "./tabs/ImagesTab";
 import VideosTab from "./tabs/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
+import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 
 export type EditSeriesInfo = {
   title?: string;
@@ -61,6 +62,8 @@ const ProductPage = () => {
       : null,
     fetcherGET,
   );
+
+  const { data: isInAgreement } = useIsSeriesInAgreement(seriesId!);
 
   const formMethods = useForm<EditSeriesInfo>();
 
@@ -294,7 +297,7 @@ const ProductPage = () => {
                 setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               />
             )}
-            {!loggedInUser?.isAdmin && !isEditable && !isPending && (
+            {!loggedInUser?.isAdmin && !isEditable && !isPending && !isInAgreement && (
               <ChangePublishedProductAction setEditProductModalIsOpen={setEditProductModalIsOpen} />
             )}
             <StatusPanel series={series} />
