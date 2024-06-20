@@ -27,29 +27,31 @@ const SupplierActions = ({
   }) => void;
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
-  const canDelete = series.draftStatus === "DRAFT" || isAdmin;
+  const isDraft = series.draftStatus === "DRAFT";
   const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const canSetToEditMode =
     series.status !== "DELETED" && ((series.draftStatus === "DONE" && series.adminStatus !== "PENDING") || isAdmin);
 
   return (
     <HStack align={"end"} gap="2">
-      <Button
-        style={{ marginTop: "20px" }}
-        onClick={() => {
-          setIsValid(productIsValid());
-          setApprovalModalIsOpen(true);
-        }}
-      >
-        Send til godkjenning
-      </Button>
+      {isDraft && (
+        <Button
+          style={{ marginTop: "20px" }}
+          onClick={() => {
+            setIsValid(productIsValid());
+            setApprovalModalIsOpen(true);
+          }}
+        >
+          Send til godkjenning
+        </Button>
+      )}
 
-      {(canDelete || canSetToEditMode || canSetExpiredStatus) && (
+      {(isDraft || canSetToEditMode || canSetExpiredStatus) && (
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
             <Dropdown.Menu.List>
-              {canDelete && (
+              {isDraft && (
                 <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                   <TrashIcon aria-hidden />
                   Slett
