@@ -1,6 +1,7 @@
 import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { useEffect } from "react";
 
 const SupplierActions = ({
   series,
@@ -46,12 +47,12 @@ const SupplierActions = ({
         </Button>
       )}
 
-      {(isDraft || canSetToEditMode || canSetExpiredStatus) && (
+      {((isDraft && !series.published) || canSetToEditMode || canSetExpiredStatus) && (
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
             <Dropdown.Menu.List>
-              {isDraft && (
+              {isDraft && !series.published && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setDeleteConfirmationModalIsOpen(true)}
                   disabled={isInAgreement}
