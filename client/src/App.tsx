@@ -31,7 +31,6 @@ import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValid
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
-import News from "news/News";
 
 export function App() {
   return (
@@ -239,25 +238,6 @@ export function App() {
           <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
           <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
         </Route>
-
-          <Route
-            path="/nyheter"
-            element={
-              <>
-                <Navbar />
-                <News />
-              </>
-            }
-          />
-
-          <Route
-              path="/nyheter/opprett"
-              element={
-                  <>
-
-                  </>
-              }
-          />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
