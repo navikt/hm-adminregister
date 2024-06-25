@@ -6,7 +6,7 @@ import { RejectApprovalModal } from "produkter/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { getDifferenceFromPublishedSeries, getDifferenceFromPublishedVariant } from "api/VersionApi";
+import { ShowDiffModal } from "produkter/diff/ShowDiffModal";
 
 const AdminActions = ({
   series,
@@ -39,28 +39,10 @@ const AdminActions = ({
   const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
 
+  const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false);
+
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
-
-  const onGetDiff = () => {
-    getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    products.map((product) => {
-      getDifferenceFromPublishedVariant(product.id, product.version ?? 0)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    });
-  };
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -82,6 +64,12 @@ const AdminActions = ({
 
   return (
     <HStack align={"end"} gap="2">
+      <ShowDiffModal
+        series={series}
+        products={products}
+        isOpen={showDiffModalIsOpen}
+        setIsOpen={setShowDiffModalIsOpen}
+      />
       <RejectApprovalModal
         series={series}
         products={products}
@@ -91,7 +79,12 @@ const AdminActions = ({
         setIsOpen={setRejectApprovalModalIsOpen}
       />
       {shouldPublish && (
-        <Button style={{ marginTop: "20px" }} onClick={onGetDiff}>
+        <Button
+          style={{ marginTop: "20px" }}
+          onClick={() => {
+            setShowDiffModalIsOpen(true);
+          }}
+        >
           Vis endringer
         </Button>
       )}
@@ -134,6 +127,7 @@ const AdminActions = ({
               ))}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
+        ;
       </Dropdown>
     </HStack>
   );
