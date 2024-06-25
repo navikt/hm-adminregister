@@ -1,9 +1,15 @@
 import {Alert, Button, ExpansionCard, Heading, HStack, Loader, Pagination, Select, VStack} from "@navikt/ds-react";
 import {PlusIcon} from "@navikt/aksel-icons";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const News = () => {
+    const navigate = useNavigate();
+    const handleCreateNewNews = () => {
+        navigate("/nyheter/opprett");
+    };
+
     const listeTom: string[] = ["EN", "TO", "TRE", "YP"]          // BYTT MED API DATA
     return (
         <main className="show-menu">
@@ -16,6 +22,7 @@ const News = () => {
                     size="medium"
                     icon={<PlusIcon aria-hidden/>}
                     iconPosition="left"
+                    onClick={handleCreateNewNews}
                 >
                     Opprett ny nyhetsmelding
                 </Button>

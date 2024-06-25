@@ -45,6 +45,21 @@ export type ProductsChunk = {
   numberOfElements?: number;
 };
 
+export type NewsChunk = {
+  content: components["schemas"]["Page_NewsRegistrationDTO_"][];
+  pageable: components["schemas"]["OpenApiPageable"];
+  /** Format: int32 */
+  pageNumber?: number;
+  /** Format: int64 */
+  offset?: number;
+  /** Format: int32 */
+  size?: number;
+  totalPages?: number;
+  empty?: boolean;
+  /** Format: int32 */
+  numberOfElements?: number;
+};
+
 export type SeriesGroupDTO = components["schemas"]["SeriesGroupDTO"][];
 export type ProductRegistrationDTO = components["schemas"]["ProductRegistrationDTO"];
 export type ProductAgreementRegistrationDTO = components["schemas"]["ProductAgreementRegistrationDTO"];
