@@ -1,11 +1,5 @@
-import {
-  DraftStatus,
-  SupplierChunk,
-  SupplierRegistrationDTO,
-  SupplierStatus,
-  SupplierUserChunk,
-  UserDTO,
-} from "./types/response-types";
+import { SupplierChunk, SupplierRegistrationDTO, SupplierStatus } from "./types/response-types";
+import { LoggedInUser } from "utils/user-util";
 
 export interface Supplier {
   id: string;
@@ -53,44 +47,6 @@ export const mapSuppliers = (data: SupplierChunk): Supplier[] => {
   });
 };
 
-export const mapSuppliersUser = (
-  _source: UserDTO,
-): {
-  roles: string[];
-  name: string;
-  create: string;
-  attributes: { [phone: string]: string };
-  id: string;
-  updated: string;
-  email: string;
-} => {
-  return {
-    id: _source.id,
-    name: _source.name,
-    email: _source.email,
-    roles: _source.roles,
-    attributes: _source.attributes,
-    create: _source.created,
-    updated: _source.updated,
-  };
-};
-
-export const mapSuppliersUsers = (
-  data: SupplierUserChunk,
-): {
-  roles: string[];
-  name: string;
-  create: string;
-  attributes: { [p: string]: string };
-  id: string;
-  updated: string;
-  email: string;
-}[] => {
-  return data.content.map((UserDTO) => {
-    return mapSuppliersUser(UserDTO);
-  });
-};
-
 export interface SupplierUserDTO {
   name?: string | null;
   email: string;
@@ -107,3 +63,9 @@ export interface SupplierDTOBody {
     homepage: string;
   };
 }
+
+// cognita dev, prod:
+const allowlistAgreementProducts = ["52084e91-2998-42b2-8b7c-45b0f212d696", "17d6107b-dffa-451b-9565-7b86394de1d3"];
+export const supplierCanChangeAgreementProduct = (user: LoggedInUser | undefined): boolean => {
+  return (user && !user.isAdmin && allowlistAgreementProducts.includes(user.supplierId!)) ?? false;
+};
