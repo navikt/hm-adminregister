@@ -1,6 +1,6 @@
 import React from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, MonthPicker, Textarea, TextField} from "@navikt/ds-react";
+import {Button, Heading, HStack, DatePicker, Textarea, TextField} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 
 
@@ -26,14 +26,12 @@ const CreateNews = () => {
                     <Heading level="2" size="small">
                         Vises på FinnHjelpemiddel
                     </Heading>
-                    <HStack gap="4">
-                        <MonthPicker>
-                            <MonthPicker.Input label={"Fra"}></MonthPicker.Input>
-                        </MonthPicker>
-                        <MonthPicker>
-                            <MonthPicker.Input label={"Til"}></MonthPicker.Input>
-                        </MonthPicker>
-                    </HStack>
+                    <DatePicker  >
+                        <HStack gap="4" wrap={false}>
+                            <DatePicker.Input label="Fra" />
+                            <DatePicker.Input label="Til" />
+                        </HStack>
+                    </DatePicker>
 
                     <Textarea label={"Beskrivelse"}>
 

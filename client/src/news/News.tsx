@@ -38,7 +38,7 @@ const News = () => {
                 </Button>
 
 
-                <VStack className="products-page__producs" gap="4">
+                <VStack className="products-page__producs" gap="4" paddingBlock="4">
                     {
                         pagedData?.content.map((news ) => (
 
