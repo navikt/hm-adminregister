@@ -1,6 +1,7 @@
 import { NewsChunk } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
-import { fetchAPI, getPath } from "api/fetch";
+import useSWR from "swr";
+import {fetcherGET} from "utils/swr-hooks";
 
 export function usePagedNews({
   page,
@@ -9,7 +10,7 @@ export function usePagedNews({
   page: number;
   pageSize: number;
 }) {
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news/`
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?page=${page}&size=${pageSize}`
 
   const { data, error, isLoading } = useSWR<NewsChunk>(path, fetcherGET);
 

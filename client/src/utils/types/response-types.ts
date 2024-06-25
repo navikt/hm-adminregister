@@ -46,7 +46,7 @@ export type ProductsChunk = {
 };
 
 export type NewsChunk = {
-  content: components["schemas"]["Page_NewsRegistrationDTO_"][];
+  content: NewsRegistrationDTO[];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;
@@ -86,6 +86,7 @@ export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementI
 export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
+export type NewsRegistrationDTO = components["schemas"]["NewsRegistrationDTO"];
 
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];

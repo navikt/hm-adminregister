@@ -1,7 +1,9 @@
-import {Alert, Button, ExpansionCard, Heading, HStack, Loader, Pagination, Select, VStack} from "@navikt/ds-react";
+import {Button, ExpansionCard, Heading, VStack} from "@navikt/ds-react";
 import {PlusIcon} from "@navikt/aksel-icons";
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import {usePagedNews} from "api/NewsApi";
+import parse from "html-react-parser";
+import styles from "./News.module.scss"
 
 
 const News = () => {
@@ -10,14 +12,22 @@ const News = () => {
         navigate("/nyheter/opprett");
     };
 
-    const listeTom: string[] = ["EN", "TO", "TRE", "YP"]          // BYTT MED API DATA
+  const {
+    data: pagedData,
+    isLoading: isLoadingPagedData,
+    error: errorPaged,
+  } = usePagedNews({
+    page: 1,
+    pageSize: 10,
+  });
+
     return (
         <main className="show-menu">
             <div className="page__background-container">
                 <Heading level="1" size="large" spacing>
                     Nyheter
                 </Heading>
-                <Button
+                <Button className={styles.createNewsButton}
                     variant="secondary"
                     size="medium"
                     icon={<PlusIcon aria-hidden/>}
@@ -27,22 +37,23 @@ const News = () => {
                     Opprett ny nyhetsmelding
                 </Button>
 
+
                 <VStack className="products-page__producs" gap="4">
                     {
-                        listeTom.map((val: string) =>
+                        pagedData?.content.map((news ) => (
 
-                            <ExpansionCard aria-label="Demo med description">
+                            <ExpansionCard aria-label="Demo med description" key={news.id}>
                                 <ExpansionCard.Header>
-                                    <ExpansionCard.Title>APITITTLE</ExpansionCard.Title>
+                                    <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
                                     <ExpansionCard.Description>
-                                        API TEKST
+                                        {news.title}
                                     </ExpansionCard.Description>
                                 </ExpansionCard.Header>
                                 <ExpansionCard.Content>
-                                    {val}
+                                    {parse(news.text)}
                                 </ExpansionCard.Content>
                             </ExpansionCard>
-                        )}
+                        ))}
                 </VStack>
 
             </div>
