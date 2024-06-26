@@ -1,5 +1,5 @@
 import { DifferenceDTO, ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { Button, Modal } from "@navikt/ds-react";
+import { BodyShort, Button, Modal } from "@navikt/ds-react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useEffect, useState } from "react";
 import {
@@ -11,6 +11,7 @@ import styles from "./ShowDiffModal.module.scss";
 import { SeriesDiff } from "produkter/diff/SeriesDiff";
 import { VariantsDiff } from "produkter/diff/VariantsDiff";
 import { Avstand } from "felleskomponenter/Avstand";
+import { ErrorBoundary } from "react-error-boundary";
 
 export const ShowDiffModal = ({
   series,
@@ -53,13 +54,11 @@ export const ShowDiffModal = ({
   return (
     <Modal open={isOpen} header={{ heading: "" }} onClose={() => setIsOpen(false)} className={styles.diffModal}>
       <Modal.Body>
-        <div>
+        <ErrorBoundary FallbackComponent={ErrorFallbackDiffModal}>
           <SeriesDiff seriesDiff={seriesDifference!} />
           <Avstand marginTop={4} />
           <VariantsDiff variantDiffs={variantsDifferences} />
-          {/*<h2>Endringer i varianter</h2>*/}
-          {/*<pre>{JSON.stringify(variantsDifferences, null, 2)}</pre>*/}
-        </div>
+        </ErrorBoundary>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setIsOpen(false)}>
@@ -67,5 +66,13 @@ export const ShowDiffModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
+  );
+};
+
+const ErrorFallbackDiffModal = () => {
+  return (
+    <div>
+      <BodyShort>Beklager, det skjedde en feil ved henting av endringer</BodyShort>
+    </div>
   );
 };

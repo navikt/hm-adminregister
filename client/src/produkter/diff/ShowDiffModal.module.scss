@@ -2,7 +2,7 @@
 
 .diffModal {
   width: 100vw;
-  height: 100vh;
+
 
   @include mixins.for-size(tablet-up) {
     max-height: 90% !important;
@@ -33,6 +33,14 @@
 
 .changeRow {
   padding: 1rem;
-  border-style: dotted;
-  border-radius: 10px;
+  border: black 1px solid;
+  s {
+    color: white;
+  }
 }
+
+.field {
+  margin: 1rem;
+}
+
+

@@ -2,6 +2,8 @@ import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
 import { useTranslation } from "react-i18next";
 import styles from "./ShowDiffModal.module.scss";
 import { ProductDifferenceDTO } from "api/VersionApi";
+import { TechDataDiff } from "produkter/diff/TechDataDiff";
+import { Strikethrough } from "produkter/diff/Strikethrough";
 
 export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifferenceDTO[] }) => {
   const { t } = useTranslation();
@@ -14,46 +16,47 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
   } else {
     return (
       <VStack gap="2">
-        <Heading size="small">Endringer i varianter</Heading>
+        <Heading size="xsmall">Endringer i varianter</Heading>
         {variantDiffs && (
           <VStack gap="3">
             {variantDiffs
               .filter((changed) => changed.difference.status === "DIFF")
               .map((variant, i) => (
-                <VStack gap="2" key={i} className={styles.changeRow}>
+                <VStack key={i} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(variant.product.articleName)}</BodyShort>
-                  <Box>
-                    <VStack gap="1">
-                      {Object.entries(variant.difference.diff.entriesDiffering).map(([key, value], index) => (
-                        <VStack gap="2" key={index} className={styles.changeRow}>
+                  <VStack>
+                    {Object.entries(variant.difference.diff.entriesDiffering)
+                      .filter(([key]) => key !== "productData.techData")
+                      .map(([key, value], index) => (
+                        <VStack key={index} className={styles.field}>
                           <BodyShort weight="semibold">{t(key)}</BodyShort>
-                          <Box>
-                            <VStack gap="1">
-                              <i>Endret fra</i>
-                              <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
-                                <>{value.second}</>
-                              </Box>
-                              til
-                              <Box padding="2" background="surface-success-subtle" className={styles.current}>
-                                <>{value.first}</>
-                              </Box>
-                            </VStack>
-                          </Box>
+                          <VStack gap="1">
+                            <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
+                              <Strikethrough>{value.second as string}</Strikethrough>
+                            </Box>
+                            <Box padding="2" background="surface-success-subtle" className={styles.current}>
+                              <>{value.first as string}</>
+                            </Box>
+                          </VStack>
                         </VStack>
                       ))}
-                    </VStack>
-                  </Box>
+                    <TechDataDiff diffDto={variant.difference} />
+                  </VStack>
                 </VStack>
               ))}
 
-            <BodyShort>Nye varianter</BodyShort>
-            {variantDiffs
-              .filter((changed) => changed.difference.status === "NEW")
-              .map((variant, i) => (
-                <VStack gap="2" key={i} className={styles.changeRow}>
-                  <BodyShort weight="semibold">{t(variant.product.articleName)}</BodyShort>
-                </VStack>
-              ))}
+            {variantDiffs.filter((changed) => changed.difference.status === "NEW").length > 0 && (
+              <>
+                <Heading size="small">Nye varianter</Heading>
+                <ul>
+                  {variantDiffs
+                    .filter((changed) => changed.difference.status === "NEW")
+                    .map((variant, i) => (
+                      <li key={i}>{t(variant.product.articleName)}</li>
+                    ))}
+                </ul>
+              </>
+            )}
           </VStack>
         )}
       </VStack>

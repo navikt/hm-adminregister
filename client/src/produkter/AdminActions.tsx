@@ -1,4 +1,10 @@
-import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
+import {
+  CogIcon,
+  ExclamationmarkTriangleIcon,
+  FileSearchIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
+} from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
@@ -43,6 +49,7 @@ const AdminActions = ({
 
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
+  const isPublished = series.published ?? false;
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -78,22 +85,19 @@ const AdminActions = ({
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
-      {shouldPublish && (
+      {shouldPublish && isPublished && (
         <Button
-          style={{ marginTop: "20px" }}
           onClick={() => {
             setShowDiffModalIsOpen(true);
           }}
+          variant="secondary"
+          icon={<FileSearchIcon title="se endring" fontSize="1.5rem" />}
         >
-          Vis endringer
+          Se endringer
         </Button>
       )}
 
-      {shouldPublish && (
-        <Button style={{ marginTop: "20px" }} onClick={onPublish}>
-          Publiser
-        </Button>
-      )}
+      {shouldPublish && <Button onClick={onPublish}>Publiser</Button>}
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>
@@ -127,7 +131,6 @@ const AdminActions = ({
               ))}
           </Dropdown.Menu.List>
         </Dropdown.Menu>
-        ;
       </Dropdown>
     </HStack>
   );
