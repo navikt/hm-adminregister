@@ -2,9 +2,47 @@ import React from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
 import {Button, Heading, HStack, DatePicker, Textarea, TextField} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
+import {HM_REGISTER_URL} from "environments";
+import {useNavigate} from "react-router-dom";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {newSupplierSchema} from "utils/zodSchema/newSupplier"; // REMOVE
+import {useErrorStore} from "utils/store/useErrorStore";
 
 
 const CreateNews = () => {
+    const { setGlobalError } = useErrorStore();
+    const navigate = useNavigate();
+    const {
+        handleSubmit,
+        register,
+        formState: { errors, isSubmitting, isDirty, isValid },
+    } = useForm<FormData>({
+        resolver: zodResolver(newSupplierSchema), /// MUST CHANGE TO BE RELATED TO NEWS
+        mode: "onChange",
+    });
+
+    async function onSubmit(data: FormData) {
+        //remove all white spaces
+
+        const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/news`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", //???
+            },
+            credentials: "include",
+            body: JSON.stringify("hei"),
+        });
+        if (!response.ok) {
+            const responsData = await response.json();
+            setGlobalError(response.status, responsData.message);
+        } else {
+            navigate("/nyheter")
+        }
+    }
+
+
+
 
     return (
         <div className="create-new-supplier">
