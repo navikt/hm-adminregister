@@ -28,14 +28,14 @@ const News = () => {
     const handleCreateNewNews = () => {
         navigate("/nyheter/opprett");
     };
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedNews({
-    page: pageState - 1,
-    pageSize: pageSizeState,
-  });
+    const {
+        data: pagedData,
+        isLoading: isLoadingPagedData,
+        error: errorPaged,
+    } = usePagedNews({
+        page: pageState - 1,
+        pageSize: pageSizeState,
+    });
 
     useEffect(() => {
         if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -76,7 +76,7 @@ const News = () => {
                     </HGrid>
                 </div>
             </main>
-    );
+        );
     }
 
     return (
@@ -86,49 +86,51 @@ const News = () => {
                     Nyheter
                 </Heading>
                 <Button className={styles.createNewsButton}
-                    variant="secondary"
-                    size="medium"
-                    icon={<PlusIcon aria-hidden/>}
-                    iconPosition="left"
-                    onClick={handleCreateNewNews}
+                        variant="secondary"
+                        size="medium"
+                        icon={<PlusIcon aria-hidden/>}
+                        iconPosition="left"
+                        onClick={handleCreateNewNews}
                 >
                     Opprett ny nyhetsmelding
                 </Button>
 
-                { isLoadingPagedData && <Loader size="3xlarge" />}
-                { pagedData &&
-                <VStack className="products-page__producs" gap="4" paddingBlock="4">
-                    {
-                        pagedData.content.map((news ) => (
+                {isLoadingPagedData && <Loader size="3xlarge"/>}
+                {pagedData &&
+                    <div className="page__content-container">
+                        <VStack className="products-page__producs" gap="4" paddingBlock="4">
+                            {
+                                pagedData.content.map((news) => (
 
-                            <ExpansionCard aria-label="Demo med description" key={news.id}>
-                                <ExpansionCard.Header>
-                                    <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
-                                    <ExpansionCard.Description>
-                                        {news.title}
-                                    </ExpansionCard.Description>
-                                </ExpansionCard.Header>
-                                <ExpansionCard.Content>
-                                    {parse(news.text)}
-                                </ExpansionCard.Content>
-                            </ExpansionCard>
-                        ))}
-                </VStack>
+                                    <ExpansionCard aria-label="Demo med description" key={news.id}>
+                                        <ExpansionCard.Header>
+                                            <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
+                                            <ExpansionCard.Description>
+                                                {news.title}
+                                            </ExpansionCard.Description>
+                                        </ExpansionCard.Header>
+                                        <ExpansionCard.Content>
+                                            {parse(news.text)}
+                                        </ExpansionCard.Content>
+                                    </ExpansionCard>
+                                ))}
+                        </VStack>
+                    </div>
                 }
 
-                <HStack gap="8" wrap={false}>
-                    { showPageNavigator === true && pagedData && (
-                    <Pagination
-                        page={pageState}
-                        onPageChange={(x) => {
-                            searchParams.set("page", x.toString());
-                            setSearchParams(searchParams);
-                            setPageState(x);
-                        }}
-                        count={pagedData.totalPages!}
-                        size="small"
-                        prevNextTexts
-                    />
+                <HStack gap="8" wrap={false} align='end'>
+                    {showPageNavigator === true && pagedData && (
+                        <Pagination
+                            page={pageState}
+                            onPageChange={(x) => {
+                                searchParams.set("page", x.toString());
+                                setSearchParams(searchParams);
+                                setPageState(x);
+                            }}
+                            count={pagedData.totalPages!}
+                            size="small"
+                            prevNextTexts
+                        />
                     )}
                     <Select
                         className={styles.pageSize}

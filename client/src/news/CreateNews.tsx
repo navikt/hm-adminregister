@@ -8,6 +8,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {newSupplierSchema} from "utils/zodSchema/newSupplier"; // REMOVE
 import {useErrorStore} from "utils/store/useErrorStore";
+import "./CreateNews.scss";
 
 
 const CreateNews = () => {
@@ -53,7 +54,7 @@ const CreateNews = () => {
                         Opprett ny nyhetsmelding
                     </Heading>
                 </div>
-                <form action="" method="POST">
+                <form action="" method="POST" className="specialform">
                     <TextField
                         label={labelRequired("Tittel på nyhetsmelding")}
                         id="name"
@@ -65,13 +66,13 @@ const CreateNews = () => {
                         Vises på FinnHjelpemiddel
                     </Heading>
                     <DatePicker  >
-                        <HStack gap="4" wrap={false}>
-                            <DatePicker.Input label="Fra" />
+                        <HStack gap="20" wrap={false}>
+                            <DatePicker.Input label="Fra"/>
                             <DatePicker.Input label="Til" />
                         </HStack>
                     </DatePicker>
 
-                    <Textarea label={"Beskrivelse"}>
+                    <Textarea label={"Beskrivelse"} resize>
 
                     </Textarea>
 

@@ -1,7 +1,40 @@
+@use "../styles/_mixins";
 
-.form {
+@import "@navikt/ds-tokens/dist/tokens";
+
+.create-new-supplier {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  width: 500px;
-}
+  justify-content: center;
 
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-8;
+  }
+
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $a-spacing-4;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $a-spacing-7;
+    width: 400px;
+
+    .button-container {
+      display: flex;
+      width: 100%;
+      gap: $a-spacing-4;
+      margin-top: $a-spacing-4;
+
+      button {
+        flex-grow: 1;
+      }
+    }
+  }
+}
