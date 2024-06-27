@@ -47,7 +47,7 @@ export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
   });
 
   const onNavigateToProduct = (seriesUUID: string) => {
-    navigate(baseUrl(`/produkter/${seriesUUID}`));
+    navigate(`/produkter/${seriesUUID}`);
   };
 
   return (
