@@ -1,8 +1,14 @@
 
-.lineBreak {
-  border-top: #D1D4D8;
+.seperatingLine{
+  border-bottom: 1px solid #CACFD4;
+  padding-bottom: 20px;
 }
 
 .optionButton{
+  align-self: end;
+}
 
+.cardContainerDiv{
+  display: flex;
+  flex-direction: column;
 }

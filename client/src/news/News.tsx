@@ -10,13 +10,13 @@ import {
     Select,
     VStack
 } from "@navikt/ds-react";
-import {MenuElipsisVerticalIcon, PencilWritingIcon, PlusIcon, TrashIcon} from "@navikt/aksel-icons";
+import {MenuElipsisVerticalIcon, PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {usePagedNews} from "api/NewsApi";
 import parse from "html-react-parser";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
-import TagWithIcon, {colors} from "felleskomponenter/TagWithIcon";
+
 
 
 const News = () => {
@@ -112,23 +112,21 @@ const News = () => {
                                             </ExpansionCard.Description>
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
-                                            <div style={{display: "flex", flexDirection: "column"}}>
-                                                <span style={{borderBottom: "1px solid #CACFD4", paddingBottom: "20px"}}>
+                                            <div className={styles.cardContainerDiv}>
+                                                <span className={styles.seperatingLine} >
                                                     {parse(news.text)}
                                                 </span>
-                                                <Box className={styles.optionButton} style={{alignSelf: "end"}}>
+                                                <Box className={styles.optionButton}>
                                                 <Dropdown>
                                                     <Button
-
                                                         variant="tertiary"
                                                         icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
                                                         as={Dropdown.Toggle}
                                                     ></Button>
                                                     <Dropdown.Menu>
                                                         <Dropdown.Menu.GroupedList>
-                                                            <Dropdown.Menu.GroupedList.Item
-
-                                                            >
+                                                            <Dropdown.Menu.GroupedList.Item onClick={() =>
+                                                                {navigate(`/nyheter/opprett/${news.id}`)}}>
                                                                 Rediger nyhetsmelding
                                                             </Dropdown.Menu.GroupedList.Item>
                                                         </Dropdown.Menu.GroupedList>
