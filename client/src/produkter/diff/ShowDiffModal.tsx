@@ -27,6 +27,7 @@ export const ShowDiffModal = ({
   const { setGlobalError } = useErrorStore();
   const [seriesDifference, setSeriesDifference] = useState<null | DifferenceDTO>(null);
   const [variantsDifferences, setVariantsDifferences] = useState<ProductDifferenceDTO[]>([]);
+  const [noDiffFound, setNoDiffFound] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,7 +44,11 @@ export const ShowDiffModal = ({
     fetchDifferences()
       .then((r) => r)
       .catch((error) => {
-        setGlobalError(error.status, error.message);
+        if (error.status === 404) {
+          setNoDiffFound(true);
+        } else {
+          setGlobalError(error.status, error.message);
+        }
       });
 
     setIsLoading(false);
@@ -60,7 +65,7 @@ export const ShowDiffModal = ({
         <ErrorBoundary FallbackComponent={ErrorFallbackDiffModal}>
           {isLoading ? (
             <>Laster...</>
-          ) : series && series.published && seriesDifference && seriesDifference.status === "NEW" ? (
+          ) : noDiffFound || (series && series.published && seriesDifference && seriesDifference.status === "NEW") ? (
             <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
           ) : noDiff ? (
             <>Ingen endringer</>
