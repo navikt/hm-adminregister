@@ -8,12 +8,12 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   const { t } = useTranslation();
 
   if (!seriesDiff || seriesDiff.status === "NO_DIFF") {
-    return <BodyShort>Ingen endringer på serie</BodyShort>;
+    return <BodyShort>Ingen endringer i felles produktinformasjon</BodyShort>;
   }
 
   return (
     <VStack gap="2">
-      <Heading size="xsmall">Endringer i serie</Heading>
+      <Heading size="xsmall">Endringer i felles produktinformasjon</Heading>
       {Object.entries(seriesDiff.diff.entriesDiffering).length > 0 && (
         <VStack gap="3">
           {Object.entries(seriesDiff.diff.entriesDiffering).map(
