@@ -9,9 +9,9 @@ import {
 } from "api/VersionApi";
 import styles from "./ShowDiffModal.module.scss";
 import { ErrorBoundary } from "react-error-boundary";
-import { SeriesDiff } from "produkter/diff/SeriesDiff";
 import { Avstand } from "felleskomponenter/Avstand";
 import { VariantsDiff } from "produkter/diff/VariantsDiff";
+import { SeriesDiff } from "produkter/diff/SeriesDiff";
 
 export const ShowDiffModal = ({
   series,
@@ -53,6 +53,10 @@ export const ShowDiffModal = ({
 
   if (!seriesDifference || !variantsDifferences) return <div>Ingen endringer</div>;
 
+  const noDiff =
+    seriesDifference.status === "NO_DIFF" &&
+    !variantsDifferences.find((v) => v.difference.status === "DIFF" || v.difference.status === "NEW");
+
   return (
     <Modal open={isOpen} header={{ heading: "" }} onClose={() => setIsOpen(false)} className={styles.diffModal}>
       <Modal.Body>
@@ -61,6 +65,8 @@ export const ShowDiffModal = ({
             <>Laster...</>
           ) : series.published && seriesDifference.status === "NEW" ? (
             <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
+          ) : noDiff ? (
+            <>Ingen endringer</>
           ) : (
             <>
               <SeriesDiff seriesDiff={seriesDifference!} />
