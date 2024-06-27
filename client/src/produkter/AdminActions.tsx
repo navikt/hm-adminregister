@@ -1,4 +1,10 @@
-import { CogIcon, ExclamationmarkTriangleIcon, TrashIcon } from "@navikt/aksel-icons";
+import {
+  CogIcon,
+  ExclamationmarkTriangleIcon,
+  FileSearchIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
+} from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
@@ -6,6 +12,7 @@ import { RejectApprovalModal } from "produkter/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { ShowDiffModal } from "produkter/diff/ShowDiffModal";
 
 const AdminActions = ({
   series,
@@ -38,8 +45,11 @@ const AdminActions = ({
   const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
 
+  const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false);
+
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
+  const isPublished = series.published ?? false;
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -61,6 +71,12 @@ const AdminActions = ({
 
   return (
     <HStack align={"end"} gap="2">
+      <ShowDiffModal
+        series={series}
+        products={products}
+        isOpen={showDiffModalIsOpen}
+        setIsOpen={setShowDiffModalIsOpen}
+      />
       <RejectApprovalModal
         series={series}
         products={products}
@@ -69,11 +85,19 @@ const AdminActions = ({
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
-      {shouldPublish && (
-        <Button style={{ marginTop: "20px" }} onClick={onPublish}>
-          Publiser
+      {shouldPublish && isPublished && (
+        <Button
+          onClick={() => {
+            setShowDiffModalIsOpen(true);
+          }}
+          variant="secondary"
+          icon={<FileSearchIcon title="se endring" fontSize="1.5rem" />}
+        >
+          Se endringer
         </Button>
       )}
+
+      {shouldPublish && <Button onClick={onPublish}>Publiser</Button>}
       <Dropdown>
         <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
         <Dropdown.Menu>

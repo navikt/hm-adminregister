@@ -72,6 +72,8 @@ export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
 
+export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
+
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];
   pageable: components["schemas"]["OpenApiPageable"];
