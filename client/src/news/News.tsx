@@ -10,7 +10,7 @@ import {
     Select,
     VStack
 } from "@navikt/ds-react";
-import {PencilWritingIcon, PlusIcon} from "@navikt/aksel-icons";
+import {PencilWritingIcon, PlusIcon, TrashIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {usePagedNews} from "api/NewsApi";
 import parse from "html-react-parser";
@@ -113,16 +113,34 @@ const News = () => {
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
                                             <div>
-                                                <div
-                                                    className={styles.editButton}
-                                                    onClick={() => {
-                                                        navigate(`/nyheter/opprett/${news.id}`);
-                                                    }
-                                                }>
-                                                    <TagWithIcon icon={<PencilWritingIcon aria-hidden fontSize={"1.5rem"} />} text="Rediger" color={colors.BLUE} />
-                                                </div>
-                                                <br />
                                                 {parse(news.text)}
+                                                <hr className={styles.lineBreak}/>
+                                                <HStack
+                                                    gap="4"
+                                                    justify="end"
+                                                    marginBlock="6 0"
+                                                >
+                                                    <div
+                                                        className={styles.cursorButton}
+                                                        onClick={() => {
+                                                            navigate(`/nyheter/opprett/${news.id}`);
+                                                        }
+                                                        }>
+                                                        <TagWithIcon
+                                                            icon={<PencilWritingIcon aria-hidden fontSize={"1.5rem"}/>}
+                                                            text="Rediger" color={colors.BLUE}/>
+                                                    </div>
+                                                    <div
+                                                        className={styles.cursorButton}
+                                                        onClick={() => {
+                                                            //TODO: add delete function
+                                                        }
+                                                        }>
+                                                        <TagWithIcon
+                                                            icon={<TrashIcon aria-hidden fontSize={"1.5rem"}/>}
+                                                            text="Slett" color={colors.RED}/>
+                                                    </div>
+                                                </HStack>
                                             </div>
                                         </ExpansionCard.Content>
                                     </ExpansionCard>

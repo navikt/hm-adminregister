@@ -1,3 +1,11 @@
-.editButton {
+.cursorButton {
   cursor: pointer;
+}
+
+.cursorButton:hover {
+  color: RED;
+}
+
+.lineBreak {
+  border-top: #D1D4D8;
 }
