@@ -50,7 +50,7 @@ const CreateNews = () => {
     }
 
     const { datepickerProps, toInputProps, fromInputProps } = useRangeDatepicker({
-        fromDate: new Date("Aug 23 2019"),
+        fromDate: new Date(),
         onRangeChange: console.log,
     });
 
@@ -80,7 +80,6 @@ const CreateNews = () => {
 
                     <DatePicker
                         {...datepickerProps}
-
                     >
                         <HStack gap="20" wrap={false}>
                             <DatePicker.Input label="Fra"

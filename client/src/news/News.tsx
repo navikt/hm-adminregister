@@ -112,10 +112,11 @@ const News = () => {
                                             </ExpansionCard.Description>
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
-                                            <div>
-                                                {parse(news.text)}
-                                                <hr className={styles.lineBreak}/>
-                                                <Box className={styles.optionButton}>
+                                            <div style={{display: "flex", flexDirection: "column"}}>
+                                                <span style={{borderBottom: "1px solid #CACFD4", paddingBottom: "20px"}}>
+                                                    {parse(news.text)}
+                                                </span>
+                                                <Box className={styles.optionButton} style={{alignSelf: "end"}}>
                                                 <Dropdown>
                                                     <Button
 
@@ -128,7 +129,7 @@ const News = () => {
                                                             <Dropdown.Menu.GroupedList.Item
 
                                                             >
-                                                                Endre tittel og beskrivelse
+                                                                Rediger nyhetsmelding
                                                             </Dropdown.Menu.GroupedList.Item>
                                                         </Dropdown.Menu.GroupedList>
                                                         <Dropdown.Menu.Divider />
@@ -136,7 +137,7 @@ const News = () => {
                                                             <Dropdown.Menu.List.Item
 
                                                             >
-                                                                Slett delkontrakt
+                                                                Slett nyhetsmelding
                                                             </Dropdown.Menu.List.Item>
                                                         </Dropdown.Menu.List>
                                                     </Dropdown.Menu>
