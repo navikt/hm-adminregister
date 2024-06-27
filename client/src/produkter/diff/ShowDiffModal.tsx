@@ -49,11 +49,8 @@ export const ShowDiffModal = ({
     setIsLoading(false);
   }, []);
 
-  if (isLoading) return <div>Laster...</div>;
-
-  if (!seriesDifference || !variantsDifferences) return <div>Ingen endringer</div>;
-
   const noDiff =
+    seriesDifference &&
     seriesDifference.status === "NO_DIFF" &&
     !variantsDifferences.find((v) => v.difference.status === "DIFF" || v.difference.status === "NEW");
 
@@ -63,7 +60,7 @@ export const ShowDiffModal = ({
         <ErrorBoundary FallbackComponent={ErrorFallbackDiffModal}>
           {isLoading ? (
             <>Laster...</>
-          ) : series.published && seriesDifference.status === "NEW" ? (
+          ) : series && series.published && seriesDifference && seriesDifference.status === "NEW" ? (
             <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
           ) : noDiff ? (
             <>Ingen endringer</>
