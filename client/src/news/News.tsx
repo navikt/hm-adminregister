@@ -1,6 +1,6 @@
 import {
-    Alert,
-    Button,
+    Alert, Box,
+    Button, Dropdown,
     ExpansionCard,
     Heading,
     HGrid,
@@ -10,7 +10,7 @@ import {
     Select,
     VStack
 } from "@navikt/ds-react";
-import {PencilWritingIcon, PlusIcon, TrashIcon} from "@navikt/aksel-icons";
+import {MenuElipsisVerticalIcon, PencilWritingIcon, PlusIcon, TrashIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {usePagedNews} from "api/NewsApi";
 import parse from "html-react-parser";
@@ -115,32 +115,33 @@ const News = () => {
                                             <div>
                                                 {parse(news.text)}
                                                 <hr className={styles.lineBreak}/>
-                                                <HStack
-                                                    gap="4"
-                                                    justify="end"
-                                                    marginBlock="6 0"
-                                                >
-                                                    <div
-                                                        className={styles.cursorButton}
-                                                        onClick={() => {
-                                                            navigate(`/nyheter/opprett/${news.id}`);
-                                                        }
-                                                        }>
-                                                        <TagWithIcon
-                                                            icon={<PencilWritingIcon aria-hidden fontSize={"1.5rem"}/>}
-                                                            text="Rediger" color={colors.BLUE}/>
-                                                    </div>
-                                                    <div
-                                                        className={styles.cursorButton}
-                                                        onClick={() => {
-                                                            //TODO: add delete function
-                                                        }
-                                                        }>
-                                                        <TagWithIcon
-                                                            icon={<TrashIcon aria-hidden fontSize={"1.5rem"}/>}
-                                                            text="Slett" color={colors.RED}/>
-                                                    </div>
-                                                </HStack>
+                                                <Box className={styles.optionButton}>
+                                                <Dropdown>
+                                                    <Button
+
+                                                        variant="tertiary"
+                                                        icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
+                                                        as={Dropdown.Toggle}
+                                                    ></Button>
+                                                    <Dropdown.Menu>
+                                                        <Dropdown.Menu.GroupedList>
+                                                            <Dropdown.Menu.GroupedList.Item
+
+                                                            >
+                                                                Endre tittel og beskrivelse
+                                                            </Dropdown.Menu.GroupedList.Item>
+                                                        </Dropdown.Menu.GroupedList>
+                                                        <Dropdown.Menu.Divider />
+                                                        <Dropdown.Menu.List>
+                                                            <Dropdown.Menu.List.Item
+
+                                                            >
+                                                                Slett delkontrakt
+                                                            </Dropdown.Menu.List.Item>
+                                                        </Dropdown.Menu.List>
+                                                    </Dropdown.Menu>
+                                                </Dropdown>
+                                                </Box>
                                             </div>
                                         </ExpansionCard.Content>
                                     </ExpansionCard>

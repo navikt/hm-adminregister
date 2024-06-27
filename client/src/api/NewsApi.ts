@@ -1,7 +1,8 @@
-import { NewsChunk } from "utils/types/response-types";
+import {NewsChunk, NewsRegistrationDTO} from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import {fetcherGET} from "utils/swr-hooks";
+import {fetchAPI, getPath} from "api/fetch";
 
 export function usePagedNews({
   page,
@@ -19,4 +20,9 @@ export function usePagedNews({
     isLoading,
     error,
   };
+}
+
+export const createNews = async (newNews: NewsRegistrationDTO ) : Promise<NewsRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/news/`), "POST", newNews);
+
 }

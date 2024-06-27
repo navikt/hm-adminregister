@@ -1,6 +1,12 @@
 @use "../styles/_mixins";
 
 @import "@navikt/ds-tokens/dist/tokens";
+.reducedSpacing{
+  padding-block: 2rem 0rem;
+}
+.increaseSpacing{
+  padding-block: 2rem 1rem;
+}
 
 .create-new-supplier {
   width: 100%;
@@ -23,7 +29,7 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-7;
+    gap: 0;
     width: 400px;
 
     .button-container {
