@@ -32,6 +32,12 @@ export const SeriesTable = ({ seriesList, heading }: Props) => {
               onClick={() => {
                 navigate(`/produkter/${product.id}`);
               }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  navigate(`/produkter/${product.id}`);
+                }
+              }}
+              tabIndex={0}
             >
               <Table.HeaderCell scope="row">
                 <b>{product.title}</b>

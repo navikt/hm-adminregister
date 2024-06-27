@@ -111,6 +111,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         name="supplierRef"
         type="text"
         error={errors?.supplierRef?.message}
+        disabled={product.published !== undefined}
       />
       {loggedInUser?.isAdmin && (
         <TextField

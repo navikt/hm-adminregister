@@ -51,7 +51,7 @@ export const ImageContainer = ({
 
   return (
     <div className={classNames("image-container", { "image-container--xsmall": size == "xsmall" })}>
-      <div className="image" onClick={onClick}>
+      <button type="button" className="button-image" onClick={onClick}>
         {imageLoadingError || !uri ? (
           <img
             src={"/adminregister/assets/image-error.png"}
@@ -86,7 +86,7 @@ export const ImageContainer = ({
             sizes="50vw"
           />
         )}
-      </div>
+      </button>
     </div>
   );
 };
