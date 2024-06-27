@@ -151,7 +151,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
                 fileInputRef?.current?.click();
               }}
             >
-              Last opp
+              Bla gjennom
             </Button>
             <input
               id="fileInput"
@@ -184,7 +184,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
           </VStack>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" disabled={uploads.length === 0}>
             Last opp
           </Button>
           <Button
