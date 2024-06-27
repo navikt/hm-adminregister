@@ -10,12 +10,13 @@ import {
     Select,
     VStack
 } from "@navikt/ds-react";
-import {PlusIcon} from "@navikt/aksel-icons";
+import {PencilWritingIcon, PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {usePagedNews} from "api/NewsApi";
 import parse from "html-react-parser";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
+import TagWithIcon, {colors} from "felleskomponenter/TagWithIcon";
 
 
 const News = () => {
@@ -28,6 +29,7 @@ const News = () => {
     const handleCreateNewNews = () => {
         navigate("/nyheter/opprett");
     };
+
     const {
         data: pagedData,
         isLoading: isLoadingPagedData,
@@ -110,7 +112,18 @@ const News = () => {
                                             </ExpansionCard.Description>
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
-                                            {parse(news.text)}
+                                            <div>
+                                                <div
+                                                    className={styles.editButton}
+                                                    onClick={() => {
+                                                        navigate(`/nyheter/opprett/${news.id}`);
+                                                    }
+                                                }>
+                                                    <TagWithIcon icon={<PencilWritingIcon aria-hidden fontSize={"1.5rem"} />} text="Rediger" color={colors.BLUE} />
+                                                </div>
+                                                <br />
+                                                {parse(news.text)}
+                                            </div>
                                         </ExpansionCard.Content>
                                     </ExpansionCard>
                                 ))}
