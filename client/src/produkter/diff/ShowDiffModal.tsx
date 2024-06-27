@@ -8,10 +8,10 @@ import {
   ProductDifferenceDTO,
 } from "api/VersionApi";
 import styles from "./ShowDiffModal.module.scss";
-import { SeriesDiff } from "produkter/diff/SeriesDiff";
-import { VariantsDiff } from "produkter/diff/VariantsDiff";
-import { Avstand } from "felleskomponenter/Avstand";
 import { ErrorBoundary } from "react-error-boundary";
+import { SeriesDiff } from "produkter/diff/SeriesDiff";
+import { Avstand } from "felleskomponenter/Avstand";
+import { VariantsDiff } from "produkter/diff/VariantsDiff";
 
 export const ShowDiffModal = ({
   series,
@@ -51,13 +51,23 @@ export const ShowDiffModal = ({
 
   if (isLoading) return <div>Laster...</div>;
 
+  if (!seriesDifference || !variantsDifferences) return <div>Ingen endringer</div>;
+
   return (
     <Modal open={isOpen} header={{ heading: "" }} onClose={() => setIsOpen(false)} className={styles.diffModal}>
       <Modal.Body>
         <ErrorBoundary FallbackComponent={ErrorFallbackDiffModal}>
-          <SeriesDiff seriesDiff={seriesDifference!} />
-          <Avstand marginTop={4} />
-          <VariantsDiff variantDiffs={variantsDifferences} />
+          {isLoading ? (
+            <>Laster...</>
+          ) : series.published && seriesDifference.status === "NEW" ? (
+            <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
+          ) : (
+            <>
+              <SeriesDiff seriesDiff={seriesDifference!} />
+              <Avstand marginTop={4} />
+              <VariantsDiff variantDiffs={variantsDifferences} />
+            </>
+          )}
         </ErrorBoundary>
       </Modal.Body>
       <Modal.Footer>
