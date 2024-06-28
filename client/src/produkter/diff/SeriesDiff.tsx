@@ -7,6 +7,13 @@ import { Strikethrough } from "produkter/diff/Strikethrough";
 export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   const { t } = useTranslation();
 
+  const changedFields = Object.entries(seriesDiff.diff.entriesDiffering).filter(([key]) => key !== "seriesData.media");
+  const changedMediaFiles = Object.entries(seriesDiff.diff.entriesDiffering).filter(
+    ([key]) => key === "seriesData.media",
+  );
+  const newFields = Object.entries(seriesDiff.diff.entriesOnlyOnLeft);
+  const deletedFields = Object.entries(seriesDiff.diff.entriesOnlyOnRight);
+
   if (!seriesDiff || seriesDiff.status === "NO_DIFF") {
     return <BodyShort>Ingen endringer i felles produktinformasjon</BodyShort>;
   }
@@ -14,9 +21,9 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   return (
     <VStack gap="2">
       <Heading size="xsmall">Endringer i felles produktinformasjon</Heading>
-      {Object.entries(seriesDiff.diff.entriesDiffering).length > 0 && (
+      {changedFields.length > 0 && (
         <VStack gap="3">
-          {Object.entries(seriesDiff.diff.entriesDiffering).map(
+          {changedFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
                 <VStack gap="2" key={index} className={styles.changeRow}>
@@ -36,10 +43,10 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {Object.entries(seriesDiff.diff.entriesOnlyOnLeft).length > 0 && (
+      {newFields.length > 0 && (
         <VStack gap="3">
           <BodyShort>Nye verdier: </BodyShort>
-          {Object.entries(seriesDiff.diff.entriesOnlyOnLeft).map(
+          {newFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
                 <VStack gap="2" key={index} className={styles.changeRow}>
@@ -56,10 +63,10 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {Object.entries(seriesDiff.diff.entriesOnlyOnRight).length > 0 && (
+      {deletedFields.length > 0 && (
         <VStack gap="3">
           <BodyShort>Slettede verdier: </BodyShort>
-          {Object.entries(seriesDiff.diff.entriesOnlyOnRight).map(
+          {deletedFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
                 <VStack gap="2" key={index} className={styles.changeRow}>
@@ -76,7 +83,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {Object.entries(seriesDiff.diff.entriesDiffering).find(([key]) => key === "seriesData.media") && (
+      {changedMediaFiles.length > 0 && (
         <Box>
           <VStack gap="1">
             <div className={styles.changeRow}>Det finnes endringer i bilde, dokumenter og/eller videoer.</div>
