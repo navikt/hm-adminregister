@@ -33,6 +33,7 @@ import {LoginWrapper} from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
 import CreateNews from "news/CreateNews";
+import EditNews from "news/EditNews";
 
 export function App() {
     return (
@@ -259,6 +260,14 @@ export function App() {
                         </>
                     }
                 />
+              <Route
+                  path="/nyheter/rediger/:newsid"
+                  element={
+                    <>
+                      <EditNews/>
+                    </>
+                  }
+              />
 
                 <Route path="*" element={<NotFound/>}/>
             </Routes>

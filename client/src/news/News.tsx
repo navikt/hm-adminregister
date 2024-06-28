@@ -126,7 +126,7 @@ const News = () => {
                                                     <Dropdown.Menu>
                                                         <Dropdown.Menu.GroupedList>
                                                             <Dropdown.Menu.GroupedList.Item onClick={() =>
-                                                                {navigate(`/nyheter/opprett/${news.id}`)}}>
+                                                                {navigate(`/nyheter/rediger/${news.id}`)}}>
                                                                 Rediger nyhetsmelding
                                                             </Dropdown.Menu.GroupedList.Item>
                                                         </Dropdown.Menu.GroupedList>

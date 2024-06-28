@@ -1,0 +1,16 @@
+.textField{
+  padding: var(--a-spacing-2);
+  background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--a-surface-default)));
+  border-radius: var(--a-border-radius-medium);
+  border: 1px solid var(--ac-textarea-border, var(--__ac-textarea-border, var(--a-border-default)));
+  resize: none;
+  width: 100%;
+  display: block;
+  color: var(--ac-textarea-text, var(--__ac-textarea-text, var(--a-text-default)));
+  overflow: auto;
+}
+
+.toolbar{
+  margin-top: var(--a-spacing-2);
+  margin-bottom:var(--a-spacing-2);
+}
