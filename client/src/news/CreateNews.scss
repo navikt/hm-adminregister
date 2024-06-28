@@ -76,7 +76,10 @@
 }
 
 .wrapper {
-  margin-top: var(--a-spacing-10);
+  margin-top:var(--a-spacing-10);
+  display: flex;
+  flex-direction: column;
+  height:fit-content;
 }
 
 .toolbar {
