@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
 import {Button, Heading, HStack, DatePicker, Textarea, TextField, useRangeDatepicker} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
@@ -12,10 +12,10 @@ import {z} from "zod";
 import {} from "utils/zodSchema/newProduct";
 import {newNewsVariantSchema} from "utils/zodSchema/Newnews";
 import {createNews} from "api/NewsApi";
-import {RichTextEditor} from "produkter/RichTextEditor";
-import {stateToHTML} from "draft-js-export-html";
-import styles from "produkter/RichTextEditor.module.scss";
 import {Editor} from "react-draft-wysiwyg";
+import { EditorState,} from 'draft-js';
+import {stateFromHTML} from "draft-js-import-html";
+import {stateToHTML} from "draft-js-export-html";
 
 type FormData = z.infer<typeof newNewsVariantSchema>;
 
@@ -32,7 +32,11 @@ const CreateNews = () => {
     mode: "onChange",
   });
 
+  const [updatedDescription, setUpdatedDescription] = useState<string>("");
+  const [state, setState] = useState<EditorState>(EditorState.createWithContent(stateFromHTML(updatedDescription)));
+
   async function onSubmit(data: FormData) {
+    console.log("ett eller annet")
     const newNewsRelease: NewsRegistrationDTO = {
       id: uuidv4(),
       title: data.newsTitle,
@@ -70,6 +74,7 @@ const CreateNews = () => {
       }
     },
   });
+  console.log(updatedDescription)
 
   return (
       <div className="create-new-supplier">
@@ -101,24 +106,28 @@ const CreateNews = () => {
               <HStack gap="20" wrap={false}>
                 <DatePicker.Input label="Fra"
                                   {...fromInputProps}
-                                  {...register("publishedOn", {required: true})}
                                   name="publishedOn"
                                   id="publishedOn"
                                   error={errors.publishedOn && errors.publishedOn.message}
                 />
                 <DatePicker.Input label="Til"
                                   {...toInputProps}
-                                  {...register("expiredOn", {required: true})}
                                   name="expiredOn"
                                   id="expiredOn"
                                   error={errors.expiredOn && errors.expiredOn.message}
                 />
               </HStack>
             </DatePicker>
-
-
             <Editor
-                editorClassName={styles.editor}
+                editorState={state}
+                onEditorStateChange={(editorState) => {
+                  setState(editorState);
+                  const html = stateToHTML(editorState.getCurrentContent());
+                  setUpdatedDescription(html);
+                }}
+                wrapperClassName="wrapper"
+                editorClassName="editor"
+                toolbarClassName="toolbar"
                 toolbar={{
                   options: ["inline", "list"],
                   inline: {
@@ -130,22 +139,19 @@ const CreateNews = () => {
                     options: ["unordered", "ordered"],
                   },
                 }}
+
             />
-
-            <Textarea label={"Beskrivelse"}
-                      resize
+            <Textarea label={""}
+                      className="hiddenText"
                       {...register("newsText", {required: true})}
-
-                      className="increaseSpacing"
+                value = {updatedDescription}
             >
-
             </Textarea>
-
-
             <div className="button-container">
               <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
                 Avbryt
               </Button>
+
               <Button type="submit" size="medium">
                 Opprett
               </Button>
