@@ -3,14 +3,14 @@ import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
 import { useTranslation } from "react-i18next";
 import styles from "./ShowDiffModal.module.scss";
 import { Strikethrough } from "produkter/diff/Strikethrough";
+import { getMediaDiff } from "produkter/diff/diff-util";
 
 export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   const { t } = useTranslation();
 
   const changedFields = Object.entries(seriesDiff.diff.entriesDiffering).filter(([key]) => key !== "seriesData.media");
-  const changedMediaFiles = Object.entries(seriesDiff.diff.entriesDiffering).filter(
-    ([key]) => key === "seriesData.media",
-  );
+
+  const mediaDiff = getMediaDiff(seriesDiff);
   const newFields = Object.entries(seriesDiff.diff.entriesOnlyOnLeft);
   const deletedFields = Object.entries(seriesDiff.diff.entriesOnlyOnRight);
 
@@ -83,10 +83,24 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {changedMediaFiles.length > 0 && (
+      {(mediaDiff.videoChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
         <Box>
           <VStack gap="1">
-            <div className={styles.changeRow}>Det finnes endringer i bilde, dokumenter og/eller videoer.</div>
+            {mediaDiff.imageChanges && (
+              <div className={styles.changeRow}>
+                Det finnes endringer i <b>bilder</b>.
+              </div>
+            )}
+            {mediaDiff.documentChanges && (
+              <div className={styles.changeRow}>
+                Det finnes endringer i <b>dokumenter</b>.
+              </div>
+            )}
+            {mediaDiff.videoChanges && (
+              <div className={styles.changeRow}>
+                Det finnes endringer i <b>videoer</b>.
+              </div>
+            )}
           </VStack>
         </Box>
       )}

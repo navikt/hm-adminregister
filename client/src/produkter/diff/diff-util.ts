@@ -1,5 +1,4 @@
-import { DifferenceDTO, TechData } from "utils/types/response-types";
-import { TechDataDict } from "utils/types/types";
+import { DifferenceDTO, MediaInfo, TechData } from "utils/types/response-types";
 
 function getDifferentElements(list1: Array<TechData>, list2: Array<TechData>): Array<TechDataDiff> {
   if (list1.length != list2.length) {
@@ -22,7 +21,49 @@ export function getTechDataDiff(diffDto: DifferenceDTO): Array<TechDataDiff> {
   return getDifferentElements(diffArrays.first as Array<TechData>, diffArrays.second as Array<TechData>);
 }
 
+function areArraysSimilar(arr1: MediaInfo[], arr2: MediaInfo[]): boolean {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  return (
+    arr1.every((item1) => arr2.some((item2) => JSON.stringify(item1) === JSON.stringify(item2))) &&
+    arr2.every((item1) => arr1.some((item2) => JSON.stringify(item1) === JSON.stringify(item2)))
+  );
+}
+
+export function getMediaDiff(diffDto: DifferenceDTO): MediaDiff {
+  const diffArrays = diffDto.diff.entriesDiffering["seriesData.media"];
+
+  const videoChanges = areArraysSimilar(
+    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "VIDEO"),
+    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "VIDEO"),
+  );
+
+  const documentChanges = areArraysSimilar(
+    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "PDF"),
+    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "PDF"),
+  );
+
+  const imageChanges = areArraysSimilar(
+    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "IMAGE"),
+    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "IMAGE"),
+  );
+
+  return {
+    videoChanges: !videoChanges,
+    documentChanges: !documentChanges,
+    imageChanges: !imageChanges,
+  };
+}
+
 export interface TechDataDiff {
   oldData: TechData;
   newData: TechData;
+}
+
+export interface MediaDiff {
+  videoChanges: boolean;
+  documentChanges: boolean;
+  imageChanges: boolean;
 }
