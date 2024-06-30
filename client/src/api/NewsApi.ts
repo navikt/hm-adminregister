@@ -12,7 +12,6 @@ export function usePagedNews({
   pageSize: number;
 }) {
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?page=${page}&size=${pageSize}`
-
   const { data, error, isLoading } = useSWR<NewsChunk>(path, fetcherGET);
 
   return {
@@ -25,4 +24,8 @@ export function usePagedNews({
 export const createNews = async (newNews: NewsRegistrationDTO ) : Promise<NewsRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/news/`), "POST", newNews);
 
+}
+
+export const updateNews = async (newNews: NewsRegistrationDTO ) : Promise<NewsRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/news/${newNews.id}`), "PUT", newNews);
 }

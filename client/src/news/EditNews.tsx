@@ -1,108 +1,146 @@
-import React from "react";
+import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, DatePicker, Textarea, TextField} from "@navikt/ds-react";
+import {Button, Heading, HStack, DatePicker, Textarea, TextField, useRangeDatepicker} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import "./CreateNews.scss";
-import {v4 as uuidv4} from "uuid"
 import {NewsRegistrationDTO} from "utils/types/response-types";
 import {z} from "zod";
 import {newNewsVariantSchema} from "utils/zodSchema/Newnews";
-import {createNews} from "api/NewsApi";
-
-import styles from "./RichTextEditor.module.scss";
-import {Editor} from "react-draft-wysiwyg";
+import {updateNews} from "api/NewsApi";
+import {useLocation} from "react-router-dom";
+import {useErrorStore} from "utils/store/useErrorStore";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 
 type FormData = z.infer<typeof newNewsVariantSchema>;
+
+
 const EditNews = () => {
-  async function onSubmit(data: FormData) {
-    const newNewsRelease: NewsRegistrationDTO = {
-      id: uuidv4(),
-      title: data.newsTitle,
-      text: data.newsText,
-      published: data.publishedOn,
-      expired: data.expiredOn,
-      // UNDER ARE TEMP VALS
-      status: "ACTIVE",
-      draftStatus: "DRAFT",
-      created: data.publishedOn,
-      updated: data.publishedOn,
-      author: "a",
-      createdBy: "a",
-      updatedBy: "a",
-      createdByUser: "a",
-      updatedByUser: "a",
-    };
-    createNews(newNewsRelease)
-  }
+    const location = useLocation()
+    const newsData = location.state as NewsRegistrationDTO;
 
-  return (
-      <div className="create-new-supplier">
-        <div className="content">
-          <div className="header-container">
-            <NewspaperIcon title="a11y-title" width={43} height={43} aria-hidden/>
-            <Heading level="1" size="large" align="center">
-              Rediger nyhetsmelding
-            </Heading>
-          </div>
-          <form >
-            <TextField
-                label={labelRequired("Tittel på nyhetsmelding")}
-                id="newsTitle"
-                name="newsTitle"
-                type="text"
-                autoComplete="on"
+    const {setGlobalError} = useErrorStore();
+    const {
+        handleSubmit,
+        register,
+        formState: {errors, isSubmitting, isDirty, isValid},
+        setValue,
+        unregister
+    } = useForm<FormData>({
+        resolver: zodResolver(newNewsVariantSchema),
+        mode: "onChange",
+    });
 
-            />
+    async function onSubmit(data: FormData) {
+        const newNewsRelease: NewsRegistrationDTO = {
+            id: newsData.id,
+            title: data.newsTitle,
+            text: data.newsText,
+            published: data.publishedOn,
+            expired: data.expiredOn,
+            // UNDER ARE TEMP VALS
+            status: "ACTIVE",
+            draftStatus: "DRAFT",
+            created: data.publishedOn,
+            updated: data.publishedOn,
+            author: "a",
+            createdBy: "a",
+            updatedBy: "a",
+            createdByUser: "a",
+            updatedByUser: "a",
+        };
+        await updateNews(newNewsRelease)
+    }
 
-            <Heading level="2" size="small" className="reducedSpacing">
-              Vises på FinnHjelpemiddel
-            </Heading>
+    const {datepickerProps, toInputProps, fromInputProps} = useRangeDatepicker({
+        defaultSelected: {from: new Date(newsData.published), to: new Date(newsData.expired)},
+        onRangeChange: (value) => {
+            if (value?.from) {
+                setValue("publishedOn", value.from)
+            } else {
+                unregister("publishedOn")
+            }
+            if (value?.to) {
+                setValue("expiredOn", value.to)
+            } else {
+                unregister("expiredOn")
+            }
+        },
+    });
+    return (
+        <div className="create-new-supplier">
+            <div className="content">
+                <div className="header-container">
+                    <NewspaperIcon title="a11y-title" width={43} height={43} aria-hidden/>
+                    <Heading level="1" size="large" align="center">
+                        Rediger nyhetsmelding
+                    </Heading>
+                </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
 
-            <DatePicker>
-              <HStack gap="20" wrap={false}>
-                <DatePicker.Input label="Fra"
-                                  name="publishedOn"
-                                  id="publishedOn"
-                />
-                <DatePicker.Input label="Til"
-                                  name="expiredOn"
-                                  id="expiredOn"
-                />
-              </HStack>
-            </DatePicker>
+                    <TextField
+                        {...register("newsTitle", {required: true})}
+                        label={labelRequired("Tittel på nyhetsmelding")}
+                        id="newsTitle"
+                        name="newsTitle"
+                        type="text"
+                        autoComplete="on"
+                        error={errors.newsTitle && errors.newsTitle.message}
+                        defaultValue={newsData.title}
+
+                    />
+
+                    <Heading level="2" size="small" className="reducedSpacing">
+                        Vises på FinnHjelpemiddel
+                    </Heading>
+                    <DatePicker
+                        {...datepickerProps}
+                    >
+                        <HStack gap="20" wrap={false} align='start'>
+                            <DatePicker.Input label="Fra"
+                                              {...fromInputProps}
+                                              {...register("publishedOn", {required: true})}
+                                              name="publishedOn"
+                                              id="publishedOn"
+                                              error={errors.publishedOn && errors.publishedOn.message}
 
 
-            <Editor
-                editorClassName ={styles.textField}
-                toolbarClassName={styles.toolbar}
-                toolbar={{
-                  options: ["inline", "list"],
-                  inline: {
-                    inDropdown: false,
-                    options: ["bold", "italic"],
-                  },
-                  list: {
-                    inDropdown: false,
-                    options: ["unordered", "ordered"],
-                  },
-                }}
-            />
+                            />
+                            <DatePicker.Input label="Til"
+                                              {...toInputProps}
+                                              {...register("expiredOn", {required: true})}
+                                              name="expiredOn"
+                                              id="expiredOn"
+                                              error={errors.expiredOn && errors.expiredOn.message}
+                            />
+                        </HStack>
+                    </DatePicker>
 
 
+                    <Textarea label={"Beskrivelse"}
+                              resize
+                              {...register("newsText", {required: true})}
 
-            <div className="button-container">
-              <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-                Avbryt
-              </Button>
-              <Button type="submit" size="medium">
-                Rediger
-              </Button>
+                              className="increaseSpacing"
+                              defaultValue={newsData.text}
+                    >
+
+                    </Textarea>
+
+
+                    <div className="button-container">
+                        <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+                            Avbryt
+                        </Button>
+                        <Button type="submit" size="medium">
+                            Rediger
+                        </Button>
+                    </div>
+                </form>
             </div>
-          </form>
         </div>
-      </div>
-  )
+    )
 }
 
 export default EditNews
