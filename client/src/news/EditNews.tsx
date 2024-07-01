@@ -11,6 +11,10 @@ import {useLocation} from "react-router-dom";
 import {useErrorStore} from "utils/store/useErrorStore";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {Editor} from "react-draft-wysiwyg";
+import {stateToHTML} from "draft-js-export-html";
+import {EditorState} from "draft-js";
+import {stateFromHTML} from "draft-js-import-html";
 
 
 type FormData = z.infer<typeof newNewsVariantSchema>;
@@ -31,6 +35,9 @@ const EditNews = () => {
         resolver: zodResolver(newNewsVariantSchema),
         mode: "onChange",
     });
+
+    const [updatedDescription, setUpdatedDescription] = useState<string>(newsData.text);
+    const [state, setState] = useState<EditorState>(EditorState.createWithContent(stateFromHTML(updatedDescription)));
 
     async function onSubmit(data: FormData) {
         const newNewsRelease: NewsRegistrationDTO = {
@@ -117,17 +124,38 @@ const EditNews = () => {
                         </HStack>
                     </DatePicker>
 
+                    <Editor
+                        editorState={state}
+                        onEditorStateChange={(editorState) => {
+                            setState(editorState);
+                            const html = stateToHTML(editorState.getCurrentContent());
+                            setUpdatedDescription(html);
+                            setValue("newsText",html)
+                        }}
+                        ariaDescribedBy="newsText-editor-error"
+                        wrapperClassName="wrapper"
+                        editorClassName="editor"
+                        toolbarClassName="toolbar"
+                        toolbar={{
+                            options: ["inline", "list"],
+                            inline: {
+                                inDropdown: false,
+                                options: ["bold", "italic"],
+                            },
+                            list: {
+                                inDropdown: false,
+                                options: ["unordered", "ordered"],
+                            },
+                        }}
 
-                    <Textarea label={"Beskrivelse"}
-                              resize
-                              {...register("newsText", {required: true})}
-
-                              className="increaseSpacing"
-                              defaultValue={newsData.text}
-                    >
-
-                    </Textarea>
-
+                    />
+                    {errors.newsText && <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
+                        <p className="navds-error-message">
+                            {
+                                errors.newsText.message
+                            }
+                        </p>
+                    </div> }
 
                     <div className="button-container">
                         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
