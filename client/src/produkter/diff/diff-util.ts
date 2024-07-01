@@ -35,6 +35,13 @@ function areArraysSimilar(arr1: MediaInfo[], arr2: MediaInfo[]): boolean {
 export function getMediaDiff(diffDto: DifferenceDTO): MediaDiff {
   const diffArrays = diffDto.diff.entriesDiffering["seriesData.media"];
 
+  if (diffArrays === undefined) {
+    return {
+      videoChanges: false,
+      documentChanges: false,
+      imageChanges: false,
+    };
+  }
   const videoChanges = areArraysSimilar(
     (diffArrays.first as MediaInfo[]).filter((media) => media.type === "VIDEO"),
     (diffArrays.second as MediaInfo[]).filter((media) => media.type === "VIDEO"),
