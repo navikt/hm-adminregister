@@ -1,5 +1,5 @@
 import { DifferenceDTO, ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { BodyShort, Button, Modal } from "@navikt/ds-react";
+import { BodyLong, BodyShort, Button, Modal } from "@navikt/ds-react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useEffect, useState } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   ProductDifferenceDTO,
 } from "api/VersionApi";
 import styles from "./ShowDiffModal.module.scss";
-import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { Avstand } from "felleskomponenter/Avstand";
 import { VariantsDiff } from "produkter/diff/VariantsDiff";
 import { SeriesDiff } from "produkter/diff/SeriesDiff";
@@ -87,10 +87,13 @@ export const ShowDiffModal = ({
   );
 };
 
-const ErrorFallbackDiffModal = () => {
+const ErrorFallbackDiffModal = ({ error, resetErrorBoundary }: FallbackProps) => {
   return (
     <div>
-      <BodyShort>Beklager, det skjedde en feil ved henting av endringer</BodyShort>
+      <BodyShort>Beklager, det skjedde en feil ved henting av endringer: </BodyShort>
+      <BodyLong>{error.status}</BodyLong>
+      <BodyLong>{error.message}</BodyLong>
+      <BodyLong>{error.error}</BodyLong>
     </div>
   );
 };
