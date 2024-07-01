@@ -21,6 +21,11 @@ import React, {useEffect, useState} from "react";
 
 const News = () => {
 
+    const formatDateFunc = (dateString : string) => {
+        const date = new Date(dateString)
+        return (date.toLocaleDateString("no-NO",{dateStyle:"long"} ))
+    };
+
     const [searchParams, setSearchParams] = useSearchParams();
     const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
     const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -108,7 +113,9 @@ const News = () => {
                                         <ExpansionCard.Header>
                                             <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
                                             <ExpansionCard.Description>
-                                                {news.title}
+                                                <span>
+                                                    Synlig på FinnHjelpemiddel fra {formatDateFunc(news.published)} til {formatDateFunc(news.expired)}
+                                                </span>
                                             </ExpansionCard.Description>
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
