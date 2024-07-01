@@ -73,6 +73,7 @@ const CreateNews = () => {
 
   console.log(errors.newsTitle && errors.newsTitle.message)
 
+  const { ref } = register('newsText');
   return (
       <div className="create-new-supplier">
         <div className="content">
@@ -101,13 +102,13 @@ const CreateNews = () => {
                 {...datepickerProps}
             >
               <HStack gap="20" wrap={false}>
-                <DatePicker.Input label="Fra"
+                <DatePicker.Input label={labelRequired("Fra")}
                                   {...fromInputProps}
                                   name="publishedOn"
                                   id="publishedOn"
                                   error={errors.publishedOn && errors.publishedOn.message}
                 />
-                <DatePicker.Input label="Til"
+                <DatePicker.Input label={labelRequired("Til")}
                                   {...toInputProps}
                                   name="expiredOn"
                                   id="expiredOn"
@@ -115,6 +116,10 @@ const CreateNews = () => {
                 />
               </HStack>
             </DatePicker>
+
+            <strong className="labelEditor" >
+              {labelRequired("Beskrivelse")}
+            </strong>
             <Editor
                 editorState={state}
                 onEditorStateChange={(editorState) => {
@@ -141,11 +146,11 @@ const CreateNews = () => {
 
             />
             {errors.newsText && <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
-              <p className="navds-error-message">
+              <strong className="navds-error-message">
               {
-                errors.newsText.message
+                "* FEIL!"
               }
-              </p>
+              </strong>
             </div> }
 
             <div className="button-container">
