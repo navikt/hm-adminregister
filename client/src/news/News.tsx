@@ -1,6 +1,6 @@
 import {
     Alert, Box,
-    Button, Dropdown,
+    Button, Checkbox, CheckboxGroup, Dropdown,
     ExpansionCard,
     Heading,
     HGrid,
@@ -12,7 +12,7 @@ import {
 } from "@navikt/ds-react";
 import {MenuElipsisVerticalIcon, PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {usePagedNews} from "api/NewsApi";
+import {useFiltedNews, usePagedNews} from "api/NewsApi";
 import parse from "html-react-parser";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
@@ -29,6 +29,9 @@ const News = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
     const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
+    const [includeInactive, setIncludeInactive] = useState(false);
+
+
 
     const navigate = useNavigate();
     const handleCreateNewNews = () => {
@@ -36,25 +39,28 @@ const News = () => {
     };
 
     const {
-        data: pagedData,
-        isLoading: isLoadingPagedData,
-        error: errorPaged,
-    } = usePagedNews({
-        page: pageState - 1,
+        data: filteredResults,
+        isLoading: isLoadingFilteredResults,
+        error: errorResults,
+    } = useFiltedNews({
+        page: pageState -1,
         pageSize: pageSizeState,
-    });
+        includeInactive: includeInactive });
 
     useEffect(() => {
-        if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
-            searchParams.set("page", String(pagedData.totalPages));
+        if (filteredResults?.totalPages && filteredResults?.totalPages < pageState) {
+            searchParams.set("page", String(filteredResults.totalPages));
             setSearchParams(searchParams);
-            setPageState(pagedData.totalPages);
+            setPageState(filteredResults.totalPages);
         }
-    }, [pagedData]);
+    }, [filteredResults]);
 
-    const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1
 
-    if (errorPaged) {
+    const showPageNavigator = filteredResults && filteredResults.totalPages && filteredResults.totalPages > 1
+
+    console.log(filteredResults)
+
+    if (errorResults) {
         return (
             <main className="show-menu">
                 <div className="page__background-container">
@@ -85,29 +91,39 @@ const News = () => {
             </main>
         );
     }
-
     return (
         <main className="show-menu">
             <div className="page__background-container">
                 <Heading level="1" size="large" spacing>
                     Nyheter
                 </Heading>
-                <Button className={styles.createNewsButton}
-                        variant="secondary"
-                        size="medium"
-                        icon={<PlusIcon aria-hidden/>}
-                        iconPosition="left"
-                        onClick={handleCreateNewNews}
-                >
-                    Opprett ny nyhetsmelding
-                </Button>
+                <div className="page__content-container">
+                    <HStack justify="space-between"
+                            gap="4">
+                        <Button className={styles.createNewsButton}
+                                variant="secondary"
+                                size="medium"
+                                icon={<PlusIcon aria-hidden/>}
+                                iconPosition="left"
+                                onClick={handleCreateNewNews}
+                        >
+                            Opprett ny nyhetsmelding
+                        </Button>
 
-                {isLoadingPagedData && <Loader size="3xlarge"/>}
-                {pagedData &&
+                            <Checkbox onChange={() => {
+                                setIncludeInactive(!includeInactive);
+                            }}>
+                                Vis utgåtte
+                            </Checkbox>
+
+                    </HStack>
+                </div>
+                {isLoadingFilteredResults && <Loader size="3xlarge"/>}
+                {filteredResults &&
                     <div className="page__content-container">
                         <VStack className="products-page__producs" gap="4" paddingBlock="4">
                             {
-                                pagedData.content.map((news) => (
+                                filteredResults.content.map((news) => (
 
                                     <ExpansionCard aria-label="Demo med description" key={news.id}>
                                         <ExpansionCard.Header>
@@ -120,35 +136,36 @@ const News = () => {
                                         </ExpansionCard.Header>
                                         <ExpansionCard.Content>
                                             <div className={styles.cardContainerDiv}>
-                                                <span className={styles.seperatingLine} >
+                                                <span className={styles.seperatingLine}>
                                                     {parse(news.text)}
                                                 </span>
                                                 <Box className={styles.optionButton}>
-                                                <Dropdown>
-                                                    <Button
-                                                        variant="tertiary"
-                                                        icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
-                                                        as={Dropdown.Toggle}
-                                                    ></Button>
-                                                    <Dropdown.Menu>
-                                                        <Dropdown.Menu.GroupedList>
-                                                            <Dropdown.Menu.GroupedList.Item
-                                                                onClick={() =>
+                                                    <Dropdown>
+                                                        <Button
+                                                            variant="tertiary"
+                                                            icon={<MenuElipsisVerticalIcon title="Rediger"
+                                                                                           fontSize="1.5rem"/>}
+                                                            as={Dropdown.Toggle}
+                                                        ></Button>
+                                                        <Dropdown.Menu>
+                                                            <Dropdown.Menu.GroupedList>
+                                                                <Dropdown.Menu.GroupedList.Item
+                                                                    onClick={() => {
+                                                                        navigate(`/nyheter/rediger/${news.id}`, {state: news})
+                                                                    }}>
+                                                                    Rediger nyhetsmelding
+                                                                </Dropdown.Menu.GroupedList.Item>
+                                                            </Dropdown.Menu.GroupedList>
+                                                            <Dropdown.Menu.Divider/>
+                                                            <Dropdown.Menu.List>
+                                                                <Dropdown.Menu.List.Item
 
-                                                                {navigate(`/nyheter/rediger/${news.id}`, {state:news})}}>
-                                                                Rediger nyhetsmelding
-                                                            </Dropdown.Menu.GroupedList.Item>
-                                                        </Dropdown.Menu.GroupedList>
-                                                        <Dropdown.Menu.Divider />
-                                                        <Dropdown.Menu.List>
-                                                            <Dropdown.Menu.List.Item
-
-                                                            >
-                                                                Slett nyhetsmelding
-                                                            </Dropdown.Menu.List.Item>
-                                                        </Dropdown.Menu.List>
-                                                    </Dropdown.Menu>
-                                                </Dropdown>
+                                                                >
+                                                                    Slett nyhetsmelding
+                                                                </Dropdown.Menu.List.Item>
+                                                            </Dropdown.Menu.List>
+                                                        </Dropdown.Menu>
+                                                    </Dropdown>
                                                 </Box>
                                             </div>
                                         </ExpansionCard.Content>
@@ -159,7 +176,7 @@ const News = () => {
                 }
 
                 <HStack gap="8" wrap={false} align='end'>
-                    {showPageNavigator === true && pagedData && (
+                    {showPageNavigator === true && filteredResults && (
                         <Pagination
                             page={pageState}
                             onPageChange={(x) => {
@@ -167,7 +184,7 @@ const News = () => {
                                 setSearchParams(searchParams);
                                 setPageState(x);
                             }}
-                            count={pagedData.totalPages!}
+                            count={filteredResults.totalPages!}
                             size="small"
                             prevNextTexts
                         />
