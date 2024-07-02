@@ -10,10 +10,9 @@ import {NewsRegistrationDTO} from "utils/types/response-types";
 import {z} from "zod";
 import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {createNews} from "api/NewsApi";
-import {Editor} from "react-draft-wysiwyg";
 import {EditorState,} from 'draft-js';
 import {stateFromHTML} from "draft-js-import-html";
-import {stateToHTML} from "draft-js-export-html";
+import RichTextEditorNews from "news/RichTextEditorNews";
 
 type FormData = z.infer<typeof newNewsVariantSchema>;
 
@@ -69,9 +68,6 @@ const CreateNews = () => {
     },
   });
 
-
-  console.log(errors.newsTitle && errors.newsTitle.message)
-
   const { ref } = register('newsText');
   return (
       <div className="create-new-supplier">
@@ -119,38 +115,16 @@ const CreateNews = () => {
             <strong className="labelEditor" >
               {labelRequired("Beskrivelse")}
             </strong>
-            <Editor
-                editorState={state}
-                onEditorStateChange={(editorState) => {
-                  setState(editorState);
-                  const html = stateToHTML(editorState.getCurrentContent());
-                  setUpdatedDescription(html);
-                  setValue("newsText",html)
-                }}
-                ariaDescribedBy="newsText-editor-error"
-                wrapperClassName="wrapper"
-                editorClassName="editor"
-                toolbarClassName="toolbar"
-                toolbar={{
-                  options: ["inline", "list"],
-                  inline: {
-                    inDropdown: false,
-                    options: ["bold", "italic"],
-                  },
-                  list: {
-                    inDropdown: false,
-                    options: ["unordered", "ordered"],
-                  },
-                }}
-
-            />
+            <div>
+              <RichTextEditorNews />
+            </div>
             {errors.newsText && <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
               <strong className="navds-error-message">
               {
                 "* FEIL!"
               }
               </strong>
-            </div> }
+            </div>}
 
             <div className="button-container">
               <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
