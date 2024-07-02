@@ -13,15 +13,10 @@ import {
 } from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
 import "./CreateNews.scss";
 import {v4 as uuidv4} from "uuid"
 import {NewsRegistrationDTO} from "utils/types/response-types";
-import {z} from "zod";
-import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {createNews} from "api/NewsApi";
-import {EditorState,} from 'draft-js';
-import {stateFromHTML} from "draft-js-import-html";
 import RichTextEditorNews from "news/RichTextEditorNews";
 
 type FormData = {
@@ -40,6 +35,10 @@ const CreateNews = () => {
       unregister }
         = useForm<FormData>({ mode: "onChange"});
 
+  const makeStatus = (publishDate : Date ) :"ACTIVE" | "INACTIVE" | "DELETED" => {
+    console.log(publishDate)
+    return "ACTIVE"
+  }
   const handleEditorChange = (content: string) => {
     setValue("newsText", content);
   };
@@ -52,7 +51,7 @@ const CreateNews = () => {
       published: data.publishedOn,
       expired: data.expiredOn,
       // UNDER ARE TEMP VALS
-      status: "ACTIVE",
+      status: makeStatus(data.publishedOn),
       draftStatus: "DRAFT",
       created: data.publishedOn,
       updated: data.publishedOn,
