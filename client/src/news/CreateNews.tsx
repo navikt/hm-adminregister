@@ -1,17 +1,12 @@
 import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, DatePicker, TextField, useRangeDatepicker, Label} from "@navikt/ds-react";
+import {Button, Heading, HStack, DatePicker, TextField, useRangeDatepicker} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
 import "./CreateNews.scss";
 import {v4 as uuidv4} from "uuid"
 import {NewsRegistrationDTO} from "utils/types/response-types";
-import {z} from "zod";
-import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {createNews} from "api/NewsApi";
-import {EditorState,} from 'draft-js';
-import {stateFromHTML} from "draft-js-import-html";
 import RichTextEditorNews from "news/RichTextEditorNews";
 
 type FormData = {
@@ -30,6 +25,10 @@ const CreateNews = () => {
       unregister }
         = useForm<FormData>({ mode: "onChange"});
 
+  const makeStatus = (publishDate : Date ) :"ACTIVE" | "INACTIVE" | "DELETED" => {
+    console.log(publishDate)
+    return "ACTIVE"
+  }
   const handleEditorChange = (content: string) => {
     setValue("newsText", content);
   };
@@ -42,7 +41,7 @@ const CreateNews = () => {
       published: data.publishedOn,
       expired: data.expiredOn,
       // UNDER ARE TEMP VALS
-      status: "ACTIVE",
+      status: makeStatus(data.publishedOn),
       draftStatus: "DRAFT",
       created: data.publishedOn,
       updated: data.publishedOn,
@@ -55,18 +54,18 @@ const CreateNews = () => {
     createNews(newNewsRelease)
   }
 
-  const { datepickerProps, toInputProps, fromInputProps } = useRangeDatepicker({
+  const {datepickerProps, toInputProps, fromInputProps} = useRangeDatepicker({
     fromDate: new Date(),
     onRangeChange: (value) => {
       if (value?.from) {
-        setValue("publishedOn", value.from);
+        setValue("publishedOn", value.from)
       } else {
-        unregister("publishedOn");
+        unregister("publishedOn")
       }
       if (value?.to) {
-        setValue("expiredOn", value.to);
+        setValue("expiredOn", value.to)
       } else {
-        unregister("expiredOn");
+        unregister("expiredOn")
       }
     },
   });
@@ -88,7 +87,7 @@ const CreateNews = () => {
                 name="newsTitle"
                 type="text"
                 autoComplete="on"
-                error={errors.newsTitle && "Tittel er påkrevd"}
+                error={errors.newsTitle && errors.newsTitle.message}
             />
 
             <Heading level="2" size="small" className="reducedSpacing">
@@ -99,21 +98,24 @@ const CreateNews = () => {
                 {...datepickerProps}
             >
               <HStack gap="20" wrap={false}>
-                <DatePicker.Input label="Fra *"
+                <DatePicker.Input label={labelRequired("Fra")}
                                   {...fromInputProps}
                                   name="publishedOn"
                                   id="publishedOn"
-                                  error={errors.publishedOn && "Publiseringsdato er påkrevd"}
+                                  error={errors.publishedOn && errors.publishedOn.message}
                 />
-                <DatePicker.Input label="Til *"
+                <DatePicker.Input label={labelRequired("Til")}
                                   {...toInputProps}
                                   name="expiredOn"
                                   id="expiredOn"
-                                  error={errors.expiredOn && "Utløpsdato er påkrevd"}
+                                  error={errors.expiredOn && errors.expiredOn.message}
                 />
               </HStack>
             </DatePicker>
 
+            <strong className="labelEditor" >
+              {labelRequired("Beskrivelse")}
+            </strong>
             <RichTextEditorNews onChange={handleEditorChange} />
             <div className="button-container">
               <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

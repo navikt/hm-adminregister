@@ -16,26 +16,31 @@ import {deleteNews, useFilteredNews} from "api/NewsApi";
 import parse from "html-react-parser";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
+import StatusTag from "felleskomponenter/StatusTag";
+import {SeriesStatus} from "utils/types/types";
 
 
 const News = () => {
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
+  const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 5);
+  const [includeInactive, setIncludeInactive] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleCreateNewsRelease = () => {
+    navigate("/nyheter/opprett");
+  };
 
   const formatDateFunc = (dateString : string) => {
     const date = new Date(dateString)
     return (date.toLocaleDateString("no-NO",{dateStyle:"long"} ))
   };
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
-  const [includeInactive, setIncludeInactive] = useState(false);
-
-
-
-  const navigate = useNavigate();
-  const handleCreateNewsRelease = () => {
-    navigate("/nyheter/opprett");
-  };
+  const newsRealseStatus = (newsStatus : "ACTIVE" | "INACTIVE" | "DELETED")  => {
+    return (newsStatus === "ACTIVE") ? (SeriesStatus.PUBLISHED) : (SeriesStatus.INACTIVE)
+  }
 
   const {
     data: filteredResults,
@@ -57,8 +62,6 @@ const News = () => {
 
 
   const showPageNavigator = filteredResults && filteredResults.totalPages && filteredResults.totalPages > 1
-
-  console.log(filteredResults)
 
   if (errorResults) {
     return (
@@ -113,7 +116,7 @@ const News = () => {
               <Checkbox onChange={() => {
                 setIncludeInactive(!includeInactive);
               }}>
-                Vis utgåtte
+                Vis inaktive
               </Checkbox>
 
             </HStack>
@@ -127,18 +130,21 @@ const News = () => {
 
                           <ExpansionCard aria-label="Demo med description" key={news.id}>
                             <ExpansionCard.Header>
-                              <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
+                              <ExpansionCard.Title>
+                                {news.title}
+                              </ExpansionCard.Title>
                               <ExpansionCard.Description>
-                                                <span>
-                                                    Synlig på FinnHjelpemiddel fra {formatDateFunc(news.published)} til {formatDateFunc(news.expired)}
-                                                </span>
+                                <span>
+                                    Synlig på FinnHjelpemiddel fra {formatDateFunc(news.published)} til {formatDateFunc(news.expired)}
+                                </span>
                               </ExpansionCard.Description>
+                              <StatusTag seriesStatus={newsRealseStatus(news.status)}/>
                             </ExpansionCard.Header>
                             <ExpansionCard.Content>
                               <div className={styles.cardContainerDiv}>
-                                                <span className={styles.seperatingLine}>
-                                                    {parse(news.text)}
-                                                </span>
+                                <span className={styles.seperatingLine}>
+                                    {parse(news.text)}
+                                </span>
                                 <Box className={styles.optionButton}>
                                   <Dropdown>
                                     <Button
@@ -146,7 +152,7 @@ const News = () => {
                                         icon={<MenuElipsisVerticalIcon title="Rediger"
                                                                        fontSize="1.5rem"/>}
                                         as={Dropdown.Toggle}
-                                    ></Button>
+                                    />
                                     <Dropdown.Menu>
                                       <Dropdown.Menu.GroupedList>
                                         <Dropdown.Menu.GroupedList.Item
@@ -202,6 +208,7 @@ const News = () => {
                   setPageSizeState(parseInt(e.target.value));
                 }}
             >
+              <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={100}>100</option>
