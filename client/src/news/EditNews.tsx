@@ -5,7 +5,7 @@ import {labelRequired} from "utils/string-util";
 import "./CreateNews.scss";
 import {NewsRegistrationDTO} from "utils/types/response-types";
 import {z} from "zod";
-import {newNewsVariantSchema} from "utils/zodSchema/Newnews";
+import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {updateNews} from "api/NewsApi";
 import {useLocation} from "react-router-dom";
 import {useErrorStore} from "utils/store/useErrorStore";

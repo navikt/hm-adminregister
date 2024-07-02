@@ -8,7 +8,7 @@ import "./CreateNews.scss";
 import {v4 as uuidv4} from "uuid"
 import {NewsRegistrationDTO} from "utils/types/response-types";
 import {z} from "zod";
-import {newNewsVariantSchema} from "utils/zodSchema/Newnews";
+import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {createNews} from "api/NewsApi";
 import {Editor} from "react-draft-wysiwyg";
 import {EditorState,} from 'draft-js';
