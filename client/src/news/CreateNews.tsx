@@ -1,6 +1,16 @@
 import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, DatePicker, TextField, useRangeDatepicker, Label} from "@navikt/ds-react";
+import {
+  Button,
+  Heading,
+  HStack,
+  DatePicker,
+  TextField,
+  useRangeDatepicker,
+  Label,
+  Select,
+  useDatepicker
+} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -55,21 +65,17 @@ const CreateNews = () => {
     createNews(newNewsRelease)
   }
 
-  const { datepickerProps, toInputProps, fromInputProps } = useRangeDatepicker({
+  const { datepickerProps, inputProps, selectedDay } = useDatepicker({
     fromDate: new Date(),
-    onRangeChange: (value) => {
-      if (value?.from) {
-        setValue("publishedOn", value.from);
+    onDateChange: (value) => {
+      if (value) {
+        setValue("publishedOn", value);
       } else {
         unregister("publishedOn");
       }
-      if (value?.to) {
-        setValue("expiredOn", value.to);
-      } else {
-        unregister("expiredOn");
-      }
-    },
-  });
+
+  }});
+
 
   return (
       <div className="create-new-supplier">
@@ -91,29 +97,33 @@ const CreateNews = () => {
                 error={errors.newsTitle && "Tittel er påkrevd"}
             />
 
-            <Heading level="2" size="small" className="reducedSpacing">
-              Vises på FinnHjelpemiddel
-            </Heading>
 
+            <HStack gap="20" wrap={false}>
             <DatePicker
                 {...datepickerProps}
             >
-              <HStack gap="20" wrap={false}>
-                <DatePicker.Input label="Fra *"
-                                  {...fromInputProps}
+
+                <DatePicker.Input label="Synlig fra *"
+                                  {...inputProps}
                                   name="publishedOn"
                                   id="publishedOn"
                                   error={errors.publishedOn && "Publiseringsdato er påkrevd"}
                 />
-                <DatePicker.Input label="Til *"
-                                  {...toInputProps}
-                                  name="expiredOn"
-                                  id="expiredOn"
-                                  error={errors.expiredOn && "Utløpsdato er påkrevd"}
-                />
-              </HStack>
-            </DatePicker>
 
+            </DatePicker>
+              <Select
+                  label="Varighet"
+                  error={errors.expiredOn && "Varighet er påkrevd"}
+              >
+                <option value="1">1 måned</option>
+                <option value="3">3 måned</option>
+                <option value="5">5 måned</option>
+              </Select>
+
+            </HStack>
+            <Heading level="2" size="small" className="reducedSpacing">
+              Beskrivelse
+            </Heading>
             <RichTextEditorNews onChange={handleEditorChange} />
             <div className="button-container">
               <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

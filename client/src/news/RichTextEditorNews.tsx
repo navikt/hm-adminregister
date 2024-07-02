@@ -14,6 +14,7 @@ export default function RichTextEditorNews({ onChange }: RichTextEditorNewsProps
         toolbar: [
             ["bold", "italic"],
             [{ list: "ordered" }, { list: "bullet" }],
+            ["link"]
         ]
     };
 
@@ -22,6 +23,7 @@ export default function RichTextEditorNews({ onChange }: RichTextEditorNewsProps
         "italic",
         "list",
         "bullet",
+        "link"
     ];
 
     const [code, setCode] = useState(
