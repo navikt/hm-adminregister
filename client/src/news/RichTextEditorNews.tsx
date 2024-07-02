@@ -5,7 +5,11 @@ import "./RichTextEditor.css";
 
 import "react-quill/dist/quill.snow.css";
 
-export default function RichTextEditorNews() {
+type RichTextEditorNewsProps = {
+    onChange: (content: string) => void;
+};
+
+export default function RichTextEditorNews({ onChange }: RichTextEditorNewsProps) {
     const modules = {
         toolbar: [
             ["bold", "italic"],
@@ -26,6 +30,7 @@ export default function RichTextEditorNews() {
 
     const handleProcedureContentChange = (content: string) => {
         setCode(content);
+        onChange(content);
     };
 
     return (

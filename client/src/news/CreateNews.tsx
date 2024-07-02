@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, DatePicker, TextField, useRangeDatepicker} from "@navikt/ds-react";
+import {Button, Heading, HStack, DatePicker, TextField, useRangeDatepicker, Label} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -14,22 +14,25 @@ import {EditorState,} from 'draft-js';
 import {stateFromHTML} from "draft-js-import-html";
 import RichTextEditorNews from "news/RichTextEditorNews";
 
-type FormData = z.infer<typeof newNewsVariantSchema>;
+type FormData = {
+  newsTitle: string;
+  newsText: string;
+  publishedOn: Date;
+  expiredOn: Date
+};
 
 const CreateNews = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: {errors, isSubmitting, isDirty, isValid},
-    setValue,
-    unregister
-  } = useForm<FormData>({
-    resolver: zodResolver(newNewsVariantSchema),
-    mode: "onChange",
-  });
+    const {
+      handleSubmit,
+      register,
+      formState: { errors },
+      setValue,
+      unregister }
+        = useForm<FormData>({ mode: "onChange"});
 
-  const [updatedDescription, setUpdatedDescription] = useState<string>("");
-  const [state, setState] = useState<EditorState>(EditorState.createWithContent(stateFromHTML(updatedDescription)));
+  const handleEditorChange = (content: string) => {
+    setValue("newsText", content);
+  };
 
   async function onSubmit(data: FormData) {
     const newNewsRelease: NewsRegistrationDTO = {
@@ -52,23 +55,22 @@ const CreateNews = () => {
     createNews(newNewsRelease)
   }
 
-  const {datepickerProps, toInputProps, fromInputProps} = useRangeDatepicker({
+  const { datepickerProps, toInputProps, fromInputProps } = useRangeDatepicker({
     fromDate: new Date(),
     onRangeChange: (value) => {
       if (value?.from) {
-        setValue("publishedOn", value.from)
+        setValue("publishedOn", value.from);
       } else {
-        unregister("publishedOn")
+        unregister("publishedOn");
       }
       if (value?.to) {
-        setValue("expiredOn", value.to)
+        setValue("expiredOn", value.to);
       } else {
-        unregister("expiredOn")
+        unregister("expiredOn");
       }
     },
   });
 
-  const { ref } = register('newsText');
   return (
       <div className="create-new-supplier">
         <div className="content">
@@ -86,7 +88,7 @@ const CreateNews = () => {
                 name="newsTitle"
                 type="text"
                 autoComplete="on"
-                error={errors.newsTitle && errors.newsTitle.message}
+                error={errors.newsTitle && "Tittel er påkrevd"}
             />
 
             <Heading level="2" size="small" className="reducedSpacing">
@@ -97,35 +99,22 @@ const CreateNews = () => {
                 {...datepickerProps}
             >
               <HStack gap="20" wrap={false}>
-                <DatePicker.Input label={labelRequired("Fra")}
+                <DatePicker.Input label="Fra *"
                                   {...fromInputProps}
                                   name="publishedOn"
                                   id="publishedOn"
-                                  error={errors.publishedOn && errors.publishedOn.message}
+                                  error={errors.publishedOn && "Publiseringsdato er påkrevd"}
                 />
-                <DatePicker.Input label={labelRequired("Til")}
+                <DatePicker.Input label="Til *"
                                   {...toInputProps}
                                   name="expiredOn"
                                   id="expiredOn"
-                                  error={errors.expiredOn && errors.expiredOn.message}
+                                  error={errors.expiredOn && "Utløpsdato er påkrevd"}
                 />
               </HStack>
             </DatePicker>
 
-            <strong className="labelEditor" >
-              {labelRequired("Beskrivelse")}
-            </strong>
-            <div>
-              <RichTextEditorNews />
-            </div>
-            {errors.newsText && <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
-              <strong className="navds-error-message">
-              {
-                "* FEIL!"
-              }
-              </strong>
-            </div>}
-
+            <RichTextEditorNews onChange={handleEditorChange} />
             <div className="button-container">
               <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
                 Avbryt
