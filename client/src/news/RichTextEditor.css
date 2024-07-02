@@ -1,12 +1,13 @@
 .ql-toolbar.ql-snow, .ql-container.ql-snow{
     border: none !important;
-
 }
+
 .ql-toolbar.ql-snow{
     border-bottom: 1px solid var(--a-border-default) !important;
 }
 
 .ql-editor {
     font-size: var(--a-font-size-large);
-    min-height: 30rem;
+    min-height: 10rem;
 }
+
