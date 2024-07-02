@@ -26,7 +26,7 @@ type FormData = {
     durationInMonths: string;
 };
 
-function calculateExpiredDate(publishedDate: Date, durationInMonths: string) {
+export function calculateExpiredDate(publishedDate: Date, durationInMonths: string) {
     const endDate = new Date(publishedDate);
     endDate.setMonth(endDate.getMonth() + parseInt(durationInMonths));
     return endDate;
@@ -49,9 +49,6 @@ const CreateNews = () => {
     }
         = useForm<FormData>({mode: "onChange"});
 
-    const makeStatus = (publishDate: Date): "ACTIVE" | "INACTIVE" | "DELETED" => {
-        return "ACTIVE"
-    }
     const handleEditorChange = (content: string) => {
         setValue("newsText", content);
     };
@@ -64,7 +61,7 @@ const CreateNews = () => {
             published: data.publishedOn,
             expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS
-            status: makeStatus(data.publishedOn),
+            status: "ACTIVE",
             draftStatus: "DRAFT",
             created: data.publishedOn,
             updated: data.publishedOn,
@@ -139,7 +136,7 @@ const CreateNews = () => {
                         Beskrivelse
                     </Heading>
                     <div className="editorConteiner">
-                        <RichTextEditorNews onChange={handleEditorChange}/>
+                        <RichTextEditorNews onChange={handleEditorChange} defaultText=""/>
                     </div>
                     <div className="button-container">
                         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

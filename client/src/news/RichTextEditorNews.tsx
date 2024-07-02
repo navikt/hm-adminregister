@@ -6,10 +6,12 @@ import "./RichTextEditor.css";
 import "react-quill/dist/quill.snow.css";
 
 type RichTextEditorNewsProps = {
-    onChange: (content: string) => void;
+    content:string;
+    setContent:  React.Dispatch<React.SetStateAction<string>>;
+
 };
 
-export default function RichTextEditorNews({ onChange }: RichTextEditorNewsProps) {
+export default function RichTextEditorNews(props : RichTextEditorNewsProps) {
     const modules = {
         toolbar: [
             ["bold", "italic"],
@@ -26,22 +28,14 @@ export default function RichTextEditorNews({ onChange }: RichTextEditorNewsProps
         "link"
     ];
 
-    const [code, setCode] = useState(
-        ""
-    );
-
-    const handleProcedureContentChange = (content: string) => {
-        setCode(content);
-        onChange(content);
-    };
 
     return (
             <ReactQuill
                 theme="snow"
                 modules={modules}
                 formats={formats}
-                value={code}
-                onChange={handleProcedureContentChange}
+                value={props.content}
+                onChange={props.setContent}
                 className={styles.editorStyle}
             />
     );

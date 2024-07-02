@@ -1,51 +1,70 @@
 import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
-import {Button, Heading, HStack, DatePicker, Textarea, TextField, useRangeDatepicker} from "@navikt/ds-react";
+import {
+    Button,
+    Heading,
+    HStack,
+    DatePicker,
+    TextField,
+    useDatepicker, Select
+} from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
 import "./CreateNews.scss";
 import {NewsRegistrationDTO} from "utils/types/response-types";
-import {z} from "zod";
-import {newNewsVariantSchema} from "utils/zodSchema/newNewsRelease";
 import {updateNews} from "api/NewsApi";
-import {useLocation} from "react-router-dom";
-import {useErrorStore} from "utils/store/useErrorStore";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Editor} from "react-draft-wysiwyg";
-import {stateToHTML} from "draft-js-export-html";
-import {EditorState} from "draft-js";
-import {stateFromHTML} from "draft-js-import-html";
+import RichTextEditorNews from "news/RichTextEditorNews";
+import { calculateExpiredDate } from "./CreateNews"
 
+type FormData = {
+    newsTitle: string;
+    newsText: string;
+    publishedOn: Date;
+    expiredOn: Date;
+    durationInMonths: string;
+};
 
-type FormData = z.infer<typeof newNewsVariantSchema>;
 
 
 const EditNews = () => {
     const location = useLocation()
     const newsData = location.state as NewsRegistrationDTO;
+    const navigate = useNavigate();
 
-    const {setGlobalError} = useErrorStore();
+    const navigateEdit = () => {
+        navigate("/nyheter");
+    };
+
+
+    const [content, setContent] = useState(
+        newsData.text
+    );
+
+
     const {
         handleSubmit,
         register,
-        formState: {errors, isSubmitting, isDirty, isValid},
+        formState: {errors},
         setValue,
         unregister
-    } = useForm<FormData>({
-        resolver: zodResolver(newNewsVariantSchema),
-        mode: "onChange",
-    });
+    }
+        = useForm<FormData>({mode: "onChange"});
 
-    const [updatedDescription, setUpdatedDescription] = useState<string>(newsData.text);
-    const [state, setState] = useState<EditorState>(EditorState.createWithContent(stateFromHTML(updatedDescription)));
+    const handleEditorChange = (content: string) => {
+        setValue("newsText", content);
+    };
+
 
     async function onSubmit(data: FormData) {
+
         const newNewsRelease: NewsRegistrationDTO = {
-            id: newsData.id,
+/*            id: newsData.id,
             title: data.newsTitle,
             text: data.newsText,
-            published: data.publishedOn,
-            expired: data.expiredOn,
+            //published: data.publishedOn,
+            published: "03.07.2024",
+            expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS
             status: "ACTIVE",
             draftStatus: "DRAFT",
@@ -55,26 +74,38 @@ const EditNews = () => {
             createdBy: "a",
             updatedBy: "a",
             createdByUser: "a",
-            updatedByUser: "a",
+            updatedByUser: "a",*/
+            id: newsData.id,
+            title: data.newsTitle,
+            text: data.newsText,
+            "status": "ACTIVE",
+            "draftStatus": "DRAFT",
+            "published": "2024-06-28T11:48:42.085Z",
+            "expired": "2024-06-28T11:48:42.085Z",
+            "created": "2024-06-28T11:48:42.085Z",
+            "updated": "2024-06-28T11:48:42.085Z",
+            "author": "string",
+            "createdBy": "string",
+            "updatedBy": "string",
+            "createdByUser": "string",
+            "updatedByUser": "string"
         };
-        await updateNews(newNewsRelease)
+        updateNews(newNewsRelease)
     }
 
-    const {datepickerProps, toInputProps, fromInputProps} = useRangeDatepicker({
-        defaultSelected: {from: new Date(newsData.published), to: new Date(newsData.expired)},
-        onRangeChange: (value) => {
-            if (value?.from) {
-                setValue("publishedOn", value.from)
+    const {datepickerProps, inputProps} = useDatepicker({
+        defaultSelected: new Date(newsData.published),
+        onDateChange: (value) => {
+            if (value) {
+                setValue("publishedOn", value);
             } else {
-                unregister("publishedOn")
+                unregister("publishedOn");
             }
-            if (value?.to) {
-                setValue("expiredOn", value.to)
-            } else {
-                unregister("expiredOn")
-            }
-        },
+
+        }
     });
+
+
     return (
         <div className="create-new-supplier">
             <div className="content">
@@ -93,69 +124,48 @@ const EditNews = () => {
                         name="newsTitle"
                         type="text"
                         autoComplete="on"
-                        error={errors.newsTitle && errors.newsTitle.message}
+                        error={errors.newsTitle && "Tittel er påkrevd"}
                         defaultValue={newsData.title}
-
                     />
 
-                    <Heading level="2" size="small" className="reducedSpacing">
-                        Vises på FinnHjelpemiddel
-                    </Heading>
-                    <DatePicker
-                        {...datepickerProps}
-                    >
-                        <HStack gap="20" wrap={false} align='start'>
-                            <DatePicker.Input label="Fra"
-                                              {...fromInputProps}
+                    <HStack paddingBlock="5 0" wrap={false} align='start' justify="space-between">
+                        <DatePicker
+                            {...datepickerProps}
+                        >
+
+                            <DatePicker.Input label={labelRequired("Synlig fra")}
                                               {...register("publishedOn", {required: true})}
+                                              {...inputProps}
                                               name="publishedOn"
                                               id="publishedOn"
-                                              error={errors.publishedOn && errors.publishedOn.message}
-
-
+                                              error={errors.publishedOn && "Publiseringsdato er påkrevd"}
                             />
-                            <DatePicker.Input label="Til"
-                                              {...toInputProps}
-                                              {...register("expiredOn", {required: true})}
-                                              name="expiredOn"
-                                              id="expiredOn"
-                                              error={errors.expiredOn && errors.expiredOn.message}
-                            />
-                        </HStack>
-                    </DatePicker>
 
-                    <Editor
-                        editorState={state}
-                        onEditorStateChange={(editorState) => {
-                            setState(editorState);
-                            const html = stateToHTML(editorState.getCurrentContent());
-                            setUpdatedDescription(html);
-                            setValue("newsText",html)
-                        }}
-                        ariaDescribedBy="newsText-editor-error"
-                        wrapperClassName="wrapper"
-                        editorClassName="editor"
-                        toolbarClassName="toolbar"
-                        toolbar={{
-                            options: ["inline", "list"],
-                            inline: {
-                                inDropdown: false,
-                                options: ["bold", "italic"],
-                            },
-                            list: {
-                                inDropdown: false,
-                                options: ["unordered", "ordered"],
-                            },
-                        }}
+                        </DatePicker>
+                        <Select
+                            {...register("durationInMonths")}
+                            label="Varighet"
+                        >
+                            <option value="1">1 måned</option>
+                            <option value="3">3 måned</option>
+                            <option value="5">5 måned</option>
+                        </Select>
 
-                    />
-                    {errors.newsText && <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
-                        <p className="navds-error-message">
-                            {
-                                errors.newsText.message
-                            }
-                        </p>
-                    </div> }
+                    </HStack>
+                    <Heading level="2" size="small" className="reducedSpacing">
+                        Beskrivelse
+                    </Heading>
+                    <div className="editorConteiner">
+                        <RichTextEditorNews content={content} setContent={setContent}/>
+                    </div>
+                    {errors.newsText &&
+                        <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
+                            <p className="navds-error-message">
+                                {
+                                    errors.newsText.message
+                                }
+                            </p>
+                        </div>}
 
                     <div className="button-container">
                         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
