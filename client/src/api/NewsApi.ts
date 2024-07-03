@@ -5,9 +5,8 @@ import {fetcherGET} from "utils/swr-hooks";
 import {fetchAPI, getPath} from "api/fetch";
 
 
-export function useFilteredNews({page, pageSize, includeInactive}: {page: number; pageSize: number; includeInactive: boolean}){
-  const status = (includeInactive) ? "" : "&status=ACTIVE";
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?page=${page}&size=${pageSize}${status}&sort=updated`
+export function useFilteredNews({page, pageSize}: {page: number; pageSize: number;}){
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?page=${page}&size=${pageSize}$&sort=updated`
   const { data, error, isLoading, mutate } = useSWR<NewsChunk>(path, fetcherGET);
 
   return {
