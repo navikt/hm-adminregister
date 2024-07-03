@@ -31,6 +31,7 @@ import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValid
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
+import EditSupplier from "leverandor/EditSupplier";
 
 export function App() {
   return (
@@ -186,6 +187,14 @@ export function App() {
             element={
               <>
                 <OpprettLeverandør />
+              </>
+            }
+          />
+          <Route
+            path="/leverandor/endre-leverandor/:supplierId"
+            element={
+              <>
+                <EditSupplier />
               </>
             }
           />

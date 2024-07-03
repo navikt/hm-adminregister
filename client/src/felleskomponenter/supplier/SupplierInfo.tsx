@@ -1,14 +1,15 @@
-import { Heading, VStack } from "@navikt/ds-react";
-import { ArrowUndoIcon, Buldings3Icon } from "@navikt/aksel-icons";
+import { Button, Heading, VStack } from "@navikt/ds-react";
+import { ArrowUndoIcon, Buldings3Icon, PencilWritingIcon, PlusIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { Supplier } from "utils/supplier-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import DefinitionList from "../definition-list/DefinitionList";
 import { formatPhoneNumber } from "utils/string-util";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
   const { loggedInUser } = useAuthStore();
+  const navigate = useNavigate();
   return (
     <VStack gap="8">
       <VStack gap="6">
@@ -31,6 +32,20 @@ const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
         <DefinitionList.Term>Nettside</DefinitionList.Term>
         <DefinitionList.Definition>{supplier?.homepageUrl}</DefinitionList.Definition>
       </DefinitionList>
+      {loggedInUser?.isAdmin && (
+        <Button
+          className="fit-content"
+          variant="secondary"
+          size="small"
+          icon={<PencilWritingIcon aria-hidden />}
+          iconPosition="left"
+          onClick={() => {
+            navigate(`/leverandor/endre-leverandor/${supplier.id}`);
+          }}
+        >
+          Endre leverandørinformasjon
+        </Button>
+      )}
     </VStack>
   );
 };

@@ -9,27 +9,21 @@ import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { getSupplier } from "api/SupplierApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 const LeverandørProfil = () => {
   const [supplier, setSupplier] = useState<Supplier>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore();
 
   const { id } = useParams();
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations/` + id, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) setGlobalError(res.status, res.statusText);
-        else return res.json();
-      })
+    getSupplier(loggedInUser?.isAdmin ?? false, id!)
       .then((data) => {
         if (!data) return;
         setSupplier(mapSupplier(data));
@@ -48,6 +42,9 @@ const LeverandørProfil = () => {
               setLoading(false);
             });
         }
+      })
+      .catch((error) => {
+        setGlobalError(error);
       });
 
     setLoading(false);
