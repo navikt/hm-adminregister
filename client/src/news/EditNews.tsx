@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
 import {
     Button,
@@ -15,7 +15,8 @@ import {updateNews} from "api/NewsApi";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
-import { calculateExpiredDate } from "./CreateNews"
+import {calculateExpiredDate} from "./CreateNews"
+import {toDateTimeString} from "utils/date-util";
 
 type FormData = {
     newsTitle: string;
@@ -24,8 +25,6 @@ type FormData = {
     expiredOn: Date;
     durationInMonths: string;
 };
-
-
 
 const EditNews = () => {
     const location = useLocation()
@@ -41,7 +40,6 @@ const EditNews = () => {
         newsData.text
     );
 
-
     const {
         handleSubmit,
         register,
@@ -49,48 +47,32 @@ const EditNews = () => {
         setValue,
         unregister
     }
-        = useForm<FormData>({mode: "onChange"});
-
-    const handleEditorChange = (content: string) => {
-        setValue("newsText", content);
-    };
+        = useForm<FormData>({
+        mode: "onChange",
+    });
 
 
     async function onSubmit(data: FormData) {
 
         const newNewsRelease: NewsRegistrationDTO = {
-/*            id: newsData.id,
+            id: newsData.id,
             title: data.newsTitle,
-            text: data.newsText,
-            //published: data.publishedOn,
-            published: "03.07.2024",
+            text: content,
+            published: toDateTimeString(data.publishedOn),
             expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS
             status: "ACTIVE",
             draftStatus: "DRAFT",
-            created: data.publishedOn,
-            updated: data.publishedOn,
+            created: newsData.created,
+            updated: new Date(),
             author: "a",
             createdBy: "a",
             updatedBy: "a",
             createdByUser: "a",
-            updatedByUser: "a",*/
-            id: newsData.id,
-            title: data.newsTitle,
-            text: data.newsText,
-            "status": "ACTIVE",
-            "draftStatus": "DRAFT",
-            "published": "2024-06-28T11:48:42.085Z",
-            "expired": "2024-06-28T11:48:42.085Z",
-            "created": "2024-06-28T11:48:42.085Z",
-            "updated": "2024-06-28T11:48:42.085Z",
-            "author": "string",
-            "createdBy": "string",
-            "updatedBy": "string",
-            "createdByUser": "string",
-            "updatedByUser": "string"
+            updatedByUser: "a",
+
         };
-        updateNews(newNewsRelease)
+        updateNews(newNewsRelease).then(navigateEdit)
     }
 
     const {datepickerProps, inputProps} = useDatepicker({
@@ -147,8 +129,8 @@ const EditNews = () => {
                             label="Varighet"
                         >
                             <option value="1">1 måned</option>
-                            <option value="3">3 måned</option>
-                            <option value="5">5 måned</option>
+                            <option value="3">3 måneder</option>
+                            <option value="5">5 måneder</option>
                         </Select>
 
                     </HStack>
@@ -156,16 +138,9 @@ const EditNews = () => {
                         Beskrivelse
                     </Heading>
                     <div className="editorConteiner">
-                        <RichTextEditorNews content={content} setContent={setContent}/>
+                        <RichTextEditorNews
+                            content={content} setContent={setContent}/>
                     </div>
-                    {errors.newsText &&
-                        <div id="newsText-editor-error" className="navds-form-field__error navds-error-message ">
-                            <p className="navds-error-message">
-                                {
-                                    errors.newsText.message
-                                }
-                            </p>
-                        </div>}
 
                     <div className="button-container">
                         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

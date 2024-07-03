@@ -40,6 +40,10 @@ const CreateNews = () => {
         navigate("/nyheter");
     };
 
+    const [content, setContent] = useState(
+        ""
+    );
+
     const {
         handleSubmit,
         register,
@@ -49,15 +53,12 @@ const CreateNews = () => {
     }
         = useForm<FormData>({mode: "onChange"});
 
-    const handleEditorChange = (content: string) => {
-        setValue("newsText", content);
-    };
 
     async function onSubmit(data: FormData) {
         const newNewsRelease: NewsRegistrationDTO = {
             id: uuidv4(),
             title: data.newsTitle,
-            text: data.newsText,
+            text: content,
             published: data.publishedOn,
             expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS
@@ -127,8 +128,8 @@ const CreateNews = () => {
                             label="Varighet"
                         >
                             <option value="1">1 måned</option>
-                            <option value="3">3 måned</option>
-                            <option value="5">5 måned</option>
+                            <option value="3">3 måneder</option>
+                            <option value="5">5 måneder</option>
                         </Select>
 
                     </HStack>
@@ -136,7 +137,7 @@ const CreateNews = () => {
                         Beskrivelse
                     </Heading>
                     <div className="editorConteiner">
-                        <RichTextEditorNews onChange={handleEditorChange} defaultText=""/>
+                        <RichTextEditorNews content={content} setContent={setContent}/>
                     </div>
                     <div className="button-container">
                         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
