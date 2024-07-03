@@ -10,15 +10,13 @@ import {
   Select,
   VStack
 } from "@navikt/ds-react";
-import {MenuElipsisVerticalIcon, PlusIcon} from "@navikt/aksel-icons";
+import {PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {deleteNews, useFilteredNews} from "api/NewsApi";
-import parse from "html-react-parser";
+import {getPageNews} from "api/NewsApi";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
-import StatusTag from "felleskomponenter/StatusTag";
-import {SeriesStatus} from "utils/types/types";
-
+import NewsCard from "./newsCard";
+import {NewsRegistrationDTO} from "utils/types/response-types";
 
 const News = () => {
 
@@ -26,42 +24,25 @@ const News = () => {
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 5);
   const [includeInactive, setIncludeInactive] = useState(false);
-
   const navigate = useNavigate();
 
-  const handleCreateNewsRelease = () => {
-    navigate("/nyheter/opprett");
-  };
-
-  const formatDateFunc = (dateString : string) => {
-    const date = new Date(dateString)
-    return (date.toLocaleDateString("no-NO",{dateStyle:"long"} ))
-  };
-
-  const newsRealseStatus = (newsStatus : "ACTIVE" | "INACTIVE" | "DELETED")  => {
-    return (newsStatus === "ACTIVE") ? (SeriesStatus.PUBLISHED) : (SeriesStatus.INACTIVE)
-  }
-
   const {
-    data: filteredResults,
+    data: pageResults,
     isLoading: isLoadingFilteredResults,
     error: errorResults,
     mutate: mutateNewsRealse
-  } = useFilteredNews({
-    page: pageState -1,
-    pageSize: pageSizeState,
-    includeInactive: includeInactive });
+  } = getPageNews({page: pageState -1, pageSize: pageSizeState});
 
   useEffect(() => {
-    if (filteredResults?.totalPages && filteredResults?.totalPages < pageState) {
-      searchParams.set("page", String(filteredResults.totalPages));
+    if (pageResults?.totalPages && pageResults?.totalPages < pageState) {
+      searchParams.set("page", String(pageResults.totalPages));
       setSearchParams(searchParams);
-      setPageState(filteredResults.totalPages);
+      setPageState(pageResults.totalPages);
     }
-  }, [filteredResults]);
+  }, [pageResults]);
 
 
-  const showPageNavigator = filteredResults && filteredResults.totalPages && filteredResults.totalPages > 1
+  const showPageNavigator = pageResults && pageResults.totalPages && pageResults.totalPages > 1
 
   if (errorResults) {
     return (
@@ -76,7 +57,7 @@ const News = () => {
                     size="medium"
                     icon={<PlusIcon aria-hidden/>}
                     iconPosition="left"
-                    onClick={handleCreateNewsRelease}
+                    onClick={() => navigate("/nyheter/opprett")}
             >
               Opprett ny nyhetsmelding
             </Button>
@@ -108,7 +89,7 @@ const News = () => {
                       size="medium"
                       icon={<PlusIcon aria-hidden/>}
                       iconPosition="left"
-                      onClick={handleCreateNewsRelease}
+                      onClick={() => navigate("/nyheter/opprett")}
               >
                 Opprett ny nyhetsmelding
               </Button>
@@ -122,69 +103,19 @@ const News = () => {
             </HStack>
           </div>
           {isLoadingFilteredResults && <Loader size="3xlarge"/>}
-          {filteredResults &&
+          {pageResults &&
               <div className="page__content-container">
                   <VStack className="products-page__producs" gap="4" paddingBlock="4">
                     {
-                      filteredResults.content.map((news) => (
-
-                          <ExpansionCard aria-label="Demo med description" key={news.id}>
-                            <ExpansionCard.Header>
-                              <ExpansionCard.Title>
-                                {news.title}
-                              </ExpansionCard.Title>
-                              <ExpansionCard.Description>
-                                <span>
-                                    Synlig på FinnHjelpemiddel fra {formatDateFunc(news.published)} til {formatDateFunc(news.expired)}
-                                </span>
-                              </ExpansionCard.Description>
-                              <StatusTag seriesStatus={newsRealseStatus(news.status)}/>
-                            </ExpansionCard.Header>
-                            <ExpansionCard.Content>
-                              <div className={styles.cardContainerDiv}>
-                                <span className={styles.seperatingLine}>
-                                    {parse(news.text)}
-                                </span>
-                                <Box className={styles.optionButton}>
-                                  <Dropdown>
-                                    <Button
-                                        variant="tertiary"
-                                        icon={<MenuElipsisVerticalIcon title="Rediger"
-                                                                       fontSize="1.5rem"/>}
-                                        as={Dropdown.Toggle}
-                                    />
-                                    <Dropdown.Menu>
-                                      <Dropdown.Menu.GroupedList>
-                                        <Dropdown.Menu.GroupedList.Item
-                                            onClick={() => {
-                                              navigate(`/nyheter/rediger/${news.id}`, {state: news})
-                                            }}>
-                                          Rediger nyhetsmelding
-                                        </Dropdown.Menu.GroupedList.Item>
-                                      </Dropdown.Menu.GroupedList>
-                                      <Dropdown.Menu.Divider/>
-                                      <Dropdown.Menu.List>
-                                        <Dropdown.Menu.List.Item
-                                            onClick={() => {
-                                              deleteNews(news.id).then(() => {mutateNewsRealse()})
-                                            }}
-                                        >
-                                          Slett nyhetsmelding
-                                        </Dropdown.Menu.List.Item>
-                                      </Dropdown.Menu.List>
-                                    </Dropdown.Menu>
-                                  </Dropdown>
-                                </Box>
-                              </div>
-                            </ExpansionCard.Content>
-                          </ExpansionCard>
-                      ))}
+                      pageResults.content.map((news : NewsRegistrationDTO) =>
+                          <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id}/>)
+                    }
                   </VStack>
               </div>
           }
 
           <HStack gap="8" wrap={false} align='end'>
-            {showPageNavigator === true && filteredResults && (
+            {showPageNavigator === true && pageResults && (
                 <Pagination
                     page={pageState}
                     onPageChange={(x) => {
@@ -192,7 +123,7 @@ const News = () => {
                       setSearchParams(searchParams);
                       setPageState(x);
                     }}
-                    count={filteredResults.totalPages!}
+                    count={pageResults.totalPages!}
                     size="small"
                     prevNextTexts
                 />
