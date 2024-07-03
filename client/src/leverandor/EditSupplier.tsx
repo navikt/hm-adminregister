@@ -28,6 +28,7 @@ export default function EditSupplier() {
   const {
     handleSubmit,
     register,
+    trigger,
     formState: { errors, isSubmitting, isDirty, isValid },
     reset,
   } = useForm<FormData>({
@@ -48,6 +49,7 @@ export default function EditSupplier() {
       homepage: supplier?.supplierData.homepage || "",
       phone: supplier?.supplierData.phone || "",
     });
+    trigger();
   }, [supplier]);
 
   if (supplierIsLoading) {
