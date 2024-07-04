@@ -16,7 +16,8 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import {calculateExpiredDate} from "./CreateNews"
-import {toDateTimeString} from "utils/date-util";
+import {toDate, toDateTimeString, toReadableDateTimeString, toReadableString} from "utils/date-util";
+import {format} from "date-fns";
 
 type FormData = {
     newsTitle: string;
@@ -36,9 +37,12 @@ const EditNews = () => {
     };
 
 
-    const [content, setContent] = useState(
+    const [contentText, setContent] = useState(
         newsData.text
     );
+
+    const [contentDate, setContentDate ] = useState(toReadableString(newsData.published))
+
 
     const {
         handleSubmit,
@@ -51,15 +55,16 @@ const EditNews = () => {
         mode: "onChange",
     });
 
-
     async function onSubmit(data: FormData) {
-
+        const publishedDate = (contentDate === newsData.published)
+                ? contentDate
+                : format(contentDate, "yyyy-dd-MM'T'HH:mm:ss")
         const newNewsRelease: NewsRegistrationDTO = {
             id: newsData.id,
             title: data.newsTitle,
-            text: content,
-            published: toDateTimeString(data.publishedOn),
-            expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
+            text: contentText,
+            published: publishedDate,
+            expired: calculateExpiredDate(toDate(publishedDate), data.durationInMonths),
             // UNDER ARE TEMP VALS
             status: "ACTIVE",
             draftStatus: "DRAFT",
@@ -113,13 +118,17 @@ const EditNews = () => {
                     <HStack paddingBlock="5 0" wrap={false} align='start' justify="space-between">
                         <DatePicker
                             {...datepickerProps}
+                            onSelect={(val?) =>
+                                (val) ? setContentDate(format(val,"dd.MM.yyyy")) : console.log("NEI!")}
                         >
+
 
                             <DatePicker.Input label={labelRequired("Synlig fra")}
                                               {...register("publishedOn", {required: true})}
                                               {...inputProps}
                                               name="publishedOn"
                                               id="publishedOn"
+                                              value={contentDate}
                                               error={errors.publishedOn && "Publiseringsdato er påkrevd"}
                             />
 
@@ -139,7 +148,7 @@ const EditNews = () => {
                     </Heading>
                     <div className="editorConteiner">
                         <RichTextEditorNews
-                            content={content} setContent={setContent}/>
+                            content={contentText} setContent={setContent}/>
                     </div>
 
                     <div className="button-container">
