@@ -131,7 +131,8 @@ const News = () => {
                       pageResults.content
                           .filter(handleFilterOption)
                           .map((news : NewsRegistrationDTO) =>
-                          <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id}/>)
+
+                          <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id} status={newsStatus}/>)
                     }
                   </VStack>
               </div>

@@ -6,7 +6,7 @@ import {MenuElipsisVerticalIcon} from "@navikt/aksel-icons";
 import {deleteNews} from "api/NewsApi";
 import React from "react";
 import {NewsRegistrationDTO} from "utils/types/response-types";
-import {toReadableString} from "utils/date-util";
+import {toDate, toReadableString} from "utils/date-util";
 import {SeriesStatus} from "utils/types/types";
 import {useNavigate} from "react-router-dom";
 import {KeyedMutator} from "swr";
@@ -14,15 +14,40 @@ import {NewsChunk} from "utils/types/response-types";
 
 
 export default function NewsCard(
-    {news, mutateNewsRealse, key}: {
+    {news, mutateNewsRealse, key, status}: {
       news: NewsRegistrationDTO,
       mutateNewsRealse: KeyedMutator<NewsChunk>,
       key: string
+      status: string
     }) {
 
-  const newsRealseStatus = (newsStatus: "ACTIVE" | "INACTIVE" | "DELETED") => {
-    return (newsStatus === "ACTIVE") ? (SeriesStatus.PUBLISHED) : (SeriesStatus.INACTIVE)
+  const newsRealseStatus = (newsStatus: string) => {
+    if ( newsStatus === "ALL") {
+        if (news.status === "INACTIVE" && (toDate(news.published) > new Date())){
+            return SeriesStatus.DRAFT
+        }
+        else if (news.status === "INACTIVE" && (toDate(news.published) < new Date())){
+            return SeriesStatus.INACTIVE
+        }
+        else if (news.status === "ACTIVE"){
+            return SeriesStatus.PUBLISHED
+        }
+        else {
+            return SeriesStatus.INACTIVE
+        }
+    }
+    if (newsStatus === "FUTURE") {
+        return SeriesStatus.DRAFT
+    }
+    if (newsStatus === "ACTIVE") {
+        return SeriesStatus.PUBLISHED
+    }
+    if (newsStatus === "EXPIRED") {
+        return SeriesStatus.INACTIVE
+    }
+    return SeriesStatus.DRAFT_CHANGE
   }
+
 
   const navigate = useNavigate();
 
@@ -36,7 +61,7 @@ export default function NewsCard(
                                     Synlig på FinnHjelpemiddel fra {toReadableString(news.published)} til {toReadableString(news.expired)}
                                 </span>
       </ExpansionCard.Description>
-      <StatusTag seriesStatus={newsRealseStatus(news.status)}/>
+      <StatusTag seriesStatus={newsRealseStatus(status)}/>
     </ExpansionCard.Header>
     <ExpansionCard.Content>
       <div className={styles.cardContainerDiv}>
@@ -69,7 +94,7 @@ export default function NewsCard(
                       })
                     }}
                 >
-                  Slett nyhetsmelding
+                  Gjør utgått
                 </Dropdown.Menu.List.Item>
               </Dropdown.Menu.List>
             </Dropdown.Menu>
