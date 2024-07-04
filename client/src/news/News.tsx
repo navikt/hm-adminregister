@@ -28,7 +28,6 @@ const News = () => {
   const navigate = useNavigate();
 
   function handleFilterOption(element: any) {
-    console.log(toDate(element.published) > new Date())
     if (newsStatus == "ALL") {
       return true
     } else if (newsStatus == "FUTURE" && element.status == "INACTIVE" && (toDate(element.published) > new Date())) {
@@ -132,7 +131,7 @@ const News = () => {
                       pageResults.content
                           .filter(handleFilterOption)
                           .map((news : NewsRegistrationDTO) =>
-                          <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id}/>)
+                          <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id} status={newsStatus}/>)
                     }
                   </VStack>
               </div>
