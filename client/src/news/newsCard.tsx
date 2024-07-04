@@ -21,8 +21,6 @@ export default function NewsCard(
       status: string
     }) {
 
-    console.log(status)
-
   const newsRealseStatus = (newsStatus: string) => {
     if ( newsStatus === "ALL") {
         if (news.status === "INACTIVE" && (toDate(news.published) > new Date())){
@@ -96,7 +94,7 @@ export default function NewsCard(
                       })
                     }}
                 >
-                  Slett nyhetsmelding
+                  Gjør utgått
                 </Dropdown.Menu.List.Item>
               </Dropdown.Menu.List>
             </Dropdown.Menu>

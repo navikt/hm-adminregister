@@ -32,13 +32,22 @@ export function calculateExpiredDate(publishedDate: Date, durationInMonths: stri
     return endDate;
 }
 
+export function calcualteStatus(publishedDate : Date, durationInMonths : string) {
+    const toDay = new Date()
+    const expiredDate = calculateExpiredDate(publishedDate, durationInMonths)
+    if (publishedDate <= toDay && toDay <= expiredDate){
+        return "ACTIVE"
+    }
+    else{
+        return "INACTIVE"
+    }
+}
+
+
 const CreateNews = () => {
 
     const navigate = useNavigate();
-
-    const navigateCreation = () => {
-        navigate("/nyheter");
-    };
+    const navigateEdit = () => {navigate("/nyheter")};
 
     const [content, setContent] = useState(
         ""
@@ -55,6 +64,7 @@ const CreateNews = () => {
 
 
     async function onSubmit(data: FormData) {
+        calcualteStatus(data.publishedOn)
         const newNewsRelease: NewsRegistrationDTO = {
             id: uuidv4(),
             title: data.newsTitle,
@@ -62,7 +72,7 @@ const CreateNews = () => {
             published: data.publishedOn,
             expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS
-            status: "ACTIVE",
+            status: calcualteStatus(data.publishedOn),
             draftStatus: "DRAFT",
             created: data.publishedOn,
             updated: data.publishedOn,
@@ -72,7 +82,7 @@ const CreateNews = () => {
             createdByUser: "a",
             updatedByUser: "a",
         };
-        createNews(newNewsRelease).then(navigateCreation)
+        createNews(newNewsRelease).then(navigateEdit)
     }
 
     const {datepickerProps, inputProps, selectedDay} = useDatepicker({

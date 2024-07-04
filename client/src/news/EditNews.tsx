@@ -15,7 +15,7 @@ import {updateNews} from "api/NewsApi";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
-import {calculateExpiredDate} from "./CreateNews"
+import {calcualteStatus, calculateExpiredDate} from "./CreateNews"
 import {toDate, toDateTimeString, toReadableDateTimeString, toReadableString} from "utils/date-util";
 import {format} from "date-fns";
 
@@ -66,7 +66,7 @@ const EditNews = () => {
             published: publishedDate,
             expired: calculateExpiredDate(toDate(publishedDate), data.durationInMonths),
             // UNDER ARE TEMP VALS
-            status: "ACTIVE",
+            status: calcualteStatus(toDate(publishedDate),data.durationInMonths),
             draftStatus: "DRAFT",
             created: newsData.created,
             updated: new Date(),
@@ -118,8 +118,6 @@ const EditNews = () => {
                     <HStack paddingBlock="5 0" wrap={false} align='start' justify="space-between">
                         <DatePicker
                             {...datepickerProps}
-                            onSelect={(val?) =>
-                                (val) ? setContentDate(format(val,"dd.MM.yyyy")) : console.log("NEI!")}
                         >
 
 
