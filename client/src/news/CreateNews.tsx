@@ -64,11 +64,10 @@ const CreateNews = () => {
 
 
     async function onSubmit(data: FormData) {
-        calcualteStatus(data.publishedOn)
         const newNewsRelease: NewsRegistrationDTO = {
             id: uuidv4(),
             title: data.newsTitle,
-            text: content,
+            text: content.replace("<p><br></p>", ""),
             published: data.publishedOn,
             expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
             // UNDER ARE TEMP VALS

@@ -40,3 +40,5 @@ export default function RichTextEditorNews(props : RichTextEditorNewsProps) {
             />
     );
 }
+
+

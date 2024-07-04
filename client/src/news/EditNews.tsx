@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {NewspaperIcon} from "@navikt/aksel-icons";
 import {
     Button,
@@ -54,13 +54,20 @@ const EditNews = () => {
     });
 
     async function onSubmit(data: FormData) {
+        console.log("vanlig")
+        console.log(contentText)
+        console.log("moda")
+        const regex = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm
+        console.log(contentText.replace(regex, "<br>"))
+
         const publishedDate = (data.publishedOn.length == "dd.mm.yyyy".length) //Check if the date is not updated by the datepicker
                 ? format(data.publishedOn, "yyyy-dd-MM'T'HH:mm:ss")
                 : data.publishedOn;
+
         const newNewsRelease: NewsRegistrationDTO = {
             id: newsData.id,
             title: data.newsTitle,
-            text: contentText,
+            text: contentText.replace(regex, "<br>"),
             published: publishedDate,
             expired: calculateExpiredDate(publishedDate, data.durationInMonths),
             // UNDER ARE TEMP VALS
@@ -89,7 +96,6 @@ const EditNews = () => {
 
         }
     });
-
 
     return (
         <div className="create-new-supplier">

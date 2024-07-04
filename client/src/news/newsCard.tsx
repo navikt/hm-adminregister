@@ -62,9 +62,9 @@ export default function NewsCard(
     </ExpansionCard.Header>
     <ExpansionCard.Content>
       <div className={styles.cardContainerDiv}>
-                                <span className={styles.seperatingLine}>
-                                    {parse(news.text)}
-                                </span>
+        <span className={styles.seperatingLine}>
+          {parse(news.text)}
+        </span>
         <Box className={styles.optionButton}>
           <Dropdown>
             <Button
