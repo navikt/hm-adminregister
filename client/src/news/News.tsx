@@ -1,7 +1,6 @@
 import {
-  Alert, Box,
-  Button, Checkbox, Dropdown,
-  ExpansionCard,
+  Alert,
+  Button,
   Heading,
   HGrid,
   HStack,
@@ -10,16 +9,14 @@ import {
   Select, ToggleGroup,
   VStack
 } from "@navikt/ds-react";
-import {MenuElipsisVerticalIcon, PlusIcon} from "@navikt/aksel-icons";
+import { PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {deleteNews, useFilteredNews} from "api/NewsApi";
-import parse from "html-react-parser";
+import { getPageNews} from "api/NewsApi";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
-import StatusTag from "felleskomponenter/StatusTag";
-import {SeriesStatus} from "utils/types/types";
-import news from "news/News";
 import {toDate} from "utils/date-util";
+import {NewsRegistrationDTO} from "utils/types/response-types";
+import NewsCard from "news/newsCard";
 
 const News = () => {
 
@@ -29,19 +26,6 @@ const News = () => {
   const [newsStatus, setNewsStatus] = useState("ACTIVE");
 
   const navigate = useNavigate();
-
-  const handleCreateNewsRelease = () => {
-    navigate("/nyheter/opprett");
-  };
-
-  const formatDateFunc = (dateString : string) => {
-    const date = new Date(dateString)
-    return (date.toLocaleDateString("no-NO",{dateStyle:"long"} ))
-  };
-
-  const newsRealseStatus = (newsStatus : "ACTIVE" | "INACTIVE" | "DELETED")  => {
-    return (newsStatus === "ACTIVE") ? (SeriesStatus.PUBLISHED) : (SeriesStatus.INACTIVE)
-  }
 
   function handleFilterOption(element: any) {
     console.log(toDate(element.published) > new Date())
@@ -60,7 +44,7 @@ const News = () => {
     isLoading: isLoadingFilteredResults,
     error: errorResults,
     mutate: mutateNewsRealse
-  } = useFilteredNews({
+  } = getPageNews({
     page: pageState -1,
     pageSize: pageSizeState
   });
@@ -145,7 +129,9 @@ const News = () => {
               <div className="page__content-container">
                   <VStack className="products-page__producs" gap="4" paddingBlock="4">
                     {
-                      pageResults.content.map((news : NewsRegistrationDTO) =>
+                      pageResults.content
+                          .filter(handleFilterOption)
+                          .map((news : NewsRegistrationDTO) =>
                           <NewsCard news={news} mutateNewsRealse={mutateNewsRealse} key={news.id}/>)
                     }
                   </VStack>
@@ -153,7 +139,7 @@ const News = () => {
           }
 
           <HStack gap="8" wrap={false} align='end'>
-            {showPageNavigator === true && pageResults && (
+            {showPageNavigator && pageResults && (
                 <Pagination
                     page={pageState}
                     onPageChange={(x) => {
