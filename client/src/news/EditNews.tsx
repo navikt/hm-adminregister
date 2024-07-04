@@ -54,11 +54,11 @@ const EditNews = () => {
     });
 
     async function onSubmit(data: FormData) {
-        console.log("vanlig")
-        console.log(contentText)
-        console.log("moda")
+        //console.log("vanlig")
+        //console.log(contentText)
+        //console.log("moda")
         const regex = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm
-        console.log(contentText.replace(regex, "<br>"))
+        //console.log(contentText.replace(regex, "<br>"))
 
         const publishedDate = (data.publishedOn.length == "dd.mm.yyyy".length) //Check if the date is not updated by the datepicker
                 ? format(data.publishedOn, "yyyy-dd-MM'T'HH:mm:ss")
