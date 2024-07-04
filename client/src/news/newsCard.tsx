@@ -14,36 +14,33 @@ import {NewsChunk} from "utils/types/response-types";
 
 
 export default function NewsCard(
-    {news, mutateNewsRealse, key, status}: {
+    {news, mutateNewsRealse, uniqueKey, status}: {
       news: NewsRegistrationDTO,
       mutateNewsRealse: KeyedMutator<NewsChunk>,
-      key: string
+      uniqueKey: string
       status: string
     }) {
 
   const newsRealseStatus = (newsStatus: string) => {
-    if ( newsStatus === "ALL") {
-        if (news.status === "INACTIVE" && (toDate(news.published) > new Date())){
-            return SeriesStatus.DRAFT
-        }
-        else if (news.status === "INACTIVE" && (toDate(news.published) < new Date())){
-            return SeriesStatus.INACTIVE
-        }
-        else if (news.status === "ACTIVE"){
-            return SeriesStatus.PUBLISHED
-        }
-        else {
-            return SeriesStatus.INACTIVE
-        }
+    if (newsStatus === "ALL") {
+      if (news.status === "INACTIVE" && (toDate(news.published) > new Date())) {
+        return SeriesStatus.DRAFT
+      } else if (news.status === "INACTIVE" && (toDate(news.published) < new Date())) {
+        return SeriesStatus.INACTIVE
+      } else if (news.status === "ACTIVE") {
+        return SeriesStatus.PUBLISHED
+      } else {
+        return SeriesStatus.INACTIVE
+      }
     }
     if (newsStatus === "FUTURE") {
-        return SeriesStatus.DRAFT
+      return SeriesStatus.DRAFT
     }
     if (newsStatus === "ACTIVE") {
-        return SeriesStatus.PUBLISHED
+      return SeriesStatus.PUBLISHED
     }
     if (newsStatus === "EXPIRED") {
-        return SeriesStatus.INACTIVE
+      return SeriesStatus.INACTIVE
     }
     return SeriesStatus.DRAFT_CHANGE
   }
@@ -51,7 +48,7 @@ export default function NewsCard(
 
   const navigate = useNavigate();
 
-  return (<ExpansionCard aria-label="Demo med description" key={key}>
+  return (<ExpansionCard aria-label="Demo med description" key={uniqueKey}>
     <ExpansionCard.Header>
       <ExpansionCard.Title>
         {news.title}
