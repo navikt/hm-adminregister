@@ -28,7 +28,6 @@ const News = () => {
   const navigate = useNavigate();
 
   function handleFilterOption(element: any) {
-    console.log(toDate(element.published) > new Date())
     if (newsStatus == "ALL") {
       return true
     } else if (newsStatus == "FUTURE" && element.status == "INACTIVE" && (toDate(element.published) > new Date())) {
