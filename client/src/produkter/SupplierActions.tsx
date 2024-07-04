@@ -3,6 +3,8 @@ import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { supplierCanChangeAgreementProduct } from "utils/supplier-util";
+import { exportProducts } from "api/ImportExportApi";
+import { useNavigate } from "react-router-dom";
 
 const SupplierActions = ({
   series,
@@ -33,7 +35,22 @@ const SupplierActions = ({
   const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
   const canSetToEditMode =
     series.status !== "DELETED" && series.draftStatus === "DONE" && series.adminStatus !== "PENDING";
+  const isPendingApproval = series.adminStatus === "PENDING" && series.draftStatus === "DONE";
   const { loggedInUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  const exportProductsForSupplier = () => {
+    exportProducts(loggedInUser?.isAdmin || false, series.id).then((response) => {
+      const bytes = new Uint8Array(response); // pass your byte response to this constructor
+      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "products.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
 
   return (
     <HStack align={"end"} gap="2">
@@ -91,6 +108,15 @@ const SupplierActions = ({
                 <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>
                   Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå
                 </Dropdown.Menu.GroupedList.Heading>
+              )}
+              <Dropdown.Menu.Divider />
+              <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
+                Eksporter varianter
+              </Dropdown.Menu.List.Item>
+              {!isPendingApproval && (
+                <Dropdown.Menu.List.Item onClick={() => navigate(`/produkt/${series.id}/importer-produkter`)}>
+                  Importer varianter
+                </Dropdown.Menu.List.Item>
               )}
             </Dropdown.Menu.List>
           </Dropdown.Menu>

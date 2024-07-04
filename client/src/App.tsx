@@ -43,15 +43,6 @@ export function App() {
 
         <Route element={<LoginWrapper />}>
           <Route
-            path="/produkter/importer-produkter"
-            element={
-              <>
-                <ImporterOgValiderProdukter />
-              </>
-            }
-          />
-
-          <Route
             path="/produkter"
             element={
               <>
@@ -90,6 +81,15 @@ export function App() {
             element={
               <>
                 <OpprettProduktVariant />
+              </>
+            }
+          />
+
+          <Route
+            path="/produkt/:seriesId/importer-produkter"
+            element={
+              <>
+                <ImporterOgValiderProdukter />
               </>
             }
           />

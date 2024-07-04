@@ -2,6 +2,7 @@ import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader, VStack } f
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import { fileToUri } from "utils/file-util";
+import { useSeries } from "utils/swr-hooks";
 
 export interface Upload {
   file: File;
@@ -10,14 +11,16 @@ export interface Upload {
 
 export interface Props {
   validerImporterteProdukter: (upload: Upload) => void;
+  seriesId: string;
 }
 
-export default function ImporterProdukter({ validerImporterteProdukter }: Props) {
+export default function ImporterProdukter({ validerImporterteProdukter, seriesId }: Props) {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
   const [fileTypeError, setFileTypeError] = useState("");
   const [moreThanOnefileError, setMoreThanOnefileError] = useState("");
+  const { series, isLoadingSeries, errorSeries } = useSeries(seriesId);
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setFileTypeError("");
@@ -65,12 +68,24 @@ export default function ImporterProdukter({ validerImporterteProdukter }: Props)
     setUpload(undefined);
   };
 
+  if (isLoadingSeries) {
+    return (
+      <main>
+        <div className="import-products">
+          <div className="content">
+            <Loader size="2xlarge" title="venter..." />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main>
       <div className="import-products">
         <div className="content">
           <Heading level="1" size="large" align="center">
-            Importer produkter
+            Importer varianter for {series?.title}
           </Heading>
           <BodyShort>Velg importfil fra din maskin og last opp. Filen må være i .xlsx format.</BodyShort>
 
