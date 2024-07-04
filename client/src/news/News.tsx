@@ -7,31 +7,63 @@ import {
   HStack,
   Loader,
   Pagination,
-  Select,
+  Select, ToggleGroup,
   VStack
 } from "@navikt/ds-react";
-import {PlusIcon} from "@navikt/aksel-icons";
+import {MenuElipsisVerticalIcon, PlusIcon} from "@navikt/aksel-icons";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {getPageNews} from "api/NewsApi";
+import {deleteNews, useFilteredNews} from "api/NewsApi";
+import parse from "html-react-parser";
 import styles from "./News.module.scss"
 import React, {useEffect, useState} from "react";
-import NewsCard from "./newsCard";
-import {NewsRegistrationDTO} from "utils/types/response-types";
+import StatusTag from "felleskomponenter/StatusTag";
+import {SeriesStatus} from "utils/types/types";
+import news from "news/News";
+import {toDate} from "utils/date-util";
 
 const News = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 5);
-  const [includeInactive, setIncludeInactive] = useState(false);
+  const [newsStatus, setNewsStatus] = useState("ACTIVE");
+
   const navigate = useNavigate();
+
+  const handleCreateNewsRelease = () => {
+    navigate("/nyheter/opprett");
+  };
+
+  const formatDateFunc = (dateString : string) => {
+    const date = new Date(dateString)
+    return (date.toLocaleDateString("no-NO",{dateStyle:"long"} ))
+  };
+
+  const newsRealseStatus = (newsStatus : "ACTIVE" | "INACTIVE" | "DELETED")  => {
+    return (newsStatus === "ACTIVE") ? (SeriesStatus.PUBLISHED) : (SeriesStatus.INACTIVE)
+  }
+
+  function handleFilterOption(element: any) {
+    console.log(toDate(element.published) > new Date())
+    if (newsStatus == "ALL") {
+      return true
+    } else if (newsStatus == "FUTURE" && element.status == "INACTIVE" && (toDate(element.published) > new Date())) {
+      return true
+    } else if (newsStatus == "EXPIRED" && element.status == "INACTIVE" && (toDate(element.published) < new Date())) {
+      return true
+    }
+    return (newsStatus == element.status)
+  }
 
   const {
     data: pageResults,
     isLoading: isLoadingFilteredResults,
     error: errorResults,
     mutate: mutateNewsRealse
-  } = getPageNews({page: pageState -1, pageSize: pageSizeState});
+  } = useFilteredNews({
+    page: pageState -1,
+    pageSize: pageSizeState
+  });
 
   useEffect(() => {
     if (pageResults?.totalPages && pageResults?.totalPages < pageState) {
@@ -84,6 +116,19 @@ const News = () => {
           <div className="page__content-container">
             <HStack justify="space-between"
                     gap="4">
+
+              <ToggleGroup
+                  value={newsStatus}
+                  onChange={(value) => setNewsStatus(value)}
+                  size="small"
+                  defaultChecked={true}
+              >
+                <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
+                <ToggleGroup.Item value={"FUTURE"}>Fremtidige</ToggleGroup.Item>
+                <ToggleGroup.Item value={"ACTIVE"} defaultChecked >Aktive</ToggleGroup.Item>
+                <ToggleGroup.Item value={"EXPIRED"}>Utgåtte</ToggleGroup.Item>
+              </ToggleGroup>
+
               <Button className={styles.createNewsButton}
                       variant="secondary"
                       size="medium"
@@ -93,13 +138,6 @@ const News = () => {
               >
                 Opprett ny nyhetsmelding
               </Button>
-
-              <Checkbox onChange={() => {
-                setIncludeInactive(!includeInactive);
-              }}>
-                Vis inaktive
-              </Checkbox>
-
             </HStack>
           </div>
           {isLoadingFilteredResults && <Loader size="3xlarge"/>}
