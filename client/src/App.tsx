@@ -34,6 +34,7 @@ import ErrorModal from "error/ErrorModal";
 import News from "news/News";
 import CreateNews from "news/CreateNews";
 import EditNews from "news/EditNews";
+import EditSupplier from "leverandor/EditSupplier";
 
 export function App() {
     return (
@@ -43,68 +44,69 @@ export function App() {
                 <Route path="/" element={<Startside/>}/>
                 <Route path="/logg-inn" element={<LoggInn/>}/>
 
-                <Route element={<LoginWrapper/>}>
-                    <Route
-                        path="/produkter/importer-produkter"
-                        element={
-                            <>
-                                <ImporterOgValiderProdukter/>
-                            </>
-                        }
-                    />
+        <Route element={<LoginWrapper />}>
+          <Route
+            path="/produkter"
+            element={
+              <>
+                <Navbar />
+                <Produkter />
+              </>
+            }
+          />
+          <Route
+            path="/produkter/opprett"
+            element={
+              <>
+                <OpprettProdukt />
+              </>
+            }
+          />
+          <Route
+            path="/produkter/:seriesId"
+            element={
+              <>
+                <Navbar />
+                <Produkt />
+              </>
+            }
+          />
+          <Route
+            path="/produkter/:seriesId/rediger-variant/:productId"
+            element={
+              <>
+                <RedigerProduktVariant />
+              </>
+            }
+          />
+          <Route
+            path="/produkter/:seriesId/opprett-variant/:productId"
+            element={
+              <>
+                <OpprettProduktVariant />
+              </>
+            }
+          />
 
-                    <Route
-                        path="/produkter"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Produkter/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/produkter/opprett"
-                        element={
-                            <>
-                                <OpprettProdukt/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/produkter/:seriesId"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Produkt/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/produkter/:seriesId/rediger-variant/:productId"
-                        element={
-                            <>
-                                <RedigerProduktVariant/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/produkter/:seriesId/opprett-variant/:productId"
-                        element={
-                            <>
-                                <OpprettProduktVariant/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/produkt/:seriesId/importer-produkter"
+            element={
+              <>
+                <ImporterOgValiderProdukter />
+              </>
+            }
+          />
 
-                    <Route
-                        path="/til-godkjenning"
-                        element={
-                            <>
-                                <Navbar/>
-                                <TilGodkjenning/>
-                            </>
-                        }
-                    />
+
+          <Route
+            path="/til-godkjenning"
+            element={
+              <>
+                <Navbar />
+                <TilGodkjenning />
+              </>
+            }
+          />
 
                     <Route
                         path="/admin/profil"
@@ -166,40 +168,48 @@ export function App() {
                         }
                     />
 
-                    <Route
-                        path="/leverandor"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Leverandører/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/leverandor/:id"
-                        element={
-                            <>
-                                <Navbar/>
-                                <LeverandørProfil/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/leverandor/opprett-leverandor"
-                        element={
-                            <>
-                                <OpprettLeverandør/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/leverandor/opprett-bruker"
-                        element={
-                            <>
-                                <OpprettLeverandørBruker/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/leverandor"
+            element={
+              <>
+                <Navbar />
+                <Leverandører />
+              </>
+            }
+          />
+          <Route
+            path="/leverandor/:id"
+            element={
+              <>
+                <Navbar />
+                <LeverandørProfil />
+              </>
+            }
+          />
+          <Route
+            path="/leverandor/opprett-leverandor"
+            element={
+              <>
+                <OpprettLeverandør />
+              </>
+            }
+          />
+          <Route
+            path="/leverandor/endre-leverandor/:supplierId"
+            element={
+              <>
+                <EditSupplier />
+              </>
+            }
+          />
+          <Route
+            path="/leverandor/opprett-bruker"
+            element={
+              <>
+                <OpprettLeverandørBruker />
+              </>
+            }
+          />
 
                     <Route
                         path="/rammeavtaler"

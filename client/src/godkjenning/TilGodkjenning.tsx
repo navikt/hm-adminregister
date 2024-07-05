@@ -2,8 +2,8 @@ import "./til-godkjenning.scss";
 import { Alert, Heading, HGrid, Loader, Pagination, Search } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
-import { SeriesTable } from "godkjenning/SeriesTable";
 import { SeriesToApproveDto } from "utils/types/response-types";
+import { SeriesToApproveTable } from "godkjenning/SeriesToApproveTable";
 
 export const TilGodkjenning = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -13,7 +13,11 @@ export const TilGodkjenning = () => {
   const pageSize = 10;
 
   const { data: allData, isLoading: allDataIsLoading, error: allDataError } = useSeriesToApprove();
-  const { data: pagedData, isLoading, error: pagedDataError } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
+  const {
+    data: pagedData,
+    isLoading,
+    error: pagedDataError,
+  } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
@@ -82,6 +86,7 @@ export const TilGodkjenning = () => {
                     label="Søk etter et produkt"
                     hideLabel={false}
                     clearButton={true}
+                    placeholder="Søk etter produktnavn"
                     size="medium"
                     value={searchTerm}
                     onChange={(value) => handleSearch(value)}
@@ -107,9 +112,9 @@ export const TilGodkjenning = () => {
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
-                <SeriesTable series={filteredData || []} />
+                <SeriesToApproveTable series={filteredData || []} />
               ) : pagedData?.content && pagedData.content.length > 0 ? (
-                <SeriesTable series={pagedData?.content} />
+                <SeriesToApproveTable series={pagedData?.content} />
               ) : (
                 <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
               )}

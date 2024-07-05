@@ -14,7 +14,7 @@ import styles from "./ProductVariantForm.module.scss";
 type FormData = {
   articleName: string;
   supplierRef: string;
-  hmsArtNr: string;
+  hmsArtNr: string | null;
   techData: Array<{
     key: string;
     value: string;
@@ -49,7 +49,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
     mode: "onTouched",
     defaultValues: {
       articleName,
-      hmsArtNr: product.hmsArtNr ?? "",
+      hmsArtNr: product.hmsArtNr,
       supplierRef: isUUID(supplierRef) ? "" : supplierRef,
       techData: product.productData.techData,
     },

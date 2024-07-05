@@ -1,16 +1,19 @@
-import { Link, SortState, Table, Tag } from "@navikt/ds-react";
+import { SortState, Table } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
-import { ChevronRightIcon } from "@navikt/aksel-icons";
+import styles from "./SeriesToApproveTable.module.scss";
 import { baseUrl } from "utils/swr-hooks";
 import { Thumbnail } from "felleskomponenter/Thumbnail";
+import { useNavigate } from "react-router-dom";
+import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
 
 interface SeriesTableProps {
   series: SeriesToApproveDto[];
 }
 
-export const SeriesTable = ({ series }: SeriesTableProps) => {
+export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
   const [sort, setSort] = useState<SortState | undefined>();
+  const navigate = useNavigate();
 
   const handleSort = (sortKey: string | undefined) => {
     if (!sortKey) return;
@@ -43,13 +46,17 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
     return 1;
   });
 
+  const onNavigateToProduct = (seriesUUID: string) => {
+    navigate(`/produkter/${seriesUUID}`);
+  };
+
   return (
-    <>
-      <Table className="products-table" sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
+    <div className={styles.seriesToApproveTable}>
+      <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader> </Table.ColumnHeader>
-            <Table.ColumnHeader>Produkt</Table.ColumnHeader>
+            <Table.HeaderCell> </Table.HeaderCell>
+            <Table.HeaderCell>Produkt</Table.HeaderCell>
             <Table.ColumnHeader sortKey="status" sortable>
               Status
             </Table.ColumnHeader>
@@ -59,50 +66,38 @@ export const SeriesTable = ({ series }: SeriesTableProps) => {
             <Table.ColumnHeader sortKey="supplierName" sortable>
               Leverandør
             </Table.ColumnHeader>
-            <Table.ColumnHeader> </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {sortedData.map((series, i) => {
             return (
               <Table.Row key={i + series.title}>
-                <Table.DataCell style={{ padding: "8px" }}>
+                <Table.DataCell className={styles.imgTd}>
                   {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
                 </Table.DataCell>
-                <Table.HeaderCell scope="row">
+                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
                   <div>{series.title}</div>
-                </Table.HeaderCell>
-                <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
-                {/*<Table.DataCell>{delkontrakttittel ?? "Ingen delkontrakt"}</Table.DataCell>*/}
-                <Table.DataCell>{series.supplierName}</Table.DataCell>
-                <Table.DataCell>
-                  {" "}
-                  <Link href={baseUrl(`/produkter/${series.seriesUUID}`)}>
-                    <ChevronRightIcon title="gå til produkt" fontSize="1.5rem" />
-                  </Link>
+                </Table.DataCell>
+                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
+                  {<StatusTag status={series.status} />}
+                </Table.DataCell>
+                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
+                  {series.supplierName}
                 </Table.DataCell>
               </Table.Row>
             );
           })}
         </Table.Body>
       </Table>
-    </>
+    </div>
   );
 };
 
 const StatusTag = ({ status }: { status: string }) => {
   if (status === "NEW") {
-    return (
-      <Tag size="small" variant="success">
-        Nytt produkt
-      </Tag>
-    );
+    return <TagWithIcon icon={<></>} text="Nytt produkt" color={colors.GREEN} />;
   } else if (status === "CHANGE") {
-    return (
-      <Tag size="small" variant="warning">
-        Endret produkt
-      </Tag>
-    );
+    return <TagWithIcon icon={<></>} text="Endret produkt" color={colors.ORANGE} />;
   } else {
     return <> </>;
   }

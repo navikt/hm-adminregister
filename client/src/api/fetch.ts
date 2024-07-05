@@ -69,7 +69,7 @@ export const fetchAPIWithHeaders = async (url: string, method: string, body?: an
     return await response.json();
   } else {
     const json = await response.json();
-    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
+    const error = { message: json?.message || response.statusText, status: response.status };
     return Promise.reject(error);
   }
 };

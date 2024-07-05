@@ -1,0 +1,47 @@
+@use "../../styles/_mixins";
+
+.diffModal {
+  width: 100vw;
+
+
+  @include mixins.for-size(tablet-up) {
+    max-height: 90% !important;
+    max-width: 90% !important;
+  }
+
+  @include mixins.for-size(desktop-up) {
+    max-height: 90% !important;
+    max-width: 60% !important;
+  }
+
+  &ModalBody {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}
+
+.previous {
+  width: fit-content;
+}
+
+.current {
+  background: var(--a-surface-success-subtle);
+  width: fit-content;
+}
+
+.changeRow {
+  margin-left: 1rem;
+  padding: 1rem;
+  border: black 1px solid;
+  s {
+    color: white;
+  }
+}
+
+.field {
+  margin: 1rem;
+}
+
+

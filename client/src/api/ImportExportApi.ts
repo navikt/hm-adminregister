@@ -2,9 +2,9 @@ import { ProductAgreementImportDTO, ProductRegistrationDTO } from "utils/types/r
 import { Upload } from "produkter/import/ImporterProdukter";
 import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from "api/fetch";
 
-export const exportProducts = async (isAdmin: boolean): Promise<any> => {
+export const exportProducts = async (isAdmin: boolean, seriesId: string): Promise<any> => {
   return await fetchAPIWithHeadersAndArrayBufferResponse(
-    getPath(isAdmin, "/api/v1/product/registrations/excel/export/supplier"),
+    getPath(isAdmin, `/api/v1/product/registrations/excel/export/supplier/${seriesId}`),
     "POST",
     undefined,
     {
@@ -15,6 +15,7 @@ export const exportProducts = async (isAdmin: boolean): Promise<any> => {
 
 export const importProducts = async (
   isAdmin: boolean,
+  seriesId: string,
   upload: Upload,
   dryRun: boolean,
 ): Promise<ProductRegistrationDTO[]> => {
@@ -24,7 +25,9 @@ export const importProducts = async (
   return await fetchAPIWithHeaders(
     getPath(
       isAdmin,
-      dryRun ? "/api/v1/product/registrations/excel/import-dryrun" : "/api/v1/product/registrations/excel/import",
+      dryRun
+        ? `/api/v1/product/registrations/excel/import-dryrun/${seriesId}`
+        : `/api/v1/product/registrations/excel/import/${seriesId}`,
     ),
     "POST",
     formData,

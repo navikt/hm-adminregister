@@ -9,10 +9,6 @@ export const DeleteVariantConfirmationModal = ({
   params: { open: boolean; variantId: string | undefined };
   setParams: (params: { open: boolean; variantId: string | undefined }) => void;
 }) => {
-  if (!params.variantId) {
-    console.log("Varianten som skal slettes ble ikke funnet.");
-  }
-
   return (
     <Modal
       open={params.open}

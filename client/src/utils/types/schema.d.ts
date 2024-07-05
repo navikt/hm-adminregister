@@ -159,6 +159,12 @@ export interface paths {
     put: operations["updateProduct"];
     delete: operations["deleteProduct"];
   };
+  "/admreg/admin/api/v1/product/versions": {
+    get: operations["getSeriesVersions"];
+  };
+  "/admreg/admin/api/v1/product/versions/{productId}/compare/{version}/approved": {
+    get: operations["compareVersionWithApproved"];
+  };
   "/admreg/admin/api/v1/series": {
     get: operations["getSeries"];
   };
@@ -171,17 +177,23 @@ export interface paths {
   "/admreg/admin/api/v1/series/reject/{id}": {
     put: operations["rejectSeries"];
   };
-  "/admreg/admin/api/v1/series/supplierRefl/{supplierRef}": {
+  "/admreg/admin/api/v1/series/series-to-active/{seriesUUID}": {
+    put: operations["setPublishedSeriesToActive"];
+  };
+  "/admreg/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
+    put: operations["setPublishedSeriesToInactive"];
+  };
+  "/admreg/admin/api/v1/series/supplierRef/{supplierRef}": {
     get: operations["findSeriesForSupplierRef"];
   };
   "/admreg/admin/api/v1/series/to-approve": {
     get: operations["findSeriesPendingApprove"];
   };
   "/admreg/admin/api/v1/series/versions": {
-    get: operations["getSeriesVersions"];
+    get: operations["getSeriesVersions_1"];
   };
   "/admreg/admin/api/v1/series/versions/{seriesId}/compare/{version}/approved": {
-    get: operations["compareVersionWithApproved"];
+    get: operations["compareVersionWithApproved_1"];
   };
   "/admreg/admin/api/v1/series/{id}": {
     get: operations["readSeries"];
@@ -271,6 +283,9 @@ export interface paths {
   "/admreg/vendor/api/v1/media/{type}/{oid}/{uri}": {
     delete: operations["deleteFiles"];
   };
+  "/admreg/vendor/api/v1/product-agreement/in-agreement/{seriesId}": {
+    get: operations["isSeriesInAgreement"];
+  };
   "/admreg/vendor/api/v1/product/registrations": {
     get: operations["findProducts_1"];
   };
@@ -317,6 +332,12 @@ export interface paths {
   };
   "/admreg/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
     put: operations["setSeriesToBeApproved"];
+  };
+  "/admreg/vendor/api/v1/series/series-to-active/{seriesUUID}": {
+    put: operations["setPublishedSeriesToActive_1"];
+  };
+  "/admreg/vendor/api/v1/series/series-to-inactive/{seriesUUID}": {
+    put: operations["setPublishedSeriesToInactive_1"];
   };
   "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setPublishedSeriesToDraft"];
@@ -374,6 +395,7 @@ export interface components {
       text?: string | null;
       identifier: string;
       attachments: components["schemas"]["AgreementAttachment"][];
+      /** @deprecated */
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
@@ -565,9 +587,6 @@ export interface components {
       textEn?: string | null;
     };
     "MapDifference_String.Object_": {
-      entriesInCommon: {
-        [key: string]: unknown;
-      };
       entriesDiffering: {
         [key: string]: components["schemas"]["Pair_Object.Object_"];
       };
@@ -670,55 +689,61 @@ export interface components {
     };
     Page_AgreementBasicInformationDto_: components["schemas"]["Slice_AgreementBasicInformationDto_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_NewsRegistrationDTO_: components["schemas"]["Slice_NewsRegistrationDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_ProductRegistrationDTO_: components["schemas"]["Slice_ProductRegistrationDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_ProductRegistrationVersionDTO_: components["schemas"]["Slice_ProductRegistrationVersionDTO_"] & {
+      /** Format: int64 */
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_ProductToApproveDto_: components["schemas"]["Slice_ProductToApproveDto_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_SeriesRegistrationDTO_: components["schemas"]["Slice_SeriesRegistrationDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_SeriesRegistrationVersionDTO_: components["schemas"]["Slice_SeriesRegistrationVersionDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_SeriesToApproveDTO_: components["schemas"]["Slice_SeriesToApproveDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_SupplierRegistrationDTO_: components["schemas"]["Slice_SupplierRegistrationDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
     Page_UserDTO_: components["schemas"]["Slice_UserDTO_"] & {
       /** Format: int64 */
-      totalSize: number;
+      totalSize?: number;
       /** Format: int32 */
       totalPages?: number;
     };
@@ -791,6 +816,7 @@ export interface components {
       accessory: boolean;
       sparePart: boolean;
       techData: components["schemas"]["TechData"][];
+      /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
@@ -799,6 +825,44 @@ export interface components {
       title: string;
       text: string;
       isoCategory: string;
+    };
+    ProductRegistration: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      supplierId: string;
+      supplierRef: string;
+      /** Format: uuid */
+      seriesUUID: string;
+      /** @deprecated */
+      seriesId: string;
+      hmsArtNr?: string | null;
+      /** @deprecated */
+      isoCategory: string;
+      /** @deprecated */
+      title: string;
+      articleName: string;
+      draftStatus: components["schemas"]["DraftStatus"];
+      adminStatus: components["schemas"]["AdminStatus"];
+      registrationStatus: components["schemas"]["RegistrationStatus"];
+      message?: string | null;
+      adminInfo?: components["schemas"]["AdminInfo"] | null;
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+      /** Format: date-time */
+      published?: string | null;
+      /** Format: date-time */
+      expired?: string | null;
+      updatedByUser: string;
+      createdByUser: string;
+      createdBy: string;
+      updatedBy: string;
+      createdByAdmin: boolean;
+      productData: components["schemas"]["ProductData"];
+      /** Format: int64 */
+      version?: number | null;
     };
     ProductRegistrationDTO: {
       /** Format: uuid */
@@ -809,8 +873,11 @@ export interface components {
       hmsArtNr?: string | null;
       /** Format: uuid */
       seriesUUID: string;
+      /** @deprecated */
       seriesId: string;
+      /** @deprecated */
       isoCategory: string;
+      /** @deprecated */
       title: string;
       articleName: string;
       draftStatus: components["schemas"]["DraftStatus"];
@@ -870,6 +937,21 @@ export interface components {
       agreements: components["schemas"]["AgreementInfo"][];
       /** Format: int64 */
       version?: number | null;
+    };
+    ProductRegistrationVersionDTO: {
+      /** Format: uuid */
+      versionId: string;
+      /** Format: uuid */
+      productId: string;
+      status: components["schemas"]["RegistrationStatus"];
+      adminStatus: components["schemas"]["AdminStatus"];
+      draftStatus: components["schemas"]["DraftStatus"];
+      /** Format: date-time */
+      updated: string;
+      productRegistration: components["schemas"]["ProductRegistration"];
+      /** Format: int64 */
+      version?: number | null;
+      updatedBy: string;
     };
     ProductToApproveDto: {
       title: string;
@@ -1074,6 +1156,19 @@ export interface components {
     };
     Slice_ProductRegistrationDTO_: {
       content: components["schemas"]["ProductRegistrationDTO"][];
+      pageable: components["schemas"]["OpenApiPageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_ProductRegistrationVersionDTO_: {
+      content: components["schemas"]["ProductRegistrationVersionDTO"][];
       pageable: components["schemas"]["OpenApiPageable"];
       /** Format: int32 */
       pageNumber?: number;
@@ -2303,6 +2398,40 @@ export interface operations {
       };
     };
   };
+  getSeriesVersions: {
+    parameters: {
+      query: {
+        params?: {
+          [key: string]: string;
+        } | null;
+        pageable: components["schemas"]["OpenApiPageable"];
+      };
+    };
+    responses: {
+      /** @description getSeriesVersions 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Page_ProductRegistrationVersionDTO_"];
+        };
+      };
+    };
+  };
+  compareVersionWithApproved: {
+    parameters: {
+      path: {
+        productId: string;
+        version: number;
+      };
+    };
+    responses: {
+      /** @description compareVersionWithApproved 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Difference_String.Object_"];
+        };
+      };
+    };
+  };
   getSeries: {
     parameters: {
       query: {
@@ -2371,6 +2500,36 @@ export interface operations {
       };
     };
   };
+  setPublishedSeriesToActive: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setPublishedSeriesToActive 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  setPublishedSeriesToInactive: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setPublishedSeriesToInactive 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
   findSeriesForSupplierRef: {
     parameters: {
       path: {
@@ -2404,7 +2563,7 @@ export interface operations {
       };
     };
   };
-  getSeriesVersions: {
+  getSeriesVersions_1: {
     parameters: {
       query: {
         params?: {
@@ -2414,7 +2573,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description getSeriesVersions 200 response */
+      /** @description getSeriesVersions_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["Page_SeriesRegistrationVersionDTO_"];
@@ -2422,7 +2581,7 @@ export interface operations {
       };
     };
   };
-  compareVersionWithApproved: {
+  compareVersionWithApproved_1: {
     parameters: {
       path: {
         seriesId: string;
@@ -2430,7 +2589,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description compareVersionWithApproved 200 response */
+      /** @description compareVersionWithApproved_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["Difference_String.Object_"];
@@ -2994,6 +3153,21 @@ export interface operations {
       };
     };
   };
+  isSeriesInAgreement: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
+    responses: {
+      /** @description isSeriesInAgreement 200 response */
+      200: {
+        content: {
+          "application/json": boolean;
+        };
+      };
+    };
+  };
   findProducts_1: {
     parameters: {
       query: {
@@ -3255,6 +3429,36 @@ export interface operations {
     };
     responses: {
       /** @description setSeriesToBeApproved 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  setPublishedSeriesToActive_1: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setPublishedSeriesToActive_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  setPublishedSeriesToInactive_1: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setPublishedSeriesToInactive_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

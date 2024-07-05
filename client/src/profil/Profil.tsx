@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { Supplier, SupplierUser, mapSupplier } from "utils/supplier-util";
+import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
 
 export default function Profil() {
   const [error, setError] = useState<Error | null>(null);
@@ -72,7 +72,7 @@ export default function Profil() {
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
           <VStack gap="10">
-            <SupplierInfo supplier={supplier} />
+            <SupplierInfo supplier={supplier} setIsOpen={() => {}} />
             <SupplierUsers users={supplierUsers} supplier={supplier} />
           </VStack>
         )}
