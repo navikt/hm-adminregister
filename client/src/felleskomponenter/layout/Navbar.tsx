@@ -5,6 +5,7 @@ import {
   Buldings3Icon,
   FileCheckmarkFillIcon,
   MenuHamburgerIcon,
+  NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
   XMarkIcon,
@@ -95,18 +96,33 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
       </Link>
 
       {loggedInUser && loggedInUser.isAdmin && (
-        <Link
-          to="/leverandor"
-          className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
-          aria-selected={pathname.startsWith("/leverandor")}
-        >
-          {pathname.startsWith("/leverandor") && <div className="active" />}
-          <div className="line" />
-          <HStack gap="4" style={{ paddingLeft: "16px" }}>
-            <Buldings3Icon fontSize={"1.5rem"} />
-            <span>Leverandører</span>
-          </HStack>
-        </Link>
+        <>
+          <Link
+            to="/leverandor"
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
+            aria-selected={pathname.startsWith("/leverandor")}
+          >
+            {pathname.startsWith("/leverandor") && <div className="active" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <Buldings3Icon fontSize={"1.5rem"} />
+              <span>Leverandører</span>
+            </HStack>
+          </Link>
+
+          <Link
+            to="/nyheter"
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/nyheter") })}
+            aria-selected={pathname.startsWith("/nyheter")}
+          >
+            {pathname.startsWith("/nyheter") && <div className="active" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <NewspaperIcon fontSize={"1.5rem"} />
+              <span>Nyheter</span>
+            </HStack>
+          </Link>
+        </>
       )}
     </VStack>
   );

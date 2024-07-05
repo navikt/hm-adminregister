@@ -1,0 +1,19 @@
+
+.seperatingLine{
+  border-bottom: 1px solid #CACFD4;
+  padding-bottom: 20px;
+}
+
+.seperatingLine p{
+  margin-block:var(--a-spacing-0);
+
+}
+
+.optionButton{
+  align-self: end;
+}
+
+.cardContainerDiv{
+  display: flex;
+  flex-direction: column;
+}
