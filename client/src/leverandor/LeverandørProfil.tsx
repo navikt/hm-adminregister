@@ -9,8 +9,9 @@ import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { getSupplier } from "api/SupplierApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { DeactivateConfirmationModal } from "leverandor/DeactivateConfirmationModal";
+import { getSupplier } from "api/SupplierApi";
 
 const LeverandørProfil = () => {
   const [supplier, setSupplier] = useState<Supplier>();
@@ -19,9 +20,11 @@ const LeverandørProfil = () => {
   const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const { id } = useParams();
 
-  useEffect(() => {
+  const fetchSupplier = () => {
     setLoading(true);
     getSupplier(loggedInUser?.isAdmin ?? false, id!)
       .then((data) => {
@@ -48,16 +51,26 @@ const LeverandørProfil = () => {
       });
 
     setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSupplier();
   }, [id]);
 
-  if (isLoading) return <Loader size="3xlarge" title="venter..." />;
+  if (isLoading || !supplier) return <Loader size="3xlarge" title="venter..." />;
 
   return (
     <main className="show-menu">
+      <DeactivateConfirmationModal
+        supplier={supplier}
+        mutateSupplier={fetchSupplier}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
           <VStack gap="10">
-            <SupplierInfo supplier={supplier} />
+            <SupplierInfo supplier={supplier} setIsOpen={setIsOpen} />
             <SupplierUsers users={supplierUsers} supplier={supplier} />
           </VStack>
         )}

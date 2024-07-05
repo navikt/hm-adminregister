@@ -20,3 +20,6 @@ export const createNewSupplier = async (
   newSupplier: SupplierDTOBody,
 ): Promise<SupplierRegistrationDTO> =>
   fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations)`), "POST", newSupplier);
+
+export const deactivateSupplier = async (isAdmin: boolean, supplierId: string): Promise<SupplierRegistrationDTO> =>
+  fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations/${supplierId}`), "DELETE");

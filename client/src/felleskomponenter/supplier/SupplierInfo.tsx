@@ -1,5 +1,5 @@
-import { Button, Heading, VStack } from "@navikt/ds-react";
-import { ArrowUndoIcon, Buldings3Icon, PencilWritingIcon, PlusIcon } from "@navikt/aksel-icons";
+import { BodyShort, Button, Heading, HStack, VStack } from "@navikt/ds-react";
+import { ArrowUndoIcon, Buldings3Icon, PencilWritingIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { Supplier } from "utils/supplier-util";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -7,7 +7,7 @@ import DefinitionList from "../definition-list/DefinitionList";
 import { formatPhoneNumber } from "utils/string-util";
 import { Link, useNavigate } from "react-router-dom";
 
-const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
+const SupplierInfo = ({ supplier, setIsOpen }: { supplier: Supplier; setIsOpen: (newState: boolean) => void }) => {
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
   return (
@@ -23,6 +23,7 @@ const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
         <Heading level="1" size="large">
           {supplier?.name}
         </Heading>
+        {supplier?.status === "INACTIVE" && <BodyShort>(INAKTIV)</BodyShort>}
       </VStack>
       <DefinitionList>
         <DefinitionList.Term>E-post</DefinitionList.Term>
@@ -32,20 +33,36 @@ const SupplierInfo = ({ supplier }: { supplier: Supplier }) => {
         <DefinitionList.Term>Nettside</DefinitionList.Term>
         <DefinitionList.Definition>{supplier?.homepageUrl}</DefinitionList.Definition>
       </DefinitionList>
-      {loggedInUser?.isAdmin && (
-        <Button
-          className="fit-content"
-          variant="secondary"
-          size="small"
-          icon={<PencilWritingIcon aria-hidden />}
-          iconPosition="left"
-          onClick={() => {
-            navigate(`/leverandor/endre-leverandor/${supplier.id}`);
-          }}
-        >
-          Endre leverandørinformasjon
-        </Button>
-      )}
+      <HStack gap="4">
+        {loggedInUser?.isAdmin && (
+          <Button
+            className="fit-content"
+            variant="secondary"
+            size="small"
+            icon={<PencilWritingIcon aria-hidden />}
+            iconPosition="left"
+            onClick={() => {
+              navigate(`/leverandor/endre-leverandor/${supplier.id}`);
+            }}
+          >
+            Endre leverandørinformasjon
+          </Button>
+        )}
+        {loggedInUser?.isAdmin && supplier.status === "ACTIVE" && (
+          <Button
+            className="fit-content"
+            variant="secondary"
+            size="small"
+            icon={<PencilWritingIcon aria-hidden />}
+            iconPosition="left"
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          >
+            Deaktiver leverandør
+          </Button>
+        )}
+      </HStack>
     </VStack>
   );
 };
