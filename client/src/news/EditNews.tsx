@@ -9,13 +9,13 @@ import {
     useDatepicker, Select
 } from "@navikt/ds-react";
 import {labelRequired} from "utils/string-util";
-import "./CreateNews.scss";
+import "./CreateNews.module.scss";
 import {NewsRegistrationDTO} from "utils/types/response-types";
 import {updateNews} from "api/NewsApi";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
-import {calcualteStatus, calculateExpiredDate} from "./CreateNews"
+import {calculateStatus, calculateExpiredDate} from "./CreateNews"
 import {toDate, toDateTimeString, toReadableDateTimeString, toReadableString} from "utils/date-util";
 import {format} from "date-fns";
 
@@ -75,7 +75,7 @@ const EditNews = () => {
             published: publishedDate,
             expired: calculateExpiredDate(publishedDate, data.durationInMonths),
             // UNDER ARE TEMP VALS
-            status: calcualteStatus(publishedDate,data.durationInMonths),
+            status: calculateStatus(publishedDate,data.durationInMonths),
             draftStatus: "DRAFT",
             created: newsData.created,
             updated: new Date(),
