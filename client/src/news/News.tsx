@@ -6,7 +6,7 @@ import styles from "./News.module.scss";
 import React, { useEffect, useState } from "react";
 import { toDate } from "utils/date-util";
 import { NewsRegistrationDTO } from "utils/types/response-types";
-import NewsCard from "news/newsCard";
+import NewsCard from "news/NewsCard";
 
 const News = () => {
   const [newsStatus, setNewsStatus] = useState("ACTIVE");
