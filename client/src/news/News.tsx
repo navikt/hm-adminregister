@@ -52,7 +52,7 @@ const News = () => {
               <ToggleGroup.Item value={"EXPIRED"}>Utgåtte</ToggleGroup.Item>
             </ToggleGroup>
 
-            <Button
+            {/*<Button
               className={styles.createNewsButton}
               variant="secondary"
               size="medium"
@@ -61,7 +61,7 @@ const News = () => {
               onClick={() => navigate("/nyheter/opprett")}
             >
               Opprett ny nyhetsmelding
-            </Button>
+            </Button>*/}
           </HStack>
         </div>
         {isLoadingFilteredResults && <Loader size="3xlarge" />}
