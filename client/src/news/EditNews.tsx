@@ -22,10 +22,14 @@ import {format} from "date-fns";
 type FormData = {
     newsTitle: string;
     newsText: string;
-    publishedOn: Date;
+    publishedOn: any;
     expiredOn: Date;
     durationInMonths: string;
 };
+function changeMonthAndDay(date: string): string {
+    const [day, month, year] = date.split(".");
+    return `${month}.${day}.${year}`;
+}
 
 const EditNews = () => {
     const location = useLocation()
@@ -61,7 +65,7 @@ const EditNews = () => {
         //console.log(contentText.replace(regex, "<br>"))
 
         const publishedDate = (data.publishedOn.length == "dd.mm.yyyy".length) //Check if the date is not updated by the datepicker
-                ? format(data.publishedOn, "yyyy-dd-MM'T'HH:mm:ss")
+                ? toDate(format(changeMonthAndDay(data.publishedOn), "yyyy-MM-dd'T'HH:mm:ss")) //the date is handled as "mm.dd.yyyy" as the formatter, therfore we change it to "dd.mm.yyyy"
                 : data.publishedOn;
 
         const newNewsRelease: NewsRegistrationDTO = {
@@ -71,7 +75,7 @@ const EditNews = () => {
             published: publishedDate,
             expired: calculateExpiredDate(publishedDate, data.durationInMonths),
             // UNDER ARE TEMP VALS
-            status: calcualteStatus(toDate(publishedDate),data.durationInMonths),
+            status: calcualteStatus(publishedDate,data.durationInMonths),
             draftStatus: "DRAFT",
             created: newsData.created,
             updated: new Date(),
@@ -126,11 +130,17 @@ const EditNews = () => {
 
 
                             <DatePicker.Input label={labelRequired("Synlig fra")}
-                                              {...register("publishedOn", {required: true})}
+                                              {...register("publishedOn", {
+                                                  required: "Publiseringsdato er påkrevd",
+                                                  pattern: {
+                                                      value: /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/, //DD.MM.ÅÅÅÅ
+                                                      message: "Ugyldig format (dd.mm.åååå)"
+                                                  }
+                                              })}
                                               {...inputProps}
                                               name="publishedOn"
                                               id="publishedOn"
-                                              error={errors.publishedOn && "Publiseringsdato er påkrevd"}
+                                              error={errors.publishedOn && errors.publishedOn.message?.toString()}
                             />
 
                         </DatePicker>
