@@ -23,18 +23,23 @@ type FormData = {
     newsText: string;
     publishedOn: Date;
     expiredOn: Date;
-    durationInMonths: string;
+    duration: string;
 };
 
-export function calculateExpiredDate(publishedDate: Date, durationInMonths: string) {
+export function calculateExpiredDate(publishedDate: Date, duration: {"type":string, "value":number}) {
     const endDate = new Date(publishedDate);
-    endDate.setMonth(endDate.getMonth() + parseInt(durationInMonths));
+    if (duration.type == "month")
+        endDate.setMonth(endDate.getMonth() + duration.value);
+    else if (duration.type == "week"){
+        endDate.setDate(endDate.getDate() + (7 * duration.value))
+    }
+
     return endDate;
 }
 
-export function calcualteStatus(publishedDate : Date, durationInMonths : string) {
+export function calcualteStatus(publishedDate : Date, duration : {"type":string, "value":number} ) {
     const toDay = new Date()
-    const expiredDate = calculateExpiredDate(publishedDate, durationInMonths)
+    const expiredDate = calculateExpiredDate(publishedDate, duration)
     if (publishedDate <= toDay && toDay <= expiredDate){
         return "ACTIVE"
     }
@@ -69,9 +74,9 @@ const CreateNews = () => {
             title: data.newsTitle,
             text: content.replace("<p><br></p>", ""),
             published: data.publishedOn,
-            expired: calculateExpiredDate(data.publishedOn, data.durationInMonths),
+            expired: calculateExpiredDate(data.publishedOn, JSON.parse(data.duration)),
             // UNDER ARE TEMP VALS
-            status: calcualteStatus(data.publishedOn),
+            status: calcualteStatus(data.publishedOn, JSON.parse(data.duration)),
             draftStatus: "DRAFT",
             created: data.publishedOn,
             updated: data.publishedOn,
@@ -133,12 +138,15 @@ const CreateNews = () => {
 
                         </DatePicker>
                         <Select
-                            {...register("durationInMonths")}
+                            {...register("duration")}
                             label="Varighet"
                         >
-                            <option value="1">1 måned</option>
-                            <option value="3">3 måneder</option>
-                            <option value="5">5 måneder</option>
+                            <option value='{"type": "week", "value": 1}'>1 uke</option>
+                            <option value='{"type": "week", "value": 2}'>2 uker</option>
+                            <option value='{"type": "week", "value": 3}'>3 uker</option>
+                            <option value='{"type": "month", "value": 1}'>1 måned</option>
+                            <option value='{"type": "month", "value": 3}'>3 måneder</option>
+                            <option value='{"type": "month", "value": 5}'>5 måneder</option>
                         </Select>
 
                     </HStack>
