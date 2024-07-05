@@ -15,12 +15,10 @@ import { NewsChunk } from "utils/types/response-types";
 export default function NewsCard({
   news,
   mutateNewsRelease,
-  uniqueKey,
   status,
 }: {
   news: NewsRegistrationDTO;
   mutateNewsRelease: KeyedMutator<NewsChunk>;
-  uniqueKey: string;
   status: string;
 }) {
   const newsReleaseStatus = (newsStatus: string) => {
@@ -50,7 +48,7 @@ export default function NewsCard({
   const navigate = useNavigate();
 
   return (
-    <ExpansionCard aria-label="Demo med description" key={uniqueKey}>
+    <ExpansionCard aria-label="Demo med description">
       <ExpansionCard.Header>
         <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
         <ExpansionCard.Description>

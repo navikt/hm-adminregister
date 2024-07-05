@@ -78,8 +78,7 @@ const News = () => {
             <div className="page__content-container">
               <VStack className="products-page__producs" gap="4" paddingBlock="4">
                 {pageResults.content.filter(handleFilterOption).map((news: NewsRegistrationDTO) => (
-                  "news"
-                  //<NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} status={newsStatus} />
+                  <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} status={newsStatus} />
                 ))}
               </VStack>
             </div>
