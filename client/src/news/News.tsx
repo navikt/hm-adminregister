@@ -1,9 +1,7 @@
-import { Alert, Button, Heading, HGrid, HStack, Loader, Pagination, ToggleGroup, VStack } from "@navikt/ds-react";
-import { PlusIcon } from "@navikt/aksel-icons";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Alert, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
+import { useNavigate } from "react-router-dom";
 import { getPageNews } from "api/NewsApi";
-import styles from "./News.module.scss";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toDate } from "utils/date-util";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import NewsCard from "news/NewsCard";

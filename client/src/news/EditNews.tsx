@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
-import { Button, Heading, HStack, DatePicker, TextField, useDatepicker, Select } from "@navikt/ds-react";
+import { Button, DatePicker, Heading, HStack, Select, TextField, useDatepicker } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import "./CreateNews.module.scss";
 import { NewsRegistrationDTO } from "utils/types/response-types";
@@ -8,8 +8,8 @@ import { updateNews } from "api/NewsApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
-import { calculateStatus, calculateExpiredDate } from "./CreateNews";
-import { toDate, toDateTimeString, toReadableDateTimeString, toReadableString } from "utils/date-util";
+import { calculateExpiredDate, calculateStatus } from "./CreateNews";
+import { toDate } from "utils/date-util";
 import { format } from "date-fns";
 
 type FormData = {

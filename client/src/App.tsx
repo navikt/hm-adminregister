@@ -1,4 +1,4 @@
-import {Route, Routes} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import LoggInn from "./logg-inn/LoggInn";
 import Produkter from "./produkter/Produkter";
 import OpprettProdukt from "./produkter/OpprettProdukt";
@@ -21,15 +21,15 @@ import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
 import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
 import Rammeavtale from "./rammeavtaler/rammeavtale/Rammeavtale";
 import OpprettRammeavtale from "./rammeavtaler/rammeavtale/OpprettRammeavtale";
-import {ErrorBoundary} from "react-error-boundary";
-import {ErrorFallback} from "error/ErrorFallback";
-import {NotFound} from "error/NotFound";
-import {Startside} from "Startside";
-import {ImporterOgValiderProdukter} from "produkter/import/ImporterOgValiderProdukter";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorFallback } from "error/ErrorFallback";
+import { NotFound } from "error/NotFound";
+import { Startside } from "Startside";
+import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
-import {ImporterOgValiderKatalogfil} from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import {TilGodkjenning} from "godkjenning/TilGodkjenning";
-import {LoginWrapper} from "LoginWrapper";
+import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
+import { TilGodkjenning } from "godkjenning/TilGodkjenning";
+import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
 import CreateNews from "news/CreateNews";
@@ -37,12 +37,12 @@ import EditNews from "news/EditNews";
 import EditSupplier from "leverandor/EditSupplier";
 
 export function App() {
-    return (
-        <FeilGrense>
-            <ErrorModal/>
-            <Routes>
-                <Route path="/" element={<Startside/>}/>
-                <Route path="/logg-inn" element={<LoggInn/>}/>
+  return (
+    <FeilGrense>
+      <ErrorModal />
+      <Routes>
+        <Route path="/" element={<Startside />} />
+        <Route path="/logg-inn" element={<LoggInn />} />
 
         <Route element={<LoginWrapper />}>
           <Route
@@ -97,7 +97,6 @@ export function App() {
             }
           />
 
-
           <Route
             path="/til-godkjenning"
             element={
@@ -108,65 +107,65 @@ export function App() {
             }
           />
 
-                    <Route
-                        path="/admin/profil"
-                        element={
-                            <>
-                                <Navbar/>
-                                <AdminProfil/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/admin/rediger-admin"
-                        element={
-                            <>
-                                <RedigerAdminBruker/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/admin/opprett-admin"
-                        element={
-                            <>
-                                <OpprettAdminBruker/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/admin/slett-admin"
-                        element={
-                            <>
-                                <SlettAdminBruker/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/admin/adminopplysninger"
-                        element={
-                            <>
-                                <Adminopplysninger/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/admin/profil"
+            element={
+              <>
+                <Navbar />
+                <AdminProfil />
+              </>
+            }
+          />
+          <Route
+            path="/admin/rediger-admin"
+            element={
+              <>
+                <RedigerAdminBruker />
+              </>
+            }
+          />
+          <Route
+            path="/admin/opprett-admin"
+            element={
+              <>
+                <OpprettAdminBruker />
+              </>
+            }
+          />
+          <Route
+            path="/admin/slett-admin"
+            element={
+              <>
+                <SlettAdminBruker />
+              </>
+            }
+          />
+          <Route
+            path="/admin/adminopplysninger"
+            element={
+              <>
+                <Adminopplysninger />
+              </>
+            }
+          />
 
-                    <Route
-                        path="/profil"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Profil/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/profil/rediger-brukerprofil"
-                        element={
-                            <>
-                                <RedigerBrukerprofil/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/profil"
+            element={
+              <>
+                <Navbar />
+                <Profil />
+              </>
+            }
+          />
+          <Route
+            path="/profil/rediger-brukerprofil"
+            element={
+              <>
+                <RedigerBrukerprofil />
+              </>
+            }
+          />
 
           <Route
             path="/leverandor"
@@ -211,80 +210,80 @@ export function App() {
             }
           />
 
-                    <Route
-                        path="/rammeavtaler"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Rammeavtaler/>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/rammeavtaler/:agreementId"
-                        element={
-                            <>
-                                <Navbar/>
-                                <Rammeavtale/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/rammeavtaler"
+            element={
+              <>
+                <Navbar />
+                <Rammeavtaler />
+              </>
+            }
+          />
+          <Route
+            path="/rammeavtaler/:agreementId"
+            element={
+              <>
+                <Navbar />
+                <Rammeavtale />
+              </>
+            }
+          />
 
-                    <Route
-                        path="/rammeavtaler/importer-katalogfil"
-                        element={
-                            <>
-                                <ImporterOgValiderKatalogfil/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/rammeavtaler/importer-katalogfil"
+            element={
+              <>
+                <ImporterOgValiderKatalogfil />
+              </>
+            }
+          />
 
-                    <Route
-                        path="/rammeavtaler/opprett"
-                        element={
-                            <>
-                                <OpprettRammeavtale/>
-                            </>
-                        }
-                    />
+          <Route
+            path="/rammeavtaler/opprett"
+            element={
+              <>
+                <OpprettRammeavtale />
+              </>
+            }
+          />
 
-                    <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger/>}/>
-                    <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger/>}/>
-                </Route>
+          <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
+          <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
+        </Route>
 
-                <Route
-                    path="/nyheter"
-                    element={
-                        <>
-                            <Navbar/>
-                            <News/>
-                        </>
-                    }
-                />
+        <Route
+          path="/nyheter"
+          element={
+            <>
+              <Navbar />
+              <News />
+            </>
+          }
+        />
 
-                <Route
-                    path="/nyheter/opprett"
-                    element={
-                        <>
-                            <CreateNews/>
-                        </>
-                    }
-                />
-              <Route
-                  path="/nyheter/rediger/:newsid"
-                  element={
-                    <>
-                      <EditNews/>
-                    </>
-                  }
-              />
+        <Route
+          path="/nyheter/opprett"
+          element={
+            <>
+              <CreateNews />
+            </>
+          }
+        />
+        <Route
+          path="/nyheter/rediger/:newsid"
+          element={
+            <>
+              <EditNews />
+            </>
+          }
+        />
 
-                <Route path="*" element={<NotFound/>}/>
-            </Routes>
-        </FeilGrense>
-    );
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </FeilGrense>
+  );
 }
 
-const FeilGrense = ({children}: { children?: React.ReactNode }) => {
-    return <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>;
+const FeilGrense = ({ children }: { children?: React.ReactNode }) => {
+  return <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>;
 };
