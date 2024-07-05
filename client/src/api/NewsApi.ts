@@ -6,7 +6,7 @@ import {fetchAPI, getPath} from "api/fetch";
 
 
 export function getPageNews({page, pageSize}: {page: number; pageSize: number}){
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?page=${page}&size=${pageSize}&sort=published,DESC`
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?&sort=published,DESC`
   const { data, error, isLoading, mutate } = useSWR<NewsChunk>(path, fetcherGET);
 
   return {

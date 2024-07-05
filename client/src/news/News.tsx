@@ -21,9 +21,11 @@ import NewsCard from "news/newsCard";
 const News = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [newsStatus, setNewsStatus] = useState("ACTIVE");
+
+  //NOT IN USE
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 5);
-  const [newsStatus, setNewsStatus] = useState("ACTIVE");
 
   const navigate = useNavigate();
 
@@ -137,7 +139,7 @@ const News = () => {
                   </VStack>
               </div>
           }
-
+          {/*NOT IN USE */}
           <HStack gap="8" wrap={false} align='end'>
             {showPageNavigator && pageResults && (
                 <Pagination
@@ -152,22 +154,6 @@ const News = () => {
                     prevNextTexts
                 />
             )}
-            <Select
-                className={styles.pageSize}
-                label="Antall nyhter per side"
-                size="small"
-                defaultValue={pageSizeState}
-                onChange={(e) => {
-                  searchParams.set("size", e.target.value);
-                  setSearchParams(searchParams);
-                  setPageSizeState(parseInt(e.target.value));
-                }}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={100}>100</option>
-            </Select>
           </HStack>
         </div>
       </main>

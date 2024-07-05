@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactQuill from "react-quill";
-import styles from "./RichTextEditor.module.scss"
 import "./RichTextEditor.css";
-
 import "react-quill/dist/quill.snow.css";
+import styles from "./RichTextEditor.module.scss"
 
 type RichTextEditorNewsProps = {
     content:string;
@@ -31,7 +30,6 @@ export default function RichTextEditorNews(props : RichTextEditorNewsProps) {
 
     return (
             <ReactQuill
-                theme="snow"
                 modules={modules}
                 formats={formats}
                 value={props.content}
