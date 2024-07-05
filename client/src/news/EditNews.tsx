@@ -17,7 +17,7 @@ type FormData = {
   newsText: string;
   publishedOn: any;
   expiredOn: Date;
-  durationInMonths: string;
+  duration: string;
 };
 function changeMonthAndDay(date: string): string {
   const [day, month, year] = date.split(".");
@@ -46,11 +46,7 @@ const EditNews = () => {
   });
 
   async function onSubmit(data: FormData) {
-    //console.log("vanlig")
-    //console.log(contentText)
-    //console.log("moda")
     const regex = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm; // capture all p,li,ol,ul tags around <br>
-    //console.log(contentText.replace(regex, "<br>"))
 
     const publishedDate =
       data.publishedOn.length == "dd.mm.yyyy".length //Check if the date is not updated by the datepicker
@@ -62,9 +58,9 @@ const EditNews = () => {
       title: data.newsTitle,
       text: contentText.replace(regex, "<br>"),
       published: publishedDate,
-      expired: calculateExpiredDate(publishedDate, data.durationInMonths),
+      expired: calculateExpiredDate(publishedDate, data.duration),
       // UNDER ARE TEMP VALS
-      status: calculateStatus(publishedDate, data.durationInMonths),
+      status: calculateStatus(publishedDate, data.duration),
       draftStatus: "DRAFT",
       created: newsData.created,
       updated: new Date(),
@@ -126,10 +122,13 @@ const EditNews = () => {
                 error={errors.publishedOn && errors.publishedOn.message?.toString()}
               />
             </DatePicker>
-            <Select {...register("durationInMonths")} label="Varighet">
-              <option value="1">1 måned</option>
-              <option value="3">3 måneder</option>
-              <option value="5">5 måneder</option>
+            <Select {...register("duration")} label="Varighet">
+              <option value='{"type": "week", "value": 1}'>1 uke</option>
+              <option value='{"type": "week", "value": 2}'>2 uker</option>
+              <option value='{"type": "week", "value": 3}'>3 uker</option>
+              <option value='{"type": "month", "value": 1}'>1 måned</option>
+              <option value='{"type": "month", "value": 3}'>3 måneder</option>
+              <option value='{"type": "month", "value": 5}'>5 måneder</option>
             </Select>
           </HStack>
           <Heading level="2" size="small" className="reducedSpacing">
