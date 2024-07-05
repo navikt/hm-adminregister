@@ -6,25 +6,22 @@ import { mapProductRegistrationDTOToProduct } from "utils/product-util";
 import { Upload } from "produkter/import/ImporterProdukter";
 import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSeriesInfo";
 import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
-import { baseUrl, useIsoCategories } from "utils/swr-hooks";
+import { baseUrl, useSeries } from "utils/swr-hooks";
 import { importProducts } from "api/ImportExportApi";
 
 interface Props {
   upload: Upload;
   reseetUpload: () => void;
+  seriesId: string;
 }
 
-export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
+export const ValiderImporterteProdukter = ({ upload, reseetUpload, seriesId }: Props) => {
   const { loggedInUser } = useAuthStore();
   const [productsToValidate, setProductsToValidate] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const { isoCategories } = useIsoCategories();
   const [importSuccessful, setImportSuccessful] = useState(false);
-
-  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
-  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoCode + " - " + cat.isoTitle);
-  //todo: avoid duplicating iso code code
+  const { series, isLoadingSeries, errorSeries } = useSeries(seriesId);
 
   useEffect(() => {
     importerDryrun();
@@ -32,7 +29,7 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
 
   const importerDryrun = () => {
     setIsLoading(true);
-    importProducts(loggedInUser?.isAdmin || false, upload, true)
+    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, true)
       .then((response) => {
         const products = mapProductRegistrationDTOToProduct(response);
         setProductsToValidate(products);
@@ -47,7 +44,7 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
   const importer = () => {
     setIsLoading(true);
 
-    importProducts(loggedInUser?.isAdmin || false, upload, false)
+    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, false)
       .then((response) => {
         const products = mapProductRegistrationDTOToProduct(response);
         setProductsToValidate(products);
@@ -66,12 +63,12 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
         <div className="import-products">
           <div className="content">
             <Heading level="1" size="large" align="center">
-              Importer produkter
+              Importeringen var vellykket.
             </Heading>
             <p>
               <BodyShort>
-                Importeringen var vellykket. Du kan nå gå til <a href={baseUrl("/produkter")}>produktoversikten</a> for
-                å se de importerte produktene.
+                Du kan nå gå til <a href={baseUrl(`/produkter/${seriesId}`)}>produksiden</a> og sende produktserien til
+                godkjenning eller se over endringene.
               </BodyShort>
             </p>
           </div>
@@ -146,9 +143,10 @@ export const ValiderImporterteProdukter = ({ upload, reseetUpload }: Props) => {
                       aria-label="Produktserie med varianter"
                       style={{ width: "90vw" }}
                       size="small"
+                      open={true}
                     >
                       <ExpansionCard.Header>
-                        <ExpansionCard.Title>{product.title}</ExpansionCard.Title>
+                        <ExpansionCard.Title>{series?.title}</ExpansionCard.Title>
                         <ExpansionCard.Description>
                           <ProductSeriesInfo product={product} />
                         </ExpansionCard.Description>
