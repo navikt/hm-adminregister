@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
 import { Button, DatePicker, Heading, HStack, Select, TextField, useDatepicker } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
@@ -9,20 +9,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { calculateExpiredDate, calculateStatus } from "./CreateNews";
-import { toDate } from "utils/date-util";
-import { format } from "date-fns";
+import { toDateTimeString } from "utils/date-util";
 
 type FormData = {
   newsTitle: string;
   newsText: string;
-  publishedOn: any;
+  publishedOn: Date;
   expiredOn: Date;
   duration: string;
 };
-function changeMonthAndDay(date: string): string {
-  const [day, month, year] = date.split(".");
-  return `${month}.${day}.${year}`;
-}
 
 const EditNews = () => {
   const location = useLocation();
@@ -48,22 +43,17 @@ const EditNews = () => {
   async function onSubmit(data: FormData) {
     const regex = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm; // capture all p,li,ol,ul tags around <br>
 
-    const publishedDate =
-      data.publishedOn.length == "dd.mm.yyyy".length //Check if the date is not updated by the datepicker
-        ? toDate(format(changeMonthAndDay(data.publishedOn), "yyyy-MM-dd'T'HH:mm:ss")) //the date is handled as "mm.dd.yyyy" as the formatter, therfore we change it to "dd.mm.yyyy"
-        : data.publishedOn;
-
     const newNewsRelease: NewsRegistrationDTO = {
       id: newsData.id,
       title: data.newsTitle,
       text: contentText.replace(regex, "<br>"),
-      published: publishedDate,
-      expired: calculateExpiredDate(publishedDate, JSON.parse(data.duration)).toString(),
+      published: toDateTimeString(data.publishedOn),
+      expired: toDateTimeString(calculateExpiredDate(data.publishedOn, JSON.parse(data.duration))),
       // UNDER ARE TEMP VALS
-      status: calculateStatus(publishedDate, JSON.parse(data.duration)),
+      status: calculateStatus(data.publishedOn, JSON.parse(data.duration)),
       draftStatus: "DRAFT",
       created: newsData.created,
-      updated: new Date().toString(),
+      updated: toDateTimeString(new Date()),
       author: "a",
       createdBy: "a",
       updatedBy: "a",
