@@ -1,5 +1,4 @@
 import { Box, Button, Dropdown, ExpansionCard } from "@navikt/ds-react";
-import StatusTag from "felleskomponenter/StatusTag";
 import styles from "news/News.module.scss";
 import parse from "html-react-parser";
 import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
@@ -7,44 +6,35 @@ import { depublishNews } from "api/NewsApi";
 import React from "react";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import { toDate, toReadableString } from "utils/date-util";
-import { SeriesStatus } from "utils/types/types";
 import { useNavigate } from "react-router-dom";
 import { KeyedMutator } from "swr";
 import { NewsChunk } from "utils/types/response-types";
+import { NewsTypes } from "news/NewsTypes";
+import NewsStatusTag from "news/NewsStatusTag";
 
 export default function NewsCard({
   news,
   mutateNewsRelease,
-  status,
 }: {
   news: NewsRegistrationDTO;
   mutateNewsRelease: KeyedMutator<NewsChunk>;
-  status: string;
 }) {
-  const newsReleaseStatus = (newsStatus: string) => {
-    if (newsStatus === "ALL") {
-      if (news.status === "INACTIVE" && toDate(news.published) > new Date()) {
-        return SeriesStatus.DRAFT;
-      } else if (news.status === "INACTIVE" && toDate(news.published) < new Date()) {
-        return SeriesStatus.INACTIVE;
-      } else if (news.status === "ACTIVE") {
-        return SeriesStatus.PUBLISHED;
-      } else {
-        return SeriesStatus.INACTIVE;
-      }
-    }
-    if (newsStatus === "FUTURE") {
-      return SeriesStatus.DRAFT;
-    }
-    if (newsStatus === "ACTIVE") {
-      return SeriesStatus.PUBLISHED;
-    }
-    if (newsStatus === "EXPIRED") {
-      return SeriesStatus.INACTIVE;
-    }
-    return SeriesStatus.DRAFT_CHANGE;
-  };
+  function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
+    const today = new Date();
+    const publishedOn = toDate(news.published);
+    const expiredOn = toDate(news.expired);
 
+    if (news.status === "ACTIVE" && publishedOn < today && expiredOn > today) {
+      return NewsTypes.PUBLISHED;
+    } else if (news.status === "INACTIVE" && publishedOn > today) {
+      return NewsTypes.FUTURE;
+    } else if ((news.status === "INACTIVE" && expiredOn < today) || news.status === "DELETED") {
+      return NewsTypes.EXPIRED;
+    }
+    return NewsTypes.EXPIRED;
+  }
+
+  const frontendStatus = mapBackendStatusToFrontend(news);
   const navigate = useNavigate();
 
   return (
@@ -56,7 +46,7 @@ export default function NewsCard({
             Synlig på FinnHjelpemiddel fra {toReadableString(news.published)} til {toReadableString(news.expired)}
           </span>
         </ExpansionCard.Description>
-        <StatusTag seriesStatus={newsReleaseStatus(status)} />
+        <NewsStatusTag newsStatus={frontendStatus} />
       </ExpansionCard.Header>
       <ExpansionCard.Content>
         <div className={styles.cardContainerDiv}>

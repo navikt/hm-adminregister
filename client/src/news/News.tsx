@@ -5,20 +5,34 @@ import React, { useState } from "react";
 import { toDate } from "utils/date-util";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import NewsCard from "news/NewsCard";
+import { NewsTypes } from "news/NewsTypes";
 
 const News = () => {
-  const [newsStatus, setNewsStatus] = useState("ACTIVE");
+  const [newsStatus, setNewsStatus] = useState("PUBLISHED");
   const navigate = useNavigate();
 
-  function handleFilterOption(news: NewsRegistrationDTO) {
-    if (newsStatus == "ALL") {
-      return true;
-    } else if (newsStatus == "FUTURE" && news.status == "INACTIVE" && toDate(news.published) > new Date()) {
-      return true;
-    } else if (newsStatus == "EXPIRED" && news.status == "INACTIVE" && toDate(news.published) < new Date()) {
+  function mapBackendNewsStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
+    const toDay = new Date();
+    const publishedOn = toDate(news.published);
+    const expiredOn = toDate(news.expired);
+
+    if (news.status === "ACTIVE" && publishedOn < toDay && expiredOn > toDay) {
+      return NewsTypes.PUBLISHED;
+    } else if (news.status === "INACTIVE" && publishedOn < toDay) {
+      return NewsTypes.EXPIRED;
+    } else if (news.status === "INACTIVE" && publishedOn > toDay) {
+      return NewsTypes.FUTURE;
+    }
+    return NewsTypes.EXPIRED;
+  }
+
+  function handleFilterOption(news: NewsRegistrationDTO, filterStatus: string) {
+    const frontendNewsStatus = mapBackendNewsStatusToFrontend(news);
+
+    if (filterStatus == "ALL") {
       return true;
     }
-    return newsStatus == news.status;
+    return frontendNewsStatus == filterStatus;
   }
 
   const {
@@ -43,11 +57,11 @@ const News = () => {
               defaultChecked={true}
             >
               <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
-              <ToggleGroup.Item value={"FUTURE"}>Fremtidige</ToggleGroup.Item>
-              <ToggleGroup.Item value={"ACTIVE"} defaultChecked>
-                Aktive
+              <ToggleGroup.Item value={NewsTypes.FUTURE}>Fremtidig</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.PUBLISHED} defaultChecked>
+                Publisert
               </ToggleGroup.Item>
-              <ToggleGroup.Item value={"EXPIRED"}>Utgåtte</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.EXPIRED}>Utgått</ToggleGroup.Item>
             </ToggleGroup>
 
             {/*<Button
@@ -77,9 +91,11 @@ const News = () => {
           pageResults && (
             <div className="page__content-container">
               <VStack className="products-page__producs" gap="4" paddingBlock="4">
-                {pageResults.content.filter(handleFilterOption).map((news: NewsRegistrationDTO) => (
-                  <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} status={newsStatus} />
-                ))}
+                {pageResults.content
+                  .filter((news: NewsRegistrationDTO) => handleFilterOption(news, newsStatus))
+                  .map((news: NewsRegistrationDTO) => (
+                    <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} />
+                  ))}
               </VStack>
             </div>
           )
