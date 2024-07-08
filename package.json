@@ -21,5 +21,8 @@
     "clean": "run-p clean:*",
     "prettier": "npm run --prefix client prettier",
     "lint": "npm run --prefix client lint"
+  },
+  "dependencies": {
+    "quill": "^2.0.2"
   }
 }
