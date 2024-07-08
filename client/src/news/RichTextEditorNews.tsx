@@ -16,21 +16,16 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
 
   const formats = ["bold", "italic", "list", "bullet", "link"];
 
+  return (<></>)
+  /*
   return (
     <ReactQuill
       modules={modules}
       formats={formats}
       value={props.content}
       onChange={props.setContent}
-      onKeyDown={(e) => {
-        const fields = Array.from(document.querySelectorAll("button")) || [];
-        if (e.key === "Tab") {
-          if (e.target.className === "ql-editor") {
-            fields[52].focus();
-          }
-        }
-      }}
       className={styles.editorStyle}
     />
   );
+   */
 }
