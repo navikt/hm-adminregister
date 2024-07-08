@@ -12,13 +12,9 @@
 .createNews {
   width: 100%;
   display: flex;
-  justify-content: center;
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    gap: $a-spacing-8;
-  }
+  flex-direction: column;
+  align-items: center;
+  gap: $a-spacing-8;
 
   .headerContainer {
     display: flex;

@@ -32,9 +32,8 @@ import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
-import CreateNews from "news/CreateNews";
-import EditNews from "news/EditNews";
 import EditSupplier from "leverandor/EditSupplier";
+import ModifyNews from "news/ModifyNews";
 
 export function App() {
   return (
@@ -265,7 +264,7 @@ export function App() {
           path="/nyheter/opprett"
           element={
             <>
-              <CreateNews />
+              <ModifyNews />
             </>
           }
         />
@@ -273,7 +272,7 @@ export function App() {
           path="/nyheter/rediger/:newsid"
           element={
             <>
-              <EditNews />
+              <ModifyNews />
             </>
           }
         />

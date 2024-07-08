@@ -66,18 +66,16 @@ const News = () => {
               <ToggleGroup.Item value={NewsTypes.EXPIRED}>Utgått</ToggleGroup.Item>
             </ToggleGroup>
 
-            {
-              <Button
-                className={styles.createNewsButton}
-                variant="secondary"
-                size="medium"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/nyheter/opprett")}
-              >
-                Opprett ny nyhetsmelding
-              </Button>
-            }
+            <Button
+              className={styles.createNewsButton}
+              variant="secondary"
+              size="medium"
+              icon={<PlusIcon aria-hidden />}
+              iconPosition="left"
+              onClick={() => navigate("/nyheter/opprett")}
+            >
+              Opprett ny nyhetsmelding
+            </Button>
           </HStack>
         </div>
         {isLoadingFilteredResults && <Loader size="3xlarge" />}
