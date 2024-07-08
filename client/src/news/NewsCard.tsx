@@ -62,7 +62,6 @@ export default function NewsCard({
         <div className={styles.cardContainerDiv}>
           <span className={styles.seperatingLine}>{parse(news.text)}</span>
           <Box className={styles.optionButton}>
-            {/*
             <Dropdown>
               <Button
                 variant="tertiary"
@@ -90,7 +89,7 @@ export default function NewsCard({
                   </Dropdown.Menu.List.Item>
                 </Dropdown.Menu.List>
               </Dropdown.Menu>
-            </Dropdown>*/}
+            </Dropdown>
           </Box>
         </div>
       </ExpansionCard.Content>

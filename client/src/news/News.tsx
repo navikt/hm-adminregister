@@ -1,10 +1,12 @@
-import { Alert, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
+import { Alert, Button, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
 import { useNavigate } from "react-router-dom";
 import { getPageNews } from "api/NewsApi";
 import React, { useState } from "react";
 import { toDate } from "utils/date-util";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import NewsCard from "news/NewsCard";
+import { PlusIcon } from "@navikt/aksel-icons";
+import styles from "./News.module.scss";
 
 const News = () => {
   const [newsStatus, setNewsStatus] = useState("ACTIVE");
@@ -50,7 +52,7 @@ const News = () => {
               <ToggleGroup.Item value={"EXPIRED"}>Utgåtte</ToggleGroup.Item>
             </ToggleGroup>
 
-            {/*<Button
+            <Button
               className={styles.createNewsButton}
               variant="secondary"
               size="medium"
@@ -59,7 +61,7 @@ const News = () => {
               onClick={() => navigate("/nyheter/opprett")}
             >
               Opprett ny nyhetsmelding
-            </Button>*/}
+            </Button>
           </HStack>
         </div>
         {isLoadingFilteredResults && <Loader size="3xlarge" />}

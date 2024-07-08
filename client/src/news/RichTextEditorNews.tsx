@@ -16,8 +16,6 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
 
   const formats = ["bold", "italic", "list", "bullet", "link"];
 
-  return (<></>)
-  /*
   return (
     <ReactQuill
       modules={modules}
@@ -27,5 +25,4 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
       className={styles.editorStyle}
     />
   );
-   */
 }
