@@ -48,9 +48,9 @@ export function calculateStatus(publishedDate: Date, duration: { type: string; v
 
 const ModifyNews = () => {
   const location = useLocation();
-  const newsData = location.state as NewsRegistrationDTO;
+  const editNewsData = location.state as NewsRegistrationDTO;
   const navigate = useNavigate();
-  const [textHtmlContent, setTextHtmlContent] = newsData ? useState(newsData.text) : useState("");
+  const [textHtmlContent, setTextHtmlContent] = useState(editNewsData ? editNewsData.text : "");
 
   const {
     handleSubmit,
@@ -69,15 +69,15 @@ const ModifyNews = () => {
         : data.publishedOn;
 
     const newNewsRelease: NewsRegistrationDTO = {
-      id: newsData ? newsData.id : uuidv4(),
+      id: editNewsData ? editNewsData.id : uuidv4(),
       title: data.newsTitle,
-      text: newsData ? textHtmlContent.replace(regex, "<br>") : textHtmlContent.replace("<p><br></p>", ""),
+      text: editNewsData ? textHtmlContent.replace(regex, "<br>") : textHtmlContent.replace("<p><br></p>", ""),
       published: publishedDate.toISOString(),
       expired: calculateExpiredDate(publishedDate, JSON.parse(data.duration)).toISOString(),
       // UNDER ARE TEMP VALS
       status: calculateStatus(publishedDate, JSON.parse(data.duration)),
       draftStatus: "DRAFT",
-      created: newsData ? newsData.created : data.publishedOn.toISOString(),
+      created: editNewsData ? editNewsData.created : new Date().toISOString(),
       updated: new Date().toISOString(),
       author: "a",
       createdBy: "a",
@@ -85,7 +85,8 @@ const ModifyNews = () => {
       createdByUser: "a",
       updatedByUser: "a",
     };
-    if (newsData) {
+
+    if (editNewsData) {
       updateNews(newNewsRelease).then(() => {
         navigate("/nyheter");
       });
@@ -97,8 +98,8 @@ const ModifyNews = () => {
   }
 
   const { datepickerProps, inputProps } = useDatepicker({
-    fromDate: newsData ? undefined : new Date(),
-    defaultSelected: newsData ? new Date(newsData.published) : undefined,
+    fromDate: editNewsData ? undefined : new Date(),
+    defaultSelected: editNewsData ? new Date(editNewsData.published) : undefined,
     onDateChange: (value) => {
       if (value) {
         setValue("publishedOn", value);
@@ -110,69 +111,67 @@ const ModifyNews = () => {
 
   return (
     <div className={styles.createNews}>
-      <div className={styles.content}>
-        <div className={styles.headerContainer}>
-          <NewspaperIcon title="a11y-title" width={43} height={43} aria-hidden />
-          <Heading level="1" size="large" align="center">
-            {newsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding"}
-          </Heading>
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            {...register("newsTitle", { required: true })}
-            label={labelRequired("Tittel på nyhetsmelding")}
-            id="newsTitle"
-            name="newsTitle"
-            type="text"
-            autoComplete="on"
-            error={errors.newsTitle && "Tittel er påkrevd"}
-            defaultValue={newsData ? newsData.title : ""}
-          />
-
-          <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
-            <DatePicker {...datepickerProps}>
-              <DatePicker.Input
-                label={labelRequired("Synlig fra")}
-                {...register("publishedOn", {
-                  required: "Publiseringsdato er påkrevd",
-                  pattern: {
-                    value: /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/, //DD.MM.ÅÅÅÅ
-                    message: "Ugyldig format (dd.mm.åååå)",
-                  },
-                })}
-                {...inputProps}
-                name="publishedOn"
-                id="publishedOn"
-                error={errors.publishedOn && errors.publishedOn.message?.toString()}
-              />
-            </DatePicker>
-            <Select {...register("duration")} label="Varighet">
-              <option value='{"type": "week", "value": 1}'>1 uke</option>
-              <option value='{"type": "week", "value": 2}'>2 uker</option>
-              <option value='{"type": "week", "value": 3}'>3 uker</option>
-              <option value='{"type": "month", "value": 1}'>1 måned</option>
-              <option value='{"type": "month", "value": 3}'>3 måneder</option>
-              <option value='{"type": "month", "value": 5}'>5 måneder</option>
-            </Select>
-          </HStack>
-          <Heading level="2" size="small" className={styles.reducedSpacing}>
-            Beskrivelse
-          </Heading>
-          <div>
-            <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
-          </div>
-
-          <div className={styles.buttonContainer}>
-            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-              Avbryt
-            </Button>
-
-            <Button type="submit" size="medium">
-              {newsData ? "Rediger" : "Opprett"}
-            </Button>
-          </div>
-        </form>
+      <div className={styles.headerContainer}>
+        <NewspaperIcon title="a11y-title" width={43} height={43} aria-hidden />
+        <Heading level="1" size="large" align="center">
+          {editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding"}
+        </Heading>
       </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+          {...register("newsTitle", { required: true })}
+          label={labelRequired("Tittel på nyhetsmelding")}
+          id="newsTitle"
+          name="newsTitle"
+          type="text"
+          autoComplete="on"
+          error={errors.newsTitle && "Tittel er påkrevd"}
+          defaultValue={editNewsData ? editNewsData.title : ""}
+        />
+
+        <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
+          <DatePicker {...datepickerProps}>
+            <DatePicker.Input
+              label={labelRequired("Synlig fra")}
+              {...register("publishedOn", {
+                required: "Publiseringsdato er påkrevd",
+                pattern: {
+                  value: /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/, //DD.MM.ÅÅÅÅ
+                  message: "Ugyldig format (dd.mm.åååå)",
+                },
+              })}
+              {...inputProps}
+              name="publishedOn"
+              id="publishedOn"
+              error={errors.publishedOn && errors.publishedOn.message?.toString()}
+            />
+          </DatePicker>
+          <Select {...register("duration")} label="Varighet">
+            <option value='{"type": "week", "value": 1}'>1 uke</option>
+            <option value='{"type": "week", "value": 2}'>2 uker</option>
+            <option value='{"type": "week", "value": 3}'>3 uker</option>
+            <option value='{"type": "month", "value": 1}'>1 måned</option>
+            <option value='{"type": "month", "value": 3}'>3 måneder</option>
+            <option value='{"type": "month", "value": 5}'>5 måneder</option>
+          </Select>
+        </HStack>
+        <Heading level="2" size="small" className={styles.reducedSpacing}>
+          Beskrivelse
+        </Heading>
+        <div>
+          <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
+        </div>
+
+        <div className={styles.buttonContainer}>
+          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+            Avbryt
+          </Button>
+
+          <Button type="submit" size="medium">
+            {editNewsData ? "Rediger" : "Opprett"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
