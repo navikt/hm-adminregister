@@ -1,12 +1,8 @@
 @use "../styles/_mixins";
 
 @import "@navikt/ds-tokens/dist/tokens";
-.reducedSpacing{
-  padding-block: 2rem 0rem;
-}
-.hiddenText{
-
-  height: var(--a-spacing-16);
+.increaseSpacing{
+  padding-block: 2rem 0;
 }
 
 .createNews {

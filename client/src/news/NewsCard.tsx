@@ -5,12 +5,12 @@ import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
 import { depublishNews } from "api/NewsApi";
 import React from "react";
 import { NewsRegistrationDTO } from "utils/types/response-types";
-import { toDate, toReadableString } from "utils/date-util";
+import { toReadableString } from "utils/date-util";
 import { useNavigate } from "react-router-dom";
 import { KeyedMutator } from "swr";
 import { NewsChunk } from "utils/types/response-types";
-import { NewsTypes } from "news/NewsTypes";
 import NewsStatusTag from "news/NewsStatusTag";
+import { mapBackendStatusToFrontend } from "news/News";
 
 export default function NewsCard({
   news,
@@ -19,26 +19,11 @@ export default function NewsCard({
   news: NewsRegistrationDTO;
   mutateNewsRelease: KeyedMutator<NewsChunk>;
 }) {
-  function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
-    const today = new Date();
-    const publishedOn = toDate(news.published);
-    const expiredOn = toDate(news.expired);
-
-    if (news.status === "ACTIVE" && publishedOn < today && expiredOn > today) {
-      return NewsTypes.PUBLISHED;
-    } else if (news.status === "INACTIVE" && publishedOn > today) {
-      return NewsTypes.FUTURE;
-    } else if ((news.status === "INACTIVE" && expiredOn < today) || news.status === "DELETED") {
-      return NewsTypes.EXPIRED;
-    }
-    return NewsTypes.EXPIRED;
-  }
-
   const frontendStatus = mapBackendStatusToFrontend(news);
   const navigate = useNavigate();
 
   return (
-    <ExpansionCard aria-label="Demo med description">
+    <ExpansionCard aria-label={"Nyhetskort for " + news.title}>
       <ExpansionCard.Header>
         <ExpansionCard.Title>{news.title}</ExpansionCard.Title>
         <ExpansionCard.Description>
@@ -75,7 +60,7 @@ export default function NewsCard({
                       depublishNews(news.id).then(() => mutateNewsRelease());
                     }}
                   >
-                    Gjør utgått
+                    Marker som utgått
                   </Dropdown.Menu.List.Item>
                 </Dropdown.Menu.List>
               </Dropdown.Menu>

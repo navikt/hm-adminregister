@@ -20,13 +20,13 @@ type FormData = {
   duration: string;
 };
 
-// Only used for edit days
+// Only used for edit mode
 function changeMonthAndDay(date: string): string {
   const [day, month, year] = date.split(".");
   return `${month}.${day}.${year}`;
 }
 
-export function calculateExpiredDate(publishedDate: Date, duration: { type: string; value: number }) {
+function calculateExpiredDate(publishedDate: Date, duration: { type: string; value: number }) {
   const endDate = new Date(publishedDate);
   if (duration.type == "month") endDate.setMonth(endDate.getMonth() + duration.value);
   else if (duration.type == "week") {
@@ -36,7 +36,7 @@ export function calculateExpiredDate(publishedDate: Date, duration: { type: stri
   return endDate;
 }
 
-export function calculateStatus(publishedDate: Date, duration: { type: string; value: number }) {
+function calculateStatus(publishedDate: Date, duration: { type: string; value: number }) {
   const toDay = new Date();
   const expiredDate = calculateExpiredDate(publishedDate, duration);
   if (publishedDate <= toDay && toDay <= expiredDate) {
@@ -46,7 +46,7 @@ export function calculateStatus(publishedDate: Date, duration: { type: string; v
   }
 }
 
-const ModifyNews = () => {
+const CreateAndEditNews = () => {
   const location = useLocation();
   const editNewsData = location.state as NewsRegistrationDTO;
   const navigate = useNavigate();
@@ -61,17 +61,20 @@ const ModifyNews = () => {
   } = useForm<FormData>({ mode: "onChange" });
 
   async function onSubmit(data: FormData) {
-    const regex = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm; // capture all p,li,ol,ul tags around <br>
+    // capture all p,li,ol,ul tags around <br>
+    const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
 
     const publishedDate =
       data.publishedOn.toString().length == "dd.mm.yyyy".length //Check if the date is not updated by the datepicker
-        ? toDate(format(changeMonthAndDay(data.publishedOn.toString()), "yyyy-MM-dd'T'HH:mm:ss")) //the date is handled as "mm.dd.yyyy" as the formatter, therfore we change it to "dd.mm.yyyy"
+        ? toDate(format(changeMonthAndDay(data.publishedOn.toString()), "yyyy-MM-dd'T'HH:mm:ss")) // the date is handled as "mm.dd.yyyy" as the formatter, therfore we change it to "dd.mm.yyyy"
         : data.publishedOn;
 
     const newNewsRelease: NewsRegistrationDTO = {
       id: editNewsData ? editNewsData.id : uuidv4(),
       title: data.newsTitle,
-      text: editNewsData ? textHtmlContent.replace(regex, "<br>") : textHtmlContent.replace("<p><br></p>", ""),
+      text: editNewsData
+        ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
+        : textHtmlContent.replace("<p><br></p>", ""),
       published: publishedDate.toISOString(),
       expired: calculateExpiredDate(publishedDate, JSON.parse(data.duration)).toISOString(),
       // UNDER ARE TEMP VALS
@@ -86,15 +89,11 @@ const ModifyNews = () => {
       updatedByUser: "a",
     };
 
-    if (editNewsData) {
-      updateNews(newNewsRelease).then(() => {
-        navigate("/nyheter");
-      });
-    } else {
-      createNews(newNewsRelease).then(() => {
-        navigate("/nyheter");
-      });
-    }
+    const handleNews = editNewsData ? updateNews : createNews;
+
+    handleNews(newNewsRelease).then(() => {
+      navigate("/nyheter");
+    });
   }
 
   const { datepickerProps, inputProps } = useDatepicker({
@@ -155,12 +154,11 @@ const ModifyNews = () => {
             <option value='{"type": "month", "value": 5}'>5 måneder</option>
           </Select>
         </HStack>
-        <Heading level="2" size="small" className={styles.reducedSpacing}>
+        <Heading level="2" size="small" className={styles.increaseSpacing}>
           Beskrivelse
         </Heading>
-        <div>
-          <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
-        </div>
+
+        <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
 
         <div className={styles.buttonContainer}>
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
@@ -176,4 +174,4 @@ const ModifyNews = () => {
   );
 };
 
-export default ModifyNews;
+export default CreateAndEditNews;

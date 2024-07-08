@@ -1,4 +1,4 @@
-import { Alert, Button, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
 import { useNavigate } from "react-router-dom";
 import { getPageNews } from "api/NewsApi";
 import React, { useState } from "react";
@@ -9,27 +9,27 @@ import { PlusIcon } from "@navikt/aksel-icons";
 import { NewsTypes } from "news/NewsTypes";
 import styles from "./News.module.scss";
 
+export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
+  const today = new Date();
+  const publishedOn = toDate(news.published);
+  const expiredOn = toDate(news.expired);
+
+  if (news.status === "ACTIVE" && publishedOn < today && expiredOn > today) {
+    return NewsTypes.PUBLISHED;
+  } else if (news.status === "INACTIVE" && publishedOn > today) {
+    return NewsTypes.FUTURE;
+  } else if ((news.status === "INACTIVE" && expiredOn < today) || news.status === "DELETED") {
+    return NewsTypes.EXPIRED;
+  }
+  return NewsTypes.EXPIRED;
+}
+
 const News = () => {
   const [newsStatus, setNewsStatus] = useState("PUBLISHED");
   const navigate = useNavigate();
 
-  function mapBackendNewsStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
-    const toDay = new Date();
-    const publishedOn = toDate(news.published);
-    const expiredOn = toDate(news.expired);
-
-    if (news.status === "ACTIVE" && publishedOn < toDay && expiredOn > toDay) {
-      return NewsTypes.PUBLISHED;
-    } else if (news.status === "INACTIVE" && publishedOn < toDay) {
-      return NewsTypes.EXPIRED;
-    } else if (news.status === "INACTIVE" && publishedOn > toDay) {
-      return NewsTypes.FUTURE;
-    }
-    return NewsTypes.EXPIRED;
-  }
-
   function handleFilterOption(news: NewsRegistrationDTO, filterStatus: string) {
-    const frontendNewsStatus = mapBackendNewsStatusToFrontend(news);
+    const frontendNewsStatus = mapBackendStatusToFrontend(news);
 
     if (filterStatus == "ALL") {
       return true;
@@ -91,7 +91,7 @@ const News = () => {
           </HGrid>
         ) : (
           pageResults && (
-            <div className="page__content-container">
+            <Box maxWidth="55rem">
               <VStack className="products-page__producs" gap="4" paddingBlock="4">
                 {pageResults.content
                   .filter((news: NewsRegistrationDTO) => handleFilterOption(news, newsStatus))
@@ -99,7 +99,7 @@ const News = () => {
                     <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} />
                   ))}
               </VStack>
-            </div>
+            </Box>
           )
         )}
       </div>

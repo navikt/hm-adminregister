@@ -33,7 +33,7 @@ import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
 import EditSupplier from "leverandor/EditSupplier";
-import ModifyNews from "news/ModifyNews";
+import CreateAndEditNews from "news/CreateAndEditNews";
 
 export function App() {
   return (
@@ -264,7 +264,7 @@ export function App() {
           path="/nyheter/opprett"
           element={
             <>
-              <ModifyNews />
+              <CreateAndEditNews />
             </>
           }
         />
@@ -272,7 +272,7 @@ export function App() {
           path="/nyheter/rediger/:newsid"
           element={
             <>
-              <ModifyNews />
+              <CreateAndEditNews />
             </>
           }
         />
