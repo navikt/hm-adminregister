@@ -13,8 +13,9 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
   const modules = {
     toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
   };
-
   const formats = ["bold", "italic", "list", "bullet", "link"];
+  const fieldsButton = Array.from(document.querySelectorAll("button")) || [];
+  const index = fieldsButton.findIndex((item) => item.className === "ql-link");
 
   return (
     <ReactQuill
@@ -23,10 +24,10 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
       value={props.content}
       onChange={props.setContent}
       onKeyDown={(e) => {
-        const fields = Array.from(document.querySelectorAll("button")) || [];
         if (e.key === "Tab") {
           if (e.target.className === "ql-editor") {
-            fields[52].focus();
+            fieldsButton[index + 1].focus();
+            console.log("textfield", props.content.replace("\t", ""));
           }
         }
       }}
