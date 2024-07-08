@@ -2,7 +2,6 @@ import { SortState, Table } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import styles from "./SeriesToApproveTable.module.scss";
-import { baseUrl } from "utils/swr-hooks";
 import { Thumbnail } from "felleskomponenter/Thumbnail";
 import { useNavigate } from "react-router-dom";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
@@ -71,19 +70,26 @@ export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
         <Table.Body>
           {sortedData.map((series, i) => {
             return (
-              <Table.Row key={i + series.title}>
+              <Table.Row
+                key={i + series.title}
+                onClick={() => {
+                  onNavigateToProduct(series.seriesUUID);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    onNavigateToProduct(series.seriesUUID);
+                  }
+                }}
+                tabIndex={0}
+              >
                 <Table.DataCell className={styles.imgTd}>
                   {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
                 </Table.DataCell>
-                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
+                <Table.DataCell>
                   <div>{series.title}</div>
                 </Table.DataCell>
-                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
-                  {<StatusTag status={series.status} />}
-                </Table.DataCell>
-                <Table.DataCell onClick={() => onNavigateToProduct(series.seriesUUID)}>
-                  {series.supplierName}
-                </Table.DataCell>
+                <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
+                <Table.DataCell>{series.supplierName}</Table.DataCell>
               </Table.Row>
             );
           })}

@@ -66,7 +66,7 @@ const News = () => {
               <ToggleGroup.Item value={NewsTypes.EXPIRED}>Utgått</ToggleGroup.Item>
             </ToggleGroup>
 
-            {
+
               <Button
                 className={styles.createNewsButton}
                 variant="secondary"
@@ -77,7 +77,7 @@ const News = () => {
               >
                 Opprett ny nyhetsmelding
               </Button>
-            }
+
           </HStack>
         </div>
         {isLoadingFilteredResults && <Loader size="3xlarge" />}

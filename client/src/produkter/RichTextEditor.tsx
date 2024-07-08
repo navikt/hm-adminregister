@@ -1,3 +1,6 @@
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import styles from "./RichTextEditor.module.scss";
 import { ReactNode, useState } from "react";
 import { stateFromHTML } from "draft-js-import-html";
