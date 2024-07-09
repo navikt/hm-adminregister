@@ -24,6 +24,6 @@ export const updateNews = async (updatedNewsRelease: NewsRegistrationDTO): Promi
   return await fetchAPI(getPath(true, `/api/v1/news/${updatedNewsRelease.id}`), "PUT", updatedNewsRelease);
 };
 
-export const depublishNews = async (newsReleaseId: string): Promise<NewsRegistrationDTO> => {
+export const deleteNews = async (newsReleaseId: string): Promise<NewsRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/news/${newsReleaseId}`), "DELETE");
 };

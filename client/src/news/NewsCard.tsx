@@ -11,6 +11,7 @@ import { KeyedMutator } from "swr";
 import { NewsChunk } from "utils/types/response-types";
 import NewsStatusTag from "news/NewsStatusTag";
 import { mapBackendStatusToFrontend } from "news/News";
+import DropdownMenu from "news/DropdownMenu";
 
 export default function NewsCard({
   news,
@@ -20,8 +21,6 @@ export default function NewsCard({
   mutateNewsRelease: KeyedMutator<NewsChunk>;
 }) {
   const frontendStatus = mapBackendStatusToFrontend(news);
-  const navigate = useNavigate();
-
   return (
     <ExpansionCard aria-label={"Nyhetskort for " + news.title}>
       <ExpansionCard.Header>
@@ -36,36 +35,12 @@ export default function NewsCard({
       <ExpansionCard.Content>
         <div className={styles.cardContainerDiv}>
           <span className={styles.seperatingLine}>{parse(news.text)}</span>
-          <Box className={styles.optionButton}>
-            <Dropdown>
-              <Button
-                variant="tertiary"
-                icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
-                as={Dropdown.Toggle}
-              />
-              <Dropdown.Menu>
-                <Dropdown.Menu.GroupedList>
-                  <Dropdown.Menu.GroupedList.Item
-                    onClick={() => {
-                      navigate(`/nyheter/rediger/${news.id}`, { state: news });
-                    }}
-                  >
-                    Rediger nyhetsmelding
-                  </Dropdown.Menu.GroupedList.Item>
-                </Dropdown.Menu.GroupedList>
-                <Dropdown.Menu.Divider />
-                <Dropdown.Menu.List>
-                  <Dropdown.Menu.List.Item
-                    onClick={() => {
-                      depublishNews(news.id).then(() => mutateNewsRelease());
-                    }}
-                  >
-                    Avpubliser
-                  </Dropdown.Menu.List.Item>
-                </Dropdown.Menu.List>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Box>
+          <DropdownMenu
+            news={news}
+            mutateNewsRelease={mutateNewsRelease}
+            frontendStatus={frontendStatus}
+            key={news.id}
+          />
         </div>
       </ExpansionCard.Content>
     </ExpansionCard>
