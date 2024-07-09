@@ -13,8 +13,10 @@ const NewsStatusTag = ({ newsStatus }: { newsStatus: NewsTypes }) => {
     );
   } else if (newsStatus === NewsTypes.PUBLISHED) {
     return <TagWithIcon icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />} text="Publisert" color={colors.GREEN} />;
-  } else if (newsStatus === NewsTypes.EXPIRED) {
-    return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Utgått" color={colors.RED} />;
+  } else if (newsStatus === NewsTypes.UNPUBLISHED) {
+    return (
+      <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Avpublisert" color={colors.RED} />
+    );
   } else {
     return <></>;
   }

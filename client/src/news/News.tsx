@@ -19,9 +19,9 @@ export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes
   } else if (news.status === "INACTIVE" && publishedOn > today) {
     return NewsTypes.FUTURE;
   } else if ((news.status === "INACTIVE" && expiredOn < today) || news.status === "DELETED") {
-    return NewsTypes.EXPIRED;
+    return NewsTypes.UNPUBLISHED;
   }
-  return NewsTypes.EXPIRED;
+  return NewsTypes.UNPUBLISHED;
 }
 
 const News = () => {
@@ -63,7 +63,7 @@ const News = () => {
               <ToggleGroup.Item value={NewsTypes.PUBLISHED} defaultChecked>
                 Publisert
               </ToggleGroup.Item>
-              <ToggleGroup.Item value={NewsTypes.EXPIRED}>Utgått</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Avpublisert</ToggleGroup.Item>
             </ToggleGroup>
 
             <Button

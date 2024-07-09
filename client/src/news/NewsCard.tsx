@@ -60,7 +60,7 @@ export default function NewsCard({
                       depublishNews(news.id).then(() => mutateNewsRelease());
                     }}
                   >
-                    Marker som utgått
+                    Avpubliser
                   </Dropdown.Menu.List.Item>
                 </Dropdown.Menu.List>
               </Dropdown.Menu>
