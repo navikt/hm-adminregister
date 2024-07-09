@@ -9,7 +9,7 @@ import { NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toDate } from "utils/date-util";
+import { toDate, toDateTimeString } from "utils/date-util";
 import { format } from "date-fns";
 
 type FormData = {
@@ -34,16 +34,6 @@ function calculateExpiredDate(publishedDate: Date, duration: { type: string; val
   }
 
   return endDate;
-}
-
-function calculateStatus(publishedDate: Date, duration: { type: string; value: number }) {
-  const toDay = new Date();
-  const expiredDate = calculateExpiredDate(publishedDate, duration);
-  if (publishedDate <= toDay && toDay <= expiredDate) {
-    return "ACTIVE";
-  } else {
-    return "INACTIVE";
-  }
 }
 
 const CreateAndEditNews = () => {
@@ -75,11 +65,11 @@ const CreateAndEditNews = () => {
       text: editNewsData
         ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
         : textHtmlContent.replace("<p><br></p>", ""),
-      published: publishedDate.toISOString(),
-      expired: calculateExpiredDate(publishedDate, JSON.parse(data.duration)).toISOString(),
-      // UNDER ARE TEMP VALS
-      status: calculateStatus(publishedDate, JSON.parse(data.duration)),
-      draftStatus: "DRAFT",
+      published: toDateTimeString(publishedDate),
+      expired: toDateTimeString(calculateExpiredDate(publishedDate, JSON.parse(data.duration))),
+      // UNDER ARE VALS IGNORED BY BACKEND
+      status: "ACTIVE",
+      draftStatus: "DONE",
       created: editNewsData ? editNewsData.created : new Date().toISOString(),
       updated: new Date().toISOString(),
       author: "a",
