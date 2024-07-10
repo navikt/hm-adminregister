@@ -8,7 +8,6 @@ import NewsCard from "news/NewsCard";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { NewsTypes } from "news/NewsTypes";
 import styles from "./News.module.scss";
-import { TRUE } from "sass";
 
 export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
   const today = new Date();
