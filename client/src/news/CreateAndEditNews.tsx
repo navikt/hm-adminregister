@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
 import { Button, DatePicker, Heading, HStack, Select, TextField, useDatepicker } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";

@@ -1,17 +1,13 @@
-import { Box, Button, Dropdown, ExpansionCard } from "@navikt/ds-react";
+import { ExpansionCard } from "@navikt/ds-react";
 import styles from "news/News.module.scss";
 import parse from "html-react-parser";
-import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
-import { depublishNews } from "api/NewsApi";
-import React from "react";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import { toReadableString } from "utils/date-util";
-import { useNavigate } from "react-router-dom";
 import { KeyedMutator } from "swr";
 import { NewsChunk } from "utils/types/response-types";
 import NewsStatusTag from "news/NewsStatusTag";
 import { mapBackendStatusToFrontend } from "news/News";
-import DropdownMenu from "news/DropdownMenu";
+import NewsDropdownMenu from "news/NewsDropdownMenu";
 
 export default function NewsCard({
   news,
@@ -21,6 +17,7 @@ export default function NewsCard({
   mutateNewsRelease: KeyedMutator<NewsChunk>;
 }) {
   const frontendStatus = mapBackendStatusToFrontend(news);
+
   return (
     <ExpansionCard aria-label={"Nyhetskort for " + news.title}>
       <ExpansionCard.Header>
@@ -35,7 +32,7 @@ export default function NewsCard({
       <ExpansionCard.Content>
         <div className={styles.cardContainerDiv}>
           <span className={styles.seperatingLine}>{parse(news.text)}</span>
-          <DropdownMenu
+          <NewsDropdownMenu
             news={news}
             mutateNewsRelease={mutateNewsRelease}
             frontendStatus={frontendStatus}

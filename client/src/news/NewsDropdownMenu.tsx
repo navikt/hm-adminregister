@@ -15,7 +15,7 @@ type dropdownItems = {
   frontendStatus: NewsTypes;
 };
 
-export default function DropdownMenu(props: dropdownItems) {
+export default function NewsDropdownMenu(props: dropdownItems) {
   const navigate = useNavigate();
 
   const publishNewsRelease: NewsRegistrationDTO = {
