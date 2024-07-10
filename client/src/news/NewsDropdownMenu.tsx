@@ -1,13 +1,11 @@
 import styles from "news/News.module.scss";
 import { Box, Button, Dropdown } from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
-import { deleteNews, updateNews } from "api/NewsApi";
-import React from "react";
+import { deleteNews, publishNews, unpublishNews } from "api/NewsApi";
 import { NewsChunk, NewsRegistrationDTO } from "utils/types/response-types";
 import { useNavigate } from "react-router-dom";
 import { KeyedMutator } from "swr";
 import { NewsTypes } from "news/NewsTypes";
-import { toDateTimeString } from "utils/date-util";
 
 type dropdownItems = {
   news: NewsRegistrationDTO;
@@ -17,43 +15,6 @@ type dropdownItems = {
 
 export default function NewsDropdownMenu(props: dropdownItems) {
   const navigate = useNavigate();
-
-  const publishNewsRelease: NewsRegistrationDTO = {
-    id: props.news.id,
-    title: props.news.title,
-    text: props.news.text,
-    published: toDateTimeString(new Date()),
-    expired: props.news.expired,
-    // UNDER ARE VALS IGNORED BY BACKEND
-    status: "ACTIVE",
-    draftStatus: "DONE",
-    created: "a",
-    updated: "a",
-    author: "a",
-    createdBy: "a",
-    updatedBy: "a",
-    createdByUser: "a",
-    updatedByUser: "a",
-  };
-  const lastWeek = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000);
-
-  const unpublishNewsRelease: NewsRegistrationDTO = {
-    id: props.news.id,
-    title: props.news.title,
-    text: props.news.text,
-    published: toDateTimeString(lastWeek),
-    expired: toDateTimeString(lastWeek),
-    // UNDER ARE VALS IGNORED BY BACKEND
-    status: "ACTIVE",
-    draftStatus: "DONE",
-    created: "a",
-    updated: "a",
-    author: "a",
-    createdBy: "a",
-    updatedBy: "a",
-    createdByUser: "a",
-    updatedByUser: "a",
-  };
 
   const editOption = (
     <Dropdown.Menu.GroupedList.Item
@@ -71,7 +32,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
       <Dropdown.Menu.GroupedList.Item
         key={props.news.id}
         onClick={() => {
-          updateNews(unpublishNewsRelease).then(() => props.mutateNewsRelease());
+          unpublishNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
       >
         Avpubliser
@@ -84,7 +45,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
       <Dropdown.Menu.GroupedList.Item
         key={props.news.id}
         onClick={() => {
-          updateNews(publishNewsRelease).then(() => props.mutateNewsRelease());
+          publishNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
       >
         Publiser
@@ -101,7 +62,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
           deleteNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
       >
-        Slett (GJØR INGENTING)
+        Slett
       </Dropdown.Menu.GroupedList.Item>
     </>
   );
@@ -110,12 +71,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
     if (frontendStatus === NewsTypes.PUBLISHED) {
       return [<Dropdown.Menu.Divider key={props.news.id} />, unpublishOption];
     } else if (frontendStatus === NewsTypes.FUTURE) {
-      return [
-        <Dropdown.Menu.Divider key={props.news.id} />,
-        publishOption,
-        <Dropdown.Menu.Divider key={props.news.id} />,
-        unpublishOption,
-      ];
+      return [<Dropdown.Menu.Divider key={props.news.id} />, publishOption];
     }
   }
 
