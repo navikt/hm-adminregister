@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
-import { Button, DatePicker, Heading, HStack, Select, TextField, useDatepicker } from "@navikt/ds-react";
+import { Button, Heading, HStack, TextField } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { useForm } from "react-hook-form";
 import styles from "./CreateNews.module.scss";
@@ -9,8 +9,8 @@ import { NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toDate, toDateTimeString } from "utils/date-util";
-import { format } from "date-fns";
+import { toDateTimeString } from "utils/date-util";
+import DatoVelger from "news/DatoVelger";
 
 type FormData = {
   newsTitle: string;
@@ -19,22 +19,6 @@ type FormData = {
   expiredOn: Date;
   duration: string;
 };
-
-// Only used for edit mode
-function changeMonthAndDay(date: string): string {
-  const [day, month, year] = date.split(".");
-  return `${month}.${day}.${year}`;
-}
-
-function calculateExpiredDate(publishedDate: Date, duration: { type: string; value: number }) {
-  const endDate = new Date(publishedDate);
-  if (duration.type == "month") endDate.setMonth(endDate.getMonth() + duration.value);
-  else if (duration.type == "week") {
-    endDate.setDate(endDate.getDate() + 7 * duration.value);
-  }
-
-  return endDate;
-}
 
 const CreateAndEditNews = () => {
   const location = useLocation();
@@ -48,16 +32,19 @@ const CreateAndEditNews = () => {
     formState: { errors },
     setValue,
     unregister,
-  } = useForm<FormData>({ mode: "onChange" });
+    control,
+    watch,
+  } = useForm<FormData>({
+    mode: "onChange",
+    defaultValues: {
+      publishedOn: editNewsData ? new Date(editNewsData.published) : undefined,
+      expiredOn: editNewsData ? new Date(editNewsData.expired) : undefined,
+    },
+  });
 
   async function onSubmit(data: FormData) {
     // capture all p,li,ol,ul tags around <br>
     const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
-
-    const publishedDate =
-      data.publishedOn.toString().length == "dd.mm.yyyy".length //Check if the date is not updated by the datepicker
-        ? toDate(format(changeMonthAndDay(data.publishedOn.toString()), "yyyy-MM-dd'T'HH:mm:ss")) // the date is handled as "mm.dd.yyyy" as the formatter, therfore we change it to "dd.mm.yyyy"
-        : data.publishedOn;
 
     const newNewsRelease: NewsRegistrationDTO = {
       id: editNewsData ? editNewsData.id : uuidv4(),
@@ -65,8 +52,8 @@ const CreateAndEditNews = () => {
       text: editNewsData
         ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
         : textHtmlContent.replace("<p><br></p>", ""),
-      published: toDateTimeString(publishedDate),
-      expired: toDateTimeString(calculateExpiredDate(publishedDate, JSON.parse(data.duration))),
+      published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
+      expired: toDateTimeString(data.expiredOn),
       // UNDER ARE VALS IGNORED BY BACKEND
       status: "ACTIVE",
       draftStatus: "DONE",
@@ -85,18 +72,6 @@ const CreateAndEditNews = () => {
       navigate("/nyheter");
     });
   }
-
-  const { datepickerProps, inputProps } = useDatepicker({
-    fromDate: editNewsData ? undefined : new Date(),
-    defaultSelected: editNewsData ? new Date(editNewsData.published) : undefined,
-    onDateChange: (value) => {
-      if (value) {
-        setValue("publishedOn", value);
-      } else {
-        unregister("publishedOn");
-      }
-    },
-  });
 
   return (
     <div className={styles.createNews}>
@@ -119,30 +94,23 @@ const CreateAndEditNews = () => {
         />
 
         <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
-          <DatePicker {...datepickerProps}>
-            <DatePicker.Input
-              label={labelRequired("Synlig fra")}
-              {...register("publishedOn", {
-                required: "Publiseringsdato er påkrevd",
-                pattern: {
-                  value: /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/, //DD.MM.ÅÅÅÅ
-                  message: "Ugyldig format (dd.mm.åååå)",
-                },
-              })}
-              {...inputProps}
-              name="publishedOn"
-              id="publishedOn"
-              error={errors.publishedOn && errors.publishedOn.message?.toString()}
-            />
-          </DatePicker>
-          <Select {...register("duration")} label="Varighet">
-            <option value='{"type": "week", "value": 1}'>1 uke</option>
-            <option value='{"type": "week", "value": 2}'>2 uker</option>
-            <option value='{"type": "week", "value": 3}'>3 uker</option>
-            <option value='{"type": "month", "value": 1}'>1 måned</option>
-            <option value='{"type": "month", "value": 3}'>3 måneder</option>
-            <option value='{"type": "month", "value": 5}'>5 måneder</option>
-          </Select>
+          <DatoVelger
+            name="publishedOn"
+            label={"Synlig fra"}
+            control={control}
+            required={true}
+            shouldUnregister={true}
+            errorVedTomInput={"Ugyldig format (dd.mm.åååå)"}
+          />
+          <DatoVelger
+            name="expiredOn"
+            label={"Synlig til"}
+            control={control}
+            required={true}
+            shouldUnregister={true}
+            errorVedTomInput={"Ugyldig format (dd.mm.åååå)"}
+            watchDate={watch("publishedOn")}
+          />
         </HStack>
         <Heading level="2" size="small" className={styles.increaseSpacing}>
           Beskrivelse
