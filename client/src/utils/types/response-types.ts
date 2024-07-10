@@ -87,6 +87,7 @@ export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
 export type NewsRegistrationDTO = components["schemas"]["NewsRegistrationDTO"];
+export type CreateUpdateNewsDTO = components["schemas"]["CreateUpdateNewsDTO"];
 
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 

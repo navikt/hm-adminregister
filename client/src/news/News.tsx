@@ -8,6 +8,7 @@ import NewsCard from "news/NewsCard";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { NewsTypes } from "news/NewsTypes";
 import styles from "./News.module.scss";
+import { TRUE } from "sass";
 
 export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
   const today = new Date();
@@ -18,23 +19,29 @@ export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes
     return NewsTypes.PUBLISHED;
   } else if (news.status === "INACTIVE" && publishedOn > today) {
     return NewsTypes.FUTURE;
-  } else if ((news.status === "INACTIVE" && expiredOn < today) || news.status === "DELETED") {
+  } else if (news.status === "INACTIVE" && expiredOn < today) {
     return NewsTypes.UNPUBLISHED;
   }
   return NewsTypes.UNPUBLISHED;
 }
 
 const News = () => {
-  const [newsStatus, setNewsStatus] = useState("PUBLISHED");
+  const [newsStatus, setNewsStatus] = useState("ALL");
   const navigate = useNavigate();
 
   function handleFilterOption(news: NewsRegistrationDTO, filterStatus: string) {
     const frontendNewsStatus = mapBackendStatusToFrontend(news);
 
-    if (filterStatus == "ALL") {
+    if (
+      filterStatus == "ALL" &&
+      (frontendNewsStatus == NewsTypes.PUBLISHED || frontendNewsStatus == NewsTypes.FUTURE)
+    ) {
       return true;
+    } else if (filterStatus == "ALL") {
+      return false;
+    } else {
+      return frontendNewsStatus == filterStatus;
     }
-    return frontendNewsStatus == filterStatus;
   }
 
   const {
@@ -52,18 +59,11 @@ const News = () => {
         </Heading>
         <div className="page__content-container">
           <HStack justify="space-between" gap="4">
-            <ToggleGroup
-              value={newsStatus}
-              onChange={(value) => setNewsStatus(value)}
-              size="small"
-              defaultChecked={true}
-            >
+            <ToggleGroup value={newsStatus} onChange={(value) => setNewsStatus(value)} size="small">
               <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
               <ToggleGroup.Item value={NewsTypes.FUTURE}>Fremtidig</ToggleGroup.Item>
-              <ToggleGroup.Item value={NewsTypes.PUBLISHED} defaultChecked>
-                Publisert
-              </ToggleGroup.Item>
-              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Avpublisert</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.PUBLISHED}>Publisert</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Historkk</ToggleGroup.Item>
             </ToggleGroup>
 
             <Button
