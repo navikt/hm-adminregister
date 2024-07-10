@@ -386,16 +386,9 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
 }
 
 export function useSuppliers() {
-  const { setGlobalError } = useErrorStore();
-
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations`;
   const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET);
   const suppliers = data && mapSuppliers(data);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     suppliers,
