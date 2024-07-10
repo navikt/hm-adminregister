@@ -1,12 +1,11 @@
 import React, { ReactNode } from "react";
 import { DatePicker, useDatepicker } from "@navikt/ds-react";
 import { UseDatepickerOptions } from "@navikt/ds-react/esm/date/hooks/useDatepicker";
-import { Control, FieldValues, Path, useController, UseFormWatch } from "react-hook-form";
+import { Control, FieldValues, Path, useController } from "react-hook-form";
 import { format, isEqual } from "date-fns";
 import { labelRequired } from "utils/string-util";
-import { commonSeriesInfo } from "utils/zodSchema/newSeries";
 
-const DatoVelger = <T extends FieldValues>({
+const CutsomDatePicker = <T extends FieldValues>({
   name,
   label,
   description,
@@ -35,10 +34,16 @@ const DatoVelger = <T extends FieldValues>({
     control,
     rules: {
       validate: (value) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         if (watchDate) {
           if (new Date(watchDate) >= new Date(value)) {
-            return "Til dato må være senere enn fra dato";
+            return "Velg senere dato";
           }
+        }
+        if (new Date(value) < today) {
+          return "Ugyldig dato";
         }
 
         if (errorVedTomInput && !value) {
@@ -58,13 +63,17 @@ const DatoVelger = <T extends FieldValues>({
     date === undefined ? "" : format(date, "yyyy-MM-dd");
 
   const { datepickerProps, inputProps, setSelected, selectedDay } = useDatepicker({
-    onDateChange: (date: Date) => {
-      date && field.onChange(formatDateToLocaleDateOrEmptyString(date));
+    onDateChange: (date) => {
+      field.onChange(formatDateToLocaleDateOrEmptyString(date));
     },
     locale: "nb",
     inputFormat: "dd.MM.yyyy",
     defaultSelected: field.value ? new Date(field.value) : undefined,
-    fromDate: watchDate ? new Date(watchDate) : new Date(),
+    fromDate: (() => {
+      const date = watchDate ? new Date(watchDate) : new Date();
+      date.setDate(date.getDate() + 1);
+      return watchDate ? date : new Date();
+    })(),
   } as UseDatepickerOptions);
 
   const handleBlur = () => {
@@ -91,4 +100,4 @@ const DatoVelger = <T extends FieldValues>({
   );
 };
 
-export default DatoVelger;
+export default CutsomDatePicker;

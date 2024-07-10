@@ -10,7 +10,7 @@ import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
-import DatoVelger from "news/DatoVelger";
+import CutsomDatePicker from "news/CutsomDatePicker";
 
 type FormData = {
   newsTitle: string;
@@ -94,21 +94,21 @@ const CreateAndEditNews = () => {
         />
 
         <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
-          <DatoVelger
+          <CutsomDatePicker
             name="publishedOn"
             label={"Synlig fra"}
             control={control}
             required={true}
             shouldUnregister={true}
-            errorVedTomInput={"Ugyldig format (dd.mm.åååå)"}
+            errorVedTomInput={"Ugyldig dato"}
           />
-          <DatoVelger
+          <CutsomDatePicker
             name="expiredOn"
             label={"Synlig til"}
             control={control}
             required={true}
             shouldUnregister={true}
-            errorVedTomInput={"Ugyldig format (dd.mm.åååå)"}
+            errorVedTomInput={"Ugyldig dato"}
             watchDate={watch("publishedOn")}
           />
         </HStack>
