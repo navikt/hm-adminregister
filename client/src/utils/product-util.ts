@@ -37,7 +37,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
       const product: Product = {
         id: firstProduct.seriesUUID?.toString(),
         title: firstProduct.title,
-        accessory: firstProduct.productData.accessory,
+        accessory: firstProduct.accessory,
         agreements: [],
         attributes: {
           text: firstProduct.productData.attributes.text ? firstProduct.productData.attributes.text : "",
@@ -56,7 +56,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
         isoCategory: firstProduct.isoCategory,
         isoCategoryText: "",
         isoCategoryTitle: "",
-        sparepart: firstProduct.productData.sparePart,
+        sparepart: firstProduct.sparePart,
         supplierId: firstProduct.supplierId?.toString(),
         variantCount: dtos.length,
         variants: dtos.map((dto) => {
