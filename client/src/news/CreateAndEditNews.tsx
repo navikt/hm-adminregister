@@ -45,7 +45,6 @@ const CreateAndEditNews = () => {
   async function onSubmit(data: FormData) {
     // capture all p,li,ol,ul tags around <br>
     const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
-
     const newNewsRelease: NewsRegistrationDTO = {
       id: editNewsData ? editNewsData.id : uuidv4(),
       title: data.newsTitle,
@@ -100,7 +99,7 @@ const CreateAndEditNews = () => {
             control={control}
             required={true}
             shouldUnregister={true}
-            errorVedTomInput={"Ugyldig dato"}
+            errorMessage={"Ugyldig dato"}
           />
           <CutsomDatePicker
             name="expiredOn"
@@ -108,7 +107,7 @@ const CreateAndEditNews = () => {
             control={control}
             required={true}
             shouldUnregister={true}
-            errorVedTomInput={"Ugyldig dato"}
+            errorMessage={"Ugyldig dato"}
             watchDate={watch("publishedOn")}
           />
         </HStack>
@@ -124,7 +123,7 @@ const CreateAndEditNews = () => {
           </Button>
 
           <Button type="submit" size="medium">
-            {editNewsData ? "Rediger" : "Opprett"}
+            {editNewsData ? "Lagre" : "Opprett"}
           </Button>
         </div>
       </form>

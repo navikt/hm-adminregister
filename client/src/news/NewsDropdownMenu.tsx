@@ -18,7 +18,6 @@ export default function NewsDropdownMenu(props: dropdownItems) {
 
   const editOption = (
     <Dropdown.Menu.GroupedList.Item
-      key={props.news.id}
       onClick={() => {
         navigate(`/nyheter/rediger/${props.news.id}`, { state: props.news });
       }}
@@ -30,7 +29,6 @@ export default function NewsDropdownMenu(props: dropdownItems) {
   const unpublishOption = (
     <>
       <Dropdown.Menu.GroupedList.Item
-        key={props.news.id}
         onClick={() => {
           unpublishNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
@@ -43,7 +41,6 @@ export default function NewsDropdownMenu(props: dropdownItems) {
   const publishOption = (
     <>
       <Dropdown.Menu.GroupedList.Item
-        key={props.news.id}
         onClick={() => {
           publishNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
@@ -55,9 +52,8 @@ export default function NewsDropdownMenu(props: dropdownItems) {
 
   const deleteOption = (
     <>
-      <Dropdown.Menu.Divider key={props.news.id + 1} />
+      <Dropdown.Menu.Divider />
       <Dropdown.Menu.GroupedList.Item
-        key={props.news.id}
         onClick={() => {
           deleteNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
@@ -69,9 +65,17 @@ export default function NewsDropdownMenu(props: dropdownItems) {
 
   function checkStatusAndPlaceOption(frontendStatus: NewsTypes) {
     if (frontendStatus === NewsTypes.PUBLISHED) {
-      return [<Dropdown.Menu.Divider key={props.news.id} />, unpublishOption];
+      return (
+        <>
+          <Dropdown.Menu.Divider /> {unpublishOption}
+        </>
+      );
     } else if (frontendStatus === NewsTypes.FUTURE) {
-      return [<Dropdown.Menu.Divider key={props.news.id} />, publishOption];
+      return (
+        <>
+          <Dropdown.Menu.Divider /> {publishOption}
+        </>
+      );
     }
   }
 
@@ -83,8 +87,8 @@ export default function NewsDropdownMenu(props: dropdownItems) {
           icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
           as={Dropdown.Toggle}
         />
-        <Dropdown.Menu key={props.news.id}>
-          <Dropdown.Menu.GroupedList key={props.news.id}>
+        <Dropdown.Menu>
+          <Dropdown.Menu.GroupedList>
             {editOption}
             {checkStatusAndPlaceOption(props.frontendStatus)}
             {deleteOption}
