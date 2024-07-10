@@ -315,17 +315,11 @@ export function useProductVariantsBySeriesId(seriesId?: string) {
 }
 
 export function useAgreements() {
-  const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations?excludedAgreementStatus=DELETED`;
 
   const { data, error, isLoading } = useSWR<AgreementsChunk>(loggedInUser ? path : null, fetcherGET);
-
-  if (error) {
-    setGlobalError(error.status, error.message);
-    throw error;
-  }
 
   return {
     data,
