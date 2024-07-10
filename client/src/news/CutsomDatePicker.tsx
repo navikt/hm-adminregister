@@ -1,4 +1,3 @@
-import React, { ReactNode } from "react";
 import { DatePicker, useDatepicker } from "@navikt/ds-react";
 import { UseDatepickerOptions } from "@navikt/ds-react/esm/date/hooks/useDatepicker";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
@@ -10,7 +9,7 @@ const CutsomDatePicker = <T extends FieldValues>({
   label,
   description,
   control,
-  errorVedTomInput,
+  errorMessage,
   readOnly,
   watchDate,
   shouldUnregister = false,
@@ -20,7 +19,7 @@ const CutsomDatePicker = <T extends FieldValues>({
   label: string;
   description?: string;
   control: Control<T>;
-  errorVedTomInput?: string;
+  errorMessage?: string;
   readOnly?: boolean;
   watchDate?: Date;
   shouldUnregister?: boolean;
@@ -43,17 +42,18 @@ const CutsomDatePicker = <T extends FieldValues>({
           }
         }
         if (new Date(value) < today) {
-          return "Ugyldig dato";
+          return errorMessage;
         }
 
-        if (errorVedTomInput && !value) {
-          return errorVedTomInput;
+        if (errorMessage && !value) {
+          return errorMessage;
         }
+
         return undefined;
       },
       required: {
         value: required,
-        message: errorVedTomInput || "Må fylles ut",
+        message: errorMessage || "Må fylles ut",
       },
     },
     shouldUnregister: shouldUnregister,
@@ -66,6 +66,7 @@ const CutsomDatePicker = <T extends FieldValues>({
     onDateChange: (date) => {
       field.onChange(formatDateToLocaleDateOrEmptyString(date));
     },
+
     locale: "nb",
     inputFormat: "dd.MM.yyyy",
     defaultSelected: field.value ? new Date(field.value) : undefined,
