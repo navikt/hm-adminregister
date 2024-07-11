@@ -62,7 +62,7 @@ const News = () => {
               <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
               <ToggleGroup.Item value={NewsTypes.FUTURE}>Fremtidig</ToggleGroup.Item>
               <ToggleGroup.Item value={NewsTypes.PUBLISHED}>Publisert</ToggleGroup.Item>
-              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Historkk</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Historikk</ToggleGroup.Item>
             </ToggleGroup>
 
             <Button
