@@ -79,6 +79,7 @@ export const addProductsToAgreement = async (
     published: agreementToUpdate.published,
     expired: agreementToUpdate.expired,
     updatedByUser: agreementToUpdate.updatedByUser,
+    updatedBy: agreementToUpdate.updatedBy,
   }));
 
   return await fetchAPI(

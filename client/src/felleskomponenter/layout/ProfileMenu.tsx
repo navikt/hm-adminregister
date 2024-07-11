@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
-import { Buldings3Icon, ChevronDownIcon, LeaveIcon, PersonCircleIcon, PersonIcon } from "@navikt/aksel-icons";
+import {
+  BagdeIcon,
+  Buldings3Icon,
+  ChevronDownIcon,
+  LeaveIcon,
+  PersonCircleIcon,
+  PersonIcon,
+} from "@navikt/aksel-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { HM_REGISTER_URL } from "environments";
@@ -59,17 +66,12 @@ const ProfileMenu = () => {
         </Button>
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
-            <div
-              className="user-menu__profile-link"
-              aria-selected={pathname === "/profil" || pathname === "/admin/profil"}
-            >
-              <Button as="a" onClick={() => (loggedInUser?.isAdmin ? navigate("/admin/profil") : navigate("/profil"))}>
-                Min profil
-              </Button>
-            </div>
+            <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
+              <BagdeIcon title="Min profil" fontSize="1.5rem" aria-hidden /> Min profil
+            </Link>
             <span className="line" />
             <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
-              <LeaveIcon title="Logg ut" fontSize="1.5rem" /> Logg ut
+              <LeaveIcon title="Logg ut" fontSize="1.5rem" aria-hidden /> Logg ut
             </Link>
             {error && <Alert variant="error">Feil ved utlogging. Error message: {error.message}</Alert>}
           </div>

@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Button, HStack, Heading, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
 import { Supplier } from "utils/supplier-util";
+import ErrorAlert from "felleskomponenter/ErrorAlert";
 
 const Leverandører = () => {
-  const { suppliers, isLoading } = useSuppliers();
+  const { suppliers, isLoading, error } = useSuppliers();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<Supplier[] | undefined>();
@@ -25,6 +26,14 @@ const Leverandører = () => {
   const handleCreateNewSupplier = () => {
     navigate("/leverandor/opprett-leverandor");
   };
+
+  if (error) {
+    return (
+      <main className="show-menu">
+        <ErrorAlert />
+      </main>
+    );
+  }
 
   return (
     <main className="show-menu">

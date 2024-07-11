@@ -206,6 +206,9 @@
   }
 
   &__profile-link {
+    display: flex;
+    align-items: center;
+    gap: $a-spacing-2;
     border: 1px solid $fm-border-darker;
     color: #fff;
     padding: $a-spacing-2 $a-spacing-4;

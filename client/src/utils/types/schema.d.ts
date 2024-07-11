@@ -303,11 +303,14 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/excel/export/supplier": {
     post: operations["createExportForAllSupplierProducts"];
   };
-  "/admreg/vendor/api/v1/product/registrations/excel/import": {
-    post: operations["importExcel_1"];
+  "/admreg/vendor/api/v1/product/registrations/excel/export/supplier/{seriesId}": {
+    post: operations["createExportForSeries"];
   };
-  "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun": {
-    post: operations["importExcelDryrun_1"];
+  "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun/{seriesId}": {
+    post: operations["importExcelForSeriesDryrun"];
+  };
+  "/admreg/vendor/api/v1/product/registrations/excel/import/{seriesId}": {
+    post: operations["importExcelForSeries"];
   };
   "/admreg/vendor/api/v1/product/registrations/series/{seriesUUID}": {
     get: operations["findBySeriesUUIDAndSupplierId_1"];
@@ -337,6 +340,9 @@ export interface paths {
   };
   "/admreg/vendor/api/v1/series/series-to-inactive/{seriesUUID}": {
     put: operations["setPublishedSeriesToInactive_1"];
+  };
+  "/admreg/vendor/api/v1/series/series_ready-for-approval/{seriesUUID}": {
+    put: operations["setSeriesReadyForApproval"];
   };
   "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setPublishedSeriesToDraft"];
@@ -504,6 +510,15 @@ export interface components {
     };
     CompatibleWith: {
       seriesIds: string[];
+      productIds: string[];
+    };
+    CreateUpdateNewsDTO: {
+      title: string;
+      text: string;
+      /** Format: date-time */
+      published: string;
+      /** Format: date-time */
+      expired: string;
     };
     DelkontraktData: {
       title?: string | null;
@@ -803,6 +818,7 @@ export interface components {
       postId?: string | null;
       status: components["schemas"]["ProductAgreementStatus"];
       createdBy: string;
+      updatedBy: string;
       /** Format: date-time */
       created: string;
       /** Format: date-time */
@@ -820,8 +836,6 @@ export interface components {
     };
     ProductData: {
       attributes: components["schemas"]["Attributes"];
-      accessory: boolean;
-      sparePart: boolean;
       techData: components["schemas"]["TechData"][];
       /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
@@ -849,6 +863,8 @@ export interface components {
       /** @deprecated */
       title: string;
       articleName: string;
+      accessory: boolean;
+      sparePart: boolean;
       draftStatus: components["schemas"]["DraftStatus"];
       adminStatus: components["schemas"]["AdminStatus"];
       registrationStatus: components["schemas"]["RegistrationStatus"];
@@ -887,6 +903,8 @@ export interface components {
       /** @deprecated */
       title: string;
       articleName: string;
+      accessory: boolean;
+      sparePart: boolean;
       draftStatus: components["schemas"]["DraftStatus"];
       adminStatus: components["schemas"]["AdminStatus"];
       registrationStatus: components["schemas"]["RegistrationStatus"];
@@ -1010,6 +1028,7 @@ export interface components {
     SeriesAttributesDTO: {
       keywords?: string[] | null;
       url?: string | null;
+      compatibleWith?: components["schemas"]["CompatibleWith"] | null;
     };
     SeriesDataDTO: {
       media: components["schemas"]["MediaInfoDTO"][];
@@ -1832,7 +1851,7 @@ export interface operations {
   createNews: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["NewsRegistrationDTO"];
+        "application/json": components["schemas"]["CreateUpdateNewsDTO"];
       };
     };
     responses: {
@@ -1862,7 +1881,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["NewsRegistrationDTO"];
+        "application/json": components["schemas"]["CreateUpdateNewsDTO"];
       };
     };
     responses: {
@@ -3268,25 +3287,27 @@ export interface operations {
       };
     };
   };
-  importExcel_1: {
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          /** Format: binary */
-          file: string;
-        };
+  createExportForSeries: {
+    parameters: {
+      path: {
+        seriesId: string;
       };
     };
     responses: {
-      /** @description importExcel_1 200 response */
+      /** @description createExportForSeries 200 response */
       200: {
         content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
         };
       };
     };
   };
-  importExcelDryrun_1: {
+  importExcelForSeriesDryrun: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
     requestBody: {
       content: {
         "multipart/form-data": {
@@ -3296,10 +3317,33 @@ export interface operations {
       };
     };
     responses: {
-      /** @description importExcelDryrun_1 200 response */
+      /** @description importExcelForSeriesDryrun 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDryRunDTO"][];
+        };
+      };
+    };
+  };
+  importExcelForSeries: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description importExcelForSeries 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
         };
       };
     };
@@ -3465,6 +3509,21 @@ export interface operations {
     };
     responses: {
       /** @description setPublishedSeriesToInactive_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  setSeriesReadyForApproval: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description setSeriesReadyForApproval 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
