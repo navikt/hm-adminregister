@@ -269,7 +269,7 @@ export function App() {
           }
         />
         <Route
-          path="/nyheter/rediger/:newsid"
+          path="/nyheter/rediger"
           element={
             <>
               <CreateAndEditNews />

@@ -19,7 +19,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
   const editOption = (
     <Dropdown.Menu.GroupedList.Item
       onClick={() => {
-        navigate(`/nyheter/rediger/${props.news.id}`, { state: props.news });
+        navigate(`/nyheter/rediger`, { state: props.news });
       }}
     >
       Rediger nyhetsmelding

@@ -9,7 +9,7 @@ import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
-import CutsomDatePicker from "news/CutsomDatePicker";
+import CustomDatePicker from "news/CustomDatePicker";
 
 type FormData = {
   newsTitle: string;
@@ -29,8 +29,6 @@ const CreateAndEditNews = () => {
     handleSubmit,
     register,
     formState: { errors },
-    setValue,
-    unregister,
     control,
     watch,
   } = useForm<FormData>({
@@ -85,7 +83,7 @@ const CreateAndEditNews = () => {
         />
 
         <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
-          <CutsomDatePicker
+          <CustomDatePicker
             name="publishedOn"
             label={"Synlig fra"}
             control={control}
@@ -93,7 +91,7 @@ const CreateAndEditNews = () => {
             shouldUnregister={true}
             errorMessage={"Ugyldig dato"}
           />
-          <CutsomDatePicker
+          <CustomDatePicker
             name="expiredOn"
             label={"Synlig til"}
             control={control}

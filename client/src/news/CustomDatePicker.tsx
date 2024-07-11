@@ -4,7 +4,7 @@ import { Control, FieldValues, Path, useController } from "react-hook-form";
 import { format, isEqual } from "date-fns";
 import { labelRequired } from "utils/string-util";
 
-const CutsomDatePicker = <T extends FieldValues>({
+const CustomDatePicker = <T extends FieldValues>({
   name,
   label,
   description,
@@ -73,7 +73,7 @@ const CutsomDatePicker = <T extends FieldValues>({
     fromDate: (() => {
       const date = watchDate ? new Date(watchDate) : new Date();
       date.setDate(date.getDate() + 1);
-      return watchDate ? date : new Date();
+      return watchDate ? date : undefined;
     })(),
   } as UseDatepickerOptions);
 
@@ -101,4 +101,4 @@ const CutsomDatePicker = <T extends FieldValues>({
   );
 };
 
-export default CutsomDatePicker;
+export default CustomDatePicker;
