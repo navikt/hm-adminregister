@@ -12,12 +12,12 @@ vi.mock("environments", () => ({
   VITE_HM_REGISTER_URL: vi.fn(() => "http://localhost:8082/imageproxy"),
 }));
 
-const dummyNews = (title: string, text: string, published: string, expired: string) => {
+const dummyNews = (title: string, text: string, published: string, expired: string, status: string) => {
   return {
     id: uuidv4(),
     title: title,
     text: text,
-    status: "ACTIVE",
+    status: status,
     draftStatus: "DRAFT",
     published: published,
     expired: expired,
@@ -36,9 +36,9 @@ test("Flere nyheter", async () => {
     http.get("http://localhost:8080/admreg/admin/api/v1/news", () => {
       return HttpResponse.json({
         content: [
-          dummyNews("Nyhet 1", "text1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z"), //PUBLISHED
-          dummyNews("Nyhet 2", "text2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z"), //UNPUBLISHED
-          dummyNews("Nyhet 3", "text3", "2025-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z"), //FUTURE
+          dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
+          dummyNews("Nyhet 2", "tekst2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z", "INACTIVE"), //UNPUBLISHED
+          dummyNews("Nyhet 3", "tekst3", "2025-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
         ],
         pageable: {
           number: 0,
@@ -54,13 +54,13 @@ test("Flere nyheter", async () => {
           },
           size: 10,
         },
-        totalSize: 3,
+        totalSize: 1,
         totalPages: 1,
         empty: false,
         size: 10,
         offset: 0,
-        pageNumber: 0,
-        numberOfElements: 3,
+        pageNumber: 1,
+        numberOfElements: 4,
       });
     }),
   );
@@ -72,5 +72,23 @@ test("Flere nyheter", async () => {
   );
 
   expect(await screen.findByRole("heading")).toBeInTheDocument();
-  //expect(await screen.findByRole("heading", { name: /Nyhet 2/ })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { name: /Nyhet 1/ })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { name: /Nyhet 3/ })).toBeInTheDocument();
+  expect(screen.queryByText(/Nyhet 2/)).toBeNull();
+  expect(await screen.findAllByRole("heading", { name: /Nyhet \d/ })).length(2);
+
+  expect(screen.queryAllByText(/Fremtidig/)).length(2);
+
+  const nyhet3Heading = await screen.findByRole("heading", { name: /Nyhet 3/ });
+
+  //const dropdownButton = nyhet3Heading.closest("button");
+  //console.log("Dette er en console log: " + dropdownButton);
+  //fireEvent.click(dropdownButton!);
+  //expect(screen.queryByText("tekst3")).exist;
+
+  const historikkButton = await screen.findByText(/Historikk/);
+  fireEvent.click(historikkButton);
+  expect(screen.queryByText("Avpublisert")).exist;
+
+  expect(await axe(container)).toHaveNoViolations();
 });

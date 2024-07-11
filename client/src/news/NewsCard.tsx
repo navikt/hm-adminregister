@@ -21,7 +21,7 @@ export default function NewsCard({
   return (
     <ExpansionCard aria-label={"Nyhetskort for " + news.title}>
       <ExpansionCard.Header>
-        <ExpansionCard.Title>{news.title + " " + news.status}</ExpansionCard.Title>
+        <ExpansionCard.Title as="h2">{news.title + " " + news.status}</ExpansionCard.Title>
         <ExpansionCard.Description>
           <span>
             Synlig på FinnHjelpemiddel fra {toReadableString(news.published)} til {toReadableString(news.expired)}
