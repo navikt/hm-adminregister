@@ -80,11 +80,8 @@ test("Flere nyheter", async () => {
   expect(screen.queryAllByText(/Fremtidig/)).length(2);
 
   const nyhet3Heading = await screen.findByRole("heading", { name: /Nyhet 3/ });
-
-  //const dropdownButton = nyhet3Heading.closest("button");
-  //console.log("Dette er en console log: " + dropdownButton);
-  //fireEvent.click(dropdownButton!);
-  //expect(screen.queryByText("tekst3")).exist;
+  fireEvent.click(nyhet3Heading);
+  expect(screen.queryByText("tekst3")).exist;
 
   const historikkButton = await screen.findByText(/Historikk/);
   fireEvent.click(historikkButton);
