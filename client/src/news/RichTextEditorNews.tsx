@@ -28,7 +28,7 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
         if (e.key === "Tab") {
           if (e.target.className === "ql-editor") {
             fieldsButton[index + 1].focus();
-            console.log("textfield", props.content.replace("\t", ""));
+            //console.log("textfield", props.content.replace("\t", ""));
           }
         }
       }}
