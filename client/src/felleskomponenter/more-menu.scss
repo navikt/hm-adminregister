@@ -1,13 +1,19 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .more-menu {
-  .navds-popover__content {
+  .more-menu-content {
     padding: 0;
+
+    li {
+      padding: 0.3rem !important;
+      width: auto !important;
+    }
   }
 
-  button {
+  .more-menu-button {
     justify-content: flex-start;
     padding: 1rem 2rem;
+
     &:hover {
       border-radius: 0;
     }
