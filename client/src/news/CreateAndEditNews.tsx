@@ -5,7 +5,7 @@ import { labelRequired } from "utils/string-util";
 import { useForm } from "react-hook-form";
 import styles from "./CreateNews.module.scss";
 import { v4 as uuidv4 } from "uuid";
-import { NewsRegistrationDTO } from "utils/types/response-types";
+import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -45,31 +45,24 @@ const CreateAndEditNews = () => {
   async function onSubmit(data: FormData) {
     // capture all p,li,ol,ul tags around <br>
     const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
-    const newNewsRelease: NewsRegistrationDTO = {
-      id: editNewsData ? editNewsData.id : uuidv4(),
+    const newNewsRelease: CreateUpdateNewsDTO = {
       title: data.newsTitle,
       text: editNewsData
         ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
         : textHtmlContent.replace("<p><br></p>", ""),
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
-      // UNDER ARE VALS IGNORED BY BACKEND
-      status: "ACTIVE",
-      draftStatus: "DONE",
-      created: editNewsData ? editNewsData.created : new Date().toISOString(),
-      updated: new Date().toISOString(),
-      author: "a",
-      createdBy: "a",
-      updatedBy: "a",
-      createdByUser: "a",
-      updatedByUser: "a",
     };
 
-    const handleNews = editNewsData ? updateNews : createNews;
-
-    handleNews(newNewsRelease).then(() => {
-      navigate("/nyheter");
-    });
+    if (editNewsData) {
+      updateNews(newNewsRelease, editNewsData.id).then(() => {
+        navigate("/nyheter");
+      });
+    } else {
+      createNews(newNewsRelease).then(() => {
+        navigate("/nyheter");
+      });
+    }
   }
 
   return (

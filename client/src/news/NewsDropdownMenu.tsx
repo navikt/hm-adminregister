@@ -27,27 +27,23 @@ export default function NewsDropdownMenu(props: dropdownItems) {
   );
 
   const unpublishOption = (
-    <>
-      <Dropdown.Menu.GroupedList.Item
-        onClick={() => {
-          unpublishNews(props.news.id).then(() => props.mutateNewsRelease());
-        }}
-      >
-        Avpubliser
-      </Dropdown.Menu.GroupedList.Item>
-    </>
+    <Dropdown.Menu.GroupedList.Item
+      onClick={() => {
+        unpublishNews(props.news.id).then(() => props.mutateNewsRelease());
+      }}
+    >
+      Avpubliser
+    </Dropdown.Menu.GroupedList.Item>
   );
 
   const publishOption = (
-    <>
-      <Dropdown.Menu.GroupedList.Item
-        onClick={() => {
-          publishNews(props.news.id).then(() => props.mutateNewsRelease());
-        }}
-      >
-        Publiser
-      </Dropdown.Menu.GroupedList.Item>
-    </>
+    <Dropdown.Menu.GroupedList.Item
+      onClick={() => {
+        publishNews(props.news.id).then(() => props.mutateNewsRelease());
+      }}
+    >
+      Publiser
+    </Dropdown.Menu.GroupedList.Item>
   );
 
   const deleteOption = (
