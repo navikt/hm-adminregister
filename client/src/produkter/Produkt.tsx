@@ -267,6 +267,8 @@ const ProductPage = () => {
               </Tabs.List>
               <AboutTab
                 series={series}
+                isAdmin={loggedInUser?.isAdmin || false}
+                mutateSeries={mutateSeries}
                 updateSeriesInfo={onSubmit}
                 isoCategory={isoCategory}
                 isEditable={isEditable}

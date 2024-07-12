@@ -3,7 +3,7 @@ import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
 import { RichTextEditor } from "produkter/RichTextEditor";
-import { useState } from "react";
+import React, { useState } from "react";
 import { updateProductDescription } from "api/SeriesApi";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";

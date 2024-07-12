@@ -1,4 +1,5 @@
 import { fetchAPI, getPath } from "api/fetch";
+import { EditSeriesInfo } from "produkter/Produkt";
 import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
@@ -64,24 +65,30 @@ export const updateProductDescription = async (
   });
 };
 
-export const updateSeriesKeywords = async (
-  seriesUUID: string,
-  keywords: string[],
-  isAdmin: boolean,
-): Promise<SeriesRegistrationDTO> => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.attributes.keywords = keywords;
-    return series;
-  });
-};
 
-export const updateSeriesURL = async (
+
+export const updateSeries = async (
   seriesUUID: string,
-  url: string,
+  editSeriesInfo: EditSeriesInfo,
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.attributes.url = url;
+    series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
+    series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
+    series.text = editSeriesInfo.description ? editSeriesInfo.description : series.text;
+
+    if (editSeriesInfo.url?.length === 0) {
+      series.seriesData.attributes.url = undefined;
+    } else {
+      series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
+    }
+
+    if (editSeriesInfo.keywords?.length === 0) {
+      series.seriesData.attributes.keywords = undefined;
+    } else {
+      series.seriesData.attributes.keywords = editSeriesInfo.keywords || series.seriesData.attributes.keywords;
+    }
+
     return series;
   });
 };
