@@ -54,6 +54,19 @@ export const updateProductTitle = async (
   });
 };
 
+export const updateProductDescription = async (
+  seriesUUID: string,
+  productDescription: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.text = productDescription;
+    return series;
+  });
+};
+
+
+
 export const updateSeries = async (
   seriesUUID: string,
   editSeriesInfo: EditSeriesInfo,

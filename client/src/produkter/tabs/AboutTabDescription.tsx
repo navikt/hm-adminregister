@@ -4,18 +4,23 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import parse from "html-react-parser";
 import { RichTextEditor } from "produkter/RichTextEditor";
 import React, { useState } from "react";
-import { EditSeriesInfo } from "produkter/Produkt";
+import { updateProductDescription } from "api/SeriesApi";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  description: string;
-  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
+  series: SeriesRegistrationDTO;
+  isAdmin: boolean;
+  mutateSeries: () => void;
   showInputError: boolean;
   isEditable: boolean;
 }
 
-export const AboutTabDescription = ({ description, updateSeriesInfo, showInputError, isEditable }: Props) => {
+export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputError, isEditable }: Props) => {
+  const description = series.text;
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
+  const { setGlobalError } = useErrorStore();
 
   const getDescription = () => (
     <>
@@ -29,8 +34,12 @@ export const AboutTabDescription = ({ description, updateSeriesInfo, showInputEr
   );
 
   const handleSaveDescription = (updatedDescription: string) => {
-    updateSeriesInfo({ description: updatedDescription });
     setShowEditDescriptionMode(false);
+    updateProductDescription(series!.id, updatedDescription, isAdmin)
+      .then(() => mutateSeries())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
   };
 
   return (
