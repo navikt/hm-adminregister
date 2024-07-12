@@ -31,7 +31,6 @@
     border-radius: var(--a-spacing-05);
 }
 
-
 .ql-editor:focus{
     outline: var(--a-border-focus) var(--a-spacing-1) solid;
     border-radius: var(--a-spacing-05);

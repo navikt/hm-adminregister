@@ -1,11 +1,11 @@
-import { NewsChunk, NewsRegistrationDTO } from "utils/types/response-types";
+import { CreateUpdateNewsDTO, NewsChunk, NewsRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 import { fetchAPI, getPath } from "api/fetch";
 
 export function getPageNews() {
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?&sort=published,DESC`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?&sort=published,DESC&status=ACTIVE,INACTIVE`;
   const { data, error, isLoading, mutate } = useSWR<NewsChunk>(path, fetcherGET);
 
   return {
@@ -16,14 +16,25 @@ export function getPageNews() {
   };
 }
 
-export const createNews = async (newNewsRelease: NewsRegistrationDTO): Promise<NewsRegistrationDTO> => {
+export const createNews = async (newNewsRelease: CreateUpdateNewsDTO): Promise<CreateUpdateNewsDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/news/`), "POST", newNewsRelease);
 };
 
-export const updateNews = async (updatedNewsRelease: NewsRegistrationDTO): Promise<NewsRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/news/${updatedNewsRelease.id}`), "PUT", updatedNewsRelease);
+export const updateNews = async (
+  updatedNewsRelease: CreateUpdateNewsDTO,
+  newsReleaseId: string,
+): Promise<CreateUpdateNewsDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/news/${newsReleaseId}`), "PUT", updatedNewsRelease);
 };
 
-export const depublishNews = async (newsReleaseId: string): Promise<NewsRegistrationDTO> => {
+export const publishNews = async (newsReleaseId: string): Promise<CreateUpdateNewsDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/news/publish/${newsReleaseId}`), "PUT");
+};
+
+export const unpublishNews = async (newsReleaseId: string): Promise<CreateUpdateNewsDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/news/unpublish/${newsReleaseId}`), "PUT");
+};
+
+export const deleteNews = async (newsReleaseId: string): Promise<CreateUpdateNewsDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/news/${newsReleaseId}`), "DELETE");
 };

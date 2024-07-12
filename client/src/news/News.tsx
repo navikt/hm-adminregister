@@ -1,24 +1,46 @@
-import { Alert, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
 import { useNavigate } from "react-router-dom";
 import { getPageNews } from "api/NewsApi";
 import React, { useState } from "react";
 import { toDate } from "utils/date-util";
 import { NewsRegistrationDTO } from "utils/types/response-types";
 import NewsCard from "news/NewsCard";
+import { PlusIcon } from "@navikt/aksel-icons";
+import { NewsTypes } from "news/NewsTypes";
+import styles from "./News.module.scss";
+
+export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
+  const today = new Date();
+  const publishedOn = toDate(news.published);
+  const expiredOn = toDate(news.expired);
+
+  if (news.status === "ACTIVE" && publishedOn < today && expiredOn > today) {
+    return NewsTypes.PUBLISHED;
+  } else if (news.status === "INACTIVE" && publishedOn > today) {
+    return NewsTypes.FUTURE;
+  } else if (news.status === "INACTIVE" && expiredOn < today) {
+    return NewsTypes.UNPUBLISHED;
+  }
+  return NewsTypes.UNPUBLISHED;
+}
 
 const News = () => {
-  const [newsStatus, setNewsStatus] = useState("ACTIVE");
+  const [newsStatus, setNewsStatus] = useState("ALL");
   const navigate = useNavigate();
 
-  function handleFilterOption(news: NewsRegistrationDTO) {
-    if (newsStatus == "ALL") {
+  function handleFilterOption(news: NewsRegistrationDTO, filterStatus: string) {
+    const frontendNewsStatus = mapBackendStatusToFrontend(news);
+
+    if (
+      filterStatus == "ALL" &&
+      (frontendNewsStatus == NewsTypes.PUBLISHED || frontendNewsStatus == NewsTypes.FUTURE)
+    ) {
       return true;
-    } else if (newsStatus == "FUTURE" && news.status == "INACTIVE" && toDate(news.published) > new Date()) {
-      return true;
-    } else if (newsStatus == "EXPIRED" && news.status == "INACTIVE" && toDate(news.published) < new Date()) {
-      return true;
+    } else if (filterStatus == "ALL") {
+      return false;
+    } else {
+      return frontendNewsStatus == filterStatus;
     }
-    return newsStatus == news.status;
   }
 
   const {
@@ -36,21 +58,14 @@ const News = () => {
         </Heading>
         <div className="page__content-container">
           <HStack justify="space-between" gap="4">
-            <ToggleGroup
-              value={newsStatus}
-              onChange={(value) => setNewsStatus(value)}
-              size="small"
-              defaultChecked={true}
-            >
+            <ToggleGroup value={newsStatus} onChange={(value) => setNewsStatus(value)} size="small">
               <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
-              <ToggleGroup.Item value={"FUTURE"}>Fremtidige</ToggleGroup.Item>
-              <ToggleGroup.Item value={"ACTIVE"} defaultChecked>
-                Aktive
-              </ToggleGroup.Item>
-              <ToggleGroup.Item value={"EXPIRED"}>Utgåtte</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.FUTURE}>Fremtidig</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.PUBLISHED}>Publisert</ToggleGroup.Item>
+              <ToggleGroup.Item value={NewsTypes.UNPUBLISHED}>Historikk</ToggleGroup.Item>
             </ToggleGroup>
 
-            {/*<Button
+            <Button
               className={styles.createNewsButton}
               variant="secondary"
               size="medium"
@@ -59,7 +74,7 @@ const News = () => {
               onClick={() => navigate("/nyheter/opprett")}
             >
               Opprett ny nyhetsmelding
-            </Button>*/}
+            </Button>
           </HStack>
         </div>
         {isLoadingFilteredResults && <Loader size="3xlarge" />}
@@ -75,13 +90,15 @@ const News = () => {
           </HGrid>
         ) : (
           pageResults && (
-            <div className="page__content-container">
+            <Box maxWidth="55rem">
               <VStack className="products-page__producs" gap="4" paddingBlock="4">
-                {pageResults.content.filter(handleFilterOption).map((news: NewsRegistrationDTO) => (
-                  <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} status={newsStatus} />
-                ))}
+                {pageResults.content
+                  .filter((news: NewsRegistrationDTO) => handleFilterOption(news, newsStatus))
+                  .map((news: NewsRegistrationDTO) => (
+                    <NewsCard news={news} mutateNewsRelease={mutateNewsRelease} key={news.id} />
+                  ))}
               </VStack>
-            </div>
+            </Box>
           )
         )}
       </div>

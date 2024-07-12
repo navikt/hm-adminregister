@@ -1,0 +1,5 @@
+export enum NewsTypes {
+  FUTURE = "FUTURE",
+  PUBLISHED = "PUBLISHED",
+  UNPUBLISHED = "UNPUBLISHED",
+}
