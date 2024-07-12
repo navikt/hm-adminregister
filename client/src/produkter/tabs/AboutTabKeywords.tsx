@@ -1,6 +1,6 @@
 import { BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { useState } from "react";
+import React, { useState } from "react";
 import { isValidKeyword } from "produkter/seriesUtils";
 import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
@@ -12,9 +12,10 @@ interface Props {
   isAdmin: boolean;
   mutateSeries: () => void;
   isEditable: boolean;
+  showInputError: boolean;
 }
 
-export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: Props) => {
+export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, showInputError, isEditable }: Props) => {
   const keywords = series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : [];
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
@@ -25,13 +26,15 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
   const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
 
+  const notValidKeywordLetters = new RegExp(/[`!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~\s]*/);
+
   const handleSaveKeywords = () => {
     setKeywordFormatError(undefined);
     setShowEditKeywordsMode(false);
     if (updatedKeywords.length <= 3) {
       if (
         updatedKeywords
-          .map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword))
+          .map((keyword, index) => isValidKeyword(keyword) && validKeywordLetters.test(keyword))
           .every(Boolean)
       ) {
         updateSeriesKeywords(series!.id, updatedKeywords, isAdmin)

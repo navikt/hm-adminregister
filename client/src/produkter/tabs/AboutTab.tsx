@@ -46,8 +46,9 @@ const AboutTab = ({
         />
 
         <AboutTabKeywords
-          keywords={series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : []}
-          updateSeriesInfo={updateSeriesInfo}
+          series={series}
+          isAdmin={isAdmin}
+          mutateSeries={mutateSeries}
           showInputError={showInputError}
           isEditable={isEditable}
         />
