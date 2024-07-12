@@ -1,22 +1,28 @@
 import { BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import React, { useState } from "react";
-import { EditSeriesInfo } from "produkter/Produkt";
 import { isValidKeyword } from "produkter/seriesUtils";
 import "./about-tab-keywords.scss";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { updateSeriesKeywords } from "api/SeriesApi";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  keywords: string[];
-  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
+  series: SeriesRegistrationDTO;
+  isAdmin: boolean;
+  mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, isEditable }: Props) => {
+export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, showInputError, isEditable }: Props) => {
+  const keywords = series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : [];
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
   const [inputValue, setInputValue] = useState("");
   const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : []);
+
+  const { setGlobalError } = useErrorStore();
 
   const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
 
@@ -31,7 +37,11 @@ export const AboutTabKeywords = ({ keywords, updateSeriesInfo, showInputError, i
           .map((keyword, index) => isValidKeyword(keyword) && validKeywordLetters.test(keyword))
           .every(Boolean)
       ) {
-        updateSeriesInfo({ keywords: updatedKeywords });
+        updateSeriesKeywords(series!.id, updatedKeywords, isAdmin)
+          .then(() => mutateSeries())
+          .catch((error) => {
+            setGlobalError(error.status, error.message);
+          });
         setShowEditKeywordsMode(false);
       } else
         setKeywordFormatError("Blir ikke lagret, nøkkelord kan bare inneholde norske bokstaver, tall og underscore");
