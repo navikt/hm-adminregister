@@ -1,5 +1,5 @@
 import { PlusCircleIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
+import { Alert, Button, HStack, Tabs, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
@@ -9,6 +9,7 @@ import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
 import { deleteFileFromSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import Lmao from "produkter/tabs/SortingArea";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -49,18 +50,7 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
           <>
-            {sortedImages.length > 0 && (
-              <ol className="images">
-                {sortedImages.map((image) => (
-                  <ImageCard
-                    mediaInfo={image}
-                    key={image.uri}
-                    handleDeleteFile={handleDeleteFile}
-                    showMenuButton={isEditable}
-                  />
-                ))}
-              </ol>
-            )}
+            {sortedImages.length > 0 && <Lmao />}
             {sortedImages.length === 0 && (
               <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>
             )}
