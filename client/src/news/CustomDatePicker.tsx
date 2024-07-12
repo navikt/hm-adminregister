@@ -11,7 +11,7 @@ const CustomDatePicker = <T extends FieldValues>({
   control,
   errorMessage,
   readOnly,
-  watchDate,
+  watchPublishDate,
   shouldUnregister = false,
   required = true,
 }: {
@@ -21,7 +21,7 @@ const CustomDatePicker = <T extends FieldValues>({
   control: Control<T>;
   errorMessage?: string;
   readOnly?: boolean;
-  watchDate?: Date;
+  watchPublishDate?: Date;
   shouldUnregister?: boolean;
   required?: boolean;
 }) => {
@@ -36,15 +36,11 @@ const CustomDatePicker = <T extends FieldValues>({
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        if (watchDate) {
-          if (new Date(watchDate) >= new Date(value)) {
+        if (watchPublishDate) {
+          if (new Date(watchPublishDate) >= new Date(value)) {
             return "Velg senere dato";
           }
         }
-        if (new Date(value) < today) {
-          return errorMessage;
-        }
-
         if (errorMessage && !value) {
           return errorMessage;
         }
@@ -71,9 +67,9 @@ const CustomDatePicker = <T extends FieldValues>({
     inputFormat: "dd.MM.yyyy",
     defaultSelected: field.value ? new Date(field.value) : undefined,
     fromDate: (() => {
-      const date = watchDate ? new Date(watchDate) : new Date();
+      const date = watchPublishDate ? new Date(watchPublishDate) : new Date();
       date.setDate(date.getDate() + 1);
-      return watchDate ? date : undefined;
+      return watchPublishDate ? date : new Date();
     })(),
   } as UseDatepickerOptions);
 

@@ -1,6 +1,5 @@
 import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Popover, VStack } from "@navikt/ds-react";
-import { useRef, useState } from "react";
+import { Button, Dropdown } from "@navikt/ds-react";
 import "./more-menu.scss";
 import { MediaInfoDTO } from "utils/types/response-types";
 
@@ -13,51 +12,29 @@ export const MoreMenu = ({
   handleDeleteFile: (uri: string) => void;
   handleEditFileName?: (uri: string) => void;
 }) => {
-  const buttonRef = useRef<SVGSVGElement>(null);
-  const [openPopover, setOpenPopover] = useState(false);
   return (
-    <>
-      <MenuElipsisVerticalIcon
-        title="meny"
-        aria-expanded={openPopover}
-        ref={buttonRef}
-        onClick={() => setOpenPopover(!openPopover)}
-        fontSize="1.5rem"
-      />
-      <Popover
-        className="more-menu"
-        open={openPopover}
-        onClose={() => setOpenPopover(false)}
-        anchorEl={buttonRef.current}
-        offset={20}
-        arrow={true}
-        placement="bottom"
-        flip={false}
-      >
-        <Popover.Content>
-          <VStack>
+    <div className="more-menu">
+      <Dropdown>
+        <Button
+          className="more-menu-button"
+          size="small"
+          variant="tertiary"
+          icon={<MenuElipsisVerticalIcon title="Meny" fontSize="1.5rem" />}
+          as={Dropdown.Toggle}
+        />
+        <Dropdown.Menu className="more-menu-content">
+          <Dropdown.Menu.List>
             {handleEditFileName && (
-              <Button
-                size="small"
-                variant="tertiary"
-                onClick={() => handleEditFileName(mediaInfo.uri)}
-                icon={<PencilWritingIcon title="rediger" fontSize="1.5rem" />}
-              >
-                Endre filnavn
-              </Button>
+              <Dropdown.Menu.List.Item onClick={() => handleEditFileName(mediaInfo.uri)}>
+                <PencilWritingIcon title="rediger" fontSize="1.5rem" /> Endre filnavn
+              </Dropdown.Menu.List.Item>
             )}
-
-            <Button
-              size="small"
-              variant="tertiary"
-              onClick={() => handleDeleteFile(mediaInfo.uri)}
-              icon={<TrashIcon title="slett" fontSize="1.5rem" />}
-            >
-              Slett
-            </Button>
-          </VStack>
-        </Popover.Content>
-      </Popover>
-    </>
+            <Dropdown.Menu.List.Item onClick={() => handleDeleteFile(mediaInfo.uri)}>
+              <TrashIcon title="slett" fontSize="1.5rem" /> Slett
+            </Dropdown.Menu.List.Item>
+          </Dropdown.Menu.List>
+        </Dropdown.Menu>
+      </Dropdown>
+    </div>
   );
 };

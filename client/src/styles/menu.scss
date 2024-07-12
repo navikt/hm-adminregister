@@ -129,7 +129,6 @@
 
     &--active {
       font-weight: bolder;
-      cursor: default;
 
       @include mixins.for-size(phone-up) {
         text-decoration: unset;

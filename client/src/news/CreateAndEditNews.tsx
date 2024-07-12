@@ -98,7 +98,7 @@ const CreateAndEditNews = () => {
             required={true}
             shouldUnregister={true}
             errorMessage={"Ugyldig dato"}
-            watchDate={watch("publishedOn")}
+            watchPublishDate={watch("publishedOn")}
           />
         </HStack>
         <Heading level="2" size="small" className={styles.increaseSpacing}>
