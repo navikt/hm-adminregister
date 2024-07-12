@@ -9,7 +9,6 @@ import {
   NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
-  RecordFillIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
@@ -110,7 +109,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <div className="line" />
             <HStack style={{ paddingLeft: "16px" }}>
               <FileXMarkFillIcon fontSize={"1.5rem"} />
-              <span style={{ paddingLeft: "16px" }}>Avslått Produkter</span>
+              <span style={{ paddingLeft: "16px" }}>Avslåtte Produkter</span>
             </HStack>
           </Link>
         </>
