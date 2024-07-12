@@ -4,18 +4,23 @@ import ProfileMenu from "./ProfileMenu";
 import {
   Buldings3Icon,
   FileCheckmarkFillIcon,
+  FileXMarkFillIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
+  RecordFillIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Link, useLocation } from "react-router-dom";
+import { getAllProd } from "utils/swr-hooks";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const rejectedProducts = getAllProd();
+  console.log(rejectedProducts);
   return (
     <nav className={classNames("menu", { open: menuOpen })}>
       <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
@@ -94,6 +99,26 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <span>Produkter</span>
         </HStack>
       </Link>
+
+      {loggedInUser && !loggedInUser.isAdmin && (
+        <>
+          <Link
+            to="/avslaatt-produkt"
+            className={classNames("page-link", { "page-link--active": pathname.startsWith("/avslaatt-produkt") })}
+            aria-selected={pathname.startsWith("/avslaatt-produkt")}
+          >
+            {pathname.startsWith("/avslaatt-produkt") && <div className="active" />}
+            <div className="line" />
+            <HStack style={{ paddingLeft: "16px" }}>
+              <FileXMarkFillIcon fontSize={"1.5rem"} />
+              <span style={{ paddingLeft: "16px" }}>Avslått Produkter</span>
+              {false && (
+                <RecordFillIcon title="a11y-title" fontSize="1.5rem" style={{ color: "#F25C5C", display: "flex" }} />
+              )}
+            </HStack>
+          </Link>
+        </>
+      )}
 
       {loggedInUser && loggedInUser.isAdmin && (
         <>

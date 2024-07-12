@@ -182,6 +182,14 @@ export function usePagedProducts({
   };
 }
 
+export function getAllProd() {
+  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations?size=1000000`;
+
+  const { data } = useSWR<SeriesChunk>(path, fetcherGET);
+
+  return data;
+}
+
 export function useSeriesToApprove() {
   const { loggedInUser } = useAuthStore();
 

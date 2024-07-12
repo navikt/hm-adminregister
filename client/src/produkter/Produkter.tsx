@@ -21,8 +21,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "produkter/ProductTable.module.scss";
 import { SeriesTable } from "produkter/SeriesTable";
+type productPropsType = { hiddenStatus?: string };
 
-const Produkter = () => {
+const Produkter = ({ hiddenStatus = undefined }: productPropsType) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -97,9 +98,16 @@ const Produkter = () => {
   return (
     <main className="show-menu">
       <div className="page__background-container">
-        <Heading level="1" size="large" spacing>
-          Produkter
-        </Heading>
+        {hiddenStatus ? (
+          <Heading level="1" size="large" spacing>
+            Avslåtte produkter
+          </Heading>
+        ) : (
+          <Heading level="1" size="large" spacing>
+            Produkter
+          </Heading>
+        )}
+
         <VStack gap="4">
           <div className="page__content-container">
             <HStack justify="space-between" wrap gap="4">
@@ -115,7 +123,7 @@ const Produkter = () => {
                   onChange={(value) => handleSearch(value)}
                 />
               </form>
-              {loggedInUser && !loggedInUser.isAdmin && (
+              {loggedInUser && !loggedInUser.isAdmin && !hiddenStatus && (
                 <HStack gap="2">
                   <Button
                     variant="secondary"
@@ -131,7 +139,7 @@ const Produkter = () => {
             </HStack>
           </div>
           <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
-            <Checkbox value="includeInactive">Vis utgåtte</Checkbox>
+            {!hiddenStatus && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
           </CheckboxGroup>
           <VStack className="products-page__products">
             <div className="page__content-container">
@@ -139,16 +147,20 @@ const Produkter = () => {
               {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
 
               {isSearch && seriesByHmsNr && (
-                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
+                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} hiddenStatus={hiddenStatus} />
               )}
               {isSearch && seriesBySupplierRef && (
-                <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
+                <SeriesTable
+                  seriesList={[seriesBySupplierRef]}
+                  heading={"Treff på Lev-artnr"}
+                  hiddenStatus={hiddenStatus}
+                />
               )}
-              {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} />}
+              {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} hiddenStatus={hiddenStatus} />}
               {isSearch && !isSearchResults && !seriesByHmsNr && !seriesBySupplierRef && !isLoadingSearchResults && (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               )}
-              {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />}
+              {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} hiddenStatus={hiddenStatus} />}
               <HStack gap="8">
                 {showPageNavigator === true && pagedData && (
                   <Pagination
@@ -163,7 +175,7 @@ const Produkter = () => {
                     prevNextTexts
                   />
                 )}
-                {searchTerm.length == 0 && (
+                {searchTerm.length == 0 && !hiddenStatus && (
                   <Select
                     className={styles.pageSize}
                     label="Antall produkter per side"

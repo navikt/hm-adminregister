@@ -6,24 +6,21 @@ import { seriesStatus } from "produkter/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { SeriesStatus } from "utils/types/types";
+import Produkter from "produkter/Produkter";
 
 interface Props {
   seriesList: SeriesRegistrationDTO[];
   heading?: string;
+  hiddenStatus?: string;
 }
-function handleApprovedProducts(product: SeriesRegistrationDTO) {
-  console.log(seriesStatus(product));
+function handleProducts(product: SeriesRegistrationDTO, hiddenStatus?: string) {
+  if (!hiddenStatus) {
+    return true;
+  }
   return seriesStatus(product) === SeriesStatus.REJECTED;
 }
 
-function sortApprovedProducts(product1: SeriesRegistrationDTO, product2: SeriesRegistrationDTO) {
-  console.log(seriesStatus(product1));
-  if (seriesStatus(product1) > seriesStatus(product2)) return -1;
-  if (seriesStatus(product1) < seriesStatus(product2)) return 1;
-  return 0;
-}
-
-export const SeriesTable = ({ seriesList, heading }: Props) => {
+export const SeriesTable = ({ seriesList, heading, hiddenStatus = undefined }: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -38,28 +35,30 @@ export const SeriesTable = ({ seriesList, heading }: Props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {seriesList.sort(sortApprovedProducts).map((product, i) => (
-            <Table.Row
-              key={i + product.id}
-              onClick={() => {
-                navigate(`/produkter/${product.id}`);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
+          {seriesList
+            .filter((product) => handleProducts(product, hiddenStatus))
+            .map((product, i) => (
+              <Table.Row
+                key={i + product.id}
+                onClick={() => {
                   navigate(`/produkter/${product.id}`);
-                }
-              }}
-              tabIndex={0}
-            >
-              <Table.HeaderCell scope="row">
-                <b>{product.title}</b>
-              </Table.HeaderCell>
-              <Table.DataCell>
-                <StatusTag seriesStatus={seriesStatus(product)} />
-              </Table.DataCell>
-              <Table.DataCell>{product.count}</Table.DataCell>
-            </Table.Row>
-          ))}
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    navigate(`/produkter/${product.id}`);
+                  }
+                }}
+                tabIndex={0}
+              >
+                <Table.HeaderCell scope="row">
+                  <b>{product.title}</b>
+                </Table.HeaderCell>
+                <Table.DataCell>
+                  <StatusTag seriesStatus={seriesStatus(product)} />
+                </Table.DataCell>
+                <Table.DataCell>{product.count}</Table.DataCell>
+              </Table.Row>
+            ))}
         </Table.Body>
       </Table>
     </div>

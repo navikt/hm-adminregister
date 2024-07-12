@@ -54,6 +54,15 @@ export function App() {
             }
           />
           <Route
+            path="/avslaatt-produkt"
+            element={
+              <>
+                <Navbar />
+                <Produkter hiddenStatus="REJECTED" />
+              </>
+            }
+          />
+          <Route
             path="/produkter/opprett"
             element={
               <>
