@@ -19,6 +19,7 @@ const NewsStatusTag = ({ newsStatus }: { newsStatus: NewsTypes }) => {
         <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Avpublisert" color={colors.RED} />
       );
     default:
+      return <></>;
   }
 };
 
