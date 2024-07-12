@@ -19,8 +19,6 @@ import { getAllProd } from "utils/swr-hooks";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const rejectedProducts = getAllProd();
-  console.log(rejectedProducts);
   return (
     <nav className={classNames("menu", { open: menuOpen })}>
       <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
@@ -52,7 +50,7 @@ export default Navbar;
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
   const { pathname } = useLocation();
   const { loggedInUser } = useAuthStore();
-
+  const rejectedProducts = getAllProd();
   if (!menuOpen) {
     return <></>;
   }
@@ -112,7 +110,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <HStack style={{ paddingLeft: "16px" }}>
               <FileXMarkFillIcon fontSize={"1.5rem"} />
               <span style={{ paddingLeft: "16px" }}>Avslått Produkter</span>
-              {false && (
+              {!rejectedProducts?.empty && (
                 <RecordFillIcon title="a11y-title" fontSize="1.5rem" style={{ color: "#F25C5C", display: "flex" }} />
               )}
             </HStack>
