@@ -43,6 +43,17 @@ const updateSeriesData = async (
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
 };
 
+export const updateProductTitle = async (
+  seriesUUID: string,
+  productTitle: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.title = productTitle;
+    return series;
+  });
+};
+
 export const updateSeries = async (
   seriesUUID: string,
   editSeriesInfo: EditSeriesInfo,

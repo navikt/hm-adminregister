@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { updateSeries } from "api/SeriesApi";
+import { updateProductTitle, updateSeries } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import AdminActions from "produkter/AdminActions";
 import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
@@ -58,6 +58,7 @@ const ProductPage = () => {
   const activeTab = searchParams.get("tab");
 
   const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
+  const [productTitle, setProductTitle] = useState("");
 
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
@@ -116,9 +117,11 @@ const ProductPage = () => {
     return !(!series.text || series.formattedText || numberOfImages(series) === 0 || series.count === 0);
   };
 
-  const handleSaveDescription = () => {
+  const handleSaveProductTitle = () => {
     setShowEditProductTitleMode(false);
-    formMethods.handleSubmit(onSubmit)();
+    updateProductTitle(series!.id, productTitle, loggedInUser?.isAdmin || false)
+      .then(() => mutateSeries())
+      .catch((error) => setGlobalError(error.status, error.message));
   };
 
   const isEditable =
@@ -212,13 +215,13 @@ const ProductPage = () => {
                       label={""}
                       id="title"
                       name="title"
-                      onChange={(event) => formMethods.setValue("title", event.currentTarget.value)}
+                      onChange={(event) => setProductTitle(event.currentTarget.value)}
                     />
                     <Button
                       className="fit-content"
                       variant="tertiary"
                       icon={<FloppydiskIcon title="Lagre tittel" fontSize="1.5rem" />}
-                      onClick={handleSaveDescription}
+                      onClick={handleSaveProductTitle}
                     >
                       Lagre
                     </Button>
