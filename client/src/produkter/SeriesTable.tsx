@@ -5,10 +5,22 @@ import StatusTag from "felleskomponenter/StatusTag";
 import { seriesStatus } from "produkter/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { SeriesStatus } from "utils/types/types";
 
 interface Props {
   seriesList: SeriesRegistrationDTO[];
   heading?: string;
+}
+function handleApprovedProducts(product: SeriesRegistrationDTO) {
+  console.log(seriesStatus(product));
+  return seriesStatus(product) === SeriesStatus.REJECTED;
+}
+
+function sortApprovedProducts(product1: SeriesRegistrationDTO, product2: SeriesRegistrationDTO) {
+  console.log(seriesStatus(product1));
+  if (seriesStatus(product1) > seriesStatus(product2)) return -1;
+  if (seriesStatus(product1) < seriesStatus(product2)) return 1;
+  return 0;
 }
 
 export const SeriesTable = ({ seriesList, heading }: Props) => {
@@ -26,7 +38,7 @@ export const SeriesTable = ({ seriesList, heading }: Props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {seriesList.map((product, i) => (
+          {seriesList.sort(sortApprovedProducts).map((product, i) => (
             <Table.Row
               key={i + product.id}
               onClick={() => {
