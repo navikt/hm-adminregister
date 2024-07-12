@@ -268,7 +268,6 @@ const ProductPage = () => {
               <AboutTab
                 series={series}
                 updateSeriesInfo={onSubmit}
-                onSubmit={onSubmit}
                 isoCategory={isoCategory}
                 isEditable={isEditable}
                 showInputError={!isValid}
