@@ -50,7 +50,8 @@ export default Navbar;
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
   const { pathname } = useLocation();
   const { loggedInUser } = useAuthStore();
-  const rejectedProducts = getAllProd();
+  const Products = getAllProd();
+  const rejectedProducts = Products?.content.find((val) => val.adminStatus === "REJECTED");
   if (!menuOpen) {
     return <></>;
   }
@@ -110,7 +111,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <HStack style={{ paddingLeft: "16px" }}>
               <FileXMarkFillIcon fontSize={"1.5rem"} />
               <span style={{ paddingLeft: "16px" }}>Avslått Produkter</span>
-              {!rejectedProducts?.empty && (
+              {rejectedProducts && (
                 <RecordFillIcon title="a11y-title" fontSize="1.5rem" style={{ color: "#F25C5C", display: "flex" }} />
               )}
             </HStack>
