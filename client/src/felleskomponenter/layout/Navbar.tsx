@@ -99,7 +99,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </HStack>
       </Link>
 
-      {loggedInUser && !loggedInUser.isAdmin && (
+      {loggedInUser && !loggedInUser.isAdmin && rejectedProducts && (
         <>
           <Link
             to="/avslaatt-produkt"
@@ -111,9 +111,6 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <HStack style={{ paddingLeft: "16px" }}>
               <FileXMarkFillIcon fontSize={"1.5rem"} />
               <span style={{ paddingLeft: "16px" }}>Avslått Produkter</span>
-              {rejectedProducts && (
-                <RecordFillIcon title="a11y-title" fontSize="1.5rem" style={{ color: "#F25C5C", display: "flex" }} />
-              )}
             </HStack>
           </Link>
         </>
