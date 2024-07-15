@@ -9,7 +9,7 @@ import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
 import { deleteFileFromSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import Lmao from "produkter/tabs/SortingArea";
+import SortingArea from "produkter/tabs/SortingArea";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -50,7 +50,7 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
           <>
-            {sortedImages.length > 0 && <Lmao />}
+            {sortedImages.length > 0 && <SortingArea sortedImages={sortedImages} />}
             {sortedImages.length === 0 && (
               <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>
             )}
