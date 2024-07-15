@@ -50,7 +50,11 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
           <>
-            {sortedImages.length > 0 && <SortingArea sortedImages={sortedImages} />}
+            {sortedImages.length > 0 && (
+              <ol className="images">
+                <SortingArea sortedImages={sortedImages} handleDeleteFile={handleDeleteFile} />
+              </ol>
+            )}
             {sortedImages.length === 0 && (
               <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>
             )}
