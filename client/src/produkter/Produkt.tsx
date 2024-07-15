@@ -28,7 +28,6 @@ import ImageTab from "./tabs/ImagesTab";
 import VideosTab from "./tabs/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
 import { useIsSeriesInAgreement } from "api/AgreementProductApi";
-import { exportProducts } from "api/ImportExportApi";
 
 export type EditSeriesInfo = {
   title?: string;

@@ -18,8 +18,15 @@ export default function SortingArea({ sortedImages, handleDeleteFile }: Props) {
     setImages(sortedImages);
   }, [sortedImages]);
 
+  console.log("OG state", sortedImages);
+  console.log("new state", images);
+  const updateImagePriority = () => {
+    sortedImages.map((item) => console.log(item));
+  };
+
   const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setImages((array) => arrayMove(array, oldIndex, newIndex));
+    setImages((array: MediaInfoDTO[]) => arrayMove(array, oldIndex, newIndex));
+    updateImagePriority();
   };
 
   return (

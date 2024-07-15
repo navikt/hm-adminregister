@@ -24,12 +24,6 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
   const { images } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
 
-  const sortedImages = images.sort((a, b) => {
-    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
-    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
-    return dateA - dateB;
-  });
-
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)
       .then(mutateSeries)
@@ -50,12 +44,12 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
       <Tabs.Panel value="images" className="tab-panel">
         <VStack gap="8">
           <>
-            {sortedImages.length > 0 && (
+            {images.length > 0 && (
               <ol className="images">
-                <SortingArea sortedImages={sortedImages} handleDeleteFile={handleDeleteFile} />
+                <SortingArea sortedImages={images} handleDeleteFile={handleDeleteFile} />
               </ol>
             )}
-            {sortedImages.length === 0 && (
+            {images.length === 0 && (
               <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>
             )}
           </>
