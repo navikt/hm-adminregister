@@ -19,18 +19,25 @@ export default function SortingArea({ sortedImages, handleDeleteFile }: Props) {
   }, [sortedImages]);
 
   console.log("OG state", sortedImages);
-  console.log("new state", images);
-  const updateImagePriority = () => {
-    sortedImages.map((item) => console.log(item));
-  };
+  updateImagePriority();
+  console.log("after updated", sortedImages);
+
+  function updateImagePriority() {
+    sortedImages.map((ogItem) => {
+      images.map((item, index) => {
+        if (item === ogItem) {
+          ogItem.priority = index;
+        }
+      });
+    });
+  }
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setImages((array: MediaInfoDTO[]) => arrayMove(array, oldIndex, newIndex));
-    updateImagePriority();
+    setImages((array) => arrayMove(array, oldIndex, newIndex));
   };
 
   return (
-    <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
+    <SortableList onSortEnd={onSortEnd} className={styles.lsit} draggedItemClassName={styles.dragged}>
       <HStack gap="2">
         {images.map((image, index) => (
           <SortableItem key={index}>
