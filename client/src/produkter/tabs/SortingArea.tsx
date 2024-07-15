@@ -1,6 +1,6 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import arrayMove from "array-move";
-import React from "react";
+import React, { useEffect } from "react";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import styles from "./sortingArea.module.scss";
@@ -14,12 +14,16 @@ interface Props {
 export default function SortingArea({ sortedImages, handleDeleteFile }: Props) {
   const [images, setImages] = React.useState(sortedImages);
 
+  useEffect(() => {
+    setImages(sortedImages);
+  }, [sortedImages]);
+
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => arrayMove(array, oldIndex, newIndex));
   };
 
   return (
-    <SortableList onSortEnd={onSortEnd} className={styles.lsit} draggedItemClassName={styles.dragged}>
+    <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
       <HStack gap="2">
         {images.map((image, index) => (
           <SortableItem key={index}>
