@@ -56,6 +56,7 @@ export const ImageContainer = ({
           <img
             src={"/adminregister/assets/image-error.png"}
             alt="Produktbilde"
+            draggable="false"
             style={{
               position: "absolute",
               height: "100%",
@@ -74,6 +75,7 @@ export const ImageContainer = ({
               setImageLoadingError(true);
             }}
             alt={text ?? "OBS mangler alt-tekst"}
+            draggable="false"
             style={{
               position: "absolute",
               height: "100%",
