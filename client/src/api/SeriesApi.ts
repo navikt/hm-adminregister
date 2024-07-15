@@ -1,5 +1,4 @@
 import { fetchAPI, getPath } from "api/fetch";
-import { EditSeriesInfo } from "produkter/Produkt";
 import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
@@ -76,28 +75,13 @@ export const updateSeriesKeywords = async (
   });
 };
 
-export const updateSeries = async (
+export const updateSeriesURL = async (
   seriesUUID: string,
-  editSeriesInfo: EditSeriesInfo,
+  url: string,
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
-    series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
-    series.text = editSeriesInfo.description ? editSeriesInfo.description : series.text;
-
-    if (editSeriesInfo.url?.length === 0) {
-      series.seriesData.attributes.url = undefined;
-    } else {
-      series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
-    }
-
-    if (editSeriesInfo.keywords?.length === 0) {
-      series.seriesData.attributes.keywords = undefined;
-    } else {
-      series.seriesData.attributes.keywords = editSeriesInfo.keywords || series.seriesData.attributes.keywords;
-    }
-
+    series.seriesData.attributes.url = url;
     return series;
   });
 };
