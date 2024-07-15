@@ -380,7 +380,7 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
 }
 
 export function useSuppliers() {
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name`;
   const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET);
   const suppliers = data && mapSuppliers(data);
 
