@@ -1,5 +1,5 @@
 import { fetchAPI, getPath } from "api/fetch";
-import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { MediaInfoDTO, RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
@@ -60,6 +60,17 @@ export const updateProductDescription = async (
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.text = productDescription;
+    return series;
+  });
+};
+
+export const updateSeriesMedia = async (
+  seriesUUID: string,
+  mediaInfoBody: MediaInfoDTO[],
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.seriesData.media = mediaInfoBody;
     return series;
   });
 };
