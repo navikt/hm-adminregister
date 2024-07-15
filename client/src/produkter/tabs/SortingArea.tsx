@@ -2,7 +2,6 @@ import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import arrayMove from "array-move";
 import React from "react";
 import { MediaInfoDTO } from "utils/types/response-types";
-import styles from "./sortingArea.modules.scss";
 import { ImageCard } from "felleskomponenter/ImageCard";
 
 interface Props {
@@ -18,12 +17,14 @@ export default function SortingArea({ sortedImages, handleDeleteFile }: Props) {
   };
 
   return (
-    <SortableList onSortEnd={onSortEnd} draggedItemClassName="dragged">
+    <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
       {images.map((image, index) => (
         <SortableItem key={index}>
-          <SortableKnob>
-            <ImageCard mediaInfo={image} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
-          </SortableKnob>
+          <div className="item">
+            <SortableKnob>
+              <ImageCard mediaInfo={image} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
+            </SortableKnob>
+          </div>
         </SortableItem>
       ))}
     </SortableList>
