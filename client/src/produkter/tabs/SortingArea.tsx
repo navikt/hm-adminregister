@@ -1,30 +1,67 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import arrayMove from "array-move";
-import React from "react";
+import React, { useState } from "react";
+import { MediaInfoDTO } from "utils/types/response-types";
+import classNames from "classnames";
+import { smallImageLoader } from "utils/image-util";
 
-export default function Lmao() {
-  const [items, setItems] = React.useState(["A", "B", "C"]);
+interface Props {
+  sortedImages: MediaInfoDTO[];
+}
+
+export default function SortingArea({ sortedImages }: Props) {
+  const [images, setImages] = React.useState(sortedImages);
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setItems((array) => arrayMove(array, oldIndex, newIndex));
+    setImages((array) => arrayMove(array, oldIndex, newIndex));
   };
+
+  const [imageLoadingError, setImageLoadingError] = useState(false);
+
+  const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
 
   return (
     <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
-      {items.map((item) => (
-        <SortableItem key={item}>
+      {images.map((image, index) => (
+        <SortableItem key={index}>
           <div className="item">
             <SortableKnob>
-              <div>
-                <img
-                  src={
-                    "http://localhost:8081/local/register/63e9335a-603a-4bd0-a79d-29a205078c4a/f74fa2bc-d333-43cb-874f-18e1b884ffaa.jpg"
-                  }
-                  alt={"TEST"}
-                />
+              <div className={classNames("image-container")}>
+                <button type="button" className="button-image" onClick={() => setImageModalIsOpen(true)}>
+                  {imageLoadingError || !image.uri ? (
+                    <img
+                      src={"/adminregister/assets/image-error.png"}
+                      alt="Produktbilde"
+                      style={{
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        inset: "0px",
+                        objectFit: "contain",
+                        color: "transparent",
+                        padding: "10px",
+                      }}
+                      sizes="50vw"
+                    />
+                  ) : (
+                    <img
+                      src={smallImageLoader({ src: image.uri, width: 400 })}
+                      alt={"OBS mangler alt-tekst"}
+                      style={{
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        inset: "0px",
+                        objectFit: "contain",
+                        color: "transparent",
+                        padding: "10px",
+                      }}
+                      sizes="50vw"
+                    />
+                  )}
+                </button>
               </div>
             </SortableKnob>
-            {item}
           </div>
         </SortableItem>
       ))}
