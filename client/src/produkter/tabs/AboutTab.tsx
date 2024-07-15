@@ -1,5 +1,4 @@
 import { Heading, Tabs, VStack } from "@navikt/ds-react";
-import { EditSeriesInfo } from "../Produkt";
 import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import AboutTabDescription from "produkter/tabs/AboutTabDescription";
 import AboutTabURL from "produkter/tabs/AboutTabURL";
@@ -9,7 +8,6 @@ interface Props {
   series: SeriesRegistrationDTO;
   isAdmin: boolean;
   mutateSeries: () => void;
-  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
   isoCategory?: IsoCategoryDTO;
   isEditable: boolean;
   showInputError: boolean;
@@ -19,7 +17,6 @@ const AboutTab = ({
   series,
   isAdmin,
   mutateSeries,
-  updateSeriesInfo,
   isoCategory,
   isEditable,
   showInputError,
@@ -49,14 +46,13 @@ const AboutTab = ({
           series={series}
           isAdmin={isAdmin}
           mutateSeries={mutateSeries}
-          showInputError={showInputError}
           isEditable={isEditable}
         />
 
         <AboutTabURL
-          url={series.seriesData.attributes.url ? series.seriesData.attributes.url : ""}
-          updateSeriesInfo={updateSeriesInfo}
-          showInputError={showInputError}
+          series={series}
+          isAdmin={isAdmin}
+          mutateSeries={mutateSeries}
           isEditable={isEditable}
         />
       </VStack>
