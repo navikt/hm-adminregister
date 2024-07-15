@@ -4,6 +4,7 @@ import React from "react";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
 import styles from "./sortingArea.module.scss";
+import { HStack } from "@navikt/ds-react";
 
 interface Props {
   sortedImages: MediaInfoDTO[];
@@ -19,15 +20,17 @@ export default function SortingArea({ sortedImages, handleDeleteFile }: Props) {
 
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.lsit} draggedItemClassName={styles.dragged}>
-      {images.map((image, index) => (
-        <SortableItem key={index}>
-          <div className={styles.item}>
-            <SortableKnob>
-              <ImageCard mediaInfo={image} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
-            </SortableKnob>
-          </div>
-        </SortableItem>
-      ))}
+      <HStack gap="2">
+        {images.map((image, index) => (
+          <SortableItem key={index}>
+            <div className={styles.item}>
+              <SortableKnob>
+                <ImageCard mediaInfo={image} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
+              </SortableKnob>
+            </div>
+          </SortableItem>
+        ))}
+      </HStack>
     </SortableList>
   );
 }

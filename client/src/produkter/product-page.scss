@@ -80,6 +80,9 @@ pre {
     border-radius: $a-border-radius-medium;
     text-align: center;
   }
+  .image-card:hover{
+    background-color: var(--a-surface-hover);
+  }
 }
 
 .image-container {

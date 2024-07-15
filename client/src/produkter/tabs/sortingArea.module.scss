@@ -7,10 +7,10 @@
   width: 10rem;
   height: 15rem;
   position: relative;
-  background-color: #ffffff;
   box-shadow: $a-shadow-xsmall;
   border-radius: $a-border-radius-medium;
   text-align: center;
+  background-color: var(--a-gray-200);
 }
 
 .list {
@@ -21,6 +21,6 @@
 
 .item {
   flex-shrink: 0;
-  display: flex;
+  display: block;
   cursor: grab;
 }
