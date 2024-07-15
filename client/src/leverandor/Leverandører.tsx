@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
+import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,14 +14,13 @@ const Leverandører = () => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const fileteresSuppliers = suppliers?.filter((supplier) =>
+    const filteredSuppliers = suppliers?.filter((supplier) =>
       supplier.name.toLowerCase().includes(value.toLowerCase()),
     );
-
-    setFilteredData(fileteresSuppliers);
+    setFilteredData(filteredSuppliers);
   };
 
-  const renderData = filteredData && filteredData.length > 0 ? filteredData : suppliers;
+  const renderData = filteredData ? filteredData : suppliers;
 
   const handleCreateNewSupplier = () => {
     navigate("/leverandor/opprett-leverandor");
@@ -69,6 +68,7 @@ const Leverandører = () => {
 
           <div className="panel-list__container">
             {isLoading && <Loader size="3xlarge" title="venter..." />}
+            {renderData?.length === 0 && <Alert variant="info">Ingen leverandører funnet.</Alert>}
             {renderData &&
               renderData.map((supplier, i) => (
                 <LinkPanel

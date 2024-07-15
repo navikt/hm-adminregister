@@ -1,5 +1,4 @@
 import { fetchAPI, getPath } from "api/fetch";
-import { EditSeriesInfo } from "produkter/Produkt";
 import { RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 
 export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
@@ -43,28 +42,46 @@ const updateSeriesData = async (
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
 };
 
-export const updateSeries = async (
+export const updateProductTitle = async (
   seriesUUID: string,
-  editSeriesInfo: EditSeriesInfo,
+  productTitle: string,
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.title = editSeriesInfo.title ? editSeriesInfo.title : series.title;
-    series.isoCategory = editSeriesInfo.isoCode ? editSeriesInfo.isoCode : series.isoCategory;
-    series.text = editSeriesInfo.description ? editSeriesInfo.description : series.text;
+    series.title = productTitle;
+    return series;
+  });
+};
 
-    if (editSeriesInfo.url?.length === 0) {
-      series.seriesData.attributes.url = undefined;
-    } else {
-      series.seriesData.attributes.url = editSeriesInfo.url ? editSeriesInfo.url : series.seriesData.attributes.url;
-    }
+export const updateProductDescription = async (
+  seriesUUID: string,
+  productDescription: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.text = productDescription;
+    return series;
+  });
+};
 
-    if (editSeriesInfo.keywords?.length === 0) {
-      series.seriesData.attributes.keywords = undefined;
-    } else {
-      series.seriesData.attributes.keywords = editSeriesInfo.keywords || series.seriesData.attributes.keywords;
-    }
+export const updateSeriesKeywords = async (
+  seriesUUID: string,
+  keywords: string[],
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.seriesData.attributes.keywords = keywords;
+    return series;
+  });
+};
 
+export const updateSeriesURL = async (
+  seriesUUID: string,
+  url: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    series.seriesData.attributes.url = url;
     return series;
   });
 };

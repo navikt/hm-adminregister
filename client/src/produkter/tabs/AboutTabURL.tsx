@@ -1,24 +1,34 @@
 import { Button, Heading, TextField, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import React, { useState } from "react";
-import { EditSeriesInfo } from "produkter/Produkt";
+import { useState } from "react";
 import { isValidUrl } from "produkter/seriesUtils";
+import { updateSeriesURL } from "api/SeriesApi";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  url: string;
-  updateSeriesInfo: (editSeriesInfo: EditSeriesInfo) => void;
+  series: SeriesRegistrationDTO;
+  isAdmin: boolean;
+  mutateSeries: () => void;
   isEditable: boolean;
-  showInputError: boolean;
 }
 
-export const AboutTabURL = ({ url, updateSeriesInfo, showInputError, isEditable }: Props) => {
+export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props) => {
   const [showEditUrlMode, setShowEditUrlMode] = useState(false);
   const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
-  const [updatedUrl, setUpdatedUrl] = useState<string>(url);
+  const [updatedUrl, setUpdatedUrl] = useState<string>(series.seriesData.attributes.url ?? "");
+  const { setGlobalError } = useErrorStore();
+
+  const url = series.seriesData.attributes.url;
 
   const handleSaveUrl = (updatedUrl: string) => {
-    updateSeriesInfo({ url: updatedUrl });
     setShowEditUrlMode(false);
+
+    updateSeriesURL(series!.id, updatedUrl, isAdmin)
+      .then(() => mutateSeries())
+      .catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
   };
 
   return (
