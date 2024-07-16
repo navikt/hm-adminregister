@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
@@ -12,6 +12,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { DeactivateConfirmationModal } from "leverandor/DeactivateConfirmationModal";
 import { getSupplier } from "api/SupplierApi";
+import SupplierInventoryInfo from "leverandor/SupplierInventoryInfo";
 
 const LeverandørProfil = () => {
   const [supplier, setSupplier] = useState<Supplier>();
@@ -72,6 +73,7 @@ const LeverandørProfil = () => {
           <VStack gap="10">
             <SupplierInfo supplier={supplier} setIsOpen={setIsOpen} />
             <SupplierUsers users={supplierUsers} supplier={supplier} />
+            <SupplierInventoryInfo supplier={supplier} />
           </VStack>
         )}
       </HGrid>

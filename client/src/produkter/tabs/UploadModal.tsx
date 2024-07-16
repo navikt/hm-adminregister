@@ -23,7 +23,14 @@ interface Props {
   mutateSeries: () => void;
 }
 
-export interface Upload {
+const removeFileExtation = (fileName: string) => {
+  if (fileName.includes(".")) {
+    return fileName.split(".")[0];
+  }
+  return fileName;
+};
+
+export interface FileUpload {
   file: File;
   previewUrl?: string;
   editedFileName?: string;
@@ -32,7 +39,7 @@ export interface Upload {
 const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [uploads, setUploads] = useState<FileUpload[]>([]);
   const [fileTypeError, setFileTypeError] = useState("");
   const { loggedInUser } = useAuthStore();
   const { handleSubmit } = useForm();
@@ -40,12 +47,8 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
   async function onSubmit() {
     setIsUploading(true);
-    const formData = new FormData();
-    for (const upload of uploads) {
-      formData.append("files", upload.file);
-    }
 
-    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, formData)
+    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, uploads)
       .then(() => {
         setIsUploading(false);
         mutateSeries();
@@ -115,7 +118,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
     handleMediaEvent(files);
   };
 
-  const setEditedFileName = (upload: Upload, newFileName: string) => {
+  const setEditedFileName = (upload: FileUpload, newFileName: string) => {
     setUploads((prevUploads) =>
       prevUploads.map((prevUpload) =>
         prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload,
@@ -215,14 +218,14 @@ const Upload = ({
   handleDelete,
   setEditedFileName,
 }: {
-  upload: Upload;
+  upload: FileUpload;
   fileType: "images" | "documents";
   handleDelete: (file: File) => void;
-  setEditedFileName: (upload: Upload, newfileName: string) => void;
+  setEditedFileName: (upload: FileUpload, newfileName: string) => void;
 }) => {
   //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
-  const [fileName, setFileName] = useState(upload.file.name);
-  const [editMode, setEditMode] = useState(false);
+  const [fileName, setFileName] = useState(removeFileExtation(upload.file.name));
+  const [editMode, setEditMode] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const fileNameInputRef = useRef<HTMLInputElement>(null);
 
@@ -230,9 +233,13 @@ const Upload = ({
     setEditMode(false);
     setEditedFileName(upload, fileName);
   };
-
+  function isTextSelected() {
+    const selection = window.getSelection();
+    return selection && selection.rangeCount > 0 && selection.toString().length > 0;
+  }
   useEffect(() => {
-    if (editMode && fileNameInputRef.current) {
+    if (editMode && fileNameInputRef.current && !isTextSelected()) {
+      fileNameInputRef.current.select();
       fileNameInputRef.current.focus();
     }
   }, [editMode]);
