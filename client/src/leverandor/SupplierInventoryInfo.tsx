@@ -4,11 +4,7 @@ import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
-
-type SupplierInventoryDTO = {
-  numberOfSeries: number;
-  numberOfVariants: number;
-};
+import { SupplierInventoryDTO } from "utils/types/response-types";
 
 const SupplierInventoryInfo = ({ supplier }: { supplier: Supplier }) => {
   const { data: data } = useSWR<SupplierInventoryDTO>(
