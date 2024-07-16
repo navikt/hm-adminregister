@@ -33,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
     "react-error-boundary": "^4.0.12",
+    "react-easy-sort": "^1.6.0",
     "react-hook-form": "^7.43.9",
     "react-i18next": "^14.1.2",
     "react-player": "^2.15.1",
