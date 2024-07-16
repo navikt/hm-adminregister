@@ -23,7 +23,7 @@ interface Props {
   mutateSeries: () => void;
 }
 
-export interface Upload {
+export interface FileUpload {
   file: File;
   previewUrl?: string;
   editedFileName?: string;
@@ -32,7 +32,7 @@ export interface Upload {
 const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [uploads, setUploads] = useState<FileUpload[]>([]);
   const [fileTypeError, setFileTypeError] = useState("");
   const { loggedInUser } = useAuthStore();
   const { handleSubmit } = useForm();
@@ -40,12 +40,8 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
   async function onSubmit() {
     setIsUploading(true);
-    const formData = new FormData();
-    for (const upload of uploads) {
-      formData.append("files", upload.file);
-    }
 
-    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, formData)
+    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, uploads)
       .then(() => {
         setIsUploading(false);
         mutateSeries();
@@ -113,7 +109,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
     });
   };
 
-  const setEditedFileName = (upload: Upload, newFileName: string) => {
+  const setEditedFileName = (upload: FileUpload, newFileName: string) => {
     setUploads((prevUploads) =>
       prevUploads.map((prevUpload) =>
         prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload,
@@ -210,10 +206,10 @@ const Upload = ({
   handleDelete,
   setEditedFileName,
 }: {
-  upload: Upload;
+  upload: FileUpload;
   fileType: "images" | "documents";
   handleDelete: (file: File) => void;
-  setEditedFileName: (upload: Upload, newfileName: string) => void;
+  setEditedFileName: (upload: FileUpload, newfileName: string) => void;
 }) => {
   //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
   const [fileName, setFileName] = useState(upload.file.name);
