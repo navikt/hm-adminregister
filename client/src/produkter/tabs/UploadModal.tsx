@@ -149,6 +149,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
               icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
               iconPosition="right"
               onClick={(event) => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
                 event.preventDefault();
                 fileInputRef?.current?.click();
               }}
