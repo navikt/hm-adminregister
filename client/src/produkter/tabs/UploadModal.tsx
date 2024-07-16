@@ -58,11 +58,18 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
       });
   }
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event?.currentTarget?.files || []);
+  const handleMediaEvent = (files: File[]) => {
+    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
 
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file, editedFileName: file.name }))); // Add editedFileName
-    setUploads(allChosenFiles);
+    const uniqueAllChosenFiles = allChosenFiles.filter(
+      (item, index, uploadList) =>
+        index ===
+        uploadList.findIndex((compareItem) => {
+          return compareItem.file.name === item.file.name;
+        }),
+    );
+
+    setUploads(uniqueAllChosenFiles);
 
     Promise.all(files.map(fileToUri)).then((urls) => {
       setUploads((previousState) =>
@@ -72,6 +79,11 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
         })),
       );
     });
+  };
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event?.currentTarget?.files || []);
+    handleMediaEvent(files);
   };
 
   const handleDelete = (file: File) => {
@@ -100,17 +112,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
       return;
     }
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
-    setUploads(allChosenFiles);
-
-    Promise.all(files.map(fileToUri)).then((urls) => {
-      setUploads((previousState) =>
-        previousState.map((f) => ({
-          ...f,
-          previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        })),
-      );
-    });
+    handleMediaEvent(files);
   };
 
   const setEditedFileName = (upload: Upload, newFileName: string) => {

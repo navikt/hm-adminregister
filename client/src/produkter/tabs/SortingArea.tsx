@@ -33,7 +33,6 @@ export default function SortingArea({ series, allImages, mutateSeries, handleDel
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
       const updatedArray = updateImagePriority(arrayMove(array, oldIndex, newIndex));
-      console.log(updatedArray);
       updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false); //.then(mutateSeries);
       return updatedArray;
     });
