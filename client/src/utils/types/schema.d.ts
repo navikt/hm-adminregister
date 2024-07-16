@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -677,14 +678,6 @@ export interface components {
       updatedBy: string;
       createdByUser: string;
       updatedByUser: string;
-    };
-    CreateUpdateNewsDTO: {
-      title: string;
-      text: string;
-      /** Format: date-time */
-      published: string;
-      /** Format: date-time */
-      expired: string;
     };
     /** @enum {string} */
     NewsStatus: "ACTIVE" | "INACTIVE" | "DELETED";
