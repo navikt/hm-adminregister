@@ -3,12 +3,17 @@ import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
 import { seriesStatus } from "produkter/seriesUtils";
+import { useSupplier } from "utils/swr-hooks";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   series: SeriesRegistrationDTO;
 }
 
 const StatusPanel = ({ series }: Props) => {
+  const { loggedInUser } = useAuthStore();
+  const { supplier } = useSupplier(loggedInUser?.isAdmin, series?.supplierId);
+
   return (
     <VStack gap="4">
       <Heading level="1" size="medium">
@@ -16,6 +21,13 @@ const StatusPanel = ({ series }: Props) => {
       </Heading>
 
       <StatusTag seriesStatus={seriesStatus(series)} />
+
+      <Box>
+        <BodyLong size="small" weight="semibold">
+          Leverandør
+        </BodyLong>
+        <BodyLong size="small">{supplier?.name}</BodyLong>
+      </Box>
 
       {series.message && (
         <Box>
