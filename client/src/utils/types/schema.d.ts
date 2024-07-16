@@ -72,6 +72,12 @@ export interface paths {
   "/admreg/admin/api/v1/news/draft": {
     post: operations["createNewsDraft"];
   };
+  "/admreg/admin/api/v1/news/publish/{id}": {
+    put: operations["publishNews"];
+  };
+  "/admreg/admin/api/v1/news/unpublish/{id}": {
+    put: operations["unpublishNews"];
+  };
   "/admreg/admin/api/v1/news/{id}": {
     put: operations["updateNews"];
     delete: operations["deleteNews"];
@@ -182,6 +188,9 @@ export interface paths {
   };
   "/admreg/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
     put: operations["setPublishedSeriesToInactive"];
+  };
+  "/admreg/admin/api/v1/series/supplier-inventory/{id}": {
+    get: operations["getSupplierProductInfo"];
   };
   "/admreg/admin/api/v1/series/supplierRef/{supplierRef}": {
     get: operations["findSeriesForSupplierRef"];
@@ -1286,6 +1295,12 @@ export interface components {
       phone?: string | null;
       homepage?: string | null;
     };
+    SupplierInventoryDTO: {
+      /** Format: int32 */
+      numberOfSeries: number;
+      /** Format: int32 */
+      numberOfVariants: number;
+    };
     SupplierRegistrationDTO: {
       /** Format: uuid */
       id: string;
@@ -1859,6 +1874,36 @@ export interface operations {
   createNewsDraft: {
     responses: {
       /** @description createNewsDraft 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["NewsRegistrationDTO"];
+        };
+      };
+    };
+  };
+  publishNews: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description publishNews 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["NewsRegistrationDTO"];
+        };
+      };
+    };
+  };
+  unpublishNews: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description unpublishNews 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["NewsRegistrationDTO"];
@@ -2544,6 +2589,21 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getSupplierProductInfo: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getSupplierProductInfo 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SupplierInventoryDTO"];
         };
       };
     };
