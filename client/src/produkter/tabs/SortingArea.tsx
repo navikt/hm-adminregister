@@ -11,37 +11,39 @@ import { useAuthStore } from "utils/store/useAuthStore";
 interface Props {
   series: SeriesRegistrationDTO;
   allImages: MediaInfoDTO[];
+  mutateSeries: () => void;
   handleDeleteFile: (uri: string) => void;
 }
 
-export default function SortingArea({ series, allImages, handleDeleteFile }: Props) {
+export default function SortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
-  const [imagesArr, setImages] = React.useState(allImages); // RES from sereis
+  const [imagesArr, setImages] = React.useState(allImages); // RES from series
 
   useEffect(() => {
     setImages(allImages);
   }, [allImages]);
 
-  const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setImages((array) => arrayMove(array, oldIndex, newIndex));
+  const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
+    return updatedArray.map((item, index) => ({
+      ...item,
+      priority: index,
+    }));
   };
 
-  function updateImagePriority() {
-    allImages.map((ogItem) => {
-      imagesArr.map((item, index) => {
-        item === ogItem && (ogItem.priority = index);
-      });
+  const onSortEnd = (oldIndex: number, newIndex: number) => {
+    setImages((array) => {
+      const updatedArray = updateImagePriority(arrayMove(array, oldIndex, newIndex));
+      console.log(updatedArray);
+      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false); //.then(mutateSeries);
+      return updatedArray;
     });
-    console.log(allImages);
-    //updateSeriesMedia(series.id, allImages, loggedInUser?.isAdmin || false);
-  }
-  updateImagePriority();
+  };
 
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.lsit} draggedItemClassName={styles.dragged}>
       <HStack gap="2">
         {imagesArr.map(
-          // res from usestate
+          // res from useState
           (
             item,
             index, //
