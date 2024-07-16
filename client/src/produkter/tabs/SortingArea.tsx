@@ -1,5 +1,5 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
-import arrayMove from "array-move";
+import { arrayMoveImmutable } from "array-move";
 import React, { useEffect } from "react";
 import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
@@ -33,7 +33,7 @@ export default function SortingArea({ series, allImages, mutateSeries, handleDel
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
-      const updatedArray = updateImagePriority(arrayMove.arrayMoveImmutable(array, oldIndex, newIndex));
+      const updatedArray = updateImagePriority(arrayMoveImmutable(array, oldIndex, newIndex));
       updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false)
         .then(mutateSeries)
         .catch((error) => {
