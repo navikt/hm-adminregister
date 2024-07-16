@@ -1,5 +1,5 @@
 import { PlusCircleIcon } from "@navikt/aksel-icons";
-import { Alert, Button, HStack, Tabs, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, HStack, Tabs, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
@@ -41,17 +41,17 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
         fileType="images"
         mutateSeries={mutateSeries}
       />
+
       <Tabs.Panel value="images" className="tab-panel">
+        <Box marginBlock={"0 4"}>
+          <Alert variant="info">Dra i bildene for å endre rekkefølgen som vises på finnHjelpemiddel.no</Alert>
+        </Box>
+
         <VStack gap="8">
           <>
             {series && (
               <ol className="images">
-                <SortingArea
-                  allImages={images}
-                  series={series}
-                  mutateSeries={mutateSeries}
-                  handleDeleteFile={handleDeleteFile}
-                />
+                <SortingArea allImages={images} series={series} handleDeleteFile={handleDeleteFile} />
               </ol>
             )}
             {!series && <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>}

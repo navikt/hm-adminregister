@@ -11,11 +11,10 @@ import { useAuthStore } from "utils/store/useAuthStore";
 interface Props {
   series: SeriesRegistrationDTO;
   allImages: MediaInfoDTO[];
-  mutateSeries: () => void;
   handleDeleteFile: (uri: string) => void;
 }
 
-export default function SortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
+export default function SortingArea({ series, allImages, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
   const [imagesArr, setImages] = React.useState(allImages); // RES from series
 
@@ -33,8 +32,7 @@ export default function SortingArea({ series, allImages, mutateSeries, handleDel
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
       const updatedArray = updateImagePriority(arrayMove(array, oldIndex, newIndex));
-      console.log(updatedArray);
-      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false); //.then(mutateSeries);
+      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false);
       return updatedArray;
     });
   };
