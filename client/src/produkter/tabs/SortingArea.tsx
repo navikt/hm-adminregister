@@ -27,7 +27,7 @@ export default function SortingArea({ series, allImages, mutateSeries, handleDel
   const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
     return updatedArray.map((item, index) => ({
       ...item,
-      priority: index,
+      priority: index + 1,
     }));
   };
 
