@@ -2,7 +2,7 @@ import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import React, { useEffect } from "react";
 import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
-import styles from "./sortingArea.module.scss";
+import styles from "./seriesSortingArea.module.scss";
 import { HStack } from "@navikt/ds-react";
 import { updateSeriesMedia } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -15,7 +15,7 @@ interface Props {
   handleDeleteFile: (uri: string) => void;
 }
 
-export default function SortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
+export default function SeriesSortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
   const [imagesArr, setImages] = React.useState(allImages);
   const { setGlobalError } = useErrorStore();
