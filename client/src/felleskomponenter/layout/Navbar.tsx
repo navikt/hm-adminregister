@@ -17,7 +17,7 @@ import { NavLink, useLocation } from "react-router-dom";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <nav className={classNames("menu", { open: menuOpen })}>
+    <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
       <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
       <Button
         className="menu__burgermenu-button"
