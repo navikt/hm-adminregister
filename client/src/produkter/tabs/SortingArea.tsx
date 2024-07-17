@@ -1,5 +1,4 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
-import arrayMove from "array-move";
 import React, { useEffect } from "react";
 import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageCard } from "felleskomponenter/ImageCard";
@@ -11,10 +10,11 @@ import { useAuthStore } from "utils/store/useAuthStore";
 interface Props {
   series: SeriesRegistrationDTO;
   allImages: MediaInfoDTO[];
+  mutateSeries: () => void;
   handleDeleteFile: (uri: string) => void;
 }
 
-export default function SortingArea({ series, allImages, handleDeleteFile }: Props) {
+export default function SortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
   const [imagesArr, setImages] = React.useState(allImages); // RES from series
 
@@ -29,10 +29,15 @@ export default function SortingArea({ series, allImages, handleDeleteFile }: Pro
     }));
   };
 
+  const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
+    [arr[init], arr[target]] = [arr[target], arr[init]];
+    return arr;
+  };
+
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
-      const updatedArray = updateImagePriority(arrayMove(array, oldIndex, newIndex));
-      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false);
+      const updatedArray = updateImagePriority(moveItemInArray(array, oldIndex, newIndex));
+      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false).then(mutateSeries);
       return updatedArray;
     });
   };
