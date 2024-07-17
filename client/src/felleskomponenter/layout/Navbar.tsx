@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import ProfileMenu from "./ProfileMenu";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,73 +55,53 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
     <VStack className="menu__nav-links">
       {loggedInUser && loggedInUser.isAdmin && (
         <>
-          <Link
-            to="/rammeavtaler"
-            className={classNames("page-link", { "page-link--active": pathname.startsWith("/rammeavtaler") })}
-            aria-selected={pathname.startsWith("/rammeavtaler")}
-          >
-            {pathname.startsWith("/rammeavtaler") && <div className="active" />}
+          <NavLink to="/rammeavtaler" className="page-link">
+            {pathname.startsWith("/rammeavtaler") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <PencilLineIcon fontSize="1.5rem" title="Rammeavtaler" />
               <span>Rammeavtaler</span>
             </HStack>
-          </Link>
-          <Link
-            to="/til-godkjenning"
-            className={classNames("page-link", { "page-link--active": pathname.startsWith("/til-godkjenning") })}
-            aria-selected={pathname.startsWith("/til-godkjenning")}
-          >
-            {pathname.startsWith("/til-godkjenning") && <div className="active" />}
+          </NavLink>
+          <NavLink to="/til-godkjenning" className="page-link">
+            {pathname.startsWith("/til-godkjenning") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <FileCheckmarkFillIcon fontSize="1.5rem" title="Til godkjenning" />
               <span>Til godkjenning</span>
             </HStack>
-          </Link>
+          </NavLink>
         </>
       )}
 
-      <Link
-        to="/produkter"
-        className={classNames("page-link", { "page-link--active": pathname.startsWith("/produkter") })}
-        aria-selected={pathname.startsWith("/produkter")}
-      >
-        {pathname.startsWith("/produkter") && <div className="active" />}
+      <NavLink to="/produkter" className="page-link">
+        {pathname.startsWith("/produkter") && <div className="active-indicator" />}
         <div className="line" />
         <HStack gap="4" style={{ paddingLeft: "16px" }}>
           <PackageFillIcon fontSize={"1.5rem"} title="Produkter" />
           <span>Produkter</span>
         </HStack>
-      </Link>
+      </NavLink>
 
       {loggedInUser && loggedInUser.isAdmin && (
         <>
-          <Link
-            to="/leverandor"
-            className={classNames("page-link", { "page-link--active": pathname.startsWith("/leverandor") })}
-            aria-selected={pathname.startsWith("/leverandor")}
-          >
-            {pathname.startsWith("/leverandor") && <div className="active" />}
+          <NavLink to="/leverandor" className="page-link">
+            {pathname.startsWith("/leverandor") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <Buldings3Icon fontSize={"1.5rem"} title="Leverandører" />
               <span>Leverandører</span>
             </HStack>
-          </Link>
+          </NavLink>
 
-          <Link
-            to="/nyheter"
-            className={classNames("page-link", { "page-link--active": pathname.startsWith("/nyheter") })}
-            aria-selected={pathname.startsWith("/nyheter")}
-          >
-            {pathname.startsWith("/nyheter") && <div className="active" />}
+          <NavLink to="/nyheter" className="page-link">
+            {pathname.startsWith("/nyheter") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" />
               <span>Nyheter</span>
             </HStack>
-          </Link>
+          </NavLink>
         </>
       )}
     </VStack>
