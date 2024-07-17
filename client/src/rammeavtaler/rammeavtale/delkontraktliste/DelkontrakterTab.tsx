@@ -86,7 +86,7 @@ const DelkontrakterTab = ({
                           aria-label="sorter-opp"
                           size={"small"}
                           variant="tertiary"
-                          icon={<ChevronUpIcon />}
+                          icon={<ChevronUpIcon title="Sorter opp" />}
                           onClick={() => {
                             reorderDelkontrakt(delkontrakt.id, delkontrakter![i - 1].id);
                           }}
@@ -97,7 +97,7 @@ const DelkontrakterTab = ({
                           aria-label="sorter-ned"
                           size={"small"}
                           variant="tertiary"
-                          icon={<ChevronDownIcon />}
+                          icon={<ChevronDownIcon title="Sorter ned" />}
                           onClick={() => {
                             reorderDelkontrakt(delkontrakt.id, delkontrakter![i + 1].id);
                           }}
