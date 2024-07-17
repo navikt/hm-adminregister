@@ -1,12 +1,16 @@
+import { FileImageFillIcon, FilePdfIcon, PencilWritingIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import {
-  FileImageFillIcon,
-  FilePdfIcon,
-  FloppydiskIcon,
-  PencilWritingIcon,
-  TrashIcon,
-  UploadIcon,
-} from "@navikt/aksel-icons";
-import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+  BodyLong,
+  BodyShort,
+  Button,
+  Heading,
+  HStack,
+  Label,
+  Loader,
+  Modal,
+  TextField,
+  VStack,
+} from "@navikt/ds-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -62,7 +66,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
   }
 
   const handleMediaEvent = (files: File[]) => {
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
+    const allChosenFiles = uploads.concat(
+      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) })),
+    );
 
     const uniqueAllChosenFiles = allChosenFiles.filter(
       (item, index, uploadList) =>
@@ -180,6 +186,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
           <VStack as="ol" gap="3" className="images-inline">
+            {fileType === "documents" && uploads.length > 0 && (
+              <Heading size="small">Filnavn vises på finnhjelpemidler</Heading>
+            )}
             {uploads.map((upload) => (
               <Upload
                 key={`${upload.file.name}`}
@@ -199,6 +208,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
             onClick={(event) => {
               event.preventDefault();
               setModalIsOpen(false);
+              setUploads([]);
             }}
             variant="secondary"
           >
@@ -224,15 +234,11 @@ const Upload = ({
   setEditedFileName: (upload: FileUpload, newfileName: string) => void;
 }) => {
   //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
-  const [fileName, setFileName] = useState(removeFileExtation(upload.file.name));
+  const [fileName, setFileName] = useState(upload.editedFileName || "");
   const [editMode, setEditMode] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const fileNameInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChangeFileName = () => {
-    setEditMode(false);
-    setEditedFileName(upload, fileName);
-  };
   function isTextSelected() {
     const selection = window.getSelection();
     return selection && selection.rangeCount > 0 && selection.toString().length > 0;
@@ -247,7 +253,7 @@ const Upload = ({
   const validateFileName = () => {
     setErrorMessage("");
     if (fileName.trim().length !== 0) {
-      handleChangeFileName();
+      setEditedFileName(upload, fileName);
     } else {
       setErrorMessage("Filen må ha et navn");
     }
@@ -262,24 +268,31 @@ const Upload = ({
             style={{ width: "500px" }}
             label="Endre filnavn"
             value={fileName}
-            onChange={(event) => setFileName(event.currentTarget.value)}
+            onChange={(event) => {
+              event.preventDefault();
+              validateFileName();
+              setFileName(event.currentTarget.value);
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                validateFileName();
               }
+            }}
+            onKeyUp={(event) => {
+              validateFileName();
+              setFileName(event.currentTarget.value);
             }}
             error={errorMessage}
           />
           <HStack align="end">
             <Button
               variant="tertiary"
-              title="Lagre"
+              title="slett"
               onClick={(event) => {
                 event.preventDefault();
-                validateFileName();
+                handleDelete(upload.file);
               }}
-              icon={<FloppydiskIcon fontSize="2rem" />}
+              icon={<TrashIcon fontSize="2rem" />}
             />
           </HStack>
         </>
@@ -306,16 +319,6 @@ const Upload = ({
                 icon={<PencilWritingIcon fontSize="1.5rem" />}
               />
             )}
-
-            <Button
-              variant="tertiary"
-              title="slett"
-              onClick={(event) => {
-                event.preventDefault();
-                handleDelete(upload.file);
-              }}
-              icon={<TrashIcon fontSize="1.5rem" />}
-            />
           </HStack>
         </>
       )}
