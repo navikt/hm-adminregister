@@ -48,7 +48,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
   };
 
   return (
-    <SortableList onSortEnd={onSortEnd} className={styles.lsit} draggedItemClassName={styles.dragged}>
+    <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
       <HStack gap="2">
         {imagesArr
           .sort((a, b) => a.priority - b.priority)
@@ -58,7 +58,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
               index, //
             ) => (
               <SortableItem key={index}>
-                <div className={styles.item}>
+                <div className={styles.userSelect}>
                   <SortableKnob>
                     <ImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
                   </SortableKnob>
