@@ -78,7 +78,7 @@ export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props
           <>
             <TextField
               defaultValue={url || ""}
-              label={""}
+              label="Legg til url"
               id="url"
               name="url"
               type="text"
