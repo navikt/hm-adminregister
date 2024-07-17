@@ -49,7 +49,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
 
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
-      <HStack gap="2">
+      <HStack as="ol" gap="2" className="images">
         {imagesArr
           .sort((a, b) => a.priority - b.priority)
           .map(
@@ -57,13 +57,15 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
               item,
               index, //
             ) => (
-              <SortableItem key={index}>
-                <div className={styles.userSelect}>
-                  <SortableKnob>
-                    <ImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
-                  </SortableKnob>
-                </div>
-              </SortableItem>
+              <li key={"bilde-" + index}>
+                <SortableItem>
+                  <div className={styles.userSelect}>
+                    <SortableKnob>
+                      <ImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
+                    </SortableKnob>
+                  </div>
+                </SortableItem>
+              </li>
             ),
           )}
       </HStack>

@@ -49,14 +49,12 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
 
         <VStack gap="8">
           {series && (
-            <ol className="images">
-              <SeriesSortingArea
-                allImages={images}
-                series={series}
-                mutateSeries={mutateSeries}
-                handleDeleteFile={handleDeleteFile}
-              />
-            </ol>
+            <SeriesSortingArea
+              allImages={images}
+              series={series}
+              mutateSeries={mutateSeries}
+              handleDeleteFile={handleDeleteFile}
+            />
           )}
           {!series && <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>}
 
