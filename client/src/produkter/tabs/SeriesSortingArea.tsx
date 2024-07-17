@@ -1,12 +1,12 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import React, { useEffect } from "react";
 import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { ImageCard } from "felleskomponenter/ImageCard";
 import styles from "./seriesSortingArea.module.scss";
 import { HStack } from "@navikt/ds-react";
 import { updateSeriesMedia } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { ProductImageCard } from "produkter/tabs/ProductImageCard";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -61,7 +61,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
                 <SortableItem>
                   <div className={styles.userSelect}>
                     <SortableKnob>
-                      <ImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
+                      <ProductImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
                     </SortableKnob>
                   </div>
                 </SortableItem>
