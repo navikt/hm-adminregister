@@ -111,24 +111,24 @@ const Rammeavtaler = () => {
                   as={Dropdown.Toggle}
                 />
                 <Dropdown.Menu>
-                  <Dropdown.Menu.GroupedList>
-                    <Dropdown.Menu.GroupedList.Item
+                  <Dropdown.Menu.List>
+                    <Dropdown.Menu.List.Item
                       onClick={() => {
                         navigate("/rammeavtaler/opprett");
                       }}
                     >
                       <PlusIcon aria-hidden />
                       Ny rammeavtale
-                    </Dropdown.Menu.GroupedList.Item>
-                    <Dropdown.Menu.GroupedList.Item
+                    </Dropdown.Menu.List.Item>
+                    <Dropdown.Menu.List.Item
                       onClick={() => {
                         navigate("/rammeavtaler/importer-katalogfil");
                       }}
                     >
                       <FileExcelIcon aria-hidden />
                       Importer katalogfil
-                    </Dropdown.Menu.GroupedList.Item>
-                  </Dropdown.Menu.GroupedList>
+                    </Dropdown.Menu.List.Item>
+                  </Dropdown.Menu.List>
                 </Dropdown.Menu>
               </Dropdown>
             </HStack>
