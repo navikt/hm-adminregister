@@ -100,8 +100,9 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
         {showEditKeywordsMode && (
           <>
             <UNSAFE_Combobox
+              className="keyword-box"
               id="keywords"
-              label=""
+              label="Legg til nøkkelord"
               allowNewValues={true}
               isMultiSelect={true}
               clearButton={true}
