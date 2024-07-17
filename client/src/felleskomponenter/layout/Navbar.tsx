@@ -63,7 +63,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/rammeavtaler") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <PencilLineIcon fontSize="1.5rem" />
+              <PencilLineIcon fontSize="1.5rem" title="Rammeavtaler" />
               <span>Rammeavtaler</span>
             </HStack>
           </Link>
@@ -75,7 +75,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/til-godkjenning") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <FileCheckmarkFillIcon fontSize="1.5rem" />
+              <FileCheckmarkFillIcon fontSize="1.5rem" title="Til godkjenning" />
               <span>Til godkjenning</span>
             </HStack>
           </Link>
@@ -90,7 +90,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         {pathname.startsWith("/produkter") && <div className="active" />}
         <div className="line" />
         <HStack gap="4" style={{ paddingLeft: "16px" }}>
-          <PackageFillIcon fontSize={"1.5rem"} />
+          <PackageFillIcon fontSize={"1.5rem"} title="Produkter" />
           <span>Produkter</span>
         </HStack>
       </Link>
@@ -105,7 +105,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/leverandor") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <Buldings3Icon fontSize={"1.5rem"} />
+              <Buldings3Icon fontSize={"1.5rem"} title="Leverandører" />
               <span>Leverandører</span>
             </HStack>
           </Link>
@@ -118,7 +118,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/nyheter") && <div className="active" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <NewspaperIcon fontSize={"1.5rem"} />
+              <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" />
               <span>Nyheter</span>
             </HStack>
           </Link>
