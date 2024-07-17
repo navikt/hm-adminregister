@@ -21,8 +21,5 @@
     "clean": "run-p clean:*",
     "prettier": "npm run --prefix client prettier",
     "lint": "npm run --prefix client lint"
-  },
-  "dependencies": {
-    "react-easy-sort": "^1.6.0"
   }
 }

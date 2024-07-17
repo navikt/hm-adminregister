@@ -27,7 +27,6 @@ export const mapImagesAndPDFfromMedia = (
   series.seriesData.media.map((media: MediaInfoDTO) => {
     if (media.type === "IMAGE" && media.uri && !seen[media.uri]) {
       images.push(media);
-      images.sort((a, b) => a.priority - b.priority);
     }
     if (media.type === "PDF" && media.uri && !seen[media.uri]) {
       pdfs.push(media);
