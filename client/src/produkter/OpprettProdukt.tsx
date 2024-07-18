@@ -16,12 +16,12 @@ type FormData = z.infer<typeof createNewSeriesSchema>;
 
 export default function OpprettProdukt() {
   const { setGlobalError } = useErrorStore();
-  const { isoCategories } = useIsoCategories();
+  const { isoCategories, isoError } = useIsoCategories();
   const navigate = useNavigate();
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty, isValid },
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(createNewSeriesSchema),
@@ -44,7 +44,7 @@ export default function OpprettProdukt() {
   }
 
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
-  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
+  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoCode + " - " + cat.isoTitle);
 
   const handleSetFormValueIso = (value: string) => {
     const parts = value.split("-");
@@ -70,7 +70,6 @@ export default function OpprettProdukt() {
             />
             <Combobox
               {...register("isoCategory", { required: true })}
-              description="Søk etter isokategorien produktet passer best inn i"
               options={isoCodesAndTitles}
               setValue={handleSetFormValueIso}
               label={labelRequired("Iso-kategori (kode)")}

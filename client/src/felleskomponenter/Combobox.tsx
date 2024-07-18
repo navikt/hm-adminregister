@@ -2,7 +2,6 @@ import { UNSAFE_Combobox } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
 
 type Props = {
-  description: string;
   defaultValue?: string;
   options?: string[];
   setValue?(value: string): void;
@@ -10,7 +9,7 @@ type Props = {
   errorMessage?: string;
 };
 
-export default function Combobox({ description, defaultValue, options, setValue, label, errorMessage }: Props) {
+export default function Combobox({ defaultValue, options, setValue, label, errorMessage }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultValue ? [defaultValue] : []);
   const [filteredOptions, setFilteredOptions] = useState<string[]>();
@@ -33,7 +32,7 @@ export default function Combobox({ description, defaultValue, options, setValue,
   return (
     <UNSAFE_Combobox
       label={label || ""}
-      description={description}
+      description={"Velg isokategori produktet passer best inn i"}
       selectedOptions={selectedOptions}
       onChange={(event) => {
         setInputValue(event?.target.value || "");
