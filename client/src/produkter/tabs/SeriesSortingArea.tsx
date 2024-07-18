@@ -50,24 +50,32 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
       <HStack as="ol" gap="2" className="images">
-        {imagesArr
-          .sort((a, b) => a.priority - b.priority)
-          .map(
-            (
-              item,
-              index, //
-            ) => (
-              <li key={"bilde-" + index}>
-                <SortableItem>
-                  <div className={styles.userSelect}>
-                    <SortableKnob>
-                      <ProductImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
-                    </SortableKnob>
-                  </div>
-                </SortableItem>
-              </li>
-            ),
-          )}
+        {imagesArr && imagesArr.length > 0
+          ? imagesArr
+              .sort((a, b) => a.priority - b.priority)
+              .map(
+                (
+                  item,
+                  index, //
+                ) => (
+                  <li key={"bilde-" + index}>
+                    <SortableItem>
+                      <div className={styles.userSelect}>
+                        <SortableKnob>
+                          <ProductImageCard
+                            mediaInfo={item}
+                            handleDeleteFile={handleDeleteFile}
+                            showMenuButton={true}
+                            setImages={setImages}
+                            imagesArr={imagesArr}
+                          />
+                        </SortableKnob>
+                      </div>
+                    </SortableItem>
+                  </li>
+                ),
+              )
+          : null}
       </HStack>
     </SortableList>
   );

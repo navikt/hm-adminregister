@@ -11,10 +11,12 @@ interface Props {
   mediaInfo: MediaInfoDTO;
   handleDeleteFile: (uri: string) => void;
   showMenuButton?: boolean;
+  setImages: any;
+  imagesArr: MediaInfoDTO[];
 }
 
 export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
-  { mediaInfo, handleDeleteFile, showMenuButton = true }: Props,
+  { mediaInfo, handleDeleteFile, showMenuButton = true, setImages, imagesArr }: Props,
   ref,
 ) {
   const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
@@ -29,9 +31,17 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
             <i>Filnavn</i>
             <span className="text-overflow-hidden-small">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
             <HStack paddingBlock={"2 2"} gap={"1"}>
-              <Button variant="tertiary" icon={<ChevronLeftIcon title="a11y-title" fontSize="1.5rem" />}></Button>
+              <Button
+                variant="tertiary"
+                icon={<ChevronLeftIcon title="a11y-title" fontSize="1.5rem" />}
+                onClick={() => setImages(imagesArr)}
+              ></Button>
               <MenuGridIcon title="a11y-title" fontSize="1.5rem" className={styles.grabbable} />
-              <Button variant="tertiary" icon={<ChevronRightIcon title="a11y-title" fontSize="1.5rem" />}></Button>
+              <Button
+                variant="tertiary"
+                icon={<ChevronRightIcon title="a11y-title" fontSize="1.5rem" />}
+                onClick={() => setImages(imagesArr)}
+              ></Button>
             </HStack>
           </VStack>
         </VStack>
