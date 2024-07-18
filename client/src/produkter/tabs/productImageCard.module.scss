@@ -15,6 +15,9 @@
     text-align: center;
 
 }
+.imageCard:hover{
+    background-color: var(--a-surface-hover);
+}
 
 .grabbable{
     margin-top: var(--a-spacing-3);

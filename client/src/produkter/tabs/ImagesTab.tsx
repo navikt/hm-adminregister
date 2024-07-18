@@ -44,7 +44,7 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
 
       <Tabs.Panel value="images" className="tab-panel">
         <Alert variant="info" className={styles.alertSpacing}>
-          Dra i bildene for å endre rekkefølgen som vises på finnHjelpemiddel.no
+          Dra i bildene eller trykk på pilene for å endre rekkefølgen som vises på finnHjelpemiddel.no
         </Alert>
 
         <VStack gap="8">
