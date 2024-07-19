@@ -5,7 +5,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { deactivateSupplier } from "api/SupplierApi";
 import { Supplier } from "utils/supplier-util";
 
-export const DeactivateConfirmationModal = ({
+export const DeactivateSupplierConfirmationModal = ({
   supplier,
   mutateSupplier,
   isOpen,

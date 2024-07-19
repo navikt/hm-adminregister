@@ -12,10 +12,10 @@ import RedigerAdminBruker from "./admin/RedigerAdminBruker";
 import SlettAdminBruker from "./admin/SlettAdminBruker";
 import Profil from "./profil/Profil";
 import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
-import Leverandører from "./leverandor/Leverandører";
-import LeverandørProfil from "./leverandor/LeverandørProfil";
-import OpprettLeverandør from "./leverandor/OpprettLeverandør";
-import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
+import Suppliers from "suppliers/Suppliers";
+import SupplierProfile from "suppliers/SupplierProfile";
+import CreateSupplier from "suppliers/CreateSupplier";
+import CreateSupplierProfile from "suppliers/CreateSupplierProfile";
 import BekreftLeverandRopplysninger from "./logg-inn/BekreftLeverandøropplysninger";
 import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
 import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
@@ -32,7 +32,7 @@ import { TilGodkjenning } from "godkjenning/TilGodkjenning";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
-import EditSupplier from "leverandor/EditSupplier";
+import EditSupplier from "suppliers/EditSupplier";
 import CreateAndEditNews from "news/CreateAndEditNews";
 
 export function App() {
@@ -171,7 +171,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Leverandører />
+                <Suppliers />
               </>
             }
           />
@@ -180,7 +180,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <LeverandørProfil />
+                <SupplierProfile />
               </>
             }
           />
@@ -188,7 +188,7 @@ export function App() {
             path="/leverandor/opprett-leverandor"
             element={
               <>
-                <OpprettLeverandør />
+                <CreateSupplier />
               </>
             }
           />
@@ -204,7 +204,7 @@ export function App() {
             path="/leverandor/opprett-bruker"
             element={
               <>
-                <OpprettLeverandørBruker />
+                <CreateSupplierProfile />
               </>
             }
           />

@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Supplier } from "utils/supplier-util";
 import ErrorAlert from "felleskomponenter/ErrorAlert";
 
-const Leverandører = () => {
+const Suppliers = () => {
   const { suppliers, isLoading, error } = useSuppliers();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -88,4 +88,4 @@ const Leverandører = () => {
   );
 };
 
-export default Leverandører;
+export default Suppliers;

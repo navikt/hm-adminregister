@@ -21,7 +21,7 @@ interface BlurredFields {
   phone: boolean;
 }
 
-export default function OpprettLeverandør() {
+export default function CreateSupplier() {
   const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     name: false,

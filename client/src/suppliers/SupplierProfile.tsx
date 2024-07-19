@@ -10,11 +10,11 @@ import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
 import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { DeactivateConfirmationModal } from "leverandor/DeactivateConfirmationModal";
+import { DeactivateSupplierConfirmationModal } from "suppliers/DeactivateSupplierConfirmationModal";
 import { getSupplier } from "api/SupplierApi";
-import SupplierInventoryInfo from "leverandor/SupplierInventoryInfo";
+import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
 
-const LeverandørProfil = () => {
+const SupplierProfile = () => {
   const [supplier, setSupplier] = useState<Supplier>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ const LeverandørProfil = () => {
 
   return (
     <main className="show-menu">
-      <DeactivateConfirmationModal
+      <DeactivateSupplierConfirmationModal
         supplier={supplier}
         mutateSupplier={fetchSupplier}
         isOpen={isOpen}
@@ -81,4 +81,4 @@ const LeverandørProfil = () => {
   );
 };
 
-export default LeverandørProfil;
+export default SupplierProfile;

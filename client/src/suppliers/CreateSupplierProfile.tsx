@@ -19,7 +19,7 @@ interface BlurredFields {
   password: boolean;
 }
 
-export default function OpprettLeverandørBruker() {
+export default function CreateSupplierProfile() {
   const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     email: false,
