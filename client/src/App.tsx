@@ -5,11 +5,9 @@ import CreateProduct from "products/CreateProduct";
 import Product from "products/Product";
 import EditProductVariant from "products/variants/EditProductVariant";
 import CreateProductVariant from "products/variants/CreateProductVariant";
-import Adminopplysninger from "./admin/Adminopplysninger";
-import OpprettAdminBruker from "./admin/OpprettAdminBruker";
-import AdminProfil from "./admin/AdminProfil";
-import RedigerAdminBruker from "./admin/RedigerAdminBruker";
-import SlettAdminBruker from "./admin/SlettAdminBruker";
+import FirstTimeAdminInfo from "./admin/FirstTimeAdminInfo";
+import CreateAdminUser from "./admin/CreateAdminUser";
+import AdminProfile from "./admin/AdminProfile";
 import Profil from "./profil/Profil";
 import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
 import Suppliers from "suppliers/Suppliers";
@@ -34,6 +32,8 @@ import ErrorModal from "error/ErrorModal";
 import News from "news/News";
 import EditSupplier from "suppliers/EditSupplier";
 import CreateAndEditNews from "news/CreateAndEditNews";
+import DeleteAdminUser from "./admin/DeleteAdminUser";
+import EditAdminUser from "admin/EditAdminUser";
 
 export function App() {
   return (
@@ -111,7 +111,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <AdminProfil />
+                <AdminProfile />
               </>
             }
           />
@@ -119,7 +119,7 @@ export function App() {
             path="/admin/rediger-admin"
             element={
               <>
-                <RedigerAdminBruker />
+                <EditAdminUser />
               </>
             }
           />
@@ -127,7 +127,7 @@ export function App() {
             path="/admin/opprett-admin"
             element={
               <>
-                <OpprettAdminBruker />
+                <CreateAdminUser />
               </>
             }
           />
@@ -135,7 +135,7 @@ export function App() {
             path="/admin/slett-admin"
             element={
               <>
-                <SlettAdminBruker />
+                <DeleteAdminUser />
               </>
             }
           />
@@ -143,7 +143,7 @@ export function App() {
             path="/admin/adminopplysninger"
             element={
               <>
-                <Adminopplysninger />
+                <FirstTimeAdminInfo />
               </>
             }
           />

@@ -19,7 +19,7 @@ interface BlurredFields {
   password: boolean;
 }
 
-export default function OpprettAdminBruker() {
+export default function CreateAdminUser() {
   const { setGlobalError } = useErrorStore();
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     email: false,

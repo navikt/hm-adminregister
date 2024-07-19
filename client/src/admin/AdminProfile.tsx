@@ -6,7 +6,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
 import { useAdminUsers, useUser } from "utils/swr-hooks";
 
-export default function AdminProfil() {
+export default function AdminProfile() {
   const navigate = useNavigate();
   const { loggedInUser } = useAuthStore();
   const { user, userError, userIsLoading } = useUser(loggedInUser);
