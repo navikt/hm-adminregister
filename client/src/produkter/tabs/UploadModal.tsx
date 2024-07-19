@@ -1,12 +1,15 @@
 import {
-  FileImageFillIcon,
-  FilePdfIcon,
-  FloppydiskIcon,
-  PencilWritingIcon,
-  TrashIcon,
-  UploadIcon,
-} from "@navikt/aksel-icons";
-import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+  BodyLong,
+  BodyShort,
+  Button,
+  Heading,
+  HStack,
+  Label,
+  Loader,
+  Modal,
+  TextField,
+  VStack,
+} from "@navikt/ds-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -14,6 +17,7 @@ import { ImageContainer } from "felleskomponenter/ImageCard";
 import { fileToUri } from "utils/file-util";
 import { uploadFilesToSeries } from "api/MediaApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import {FileImageFillIcon, TrashIcon, UploadIcon} from "@navikt/aksel-icons";
 
 interface Props {
   modalIsOpen: boolean;
@@ -22,6 +26,13 @@ interface Props {
   setModalIsOpen: (open: boolean) => void;
   mutateSeries: () => void;
 }
+
+const removeFileExtation = (fileName: string) => {
+  if (fileName.includes(".")) {
+    return fileName.split(".")[0];
+  }
+  return fileName;
+};
 
 export interface FileUpload {
   file: File;
@@ -54,11 +65,20 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
       });
   }
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event?.currentTarget?.files || []);
+  const handleMediaEvent = (files: File[]) => {
+    const allChosenFiles = uploads.concat(
+      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) })),
+    );
 
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file, editedFileName: file.name }))); // Add editedFileName
-    setUploads(allChosenFiles);
+    const uniqueAllChosenFiles = allChosenFiles.filter(
+      (item, index, uploadList) =>
+        index ===
+        uploadList.findIndex((compareItem) => {
+          return compareItem.file.name === item.file.name;
+        }),
+    );
+
+    setUploads(uniqueAllChosenFiles);
 
     Promise.all(files.map(fileToUri)).then((urls) => {
       setUploads((previousState) =>
@@ -68,6 +88,11 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
         })),
       );
     });
+  };
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event?.currentTarget?.files || []);
+    handleMediaEvent(files);
   };
 
   const handleDelete = (file: File) => {
@@ -96,17 +121,7 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
       return;
     }
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
-    setUploads(allChosenFiles);
-
-    Promise.all(files.map(fileToUri)).then((urls) => {
-      setUploads((previousState) =>
-        previousState.map((f) => ({
-          ...f,
-          previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        })),
-      );
-    });
+    handleMediaEvent(files);
   };
 
   const setEditedFileName = (upload: FileUpload, newFileName: string) => {
@@ -143,6 +158,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
               icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
               iconPosition="right"
               onClick={(event) => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
                 event.preventDefault();
                 fileInputRef?.current?.click();
               }}
@@ -168,6 +186,9 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
 
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
           <VStack as="ol" gap="3" className="images-inline">
+            {fileType === "documents" && uploads.length > 0 && (
+              <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
+            )}
             {uploads.map((upload) => (
               <Upload
                 key={`${upload.file.name}`}
@@ -180,13 +201,18 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
           </VStack>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" variant="primary" disabled={uploads.length === 0}>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={uploads.some((value) => value.editedFileName?.trim().length === 0) || uploads.length === 0}
+          >
             Last opp
           </Button>
           <Button
             onClick={(event) => {
               event.preventDefault();
               setModalIsOpen(false);
+              setUploads([]);
             }}
             variant="secondary"
           >
@@ -212,97 +238,75 @@ const Upload = ({
   setEditedFileName: (upload: FileUpload, newfileName: string) => void;
 }) => {
   //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
-  const [fileName, setFileName] = useState(upload.file.name);
-  const [editMode, setEditMode] = useState(false);
+  const [fileName, setFileName] = useState(upload.editedFileName || "");
+  const [onCreation] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const fileNameInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChangeFileName = () => {
-    setEditMode(false);
-    setEditedFileName(upload, fileName);
-  };
-
+  function isTextSelected() {
+    const selection = window.getSelection();
+    return selection && selection.rangeCount > 0 && selection.toString().length > 0;
+  }
   useEffect(() => {
-    if (editMode && fileNameInputRef.current) {
+    if (fileNameInputRef.current && !isTextSelected()) {
+      fileNameInputRef.current.select();
       fileNameInputRef.current.focus();
     }
-  }, [editMode]);
+  }, [onCreation]);
 
   const validateFileName = () => {
     setErrorMessage("");
-    if (fileName.trim().length !== 0) {
-      handleChangeFileName();
-    } else {
+
+    if (fileName.trim().length == 0) {
       setErrorMessage("Filen må ha et navn");
     }
   };
 
   return (
     <HStack as="li" justify="space-between" wrap={false}>
-      {editMode && fileType === "documents" ? (
+      {fileType === "documents" ? (
         <>
           <TextField
             ref={fileNameInputRef}
             style={{ width: "500px" }}
-            label="Endre filnavn"
+            label={"Endre filnavn"}
             value={fileName}
-            onChange={(event) => setFileName(event.currentTarget.value)}
+            onChange={(event) => {
+              event.preventDefault();
+              setEditedFileName(upload, fileName);
+              validateFileName();
+              setFileName(event.currentTarget.value);
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                validateFileName();
               }
+            }}
+            onKeyUp={(event) => {
+              setEditedFileName(upload, fileName);
+              validateFileName();
+              setFileName(event.currentTarget.value);
             }}
             error={errorMessage}
           />
-          <HStack align="end">
-            <Button
-              variant="tertiary"
-              title="Lagre"
-              onClick={(event) => {
-                event.preventDefault();
-                validateFileName();
-              }}
-              icon={<FloppydiskIcon fontSize="2rem" />}
-            />
-          </HStack>
         </>
       ) : (
-        <>
-          <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
-            {fileType === "images" ? (
-              <ImageContainer uri={upload.previewUrl} size="xsmall" />
-            ) : (
-              <FilePdfIcon fontSize="1.5rem" />
-            )}
-            <Label className="text-overflow-hidden-large">{fileName}</Label>
-          </HStack>
-
-          <HStack wrap={false}>
-            {fileType === "documents" && (
-              <Button
-                variant="tertiary"
-                title="rediger"
-                onClick={(event) => {
-                  event.preventDefault();
-                  setEditMode(true);
-                }}
-                icon={<PencilWritingIcon fontSize="1.5rem" />}
-              />
-            )}
-
-            <Button
-              variant="tertiary"
-              title="slett"
-              onClick={(event) => {
-                event.preventDefault();
-                handleDelete(upload.file);
-              }}
-              icon={<TrashIcon fontSize="1.5rem" />}
-            />
-          </HStack>
-        </>
+        <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+          <ImageContainer uri={upload.previewUrl} size="xsmall" />
+          <Label className="text-overflow-hidden-large">{fileName}</Label>
+        </HStack>
       )}
+      <HStack align="end">
+        <Button
+          variant="tertiary"
+          title="slett"
+          onClick={(event) => {
+            event.preventDefault();
+            handleDelete(upload.file);
+          }}
+          icon={<TrashIcon fontSize="2rem" />}
+        />
+      </HStack>
     </HStack>
   );
 };

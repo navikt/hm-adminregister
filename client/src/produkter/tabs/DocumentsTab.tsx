@@ -112,7 +112,7 @@ const DocumentListItem = ({
   handleDeleteFile: (uri: string) => void;
   handleUpdateFileName: (uri: string, text: string) => void;
 }) => {
-  const [editedFileText, setEditedFileText] = useState(file.filename || "");
+  const [editedFileText, setEditedFileText] = useState(file.text || "");
   const [editMode, setEditMode] = useState(false);
   const containerRef = useRef<HTMLInputElement>(null);
 
