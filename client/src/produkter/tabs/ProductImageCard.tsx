@@ -7,9 +7,12 @@ import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import styles from "./productImageCard.module.scss";
 import { moveItemInArray, updateImagePriority } from "produkter/tabs/SeriesSortingArea";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { useSeries } from "utils/swr-hooks";
 
 interface Props {
-  mediaInfo: MediaInfoDTO;
+  seriesId: string;
   handleDeleteFile: (uri: string) => void;
   setImages: any;
   imagesArr: MediaInfoDTO[];
@@ -17,34 +20,47 @@ interface Props {
 }
 
 export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
-  { mediaInfo, handleDeleteFile, setImages, imagesArr, index }: Props,
+  { seriesId, handleDeleteFile, setImages, imagesArr, index }: Props,
   ref,
 ) {
   const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
+  const { loggedInUser } = useAuthStore();
+  const { setGlobalError } = useErrorStore();
+  const { mutateSeries } = useSeries(seriesId!);
 
   const handleMoveLeft = () => {
     if (index > 0) {
       console.log(index);
-      setImages(updateImagePriority(moveItemInArray(imagesArr, index, index - 1)));
+      const updatedArray = setImages(updateImagePriority(moveItemInArray(imagesArr, index, index - 1)));
+      //handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
     }
   };
 
   const handleMoveRight = () => {
     console.log(index);
     if (index < imagesArr.length - 1) {
-      setImages(updateImagePriority(moveItemInArray(imagesArr, index, index + 1)));
+      const updatedArray = setImages(updateImagePriority(moveItemInArray(imagesArr, index, index + 1)));
+      //handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
     }
   };
 
   return (
     <>
-      <ImageModal mediaInfo={mediaInfo} onClose={() => setImageModalIsOpen(false)} isModalOpen={imageModalIsOpen} />
+      <ImageModal
+        mediaInfo={imagesArr[index]}
+        onClose={() => setImageModalIsOpen(false)}
+        isModalOpen={imageModalIsOpen}
+      />
       <div className={styles.imageCard} ref={ref}>
         <VStack gap="2">
-          <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} onClick={() => setImageModalIsOpen(true)} />
+          <ImageContainer
+            uri={imagesArr[index].uri}
+            text={imagesArr[index].text}
+            onClick={() => setImageModalIsOpen(true)}
+          />
           <VStack gap="1" align="center">
             <i>Filnavn</i>
-            <span className="text-overflow-hidden-small">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
+            <span className="text-overflow-hidden-small">{imagesArr[index].filename ?? "OBS mangler beskrivelse"}</span>
             <HStack paddingBlock={"2 2"} gap={"1"}>
               <Button
                 variant="tertiary"
@@ -60,9 +76,8 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
             </HStack>
           </VStack>
         </VStack>
-
         <div className="more-menu-container">
-          <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} />
+          <MoreMenu mediaInfo={imagesArr[index]} handleDeleteFile={handleDeleteFile} />
         </div>
       </div>
     </>
