@@ -6,7 +6,7 @@ import { ImageContainer } from "felleskomponenter/ImageCard";
 import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import styles from "./productImageCard.module.scss";
-import { moveItemInArray, updateImagePriority } from "produkter/tabs/SeriesSortingArea";
+import { handleUpdateOfSeriesMedia, moveItemInArray, updateImagePriority } from "produkter/tabs/SeriesSortingArea";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useSeries } from "utils/swr-hooks";
@@ -31,16 +31,18 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
   const handleMoveLeft = () => {
     if (index > 0) {
       console.log(index);
-      const updatedArray = setImages(updateImagePriority(moveItemInArray(imagesArr, index, index - 1)));
-      //handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
+      const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index - 1));
+      setImages(updatedArray);
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
     }
   };
 
   const handleMoveRight = () => {
     console.log(index);
     if (index < imagesArr.length - 1) {
-      const updatedArray = setImages(updateImagePriority(moveItemInArray(imagesArr, index, index + 1)));
-      //handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
+      const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index + 1));
+      setImages(updatedArray);
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
     }
   };
 
