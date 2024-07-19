@@ -248,34 +248,34 @@ export function App() {
 
           <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
           <Route path="/logg-inn/brukeropplysninger" element={<FirstTimeUserInfo />} />
+
+          <Route
+            path="/nyheter"
+            element={
+              <>
+                <Navbar />
+                <News />
+              </>
+            }
+          />
+
+          <Route
+            path="/nyheter/opprett"
+            element={
+              <>
+                <CreateAndEditNews />
+              </>
+            }
+          />
+          <Route
+            path="/nyheter/rediger"
+            element={
+              <>
+                <CreateAndEditNews />
+              </>
+            }
+          />
         </Route>
-
-        <Route
-          path="/nyheter"
-          element={
-            <>
-              <Navbar />
-              <News />
-            </>
-          }
-        />
-
-        <Route
-          path="/nyheter/opprett"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
-        <Route
-          path="/nyheter/rediger"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
