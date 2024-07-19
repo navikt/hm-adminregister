@@ -3,9 +3,9 @@ import { Alert, Heading, HGrid, Loader, Pagination, Search } from "@navikt/ds-re
 import React, { useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
-import { SeriesToApproveTable } from "godkjenning/SeriesToApproveTable";
+import { SeriesToApproveTable } from "approval/SeriesToApproveTable";
 
-export const TilGodkjenning = () => {
+export const ForApproval = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
 

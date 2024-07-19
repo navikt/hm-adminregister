@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import LoggInn from "./logg-inn/LoggInn";
+import Login from "login/Login";
 import Products from "products/Products";
 import CreateProduct from "products/CreateProduct";
 import Product from "products/Product";
@@ -8,14 +8,12 @@ import CreateProductVariant from "products/variants/CreateProductVariant";
 import FirstTimeAdminInfo from "./admin/FirstTimeAdminInfo";
 import CreateAdminUser from "./admin/CreateAdminUser";
 import AdminProfile from "./admin/AdminProfile";
-import Profil from "./profil/Profil";
-import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
+import Profile from "profile/Profile";
+import EditProfile from "profile/EditProfile";
 import Suppliers from "suppliers/Suppliers";
 import SupplierProfile from "suppliers/SupplierProfile";
 import CreateSupplier from "suppliers/CreateSupplier";
 import CreateSupplierProfile from "suppliers/CreateSupplierProfile";
-import BekreftLeverandRopplysninger from "./logg-inn/BekreftLeverandøropplysninger";
-import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
 import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
 import Rammeavtale from "./rammeavtaler/rammeavtale/Rammeavtale";
 import OpprettRammeavtale from "./rammeavtaler/rammeavtale/OpprettRammeavtale";
@@ -26,7 +24,7 @@ import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import { TilGodkjenning } from "godkjenning/TilGodkjenning";
+import { ForApproval } from "approval/ForApproval";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
@@ -34,6 +32,8 @@ import EditSupplier from "suppliers/EditSupplier";
 import CreateAndEditNews from "news/CreateAndEditNews";
 import DeleteAdminUser from "./admin/DeleteAdminUser";
 import EditAdminUser from "admin/EditAdminUser";
+import FirstTimeUserInfo from "login/FirstTimeUserInfo";
+import FirstTimeSupplierInfo from "login/FirstTimeSupplierInfo";
 
 export function App() {
   return (
@@ -41,7 +41,7 @@ export function App() {
       <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
-        <Route path="/logg-inn" element={<LoggInn />} />
+        <Route path="/logg-inn" element={<Login />} />
 
         <Route element={<LoginWrapper />}>
           <Route
@@ -101,7 +101,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <TilGodkjenning />
+                <ForApproval />
               </>
             }
           />
@@ -153,7 +153,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Profil />
+                <Profile />
               </>
             }
           />
@@ -161,7 +161,7 @@ export function App() {
             path="/profil/rediger-brukerprofil"
             element={
               <>
-                <RedigerBrukerprofil />
+                <EditProfile />
               </>
             }
           />
@@ -246,8 +246,8 @@ export function App() {
             }
           />
 
-          <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
-          <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
+          <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
+          <Route path="/logg-inn/brukeropplysninger" element={<FirstTimeUserInfo />} />
         </Route>
 
         <Route

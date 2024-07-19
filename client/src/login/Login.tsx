@@ -17,7 +17,7 @@ interface BlurredFields {
   password: boolean;
 }
 
-export default function LoggInn() {
+export default function Login() {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({

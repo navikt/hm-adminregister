@@ -21,7 +21,7 @@ interface BlurredFields {
   phone: boolean;
 }
 
-const RedigerBrukerprofil = () => {
+const EditProfile = () => {
   const { loggedInUser } = useAuthStore();
   const { user, userIsLoading } = useUser(loggedInUser);
 
@@ -43,7 +43,7 @@ const RedigerBrukerprofil = () => {
     </main>
   );
 };
-export default RedigerBrukerprofil;
+export default EditProfile;
 
 const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
   const { setGlobalError } = useErrorStore();
