@@ -192,6 +192,7 @@ const ProductPage = () => {
                   <TextField
                     defaultValue={series.title ?? ""}
                     label={""}
+                    aria-label="Rediger tittel"
                     id="title"
                     name="title"
                     onChange={(event) => setProductTitle(event.currentTarget.value)}

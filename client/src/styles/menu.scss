@@ -104,7 +104,7 @@
       padding-right: $a-spacing-4;
     }
 
-    .active {
+    .active-indicator {
       position: absolute;
       left: 0;
       height: 28px;
@@ -123,11 +123,11 @@
 
     &:focus-visible,
       // &:focus,
-    &:hover:not(.page-link--active) {
+    &:hover:not(.page-link.active) {
       background-color: #363c5d;
     }
 
-    &--active {
+    &.active {
       font-weight: bolder;
 
       @include mixins.for-size(phone-up) {

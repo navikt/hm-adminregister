@@ -4,11 +4,12 @@ import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { ImageCard } from "felleskomponenter/ImageCard";
 import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
 import { deleteFileFromSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import SeriesSortingArea from "produkter/tabs/SeriesSortingArea";
+import styles from "./imagesTab.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -22,12 +23,6 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
-
-  const sortedImages = images.sort((a, b) => {
-    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
-    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
-    return dateA - dateB;
-  });
 
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)
@@ -46,39 +41,34 @@ const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) 
         fileType="images"
         mutateSeries={mutateSeries}
       />
+
       <Tabs.Panel value="images" className="tab-panel">
+        <Alert variant="info" className={styles.alertSpacing}>
+          Dra i bildene for å endre rekkefølgen som vises på finnHjelpemiddel.no
+        </Alert>
+
         <VStack gap="8">
-          <>
-            {sortedImages.length > 0 && (
-              <ol className="images">
-                {sortedImages.map((image) => (
-                  <ImageCard
-                    mediaInfo={image}
-                    key={image.uri}
-                    handleDeleteFile={handleDeleteFile}
-                    showMenuButton={isEditable}
-                  />
-                ))}
-              </ol>
-            )}
-            {sortedImages.length === 0 && (
-              <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>
-            )}
-          </>
+          {series && (
+            <SeriesSortingArea
+              allImages={images}
+              series={series}
+              mutateSeries={mutateSeries}
+              handleDeleteFile={handleDeleteFile}
+            />
+          )}
+          {!series && <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>}
 
           {isEditable && (
-            <>
-              <Button
-                className="fit-content"
-                variant="tertiary"
-                icon={<PlusCircleIcon title="Legg til bilder" fontSize="1.5rem" />}
-                onClick={() => {
-                  setModalIsOpen(true);
-                }}
-              >
-                Legg til bilder
-              </Button>
-            </>
+            <Button
+              className="fit-content"
+              variant="tertiary"
+              icon={<PlusCircleIcon title="Legg til bilder" fontSize="1.5rem" />}
+              onClick={() => {
+                setModalIsOpen(true);
+              }}
+            >
+              Legg til bilder
+            </Button>
           )}
         </VStack>
       </Tabs.Panel>

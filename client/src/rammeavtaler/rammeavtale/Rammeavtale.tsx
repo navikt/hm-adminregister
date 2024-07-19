@@ -175,6 +175,7 @@ const AgreementPage = () => {
                   variant="secondary"
                   icon={<CogIcon aria-hidden fontSize={"1.5rem"} />}
                   as={Dropdown.Toggle}
+                  title="Endre eller slett"
                 ></Button>
                 <Dropdown.Menu>
                   <Dropdown.Menu.GroupedList>

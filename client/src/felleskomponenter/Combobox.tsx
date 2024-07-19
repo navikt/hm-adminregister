@@ -32,7 +32,7 @@ export default function Combobox({ defaultValue, options, setValue, label, error
   return (
     <UNSAFE_Combobox
       label={label || ""}
-      description={"Velg isokategori produktet passer best inn i"}
+      description={"Søk etter isokategori produktet passer best inn i"}
       selectedOptions={selectedOptions}
       onChange={(event) => {
         setInputValue(event?.target.value || "");
