@@ -7,11 +7,12 @@ import { updateSeriesMedia } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductImageCard } from "produkter/tabs/ProductImageCard";
+import { LoggedInUser } from "utils/user-util";
+import { useSeries } from "utils/swr-hooks";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  seriesId: string;
   allImages: MediaInfoDTO[];
-  mutateSeries: () => void;
   handleDeleteFile: (uri: string) => void;
 }
 
@@ -29,10 +30,26 @@ export const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
   }));
 };
 
-export default function SeriesSortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
+export const handleUpdateOfSeriesMedia = (
+  seriesId: string,
+  updatedArray: MediaInfoDTO[],
+  loggedInUser: LoggedInUser | undefined,
+  mutateSeries: () => void,
+  setGlobalError: any,
+) => {
+  updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false)
+    .then(mutateSeries)
+    .catch((error) => {
+      setGlobalError(error);
+    });
+};
+
+export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
-  const [imagesArr, setImages] = React.useState(allImages);
   const { setGlobalError } = useErrorStore();
+  const [imagesArr, setImages] = React.useState(allImages);
+  const { mutateSeries } = useSeries(seriesId!);
+
   useEffect(() => {
     setImages(allImages);
   }, [allImages]);
@@ -40,11 +57,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
       const updatedArray = updateImagePriority(moveItemInArray(array, oldIndex, newIndex));
-      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false)
-        .then(mutateSeries)
-        .catch((error) => {
-          setGlobalError(error);
-        });
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
       return updatedArray;
     });
   };
@@ -65,7 +78,7 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
                       <div className={styles.userSelect}>
                         <SortableKnob>
                           <ProductImageCard
-                            mediaInfo={item}
+                            seriesId={seriesId}
                             handleDeleteFile={handleDeleteFile}
                             setImages={setImages}
                             imagesArr={imagesArr}
