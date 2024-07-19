@@ -1,4 +1,4 @@
-import { findAllByRole, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import News from "news/News";
 import { MemoryRouter } from "react-router-dom";
