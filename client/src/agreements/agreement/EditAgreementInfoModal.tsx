@@ -17,7 +17,7 @@ interface Props {
   mutateAgreement: () => void;
 }
 
-const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutateAgreement }: Props) => {
+const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutateAgreement }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const {
@@ -168,4 +168,4 @@ const EditRammeavtaleInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, muta
   );
 };
 
-export default EditRammeavtaleInfoModal;
+export default EditAgreementInfoModal;

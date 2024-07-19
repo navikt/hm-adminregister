@@ -22,7 +22,7 @@ interface BlurredFields {
   phone: boolean;
 }
 
-const BekreftLeverandøropplysninger = () => {
+const FirstTimeSupplierInfo = () => {
   const { loggedInUser } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin);
@@ -59,7 +59,7 @@ const BekreftLeverandøropplysninger = () => {
   );
 };
 
-export default BekreftLeverandøropplysninger;
+export default FirstTimeSupplierInfo;
 
 const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegistrationDTO; mutate: any }) => {
   const { setGlobalError } = useErrorStore();

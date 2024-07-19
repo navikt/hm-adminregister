@@ -3,11 +3,11 @@ import React, { useRef, useState } from "react";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
-import { EditCommonInfoAgreement } from "./Rammeavtale";
+import { EditCommonInfoAgreement } from "./Agreement";
 import { labelRequired } from "utils/string-util";
 import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 import parse from "html-react-parser";
-import { AgreementDescriptionRTE } from "rammeavtaler/rammeavtale/AgreementDescriptionRTE";
+import { AgreementDescriptionRTE } from "agreements/agreement/AgreementDescriptionRTE";
 
 interface Props {
   agreement: AgreementRegistrationDTO;

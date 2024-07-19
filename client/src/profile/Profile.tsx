@@ -8,7 +8,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
 
-export default function Profil() {
+export default function Profile() {
   const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
   const [supplier, setSupplier] = useState<Supplier>();

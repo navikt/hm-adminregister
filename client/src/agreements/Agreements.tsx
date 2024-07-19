@@ -24,7 +24,7 @@ export enum AgreementFilterOption {
   EXPIRED = "EXPIRED",
 }
 
-const Rammeavtaler = () => {
+const Agreements = () => {
   const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(AgreementFilterOption.ALL);
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
@@ -211,4 +211,4 @@ const Rammeavtaler = () => {
     </main>
   );
 };
-export default Rammeavtaler;
+export default Agreements;

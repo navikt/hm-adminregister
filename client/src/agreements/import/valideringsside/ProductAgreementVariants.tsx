@@ -1,5 +1,5 @@
 import { ExpansionCard } from "@navikt/ds-react";
-import { ProductAgreementsTable } from "rammeavtaler/import/valideringsside/ProductAgreementsTable";
+import { ProductAgreementsTable } from "agreements/import/valideringsside/ProductAgreementsTable";
 import React from "react";
 import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
 

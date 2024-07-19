@@ -5,15 +5,15 @@ import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
 import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
 import { generateImportData, ImportData } from "utils/import-util";
-import { ProductAgreementVariants } from "rammeavtaler/import/valideringsside/ProductAgreementVariants";
-import { ProductAgreementsWithNoSeries } from "rammeavtaler/import/valideringsside/ProductAgreementsWithNoSeries";
+import { ProductAgreementVariants } from "agreements/import/valideringsside/ProductAgreementVariants";
+import { ProductAgreementsWithNoSeries } from "agreements/import/valideringsside/ProductAgreementsWithNoSeries";
 
 interface Props {
   upload: Upload;
   reseetUpload: () => void;
 }
 
-export const ValiderImporterteProductAgreements = ({ upload, reseetUpload }: Props) => {
+export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Props) => {
   const [productAgreementsToValidate, setProductAgreementsToValidate] = useState<ProductAgreementRegistrationDTO[]>([]);
   const [importData, setImportData] = useState<ImportData | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
