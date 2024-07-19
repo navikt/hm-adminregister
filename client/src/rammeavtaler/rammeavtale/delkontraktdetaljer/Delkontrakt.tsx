@@ -179,6 +179,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                               <Loader></Loader>
                             ) : (
                               <Select
+                                aria-label="Rangering"
                                 id="rangering"
                                 name="rangering"
                                 label={""}

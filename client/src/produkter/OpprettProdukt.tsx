@@ -44,12 +44,12 @@ export default function OpprettProdukt() {
   }
 
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
-  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoCode + " - " + cat.isoTitle);
+  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
 
   const handleSetFormValueIso = (value: string) => {
     const parts = value.split("-");
-    const firstPartWithoutSpaces = parts[0].replace(/\s/g, ""); // Remove spaces
-    setValue("isoCategory", firstPartWithoutSpaces);
+    const lastPartWithoutSpaces = parts[1].replace(/\s/g, ""); // Remove spaces
+    setValue("isoCategory", lastPartWithoutSpaces);
   };
 
   return (
