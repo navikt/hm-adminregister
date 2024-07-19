@@ -6,20 +6,35 @@ import { ImageContainer } from "felleskomponenter/ImageCard";
 import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import styles from "./productImageCard.module.scss";
+import { moveItemInArray, updateImagePriority } from "produkter/tabs/SeriesSortingArea";
 
 interface Props {
   mediaInfo: MediaInfoDTO;
   handleDeleteFile: (uri: string) => void;
-  showMenuButton?: boolean;
   setImages: any;
   imagesArr: MediaInfoDTO[];
+  index: number;
 }
 
 export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
-  { mediaInfo, handleDeleteFile, showMenuButton = true, setImages, imagesArr }: Props,
+  { mediaInfo, handleDeleteFile, setImages, imagesArr, index }: Props,
   ref,
 ) {
   const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
+
+  const handleMoveLeft = () => {
+    if (index > 0) {
+      console.log(index);
+      setImages(updateImagePriority(moveItemInArray(imagesArr, index, index - 1)));
+    }
+  };
+
+  const handleMoveRight = () => {
+    console.log(index);
+    if (index < imagesArr.length - 1) {
+      setImages(updateImagePriority(moveItemInArray(imagesArr, index, index + 1)));
+    }
+  };
 
   return (
     <>
@@ -34,23 +49,21 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
               <Button
                 variant="tertiary"
                 icon={<ChevronLeftIcon title="a11y-title" fontSize="1.5rem" />}
-                onClick={() => setImages(imagesArr)}
+                onClick={handleMoveLeft}
               ></Button>
               <MenuGridIcon title="a11y-title" fontSize="1.5rem" className={styles.grabbable} />
               <Button
                 variant="tertiary"
                 icon={<ChevronRightIcon title="a11y-title" fontSize="1.5rem" />}
-                onClick={() => setImages(imagesArr)}
+                onClick={handleMoveRight}
               ></Button>
             </HStack>
           </VStack>
         </VStack>
 
-        {showMenuButton && (
-          <div className="more-menu-container">
-            <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} />
-          </div>
-        )}
+        <div className="more-menu-container">
+          <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} />
+        </div>
       </div>
     </>
   );

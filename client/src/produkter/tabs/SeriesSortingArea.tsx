@@ -15,6 +15,20 @@ interface Props {
   handleDeleteFile: (uri: string) => void;
 }
 
+export const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
+  if (target >= 0 && target < arr.length) {
+    [arr[init], arr[target]] = [arr[target], arr[init]];
+  }
+  return arr;
+};
+
+export const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
+  return updatedArray.map((item, index) => ({
+    ...item,
+    priority: index + 1,
+  }));
+};
+
 export default function SeriesSortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
   const [imagesArr, setImages] = React.useState(allImages);
@@ -22,18 +36,6 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
   useEffect(() => {
     setImages(allImages);
   }, [allImages]);
-
-  const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
-    return updatedArray.map((item, index) => ({
-      ...item,
-      priority: index + 1,
-    }));
-  };
-
-  const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
-    [arr[init], arr[target]] = [arr[target], arr[init]];
-    return arr;
-  };
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
@@ -65,9 +67,9 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
                           <ProductImageCard
                             mediaInfo={item}
                             handleDeleteFile={handleDeleteFile}
-                            showMenuButton={true}
                             setImages={setImages}
                             imagesArr={imagesArr}
+                            index={index}
                           />
                         </SortableKnob>
                       </div>
