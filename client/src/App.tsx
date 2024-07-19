@@ -14,16 +14,15 @@ import Suppliers from "suppliers/Suppliers";
 import SupplierProfile from "suppliers/SupplierProfile";
 import CreateSupplier from "suppliers/CreateSupplier";
 import CreateSupplierProfile from "suppliers/CreateSupplierProfile";
-import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
-import Rammeavtale from "./rammeavtaler/rammeavtale/Rammeavtale";
-import OpprettRammeavtale from "./rammeavtaler/rammeavtale/OpprettRammeavtale";
+import Agreements from "agreements/Agreements";
+import CreateAgreement from "agreements/agreement/CreateAgreement";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
-import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
+import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
 import { ForApproval } from "approval/ForApproval";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
@@ -34,6 +33,7 @@ import DeleteAdminUser from "./admin/DeleteAdminUser";
 import EditAdminUser from "admin/EditAdminUser";
 import FirstTimeUserInfo from "login/FirstTimeUserInfo";
 import FirstTimeSupplierInfo from "login/FirstTimeSupplierInfo";
+import Agreement from "agreements/agreement/Agreement";
 
 export function App() {
   return (
@@ -214,7 +214,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Rammeavtaler />
+                <Agreements />
               </>
             }
           />
@@ -223,7 +223,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Rammeavtale />
+                <Agreement />
               </>
             }
           />
@@ -241,7 +241,7 @@ export function App() {
             path="/rammeavtaler/opprett"
             element={
               <>
-                <OpprettRammeavtale />
+                <CreateAgreement />
               </>
             }
           />

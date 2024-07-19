@@ -13,7 +13,7 @@ import { HM_REGISTER_URL } from "environments";
 import { deleteAgreement, publishAgreement, updateAgreementDescription } from "api/AgreementApi";
 import { toReadableDateTimeString, toReadableString } from "utils/date-util";
 import DelkontrakterTab from "./delkontraktliste/DelkontrakterTab";
-import EditRammeavtaleInfoModal from "./EditRammeavtaleInfoModal";
+import EditAgreementInfoModal from "./EditAgreementInfoModal";
 import FileTab from "./vedlegg/FileTab";
 import { WordWrappedHeading } from "felleskomponenter/styledcomponents/Heading";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
@@ -22,7 +22,7 @@ import StatusTagAgreement from "felleskomponenter/StatusTagAgreement";
 export type EditCommonInfoAgreement = {
   description: string;
 };
-const AgreementPage = () => {
+const Agreement = () => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const activeTab = searchParams.get("tab");
@@ -117,7 +117,7 @@ const AgreementPage = () => {
 
   return (
     <>
-      <EditRammeavtaleInfoModal
+      <EditAgreementInfoModal
         modalIsOpen={isEditAgreementModalOpen}
         agreement={agreement}
         setModalIsOpen={setIsEditAgreementModalOpen}
@@ -220,7 +220,7 @@ const AgreementPage = () => {
     </>
   );
 };
-export default AgreementPage;
+export default Agreement;
 
 const PublishButton = ({ onClick }: { onClick: () => void }) => {
   return (

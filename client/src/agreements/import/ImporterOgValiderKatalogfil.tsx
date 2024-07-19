@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./import.scss";
-import ImporterKatalogfil, { Upload } from "rammeavtaler/import/ImporterKatalogfil";
-import { ValiderImporterteProductAgreements } from "rammeavtaler/import/valideringsside/ValiderImporterteProductAgreements";
+import ImporterKatalogfil, { Upload } from "agreements/import/ImporterKatalogfil";
+import { ValidateImportedProductAgreements } from "agreements/import/valideringsside/ValidateImportedProductAgreements";
 
 export const ImporterOgValiderKatalogfil = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
@@ -10,7 +10,7 @@ export const ImporterOgValiderKatalogfil = () => {
     return <ImporterKatalogfil validerImporterteProdukter={setUpload} />;
   } else
     return (
-      <ValiderImporterteProductAgreements
+      <ValidateImportedProductAgreements
         upload={upload}
         reseetUpload={() => {
           setUpload(undefined);

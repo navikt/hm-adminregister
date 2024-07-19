@@ -3,7 +3,7 @@ import { useState } from "react";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { AttachmentGroup } from "./AttachmentGroup";
 import { AgreementRegistrationDTO } from "utils/types/response-types";
-import NewAttachmentGroupModal from "rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal";
+import NewAttachmentGroupModal from "agreements/agreement/vedlegg/NewAttachmentGroupModal";
 import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 
 interface Props {

@@ -15,7 +15,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 
 type FormData = z.infer<typeof createNewAgreementSchema>;
 
-export default function OpprettRammeavtale() {
+export default function CreateAgreement() {
   const { setGlobalError } = useErrorStore();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState<boolean>(false);
