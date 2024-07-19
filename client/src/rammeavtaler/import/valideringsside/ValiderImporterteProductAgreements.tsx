@@ -1,6 +1,6 @@
 import { Alert, BodyShort, Button, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
-import { Upload } from "produkter/import/ImporterProdukter";
+import { Upload } from "products/import/ImporterProdukter";
 import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
 import { ProductAgreementRegistrationDTO } from "utils/types/response-types";

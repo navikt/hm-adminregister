@@ -2,7 +2,7 @@ import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/respo
 import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
-import { numberOfImages } from "produkter/seriesUtils";
+import { numberOfImages } from "products/seriesUtils";
 import { sendSeriesToApproval } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 

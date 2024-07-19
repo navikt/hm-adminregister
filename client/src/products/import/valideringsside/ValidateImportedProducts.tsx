@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
-import { Upload } from "produkter/import/ImporterProdukter";
-import { ProductSeriesInfo } from "produkter/import/valideringsside/ProductSeriesInfo";
-import { VariantsTable } from "produkter/import/valideringsside/VariantsTable";
+import { Upload } from "products/import/ImporterProdukter";
+import { ProductSeriesInfo } from "products/import/valideringsside/ProductSeriesInfo";
+import { VariantsTable } from "products/import/valideringsside/VariantsTable";
 import { baseUrl, useSeries } from "utils/swr-hooks";
 import { importProducts } from "api/ImportExportApi";
 
@@ -15,7 +15,7 @@ interface Props {
   seriesId: string;
 }
 
-export const ValiderImporterteProdukter = ({ upload, reseetUpload, seriesId }: Props) => {
+export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId }: Props) => {
   const { loggedInUser } = useAuthStore();
   const [productsToValidate, setProductsToValidate] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -7,7 +7,7 @@ import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types"
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
-import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { changeFilenameOnAttachedFile, deleteFileFromSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 

@@ -1,8 +1,8 @@
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { Heading, Table } from "@navikt/ds-react";
-import styles from "produkter/ProductTable.module.scss";
+import styles from "products/ProductTable.module.scss";
 import StatusTag from "felleskomponenter/StatusTag";
-import { seriesStatus } from "produkter/seriesUtils";
+import { seriesStatus } from "products/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 

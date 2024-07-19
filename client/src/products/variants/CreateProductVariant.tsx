@@ -13,7 +13,7 @@ import { useSeries } from "utils/swr-hooks";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
-const OpprettProduktVariant = () => {
+const CreateProductVariant = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
   const [searchParams] = useSearchParams();
@@ -100,4 +100,4 @@ const OpprettProduktVariant = () => {
   );
 };
 
-export default OpprettProduktVariant;
+export default CreateProductVariant;

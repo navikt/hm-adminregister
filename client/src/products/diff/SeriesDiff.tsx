@@ -2,8 +2,8 @@ import { DifferenceDTO } from "utils/types/response-types";
 import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
 import { useTranslation } from "react-i18next";
 import styles from "./ShowDiffModal.module.scss";
-import { Strikethrough } from "produkter/diff/Strikethrough";
-import { getMediaDiff } from "produkter/diff/diff-util";
+import { Strikethrough } from "products/diff/Strikethrough";
+import { getMediaDiff } from "products/diff/diff-util";
 
 export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   const { t } = useTranslation();

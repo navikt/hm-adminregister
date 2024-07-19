@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import ProductVariantForm from "./ProductVariantForm";
 import { useProductByProductId } from "utils/swr-hooks";
 
-const RedigerProduktVariant = () => {
+const EditProductVariant = () => {
   const { productId } = useParams();
 
   const { product, isLoading, mutate, error } = useProductByProductId(productId!);
@@ -46,4 +46,4 @@ const RedigerProduktVariant = () => {
   );
 };
 
-export default RedigerProduktVariant;
+export default EditProductVariant;

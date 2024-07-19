@@ -7,13 +7,13 @@ import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, 
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { updateProductTitle } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
-import AdminActions from "produkter/AdminActions";
-import { DeleteConfirmationModal } from "produkter/DeleteConfirmationModal";
-import { EditPublishedProductConfirmationModal } from "produkter/EditPublishedProductConfirmationModal";
-import { RequestApprovalModal } from "produkter/RequestApprovalModal";
-import { numberOfDocuments, numberOfImages, numberOfVideos } from "produkter/seriesUtils";
-import StatusPanel from "produkter/StatusPanel";
-import SupplierActions from "produkter/SupplierActions";
+import AdminActions from "products/AdminActions";
+import { DeleteConfirmationModal } from "products/DeleteConfirmationModal";
+import { EditPublishedProductConfirmationModal } from "products/EditPublishedProductConfirmationModal";
+import { RequestApprovalModal } from "products/RequestApprovalModal";
+import { numberOfDocuments, numberOfImages, numberOfVideos } from "products/seriesUtils";
+import StatusPanel from "products/StatusPanel";
+import SupplierActions from "products/SupplierActions";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -28,7 +28,7 @@ import VideosTab from "./tabs/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
 import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 
-const ProductPage = () => {
+const Product = () => {
   const { seriesId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -306,4 +306,4 @@ const ProductPage = () => {
     </main>
   );
 };
-export default ProductPage;
+export default Product;

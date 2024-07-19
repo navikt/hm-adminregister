@@ -2,8 +2,8 @@ import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
 import { useTranslation } from "react-i18next";
 import styles from "./ShowDiffModal.module.scss";
 import { ProductDifferenceDTO } from "api/VersionApi";
-import { TechDataDiff } from "produkter/diff/TechDataDiff";
-import { Strikethrough } from "produkter/diff/Strikethrough";
+import { TechDataDiff } from "products/diff/TechDataDiff";
+import { Strikethrough } from "products/diff/Strikethrough";
 
 export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifferenceDTO[] }) => {
   const { t } = useTranslation();

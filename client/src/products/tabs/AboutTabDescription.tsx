@@ -2,7 +2,7 @@ import { Alert, Button, Heading, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
-import { RichTextEditor } from "produkter/RichTextEditor";
+import { RichTextEditor } from "products/RichTextEditor";
 import { useState } from "react";
 import { updateProductDescription } from "api/SeriesApi";
 import { SeriesRegistrationDTO } from "utils/types/response-types";

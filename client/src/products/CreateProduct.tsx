@@ -14,7 +14,7 @@ import { draftNewSeries } from "api/SeriesApi";
 
 type FormData = z.infer<typeof createNewSeriesSchema>;
 
-export default function OpprettProdukt() {
+export default function CreateProduct() {
   const { setGlobalError } = useErrorStore();
   const { isoCategories, isoError } = useIsoCategories();
   const navigate = useNavigate();

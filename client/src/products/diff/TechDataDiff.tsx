@@ -1,8 +1,8 @@
 import { DifferenceDTO } from "utils/types/response-types";
-import { getTechDataDiff } from "produkter/diff/diff-util";
+import { getTechDataDiff } from "products/diff/diff-util";
 import { BodyShort, Box, HStack, VStack } from "@navikt/ds-react";
-import styles from "produkter/diff/ShowDiffModal.module.scss";
-import { Strikethrough } from "produkter/diff/Strikethrough";
+import styles from "products/diff/ShowDiffModal.module.scss";
+import { Strikethrough } from "products/diff/Strikethrough";
 import { Avstand } from "felleskomponenter/Avstand";
 
 export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {

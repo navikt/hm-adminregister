@@ -1,7 +1,7 @@
 import { Button, Heading, TextField, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
-import { isValidUrl } from "produkter/seriesUtils";
+import { isValidUrl } from "products/seriesUtils";
 import { updateSeriesURL } from "api/SeriesApi";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";

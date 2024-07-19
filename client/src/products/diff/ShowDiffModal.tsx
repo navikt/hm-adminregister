@@ -10,8 +10,8 @@ import {
 import styles from "./ShowDiffModal.module.scss";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { Avstand } from "felleskomponenter/Avstand";
-import { VariantsDiff } from "produkter/diff/VariantsDiff";
-import { SeriesDiff } from "produkter/diff/SeriesDiff";
+import { VariantsDiff } from "products/diff/VariantsDiff";
+import { SeriesDiff } from "products/diff/SeriesDiff";
 
 export const ShowDiffModal = ({
   series,

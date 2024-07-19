@@ -2,7 +2,7 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
 import StatusTag from "felleskomponenter/StatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
-import { seriesStatus } from "produkter/seriesUtils";
+import { seriesStatus } from "products/seriesUtils";
 import { useSupplier } from "utils/swr-hooks";
 import { useAuthStore } from "utils/store/useAuthStore";
 

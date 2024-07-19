@@ -4,11 +4,11 @@ import { useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import SeriesSortingArea from "produkter/tabs/SeriesSortingArea";
+import SeriesSortingArea from "products/tabs/SeriesSortingArea";
 import styles from "./imagesTab.module.scss";
 
 interface Props {

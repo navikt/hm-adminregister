@@ -8,11 +8,11 @@ import {
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
-import { RejectApprovalModal } from "produkter/RejectApprovalModal";
+import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { ShowDiffModal } from "produkter/diff/ShowDiffModal";
+import { ShowDiffModal } from "products/diff/ShowDiffModal";
 
 const AdminActions = ({
   series,

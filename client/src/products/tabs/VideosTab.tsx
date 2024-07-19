@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import ReactPlayer from "react-player";
-import { mapImagesAndPDFfromMedia } from "produkter/seriesUtils";
+import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 

@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import LoggInn from "./logg-inn/LoggInn";
-import Produkter from "./produkter/Produkter";
-import OpprettProdukt from "./produkter/OpprettProdukt";
-import Produkt from "./produkter/Produkt";
-import RedigerProduktVariant from "./produkter/variants/RedigerProduktVariant";
-import OpprettProduktVariant from "./produkter/variants/OpprettProduktVariant";
+import Products from "products/Products";
+import CreateProduct from "products/CreateProduct";
+import Product from "products/Product";
+import EditProductVariant from "products/variants/EditProductVariant";
+import CreateProductVariant from "products/variants/CreateProductVariant";
 import Adminopplysninger from "./admin/Adminopplysninger";
 import OpprettAdminBruker from "./admin/OpprettAdminBruker";
 import AdminProfil from "./admin/AdminProfil";
@@ -25,7 +25,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
-import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
+import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
 import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
 import { TilGodkjenning } from "godkjenning/TilGodkjenning";
@@ -49,7 +49,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Produkter />
+                <Products />
               </>
             }
           />
@@ -57,7 +57,7 @@ export function App() {
             path="/produkter/opprett"
             element={
               <>
-                <OpprettProdukt />
+                <CreateProduct />
               </>
             }
           />
@@ -66,7 +66,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Produkt />
+                <Product />
               </>
             }
           />
@@ -74,7 +74,7 @@ export function App() {
             path="/produkter/:seriesId/rediger-variant/:productId"
             element={
               <>
-                <RedigerProduktVariant />
+                <EditProductVariant />
               </>
             }
           />
@@ -82,7 +82,7 @@ export function App() {
             path="/produkter/:seriesId/opprett-variant/:productId"
             element={
               <>
-                <OpprettProduktVariant />
+                <CreateProductVariant />
               </>
             }
           />

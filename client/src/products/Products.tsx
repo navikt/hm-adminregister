@@ -19,10 +19,10 @@ import { usePagedProducts, useProducts, useSeriesByHmsNr, useSeriesBySupplierRef
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import styles from "produkter/ProductTable.module.scss";
-import { SeriesTable } from "produkter/SeriesTable";
+import styles from "products/ProductTable.module.scss";
+import { SeriesTable } from "products/SeriesTable";
 
-const Produkter = () => {
+const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -188,4 +188,4 @@ const Produkter = () => {
     </main>
   );
 };
-export default Produkter;
+export default Products;

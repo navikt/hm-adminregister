@@ -1,7 +1,7 @@
 import { BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
-import { isValidKeyword } from "produkter/seriesUtils";
+import { isValidKeyword } from "products/seriesUtils";
 import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { updateSeriesKeywords } from "api/SeriesApi";
@@ -30,9 +30,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
     setShowEditKeywordsMode(false);
     if (updatedKeywords.length <= 3) {
       if (
-        updatedKeywords
-          .map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword))
-          .every(Boolean)
+        updatedKeywords.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword)).every(Boolean)
       ) {
         updateSeriesKeywords(series!.id, updatedKeywords, isAdmin)
           .then(() => mutateSeries())

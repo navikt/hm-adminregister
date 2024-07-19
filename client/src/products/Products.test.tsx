@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import Produkter from "produkter/Produkter";
+import Products from "products/Products";
 import { MemoryRouter } from "react-router-dom";
 import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
@@ -81,7 +81,7 @@ test("Flere produkter", async () => {
 
   const { container } = render(
     <MemoryRouter>
-      <Produkter />
+      <Products />
     </MemoryRouter>,
   );
 

@@ -1,7 +1,7 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteDraftProducts, updateProductVariant } from "api/ProductApi";
-import { DeleteVariantConfirmationModal } from "produkter/variants/DeleteVariantConfirmationModal";
+import { DeleteVariantConfirmationModal } from "products/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { tenYearsFromTodayTimestamp, todayTimestamp } from "utils/date-util";
