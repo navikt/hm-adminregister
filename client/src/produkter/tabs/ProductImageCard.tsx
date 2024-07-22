@@ -30,7 +30,6 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
 
   const handleMoveLeft = () => {
     if (index > 0) {
-      console.log(index);
       const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index - 1));
       setImages(updatedArray);
       handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
@@ -38,7 +37,6 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
   };
 
   const handleMoveRight = () => {
-    console.log(index);
     if (index < imagesArr.length - 1) {
       const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index + 1));
       setImages(updatedArray);
