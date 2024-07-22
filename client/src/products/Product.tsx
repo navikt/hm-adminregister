@@ -21,10 +21,10 @@ import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-
 import { IsoCategoryDTO } from "utils/types/response-types";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
-import AboutTab from "./tabs/AboutTab";
-import DocumentTab from "./tabs/DocumentsTab";
-import ImageTab from "./tabs/ImagesTab";
-import VideosTab from "./tabs/VideosTab";
+import AboutTab from "./about/AboutTab";
+import DocumentTab from "products/files/DocumentsTab";
+import ImageTab from "products/files/images/ImagesTab";
+import VideosTab from "products/videos/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
 import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 

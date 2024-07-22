@@ -2,11 +2,15 @@ import { Button, HStack, VStack } from "@navikt/ds-react";
 import { forwardRef, useState } from "react";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { ChevronLeftIcon, ChevronRightIcon, MenuGridIcon } from "@navikt/aksel-icons";
-import { ImageContainer } from "products/tabs/ImageContainer";
+import { ImageContainer } from "products/files/images/ImageContainer";
 import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import styles from "./productImageCard.module.scss";
-import { handleUpdateOfSeriesMedia, moveItemInArray, updateImagePriority } from "products/tabs/SeriesSortingArea";
+import {
+  handleUpdateOfSeriesMedia,
+  moveItemInArray,
+  updateImagePriority,
+} from "products/files/images/SeriesSortingArea";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useSeries } from "utils/swr-hooks";

@@ -6,7 +6,7 @@ import { HStack } from "@navikt/ds-react";
 import { updateSeriesMedia } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ProductImageCard } from "products/tabs/ProductImageCard";
+import { ProductImageCard } from "products/files/images/ProductImageCard";
 import { LoggedInUser } from "utils/user-util";
 import { useSeries } from "utils/swr-hooks";
 

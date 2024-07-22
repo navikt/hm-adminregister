@@ -13,7 +13,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ImageContainer } from "products/tabs/ImageContainer";
+import { ImageContainer } from "products/files/images/ImageContainer";
 import { fileToUri } from "utils/file-util";
 import { uploadFilesToSeries } from "api/MediaApi";
 import { useAuthStore } from "utils/store/useAuthStore";

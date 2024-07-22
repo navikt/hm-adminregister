@@ -1,8 +1,8 @@
 import { Heading, Tabs, VStack } from "@navikt/ds-react";
 import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import AboutTabDescription from "products/tabs/AboutTabDescription";
-import AboutTabURL from "products/tabs/AboutTabURL";
-import AboutTabKeywords from "products/tabs/AboutTabKeywords";
+import AboutTabDescription from "products/about/AboutTabDescription";
+import AboutTabURL from "products/about/AboutTabURL";
+import AboutTabKeywords from "products/about/AboutTabKeywords";
 
 interface Props {
   series: SeriesRegistrationDTO;
