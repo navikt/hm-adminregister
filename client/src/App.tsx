@@ -21,7 +21,7 @@ import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
 import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
-import Navbar from "felleskomponenter/layout/Navbar";
+import Navbar from "menu/Navbar";
 import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
 import { ForApproval } from "approval/ForApproval";
 import { LoginWrapper } from "LoginWrapper";
