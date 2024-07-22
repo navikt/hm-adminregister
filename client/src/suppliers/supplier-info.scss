@@ -1,7 +1,7 @@
 @use "../styles/_mixins";
 @import "@navikt/ds-tokens/dist/tokens";
 
-.supplier-profile {
+.supplier-info {
   &__parent-page-link {
     padding: $a-spacing-6 0;
     gap: $a-spacing-2;

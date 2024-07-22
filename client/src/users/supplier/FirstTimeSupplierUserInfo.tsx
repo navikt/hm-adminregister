@@ -1,13 +1,15 @@
 import { ComponentIcon } from "@navikt/aksel-icons";
 import { Heading, Loader } from "@navikt/ds-react";
-import { useAuthStore } from "utils/store/useAuthStore";
 import { useUser } from "utils/swr-hooks";
-import FirstTimeUserInfoForm from "felleskomponenter/forms/FirstTimeUserInfoForm";
+import { useAuthStore } from "utils/store/useAuthStore";
+import React from "react";
+import FirstTimeUserInfoForm from "users/FirstTimeUserInfoForm";
 
-const FirstTimeAdminInfo = () => {
+const FirstTimeSupplierUserInfo = () => {
   const { loggedInUser } = useAuthStore();
   const { user, userIsLoading } = useUser(loggedInUser);
 
+  //TODO: Mulig vi må gjøre noe tilsvarende her som i ConfirmSupplierInfo med loadingen
   if (userIsLoading) {
     return <Loader size="3xlarge" title="venter..."></Loader>;
   }
@@ -22,10 +24,11 @@ const FirstTimeAdminInfo = () => {
             <span>Admin</span>
           </Heading>
         </span>
-        {user && <FirstTimeUserInfoForm user={user} isAdmin={true} />}
+
+        {user && <FirstTimeUserInfoForm user={user} isAdmin={false} />}
       </div>
     </main>
   );
 };
 
-export default FirstTimeAdminInfo;
+export default FirstTimeSupplierUserInfo;

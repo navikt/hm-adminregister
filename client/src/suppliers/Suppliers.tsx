@@ -3,14 +3,14 @@ import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navi
 import { PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
-import { Supplier } from "utils/supplier-util";
+import { SupplierDTO } from "utils/supplier-util";
 import ErrorAlert from "felleskomponenter/ErrorAlert";
 
 const Suppliers = () => {
   const { suppliers, isLoading, error } = useSuppliers();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<Supplier[] | undefined>();
+  const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);

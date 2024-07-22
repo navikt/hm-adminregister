@@ -1,20 +1,20 @@
 import { BodyShort, Button, Heading, HStack, VStack } from "@navikt/ds-react";
 import { ArrowUndoIcon, Buldings3Icon, PencilWritingIcon } from "@navikt/aksel-icons";
 import React from "react";
-import { Supplier } from "utils/supplier-util";
+import { SupplierDTO } from "utils/supplier-util";
 import { useAuthStore } from "utils/store/useAuthStore";
-import DefinitionList from "../definition-list/DefinitionList";
+import DefinitionList from "../felleskomponenter/definition-list/DefinitionList";
 import { formatPhoneNumber } from "utils/string-util";
 import { Link, useNavigate } from "react-router-dom";
 
-const SupplierInfo = ({ supplier, setIsOpen }: { supplier: Supplier; setIsOpen: (newState: boolean) => void }) => {
+const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpen: (newState: boolean) => void }) => {
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
   return (
     <VStack gap="8">
       <VStack gap="6">
         {loggedInUser?.isAdmin && (
-          <Link className="supplier-profile__parent-page-link" to="/leverandor">
+          <Link className="supplier-info__parent-page-link" to="/leverandor">
             <ArrowUndoIcon title="Tilbake til oversikt" fontSize="1.5rem" />
             Tilbake til oversikt
           </Link>

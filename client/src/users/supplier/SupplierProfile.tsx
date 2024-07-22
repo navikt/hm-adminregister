@@ -1,17 +1,17 @@
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
-import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
-import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
+import SupplierInfo from "suppliers/SupplierInfo";
+import SupplierUsers from "suppliers/SupplierUsers";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
+import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
 
-export default function Profile() {
+export default function SupplierProfile() {
   const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
-  const [supplier, setSupplier] = useState<Supplier>();
+  const [supplier, setSupplier] = useState<SupplierDTO>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { loggedInUser } = useAuthStore();

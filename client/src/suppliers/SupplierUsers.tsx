@@ -1,12 +1,12 @@
 import { Button, Heading, Table, VStack } from "@navikt/ds-react";
 import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
 import React from "react";
-import { Supplier, SupplierUser } from "utils/supplier-util";
+import { SupplierDTO, SupplierUser } from "utils/supplier-util";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
 
-const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: Supplier }) => {
+const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: SupplierDTO }) => {
   const navigate = useNavigate();
   const { loggedInUser } = useAuthStore();
   const handleCreateNewSupplierUser = () => {

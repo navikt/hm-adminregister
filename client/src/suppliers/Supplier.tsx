@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
-import "./supplier-profile.scss";
-import { mapSupplier, Supplier, SupplierUser } from "utils/supplier-util";
+import "./supplier-info.scss";
+import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
 import { useParams } from "react-router-dom";
 import { HM_REGISTER_URL } from "environments";
-import SupplierInfo from "felleskomponenter/supplier/SupplierInfo";
-import SupplierUsers from "felleskomponenter/supplier/SupplierUsers";
+import SupplierInfo from "suppliers/SupplierInfo";
+import SupplierUsers from "suppliers/SupplierUsers";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { DeactivateSupplierConfirmationModal } from "suppliers/DeactivateSupplierConfirmationModal";
 import { getSupplier } from "api/SupplierApi";
 import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
 
-const SupplierProfile = () => {
-  const [supplier, setSupplier] = useState<Supplier>();
+const Supplier = () => {
+  const [supplier, setSupplier] = useState<SupplierDTO>();
   const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { setGlobalError } = useErrorStore();
@@ -81,4 +81,4 @@ const SupplierProfile = () => {
   );
 };
 
-export default SupplierProfile;
+export default Supplier;
