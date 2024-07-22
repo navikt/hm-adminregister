@@ -27,12 +27,15 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
   const { mutateSeries } = useSeries(seriesId!);
+  const rightButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll(".rightButton")) || [];
+  const leftButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll(".leftButton")) || [];
 
   const handleMoveLeft = () => {
     if (index > 0) {
       const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index - 1));
       setImages(updatedArray);
       handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
+      leftButtonArray[index - 1].focus();
     }
   };
 
@@ -41,6 +44,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
       const updatedArray = updateImagePriority(moveItemInArray(imagesArr, index, index + 1));
       setImages(updatedArray);
       handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
+      rightButtonArray[index + 1].focus();
     }
   };
 
@@ -65,12 +69,14 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
               <Button
                 variant="tertiary"
                 icon={<ChevronLeftIcon title="a11y-title" fontSize="1.5rem" />}
+                className={"leftButton"}
                 onClick={handleMoveLeft}
               ></Button>
               <MenuGridIcon title="a11y-title" fontSize="1.5rem" className={styles.grabbable} />
               <Button
                 variant="tertiary"
                 icon={<ChevronRightIcon title="a11y-title" fontSize="1.5rem" />}
+                className={"rightButton"}
                 onClick={handleMoveRight}
               ></Button>
             </HStack>
