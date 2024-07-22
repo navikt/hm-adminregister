@@ -1,9 +1,9 @@
 import { HM_REGISTER_URL } from "environments";
 import { DelkontraktRegistrationDTO } from "utils/types/response-types";
-import { EditDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktdetaljer/EditDelkontraktInfoModal";
+import { EditDelkontraktFormData } from "agreements/agreement/delkontraktdetaljer/EditDelkontraktInfoModal";
 import { todayTimestamp } from "utils/date-util";
 import { v4 as uuidv4 } from "uuid";
-import { NyDelkontraktFormData } from "rammeavtaler/rammeavtale/delkontraktliste/NewDelkontraktModal";
+import { NyDelkontraktFormData } from "agreements/agreement/delkontraktliste/NewDelkontraktModal";
 import { fetchAPI, httpDelete } from "api/fetch";
 
 export const getDelkontrakt = (delkontraktId: string): Promise<DelkontraktRegistrationDTO> =>

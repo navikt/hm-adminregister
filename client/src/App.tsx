@@ -1,39 +1,39 @@
 import { Route, Routes } from "react-router-dom";
-import LoggInn from "./logg-inn/LoggInn";
-import Produkter from "./produkter/Produkter";
-import OpprettProdukt from "./produkter/OpprettProdukt";
-import Produkt from "./produkter/Produkt";
-import RedigerProduktVariant from "./produkter/variants/RedigerProduktVariant";
-import OpprettProduktVariant from "./produkter/variants/OpprettProduktVariant";
-import Adminopplysninger from "./admin/Adminopplysninger";
-import OpprettAdminBruker from "./admin/OpprettAdminBruker";
-import AdminProfil from "./admin/AdminProfil";
-import RedigerAdminBruker from "./admin/RedigerAdminBruker";
-import SlettAdminBruker from "./admin/SlettAdminBruker";
-import Profil from "./profil/Profil";
-import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
-import Leverandører from "./leverandor/Leverandører";
-import LeverandørProfil from "./leverandor/LeverandørProfil";
-import OpprettLeverandør from "./leverandor/OpprettLeverandør";
-import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
-import BekreftLeverandRopplysninger from "./logg-inn/BekreftLeverandøropplysninger";
-import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
-import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
-import Rammeavtale from "./rammeavtaler/rammeavtale/Rammeavtale";
-import OpprettRammeavtale from "./rammeavtaler/rammeavtale/OpprettRammeavtale";
+import Login from "login/Login";
+import Products from "products/Products";
+import CreateProduct from "products/CreateProduct";
+import Product from "products/Product";
+import EditProductVariant from "products/variants/EditProductVariant";
+import CreateProductVariant from "products/variants/CreateProductVariant";
+import FirstTimeAdminInfo from "./admin/FirstTimeAdminInfo";
+import CreateAdminUser from "./admin/CreateAdminUser";
+import AdminProfile from "./admin/AdminProfile";
+import Profile from "profile/Profile";
+import EditProfile from "profile/EditProfile";
+import Suppliers from "suppliers/Suppliers";
+import SupplierProfile from "suppliers/SupplierProfile";
+import CreateSupplier from "suppliers/CreateSupplier";
+import CreateSupplierProfile from "suppliers/CreateSupplierProfile";
+import Agreements from "agreements/Agreements";
+import CreateAgreement from "agreements/agreement/CreateAgreement";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
-import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
+import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
 import Navbar from "felleskomponenter/layout/Navbar";
-import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import { TilGodkjenning } from "godkjenning/TilGodkjenning";
+import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
+import { ForApproval } from "approval/ForApproval";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
-import EditSupplier from "leverandor/EditSupplier";
+import EditSupplier from "suppliers/EditSupplier";
 import CreateAndEditNews from "news/CreateAndEditNews";
+import DeleteAdminUser from "./admin/DeleteAdminUser";
+import EditAdminUser from "admin/EditAdminUser";
+import FirstTimeUserInfo from "login/FirstTimeUserInfo";
+import FirstTimeSupplierInfo from "login/FirstTimeSupplierInfo";
+import Agreement from "agreements/agreement/Agreement";
 
 export function App() {
   return (
@@ -41,7 +41,7 @@ export function App() {
       <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
-        <Route path="/logg-inn" element={<LoggInn />} />
+        <Route path="/logg-inn" element={<Login />} />
 
         <Route element={<LoginWrapper />}>
           <Route
@@ -49,7 +49,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Produkter />
+                <Products />
               </>
             }
           />
@@ -57,7 +57,7 @@ export function App() {
             path="/produkter/opprett"
             element={
               <>
-                <OpprettProdukt />
+                <CreateProduct />
               </>
             }
           />
@@ -66,7 +66,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Produkt />
+                <Product />
               </>
             }
           />
@@ -74,7 +74,7 @@ export function App() {
             path="/produkter/:seriesId/rediger-variant/:productId"
             element={
               <>
-                <RedigerProduktVariant />
+                <EditProductVariant />
               </>
             }
           />
@@ -82,7 +82,7 @@ export function App() {
             path="/produkter/:seriesId/opprett-variant/:productId"
             element={
               <>
-                <OpprettProduktVariant />
+                <CreateProductVariant />
               </>
             }
           />
@@ -101,7 +101,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <TilGodkjenning />
+                <ForApproval />
               </>
             }
           />
@@ -111,7 +111,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <AdminProfil />
+                <AdminProfile />
               </>
             }
           />
@@ -119,7 +119,7 @@ export function App() {
             path="/admin/rediger-admin"
             element={
               <>
-                <RedigerAdminBruker />
+                <EditAdminUser />
               </>
             }
           />
@@ -127,7 +127,7 @@ export function App() {
             path="/admin/opprett-admin"
             element={
               <>
-                <OpprettAdminBruker />
+                <CreateAdminUser />
               </>
             }
           />
@@ -135,7 +135,7 @@ export function App() {
             path="/admin/slett-admin"
             element={
               <>
-                <SlettAdminBruker />
+                <DeleteAdminUser />
               </>
             }
           />
@@ -143,7 +143,7 @@ export function App() {
             path="/admin/adminopplysninger"
             element={
               <>
-                <Adminopplysninger />
+                <FirstTimeAdminInfo />
               </>
             }
           />
@@ -153,7 +153,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Profil />
+                <Profile />
               </>
             }
           />
@@ -161,7 +161,7 @@ export function App() {
             path="/profil/rediger-brukerprofil"
             element={
               <>
-                <RedigerBrukerprofil />
+                <EditProfile />
               </>
             }
           />
@@ -171,7 +171,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Leverandører />
+                <Suppliers />
               </>
             }
           />
@@ -180,7 +180,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <LeverandørProfil />
+                <SupplierProfile />
               </>
             }
           />
@@ -188,7 +188,7 @@ export function App() {
             path="/leverandor/opprett-leverandor"
             element={
               <>
-                <OpprettLeverandør />
+                <CreateSupplier />
               </>
             }
           />
@@ -204,7 +204,7 @@ export function App() {
             path="/leverandor/opprett-bruker"
             element={
               <>
-                <OpprettLeverandørBruker />
+                <CreateSupplierProfile />
               </>
             }
           />
@@ -214,7 +214,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Rammeavtaler />
+                <Agreements />
               </>
             }
           />
@@ -223,7 +223,7 @@ export function App() {
             element={
               <>
                 <Navbar />
-                <Rammeavtale />
+                <Agreement />
               </>
             }
           />
@@ -241,41 +241,41 @@ export function App() {
             path="/rammeavtaler/opprett"
             element={
               <>
-                <OpprettRammeavtale />
+                <CreateAgreement />
               </>
             }
           />
 
-          <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
-          <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
+          <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
+          <Route path="/logg-inn/brukeropplysninger" element={<FirstTimeUserInfo />} />
+
+          <Route
+            path="/nyheter"
+            element={
+              <>
+                <Navbar />
+                <News />
+              </>
+            }
+          />
+
+          <Route
+            path="/nyheter/opprett"
+            element={
+              <>
+                <CreateAndEditNews />
+              </>
+            }
+          />
+          <Route
+            path="/nyheter/rediger"
+            element={
+              <>
+                <CreateAndEditNews />
+              </>
+            }
+          />
         </Route>
-
-        <Route
-          path="/nyheter"
-          element={
-            <>
-              <Navbar />
-              <News />
-            </>
-          }
-        />
-
-        <Route
-          path="/nyheter/opprett"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
-        <Route
-          path="/nyheter/rediger"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -19,7 +19,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import useSWR, { Fetcher } from "swr";
 import { HM_REGISTER_URL } from "environments";
 import { LoggedInUser } from "./user-util";
-import { AgreementFilterOption } from "rammeavtaler/Rammeavtaler";
+import { AgreementFilterOption } from "agreements/Agreements";
 import { getPath } from "api/fetch";
 
 export function baseUrl(url: string = "") {
