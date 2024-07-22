@@ -1,11 +1,10 @@
 import { BodyShort, Button, Heading, HStack, VStack } from "@navikt/ds-react";
 import { ArrowUndoIcon, Buldings3Icon, PencilWritingIcon } from "@navikt/aksel-icons";
-import React from "react";
 import { SupplierDTO } from "utils/supplier-util";
 import { useAuthStore } from "utils/store/useAuthStore";
-import DefinitionList from "../felleskomponenter/definition-list/DefinitionList";
 import { formatPhoneNumber } from "utils/string-util";
 import { Link, useNavigate } from "react-router-dom";
+import styles from "./SupplierInfo.module.scss";
 
 const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpen: (newState: boolean) => void }) => {
   const { loggedInUser } = useAuthStore();
@@ -25,14 +24,14 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
         </Heading>
         {supplier?.status === "INACTIVE" && <BodyShort>(INAKTIV)</BodyShort>}
       </VStack>
-      <DefinitionList>
-        <DefinitionList.Term>E-post</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.email}</DefinitionList.Definition>
-        <DefinitionList.Term>Telefon</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier.phone && formatPhoneNumber(supplier.phone)}</DefinitionList.Definition>
-        <DefinitionList.Term>Nettside</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.homepageUrl}</DefinitionList.Definition>
-      </DefinitionList>
+      <dl className={styles.descriptionList}>
+        <dt>E-post</dt>
+        <dd>{supplier?.email}</dd>
+        <dt>Telefon</dt>
+        <dd>{supplier.phone && formatPhoneNumber(supplier.phone)}</dd>
+        <dt>Nettside</dt>
+        <dd>{supplier?.homepageUrl}</dd>
+      </dl>
       <HStack gap="4">
         {loggedInUser?.isAdmin && (
           <Button

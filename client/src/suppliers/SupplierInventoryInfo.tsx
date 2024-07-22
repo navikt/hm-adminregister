@@ -1,10 +1,10 @@
 import { SupplierDTO } from "utils/supplier-util";
 import { Heading, VStack } from "@navikt/ds-react";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 import { SupplierInventoryDTO } from "utils/types/response-types";
+import styles from "./SupplierInventoryInfo.module.scss";
 
 const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
   const { data: data } = useSWR<SupplierInventoryDTO>(
@@ -19,12 +19,12 @@ const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
           Info
         </Heading>
       </VStack>
-      <DefinitionList>
-        <DefinitionList.Term>Antall aktive produktserier</DefinitionList.Term>
-        <DefinitionList.Definition>{data?.numberOfSeries}</DefinitionList.Definition>
-        <DefinitionList.Term>Antall aktive varianter</DefinitionList.Term>
-        <DefinitionList.Definition>{data?.numberOfVariants}</DefinitionList.Definition>
-      </DefinitionList>
+      <dl className={styles.descriptionList}>
+        <dt>Antall aktive produktserier</dt>
+        <dd>{data?.numberOfSeries}</dd>
+        <dt>Antall aktive varianter</dt>
+        <dd>{data?.numberOfVariants}</dd>
+      </dl>
     </VStack>
   );
 };
