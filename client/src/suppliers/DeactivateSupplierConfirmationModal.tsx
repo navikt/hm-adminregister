@@ -3,7 +3,7 @@ import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { deactivateSupplier } from "api/SupplierApi";
-import { Supplier } from "utils/supplier-util";
+import { SupplierDTO } from "utils/supplier-util";
 
 export const DeactivateSupplierConfirmationModal = ({
   supplier,
@@ -11,7 +11,7 @@ export const DeactivateSupplierConfirmationModal = ({
   isOpen,
   setIsOpen,
 }: {
-  supplier: Supplier;
+  supplier: SupplierDTO;
   mutateSupplier: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;

@@ -1,7 +1,7 @@
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { Heading, Table } from "@navikt/ds-react";
 import styles from "products/ProductTable.module.scss";
-import StatusTag from "felleskomponenter/StatusTag";
+import SeriesStatusTag from "products/SeriesStatusTag";
 import { seriesStatus } from "products/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +43,7 @@ export const SeriesTable = ({ seriesList, heading }: Props) => {
                 <b>{product.title}</b>
               </Table.HeaderCell>
               <Table.DataCell>
-                <StatusTag seriesStatus={seriesStatus(product)} />
+                <SeriesStatusTag seriesStatus={seriesStatus(product)} />
               </Table.DataCell>
               <Table.DataCell>{product.count}</Table.DataCell>
             </Table.Row>

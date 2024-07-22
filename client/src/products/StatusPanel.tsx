@@ -1,6 +1,6 @@
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
-import StatusTag from "felleskomponenter/StatusTag";
+import SeriesStatusTag from "products/SeriesStatusTag";
 import { toReadableDateTimeString } from "utils/date-util";
 import { seriesStatus } from "products/seriesUtils";
 import { useSupplier } from "utils/swr-hooks";
@@ -20,7 +20,7 @@ const StatusPanel = ({ series }: Props) => {
         Status
       </Heading>
 
-      <StatusTag seriesStatus={seriesStatus(series)} />
+      <SeriesStatusTag seriesStatus={seriesStatus(series)} />
 
       <Box>
         <BodyLong size="small" weight="semibold">

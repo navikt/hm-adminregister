@@ -17,7 +17,7 @@ import EditAgreementInfoModal from "./EditAgreementInfoModal";
 import FileTab from "./vedlegg/FileTab";
 import { WordWrappedHeading } from "felleskomponenter/styledcomponents/Heading";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
-import StatusTagAgreement from "felleskomponenter/StatusTagAgreement";
+import AgreementStatusTag from "agreements/agreement/AgreementStatusTag";
 
 export type EditCommonInfoAgreement = {
   description: string;
@@ -205,7 +205,7 @@ const Agreement = () => {
               </Heading>
 
               {isDraft && <PublishButton onClick={() => setPubliserRammeavtaleModalIsOpen(true)} />}
-              <StatusTagAgreement publiseringsdato={agreement.published} isDraft={isDraft} />
+              <AgreementStatusTag publiseringsdato={agreement.published} isDraft={isDraft} />
 
               <div>
                 <BodyShort>
