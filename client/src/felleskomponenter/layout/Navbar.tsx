@@ -12,34 +12,37 @@ import {
 } from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
-      <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
-      <Button
-        className="menu__burgermenu-button"
-        icon={
-          menuOpen ? (
-            <XMarkIcon title="Lukk menyen" />
-          ) : (
-            <MenuHamburgerIcon title="Åpne menyen" style={{ color: "#272a3a" }} />
-          )
-        }
-        variant="tertiary"
-        onClick={() => setMenuOpen(!menuOpen)}
-      />
-      <VStack gap="32" className="menu__desktop">
-        <NavigationLinks menuOpen={true} />
-        <ProfileMenu />
-      </VStack>
-      <div className={classNames("menu__mobile", { open: menuOpen })}>
-        <NavigationLinks menuOpen={menuOpen} />
-        {menuOpen && <ProfileMenu />}
-      </div>
-    </nav>
+    <>
+      <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
+        <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
+        <Button
+          className="menu__burgermenu-button"
+          icon={
+            menuOpen ? (
+              <XMarkIcon title="Lukk menyen" />
+            ) : (
+              <MenuHamburgerIcon title="Åpne menyen" style={{ color: "#272a3a" }} />
+            )
+          }
+          variant="tertiary"
+          onClick={() => setMenuOpen(!menuOpen)}
+        />
+        <VStack gap="32" className="menu__desktop">
+          <NavigationLinks menuOpen={true} />
+          <ProfileMenu />
+        </VStack>
+        <div className={classNames("menu__mobile", { open: menuOpen })}>
+          <NavigationLinks menuOpen={menuOpen} />
+          {menuOpen && <ProfileMenu />}
+        </div>
+      </nav>
+      <Outlet />
+    </>
   );
 };
 export default Navbar;
