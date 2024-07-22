@@ -1,36 +1,22 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
-.tag-with-icon {
-  padding: $a-spacing-1 $a-spacing-2;
-  border-radius: $a-border-radius-medium;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  width: fit-content;
+.tag-container {
+  display: contents;
 
-  p {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1rem;
-  }
+  .navds-tag {
+    padding: $a-spacing-1 $a-spacing-2;
+    border-radius: $a-border-radius-medium;
+    width: fit-content;
+    border: none;
 
-  &--grey {
-    background-color: $a-gray-100;
-  }
+    &:has(.navds-tag__icon--left) {
+      gap: 6px;
+    }
 
-  &--orange {
-    background-color: $a-orange-200;
-  }
-
-  &--green {
-    background-color: $a-green-100;
-  }
-
-  &--red {
-    background-color: $a-red-100;
-  }
-
-  &--blue {
-    background-color: $a-blue-100;
+    --ac-tag-neutral-bg: var(--a-gray-100);
+    --ac-tag-warning-bg: var(--a-orange-200);
+    --ac-tag-success-bg: var(--a-green-100);
+    --ac-tag-error-bg: var(--a-red-100);
+    --ac-tag-info-bg: var(--a-blue-100);
   }
 }

@@ -1,29 +1,22 @@
-import classNames from "classnames";
 import { ReactNode } from "react";
 import "./tags.scss";
+import { Tag } from "@navikt/ds-react";
 
 export enum colors {
-  "GREY",
-  "ORANGE",
-  "GREEN",
-  "RED",
-  "BLUE",
+  "GREY" = "neutral",
+  "ORANGE" = "warning",
+  "GREEN" = "success",
+  "RED" = "error",
+  "BLUE" = "info",
 }
 
 const TagWithIcon = ({ icon, text, color }: { icon: ReactNode; text: string; color: colors }) => {
   return (
-    <span
-      className={classNames("tag-with-icon", {
-        "tag-with-icon--grey": color === colors.GREY,
-        "tag-with-icon--orange": color === colors.ORANGE,
-        "tag-with-icon--green": color === colors.GREEN,
-        "tag-with-icon--red": color === colors.RED,
-        "tag-with-icon--blue": color === colors.BLUE,
-      })}
-    >
-      {icon}
-      <p className="text">{text}</p>
-    </span>
+    <div className="tag-container">
+      <Tag variant={color} icon={icon} size="small">
+        {text}
+      </Tag>
+    </div>
   );
 };
 
