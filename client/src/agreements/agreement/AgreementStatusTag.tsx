@@ -1,8 +1,8 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon } from "@navikt/aksel-icons";
-import TagWithIcon, { colors } from "./TagWithIcon";
+import TagWithIcon, { colors } from "../../felleskomponenter/TagWithIcon";
 import { toDate, toReadableDateString, toReadableDateTimeString } from "utils/date-util";
 
-const StatusTagAgreement = ({ publiseringsdato, isDraft }: { publiseringsdato: string; isDraft: boolean }) => {
+const AgreementStatusTag = ({ publiseringsdato, isDraft }: { publiseringsdato: string; isDraft: boolean }) => {
   if (isDraft) {
     return (
       <TagWithIcon
@@ -24,4 +24,4 @@ const StatusTagAgreement = ({ publiseringsdato, isDraft }: { publiseringsdato: s
   }
 };
 
-export default StatusTagAgreement;
+export default AgreementStatusTag;

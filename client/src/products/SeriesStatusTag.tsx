@@ -1,8 +1,8 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon, PencilWritingIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
-import TagWithIcon, { colors } from "./TagWithIcon";
+import TagWithIcon, { colors } from "../felleskomponenter/TagWithIcon";
 import { SeriesStatus } from "utils/types/types";
 
-const StatusTag = ({ seriesStatus }: { seriesStatus: SeriesStatus }) => {
+const SeriesStatusTag = ({ seriesStatus }: { seriesStatus: SeriesStatus }) => {
   if (seriesStatus === SeriesStatus.DELETED) {
     return <TagWithIcon icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Slettet" color={colors.RED} />;
   } else if (seriesStatus === SeriesStatus.INACTIVE) {
@@ -34,4 +34,4 @@ const StatusTag = ({ seriesStatus }: { seriesStatus: SeriesStatus }) => {
   }
 };
 
-export default StatusTag;
+export default SeriesStatusTag;
