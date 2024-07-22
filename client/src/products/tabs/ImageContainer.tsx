@@ -1,44 +1,6 @@
-import { VStack } from "@navikt/ds-react";
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
-import { MoreMenu } from "./MoreMenu";
-import { MediaInfoDTO } from "utils/types/response-types";
 import { smallImageLoader } from "utils/image-util";
-import ImageModal from "./ImageModal";
-
-interface Props {
-  mediaInfo: MediaInfoDTO;
-  handleDeleteFile: (uri: string) => void;
-  showMenuButton?: boolean;
-}
-
-export const ImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
-  { mediaInfo, handleDeleteFile, showMenuButton = true }: Props,
-  ref,
-) {
-  const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
-
-  return (
-    <>
-      <ImageModal mediaInfo={mediaInfo} onClose={() => setImageModalIsOpen(false)} isModalOpen={imageModalIsOpen} />
-      <div className="image-card" ref={ref}>
-        <VStack gap="2">
-          <ImageContainer uri={mediaInfo.uri} text={mediaInfo.text} onClick={() => setImageModalIsOpen(true)} />
-          <VStack gap="1" align="center">
-            <i>Filnavn</i>{" "}
-            <span className="text-overflow-hidden-small">{mediaInfo.filename ?? "OBS mangler beskrivelse"}</span>
-          </VStack>
-        </VStack>
-
-        {showMenuButton && (
-          <div className="more-menu-container">
-            <MoreMenu mediaInfo={mediaInfo} handleDeleteFile={handleDeleteFile} />
-          </div>
-        )}
-      </div>
-    </>
-  );
-});
 
 export const ImageContainer = ({
   uri,

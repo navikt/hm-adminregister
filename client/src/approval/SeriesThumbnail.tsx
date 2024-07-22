@@ -8,7 +8,7 @@ interface Props {
   mediaInfo: MediaInfoDTO;
 }
 
-export const Thumbnail = ({ mediaInfo }: Props) => {
+export const SeriesThumbnail = ({ mediaInfo }: Props) => {
   const [imageLoadingError, setImageLoadingError] = useState(false);
   const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
   return (

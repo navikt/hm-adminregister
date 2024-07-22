@@ -2,7 +2,7 @@ import { SortState, Table } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import styles from "./SeriesToApproveTable.module.scss";
-import { Thumbnail } from "felleskomponenter/Thumbnail";
+import { SeriesThumbnail } from "approval/SeriesThumbnail";
 import { useNavigate } from "react-router-dom";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
 
@@ -83,7 +83,7 @@ export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
                 tabIndex={0}
               >
                 <Table.DataCell className={styles.imgTd}>
-                  {series.thumbnail && <Thumbnail mediaInfo={series.thumbnail} />}
+                  {series.thumbnail && <SeriesThumbnail mediaInfo={series.thumbnail} />}
                 </Table.DataCell>
                 <Table.DataCell>
                   <div>{series.title}</div>

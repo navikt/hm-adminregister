@@ -2,7 +2,7 @@ import { Button, HStack, VStack } from "@navikt/ds-react";
 import { forwardRef, useState } from "react";
 import { MediaInfoDTO } from "utils/types/response-types";
 import { ChevronLeftIcon, ChevronRightIcon, MenuGridIcon } from "@navikt/aksel-icons";
-import { ImageContainer } from "felleskomponenter/ImageCard";
+import { ImageContainer } from "products/tabs/ImageContainer";
 import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import styles from "./productImageCard.module.scss";

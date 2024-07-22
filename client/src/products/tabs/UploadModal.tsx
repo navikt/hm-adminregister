@@ -13,11 +13,11 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ImageContainer } from "felleskomponenter/ImageCard";
+import { ImageContainer } from "products/tabs/ImageContainer";
 import { fileToUri } from "utils/file-util";
 import { uploadFilesToSeries } from "api/MediaApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import {FileImageFillIcon, TrashIcon, UploadIcon} from "@navikt/aksel-icons";
+import { FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 
 interface Props {
   modalIsOpen: boolean;
