@@ -1,48 +1,63 @@
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import React, { useEffect } from "react";
-import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { ImageCard } from "felleskomponenter/ImageCard";
+import { MediaInfoDTO } from "utils/types/response-types";
 import styles from "./seriesSortingArea.module.scss";
 import { HStack } from "@navikt/ds-react";
 import { updateSeriesMedia } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { ProductImageCard } from "products/tabs/ProductImageCard";
+import { LoggedInUser } from "utils/user-util";
+import { useSeries } from "utils/swr-hooks";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  seriesId: string;
   allImages: MediaInfoDTO[];
-  mutateSeries: () => void;
   handleDeleteFile: (uri: string) => void;
 }
 
-export default function SeriesSortingArea({ series, allImages, mutateSeries, handleDeleteFile }: Props) {
+export const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
+  if (target >= 0 && target < arr.length) {
+    [arr[init], arr[target]] = [arr[target], arr[init]];
+  }
+  return arr;
+};
+
+export const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
+  return updatedArray.map((item, index) => ({
+    ...item,
+    priority: index + 1,
+  }));
+};
+
+export const handleUpdateOfSeriesMedia = (
+  seriesId: string,
+  updatedArray: MediaInfoDTO[],
+  loggedInUser: LoggedInUser | undefined,
+  mutateSeries: () => void,
+  setGlobalError: any,
+) => {
+  updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false)
+    .then(mutateSeries)
+    .catch((error) => {
+      setGlobalError(error);
+    });
+};
+
+export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFile }: Props) {
   const { loggedInUser } = useAuthStore();
-  const [imagesArr, setImages] = React.useState(allImages);
   const { setGlobalError } = useErrorStore();
+  const [imagesArr, setImages] = React.useState(allImages);
+  const { mutateSeries } = useSeries(seriesId!);
+
   useEffect(() => {
     setImages(allImages);
   }, [allImages]);
 
-  const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
-    return updatedArray.map((item, index) => ({
-      ...item,
-      priority: index + 1,
-    }));
-  };
-
-  const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
-    [arr[init], arr[target]] = [arr[target], arr[init]];
-    return arr;
-  };
-
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setImages((array) => {
       const updatedArray = updateImagePriority(moveItemInArray(array, oldIndex, newIndex));
-      updateSeriesMedia(series.id, updatedArray, loggedInUser?.isAdmin || false)
-        .then(mutateSeries)
-        .catch((error) => {
-          setGlobalError(error);
-        });
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError);
       return updatedArray;
     });
   };
@@ -50,24 +65,32 @@ export default function SeriesSortingArea({ series, allImages, mutateSeries, han
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
       <HStack as="ol" gap="2" className="images">
-        {imagesArr
-          .sort((a, b) => a.priority - b.priority)
-          .map(
-            (
-              item,
-              index, //
-            ) => (
-              <li key={"bilde-" + index}>
-                <SortableItem>
-                  <div className={styles.userSelect}>
-                    <SortableKnob>
-                      <ImageCard mediaInfo={item} handleDeleteFile={handleDeleteFile} showMenuButton={true} />
-                    </SortableKnob>
-                  </div>
-                </SortableItem>
-              </li>
-            ),
-          )}
+        {imagesArr && imagesArr.length > 0
+          ? imagesArr
+              .sort((a, b) => a.priority - b.priority)
+              .map(
+                (
+                  item,
+                  index, //
+                ) => (
+                  <li key={"bilde-" + index}>
+                    <SortableItem>
+                      <div className={styles.userSelect}>
+                        <SortableKnob>
+                          <ProductImageCard
+                            seriesId={seriesId}
+                            handleDeleteFile={handleDeleteFile}
+                            setImages={setImages}
+                            imagesArr={imagesArr}
+                            index={index}
+                          />
+                        </SortableKnob>
+                      </div>
+                    </SortableItem>
+                  </li>
+                ),
+              )
+          : null}
       </HStack>
     </SortableList>
   );
