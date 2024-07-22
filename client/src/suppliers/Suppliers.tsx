@@ -4,7 +4,7 @@ import { PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
 import { SupplierDTO } from "utils/supplier-util";
-import ErrorAlert from "felleskomponenter/ErrorAlert";
+import ErrorAlert from "error/ErrorAlert";
 
 const Suppliers = () => {
   const { suppliers, isLoading, error } = useSuppliers();
