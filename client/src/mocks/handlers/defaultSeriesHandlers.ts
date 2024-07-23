@@ -1,7 +1,8 @@
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
+import { apiPath } from "mocks/apiPath";
 
-export const noSeriesHandler = http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, () => {
+export const noSeriesHandler = http.get(apiPath("vendor/api/v1/series"), () => {
   return HttpResponse.json({
     content: [],
     pageable: {
@@ -28,7 +29,7 @@ export const noSeriesHandler = http.get(`http://localhost:8080/admreg/vendor/api
   });
 });
 
-export const defaultSeriesHandler = http.get(`http://localhost:8080/admreg/vendor/api/v1/series/*`, () => {
+export const defaultSeriesHandler = http.get(apiPath("vendor/api/v1/series/*"), () => {
   return HttpResponse.json({
     id: uuidv4(),
     supplierId: uuidv4(),
@@ -60,34 +61,31 @@ export const defaultSeriesHandler = http.get(`http://localhost:8080/admreg/vendo
   });
 });
 
-export const noVariantsHandler = http.get(
-  `http://localhost:8080/admreg/vendor/api/v1/product/registrations/series/*`,
-  () => {
-    return HttpResponse.json({
-      content: [],
-      pageable: {
-        number: 0,
-        sort: {
-          orderBy: [
-            {
-              property: "created",
-              direction: "DESC",
-              ignoreCase: false,
-              ascending: false,
-            },
-          ],
-        },
-        size: 10,
+export const noVariantsHandler = http.get(apiPath("vendor/api/v1/product/registrations/series/*"), () => {
+  return HttpResponse.json({
+    content: [],
+    pageable: {
+      number: 0,
+      sort: {
+        orderBy: [
+          {
+            property: "created",
+            direction: "DESC",
+            ignoreCase: false,
+            ascending: false,
+          },
+        ],
       },
-      totalSize: 1,
-      totalPages: 1,
-      empty: true,
       size: 10,
-      offset: 0,
-      pageNumber: 0,
-      numberOfElements: 1,
-    });
-  },
-);
+    },
+    totalSize: 1,
+    totalPages: 1,
+    empty: true,
+    size: 10,
+    offset: 0,
+    pageNumber: 0,
+    numberOfElements: 1,
+  });
+});
 
 export const defaultSeriesHandlers = [noSeriesHandler, noVariantsHandler, defaultSeriesHandler];

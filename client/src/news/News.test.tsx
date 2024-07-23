@@ -6,6 +6,7 @@ import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import { axe } from "vitest-axe";
+import { apiPath } from "mocks/apiPath";
 
 const dummyNews = (title: string, text: string, published: string, expired: string, status: string) => {
   return {
@@ -28,7 +29,7 @@ const dummyNews = (title: string, text: string, published: string, expired: stri
 
 test("Flere nyheter", async () => {
   server.use(
-    http.get("http://localhost:8080/admreg/admin/api/v1/news", () => {
+    http.get(apiPath("admin/api/v1/news"), () => {
       return HttpResponse.json({
         content: [
           dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED

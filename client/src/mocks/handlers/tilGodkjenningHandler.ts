@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { ProdukterTilGodkjenningChunk } from "utils/types/response-types";
 import { tilGodkjenningLangListe } from "mocks/data/tilGodkjenningLangListe";
-import { apiPath } from "mocks/browser";
+import { apiPath } from "mocks/apiPath";
 
 export const tilGodkjenningHandlers = [
   http.get<any, any, ProdukterTilGodkjenningChunk>(
