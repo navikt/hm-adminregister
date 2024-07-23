@@ -1,7 +1,7 @@
 import { SupplierChunk, SupplierRegistrationDTO, SupplierStatus } from "./types/response-types";
 import { LoggedInUser } from "utils/user-util";
 
-export interface Supplier {
+export interface SupplierDTO {
   id: string;
   status: SupplierStatus;
   name: string;
@@ -26,7 +26,7 @@ export interface SupplierUser {
   updated?: string | null;
 }
 
-export const mapSupplier = (_source: SupplierRegistrationDTO): Supplier => {
+export const mapSupplier = (_source: SupplierRegistrationDTO): SupplierDTO => {
   return {
     id: _source.id,
     status: _source.status,
@@ -41,7 +41,7 @@ export const mapSupplier = (_source: SupplierRegistrationDTO): Supplier => {
   };
 };
 
-export const mapSuppliers = (data: SupplierChunk): Supplier[] => {
+export const mapSuppliers = (data: SupplierChunk): SupplierDTO[] => {
   return data.content.map((supplierRegistrationDTO) => {
     return mapSupplier(supplierRegistrationDTO);
   });

@@ -1,9 +1,9 @@
 import { HM_REGISTER_URL } from "environments";
 import { AgreementAttachment, AgreementDraftWithDTO, AgreementRegistrationDTO } from "utils/types/response-types";
-import { EditCommonInfoAgreement } from "rammeavtaler/rammeavtale/Rammeavtale";
+import { EditCommonInfoAgreement } from "agreements/agreement/Agreement";
 import { v4 as uuidv4 } from "uuid";
 import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
-import { EditAttachmentGroupFormData } from "rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal";
+import { EditAttachmentGroupFormData } from "agreements/agreement/vedlegg/EditAttachmentGroupModal";
 import {
   getAgreeementWithNewAttachmentGroup,
   getAgreeementWithoutDeletedAttachmentDTO,
@@ -12,7 +12,7 @@ import {
   getEditedAgreementWithNewAttachmentGroupInfo,
   getEditedAgreementWithNewInfoDTO,
 } from "utils/agreement-util";
-import { NyAttachmentGroupFormData } from "rammeavtaler/rammeavtale/vedlegg/NewAttachmentGroupModal";
+import { NyAttachmentGroupFormData } from "agreements/agreement/vedlegg/NewAttachmentGroupModal";
 import { fetchAPI, getPath } from "api/fetch";
 
 export const getAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>

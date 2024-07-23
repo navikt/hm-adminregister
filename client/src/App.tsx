@@ -1,39 +1,39 @@
 import { Route, Routes } from "react-router-dom";
-import LoggInn from "./logg-inn/LoggInn";
-import Produkter from "./produkter/Produkter";
-import OpprettProdukt from "./produkter/OpprettProdukt";
-import Produkt from "./produkter/Produkt";
-import RedigerProduktVariant from "./produkter/variants/RedigerProduktVariant";
-import OpprettProduktVariant from "./produkter/variants/OpprettProduktVariant";
-import Adminopplysninger from "./admin/Adminopplysninger";
-import OpprettAdminBruker from "./admin/OpprettAdminBruker";
-import AdminProfil from "./admin/AdminProfil";
-import RedigerAdminBruker from "./admin/RedigerAdminBruker";
-import SlettAdminBruker from "./admin/SlettAdminBruker";
-import Profil from "./profil/Profil";
-import RedigerBrukerprofil from "./profil/RedigerBrukerprofil";
-import Leverandører from "./leverandor/Leverandører";
-import LeverandørProfil from "./leverandor/LeverandørProfil";
-import OpprettLeverandør from "./leverandor/OpprettLeverandør";
-import OpprettLeverandørBruker from "./leverandor/OpprettLeverandørBruker";
-import BekreftLeverandRopplysninger from "./logg-inn/BekreftLeverandøropplysninger";
-import Brukeropplysninger from "./logg-inn/Brukeropplysninger";
-import Rammeavtaler from "./rammeavtaler/Rammeavtaler";
-import Rammeavtale from "./rammeavtaler/rammeavtale/Rammeavtale";
-import OpprettRammeavtale from "./rammeavtaler/rammeavtale/OpprettRammeavtale";
+import Login from "users/Login";
+import Products from "products/Products";
+import CreateProduct from "products/CreateProduct";
+import Product from "products/Product";
+import EditProductVariant from "products/variants/EditProductVariant";
+import CreateProductVariant from "products/variants/CreateProductVariant";
+import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
+import CreateAdminUser from "./users/admin/CreateAdminUser";
+import AdminProfile from "./users/admin/AdminProfile";
+import SupplierProfile from "users/supplier/SupplierProfile";
+import EditSupplierUser from "users/supplier/EditSupplierUser";
+import Suppliers from "suppliers/Suppliers";
+import Supplier from "suppliers/Supplier";
+import CreateSupplier from "suppliers/CreateSupplier";
+import CreateSupplierUser from "users/supplier/CreateSupplierUser";
+import Agreements from "agreements/Agreements";
+import CreateAgreement from "agreements/agreement/CreateAgreement";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "error/ErrorFallback";
 import { NotFound } from "error/NotFound";
 import { Startside } from "Startside";
-import { ImporterOgValiderProdukter } from "produkter/import/ImporterOgValiderProdukter";
-import Navbar from "felleskomponenter/layout/Navbar";
-import { ImporterOgValiderKatalogfil } from "rammeavtaler/import/ImporterOgValiderKatalogfil";
-import { TilGodkjenning } from "godkjenning/TilGodkjenning";
+import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
+import Navbar from "menu/Navbar";
+import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
+import { ForApproval } from "approval/ForApproval";
 import { LoginWrapper } from "LoginWrapper";
 import ErrorModal from "error/ErrorModal";
 import News from "news/News";
-import EditSupplier from "leverandor/EditSupplier";
+import EditSupplier from "suppliers/EditSupplier";
 import CreateAndEditNews from "news/CreateAndEditNews";
+import DeleteAdminUser from "./users/admin/DeleteAdminUser";
+import EditAdminUser from "users/admin/EditAdminUser";
+import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
+import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
+import Agreement from "agreements/agreement/Agreement";
 
 export function App() {
   return (
@@ -41,250 +41,56 @@ export function App() {
       <ErrorModal />
       <Routes>
         <Route path="/" element={<Startside />} />
-        <Route path="/logg-inn" element={<LoggInn />} />
+        <Route path="/logg-inn" element={<Login />} />
 
         <Route element={<LoginWrapper />}>
-          <Route
-            path="/produkter"
+          <Route element={<Navbar />}>
+            <Route path="/produkter" element={<Products />} />
+            <Route path="/avslaatt-produkt"
             element={
-              <>
-                <Navbar />
-                <Produkter />
-              </>
-            }
-          />
-          <Route
-            path="/avslaatt-produkt"
-            element={
-              <>
-                <Navbar />
-                <Produkter hiddenStatus="REJECTED" />
-              </>
-            }
-          />
-          <Route
-            path="/produkter/opprett"
-            element={
-              <>
-                <OpprettProdukt />
-              </>
-            }
-          />
-          <Route
-            path="/produkter/:seriesId"
-            element={
-              <>
-                <Navbar />
-                <Produkt />
-              </>
-            }
-          />
-          <Route
-            path="/produkter/:seriesId/rediger-variant/:productId"
-            element={
-              <>
-                <RedigerProduktVariant />
-              </>
-            }
-          />
-          <Route
-            path="/produkter/:seriesId/opprett-variant/:productId"
-            element={
-              <>
-                <OpprettProduktVariant />
-              </>
-            }
-          />
+                <Products hiddenStatus="REJECTED" />
+            }/>
+            <Route path="/produkter/:seriesId" element={<Product />} />
 
-          <Route
-            path="/produkt/:seriesId/importer-produkter"
-            element={
-              <>
-                <ImporterOgValiderProdukter />
-              </>
-            }
-          />
+            <Route path="/til-godkjenning" element={<ForApproval />} />
 
-          <Route
-            path="/til-godkjenning"
-            element={
-              <>
-                <Navbar />
-                <TilGodkjenning />
-              </>
-            }
-          />
+            <Route path="/admin/profil" element={<AdminProfile />} />
+            <Route path="/profil" element={<SupplierProfile />} />
 
-          <Route
-            path="/admin/profil"
-            element={
-              <>
-                <Navbar />
-                <AdminProfil />
-              </>
-            }
-          />
-          <Route
-            path="/admin/rediger-admin"
-            element={
-              <>
-                <RedigerAdminBruker />
-              </>
-            }
-          />
-          <Route
-            path="/admin/opprett-admin"
-            element={
-              <>
-                <OpprettAdminBruker />
-              </>
-            }
-          />
-          <Route
-            path="/admin/slett-admin"
-            element={
-              <>
-                <SlettAdminBruker />
-              </>
-            }
-          />
-          <Route
-            path="/admin/adminopplysninger"
-            element={
-              <>
-                <Adminopplysninger />
-              </>
-            }
-          />
+            <Route path="/leverandor" element={<Suppliers />} />
+            <Route path="/leverandor/:id" element={<Supplier />} />
 
-          <Route
-            path="/profil"
-            element={
-              <>
-                <Navbar />
-                <Profil />
-              </>
-            }
-          />
-          <Route
-            path="/profil/rediger-brukerprofil"
-            element={
-              <>
-                <RedigerBrukerprofil />
-              </>
-            }
-          />
+            <Route path="/rammeavtaler" element={<Agreements />} />
+            <Route path="/rammeavtaler/:agreementId" element={<Agreement />} />
 
-          <Route
-            path="/leverandor"
-            element={
-              <>
-                <Navbar />
-                <Leverandører />
-              </>
-            }
-          />
-          <Route
-            path="/leverandor/:id"
-            element={
-              <>
-                <Navbar />
-                <LeverandørProfil />
-              </>
-            }
-          />
-          <Route
-            path="/leverandor/opprett-leverandor"
-            element={
-              <>
-                <OpprettLeverandør />
-              </>
-            }
-          />
-          <Route
-            path="/leverandor/endre-leverandor/:supplierId"
-            element={
-              <>
-                <EditSupplier />
-              </>
-            }
-          />
-          <Route
-            path="/leverandor/opprett-bruker"
-            element={
-              <>
-                <OpprettLeverandørBruker />
-              </>
-            }
-          />
+            <Route path="/nyheter" element={<News />} />
+          </Route>
 
-          <Route
-            path="/rammeavtaler"
-            element={
-              <>
-                <Navbar />
-                <Rammeavtaler />
-              </>
-            }
-          />
-          <Route
-            path="/rammeavtaler/:agreementId"
-            element={
-              <>
-                <Navbar />
-                <Rammeavtale />
-              </>
-            }
-          />
+          <Route path="/produkter/opprett" element={<CreateProduct />} />
+          <Route path="/produkter/:seriesId/rediger-variant/:productId" element={<EditProductVariant />} />
+          <Route path="/produkter/:seriesId/opprett-variant/:productId" element={<CreateProductVariant />} />
+          <Route path="/produkt/:seriesId/importer-produkter" element={<ImporterOgValiderProdukter />} />
 
-          <Route
-            path="/rammeavtaler/importer-katalogfil"
-            element={
-              <>
-                <ImporterOgValiderKatalogfil />
-              </>
-            }
-          />
+          <Route path="/admin/rediger-admin" element={<EditAdminUser />} />
+          <Route path="/admin/opprett-admin" element={<CreateAdminUser />} />
+          <Route path="/admin/slett-admin" element={<DeleteAdminUser />} />
+          <Route path="/admin/adminopplysninger" element={<FirstTimeAdminInfo />} />
 
-          <Route
-            path="/rammeavtaler/opprett"
-            element={
-              <>
-                <OpprettRammeavtale />
-              </>
-            }
-          />
+          <Route path="/profil/rediger-brukerprofil" element={<EditSupplierUser />} />
 
-          <Route path="/logg-inn/leverandoropplysninger" element={<BekreftLeverandRopplysninger />} />
-          <Route path="/logg-inn/brukeropplysninger" element={<Brukeropplysninger />} />
+          <Route path="/leverandor/opprett-leverandor" element={<CreateSupplier />} />
+          <Route path="/leverandor/endre-leverandor/:supplierId" element={<EditSupplier />} />
+          <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUser />} />
+
+          <Route path="/rammeavtaler/importer-katalogfil" element={<ImporterOgValiderKatalogfil />} />
+          <Route path="/rammeavtaler/opprett" element={<CreateAgreement />} />
+
+          <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
+          <Route path="/logg-inn/brukeropplysninger" element={<FirstTimeSupplierUserInfo />} />
+
+          <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
+          <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />
         </Route>
-
-        <Route
-          path="/nyheter"
-          element={
-            <>
-              <Navbar />
-              <News />
-            </>
-          }
-        />
-
-        <Route
-          path="/nyheter/opprett"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
-        <Route
-          path="/nyheter/rediger"
-          element={
-            <>
-              <CreateAndEditNews />
-            </>
-          }
-        />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

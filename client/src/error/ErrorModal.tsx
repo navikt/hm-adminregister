@@ -28,7 +28,7 @@ const ErrorModal = () => {
       return `En serverfeil har skjedd. Oppdater siden eller prøv igjen.`;
     }
     //Dette bør ikke skje. Om det skjer så bør vi få vite om det. Vi bør lage noe som gir en alert i slack eller sentry
-    return `${errorCode}: ${errorMessage} 😣 Beklager, her skjedde det noe som ikke skal skje. Våre utviklere er på saken.`;
+    return `${errorCode}: ${errorMessage} Beklager, her skjedde det noe som ikke skal skje. Våre utviklere er på saken.`;
   };
 
   const heading = () => {

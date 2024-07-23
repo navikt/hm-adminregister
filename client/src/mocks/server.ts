@@ -1,4 +1,4 @@
 import { setupServer } from "msw/node";
-import { noContentHandlers } from "mocks/handlers/noContentHandlers";
+import { defaultSeriesHandlers } from "mocks/handlers/defaultSeriesHandlers";
 
-export const server = setupServer(...noContentHandlers);
+export const server = setupServer(...defaultSeriesHandlers);

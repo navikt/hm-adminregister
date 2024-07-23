@@ -1,5 +1,5 @@
 import { AgreementAttachment, AgreementPostDTO, AgreementRegistrationDTO, MediaInfo } from "./types/response-types";
-import { EditAttachmentGroupFormData } from "rammeavtaler/rammeavtale/vedlegg/EditAttachmentGroupModal";
+import { EditAttachmentGroupFormData } from "agreements/agreement/vedlegg/EditAttachmentGroupModal";
 import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
 
 export const getEditedAgreementDTOAddFiles = (

@@ -1,0 +1,14 @@
+@use "../../styles/mixins";
+@import "@navikt/ds-tokens/dist/tokens";
+
+.keywords-static {
+  --ac-tag-alt-3-bg: var(--a-blue-700);
+  .navds-tag--alt3{
+    color: var(--a-white);
+    border-radius: var(--a-border-radius-full);
+  }
+}
+
+.keyword-box {
+  padding-top: 0.5rem;
+}
