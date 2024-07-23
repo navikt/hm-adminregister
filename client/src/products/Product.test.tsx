@@ -1,16 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 import Products from "products/Products";
 import { MemoryRouter } from "react-router-dom";
 import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import { axe } from "vitest-axe";
-
-vi.mock("environments", () => ({
-  HM_REGISTER_URL: vi.fn(() => "http://localhost:8080"),
-  VITE_HM_REGISTER_URL: vi.fn(() => "http://localhost:8082/imageproxy"),
-}));
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {

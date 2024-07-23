@@ -10,6 +10,11 @@ expect.extend(axeMatchers);
 // @ts-expect-error mock for å fikse jsdom-feil i testene
 HTMLCanvasElement.prototype.getContext = vi.fn();
 
+vi.mock("environments", () => ({
+  HM_REGISTER_URL: vi.fn(() => "http://localhost:8080"),
+  VITE_HM_REGISTER_URL: vi.fn(() => "http://localhost:8082/imageproxy"),
+}));
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "warn" });
 });
