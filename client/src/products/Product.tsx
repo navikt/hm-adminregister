@@ -224,7 +224,7 @@ const Product = () => {
                 value="about"
                 label={
                   <>
-                    Om produktet
+                    TEST
                     {!series.text && !series.formattedText && !isValid && (
                       <ExclamationmarkTriangleIcon className="product-error-text" />
                     )}
