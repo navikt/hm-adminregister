@@ -1,13 +1,10 @@
 import { render, renderHook, screen } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
-import Products from "products/Products";
-import { MemoryRouter, Params, Route, Routes } from "react-router-dom";
-import { server } from "mocks/server";
-import { http, HttpResponse } from "msw";
+import { expect, test } from "vitest";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { axe } from "vitest-axe";
 import Product from "products/Product";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { axe } from "jest-axe";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
