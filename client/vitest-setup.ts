@@ -7,7 +7,6 @@ import { toHaveNoViolations } from "jest-axe";
 expect.extend(matchers);
 expect.extend(toHaveNoViolations);
 
-// @ts-expect-error mock for å fikse jsdom-feil i testene
 HTMLCanvasElement.prototype.getContext = vi.fn();
 
 vi.mock("environments", () => ({

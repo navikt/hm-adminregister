@@ -76,7 +76,7 @@
     "typescript": "^4.7.4",
     "vite": "^4.5.3",
     "vite-tsconfig-paths": "^4.3.1",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.4"
   },
   "overrides": {
     "nwsapi": "2.2.12"
