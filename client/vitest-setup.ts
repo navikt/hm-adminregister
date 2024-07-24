@@ -1,11 +1,11 @@
 import matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
-import "vitest-axe/extend-expect";
-import * as axeMatchers from "vitest-axe/matchers";
 import { server } from "mocks/server";
+import { toHaveNoViolations } from "jest-axe";
+
 expect.extend(matchers);
-expect.extend(axeMatchers);
+expect.extend(toHaveNoViolations);
 
 // @ts-expect-error mock for å fikse jsdom-feil i testene
 HTMLCanvasElement.prototype.getContext = vi.fn();
