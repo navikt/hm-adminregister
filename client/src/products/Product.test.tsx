@@ -51,7 +51,7 @@ test("Flere produkter", async () => {
     supplierName: "",
     supplierId: "",
   });
-  render(
+  const { container } = render(
     <MemoryRouter initialEntries={["/produkter/e7ef234a-fc0c-4538-a8b2-63a361ad3529"]}>
       <Routes>
         <Route path={"/produkter/:seriesId"} element={<Product />}></Route>
@@ -61,5 +61,5 @@ test("Flere produkter", async () => {
 
   expect(await screen.findByRole("heading", { level: 1, name: "defaultTitle" })).toBeInTheDocument();
 
-  //expect(await axe(container)).toHaveNoViolations();
+  expect(await axe(container)).toHaveNoViolations();
 });
