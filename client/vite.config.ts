@@ -47,8 +47,10 @@ export default defineConfig((env) => ({
   test: {
     global: true,
     environment: "jsdom",
-    deps: {
-      inline: ["@testing-library/user-event"],
+    server: {
+      deps: {
+        inline: ["@testing-library/user-event"],
+      },
     },
     setupFiles: ["vitest-setup.ts"],
   },
