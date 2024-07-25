@@ -5,8 +5,6 @@ import SeriesStatusTag from "products/SeriesStatusTag";
 import { seriesStatus } from "products/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { SeriesStatus } from "utils/types/types";
-import product from "./Product";
 
 interface Props {
   seriesList: SeriesRegistrationDTO[];

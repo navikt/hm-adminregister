@@ -14,7 +14,6 @@ import {
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { getAllRejectedSeries } from "utils/swr-hooks";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,8 +51,6 @@ export default Navbar;
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
   const { pathname } = useLocation();
   const { loggedInUser } = useAuthStore();
-  const rejectedProducts = getAllRejectedSeries();
-  //const rejectedProducts = RejectedProducts?.content.find((val) => val.adminStatus === "REJECTED");
 
   if (!menuOpen) {
     return <></>;
