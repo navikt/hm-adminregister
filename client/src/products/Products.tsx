@@ -22,9 +22,9 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "products/ProductTable.module.scss";
 import { SeriesTable } from "products/SeriesTable";
 
-type productPropsType = { hiddenStatus?: string };
+type productPropsType = { isRejectedPage: boolean };
 
-const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
+const Products = ({ isRejectedPage = false }: productPropsType) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -38,6 +38,7 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
     page: pageState - 1,
     pageSize: pageSizeState,
     statusFilters,
+    isRejectedPage,
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
@@ -99,7 +100,7 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
   return (
     <main className="show-menu">
       <div className="page__background-container">
-        {hiddenStatus ? (
+        {isRejectedPage ? (
           <Heading level="1" size="large" spacing>
             Avslåtte produkter
           </Heading>
@@ -124,7 +125,7 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
                   onChange={(value) => handleSearch(value)}
                 />
               </form>
-              {loggedInUser && !loggedInUser.isAdmin && !hiddenStatus && (
+              {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
                 <HStack gap="2">
                   <Button
                     variant="secondary"
@@ -140,7 +141,7 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
             </HStack>
           </div>
           <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
-            {!hiddenStatus && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
+            {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
           </CheckboxGroup>
           <VStack className="products-page__products">
             <div className="page__content-container">
@@ -148,20 +149,20 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
               {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
 
               {isSearch && seriesByHmsNr && (
-                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} hiddenStatus={hiddenStatus} />
+                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
               )}
               {isSearch && seriesBySupplierRef && (
-                <SeriesTable
-                  seriesList={[seriesBySupplierRef]}
-                  heading={"Treff på Lev-artnr"}
-                  hiddenStatus={hiddenStatus}
-                />
+                <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
               )}
-              {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} hiddenStatus={hiddenStatus} />}
+              {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} />}
               {isSearch && !isSearchResults && !seriesByHmsNr && !seriesBySupplierRef && !isLoadingSearchResults && (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               )}
-              {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} hiddenStatus={hiddenStatus} />}
+              {pagedData?.content.length === 0 ? (
+                <Alert variant="info">Ingen avslåtte produkter funnet.</Alert>
+              ) : (
+                !isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />
+              )}
               <HStack gap="8">
                 {showPageNavigator === true && pagedData && (
                   <Pagination
@@ -176,7 +177,7 @@ const Products = ({ hiddenStatus = undefined }: productPropsType)  => {
                     prevNextTexts
                   />
                 )}
-                {searchTerm.length == 0 && !hiddenStatus && (
+                {searchTerm.length == 0 && !isRejectedPage && (
                   <Select
                     className={styles.pageSize}
                     label="Antall produkter per side"

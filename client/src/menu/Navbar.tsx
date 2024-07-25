@@ -14,7 +14,7 @@ import {
 import { Button, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { getAllProd } from "utils/swr-hooks";
+import { getAllRejectedSeries } from "utils/swr-hooks";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,8 +52,8 @@ export default Navbar;
 const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
   const { pathname } = useLocation();
   const { loggedInUser } = useAuthStore();
-  const Products = getAllProd();
-  const rejectedProducts = Products?.content.find((val) => val.adminStatus === "REJECTED");
+  const rejectedProducts = getAllRejectedSeries();
+  //const rejectedProducts = RejectedProducts?.content.find((val) => val.adminStatus === "REJECTED");
 
   if (!menuOpen) {
     return <></>;
@@ -112,17 +112,16 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </>
       )}
 
-{loggedInUser && !loggedInUser.isAdmin && rejectedProducts && (
-          <NavLink to="/avslaatt-produkt" className="page-link">
-            {pathname.startsWith("/avslaatt-produkt") && <div className="active-indicator" />}
-            <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <FileXMarkFillIcon fontSize={"1.5rem"} title="avslaatt-produkt" />
-              <span>avslaatt-produkt</span>
-            </HStack>
-          </NavLink>
+      {loggedInUser && !loggedInUser.isAdmin && (
+        <NavLink to="/avslaatt-produkt" className="page-link">
+          {pathname.startsWith("/avslaatt-produkt") && <div className="active-indicator" />}
+          <div className="line" />
+          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <FileXMarkFillIcon fontSize={"1.5rem"} title="avslaatt-produkt" />
+            <span>Avslått produkt</span>
+          </HStack>
+        </NavLink>
       )}
-
     </VStack>
   );
 };

@@ -6,21 +6,14 @@ import { seriesStatus } from "products/seriesUtils";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { SeriesStatus } from "utils/types/types";
-import product from "./Product"
+import product from "./Product";
 
 interface Props {
   seriesList: SeriesRegistrationDTO[];
   heading?: string;
-  hiddenStatus?: string;
-}
-function handleProducts(product: SeriesRegistrationDTO, hiddenStatus?: string) {
-  if (!hiddenStatus) {
-    return true;
-  }
-  return seriesStatus(product) === SeriesStatus.REJECTED;
 }
 
-export const SeriesTable = ({ seriesList, heading, hiddenStatus = undefined }: Props) => {
+export const SeriesTable = ({ seriesList, heading }: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -35,12 +28,12 @@ export const SeriesTable = ({ seriesList, heading, hiddenStatus = undefined }: P
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {seriesList
-            .filter((product) => handleProducts(product, hiddenStatus))
-            .map((product, i) => (
-              <Table.Row
-                key={i + product.id}
-                onClick={() => {navigate(`/produkter/${product.id}`);}}
+          {seriesList.map((product, i) => (
+            <Table.Row
+              key={i + product.id}
+              onClick={() => {
+                navigate(`/produkter/${product.id}`);
+              }}
               tabIndex={0}
             >
               <Table.HeaderCell scope="row">

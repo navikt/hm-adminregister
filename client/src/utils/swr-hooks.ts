@@ -160,18 +160,22 @@ export function usePagedProducts({
   page,
   pageSize,
   statusFilters,
+  isRejectedPage,
 }: {
   page: number;
   pageSize: number;
   statusFilters: string[];
+  isRejectedPage: boolean;
 }) {
   const { loggedInUser } = useAuthStore();
 
   const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
 
+  const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
+
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`;
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
@@ -182,8 +186,8 @@ export function usePagedProducts({
   };
 }
 
-export function getAllProd() {
-  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations?size=1000000`;
+export function getAllRejectedSeries() {
+  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?size=1000000&adminStatus=REJECTED`;
 
   const { data } = useSWR<SeriesChunk>(path, fetcherGET);
 

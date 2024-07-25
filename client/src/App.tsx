@@ -45,11 +45,8 @@ export function App() {
 
         <Route element={<LoginWrapper />}>
           <Route element={<Navbar />}>
-            <Route path="/produkter" element={<Products />} />
-            <Route path="/avslaatt-produkt"
-            element={
-                <Products hiddenStatus="REJECTED" />
-            }/>
+            <Route path="/produkter" element={<Products isRejectedPage={false} />} />
+            <Route path="/avslaatt-produkt" element={<Products isRejectedPage={true} />} />
             <Route path="/produkter/:seriesId" element={<Product />} />
 
             <Route path="/til-godkjenning" element={<ForApproval />} />
