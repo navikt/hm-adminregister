@@ -17,15 +17,15 @@ const formats = ["bold", "italic", "list", "bullet", "link"];
 
 type ThirdProps ={
   onTextChange : any
-  defaultValue? : any
+  defaultValue? : string
+  className? : string
 };
 
 export const NewEditor = forwardRef<Quill | null, ThirdProps>(
-  function TempComp({ onTextChange, defaultValue }: ThirdProps, ref) {
+  function TempComp({ onTextChange, defaultValue, className }: ThirdProps, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const defaultValueRef = useRef(defaultValue);
     const onTextChangeRef = useRef(onTextChange);
-
+    
     useLayoutEffect(() => {
       onTextChangeRef.current = onTextChange;
     });
@@ -48,15 +48,16 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
         theme: 'snow',
 
       });
-
+    
       if (ref && typeof ref === 'function') {
         ref(quill);
       } else if (ref && 'current' in ref) {
         (ref as React.MutableRefObject<Quill | null>).current = quill;
       }
 
-      if (defaultValueRef.current) {
-        quill.setContents(defaultValueRef.current);
+      if (defaultValue) {
+        const incomingText = quill.clipboard.convert(defaultValue)
+        quill.setContents(incomingText);
       }
 
       quill.on('text-change', (...args: any[]) => {
@@ -71,7 +72,7 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
       };
     }, [ref]);
 
-    return <div ref={containerRef}></div>;
+    return <div ref={containerRef} className={className}></div>;
   }
 );
 

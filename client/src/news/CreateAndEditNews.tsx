@@ -109,7 +109,7 @@ const CreateAndEditNews = () => {
           Beskrivelse
         </Heading>
 
-        <NewEditor onTextChange={setLastChange} />
+        <NewEditor onTextChange={setLastChange} defaultValue={editNewsData ? editNewsData.text : ""} className={styles.editorStyle}/>
 
         <div className={styles.buttonContainer}>
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
