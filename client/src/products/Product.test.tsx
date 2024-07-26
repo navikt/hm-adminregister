@@ -57,6 +57,13 @@ test("Flere produkter", async () => {
   );
 
   expect(await screen.findByRole("heading", { level: 1, name: "defaultTitle" })).toBeInTheDocument();
+  // about
+  expect(await screen.findByText("defaultText")).toBeInTheDocument();
+  expect(await screen.findByText("defaultKeyword")).toBeInTheDocument();
+  expect(await screen.findByText("https://nav.no")).toBeInTheDocument();
+  // sidebar
+  expect(await screen.findByText("Ikke publisert")).toBeInTheDocument();
+  expect(await screen.findByText("DefaultSupplier")).toBeInTheDocument();
 
   expect(await axe(container)).toHaveNoViolations();
 });

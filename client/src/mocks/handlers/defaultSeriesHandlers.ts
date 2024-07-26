@@ -42,7 +42,10 @@ export const defaultSeriesHandler = http.get(apiPath("vendor/api/v1/series/*"), 
     status: "ACTIVE",
     seriesData: {
       media: [],
-      attributes: {},
+      attributes: {
+        keywords: ["defaultKeyword"],
+        url: "https://nav.no",
+      },
     },
     created: "2024-05-24T09:54:25.595126",
     updated: "2024-05-24T09:54:25.595163",
