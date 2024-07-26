@@ -3,89 +3,76 @@ import Quill from 'quill';
 import "./RichTextEditor.css";
 import "react-quill/dist/quill.snow.css";
 import styles from "./RichTextEditor.module.scss";
-import { useRef,useLayoutEffect,forwardRef,useEffect,useState  } from "react";
+import { useRef,useLayoutEffect,forwardRef,useEffect } from "react";
 
-type RichTextEditorNewsProps = {
-  content: string;
-  setContent: React.Dispatch<React.SetStateAction<string>>;
-};
+/* useEffect(() => {
+  //9 is the keybinding for tab
+  if (editorRef.current) delete editorRef.current.getEditor().getModule("keyboard").bindings[9];
+}, [editorRef]);
+ */
 
-type thirdProps ={
+const modules = {toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],}
+const formats = ["bold", "italic", "list", "bullet", "link"];
+
+
+type ThirdProps ={
   onTextChange : any
   defaultValue? : any
 };
 
-export function RichTextEditorNews(props: RichTextEditorNewsProps) {
-  const editorRef = useRef<ReactQuill>(null);
-  useEffect(() => {
-    //9 is the keybinding for tab
-    if (editorRef.current) delete editorRef.current.getEditor().getModule("keyboard").bindings[9];
-  }, [editorRef]);
+export const NewEditor = forwardRef<Quill | null, ThirdProps>(
+  function TempComp({ onTextChange, defaultValue }: ThirdProps, ref) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const defaultValueRef = useRef(defaultValue);
+    const onTextChangeRef = useRef(onTextChange);
 
-  const modules = {
-    toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
-  };
-
-  const formats = ["bold", "italic", "list", "bullet", "link"];
-
-  return (
-    <ReactQuill
-      ref={editorRef}
-      modules={modules}
-      formats={formats}
-      value={props.content}
-      onChange={props.setContent}
-      className={styles.editorStyle}
-    />
-  );
-}
-
-/////
-export const NewEditor = forwardRef<any, any>(
-  function tempComp(
-  { onTextChange, defaultValue}: thirdProps,
-  ref,
-) {
-  
-  const containerRef = useRef<HTMLDivElement>(null);
-  const defaultValueRef = useRef(defaultValue);
-  const onTextChangeRef = useRef(onTextChange);
-
-  useLayoutEffect(() => {
-    onTextChangeRef.current = onTextChange;
-  });
-
-
-  useEffect(() => {
-    const container = containerRef.current;
-
-    const editorContainer = container?.appendChild(
-      container.ownerDocument.createElement('div'),
-    );
-
-    const quill = new Quill(editorContainer, {
-      theme: 'snow',
+    useLayoutEffect(() => {
+      onTextChangeRef.current = onTextChange;
     });
 
-    ref?.current = quill;
+    useEffect(() => {
+      const container = containerRef.current;
 
-    if (defaultValueRef.current) {
-      quill.setContents(defaultValue);
-    }
+      if (!container) {
+        console.error('Invalid Quill container');
+        return;
+      }
 
-    quill.on(Quill.events.TEXT_CHANGE, (...args) => {
-      onTextChangeRef.current?.(...args);
-    });
+      const editorContainer = container.appendChild(
+        document.createElement('div')
+      );
 
-    return () => {
-      ref.current = null;
-      container.innerHTML = '';
-    };
-  }, [ref]);
+      const quill = new Quill(editorContainer, {
+        modules,
+        formats,
+        theme: 'snow',
 
+      });
 
-  return <div ref={ref}></div>
+      if (ref && typeof ref === 'function') {
+        ref(quill);
+      } else if (ref && 'current' in ref) {
+        (ref as React.MutableRefObject<Quill | null>).current = quill;
+      }
 
-})
+      if (defaultValueRef.current) {
+        quill.setContents(defaultValueRef.current);
+      }
+
+      quill.on('text-change', (...args: any[]) => {
+        onTextChangeRef.current?.(...args);
+      });
+
+      return () => {
+        if (ref && 'current' in ref) {
+          (ref as React.MutableRefObject<Quill | null>).current = null;
+        }
+        container.innerHTML = '';
+      };
+    }, [ref]);
+
+    return <div ref={containerRef}></div>;
+  }
+);
 
 export default NewEditor
