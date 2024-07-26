@@ -1,15 +1,7 @@
-import ReactQuill from "react-quill";
 import Quill from 'quill';
 import "./RichTextEditor.css";
 import "react-quill/dist/quill.snow.css";
-import styles from "./RichTextEditor.module.scss";
 import { useRef,useLayoutEffect,forwardRef,useEffect } from "react";
-
-/* useEffect(() => {
-  //9 is the keybinding for tab
-  if (editorRef.current) delete editorRef.current.getEditor().getModule("keyboard").bindings[9];
-}, [editorRef]);
- */
 
 const modules = {toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],}
 const formats = ["bold", "italic", "list", "bullet", "link"];
@@ -60,7 +52,7 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
       }
 
       quill.on('text-change', (...args: any[]) => {
-        onTextChangeRef.current?.(...args);
+        onTextChange(quill.root.innerHTML)
       });
 
       return () => {

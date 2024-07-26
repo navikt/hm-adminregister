@@ -26,9 +26,6 @@ const CreateAndEditNews = () => {
   const navigate = useNavigate();
   const [textHtmlContent, setTextHtmlContent] = useState(editNewsData ? editNewsData.text : "");
 
-  const quillRef = useRef();
-  const [lastChange, setLastChange] = useState();
-
   const {
     handleSubmit,
     register,
@@ -109,7 +106,7 @@ const CreateAndEditNews = () => {
           Beskrivelse
         </Heading>
 
-        <NewEditor onTextChange={setLastChange} defaultValue={editNewsData ? editNewsData.text : ""} className={styles.editorStyle}/>
+        <NewEditor onTextChange={setTextHtmlContent} defaultValue={editNewsData ? editNewsData.text : ""} className={styles.editorStyle}/>
 
         <div className={styles.buttonContainer}>
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
