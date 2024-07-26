@@ -44,7 +44,7 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
         const content = quill.root.innerHTML;
         console.log("raw",content)
 
-        const contentRegex = /(?<=>)[a-zA-Z]*?(?=<)/g  // SHOULD REMOVE SPACES
+        const contentRegex = /(?<=>)[a-zA-Z]*?[^ ](?=<)|<br>/g //ALSO GETS BR might not be good
         const quillClass = "className=quillTag>" 
         
         const tagRegex  = /<[a-z]*[^br]>/g
@@ -57,8 +57,9 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
         const tagArrayWithoutBr = [...content.matchAll(tagRegex)];
 
         const endTagArray = [...content.matchAll(endTagRegex)];
-        console.log(tagArrayWithoutBr)
-        console.log(contentArray)
+        console.log("tags",tagArrayWithoutBr)
+        console.log("contet",contentArray)
+        console.log("endtags",endTagArray)
 
         var currUlOl = 0
          for (let i = 0; i < tagArrayWithoutBr.length; i++){
@@ -76,10 +77,11 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
             currUlOl += 1
             //JUMP FURTHER INTO TagArray since we have printed out mutiple
             i = i + listItems.length
+            console.log(endTagArray[i][0])
           }
           else{
-            
-            //console.log(endTagArray[i][0])
+            console.log(contentArray[i][0]) // CRASHES HERE
+            console.log(endTagArray[i][0])
           }
         } 
       };
