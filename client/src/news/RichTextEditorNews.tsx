@@ -1,4 +1,4 @@
-import Quill from 'quill';
+import Quill from "quill";
 import "./RichTextEditor.css";
 import "react-quill/dist/quill.snow.css";
 import { useRef,useLayoutEffect,forwardRef,useEffect } from "react";
@@ -16,7 +16,6 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
   function TempComp({ onTextChange, defaultValue, className }: ThirdProps, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
     const onTextChangeRef = useRef(onTextChange);
-    
     useLayoutEffect(() => {
       onTextChangeRef.current = onTextChange;
     });
@@ -25,24 +24,70 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
       const container = containerRef.current;
 
       if (!container) {
-        console.error('Invalid Quill container');
+        console.error("Invalid Quill container");
         return;
       }
 
       const editorContainer = container.appendChild(
-        document.createElement('div')
+        document.createElement("div")
       );
 
       const quill = new Quill(editorContainer, {
         modules,
         formats,
-        theme: 'snow',
+        theme: "snow",
       });
-      delete quill.getModule('keyboard').bindings["9"]
-    
-      if (ref && typeof ref === 'function') {
+      delete quill.getModule("keyboard").bindings["9"]
+
+      const applyQuillClass = () => {
+        // WHOLE TEXT
+        const content = quill.root.innerHTML;
+        console.log("raw",content)
+
+        const contentRegex = /(?<=>)[a-zA-Z]*?(?=<)/g  // SHOULD REMOVE SPACES
+        const quillClass = "className=quillTag>" 
+        
+        const tagRegex  = /<[a-z]*[^br]>/g
+        const endTagRegex = /<\/[a-z]*>/g
+        const ListRegex = /<.l>.*?<\/.l>/g
+
+        const contentOflists = [...content.matchAll(ListRegex)];
+
+        const contentArray = [...content.matchAll(contentRegex)];
+        const tagArrayWithoutBr = [...content.matchAll(tagRegex)];
+
+        const endTagArray = [...content.matchAll(endTagRegex)];
+        console.log(tagArrayWithoutBr)
+        console.log(contentArray)
+
+        var currUlOl = 0
+         for (let i = 0; i < tagArrayWithoutBr.length; i++){
+          console.log(i)
+          console.log(tagArrayWithoutBr[i][0])
+
+          if (tagArrayWithoutBr[i][0] === "<ol>" || tagArrayWithoutBr[i][0] === "<ul>" ){
+            //HERE WE PICK OUT THE CURRENT OL/UL
+            const listContent = contentOflists[currUlOl][0]; 
+            const listItems = [...listContent.matchAll(/<li>.*?<\/li>/g)];
+            //HERE WE PRINT OUT THE VALUES OF EACH LI
+            for (let j = 0; j < listItems.length; j++){
+              console.log(listItems[j][0])
+            }
+            currUlOl += 1
+            //JUMP FURTHER INTO TagArray since we have printed out mutiple
+            i = i + listItems.length
+          }
+          else{
+            
+            //console.log(endTagArray[i][0])
+          }
+        } 
+      };
+
+
+      if (ref && typeof ref === "function") {
         ref(quill);
-      } else if (ref && 'current' in ref) {
+      } else if (ref && "current" in ref) {
         (ref as React.MutableRefObject<Quill | null>).current = quill;
       }
 
@@ -51,15 +96,17 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
         quill.setContents(incomingText);
       }
 
-      quill.on('text-change', (...args: any[]) => {
+      quill.on("text-change", () => {
+
+        applyQuillClass()
         onTextChange(quill.root.innerHTML)
       });
 
       return () => {
-        if (ref && 'current' in ref) {
+        if (ref && "current" in ref) {
           (ref as React.MutableRefObject<Quill | null>).current = null;
         }
-        container.innerHTML = '';
+        container.innerHTML = "";
       };
     }, [ref]);
 

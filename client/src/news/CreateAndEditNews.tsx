@@ -41,13 +41,9 @@ const CreateAndEditNews = () => {
   });
 
   async function onSubmit(data: FormData) {
-    // capture all p,li,ol,ul tags around <br>
-    const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
     const newNewsRelease: CreateUpdateNewsDTO = {
       title: data.newsTitle,
-      text: editNewsData
-        ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
-        : textHtmlContent.replace("<p><br></p>", ""),
+      text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
     };
