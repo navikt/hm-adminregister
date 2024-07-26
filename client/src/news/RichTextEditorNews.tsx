@@ -14,7 +14,6 @@ import { useRef,useLayoutEffect,forwardRef,useEffect } from "react";
 const modules = {toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],}
 const formats = ["bold", "italic", "list", "bullet", "link"];
 
-
 type ThirdProps ={
   onTextChange : any
   defaultValue? : string
@@ -46,8 +45,8 @@ export const NewEditor = forwardRef<Quill | null, ThirdProps>(
         modules,
         formats,
         theme: 'snow',
-
       });
+      delete quill.getModule('keyboard').bindings["9"]
     
       if (ref && typeof ref === 'function') {
         ref(quill);
