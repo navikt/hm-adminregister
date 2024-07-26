@@ -115,7 +115,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <div className="line" />
           <HStack gap="4" style={{ paddingLeft: "16px" }}>
             <FileXMarkFillIcon fontSize={"1.5rem"} title="avslaatt-produkt" />
-            <span>Avslått produkt</span>
+            <span>Avslåtte produkter</span>
           </HStack>
         </NavLink>
       )}
