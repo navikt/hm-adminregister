@@ -122,6 +122,11 @@ export type SeriesChunk = {
   numberOfElements?: number;
 };
 
+export type FeatureFlag = {
+  name: string;
+  enabled: boolean;
+};
+
 // Path params
 //type EndpointParams = paths['/my/endpoint']['parameters']
 

@@ -5,12 +5,10 @@ let unleashInstance: Unleash;
 
 type Features = { [key: string]: boolean };
 
-// If Unleash instance goes down, we don't want screen sharing and chatbot to be
-// feature disabled. So we default to true if the instance can not initialize.
+// If Unleash instance goes down and you want to keep some features on.
 // NOTE: Other filters may have other strategies, by setting to false.
 const defaultToggles: Features = {
-  "dekoratoren.skjermdeling": true,
-  "dekoratoren.chatbotscript": true,
+  "adminreg.dummyfeature": true,
 };
 
 const initializeUnleash = async () => {
@@ -23,15 +21,13 @@ const initializeUnleash = async () => {
   try {
     unleashInstance = initialize({
       url: `${UNLEASH_SERVER_API_URL}/api/`,
-      appName: "nav-dekoratoren",
+      appName: "hm-adminregister",
       customHeaders: { Authorization: UNLEASH_SERVER_API_TOKEN },
     });
   } catch (e) {
     console.error("Error initializing unleash", e);
     return false;
   }
-
-  console.info("Unleash initialized");
 
   return true;
 };
