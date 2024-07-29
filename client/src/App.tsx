@@ -34,6 +34,7 @@ import EditAdminUser from "users/admin/EditAdminUser";
 import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
 import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
 import Agreement from "agreements/agreement/Agreement";
+import RejectedProducts from "products/RejectedProducts";
 
 export function App() {
   return (
@@ -45,8 +46,8 @@ export function App() {
 
         <Route element={<LoginWrapper />}>
           <Route element={<Navbar />}>
-            <Route path="/produkter" element={<Products isRejectedPage={false} />} />
-            <Route path="/avslaatt-produkt" element={<Products isRejectedPage={true} />} />
+            <Route path="/produkter" element={<Products />} />
+            <Route path="/avslaatt-produkt" element={<RejectedProducts />} />
             <Route path="/produkter/:seriesId" element={<Product />} />
 
             <Route path="/til-godkjenning" element={<ForApproval />} />
