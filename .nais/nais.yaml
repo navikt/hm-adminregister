@@ -39,7 +39,7 @@ spec:
     - name: VITE_IMAGE_PROXY_EXTERNAL_URL
       value: {{image_proxy_external_url}}
     - name: UNLEASH_SERVER_API_URL
-      value: 'https://teamdigihot-unleash-api.nav.cloud.nais.io/api'
+      value: 'https://teamdigihot-unleash-api.nav.cloud.nais.io'
 
   replicas:
     min: {{replicas.min}}
