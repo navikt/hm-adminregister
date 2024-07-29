@@ -214,5 +214,3 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
 };
 
 export default ProductPageBody;
-
-//TODO: sjekke at listen tar inn kun avslåtte produkter (også i søk, sjekke om den søker på listen med avslåtte produkter) i produktlisten
