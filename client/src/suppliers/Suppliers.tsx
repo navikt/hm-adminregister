@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Alert, Button, Heading, HStack, LinkPanel, Loader, Search } from "@navikt/ds-react";
-import { PlusIcon } from "@navikt/aksel-icons";
+import { Alert, Button, Heading, HStack, Loader, Search } from "@navikt/ds-react";
+import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
 import { SupplierDTO } from "utils/supplier-util";
 import ErrorAlert from "error/ErrorAlert";
+import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import styles from "./Suppliers.module.scss";
 
 const Suppliers = () => {
   const { suppliers, isLoading, error } = useSuppliers();
@@ -70,16 +72,15 @@ const Suppliers = () => {
             {isLoading && <Loader size="3xlarge" title="venter..." />}
             {renderData?.length === 0 && <Alert variant="info">Ingen leverandører funnet.</Alert>}
             {renderData &&
-              renderData.map((supplier, i) => (
-                <LinkPanel
-                  as={Link}
-                  to={`/leverandor/${supplier.id}`}
-                  border
-                  className="panel-list__name-panel"
-                  key={i}
-                >
-                  <LinkPanel.Title className="panel-list__title">{supplier.name}</LinkPanel.Title>
-                </LinkPanel>
+              renderData.map((supplier) => (
+                <Link to={`/leverandor/${supplier.id}`} className={styles.supplierPanel} key={supplier.id}>
+                  <b>{supplier.name}</b>
+                  <div>
+                    {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
+                    {supplier.status === "ACTIVE" && <TagWithIcon icon={<></>} text="Aktiv" color={colors.GREEN} />}
+                  </div>
+                  <ChevronRightIcon className={styles.chevron} aria-hidden fontSize="24px" />
+                </Link>
               ))}
           </div>
         </div>
