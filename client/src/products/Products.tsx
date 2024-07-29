@@ -30,7 +30,7 @@ const Products = () => {
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
 
-  const { data } = getFeatureFlag("adminreg.test");
+  const { flagEnabled } = getFeatureFlag("adminreg.test");
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -103,7 +103,7 @@ const Products = () => {
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
-        {data?.enabled && <div>Feature flag is enabled</div>}
+        {flagEnabled && <div>Feature flag is enabled</div>}
         <VStack gap="4">
           <div className="page__content-container">
             <HStack justify="space-between" wrap gap="4">
