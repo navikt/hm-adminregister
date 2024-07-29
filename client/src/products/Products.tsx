@@ -103,9 +103,7 @@ const Products = () => {
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
-        <div>
-          {data?.name} : {data?.enabled}
-        </div>
+        {data?.enabled && <div>Feature flag is enabled</div>}
         <VStack gap="4">
           <div className="page__content-container">
             <HStack justify="space-between" wrap gap="4">
