@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import { config } from "./config";
 import { createMetrics } from "./metrics";
 import path from "path";
+import { getFeaturesHandler } from "./features";
 
 export const routes = {
   internal(): Router {
@@ -30,6 +31,7 @@ export const routes = {
         res.type(".js");
         res.send(`window.appSettings = ${JSON.stringify(appSettings)}`);
       })
+      .get("features", getFeaturesHandler)
       .get("*", express.static(config.build_path))
       .get("*", function (req, res) {
         res.sendFile("index.html", { root: path.join(__dirname, "../../client/dist/") });
