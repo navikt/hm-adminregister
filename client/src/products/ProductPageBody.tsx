@@ -70,7 +70,7 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
       if (isRejectedPage) {
         setFilteredData(
           searchResults.content.filter((item) => {
-            item.adminStatus === "REJECTED";
+            return item.adminStatus === "REJECTED";
           }),
         );
       } else {
@@ -78,8 +78,6 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
       }
     }
   }, [searchResults]);
-
-  console.log(searchResults?.content);
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
