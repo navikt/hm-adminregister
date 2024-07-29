@@ -31,7 +31,7 @@ const initializeUnleash = async () => {
     return false;
   }
 
-  console.log("Unleash initialized");
+  console.info("Unleash initialized");
 
   return true;
 };
