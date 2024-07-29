@@ -1,14 +1,11 @@
 import matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
-import "vitest-axe/extend-expect";
-import * as axeMatchers from "vitest-axe/matchers";
 import { server } from "mocks/server";
-expect.extend(matchers);
-expect.extend(axeMatchers);
+import { toHaveNoViolations } from "jest-axe";
 
-// @ts-expect-error mock for å fikse jsdom-feil i testene
-HTMLCanvasElement.prototype.getContext = vi.fn();
+expect.extend(matchers);
+expect.extend(toHaveNoViolations);
 
 vi.mock("environments", () => ({
   HM_REGISTER_URL: vi.fn(() => "http://localhost:8080"),

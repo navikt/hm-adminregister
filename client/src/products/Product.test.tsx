@@ -1,11 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, renderHook, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import Products from "products/Products";
-import { MemoryRouter } from "react-router-dom";
-import { server } from "mocks/server";
-import { http, HttpResponse } from "msw";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { axe } from "vitest-axe";
+import Product from "products/Product";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { axe } from "jest-axe";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
@@ -40,53 +39,31 @@ const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus:
 };
 
 test("Flere produkter", async () => {
-  server.use(
-    http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, () => {
-      return HttpResponse.json({
-        content: [
-          dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
-          dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
-          dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
-          dummyProduct("p4", "DONE", "APPROVED"), //Publisert
-        ],
-        pageable: {
-          number: 0,
-          sort: {
-            orderBy: [
-              {
-                property: "created",
-                direction: "DESC",
-                ignoreCase: false,
-                ascending: false,
-              },
-            ],
-          },
-          size: 10,
-        },
-        totalSize: 3,
-        totalPages: 1,
-        empty: false,
-        size: 10,
-        offset: 0,
-        pageNumber: 0,
-        numberOfElements: 3,
-      });
-    }),
-  );
-
+  const { result } = renderHook(() => useAuthStore());
+  result.current.setLoggedInUser({
+    isAdmin: false,
+    userId: "",
+    userName: "",
+    exp: "",
+    supplierName: "",
+    supplierId: "",
+  });
   const { container } = render(
-    <MemoryRouter>
-      <Products />
+    <MemoryRouter initialEntries={["/produkter/e7ef234a-fc0c-4538-a8b2-63a361ad3529"]}>
+      <Routes>
+        <Route path={"/produkter/:seriesId"} element={<Product />}></Route>
+      </Routes>
     </MemoryRouter>,
   );
 
-  expect(await screen.findByRole("row", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
-
-  expect(await screen.findAllByRole("row")).toHaveLength(5); //header + 4 produkter
-  expect(await screen.findByRole("row", { name: /Ikke publisert/ }));
-  expect(await screen.findByRole("row", { name: /Avslått/ }));
-  expect(await screen.findByRole("row", { name: /Venter på godkjenning/ }));
-  expect(await screen.findByRole("row", { name: /Publisert/ }));
+  expect(await screen.findByRole("heading", { level: 1, name: "defaultTitle" })).toBeInTheDocument();
+  // about
+  expect(await screen.findByText("defaultText")).toBeInTheDocument();
+  expect(await screen.findByText("defaultKeyword")).toBeInTheDocument();
+  expect(await screen.findByText("https://nav.no")).toBeInTheDocument();
+  // sidebar
+  expect(await screen.findByText("Ikke publisert")).toBeInTheDocument();
+  expect(await screen.findByText("DefaultSupplier")).toBeInTheDocument();
 
   expect(await axe(container)).toHaveNoViolations();
 });
