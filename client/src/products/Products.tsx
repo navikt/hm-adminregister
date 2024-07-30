@@ -19,7 +19,6 @@ import { usePagedProducts, useProducts, useSeriesByHmsNr, useSeriesBySupplierRef
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import styles from "products/ProductTable.module.scss";
 import { SeriesTable } from "products/SeriesTable";
 
 const Products = () => {
@@ -149,7 +148,7 @@ const Products = () => {
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               )}
               {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />}
-              <HStack gap="8">
+              <HStack gap="8" align={"center"}>
                 {showPageNavigator === true && pagedData && (
                   <Pagination
                     page={pageState}
@@ -165,7 +164,6 @@ const Products = () => {
                 )}
                 {searchTerm.length == 0 && (
                   <Select
-                    className={styles.pageSize}
                     label="Antall produkter per side"
                     size="small"
                     defaultValue={pageSizeState}

@@ -71,22 +71,22 @@ test("Flere produkter", async () => {
         pageNumber: 0,
         numberOfElements: 3,
       });
-    }),
+    })
   );
 
   const { container } = render(
     <MemoryRouter>
       <Products />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
-  expect(await screen.findByRole("row", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
+  expect(await screen.findAllByRole("listitem")).toHaveLength(4);
 
-  expect(await screen.findAllByRole("row")).toHaveLength(5); //header + 4 produkter
-  expect(await screen.findByRole("row", { name: /Ikke publisert/ }));
-  expect(await screen.findByRole("row", { name: /Avslått/ }));
-  expect(await screen.findByRole("row", { name: /Venter på godkjenning/ }));
-  expect(await screen.findByRole("row", { name: /Publisert/ }));
+  expect(await screen.findByRole("link", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
+  expect(await screen.findByRole("link", { name: /Ikke publisert/ }));
+  expect(await screen.findByRole("link", { name: /Avslått/ }));
+  expect(await screen.findByRole("link", { name: /Venter på godkjenning/ }));
+  expect(await screen.findByRole("link", { name: /Publisert/ }));
 
   expect(await axe(container)).toHaveNoViolations();
 });
