@@ -1,0 +1,14 @@
+@use "../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+.create-new-supplier {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+button {
+  flex-grow: 1;
+}
