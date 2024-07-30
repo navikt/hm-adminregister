@@ -17,8 +17,9 @@ export default function FormBox(props: FormBoxProps) {
                 paddingInline="20"
                 borderRadius="large"
                 shadow="medium"
+
             >
-                <VStack align="center" gap="8">
+                <VStack align="center" gap="8" maxWidth="300px">
                     <VStack align="center" gap="4">
                         <Buldings3Icon title="a11y-title" width={43} height={43} aria-hidden />
                         <Heading level="1" size="large" align="center">
