@@ -11,20 +11,12 @@
   text-decoration: none;
 }
 
-.supplierPanel b {
-  flex-basis: 80%;
-}
-
-.supplierPanel div {
-  flex-basis: 20%
-}
-
 .supplierPanel:hover {
   cursor: pointer;
   box-shadow: var(--a-shadow-small);
 }
 
-.supplierPanel:hover b {
+.supplierPanel:hover p {
   text-decoration: underline;
   color: var(--ac-link-panel-hover-text, var(--a-text-action-hover));
 }
@@ -41,4 +33,11 @@
 
 .chevron {
   flex-shrink: 0;
+}
+
+.supplierPanelContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--a-spacing-6);
+  max-width: 55rem;
 }
