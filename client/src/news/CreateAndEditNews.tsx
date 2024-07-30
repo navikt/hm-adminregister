@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import styles from "./CreateAndEditNews.module.scss";
 import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
-import RichTextEditorNews from "news/RichTextEditorNews";
+import RichTextNewsEditor from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
 import CustomDatePicker from "news/CustomDatePicker";
@@ -40,13 +40,9 @@ const CreateAndEditNews = () => {
   });
 
   async function onSubmit(data: FormData) {
-    // capture all p,li,ol,ul tags around <br>
-    const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
     const newNewsRelease: CreateUpdateNewsDTO = {
       title: data.newsTitle,
-      text: editNewsData
-        ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
-        : textHtmlContent.replace("<p><br></p>", ""),
+      text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
     };
@@ -105,7 +101,11 @@ const CreateAndEditNews = () => {
           Beskrivelse
         </Heading>
 
-        <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
+        <RichTextNewsEditor
+          onTextChange={setTextHtmlContent}
+          defaultValue={editNewsData ? editNewsData.text : ""}
+          className={styles.editorStyle}
+        />
 
         <div className={styles.buttonContainer}>
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
