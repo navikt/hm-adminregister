@@ -38,10 +38,10 @@ import { getFeatureFlags } from "api/FeatureApi";
 import { FlagProvider } from "toggles/context";
 
 export function App() {
-  const { flags } = getFeatureFlags();
+  const toggles = getFeatureFlags();
 
   return (
-    <FlagProvider toggles={flags ?? []}>
+    <FlagProvider toggles={toggles ?? []}>
       <FeilGrense>
         <ErrorModal />
         <Routes>

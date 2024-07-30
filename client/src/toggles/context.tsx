@@ -10,12 +10,6 @@ export function FlagProvider({ toggles, children }: PropsWithChildren<{ toggles:
 
 export function useFlag(name: ExpectedToggles): IToggle {
   const context = useContext(FlagContext);
-  if (context == null) {
-    console.log("context is null");
-  } else {
-    console.log(context.toggles);
-  }
-
   const toggle = context?.toggles.find((toggle) => toggle.name === name);
 
   if (toggle == null) {
