@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button, Heading, HStack, Loader, Search } from "@navikt/ds-react";
+import { Alert, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
 import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useSuppliers } from "utils/swr-hooks";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ const Suppliers = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
+  const [pageState, setPageState] = useState(1);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -86,6 +87,14 @@ const Suppliers = () => {
                 </Link>
               ))}
           </div>
+          <Pagination
+            page={pageState}
+            onPageChange={(x) => setPageState(x)}
+            count={9}
+            boundaryCount={1}
+            siblingCount={0}
+            prevNextTexts
+          />
         </div>
       </div>
     </main>

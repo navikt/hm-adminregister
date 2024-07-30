@@ -39,20 +39,20 @@ export default function AdminProfile() {
         <Heading level="1" size="large" spacing>
           Min profil
         </Heading>
-        <VStack gap="10">
-          <dl className={styles.descriptionList}>
-            <dt>Name</dt>
-            <dd>{user?.name}</dd>
-            <dt>E-post</dt>
-            <dd>{user?.email}</dd>
-            <dt>Telefon</dt>
-            <dd>{user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}</dd>
-          </dl>
-          {/*Bruker med epostadresse {user.email} er innlogget med
-          {` ${user.roles.includes("ROLE_ADMIN") ? "Admin" : "Supplier"} rolle!`}*/}
-          <Heading level="2" size="medium">
-            Admin brukere
-          </Heading>
+        <VStack gap="5">
+          <VStack gap="20">
+            <dl className={styles.descriptionList}>
+              <dt>Name</dt>
+              <dd>{user?.name}</dd>
+              <dt>E-post</dt>
+              <dd>{user?.email}</dd>
+              <dt>Telefon</dt>
+              <dd>{user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}</dd>
+            </dl>
+            <Heading level="2" size="medium">
+              Admin brukere
+            </Heading>
+          </VStack>
           {adminUsers && adminUsers.length > 0 && (
             <Table>
               <Table.Header>
@@ -117,7 +117,7 @@ export default function AdminProfile() {
             onClick={handleCreateNewAdminUser}
             className="fit-content"
           >
-            Legg til ny adminbruker
+            Opprett bruker
           </Button>
         </VStack>
       </HGrid>
