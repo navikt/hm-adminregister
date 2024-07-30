@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button, Heading, TextField } from "@navikt/ds-react";
-import { Buldings3Icon } from "@navikt/aksel-icons";
+import { Button, HStack, TextField, VStack } from "@navikt/ds-react";
 import "./create-supplier.scss";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,54 +10,27 @@ import { useNavigate } from "react-router-dom";
 import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { SupplierDTOBody } from "utils/supplier-util";
 import { HM_REGISTER_URL } from "environments";
+import FormBox from "felleskomponenter/FormBox";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 
-interface BlurredFields {
-  name: boolean;
-  email: boolean;
-  homepage: boolean;
-  phone: boolean;
-}
 
 export default function CreateSupplier() {
   const { setGlobalError } = useErrorStore();
-  const [blurredFields, setBlurredFields] = useState<BlurredFields>({
-    name: false,
-    email: false,
-    homepage: false,
-    phone: false,
-  });
+
   const [phoneValue, setPhoneValue] = useState("");
 
   const navigate = useNavigate();
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(newSupplierSchema),
-    mode: "onChange",
+    mode: "onSubmit",
+    reValidateMode: "onChange"
   });
 
-  const handleFieldBlur = (fieldName: string) => {
-    setBlurredFields({
-      ...blurredFields,
-      [fieldName]: true,
-    });
-
-    if (fieldName === "phone") {
-      const formattedValue = formatPhoneNumber(phoneValue);
-      setPhoneValue(formattedValue);
-    }
-  };
-
-  const handleFieldFocus = (fieldName: string) => {
-    setBlurredFields({
-      ...blurredFields,
-      [fieldName]: false,
-    });
-  };
 
   async function onSubmit(data: FormData) {
     //remove all white spaces
@@ -95,15 +67,9 @@ export default function CreateSupplier() {
   }
 
   return (
-    <div className="create-new-supplier">
-      <div className="content">
-        <div className="header-container">
-          <Buldings3Icon title="a11y-title" width={43} height={43} aria-hidden />
-          <Heading level="1" size="large" align="center">
-            Opprett ny leverandør
-          </Heading>
-        </div>
-        <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+    <FormBox title="Opprett ny leverandør">
+      <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+        <VStack gap="7" width="300px" >
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -111,9 +77,7 @@ export default function CreateSupplier() {
             name="name"
             type="text"
             autoComplete="on"
-            onBlur={() => handleFieldBlur("name")}
-            onFocus={() => handleFieldFocus("name")}
-            error={blurredFields.name && errors.name && errors.name.message}
+            error={errors.name && errors.name.message}
           />
           <TextField
             {...register("email", { required: false })}
@@ -121,10 +85,9 @@ export default function CreateSupplier() {
             id="email"
             type="email"
             name="email"
+            description="Eksempel: e-post til kundeservice"
             autoComplete="on"
-            onBlur={() => handleFieldBlur("email")}
-            onFocus={() => handleFieldFocus("email")}
-            error={blurredFields.email && errors.email && errors.email.message}
+            error={errors.email && errors.email.message}
           />
           <TextField
             {...register("homepage", { required: false })}
@@ -134,9 +97,7 @@ export default function CreateSupplier() {
             name="homepage"
             description="Eksempel: www.domene.no"
             autoComplete="on"
-            onBlur={() => handleFieldBlur("homepage")}
-            onFocus={() => handleFieldFocus("homepage")}
-            error={blurredFields.homepage && errors.homepage && errors.homepage.message}
+            error={errors.homepage && errors.homepage.message}
           />
           <TextField
             {...register("phone", { required: false })}
@@ -144,23 +105,23 @@ export default function CreateSupplier() {
             id="phoneNumber"
             type="text"
             name="phone"
+            description="Eksempel: nummer til kundeservice"
             autoComplete="on"
             onChange={(event) => setPhoneValue(event.target.value)}
-            onBlur={() => handleFieldBlur("phone")}
-            onFocus={() => handleFieldFocus("phone")}
-            error={blurredFields.phone && errors.phone && errors.phone.message}
+            onBlur={() => setPhoneValue(formatPhoneNumber(phoneValue))}
+            error={errors.phone && errors.phone.message}
             value={phoneValue}
           />
-          <div className="button-container">
+          <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>
-            <Button type="submit" size="medium" disabled={!isDirty || !isValid || isSubmitting}>
+            <Button type="submit" size="medium" >
               Opprett
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </HStack>
+        </VStack>
+      </form>
+    </FormBox>
   );
 }
