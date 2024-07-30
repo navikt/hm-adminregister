@@ -1,107 +1,79 @@
+import "./RichTextEditorNews.css";
+import "quill/dist/quill.snow.css";
+import React, { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import Quill from "quill";
-import "./RichTextEditor.css";
-import "react-quill/dist/quill.snow.css";
-import { useRef,useLayoutEffect,forwardRef,useEffect } from "react";
 
-const modules = {toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],}
-const formats = ["bold", "italic", "list", "bullet", "link"];
-
-type ThirdProps ={
-  onTextChange : any
-  defaultValue? : string
-  className? : string
+// noinspection JSUnusedGlobalSymbols
+const bindings = {
+  tab: {
+    key: 9,
+    handler: () => true,
+  },
 };
 
-export const NewEditor = forwardRef<Quill | null, ThirdProps>(
-  function TempComp({ onTextChange, defaultValue, className }: ThirdProps, ref) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const onTextChangeRef = useRef(onTextChange);
+const modules = {
+  toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
+  keyboard: {
+    bindings: bindings,
+  },
+};
+const formats = ["bold", "italic", "list", "link"];
 
-    const checkContentForList = (html:string) : string  =>{
-      const regExOl = /<ol>/g
-      const regExUl = /<ul>/g
-      const olMatch = [...html.matchAll(regExOl)]
-      const ulMatch = [...html.matchAll(regExUl)]
-      
-      if (olMatch.length && ulMatch.length)
-        return "both"
-      else if (olMatch.length)
-        return "ol"
-      else if (ulMatch.length)
-        return "ul"
-      else return "nothing"
-    }
-    
-    const handleQuery = (quill:Quill, state:string) => {
-      if (state == "both"){
-        quill.root.querySelectorAll('ol').forEach((element) => {
-        element.classList.add('quill-ol');
-      });
-      quill.root.querySelectorAll('ul').forEach((element) => {
-        element.classList.add('quill-ul');
-      })}  
-      else if (state == "ol"){
-        quill.root.querySelectorAll('ol').forEach((element) => {
-          element.classList.add('quill-ol');
-        });
-        }
-      else if (state == "ul"){
-        quill.root.querySelectorAll('ul').forEach((element) => {
-          element.classList.add('quill-ul');
-        });
-      }
+type Props = {
+  onTextChange: (html: string) => void;
+  defaultValue?: string;
+  className?: string;
+};
+
+export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, defaultValue, className }: Props, ref) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const onTextChangeRef = useRef(onTextChange);
+  const defaultValueRef = useRef(defaultValue);
+
+  useLayoutEffect(() => {
+    onTextChangeRef.current = onTextChange;
+  });
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) {
+      console.error("Invalid Quill container");
+      return;
     }
 
-    useLayoutEffect(() => {
-      onTextChangeRef.current = onTextChange;
+    const editorContainer = container.appendChild(container.ownerDocument.createElement("div"));
+
+    const quill = new Quill(editorContainer, {
+      modules,
+      formats,
+      theme: "snow",
     });
 
-    useEffect(() => {
-      const container = containerRef.current;
+    if (ref && typeof ref === "function") {
+      ref(quill);
+    } else if (ref && "current" in ref) {
+      (ref as React.MutableRefObject<Quill | null>).current = quill;
+    }
 
-      if (!container) {
-        console.error("Invalid Quill container");
-        return;
+    if (defaultValueRef.current) {
+      const htmlAsDelta = quill.clipboard.convert({ html: defaultValueRef.current });
+      quill.setContents(htmlAsDelta);
+    }
+
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      onTextChange(quill.root.innerHTML);
+    });
+
+    return () => {
+      if (ref && "current" in ref) {
+        (ref as React.MutableRefObject<Quill | null>).current = null;
       }
+      container.innerHTML = "";
+    };
+  }, [ref]);
 
-      const editorContainer = container.appendChild(
-        document.createElement("div")
-      );
+  return <div ref={containerRef} className={className}></div>;
+});
 
-      const quill = new Quill(editorContainer, {
-        modules,
-        formats,
-        theme: "snow",
-      });
-      delete quill.getModule("keyboard").bindings["9"]
-
-      if (ref && typeof ref === "function") {
-        ref(quill);
-      } else if (ref && "current" in ref) {
-        (ref as React.MutableRefObject<Quill | null>).current = quill;
-      }
-
-      if (defaultValue) {
-        const incomingText = quill.clipboard.convert(defaultValue)
-        quill.setContents(incomingText);
-      }
-
-      quill.on("text-change", () => {
-        const state = checkContentForList(quill.root.innerHTML)
-        handleQuery(quill,state)
-        onTextChange(quill.root.innerHTML)
-      });
-
-      return () => {
-        if (ref && "current" in ref) {
-          (ref as React.MutableRefObject<Quill | null>).current = null;
-        }
-        container.innerHTML = "";
-      };
-    }, [ref]);
-
-    return <div ref={containerRef} className={className}></div>;
-  }
-);
-
-export default NewEditor
+export default RichTextNewsEditor;

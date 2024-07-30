@@ -1,4 +1,4 @@
-import { useState,useRef } from "react";
+import { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
 import { Button, Heading, HStack, TextField } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import styles from "./CreateAndEditNews.module.scss";
 import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
-import RichTextEditorNews from "news/RichTextEditorNews";
-import NewEditor from "news/RichTextEditorNews";
+import RichTextNewsEditor from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
 import CustomDatePicker from "news/CustomDatePicker";
@@ -102,7 +101,11 @@ const CreateAndEditNews = () => {
           Beskrivelse
         </Heading>
 
-        <NewEditor onTextChange={setTextHtmlContent} defaultValue={editNewsData ? editNewsData.text : ""} className={styles.editorStyle}/>
+        <RichTextNewsEditor
+          onTextChange={setTextHtmlContent}
+          defaultValue={editNewsData ? editNewsData.text : ""}
+          className={styles.editorStyle}
+        />
 
         <div className={styles.buttonContainer}>
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
