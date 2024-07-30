@@ -102,7 +102,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
               <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" />
-              <span>Nyheter</span>
+              <span>Nyhetsmeldinger</span>
             </HStack>
           </NavLink>
         </>

@@ -85,10 +85,10 @@ export default function CreateAdminUser() {
   return (
     <main>
       <div className="create-new-admin-user">
-        <div className="content">
+        <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
           <div className="header-container">
             <PersonIcon aria-hidden={true} title="Person-ikon" width={43} height={43} />
-            <Heading level="1" size="large" align="center">
+            <Heading level="1" size="medium" align="center">
               Opprett ny admin-bruker
             </Heading>
           </div>
@@ -110,6 +110,7 @@ export default function CreateAdminUser() {
               label={labelRequired("Midlertidig passord")}
               id="password"
               type={isPasswordShown ? "text" : "password"}
+              description="Passordet skal byttes ved første innlogging"
               name="password"
               autoComplete="off"
               onBlur={() => handleFieldBlur("password")}
@@ -120,7 +121,7 @@ export default function CreateAdminUser() {
               Vis passord
             </Checkbox>
             <Alert variant="info">
-              Husk at det ikke vil være mulig å finne tilbake til det midlertidige passordet etter at brukeren er
+              OBS! Det vil ikke være mulig å finne tilbake til det midlertidige passordet etter at brukeren er
               opprettet.
             </Alert>
             <div className="button-container">

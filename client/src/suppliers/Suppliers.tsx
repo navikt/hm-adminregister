@@ -75,6 +75,9 @@ const Suppliers = () => {
               renderData.map((supplier) => (
                 <Link to={`/leverandor/${supplier.id}`} className={styles.supplierPanel} key={supplier.id}>
                   <b>{supplier.name}</b>
+                  <p>
+                    {supplier.postNr} {supplier.postLocation}
+                  </p>
                   <div>
                     {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
                     {supplier.status === "ACTIVE" && <TagWithIcon icon={<></>} text="Aktiv" color={colors.GREEN} />}

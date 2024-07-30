@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
 import { useAdminUsers, useUser } from "utils/swr-hooks";
+import styles from "suppliers/SupplierInfo.module.scss";
 
 export default function AdminProfile() {
   const navigate = useNavigate();
@@ -36,11 +37,19 @@ export default function AdminProfile() {
     <main className="show-menu">
       <HGrid columns="minmax(16rem, 55rem)">
         <Heading level="1" size="large" spacing>
-          Admin-profil
+          Min profil
         </Heading>
         <VStack gap="10">
-          Bruker med epostadresse {user.email} er innlogget med
-          {` ${user.roles.includes("ROLE_ADMIN") ? "Admin" : "Supplier"} rolle!`}
+          <dl className={styles.descriptionList}>
+            <dt>Name</dt>
+            <dd>{user?.name}</dd>
+            <dt>E-post</dt>
+            <dd>{user?.email}</dd>
+            <dt>Telefon</dt>
+            <dd>{user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}</dd>
+          </dl>
+          {/*Bruker med epostadresse {user.email} er innlogget med
+          {` ${user.roles.includes("ROLE_ADMIN") ? "Admin" : "Supplier"} rolle!`}*/}
           <Heading level="2" size="medium">
             Admin brukere
           </Heading>
