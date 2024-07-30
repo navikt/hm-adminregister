@@ -10,7 +10,6 @@ export function getFeatureFlags() {
   const { data, error } = useSWR<Record<string, boolean>>(path, fetcherGET);
 
   if (error) {
-    console.error("Error fetching feature flags", error);
     return [];
   }
 
