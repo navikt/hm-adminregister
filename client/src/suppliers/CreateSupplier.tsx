@@ -11,6 +11,7 @@ import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { SupplierDTOBody } from "utils/supplier-util";
 import { HM_REGISTER_URL } from "environments";
 import FormBox from "felleskomponenter/FormBox";
+import { Buldings3Icon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 
@@ -67,7 +68,7 @@ export default function CreateSupplier() {
   }
 
   return (
-    <FormBox title="Opprett ny leverandør">
+    <FormBox title="Opprett ny leverandør" icon={<Buldings3Icon />}>
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7" width="300px" >
           <TextField

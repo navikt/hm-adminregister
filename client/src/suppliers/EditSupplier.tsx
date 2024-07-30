@@ -12,6 +12,7 @@ import { updateSupplier } from "api/SupplierApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useAuthStore } from "utils/store/useAuthStore";
 import FormBox from "felleskomponenter/FormBox";
+import { Buldings3Icon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 export default function EditSupplier() {
@@ -82,7 +83,7 @@ export default function EditSupplier() {
   }
 
   return (
-    <FormBox title="Endre leverandørinformasjon">
+    <FormBox title="Endre leverandørinformasjon" icon={<Buldings3Icon />}>
 
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
         <TextField
