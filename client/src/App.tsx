@@ -53,7 +53,7 @@ export function App() {
             <Route element={<Navbar />}>
               <Route path="/produkter" element={<Products />} />
               <Route path="/avslaatt-produkt" element={<RejectedProducts />} />
-            <Route path="/produkter/:seriesId" element={<Product />} />
+              <Route path="/produkter/:seriesId" element={<Product />} />
 
               <Route path="/til-godkjenning" element={<ForApproval />} />
 

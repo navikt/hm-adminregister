@@ -2,13 +2,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import {
-  getAllRejectedSeries,
   usePagedProducts,
-  useProducts,
   useSeriesByHmsNr,
   useSeriesBySupplierRef,
 } from "utils/swr-hooks";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
 import {
   Alert,
   Button,
@@ -28,12 +25,13 @@ import { PlusIcon } from "@navikt/aksel-icons";
 
 type productPropsType = { isRejectedPage: boolean };
 
-const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
+const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -41,17 +39,11 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
   } = usePagedProducts({
     page: pageState - 1,
     pageSize: pageSizeState,
+    titleSearchTerm: searchTerm,
     statusFilters,
     isRejectedPage,
   });
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const {
-    data: searchResults,
-    isLoading: isLoadingSearchResults,
-    error: errorProducts,
-  } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
 
-  const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
   const navigate = useNavigate();
 
   const { seriesByHmsNr } = useSeriesByHmsNr(searchTerm);
@@ -59,24 +51,8 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    if (value.length == 0) {
-      setFilteredData(undefined);
-    }
   };
 
-  useEffect(() => {
-    if (searchResults && searchResults.content) {
-      if (isRejectedPage) {
-        setFilteredData(
-          searchResults.content.filter((item) => {
-            return item.adminStatus === "REJECTED";
-          }),
-        );
-      } else {
-        setFilteredData(searchResults.content);
-      }
-    }
-  }, [searchResults]);
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -87,11 +63,10 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
   }, [pagedData]);
 
   const isSearch = searchTerm.length > 0;
-  const isSearchResults = filteredData && filteredData.length > 0;
 
   const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && !isSearch;
 
-  if (errorPaged || errorProducts) {
+  if (errorPaged) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -151,26 +126,18 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
           </CheckboxGroup>
           <VStack className="products-page__products">
             <div className="page__content-container">
-              {isSearch && isLoadingSearchResults && <Loader size="3xlarge" />}
-              {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
+              {isLoadingPagedData && <Loader size="3xlarge" />}
 
-              {isSearch ? (
-                seriesByHmsNr ? (
-                  <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
-                ) : seriesBySupplierRef ? (
-                  <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-                ) : isSearchResults ? (
-                  <SeriesTable seriesList={filteredData} />
-                ) : !isLoadingSearchResults ? (
-                  <Alert variant="info">Ingen produkter funnet med søket: {`"${searchTerm}"`}.</Alert>
-                ) : null
-              ) : pagedData?.content.length === 0 ? (
-                <Alert variant="info">
-                  {isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}
-                </Alert>
-              ) : (
-                !isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />
-              )}
+
+              {seriesByHmsNr ? (
+                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
+              ) : seriesBySupplierRef ? (
+                <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
+              ) : pagedData?.content ? (
+                <SeriesTable seriesList={pagedData.content} />
+              ) ://TODO: Find bug
+                <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}.</Alert>
+              }
 
               <HStack gap="8" align={"center"}>
                 {showPageNavigator === true && pagedData && (
@@ -211,4 +178,4 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
   );
 };
 
-export default ProductPageBody;
+export default ProductListWrapper;

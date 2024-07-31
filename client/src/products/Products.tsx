@@ -1,7 +1,7 @@
-import ProductPageBody from "products/ProductPageBody";
+import ProductListWrapper from "products/ProductListWrapper";
 
 const Products = () => {
-  return <ProductPageBody isRejectedPage={false} />;
+  return <ProductListWrapper isRejectedPage={false} />;
 };
 
 export default Products;

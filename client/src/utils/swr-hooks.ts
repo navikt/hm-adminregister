@@ -133,49 +133,30 @@ export function userProductVariantsBySeriesId(seriesId: string) {
   };
 }
 
-export function useProducts({ titleSearchTerm, statusFilters }: { titleSearchTerm: string; statusFilters: string[] }) {
+export function usePagedProducts({
+  page,
+  pageSize,
+  titleSearchTerm,
+  statusFilters,
+  isRejectedPage,
+}: {
+  page: number;
+  pageSize: number;
+  titleSearchTerm: string;
+  statusFilters: string[];
+  isRejectedPage: boolean;
+}) {
   const { loggedInUser } = useAuthStore();
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
   const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?excludedStatus=DELETED${titleSearchParam}&status=${status}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?excludedStatus=DELETED${titleSearchParam}&status=${status}`;
-
-  const { data, error, isLoading } = useSWR<SeriesChunk>(
-    titleSearchTerm && titleSearchParam !== "" ? path : null,
-    fetcherGET,
-  );
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
-}
-
-export function usePagedProducts({
-  page,
-  pageSize,
-  statusFilters,
-  isRejectedPage,
-}: {
-  page: number;
-  pageSize: number;
-  statusFilters: string[];
-  isRejectedPage: boolean;
-}) {
-  const { loggedInUser } = useAuthStore();
-
-  const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
-
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
