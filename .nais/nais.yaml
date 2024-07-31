@@ -22,7 +22,7 @@ spec:
       external:
         - host: teamdigihot-unleash-api.nav.cloud.nais.io
   envFrom:
-    - secret: hm-oversikt-frontend-unleash-secrets
+    - secret: hm-adminreg-unleash-secret
   env:
     - name: RUNTIME_ENVIRONMENT
       value: {{runtime_env}}
