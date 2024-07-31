@@ -1,0 +1,18 @@
+.seriesList {
+  list-style: none;
+  margin-block-start: 0;
+  padding-inline-start: 0;
+}
+
+.seriesPanel {
+  padding: var(--a-spacing-4);
+  border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
+  border-radius: var(--a-border-radius-large);
+  background-color: var(--a-bg-default);
+  color: var(--a-text-default);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--a-surface-hover);
+  }
+}

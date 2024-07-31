@@ -24,7 +24,6 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import { SeriesTable } from "products/SeriesTable";
-import styles from "products/ProductTable.module.scss";
 import { PlusIcon } from "@navikt/aksel-icons";
 
 type productPropsType = { isRejectedPage: boolean };
@@ -173,7 +172,7 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
                 !isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />
               )}
 
-              <HStack gap="8">
+              <HStack gap="8" align={"center"}>
                 {showPageNavigator === true && pagedData && (
                   <Pagination
                     page={pageState}
@@ -189,7 +188,6 @@ const ProductPageBody = ({ isRejectedPage = false }: productPropsType) => {
                 )}
                 {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
                   <Select
-                    className={styles.pageSize}
                     label="Antall produkter per side"
                     size="small"
                     defaultValue={pageSizeState}

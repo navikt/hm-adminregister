@@ -1,50 +1,38 @@
 import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { Heading, Table } from "@navikt/ds-react";
-import styles from "products/ProductTable.module.scss";
+import { Heading, HGrid, VStack } from "@navikt/ds-react";
+import styles from "products/SeriesTable.module.scss";
 import SeriesStatusTag from "products/SeriesStatusTag";
 import { seriesStatus } from "products/seriesUtils";
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-interface Props {
-  seriesList: SeriesRegistrationDTO[];
-  heading?: string;
-}
-
-export const SeriesTable = ({ seriesList, heading }: Props) => {
-  const navigate = useNavigate();
-
+export const SeriesTable = ({ seriesList, heading }: { seriesList: SeriesRegistrationDTO[]; heading?: string }) => {
   return (
-    <div className={styles.productTable}>
+    <VStack gap={"1-alt"} className={styles.seriesList}>
       {heading && <Heading size="medium">{heading}</Heading>}
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell scope="col">Produktnavn</Table.HeaderCell>
-            <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-            <Table.HeaderCell scope="col">Antall varianter</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {seriesList.map((product, i) => (
-            <Table.Row
-              key={i + product.id}
-              onClick={() => {
-                navigate(`/produkter/${product.id}`);
-              }}
-              tabIndex={0}
+      <HGrid columns={"1fr 2fr 1fr"} padding={"2"} gap={"2"}>
+        <b>Produktnavn</b>
+        <b>Status</b>
+        <b>Antall varianter</b>
+      </HGrid>
+
+      <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
+        {seriesList.map((series) => (
+          <li key={series.id}>
+            <HGrid
+              as={Link}
+              to={`/produkter/${series.id}`}
+              columns={"1fr 2fr 1fr"}
+              gap={"2"}
+              align={"center"}
+              className={styles.seriesPanel}
             >
-              <Table.HeaderCell scope="row">
-                <b>{product.title}</b>
-              </Table.HeaderCell>
-              <Table.DataCell>
-                <SeriesStatusTag seriesStatus={seriesStatus(product)} />
-              </Table.DataCell>
-              <Table.DataCell>{product.count}</Table.DataCell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
-    </div>
+              <b>{series.title}</b>
+              <SeriesStatusTag seriesStatus={seriesStatus(series)} />
+              {series.count}
+            </HGrid>
+          </li>
+        ))}
+      </VStack>
+    </VStack>
   );
 };
