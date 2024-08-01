@@ -98,7 +98,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
-                  variant="primary"
+                  variant="simple"
                   clearButton={true}
                   placeholder="Søk etter produktnavn"
                   size="medium"
@@ -133,10 +133,10 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
               ) : seriesBySupplierRef ? (
                 <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-              ) : pagedData?.content ? (
+              ) : pagedData && pagedData.content && pagedData?.content.length !== 0 ? (
                 <SeriesTable seriesList={pagedData.content} />
-              ) ://TODO: Find bug
-                <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}.</Alert>
+              ) :
+                <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}</Alert>
               }
 
               <HStack gap="8" align={"center"}>
