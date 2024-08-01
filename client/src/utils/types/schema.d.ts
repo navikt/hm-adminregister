@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -188,6 +187,12 @@ export interface paths {
   };
   "/admreg/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
     put: operations["setPublishedSeriesToInactive"];
+  };
+  "/admreg/admin/api/v1/series/series/create-from/products": {
+    post: operations["createSeriesFromProductList"];
+  };
+  "/admreg/admin/api/v1/series/series/products/move-to/{seriesId}": {
+    put: operations["moveProductVariantsToSeries"];
   };
   "/admreg/admin/api/v1/series/supplier-inventory/{id}": {
     get: operations["getSupplierProductInfo"];
@@ -793,7 +798,12 @@ export interface components {
       dryRun: boolean;
       /** Format: int32 */
       count: number;
-      productAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      /** Format: int32 */
+      newCount: number;
+      file: string;
+      createdSeries: components["schemas"]["SeriesRegistration"][];
+      createdAccessoryParts: components["schemas"]["ProductRegistration"][];
+      createdMainProducts: components["schemas"]["ProductRegistration"][];
       productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
     };
     ProductAgreementRegistrationDTO: {
@@ -805,6 +815,9 @@ export interface components {
       seriesUuid?: string | null;
       title: string;
       articleName?: string | null;
+      accessory: boolean;
+      sparePart: boolean;
+      isoCategory?: string | null;
       /** Format: uuid */
       supplierId: string;
       supplierRef: string;
@@ -984,6 +997,8 @@ export interface components {
       title: string;
       articleName: string;
       /** Format: uuid */
+      productId: string;
+      /** Format: uuid */
       seriesId: string;
       status: string;
       supplierName: string;
@@ -991,6 +1006,8 @@ export interface components {
       agreementId?: string | null;
       delkontrakttittel?: string | null;
       thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
+      sparePart: boolean;
+      accessory: boolean;
     };
     ProductVariantsForDelkontraktDto: {
       /** Format: uuid */
@@ -2590,6 +2607,41 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
         };
+      };
+    };
+  };
+  createSeriesFromProductList: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description createSeriesFromProductList 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  moveProductVariantsToSeries: {
+    parameters: {
+      path: {
+        seriesId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          productIds: string[];
+        };
+      };
+    };
+    responses: {
+      /** @description moveProductVariantsToSeries 200 response */
+      200: {
+        content: never;
       };
     };
   };

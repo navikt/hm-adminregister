@@ -1,67 +1,61 @@
-import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
+import { ProductAgreementRegistrationDTO, SeriesRegistrations } from "utils/types/response-types";
 import _ from "lodash";
 
-export const generateImportData = (productAgreements: ProductAgreementRegistrationDTO[]): ImportData => {
-  let groupedProductAgreements: ProductAgreementRegistrationDTOGroupedBySeries[] = [];
-  let productAgreementsWithNoSeries: ProductAgreementRegistrationDTO[] = [];
+export const groupProductAgreementsBySeries = (
+  productAgreements: ProductAgreementRegistrationDTO[],
+  newSeriesRegistrations: SeriesRegistrations,
+): GroupedProductAgreements => {
+  const groupedProductAgreements: ProductAgreementRegistrationDTOGroupedBySeries[] = [];
 
   const groupedBySeries = _.groupBy(productAgreements, "seriesUuid");
 
-  const uniqueAgreements = _.uniqBy(productAgreements, "agreementId");
-
-  // let agreementDict: Map<string, AgreementRegistrationDTO> = new Map<string, AgreementRegistrationDTO>();
-  // uniqueAgreements.forEach((value) => {
-  //   getAgreement(value.agreementId).then((agreement) => {
-  //     agreementDict.set(value.agreementId, agreement);
-  //   });
-  // });
-
-  let numberOfProductAgreementsWithoutSeriesUUID = 0;
-  let numberOfProductAgreementsWithoutProductId = 0;
+  let newHovedprodukts = 0;
+  let newSpareParts = 0;
+  let newAccessories = 0;
 
   Object.entries(groupedBySeries).forEach(([key, variants]) => {
-    if (key === "undefined" || !key) {
-      productAgreementsWithNoSeries = productAgreementsWithNoSeries.concat(variants);
-    } else if (variants.length > 0) {
+    if (variants.length > 0) {
       const firstProductAgreement = variants[0];
+      const newSeries = newSeriesRegistrations.find((series) => series.id === firstProductAgreement.seriesUuid);
+      if (newSeries && firstProductAgreement.sparePart) {
+        newSpareParts++;
+      } else if (newSeries && firstProductAgreement.accessory) {
+        newAccessories++;
+      } else if (newSeries && !firstProductAgreement.sparePart && !firstProductAgreement.accessory) {
+        newHovedprodukts++;
+      }
       const productAgreementGroup: ProductAgreementRegistrationDTOGroupedBySeries = {
         seriesUuid: firstProductAgreement.seriesUuid ? firstProductAgreement.seriesUuid : undefined,
-        title: firstProductAgreement.title ? firstProductAgreement.title : undefined,
+        title: newSeries?.title || firstProductAgreement.title,
+        accessory: firstProductAgreement.accessory,
+        sparePart: firstProductAgreement.sparePart,
+        newProduct: newSeries != null,
         variants: [...variants],
       };
       groupedProductAgreements.push(productAgreementGroup);
     }
-
-    variants.forEach((variant) => {
-      if (!variant.seriesUuid) {
-        numberOfProductAgreementsWithoutSeriesUUID += 1;
-      }
-      if (!variant.productId) {
-        numberOfProductAgreementsWithoutProductId += 1;
-      }
-    });
   });
 
   return {
-    numberOfProductAgreements: productAgreements.length,
-    numberOfProductAgreementsWithoutSeriesUUID: numberOfProductAgreementsWithoutSeriesUUID,
-    numberOfProductAgreementsWithoutProductId: numberOfProductAgreementsWithoutProductId,
     groupedProductAgreements: groupedProductAgreements,
-    productAgreementsWithNoSeries: productAgreementsWithNoSeries,
+    newHovedprodukts: newHovedprodukts,
+    newSpareParts: newSpareParts,
+    newAccessories: newAccessories,
   };
 };
 
-export interface ImportData {
-  numberOfProductAgreements: number;
-  numberOfProductAgreementsWithoutSeriesUUID: number;
-  numberOfProductAgreementsWithoutProductId: number;
+export interface GroupedProductAgreements {
+  newHovedprodukts: number;
+  newSpareParts: number;
+  newAccessories: number;
   groupedProductAgreements?: ProductAgreementRegistrationDTOGroupedBySeries[];
-  productAgreementsWithNoSeries?: ProductAgreementRegistrationDTO[];
 }
 
 export interface ProductAgreementRegistrationDTOGroupedBySeries {
   seriesUuid?: string;
   title?: string;
-  agreementName?: string;
+  accessory: boolean;
+  sparePart: boolean;
+  newProduct: boolean;
   variants: ProductAgreementRegistrationDTO[];
 }
