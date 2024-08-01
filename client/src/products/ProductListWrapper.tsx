@@ -133,7 +133,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
               ) : seriesBySupplierRef ? (
                 <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-              ) : pagedData && pagedData.content && pagedData?.content.length !== 0 ? (
+              ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
                 <SeriesTable seriesList={pagedData.content} />
               ) :
                 <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}</Alert>
