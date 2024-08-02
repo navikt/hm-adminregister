@@ -27,6 +27,7 @@ export const DeleteConfirmationModal = ({
     deleteSeries(loggedInUser?.isAdmin ?? true, series.id)
       .then(() => {
         mutateSeries();
+        mutateProducts();
       })
       .catch((error) => {
         setGlobalError(error);
