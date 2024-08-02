@@ -205,7 +205,7 @@ const VariantsTab = ({
                         {paginatedVariants.map((product, i) => (
                           <Table.DataCell key={`expired-${i}`}>
                             {product.registrationStatus === "INACTIVE" && <Tag variant="warning-moderate">Utgått</Tag>}
-                            {product.registrationStatus === "DELETED" && <Tag variant="warning-filled">Slettet</Tag>}
+                            {product.registrationStatus === "DELETED" && <Tag variant="error-moderate">Slettet</Tag>}
                           </Table.DataCell>
                         ))}
                       </Table.Row>
