@@ -6,7 +6,7 @@ on:
       environment:
         type: choice
         description: Deploy to environment
-        default: dev
+        default: 'dev'
         options:
           - dev
           - prod
@@ -47,7 +47,7 @@ jobs:
     needs: [test]
     name: Build and push docker container
     permissions:
-      contents: 'write'
+      contents: 'read'
       id-token: 'write'
     runs-on: ubuntu-latest
     outputs:
