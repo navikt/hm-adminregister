@@ -24,16 +24,13 @@ export const DeleteConfirmationModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onDelete() {
-    markProductsAsDeleted(loggedInUser?.isAdmin ?? true, products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
+    deleteSeries(loggedInUser?.isAdmin ?? true, series.id)
+      .then(() => {
+        mutateSeries();
+      })
       .catch((error) => {
         setGlobalError(error);
       });
-    deleteSeries(loggedInUser?.isAdmin ?? true, series.id).then(() => {
-      mutateSeries();
-    }).catch((error) => {
-      setGlobalError(error);
-    });
   }
 
   return (
