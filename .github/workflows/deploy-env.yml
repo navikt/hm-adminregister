@@ -6,6 +6,7 @@ on:
       environment:
         type: choice
         description: Deploy to environment
+        default: dev
         options:
           - dev
           - prod
@@ -16,7 +17,7 @@ on:
 run-name: Bygg og deploy til ${{ inputs.environment }}
 
 env:
-  BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment || 'dev' }}
+  BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment }}
   CLUSTER: ${{ inputs.environment == 'prod' && 'prod-gcp' || 'dev-gcp' }}
 
 jobs:
@@ -46,7 +47,7 @@ jobs:
     needs: [test]
     name: Build and push docker container
     permissions:
-      contents: 'read'
+      contents: 'write'
       id-token: 'write'
     runs-on: ubuntu-latest
     outputs:
