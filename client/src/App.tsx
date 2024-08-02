@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import Login from "users/Login";
-import Products from "products/Products";
 import CreateProduct from "products/CreateProduct";
 import Product from "products/Product";
 import EditProductVariant from "products/variants/EditProductVariant";
@@ -34,9 +33,9 @@ import EditAdminUser from "users/admin/EditAdminUser";
 import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
 import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
 import Agreement from "agreements/agreement/Agreement";
-import RejectedProducts from "products/RejectedProducts";
 import { getFeatureFlags } from "api/FeatureApi";
 import { FlagProvider } from "toggles/context";
+import ProductListWrapper from "products/ProductListWrapper";
 
 export function App() {
   const toggles = getFeatureFlags();
@@ -51,8 +50,8 @@ export function App() {
 
           <Route element={<LoginWrapper />}>
             <Route element={<Navbar />}>
-              <Route path="/produkter" element={<Products />} />
-              <Route path="/avslaatt-produkt" element={<RejectedProducts />} />
+              <Route path="/produkter" element={<ProductListWrapper key="all-products" isRejectedPage={false} />} />
+              <Route path="/avslaatt-produkt" element={<ProductListWrapper key="rejected-products" isRejectedPage={true} />} />
               <Route path="/produkter/:seriesId" element={<Product />} />
 
               <Route path="/til-godkjenning" element={<ForApproval />} />
