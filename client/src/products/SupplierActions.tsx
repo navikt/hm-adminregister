@@ -93,7 +93,7 @@ const SupplierActions = ({
                 (series.status === "ACTIVE" ? (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                    disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                    // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                   >
                     Marker som utgått
                   </Dropdown.Menu.List.Item>
