@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonPencilIcon } from "@navikt/aksel-icons";
+import { PersonIcon, PersonPencilIcon } from "@navikt/aksel-icons";
 import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import FormBox from "felleskomponenter/FormBox";
@@ -31,14 +31,12 @@ const EditAdminUser = () => {
   }
 
   return (
-    <main>
-      <div className="auth-page">
-        {user && loggedInUser?.isAdmin && (
-          <FormBox title="Oppdater informasjonen om deg" icon={<PersonPencilIcon />}>
-            {user && <AdminUserEditForm user={user} />}
-          </FormBox>)}
-      </div>
-    </main>
+    <>
+      {user && loggedInUser?.isAdmin && (
+        <FormBox title="Oppdater brukerinformasjon" icon={<PersonIcon />}>
+          {user && <AdminUserEditForm user={user} />}
+        </FormBox>)}
+    </>
   );
 };
 
@@ -133,7 +131,6 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
         {...register("name", { required: true })}
         label={labelRequired("Navn")}
         autoComplete="on"
-        description="Fornavn og etternavn"
         onBlur={() => handleFieldBlur("name")}
         onFocus={() => handleFieldFocus("name")}
         error={blurredFields.name && errors?.name?.message}

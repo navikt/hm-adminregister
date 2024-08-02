@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonPencilIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { PersonIcon } from "@navikt/aksel-icons";
+import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,17 +31,9 @@ const EditSupplierUser = () => {
   }
 
   return (
-    <main>
-      <div className="auth-page">
-        <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-          <PersonPencilIcon title="a11y-title" fontSize="1.5rem" />
-          <Heading spacing level="2" size="small" align="center">
-            Oppdater informasjonen om deg
-          </Heading>
-          {user && <SupplierUserProfile user={user} />}
-        </div>
-      </div>
-    </main>
+    <FormBox title="Oppdater brukerinformasjon" icon={<PersonIcon />}>
+      {user && <SupplierUserProfile user={user} />}
+    </FormBox>
   );
 };
 export default EditSupplierUser;
@@ -126,8 +118,9 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
   }
 
   return (
-    <FormBox>
-      <form method="POST" onSubmit={handleSubmit(onSubmit)}>
+
+    <form method="POST" onSubmit={handleSubmit(onSubmit)}>
+      <VStack gap="7" width="300px">
         <TextField
           {...register("name", { required: true })}
           label={labelRequired("Navn")}
@@ -135,7 +128,6 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
           name="name"
           size="medium"
           autoComplete="on"
-          description="Fornavn og etternavn"
           onBlur={() => handleFieldBlur("name")}
           onFocus={() => handleFieldFocus("name")}
           error={blurredFields.name && errors?.name?.message}
@@ -151,20 +143,22 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
           onFocus={() => handleFieldFocus("phone")}
           error={blurredFields.phone && errors?.phone?.message}
         />
-        <div className="auth-dialog-box__button-container">
+        <HStack gap="4">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>
           <Button type="submit" size="medium" disabled={isSubmitting}>
             Lagre
           </Button>
-        </div>
-        {error?.name && (
-          <p>
-            <span className="auth-dialog-box__error-message">{error?.message}</span>
-          </p>
-        )}
-      </form>
-    </FormBox>
+        </HStack>
+      </VStack>
+      {error?.name && (
+        <p>
+          <span className="auth-dialog-box__error-message">{error?.message}</span>
+        </p>
+      )}
+    </form>
+
+
   );
 };
