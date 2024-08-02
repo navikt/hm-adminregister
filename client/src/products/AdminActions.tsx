@@ -1,10 +1,4 @@
-import {
-  CogIcon,
-  ExclamationmarkTriangleIcon,
-  FileSearchIcon,
-  MagnifyingGlassIcon,
-  TrashIcon,
-} from "@navikt/aksel-icons";
+import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
 import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
@@ -50,6 +44,7 @@ const AdminActions = ({
   const isPending = series.adminStatus === "PENDING";
   const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
   const isPublished = series.published ?? false;
+  const isDeleted = series.status === "DELETED";
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -111,10 +106,12 @@ const AdminActions = ({
                 <Dropdown.Menu.Divider />
               </>
             )}
-            <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-              Slett
-              <TrashIcon aria-hidden />
-            </Dropdown.Menu.List.Item>
+            {!isDeleted && (
+              <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                Slett
+                <TrashIcon aria-hidden />
+              </Dropdown.Menu.List.Item>
+            )}
             {canSetExpiredStatus &&
               (series.status === "ACTIVE" ? (
                 <Dropdown.Menu.List.Item
