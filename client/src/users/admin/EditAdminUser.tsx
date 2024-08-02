@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonIcon, PersonPencilIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { PersonIcon } from "@navikt/aksel-icons";
+import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import FormBox from "felleskomponenter/FormBox";
 import { useState } from "react";
@@ -56,10 +56,11 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(adminInfoUpdate),
-    mode: "onChange",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues: {
       name: user.name || "",
       phone: user.attributes.phone || "",
@@ -67,22 +68,10 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
   });
 
   const handleFieldBlur = (fieldName: string) => {
-    setBlurredFields({
-      ...blurredFields,
-      [fieldName]: true,
-    });
-
     if (fieldName === "phone") {
       const formattedValue = formatPhoneNumber(phoneValue);
       setPhoneValue(formattedValue);
     }
-  };
-
-  const handleFieldFocus = (fieldName: string) => {
-    setBlurredFields({
-      ...blurredFields,
-      [fieldName]: false,
-    });
   };
 
   async function onSubmit(data: FormData) {
@@ -126,33 +115,32 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
   }
 
   return (
-    <form className="auth-dialog-box__form" method="POST" onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        {...register("name", { required: true })}
-        label={labelRequired("Navn")}
-        autoComplete="on"
-        onBlur={() => handleFieldBlur("name")}
-        onFocus={() => handleFieldFocus("name")}
-        error={blurredFields.name && errors?.name?.message}
-      />
-      <TextField
-        {...register("phone", { required: false })}
-        label="Telefonnummer"
-        autoComplete="on"
-        type="text"
-        name="phone"
-        onBlur={() => handleFieldBlur("phone")}
-        onFocus={() => handleFieldFocus("phone")}
-        error={blurredFields.phone && errors?.phone?.message}
-      />
-      <div className="auth-dialog-box__button-container">
-        <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-          Avbryt
-        </Button>
-        <Button type="submit" size="medium">
-          Lagre
-        </Button>
-      </div>
+    <form method="POST" onSubmit={handleSubmit(onSubmit)}>
+      <VStack gap="7" width="300px" >
+        <TextField
+          {...register("name", { required: true })}
+          label={labelRequired("Navn")}
+          autoComplete="on"
+          error={errors?.name?.message}
+        />
+        <TextField
+          {...register("phone", { required: false })}
+          label="Telefonnummer"
+          autoComplete="on"
+          type="text"
+          name="phone"
+          onBlur={() => handleFieldBlur("phone")}
+          error={errors?.phone?.message}
+        />
+        <HStack gap="4" >
+          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+            Avbryt
+          </Button>
+          <Button type="submit" size="medium">
+            Lagre
+          </Button>
+        </HStack>
+      </VStack>
       {error?.name && (
         <p>
           <span className="auth-dialog-box__error-message">{error?.message}</span>
