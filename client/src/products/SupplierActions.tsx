@@ -83,7 +83,7 @@ const SupplierActions = ({
               {canSetToEditMode && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setEditProductModalIsOpen(true)}
-                  disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                 >
                   Endre produkt
                   <PencilIcon aria-hidden />
