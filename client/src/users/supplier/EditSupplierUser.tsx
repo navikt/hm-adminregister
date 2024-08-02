@@ -13,6 +13,7 @@ import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { useUser } from "utils/swr-hooks";
 import { UserDTO } from "utils/types/response-types";
 import { supplierUserInfoUpdate } from "utils/zodSchema/login";
+import FormBox from "felleskomponenter/FormBox";
 
 type FormData = z.infer<typeof supplierUserInfoUpdate>;
 
@@ -125,43 +126,45 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
   }
 
   return (
-    <form className="auth-dialog-box__form" method="POST" onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        {...register("name", { required: true })}
-        label={labelRequired("Navn")}
-        id="name"
-        name="name"
-        size="medium"
-        autoComplete="on"
-        description="Fornavn og etternavn"
-        onBlur={() => handleFieldBlur("name")}
-        onFocus={() => handleFieldFocus("name")}
-        error={blurredFields.name && errors?.name?.message}
-      />
-      <TextField
-        {...register("phone", { required: false })}
-        label="Telefonnummer"
-        id="phoneNumber"
-        type="text"
-        name="phone"
-        autoComplete="on"
-        onBlur={() => handleFieldBlur("phone")}
-        onFocus={() => handleFieldFocus("phone")}
-        error={blurredFields.phone && errors?.phone?.message}
-      />
-      <div className="auth-dialog-box__button-container">
-        <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-          Avbryt
-        </Button>
-        <Button type="submit" size="medium" disabled={isSubmitting}>
-          Lagre
-        </Button>
-      </div>
-      {error?.name && (
-        <p>
-          <span className="auth-dialog-box__error-message">{error?.message}</span>
-        </p>
-      )}
-    </form>
+    <FormBox>
+      <form method="POST" onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+          {...register("name", { required: true })}
+          label={labelRequired("Navn")}
+          id="name"
+          name="name"
+          size="medium"
+          autoComplete="on"
+          description="Fornavn og etternavn"
+          onBlur={() => handleFieldBlur("name")}
+          onFocus={() => handleFieldFocus("name")}
+          error={blurredFields.name && errors?.name?.message}
+        />
+        <TextField
+          {...register("phone", { required: false })}
+          label="Telefonnummer"
+          id="phoneNumber"
+          type="text"
+          name="phone"
+          autoComplete="on"
+          onBlur={() => handleFieldBlur("phone")}
+          onFocus={() => handleFieldFocus("phone")}
+          error={blurredFields.phone && errors?.phone?.message}
+        />
+        <div className="auth-dialog-box__button-container">
+          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+            Avbryt
+          </Button>
+          <Button type="submit" size="medium" disabled={isSubmitting}>
+            Lagre
+          </Button>
+        </div>
+        {error?.name && (
+          <p>
+            <span className="auth-dialog-box__error-message">{error?.message}</span>
+          </p>
+        )}
+      </form>
+    </FormBox>
   );
 };

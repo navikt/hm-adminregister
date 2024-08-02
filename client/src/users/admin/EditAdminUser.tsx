@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PersonPencilIcon } from "@navikt/aksel-icons";
 import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
+import FormBox from "felleskomponenter/FormBox";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -33,14 +34,9 @@ const EditAdminUser = () => {
     <main>
       <div className="auth-page">
         {user && loggedInUser?.isAdmin && (
-          <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-            <PersonPencilIcon title="a11y-title" fontSize="1.5rem" />
-            <Heading spacing level="2" size="small" align="center">
-              Oppdater informasjonen om deg
-            </Heading>
+          <FormBox title="Oppdater informasjonen om deg" icon={<PersonPencilIcon />}>
             {user && <AdminUserEditForm user={user} />}
-          </div>
-        )}
+          </FormBox>)}
       </div>
     </main>
   );
@@ -156,7 +152,7 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
         <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
           Avbryt
         </Button>
-        <Button type="submit" size="medium" disabled={!isDirty || !isValid || isSubmitting}>
+        <Button type="submit" size="medium">
           Lagre
         </Button>
       </div>
