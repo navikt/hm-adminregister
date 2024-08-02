@@ -15,7 +15,6 @@ run-name: Bygg og deploy til ${{ inputs.environment }}
 env:
   BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment }}
   CLUSTER: ${{ inputs.environment == 'prod' && 'prod-gcp' || 'dev-gcp' }}
-  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   test:
@@ -51,26 +50,17 @@ jobs:
       image: ${{ steps.docker-build.outputs.image }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: nais/docker-build-push@v0
+        id: docker-build
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and publish Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE }}
-          build-args: |
+          team: teamdigihot
+          build_args: |
             BUILD_ENV=${{ env.BUILD_ENV }}
             CLUSTER=${{ env.CLUSTER }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          secrets: |
+          build_secrets: |
             "NODE_AUTH_TOKEN=${{ secrets.READER_TOKEN }}"
-
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy:
     name: Deploy ${{ inputs.environment }}
@@ -83,5 +73,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ env.CLUSTER }}
           RESOURCE: .nais/nais.yaml
-          VAR: image=${{ env.IMAGE }}
+          VAR: image=${{ needs.build.outputs.image }}
           VARS: .nais/nais-${{ inputs.environment }}.json
