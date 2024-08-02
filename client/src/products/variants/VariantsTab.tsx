@@ -174,7 +174,7 @@ const VariantsTab = ({
                                   </Dropdown.Menu.List.Item>
                                 ) : product.registrationStatus === "ACTIVE" ? (
                                   <Dropdown.Menu.List.Item
-                                    disabled={product.draftStatus === "DRAFT" || isInAgreement}
+                                    disabled={product.draftStatus === "DRAFT"}
                                     onClick={() => setAsExpired(product)}
                                   >
                                     Marker variant som utgått
