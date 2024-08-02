@@ -74,7 +74,7 @@ const SupplierActions = ({
               {isDraft && !series.published && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setDeleteConfirmationModalIsOpen(true)}
-                  disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                 >
                   <TrashIcon aria-hidden />
                   Slett
@@ -104,11 +104,11 @@ const SupplierActions = ({
                     Marker som aktiv
                   </Dropdown.Menu.List.Item>
                 ))}
-              {isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (
-                <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>
-                  Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå
-                </Dropdown.Menu.GroupedList.Heading>
-              )}
+              {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
+              {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
+              {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
+              {/*  </Dropdown.Menu.GroupedList.Heading>*/}
+              {/*)}*/}
               <Dropdown.Menu.Divider />
               <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
                 Eksporter varianter

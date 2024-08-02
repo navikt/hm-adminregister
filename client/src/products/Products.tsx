@@ -20,7 +20,6 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SeriesTable } from "products/SeriesTable";
-import { useFlag } from "toggles/context";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,7 +28,6 @@ const Products = () => {
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
 
-  const aFlag = useFlag("adminreg.test");
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -102,7 +100,6 @@ const Products = () => {
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
-        {aFlag.enabled && <div>Feature flag is enabled</div>}
         <VStack gap="4">
           <div className="page__content-container">
             <HStack justify="space-between" wrap gap="4">
