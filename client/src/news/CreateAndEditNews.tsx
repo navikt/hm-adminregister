@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { NewspaperIcon } from "@navikt/aksel-icons";
-import { Button, Heading, HStack, TextField } from "@navikt/ds-react";
+import { Box, Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { useForm } from "react-hook-form";
-import styles from "./CreateAndEditNews.module.scss";
 import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
 import RichTextEditorNews from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
 import CustomDatePicker from "news/CustomDatePicker";
+import FormBox from "felleskomponenter/FormBox";
 
 type FormData = {
   newsTitle: string;
@@ -62,62 +62,61 @@ const CreateAndEditNews = () => {
     }
   }
 
+  const title = editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding"
+
   return (
-    <div className={styles.createNews}>
-      <div className={styles.headerContainer}>
-        <NewspaperIcon title="a11y-title" width={43} height={43} aria-hidden />
-        <Heading level="1" size="large" align="center">
-          {editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding"}
-        </Heading>
-      </div>
+    <FormBox title={title} icon={<NewspaperIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          {...register("newsTitle", { required: true })}
-          label={labelRequired("Tittel på nyhetsmelding")}
-          id="newsTitle"
-          name="newsTitle"
-          type="text"
-          autoComplete="on"
-          error={errors.newsTitle && "Tittel er påkrevd"}
-          defaultValue={editNewsData ? editNewsData.title : ""}
-        />
-
-        <HStack paddingBlock="5 0" wrap={false} align="start" justify="space-between">
-          <CustomDatePicker
-            name="publishedOn"
-            label={"Synlig fra"}
-            control={control}
-            required={true}
-            shouldUnregister={true}
-            errorMessage={"Ugyldig dato"}
+        <VStack gap="7">
+          <TextField
+            {...register("newsTitle", { required: true })}
+            label={labelRequired("Tittel på nyhetsmelding")}
+            id="newsTitle"
+            name="newsTitle"
+            type="text"
+            autoComplete="on"
+            error={errors.newsTitle && "Tittel er påkrevd"}
+            defaultValue={editNewsData ? editNewsData.title : ""}
           />
-          <CustomDatePicker
-            name="expiredOn"
-            label={"Synlig til"}
-            control={control}
-            required={true}
-            shouldUnregister={true}
-            errorMessage={"Ugyldig dato"}
-            watchPublishDate={watch("publishedOn")}
-          />
-        </HStack>
-        <Heading level="2" size="small" className={styles.increaseSpacing}>
-          Beskrivelse
-        </Heading>
+          <Box>
+            <Heading level="2" size="xsmall" spacing={true}>
+              Vises på FinnHjelpemiddel
+            </Heading>
+            <HStack gap="4" wrap={false} align="start" justify="space-between">
+              <CustomDatePicker
+                name="publishedOn"
+                label={"Fra"}
+                control={control}
+                required={true}
+                shouldUnregister={true}
+                errorMessage={"Ugyldig dato"}
+              />
 
-        <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
+              <CustomDatePicker
+                name="expiredOn"
+                label={"Til"}
+                control={control}
+                required={true}
+                shouldUnregister={true}
+                errorMessage={"Ugyldig dato"}
+                watchPublishDate={watch("publishedOn")}
+              />
+            </HStack>
+          </Box>
 
-        <div className={styles.buttonContainer}>
-          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-            Avbryt
-          </Button>
+          <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
+          <HStack gap="4" align="center">
+            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+              Avbryt
+            </Button>
 
-          <Button type="submit" size="medium">
-            {editNewsData ? "Lagre" : "Opprett"}
-          </Button>
-        </div>
+            <Button type="submit" size="medium">
+              {editNewsData ? "Lagre" : "Opprett"}
+            </Button>
+          </HStack>
+        </VStack>
       </form>
-    </div>
+    </FormBox >
   );
 };
 

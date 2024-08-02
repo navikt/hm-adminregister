@@ -4,6 +4,7 @@ import "./RichTextEditor.css";
 import "react-quill/dist/quill.snow.css";
 import styles from "./RichTextEditor.module.scss";
 import { useRef } from "react";
+import { Box, Heading } from "@navikt/ds-react";
 
 type RichTextEditorNewsProps = {
   content: string;
@@ -24,13 +25,18 @@ export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
   const formats = ["bold", "italic", "list", "bullet", "link"];
 
   return (
-    <ReactQuill
-      ref={editorRef}
-      modules={modules}
-      formats={formats}
-      value={props.content}
-      onChange={props.setContent}
-      className={styles.editorStyle}
-    />
+    <Box>
+      <Heading level="2" size="xsmall" spacing={true}>
+        Beskrivelse
+      </Heading>
+      <ReactQuill
+        ref={editorRef}
+        modules={modules}
+        formats={formats}
+        value={props.content}
+        onChange={props.setContent}
+        className={styles.editorStyle}
+      />
+    </Box>
   );
 }
