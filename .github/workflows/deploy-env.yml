@@ -9,6 +9,9 @@ on:
         options:
           - dev
           - prod
+  push:
+    branches:
+      - nais-docker-bp
 
 run-name: Bygg og deploy til ${{ inputs.environment }}
 
@@ -44,7 +47,6 @@ jobs:
     name: Build and push docker container
     permissions:
       contents: 'write'
-      packages: 'write'
       id-token: 'write'
     runs-on: ubuntu-latest
     outputs:
