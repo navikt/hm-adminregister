@@ -45,6 +45,7 @@ jobs:
     permissions:
       contents: 'read'
       packages: 'write'
+      id-token: 'write'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.docker-build.outputs.image }}
