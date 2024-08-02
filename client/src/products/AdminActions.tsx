@@ -93,42 +93,45 @@ const AdminActions = ({
       )}
 
       {shouldPublish && <Button onClick={onPublish}>Publiser</Button>}
-      <Dropdown>
-        <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
-        <Dropdown.Menu>
-          <Dropdown.Menu.List>
-            {isPending && shouldPublish && (
-              <>
-                <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
-                  Avslå
-                  <ExclamationmarkTriangleIcon aria-hidden />
-                </Dropdown.Menu.List.Item>
-                <Dropdown.Menu.Divider />
-              </>
-            )}
-            {!isDeleted && (
+      {isDeleted ? (
+        <></>
+      ) : (
+        <Dropdown>
+          <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
+          <Dropdown.Menu>
+            <Dropdown.Menu.List>
+              {isPending && shouldPublish && (
+                <>
+                  <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
+                    Avslå
+                    <ExclamationmarkTriangleIcon aria-hidden />
+                  </Dropdown.Menu.List.Item>
+                  <Dropdown.Menu.Divider />
+                </>
+              )}
               <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                 Slett
                 <TrashIcon aria-hidden />
               </Dropdown.Menu.List.Item>
-            )}
-            {canSetExpiredStatus &&
-              (series.status === "ACTIVE" ? (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                >
-                  Marker som utgått
-                </Dropdown.Menu.List.Item>
-              ) : (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
-                >
-                  Marker som aktiv
-                </Dropdown.Menu.List.Item>
-              ))}
-          </Dropdown.Menu.List>
-        </Dropdown.Menu>
-      </Dropdown>
+
+              {canSetExpiredStatus &&
+                (series.status === "ACTIVE" ? (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                  >
+                    Marker som utgått
+                  </Dropdown.Menu.List.Item>
+                ) : (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                  >
+                    Marker som aktiv
+                  </Dropdown.Menu.List.Item>
+                ))}
+            </Dropdown.Menu.List>
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
     </HStack>
   );
 };
