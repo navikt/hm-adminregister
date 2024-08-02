@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SupplierDTO } from "utils/supplier-util";
 import ErrorAlert from "error/ErrorAlert";
 import styles from "./Suppliers.module.scss";
+import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
 
 const Suppliers = () => {
   const { suppliers, isLoading, error } = useSuppliers();
@@ -53,8 +54,7 @@ const Suppliers = () => {
               <Search
                 className="search-button"
                 label="Søk etter en leverandør"
-                variant="primary"
-                clearButton={true}
+                variant="simple"
                 placeholder="Søk etter en leverandør"
                 size="medium"
                 value={searchTerm}
@@ -81,20 +81,24 @@ const Suppliers = () => {
                   <p>
                     <strong>{supplier.name}</strong> {supplier.postNr} {supplier.postLocation}
                   </p>
+                  <div>
+                    {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
+                    {supplier.status === "ACTIVE" && <TagWithIcon icon={<></>} text="Aktiv" color={colors.GREEN} />}
+                  </div>
                   <ChevronRightIcon className={styles.chevron} aria-hidden fontSize="24px" />
                 </Link>
               ))}
-            {renderData && renderData?.length > itemsPerPage && (
-              <Pagination
-                page={pageState}
-                onPageChange={(x) => setPageState(x)}
-                count={Math.ceil(renderData.length / itemsPerPage)}
-                boundaryCount={1}
-                siblingCount={0}
-                prevNextTexts
-              />
-            )}
           </div>
+          {renderData && renderData?.length > itemsPerPage && (
+            <Pagination
+              page={pageState}
+              onPageChange={(x) => setPageState(x)}
+              count={Math.ceil(renderData.length / itemsPerPage)}
+              boundaryCount={1}
+              siblingCount={0}
+              size="small"
+            />
+          )}
         </div>
       </div>
     </main>
