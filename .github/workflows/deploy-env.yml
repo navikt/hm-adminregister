@@ -43,7 +43,7 @@ jobs:
     needs: [test]
     name: Build and push docker container
     permissions:
-      contents: 'read'
+      contents: 'write'
       packages: 'write'
       id-token: 'write'
     runs-on: ubuntu-latest
