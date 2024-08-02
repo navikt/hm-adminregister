@@ -1,12 +1,11 @@
-import { Alert, BodyShort, Button, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
-import React, { useEffect, useState } from "react";
+import { Alert, BodyShort, Box, Button, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
+import { useEffect, useState } from "react";
 import { Upload } from "products/import/ImporterProdukter";
 import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
-import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
-import { generateImportData, ImportData } from "utils/import-util";
+import { ProductAgreementRegistrationDTO, ProductAgreementsWithInformation } from "utils/types/response-types";
+import { GroupedProductAgreements, groupProductAgreementsBySeries } from "utils/import-util";
 import { ProductAgreementVariants } from "agreements/import/valideringsside/ProductAgreementVariants";
-import { ProductAgreementsWithNoSeries } from "agreements/import/valideringsside/ProductAgreementsWithNoSeries";
 
 interface Props {
   upload: Upload;
@@ -15,7 +14,9 @@ interface Props {
 
 export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Props) => {
   const [productAgreementsToValidate, setProductAgreementsToValidate] = useState<ProductAgreementRegistrationDTO[]>([]);
-  const [importData, setImportData] = useState<ImportData | undefined>(undefined);
+  const [productAgreementsWithInformation, setProductAgreementsWithInformation] =
+    useState<ProductAgreementsWithInformation>([]);
+  const [importData, setImportData] = useState<GroupedProductAgreements | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [importSuccessful, setImportSuccessful] = useState(false);
@@ -28,8 +29,12 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
     setIsLoading(true);
     importKatalogfil(upload, true)
       .then((response) => {
-        setProductAgreementsToValidate(response.productAgreements);
-        const importData_ = generateImportData(response.productAgreements);
+        const productAgreeementsToValidate = response.productAgreementsWithInformation.map((productAgreement) => {
+          return productAgreement.first;
+        });
+        setProductAgreementsWithInformation(response.productAgreementsWithInformation);
+        setProductAgreementsToValidate(productAgreeementsToValidate);
+        const importData_ = groupProductAgreementsBySeries(productAgreeementsToValidate, response.createdSeries);
         setImportData(importData_);
         setIsLoading(false);
       })
@@ -44,7 +49,10 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
 
     importKatalogfil(upload, false)
       .then((response) => {
-        setProductAgreementsToValidate(response.productAgreements);
+        const productAgreeementsToValidate = response.productAgreementsWithInformation.map((productAgreement) => {
+          return productAgreement.first;
+        });
+        setProductAgreementsToValidate(productAgreeementsToValidate);
         setIsLoading(false);
         setImportSuccessful(true);
       })
@@ -107,8 +115,8 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
             </Heading>
             {isLoading && <Loader size="2xlarge" />}
 
-            {!isLoading && productAgreementsToValidate.length > 0 && importData && (
-              <VStack gap="6">
+            {!isLoading && productAgreementsWithInformation.length > 0 && importData && (
+              <VStack gap="4">
                 <HStack gap="4">
                   <Button
                     className="fit-content"
@@ -126,7 +134,7 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
                     size="medium"
                     variant="primary"
                     iconPosition="right"
-                    onClick={(event) => {
+                    onClick={() => {
                       importer();
                     }}
                   >
@@ -134,14 +142,27 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
                   </Button>
                 </HStack>
 
-                <ProductAgreementsWithNoSeries productAgreements={importData.productAgreementsWithNoSeries ?? []} />
+                <Box padding="2">
+                  <HStack gap="1">
+                    Nye hovedprodukter: <b>{importData.newHovedprodukts}</b>
+                  </HStack>
+                  <HStack gap="1">
+                    Nye reservedeler: <b>{importData.newSpareParts}</b>
+                  </HStack>
+                  <HStack gap="1">
+                    Nye tilbehør: <b>{importData.newAccessories}</b>
+                  </HStack>
+                </Box>
 
                 {importData?.groupedProductAgreements?.map((productAgreementSeries, i) => {
                   return (
-                    <div>
+                    <div key={i}>
                       <ProductAgreementVariants
                         key={i}
                         title={productAgreementSeries.title}
+                        accessory={productAgreementSeries.accessory}
+                        sparePart={productAgreementSeries.sparePart}
+                        newProduct={productAgreementSeries.newProduct}
                         variants={productAgreementSeries.variants}
                       />
                     </div>

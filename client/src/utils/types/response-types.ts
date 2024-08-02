@@ -92,6 +92,11 @@ export type SupplierInventoryDTO = components["schemas"]["SupplierInventoryDTO"]
 
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
+export type ProductAgreementsWithInformation =
+  components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
+
+export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
+
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];
   pageable: components["schemas"]["OpenApiPageable"];
