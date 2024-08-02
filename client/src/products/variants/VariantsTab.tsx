@@ -79,7 +79,7 @@ const VariantsTab = ({
 
   const paginatedVariants = products.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
 
-  const anyExpired = products.some((product) => product.registrationStatus === "INACTIVE");
+  const anyNonActive = products.some((product) => product.registrationStatus !== "ACTIVE");
 
   const setAsExpired = (product: ProductRegistrationDTO) => {
     const productRegistrationUpdated: ProductRegistrationDTO = {
@@ -199,12 +199,13 @@ const VariantsTab = ({
                         <Table.DataCell key={`articleName-${i}`}>{product.articleName || "-"}</Table.DataCell>
                       ))}
                     </Table.Row>
-                    {anyExpired && (
+                    {anyNonActive && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
                         {paginatedVariants.map((product, i) => (
                           <Table.DataCell key={`expired-${i}`}>
                             {product.registrationStatus === "INACTIVE" && <Tag variant="warning-moderate">Utgått</Tag>}
+                            {product.registrationStatus === "DELETED" && <Tag variant="error-moderate">Slettet</Tag>}
                           </Table.DataCell>
                         ))}
                       </Table.Row>
