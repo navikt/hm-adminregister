@@ -94,7 +94,12 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(!series.text || series.formattedText || numberOfImages(series) === 0 || series.count === 0);
+    return !(
+      !series.text ||
+      series.formattedText ||
+      (!loggedInUser?.isAdmin && numberOfImages(series) === 0) ||
+      series.count === 0
+    );
   };
 
   const handleSaveProductTitle = () => {
