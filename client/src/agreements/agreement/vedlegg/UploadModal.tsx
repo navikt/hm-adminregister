@@ -155,12 +155,12 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
             onDrop={handleDragEvent}
             className="images-tab__upload-container"
           >
-            <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
+            <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
             <BodyShort className="images-tab__text">Slipp dokumentet her eller</BodyShort>
             <Button
               size="small"
               variant="secondary"
-              icon={<UploadIcon title="Last opp dokument" fontSize="1.5rem" />}
+              icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
               iconPosition="right"
               onClick={(event) => {
                 event.preventDefault();
@@ -191,13 +191,13 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
             {uploads.map((upload, i) => (
               <HStack as="li" justify="space-between" align="center" key={`upload-${i}`}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                  <FilePdfIcon fontSize="1.5rem" />
+                  <FilePdfIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
                   variant="tertiary"
-                  icon={<TrashIcon />}
+                  icon={<TrashIcon aria-hidden />}
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />

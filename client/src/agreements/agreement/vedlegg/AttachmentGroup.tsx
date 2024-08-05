@@ -102,7 +102,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
             <Button
               className="fit-content"
               variant="tertiary"
-              icon={<PlusCircleIcon title="Legg til dokumenter" fontSize="1.5rem" />}
+              icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
                 setModalIsOpen(true);
               }}

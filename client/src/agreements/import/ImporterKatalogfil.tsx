@@ -82,7 +82,7 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
               onDrop={handleDragEvent}
               className="images-tab__upload-container"
             >
-              <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
+              <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
               <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
               <Button
                 size="small"

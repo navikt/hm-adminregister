@@ -41,7 +41,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
           <Button
             className="fit-content"
             variant="tertiary"
-            icon={<PlusCircleIcon title="Legg til dokument" fontSize="1.5rem" />}
+            icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             onClick={() => {
               setModalIsOpen(true);
             }}

@@ -62,7 +62,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/rammeavtaler") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <PencilLineIcon fontSize="1.5rem" title="Rammeavtaler" />
+              <PencilLineIcon fontSize="1.5rem" aria-hidden />
               <span>Rammeavtaler</span>
             </HStack>
           </NavLink>
@@ -70,7 +70,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/til-godkjenning") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <FileCheckmarkFillIcon fontSize="1.5rem" title="Til godkjenning" />
+              <FileCheckmarkFillIcon fontSize="1.5rem" aria-hidden />
               <span>Til godkjenning</span>
             </HStack>
           </NavLink>
@@ -81,7 +81,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         {pathname.startsWith("/produkter") && <div className="active-indicator" />}
         <div className="line" />
         <HStack gap="4" style={{ paddingLeft: "16px" }}>
-          <PackageFillIcon fontSize={"1.5rem"} title="Produkter" />
+          <PackageFillIcon fontSize={"1.5rem"} aria-hidden />
           <span>Produkter</span>
         </HStack>
       </NavLink>
@@ -92,7 +92,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/leverandor") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <Buldings3Icon fontSize={"1.5rem"} title="Leverandører" />
+              <Buldings3Icon fontSize={"1.5rem"} aria-hidden />
               <span>Leverandører</span>
             </HStack>
           </NavLink>
@@ -101,7 +101,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/nyheter") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" />
+              <NewspaperIcon fontSize={"1.5rem"} aria-hidden />
               <span>Nyheter</span>
             </HStack>
           </NavLink>
