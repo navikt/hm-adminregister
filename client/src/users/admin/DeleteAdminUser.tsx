@@ -20,7 +20,7 @@ const DeleteAdminUser = () => {
     <main>
       <div className="auth-page">
         <div className="auth-dialog-box__container">
-          <PersonCrossIcon title="Slette bruker" fontSize="1.5rem" />
+          <PersonCrossIcon fontSize="1.5rem" aria-hidden />
           <Heading spacing level="2" size="small" align="center">
             Slette bruker
           </Heading>

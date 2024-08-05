@@ -14,7 +14,7 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
       <VStack gap="6">
         {loggedInUser?.isAdmin && (
           <Link className="supplier-info__parent-page-link" to="/leverandor">
-            <ArrowUndoIcon title="Tilbake til oversikt" fontSize="1.5rem" />
+            <ArrowUndoIcon fontSize="1.5rem" aria-hidden />
             Tilbake til oversikt
           </Link>
         )}

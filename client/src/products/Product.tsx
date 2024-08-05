@@ -205,7 +205,7 @@ const Product = () => {
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<FloppydiskIcon title="Lagre tittel" fontSize="1.5rem" />}
+                    icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
                     onClick={handleSaveProductTitle}
                   >
                     Lagre

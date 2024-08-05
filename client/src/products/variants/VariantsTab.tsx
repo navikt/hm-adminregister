@@ -254,7 +254,7 @@ const VariantsTab = ({
           <Button
             className="fit-content"
             variant="tertiary"
-            icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+            icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             style={{ marginTop: "16px" }}
             onClick={() => {
               navigate(

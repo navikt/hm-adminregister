@@ -87,7 +87,7 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
               <Button
                 size="small"
                 variant="secondary"
-                icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
+                icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
                 iconPosition="right"
                 onClick={(event) => {
                   event.preventDefault();
@@ -121,13 +121,13 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
             <VStack as="ol" gap="3" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                  <FileExcelIcon fontSize="1.5rem" />
+                  <FileExcelIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
                   variant="tertiary"
-                  icon={<TrashIcon />}
+                  icon={<TrashIcon aria-hidden />}
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />

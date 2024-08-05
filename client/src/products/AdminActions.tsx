@@ -86,7 +86,7 @@ const AdminActions = ({
             setShowDiffModalIsOpen(true);
           }}
           variant="secondary"
-          icon={<FileSearchIcon title="se endring" fontSize="1.5rem" />}
+          icon={<FileSearchIcon fontSize="1.5rem" aria-hidden />}
         >
           Se endringer
         </Button>

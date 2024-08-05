@@ -98,7 +98,7 @@ export default function CreateSupplier() {
     <div className="create-new-supplier">
       <div className="content">
         <div className="header-container">
-          <Buldings3Icon title="a11y-title" width={43} height={43} aria-hidden />
+          <Buldings3Icon width={43} height={43} aria-hidden />
           <Heading level="1" size="large" align="center">
             Opprett ny leverandør
           </Heading>

@@ -87,7 +87,7 @@ export default function CreateSupplierUser() {
     <div className="create-new-supplier-user">
       <div className="content">
         <div className="header-container">
-          <PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />
+          <PersonIcon aria-hidden={true} width={43} height={43} />
           <Heading level="1" size="large" align="center">
             Opprett ny bruker
           </Heading>

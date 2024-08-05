@@ -51,9 +51,9 @@ const ProfileMenu = () => {
         >
           <span className="icon-name-container">
             {loggedInUser?.isAdmin ? (
-              <PersonIcon title="User icon" fontSize="2.25rem" />
+              <PersonIcon fontSize="2.25rem" aria-hidden />
             ) : (
-              <Buldings3Icon title="Building icon" fontSize="2.25rem" />
+              <Buldings3Icon fontSize="2.25rem" aria-hidden />
             )}
             <VStack align={"start"}>
               <BodyShort className="text-overflow-hidden-small">
@@ -85,7 +85,7 @@ const ProfileMenu = () => {
           icon={<PersonCircleIcon title="profile" fontSize="2.25rem" />}
         ></Button>
         <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
-          <LeaveIcon title="Logg ut" fontSize="1.5rem" /> <Detail>Logg ut</Detail>
+          <LeaveIcon fontSize="1.5rem" aria-hidden /> <Detail>Logg ut</Detail>
         </Link>
       </div>
     </>
