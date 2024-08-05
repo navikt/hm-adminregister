@@ -1,4 +1,4 @@
-import { render, renderHook, screen } from "@testing-library/react";
+import { fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { expect, test, describe } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -22,7 +22,10 @@ const dummyProduct = (id: string, title: string, draftStatus: string = "DRAFT", 
     status: "ACTIVE",
     seriesData: {
       media: [],
-      attributes: {},
+      attributes: {
+        keywords: ["defaultKeyword"],
+        url: "https://nav.no",
+      },
     },
     created: "2024-05-24T09:54:25.595126",
     updated: "2024-05-24T09:54:25.595163",
@@ -59,6 +62,11 @@ const changeDescriptionButton = "Endre beskrivelse";
 const changeKeywordButton = "Endre nøkkelord";
 const changeURLButton = "Endre URL";
 
+const addVariantButton = "Legg til ny variant";
+const addImagesButton = "Legg til bilder";
+const addDocumentsButton = "Legg til dokumenter";
+const addVideoButton = "Legg til videolenke";
+
 describe("Produktside", () => {
   test("Redigerbart produkt", async () => {
     logIn(false);
@@ -79,11 +87,28 @@ describe("Produktside", () => {
     expect(await screen.findByText("Ikke publisert")).toBeInTheDocument();
     expect(await screen.findByText("DefaultSupplier")).toBeInTheDocument();
 
+    expect(await axe(container)).toHaveNoViolations();
+
+    //Redigeringsknapper vises
     expect(await screen.findByRole("button", { name: approvalButton })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: changeDescriptionButton })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: changeKeywordButton })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: changeURLButton })).toBeInTheDocument();
 
+    fireEvent.click(await screen.findByRole("tab", { name: /Egenskaper/ }));
+    expect(await screen.findByRole("button", { name: addVariantButton })).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Bilder/ }));
+    expect(await screen.findByRole("button", { name: addImagesButton })).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Dokumenter/ }));
+    expect(await screen.findByRole("button", { name: addDocumentsButton })).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Videolenker/ }));
+    expect(await screen.findByRole("button", { name: addVideoButton })).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -106,9 +131,22 @@ describe("Produktside", () => {
 
     expect(await screen.findByText("Venter på godkjenning")).toBeInTheDocument();
 
+    //Redigeringsknapper vises ikke
     expect(screen.queryByRole("button", { name: approvalButton })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: changeDescriptionButton })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: changeKeywordButton })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: changeURLButton })).not.toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Egenskaper/ }));
+    expect(screen.queryByRole("button", { name: addVariantButton })).not.toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Bilder/ }));
+    expect(screen.queryByRole("button", { name: addImagesButton })).not.toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Dokumenter/ }));
+    expect(screen.queryByRole("button", { name: addDocumentsButton })).not.toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Videolenker/ }));
+    expect(screen.queryByRole("button", { name: addVideoButton })).not.toBeInTheDocument();
   });
 });
