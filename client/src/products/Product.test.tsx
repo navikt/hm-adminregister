@@ -112,7 +112,7 @@ describe("Produktside", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  test("Kan ikke redigere produkt når til godkjenning", async () => {
+  test("Ikke-redigerbart produkt", async () => {
     logIn(false);
 
     server.use(
