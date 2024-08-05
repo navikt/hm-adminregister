@@ -10,7 +10,7 @@ const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: S
   const navigate = useNavigate();
   const { loggedInUser } = useAuthStore();
   const handleCreateNewSupplierUser = () => {
-    navigate(`/leverandor/opprett-bruker?suppid=${supplier.id}`);
+    navigate(`/leverandor/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
   };
   return (
     <VStack gap="3">
@@ -42,7 +42,7 @@ const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: S
                       disabled={true}
                       icon={<TrashIcon aria-hidden />}
                       iconPosition="right"
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       Slette
                     </Button>

@@ -78,19 +78,21 @@ export default function CreateAdminUser() {
             autoComplete="off"
             error={errors?.email?.message}
           />
-          <TextField
-            {...register("password", { required: true })}
-            label={labelRequired("Midlertidig passord")}
-            id="password"
-            type={isPasswordShown ? "text" : "password"}
-            description="Passordet skal byttes ved første innlogging"
-            name="password"
-            autoComplete="off"
-            error={errors?.password?.message}
-          />
-          <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value="isPassShown">
-            Vis passord
-          </Checkbox>
+          <VStack>
+            <TextField
+              {...register("password", { required: true })}
+              label={labelRequired("Midlertidig passord")}
+              id="password"
+              type={isPasswordShown ? "text" : "password"}
+              description="Passordet skal byttes ved første innlogging"
+              name="password"
+              autoComplete="off"
+              error={errors?.password?.message}
+            />
+            <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value="isPassShown">
+              Vis passord
+            </Checkbox>
+          </VStack>
           <Alert variant="info">
             OBS! Det vil ikke være mulig å finne tilbake til det midlertidige passordet etter at brukeren er
             opprettet.

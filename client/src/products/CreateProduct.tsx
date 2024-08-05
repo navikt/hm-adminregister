@@ -12,6 +12,7 @@ import Combobox from "felleskomponenter/Combobox";
 import { createNewSeriesSchema } from "utils/zodSchema/newSeries";
 import { draftNewSeries } from "api/SeriesApi";
 import FormBox from "felleskomponenter/FormBox";
+import { PackageIcon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof createNewSeriesSchema>;
 
@@ -54,7 +55,7 @@ export default function CreateProduct() {
   };
 
   return (
-    <FormBox title="Kom i gang med nytt produkt">
+    <FormBox title="Kom i gang med nytt produkt" icon={<PackageIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7">
           <TextField

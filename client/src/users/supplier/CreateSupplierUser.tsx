@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { PersonIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Checkbox, Heading, TextField } from "@navikt/ds-react";
+import { Alert, Button, Checkbox, HStack, TextField, VStack } from "@navikt/ds-react";
 import { newSupplierUserSchema } from "utils/zodSchema/newUser";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { SupplierUserDTO } from "utils/supplier-util";
 import { labelRequired } from "utils/string-util";
 import { HM_REGISTER_URL } from "environments";
@@ -17,7 +17,8 @@ type FormData = z.infer<typeof newSupplierUserSchema>;
 
 export default function CreateSupplierUser() {
   const { setGlobalError } = useErrorStore();
-
+  const location = useLocation();
+  const supplierName = location.state as String;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -25,7 +26,7 @@ export default function CreateSupplierUser() {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(newSupplierUserSchema),
     mode: "onSubmit",
@@ -68,42 +69,49 @@ export default function CreateSupplierUser() {
 
   return (
     <FormBox title="Opprett ny bruker" icon={<PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />}>
-
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          {...register("email", { required: true })}
-          label={labelRequired("E-post")}
-          id="email"
-          type="email"
-          name="email"
-          description="Eksempel: firma@domene.no"
-          autoComplete="on"
-          error={errors?.email?.message}
-        />
-        <TextField
-          {...register("password", { required: true })}
-          label={labelRequired("Midlertidig passord")}
-          id="password"
-          type={isPasswordShown ? "text" : "password"}
-          name="password"
-          description="Passordet skal byttes ved første innlogging"
-          autoComplete="off"
-          error={errors?.password?.message}
-        />
-        <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value="isPassShown">
-          Vis passord
-        </Checkbox>
-        <Alert variant="info">
-          OBS! Det ikke vil være mulig å finne tilbake til det midlertidige passordet etter at brukeren er opprettet.
-        </Alert>
-        <div className="button-container">
-          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-            Avbryt
-          </Button>
-          <Button type="submit" size="medium">
-            Opprett
-          </Button>
-        </div>
+        <VStack gap="7" width="300px">
+          <VStack>
+            <strong>Leverandør</strong>
+            {supplierName}
+          </VStack>
+          <TextField
+            {...register("email", { required: true })}
+            label={labelRequired("E-post")}
+            id="email"
+            type="email"
+            name="email"
+            description="Eksempel: firma@domene.no"
+            autoComplete="on"
+            error={errors?.email?.message}
+          />
+          <VStack>
+            <TextField
+              {...register("password", { required: true })}
+              label={labelRequired("Midlertidig passord")}
+              id="password"
+              type={isPasswordShown ? "text" : "password"}
+              name="password"
+              description="Passordet skal byttes ved første innlogging"
+              autoComplete="off"
+              error={errors?.password?.message}
+            />
+            <Checkbox onClick={() => setIsPasswordShown((prevState) => !prevState)} value="isPassShown">
+              Vis passord
+            </Checkbox>
+          </VStack>
+          <Alert variant="info">
+            OBS! Det ikke vil være mulig å finne tilbake til det midlertidige passordet etter at brukeren er opprettet.
+          </Alert>
+          <HStack gap="4">
+            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+              Avbryt
+            </Button>
+            <Button type="submit" size="medium">
+              Opprett
+            </Button>
+          </HStack>
+        </VStack>
       </form>
     </FormBox>
   );

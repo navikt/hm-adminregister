@@ -1,6 +1,6 @@
 import styles from "news/News.module.scss";
 import { Box, Button, Dropdown } from "@navikt/ds-react";
-import { MenuElipsisVerticalIcon } from "@navikt/aksel-icons";
+import { EyeClosedIcon, EyeIcon, MenuElipsisHorizontalCircleIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { deleteNews, publishNews, unpublishNews } from "api/NewsApi";
 import { NewsChunk, NewsRegistrationDTO } from "utils/types/response-types";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,8 @@ export default function NewsDropdownMenu(props: dropdownItems) {
         navigate(`/nyheter/rediger`, { state: props.news });
       }}
     >
-      Rediger nyhetsmelding
+      Rediger
+      <PencilWritingIcon title="Rediger" fontSize="1.5rem" />
     </Dropdown.Menu.GroupedList.Item>
   );
 
@@ -33,6 +34,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
       }}
     >
       Avpubliser
+      <EyeClosedIcon title="Avpubliser" fontSize="1.5rem" />
     </Dropdown.Menu.GroupedList.Item>
   );
 
@@ -43,6 +45,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
       }}
     >
       Publiser
+      <EyeIcon title="Publiser" fontSize="1.5rem" />
     </Dropdown.Menu.GroupedList.Item>
   );
 
@@ -50,11 +53,13 @@ export default function NewsDropdownMenu(props: dropdownItems) {
     <>
       <Dropdown.Menu.Divider />
       <Dropdown.Menu.GroupedList.Item
+        style={{ color: "RED" }}
         onClick={() => {
           deleteNews(props.news.id).then(() => props.mutateNewsRelease());
         }}
       >
         Slett
+        <TrashIcon title="Slett" fontSize="1.5rem" color="RED" />
       </Dropdown.Menu.GroupedList.Item>
     </>
   );
@@ -63,13 +68,13 @@ export default function NewsDropdownMenu(props: dropdownItems) {
     if (frontendStatus === NewsTypes.PUBLISHED) {
       return (
         <>
-          <Dropdown.Menu.Divider /> {unpublishOption}
+          {unpublishOption}
         </>
       );
     } else if (frontendStatus === NewsTypes.FUTURE) {
       return (
         <>
-          <Dropdown.Menu.Divider /> {publishOption}
+          {publishOption}
         </>
       );
     }
@@ -80,7 +85,7 @@ export default function NewsDropdownMenu(props: dropdownItems) {
       <Dropdown>
         <Button
           variant="tertiary"
-          icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
+          icon={<MenuElipsisHorizontalCircleIcon title="Rediger" fontSize="1.5rem" />}
           as={Dropdown.Toggle}
         />
         <Dropdown.Menu>
