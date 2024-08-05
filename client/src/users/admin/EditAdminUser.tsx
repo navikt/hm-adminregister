@@ -17,10 +17,6 @@ import { z } from "zod";
 
 type FormData = z.infer<typeof adminInfoUpdate>;
 
-interface BlurredFields {
-  name: boolean;
-  phone: boolean;
-}
 
 const EditAdminUser = () => {
   const { loggedInUser } = useAuthStore();
@@ -44,10 +40,6 @@ export default EditAdminUser;
 
 const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
   const { setGlobalError } = useErrorStore();
-  const [blurredFields, setBlurredFields] = useState<BlurredFields>({
-    name: false,
-    phone: false,
-  });
   const [phoneValue, setPhoneValue] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState<Error | null>(null);
@@ -96,7 +88,7 @@ const AdminUserEditForm = ({ user }: { user: UserDTO }) => {
         body: userInfoBody,
       });
       if (response.ok) {
-        const loggedInUser = mapLoggedInUser(await response.json());
+        // const loggedInUser = mapLoggedInUser(await response.json());
         navigate("/admin/profil");
       }
 
