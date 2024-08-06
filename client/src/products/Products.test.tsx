@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import Products from "products/Products";
 import { MemoryRouter } from "react-router-dom";
 import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import { axe } from "jest-axe";
+import ProductListWrapper from "./ProductListWrapper";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
@@ -76,7 +76,7 @@ test("Flere produkter", async () => {
 
   const { container } = render(
     <MemoryRouter>
-      <Products />
+      <ProductListWrapper key="all-products" isRejectedPage={false} />
     </MemoryRouter>
   );
 
