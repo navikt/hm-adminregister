@@ -27,7 +27,6 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
   const handleSaveKeywords = () => {
     setKeywordFormatError(undefined);
-    setShowEditKeywordsMode(false);
     if (updatedKeywords.length <= 3) {
       if (
         updatedKeywords.map((keyword) => isValidKeyword(keyword) && validKeywordLetters.test(keyword)).every(Boolean)
@@ -49,15 +48,20 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
         <Heading level="2" size="xsmall">
           Nøkkelord
         </Heading>
-        <BodyShort>
-          Nøkkelord vil bli brukt til søket, så her kan dere legge ord som dere mener bør gi treff på dette
-          hjelpemiddelet.
-        </BodyShort>
+        <BodyShort>Stikkord som kan søkes på i søket til FinnHjelpemiddel</BodyShort>
         {!showEditKeywordsMode && (
           <>
-            {!keywords ? (
+            <HStack gap="4">
+              {updatedKeywords.map((keyword, index) => (
+                <span className="keywords-static" key={index}>
+                  <Tag variant="alt3">{keyword}</Tag>
+                  {index < updatedKeywords.length - 1 ? "  " : ""}
+                </span>
+              ))}
+            </HStack>
+            {isEditable && (
               <>
-                {isEditable ? (
+                {!keywords || keywords.length === 0 ? (
                   <Button
                     className="fit-content"
                     variant="tertiary"
@@ -67,20 +71,6 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
                     Legg til nøkkelord
                   </Button>
                 ) : (
-                  "-"
-                )}
-              </>
-            ) : (
-              <>
-                <HStack gap="4">
-                  {updatedKeywords.map((keyword, index) => (
-                    <span className="keywords-static" key={index}>
-                      <Tag variant="alt3">{keyword}</Tag>
-                      {index < updatedKeywords.length - 1 ? "  " : ""}
-                    </span>
-                  ))}
-                </HStack>
-                {isEditable && (
                   <Button
                     className="fit-content"
                     variant="tertiary"
