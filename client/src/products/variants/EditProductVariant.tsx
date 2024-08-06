@@ -1,7 +1,8 @@
-import { Alert, Heading, HGrid, HStack, Loader, VStack } from "@navikt/ds-react";
+import { Alert, HGrid, Loader, VStack } from "@navikt/ds-react";
 import { useParams } from "react-router-dom";
 import ProductVariantForm from "./ProductVariantForm";
 import { useProductByProductId } from "utils/swr-hooks";
+import FormBox from "felleskomponenter/FormBox";
 
 const EditProductVariant = () => {
   const { productId } = useParams();
@@ -33,16 +34,11 @@ const EditProductVariant = () => {
   }
 
   return (
-    <main>
-      <HStack justify="center">
-        <VStack gap="8" className="spacing-bottom--xlarge">
-          <Heading level="1" size="large" align="start">
-            Egenskaper
-          </Heading>
-          <ProductVariantForm product={product} mutate={mutate} />
-        </VStack>
-      </HStack>
-    </main>
+    <FormBox title="Egenskaper">
+      <VStack gap="8">
+        <ProductVariantForm product={product} mutate={mutate} />
+      </VStack>
+    </FormBox>
   );
 };
 

@@ -23,7 +23,7 @@ export default function CreateProduct() {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isSubmitting },
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(createNewSeriesSchema),
