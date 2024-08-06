@@ -59,7 +59,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
                 <Button
                   className="fit-content"
                   variant="tertiary"
-                  icon={<PlusCircleIcon title="Legg til beskrivelse" fontSize="1.5rem" />}
+                  icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                   onClick={() => setShowEditDescriptionMode(true)}
                 >
                   Legg til beskrivelse
@@ -73,7 +73,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<PencilWritingIcon title="Endre beskrivelse" fontSize="1.5rem" />}
+                    icon={<PencilWritingIcon fontSize="1.5rem" aria-hidden />}
                     onClick={() => setShowEditDescriptionMode(true)}
                   >
                     Endre beskrivelse
@@ -96,7 +96,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
             <Button
               className="fit-content"
               variant="tertiary"
-              icon={<FloppydiskIcon title="Lagre beskrivelse" fontSize="1.5rem" />}
+              icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
                 handleSaveDescription(updatedDescription);
               }}

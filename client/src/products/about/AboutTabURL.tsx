@@ -45,7 +45,7 @@ export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<PlusCircleIcon title="Legg til URL til leverandørs produktside" fontSize="1.5rem" />}
+                    icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                     onClick={() => setShowEditUrlMode(true)}
                   >
                     Legg til URL til leverandørs produktside
@@ -63,7 +63,7 @@ export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<PencilWritingIcon title="Endre url" fontSize="1.5rem" />}
+                    icon={<PencilWritingIcon fontSize="1.5rem" aria-hidden />}
                     onClick={() => setShowEditUrlMode(true)}
                   >
                     Endre URL
@@ -95,7 +95,7 @@ export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props
             <Button
               className="fit-content"
               variant="tertiary"
-              icon={<FloppydiskIcon title="Lagre URL" fontSize="1.5rem" />}
+              icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
                 handleSaveUrl(updatedUrl);
               }}

@@ -26,11 +26,11 @@ export const MoreMenu = ({
           <Dropdown.Menu.List>
             {handleEditFileName && (
               <Dropdown.Menu.List.Item onClick={() => handleEditFileName(mediaInfo.uri)}>
-                <PencilWritingIcon title="rediger" fontSize="1.5rem" /> Endre filnavn
+                <PencilWritingIcon fontSize="1.5rem" aria-hidden /> Endre filnavn
               </Dropdown.Menu.List.Item>
             )}
             <Dropdown.Menu.List.Item onClick={() => handleDeleteFile(mediaInfo.uri)}>
-              <TrashIcon title="slett" fontSize="1.5rem" /> Slett
+              <TrashIcon fontSize="1.5rem" aria-hidden /> Slett
             </Dropdown.Menu.List.Item>
           </Dropdown.Menu.List>
         </Dropdown.Menu>

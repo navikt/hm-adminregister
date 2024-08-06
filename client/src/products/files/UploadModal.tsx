@@ -150,12 +150,12 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
             onDrop={handleDragEvent}
             className="images-tab__upload-container"
           >
-            <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
+            <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
             <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
             <Button
               size="small"
               variant="secondary"
-              icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
+              icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
               iconPosition="right"
               onClick={(event) => {
                 if (fileInputRef.current) {
@@ -304,7 +304,7 @@ const Upload = ({
             event.preventDefault();
             handleDelete(upload.file);
           }}
-          icon={<TrashIcon fontSize="2rem" />}
+          icon={<TrashIcon fontSize="2rem" aria-hidden />}
         />
       </HStack>
     </HStack>

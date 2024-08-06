@@ -3,9 +3,10 @@ import { NewspaperIcon } from "@navikt/aksel-icons";
 import { Box, Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { useForm } from "react-hook-form";
+import styles from "./CreateAndEditNews.module.scss";
 import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
-import RichTextEditorNews from "news/RichTextEditorNews";
+import RichTextNewsEditor from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
 import CustomDatePicker from "news/CustomDatePicker";
@@ -40,13 +41,9 @@ const CreateAndEditNews = () => {
   });
 
   async function onSubmit(data: FormData) {
-    // capture all p,li,ol,ul tags around <br>
-    const captureUnwantedGroup = /<ul>|(<li>|<p>|<ol>)<br>(<\/li>|<\/p>|<\/ol>)|<\/ul>/gm;
     const newNewsRelease: CreateUpdateNewsDTO = {
       title: data.newsTitle,
-      text: editNewsData
-        ? textHtmlContent.replace(captureUnwantedGroup, "<br>")
-        : textHtmlContent.replace("<p><br></p>", ""),
+      text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
     };
@@ -104,7 +101,16 @@ const CreateAndEditNews = () => {
             </HStack>
           </Box>
 
-          <RichTextEditorNews content={textHtmlContent} setContent={setTextHtmlContent} />
+          <Box>
+            <Heading level="2" size="xsmall" spacing={true}>
+              Beskrivelse
+            </Heading>
+            <RichTextNewsEditor
+              onTextChange={setTextHtmlContent}
+              defaultValue={editNewsData ? editNewsData.text : ""}
+              className={styles.editorStyle}
+            />
+          </Box>
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt

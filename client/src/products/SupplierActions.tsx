@@ -74,7 +74,7 @@ const SupplierActions = ({
               {isDraft && !series.published && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setDeleteConfirmationModalIsOpen(true)}
-                  disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                 >
                   <TrashIcon aria-hidden />
                   Slett
@@ -83,7 +83,7 @@ const SupplierActions = ({
               {canSetToEditMode && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setEditProductModalIsOpen(true)}
-                  disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                 >
                   Endre produkt
                   <PencilIcon aria-hidden />
@@ -93,7 +93,7 @@ const SupplierActions = ({
                 (series.status === "ACTIVE" ? (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                    disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                    // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                   >
                     Marker som utgått
                   </Dropdown.Menu.List.Item>
@@ -104,11 +104,11 @@ const SupplierActions = ({
                     Marker som aktiv
                   </Dropdown.Menu.List.Item>
                 ))}
-              {isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (
-                <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>
-                  Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå
-                </Dropdown.Menu.GroupedList.Heading>
-              )}
+              {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
+              {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
+              {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
+              {/*  </Dropdown.Menu.GroupedList.Heading>*/}
+              {/*)}*/}
               <Dropdown.Menu.Divider />
               <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
                 Eksporter varianter

@@ -48,7 +48,7 @@ const FirstTimeSupplierInfo = () => {
           </Heading>
         </span>
         <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-          <Buldings3Icon title="a11y-title" fontSize="1.5rem" aria-hidden />
+          <Buldings3Icon fontSize="1.5rem" aria-hidden />
           <Heading spacing level="2" size="medium" align="center">
             Før du går videre trenger vi også litt mer informasjon om leverandøren du representerer.
           </Heading>

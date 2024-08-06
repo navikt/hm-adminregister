@@ -84,7 +84,7 @@ const DocumentsTab = ({ series, mutateSeries, isEditable, showInputError }: Prop
               <Button
                 className="fit-content"
                 variant="tertiary"
-                icon={<PlusCircleIcon title={"Legg til dokumenter"} fontSize="1.5rem" />}
+                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                 onClick={() => {
                   setModalIsOpen(true);
                 }}
@@ -149,7 +149,7 @@ const DocumentListItem = ({
               variant="tertiary"
               title="Lagre"
               onClick={handleSaveFileName}
-              icon={<FloppydiskIcon fontSize="2rem" />}
+              icon={<FloppydiskIcon fontSize="2rem" aria-hidden />}
             />
           </HStack>
         </>

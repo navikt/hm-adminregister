@@ -13,7 +13,8 @@
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
-    "prom-client": "^14.1.0"
+    "prom-client": "^14.1.0",
+    "unleash-client": "^6.1.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",

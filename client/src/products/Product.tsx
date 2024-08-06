@@ -94,7 +94,12 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(!series.text || series.formattedText || numberOfImages(series) === 0 || series.count === 0);
+    return !(
+      !series.text ||
+      series.formattedText ||
+      (!loggedInUser?.isAdmin && numberOfImages(series) === 0) ||
+      series.count === 0
+    );
   };
 
   const handleSaveProductTitle = () => {
@@ -200,7 +205,7 @@ const Product = () => {
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<FloppydiskIcon title="Lagre tittel" fontSize="1.5rem" />}
+                    icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
                     onClick={handleSaveProductTitle}
                   >
                     Lagre

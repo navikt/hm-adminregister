@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: Props) => {
-  const keywords = series.seriesData.attributes.keywords ? series.seriesData.attributes.keywords : [];
+  const keywords = series.seriesData.attributes.keywords;
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
   const [inputValue, setInputValue] = useState("");
@@ -61,7 +61,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<PlusCircleIcon title="Legg til URL til produsentens produktside" fontSize="1.5rem" />}
+                    icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                     onClick={() => setShowEditKeywordsMode(true)}
                   >
                     Legg til nøkkelord
@@ -84,7 +84,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<PencilWritingIcon title="Endre url" fontSize="1.5rem" />}
+                    icon={<PencilWritingIcon fontSize="1.5rem" aria-hidden />}
                     onClick={() => setShowEditKeywordsMode(true)}
                   >
                     Endre nøkkelord
@@ -119,7 +119,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
             <Button
               className="fit-content"
               variant="tertiary"
-              icon={<FloppydiskIcon title="Lagre nøkkelord" fontSize="1.5rem" />}
+              icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
               onClick={handleSaveKeywords}
             >
               Lagre

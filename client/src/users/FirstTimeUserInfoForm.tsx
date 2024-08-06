@@ -131,7 +131,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
 
   return (
     <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-      <PersonPencilIcon title="a11y-title" fontSize="1.5rem" />
+      <PersonPencilIcon fontSize="1.5rem" aria-hidden />
       <Heading spacing level="2" size="small" align="center">
         Fyll ut informasjonen om deg og lag et nytt passord.
       </Heading>

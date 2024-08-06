@@ -1,4 +1,11 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { useAuthStore } from "utils/store/useAuthStore";
+import {
+  usePagedProducts,
+  useSeriesByHmsNr,
+  useSeriesBySupplierRef,
+} from "utils/swr-hooks";
 import {
   Alert,
   Button,
@@ -13,21 +20,18 @@ import {
   Select,
   VStack,
 } from "@navikt/ds-react";
-import "./products.scss";
-import { PlusIcon } from "@navikt/aksel-icons";
-import { usePagedProducts, useProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import styles from "products/ProductTable.module.scss";
 import { SeriesTable } from "products/SeriesTable";
+import { PlusIcon } from "@navikt/aksel-icons";
 
-const Products = () => {
+type productPropsType = { isRejectedPage: boolean };
+
+const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -35,15 +39,11 @@ const Products = () => {
   } = usePagedProducts({
     page: pageState - 1,
     pageSize: pageSizeState,
+    titleSearchTerm: searchTerm,
     statusFilters,
+    isRejectedPage,
   });
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const {
-    data: searchResults,
-    isLoading: isLoadingSearchResults,
-    error: errorProducts,
-  } = useProducts({ titleSearchTerm: searchTerm, statusFilters });
-  const [filteredData, setFilteredData] = useState<SeriesRegistrationDTO[] | undefined>();
+
   const navigate = useNavigate();
 
   const { seriesByHmsNr } = useSeriesByHmsNr(searchTerm);
@@ -51,16 +51,8 @@ const Products = () => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    if (value.length == 0) {
-      setFilteredData(undefined);
-    }
   };
 
-  useEffect(() => {
-    if (searchResults && searchResults.content) {
-      setFilteredData(searchResults.content);
-    }
-  }, [searchResults]);
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -71,11 +63,10 @@ const Products = () => {
   }, [pagedData]);
 
   const isSearch = searchTerm.length > 0;
-  const isSearchResults = filteredData && filteredData.length > 0;
 
   const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && !isSearch;
 
-  if (errorPaged || errorProducts) {
+  if (errorPaged) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -98,7 +89,7 @@ const Products = () => {
     <main className="show-menu">
       <div className="page__background-container">
         <Heading level="1" size="large" spacing>
-          Produkter
+          {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
         </Heading>
         <VStack gap="4">
           <div className="page__content-container">
@@ -107,7 +98,7 @@ const Products = () => {
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
-                  variant="primary"
+                  variant="simple"
                   clearButton={true}
                   placeholder="Søk etter produktnavn"
                   size="medium"
@@ -115,7 +106,7 @@ const Products = () => {
                   onChange={(value) => handleSearch(value)}
                 />
               </form>
-              {loggedInUser && !loggedInUser.isAdmin && (
+              {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
                 <HStack gap="2">
                   <Button
                     variant="secondary"
@@ -131,25 +122,24 @@ const Products = () => {
             </HStack>
           </div>
           <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
-            <Checkbox value="includeInactive">Vis utgåtte</Checkbox>
+            {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
           </CheckboxGroup>
           <VStack className="products-page__products">
             <div className="page__content-container">
-              {isSearch && isLoadingSearchResults && <Loader size="3xlarge" />}
-              {!isSearch && isLoadingPagedData && <Loader size="3xlarge" />}
+              {isLoadingPagedData && <Loader size="3xlarge" />}
 
-              {isSearch && seriesByHmsNr && (
+
+              {seriesByHmsNr ? (
                 <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
-              )}
-              {isSearch && seriesBySupplierRef && (
+              ) : seriesBySupplierRef ? (
                 <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-              )}
-              {isSearch && isSearchResults && <SeriesTable seriesList={filteredData} />}
-              {isSearch && !isSearchResults && !seriesByHmsNr && !seriesBySupplierRef && !isLoadingSearchResults && (
-                <Alert variant="info">Ingen produkter funnet.</Alert>
-              )}
-              {!isSearch && pagedData && <SeriesTable seriesList={pagedData.content} />}
-              <HStack gap="8">
+              ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
+                <SeriesTable seriesList={pagedData.content} />
+              ) :
+                <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}</Alert>
+              }
+
+              <HStack gap="8" align={"center"}>
                 {showPageNavigator === true && pagedData && (
                   <Pagination
                     page={pageState}
@@ -163,9 +153,8 @@ const Products = () => {
                     prevNextTexts
                   />
                 )}
-                {searchTerm.length == 0 && (
+                {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
                   <Select
-                    className={styles.pageSize}
                     label="Antall produkter per side"
                     size="small"
                     defaultValue={pageSizeState}
@@ -188,4 +177,5 @@ const Products = () => {
     </main>
   );
 };
-export default Products;
+
+export default ProductListWrapper;

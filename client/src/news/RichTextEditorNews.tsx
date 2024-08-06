@@ -1,42 +1,81 @@
-import React, { useEffect } from "react";
-import ReactQuill from "react-quill";
-import "./RichTextEditor.css";
-import "react-quill/dist/quill.snow.css";
-import styles from "./RichTextEditor.module.scss";
-import { useRef } from "react";
-import { Box, Heading } from "@navikt/ds-react";
+import "./RichTextEditorNews.css";
+import "quill/dist/quill.snow.css";
+import React, { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
+import Quill from "quill";
 
-type RichTextEditorNewsProps = {
-  content: string;
-  setContent: React.Dispatch<React.SetStateAction<string>>;
+// noinspection JSUnusedGlobalSymbols
+const bindings = {
+  tab: {
+    key: 9,
+    handler: () => true,
+  },
 };
 
-export default function RichTextEditorNews(props: RichTextEditorNewsProps) {
-  const editorRef = useRef<ReactQuill>(null);
+
+
+const modules = {
+  toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
+  keyboard: {
+    bindings: bindings,
+  },
+};
+const formats = ["bold", "italic", "list", "link"];
+
+type Props = {
+  onTextChange: (html: string) => void;
+  defaultValue?: string;
+  className?: string;
+};
+
+export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, defaultValue, className }: Props, ref) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const onTextChangeRef = useRef(onTextChange);
+  const defaultValueRef = useRef(defaultValue);
+
+  useLayoutEffect(() => {
+    onTextChangeRef.current = onTextChange;
+  });
+
   useEffect(() => {
-    //9 is the keybinding for tab
-    if (editorRef.current) delete editorRef.current.getEditor().getModule("keyboard").bindings[9];
-  }, [editorRef]);
+    const container = containerRef.current;
 
-  const modules = {
-    toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
-  };
+    if (!container) {
+      console.error("Invalid Quill container");
+      return;
+    }
 
-  const formats = ["bold", "italic", "list", "bullet", "link"];
+    const editorContainer = container.appendChild(container.ownerDocument.createElement("div"));
 
-  return (
-    <Box>
-      <Heading level="2" size="xsmall" spacing={true}>
-        Beskrivelse
-      </Heading>
-      <ReactQuill
-        ref={editorRef}
-        modules={modules}
-        formats={formats}
-        value={props.content}
-        onChange={props.setContent}
-        className={styles.editorStyle}
-      />
-    </Box>
-  );
-}
+    const quill = new Quill(editorContainer, {
+      modules,
+      formats,
+      theme: "snow",
+    });
+
+    if (ref && typeof ref === "function") {
+      ref(quill);
+    } else if (ref && "current" in ref) {
+      (ref as React.MutableRefObject<Quill | null>).current = quill;
+    }
+
+    if (defaultValueRef.current) {
+      const htmlAsDelta = quill.clipboard.convert({ html: defaultValueRef.current });
+      quill.setContents(htmlAsDelta);
+    }
+
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      onTextChange(quill.root.innerHTML);
+    });
+
+    return () => {
+      if (ref && "current" in ref) {
+        (ref as React.MutableRefObject<Quill | null>).current = null;
+      }
+      container.innerHTML = "";
+    };
+  }, [ref]);
+
+  return <div ref={containerRef} className={className}></div>;
+});
+
+export default RichTextNewsEditor;

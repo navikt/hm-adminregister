@@ -97,12 +97,12 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesId
               onDrop={handleDragEvent}
               className="images-tab__upload-container"
             >
-              <FileImageFillIcon className="images-tab__upload-icon" title="filillustarsjon" fontSize="4rem" />
+              <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
               <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
               <Button
                 size="small"
                 variant="secondary"
-                icon={<UploadIcon title="Last opp bilde" fontSize="1.5rem" />}
+                icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
                 iconPosition="right"
                 onClick={(event) => {
                   event.preventDefault();
@@ -136,13 +136,13 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesId
             <VStack as="ol" gap="3" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
                 <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                  <FileExcelIcon fontSize="1.5rem" />
+                  <FileExcelIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
                   variant={"tertiary"}
-                  icon={<TrashIcon />}
+                  icon={<TrashIcon aria-hidden />}
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
                 />

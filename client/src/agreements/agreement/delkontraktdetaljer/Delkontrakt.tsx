@@ -227,7 +227,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               <Button
                 className="fit-content"
                 variant="tertiary"
-                icon={<PlusCircleIcon title="Legg til produkt" fontSize="1.5rem" />}
+                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                 onClick={() => {
                   setNyttProduktModalIsOpen(true);
                 }}
