@@ -11,6 +11,8 @@ const bindings = {
   },
 };
 
+
+
 const modules = {
   toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
   keyboard: {
@@ -21,7 +23,7 @@ const formats = ["bold", "italic", "list", "link"];
 
 type Props = {
   onTextChange: (html: string) => void;
-  defaultValue?: string;
+  defaultValue?: any;
   className?: string;
 };
 
@@ -57,7 +59,7 @@ export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, d
     }
 
     if (defaultValueRef.current) {
-      const htmlAsDelta = quill.clipboard.convert({ html: defaultValueRef.current });
+      const htmlAsDelta = quill.clipboard.convert( {html :defaultValueRef.current} );
       quill.setContents(htmlAsDelta);
     }
 

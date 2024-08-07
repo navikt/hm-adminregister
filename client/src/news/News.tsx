@@ -54,7 +54,7 @@ const News = () => {
     <main className="show-menu">
       <div className="page__background-container">
         <Heading level="1" size="large" spacing>
-          Nyheter
+          Nyhetsmeldinger
         </Heading>
         <div className="page__content-container">
           <HStack justify="space-between" gap="4">

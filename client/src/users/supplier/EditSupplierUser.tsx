@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonPencilIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { PersonIcon } from "@navikt/aksel-icons";
+import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,7 @@ import { formatPhoneNumber, labelRequired } from "utils/string-util";
 import { useUser } from "utils/swr-hooks";
 import { UserDTO } from "utils/types/response-types";
 import { supplierUserInfoUpdate } from "utils/zodSchema/login";
+import FormBox from "felleskomponenter/FormBox";
 
 type FormData = z.infer<typeof supplierUserInfoUpdate>;
 
@@ -30,17 +31,9 @@ const EditSupplierUser = () => {
   }
 
   return (
-    <main>
-      <div className="auth-page">
-        <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-          <PersonPencilIcon fontSize="1.5rem" aria-hidden />
-          <Heading spacing level="2" size="small" align="center">
-            Oppdater informasjonen om deg
-          </Heading>
-          {user && <SupplierUserProfile user={user} />}
-        </div>
-      </div>
-    </main>
+    <FormBox title="Oppdater brukerinformasjon" icon={<PersonIcon />}>
+      {user && <SupplierUserProfile user={user} />}
+    </FormBox>
   );
 };
 export default EditSupplierUser;
@@ -125,43 +118,47 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
   }
 
   return (
-    <form className="auth-dialog-box__form" method="POST" onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        {...register("name", { required: true })}
-        label={labelRequired("Navn")}
-        id="name"
-        name="name"
-        size="medium"
-        autoComplete="on"
-        description="Fornavn og etternavn"
-        onBlur={() => handleFieldBlur("name")}
-        onFocus={() => handleFieldFocus("name")}
-        error={blurredFields.name && errors?.name?.message}
-      />
-      <TextField
-        {...register("phone", { required: false })}
-        label="Telefonnummer"
-        id="phoneNumber"
-        type="text"
-        name="phone"
-        autoComplete="on"
-        onBlur={() => handleFieldBlur("phone")}
-        onFocus={() => handleFieldFocus("phone")}
-        error={blurredFields.phone && errors?.phone?.message}
-      />
-      <div className="auth-dialog-box__button-container">
-        <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-          Avbryt
-        </Button>
-        <Button type="submit" size="medium" disabled={isSubmitting}>
-          Lagre
-        </Button>
-      </div>
+
+    <form method="POST" onSubmit={handleSubmit(onSubmit)}>
+      <VStack gap="7" width="300px">
+        <TextField
+          {...register("name", { required: true })}
+          label={labelRequired("Navn")}
+          id="name"
+          name="name"
+          size="medium"
+          autoComplete="on"
+          onBlur={() => handleFieldBlur("name")}
+          onFocus={() => handleFieldFocus("name")}
+          error={blurredFields.name && errors?.name?.message}
+        />
+        <TextField
+          {...register("phone", { required: false })}
+          label="Telefonnummer"
+          id="phoneNumber"
+          type="text"
+          name="phone"
+          autoComplete="on"
+          onBlur={() => handleFieldBlur("phone")}
+          onFocus={() => handleFieldFocus("phone")}
+          error={blurredFields.phone && errors?.phone?.message}
+        />
+        <HStack gap="4">
+          <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+            Avbryt
+          </Button>
+          <Button type="submit" size="medium" disabled={isSubmitting}>
+            Lagre
+          </Button>
+        </HStack>
+      </VStack>
       {error?.name && (
         <p>
           <span className="auth-dialog-box__error-message">{error?.message}</span>
         </p>
       )}
     </form>
+
+
   );
 };

@@ -10,6 +10,8 @@ import { DraftVariantDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { draftProductVariantV2 } from "api/ProductApi";
 import { useSeries } from "utils/swr-hooks";
+import FormBox from "felleskomponenter/FormBox";
+import { LayersIcon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -24,7 +26,7 @@ const CreateProductVariant = () => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid },
+    formState: { errors, isSubmitting },
     setError,
   } = useForm<FormData>({
     resolver: zodResolver(newProductVariantSchema),
@@ -60,43 +62,36 @@ const CreateProductVariant = () => {
   }
 
   return (
-    <main>
-      <HStack justify="center" className="create-variant-page">
+    <FormBox title="Legg til variant" icon={<LayersIcon />}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="8">
-          <Heading level="1" size="large" align="start">
-            Legg til variant
-          </Heading>
-
-          <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              {...register("articleName", { required: true })}
-              label={labelRequired("Variantnavn")}
-              id="articleName"
-              name="articleName"
-              type="text"
-              error={errors?.articleName?.message}
-            />
-            <TextField
-              {...register("supplierRef", { required: true })}
-              label={labelRequired("Leverandør artikkelnummer")}
-              id="supplierRef"
-              name="supplierRef"
-              type="text"
-              error={errors?.supplierRef?.message}
-            />
-
-            <div className="button-container">
-              <Button type="reset" variant="tertiary" size="medium" onClick={() => window.history.back()}>
-                Avbryt
-              </Button>
-              <Button type="submit" size="medium" disabled={!isValid}>
-                {hasTechData ? "Opprett og legg til mer info" : "Opprett"}
-              </Button>
-            </div>
-          </form>
+          <TextField
+            {...register("articleName", { required: true })}
+            label={labelRequired("Variantnavn")}
+            id="articleName"
+            name="articleName"
+            type="text"
+            error={errors?.articleName?.message}
+          />
+          <TextField
+            {...register("supplierRef", { required: true })}
+            label={labelRequired("Leverandør artikkelnummer")}
+            id="supplierRef"
+            name="supplierRef"
+            type="text"
+            error={errors?.supplierRef?.message}
+          />
+          <HStack gap="3">
+            <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
+              Avbryt
+            </Button>
+            <Button type="submit" size="medium" disabled={isSubmitting}>
+              {hasTechData ? "Opprett og legg til mer info" : "Opprett"}
+            </Button>
+          </HStack>
         </VStack>
-      </HStack>
-    </main>
+      </form>
+    </FormBox>
   );
 };
 

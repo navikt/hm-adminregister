@@ -185,7 +185,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
       <div className="button-container">
         <Button
           type="reset"
-          variant="tertiary"
+          variant="secondary"
           size="medium"
           onClick={() => navigate(`/produkter/${product.seriesId}?tab=variants&page=${page}`)}
         >

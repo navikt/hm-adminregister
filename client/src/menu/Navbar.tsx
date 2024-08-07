@@ -11,7 +11,7 @@ import {
   PencilLineIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
-import { Button, HStack, VStack } from "@navikt/ds-react";
+import { Button, Heading, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <>
       <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
-        <div className="menu__logo">Finn Hjelpemiddel (admin)</div>
+        <div className="menu__logo">Finn Hjelpemiddel Admin og registrering</div>
         <Button
           className="menu__burgermenu-button"
           icon={
@@ -102,7 +102,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith("/nyheter") && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <NewspaperIcon fontSize={"1.5rem"} aria-hidden />
+              <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" aria-hidden />
               <span>Nyheter</span>
             </HStack>
           </NavLink>

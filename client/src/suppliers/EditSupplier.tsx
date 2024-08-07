@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
-import { Buldings3Icon } from "@navikt/aksel-icons";
-import "./create-supplier.scss";
+import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,6 +11,8 @@ import { SupplierDTOBody } from "utils/supplier-util";
 import { updateSupplier } from "api/SupplierApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useAuthStore } from "utils/store/useAuthStore";
+import FormBox from "felleskomponenter/FormBox";
+import { Buldings3Icon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 export default function EditSupplier() {
@@ -83,15 +83,10 @@ export default function EditSupplier() {
   }
 
   return (
-    <div className="create-new-supplier">
-      <div className="content">
-        <div className="header-container">
-          <Buldings3Icon width={43} height={43} aria-hidden />
-          <Heading level="1" size="large" align="center">
-            Endre leverandørinformasjon
-          </Heading>
-        </div>
-        <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+    <FormBox title="Endre leverandørinformasjon" icon={<Buldings3Icon />}>
+
+      <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+        <VStack gap="7" width="300px" >
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -107,6 +102,7 @@ export default function EditSupplier() {
             id="email"
             type="email"
             name="email"
+            description="Eksempel: e-post til kundeservice"
             autoComplete="on"
             error={errors.email && errors.email.message}
           />
@@ -126,19 +122,21 @@ export default function EditSupplier() {
             id="phoneNumber"
             type="text"
             name="phone"
+            description="Eksempel: nummer til kundeservice"
             autoComplete="on"
             error={errors.phone && errors.phone.message}
           />
-          <div className="button-container">
+          <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>
             <Button type="submit" size="medium" disabled={!isValid || isSubmitting}>
               Lagre
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </HStack>
+        </VStack>
+      </form>
+
+    </FormBox >
   );
 }

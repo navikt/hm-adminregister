@@ -53,7 +53,7 @@ export const supplierInfoUpdate = z.object({
 });
 
 export const supplierUserInfoUpdate = z.object({
-  name: z.string().min(1, "Du må fylle inn navn"),
+  name: z.string().min(1, "Navn er påkrevd"),
   phone: z
     .string()
     .transform((value) => value.trim())
@@ -69,7 +69,7 @@ export const supplierUserInfoUpdate = z.object({
 });
 
 export const adminInfoUpdate = z.object({
-  name: z.string().min(1, "Du må fylle inn navn"),
+  name: z.string().min(1, "Navn er påkrevd"),
   phone: z
     .string()
     .transform((value) => value.trim())

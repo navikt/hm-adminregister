@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--a-spacing-4);
+  padding-inline: var(--a-spacing-4);
   border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
   border-radius: var(--a-border-radius-large);
   background-color: var(--a-bg-default);
@@ -11,7 +11,7 @@
   text-decoration: none;
 }
 
-.supplierPanel b {
+.supplierPanel p {
   flex-basis: 80%;
 }
 
@@ -19,12 +19,13 @@
   flex-basis: 20%
 }
 
+
 .supplierPanel:hover {
   cursor: pointer;
   box-shadow: var(--a-shadow-small);
 }
 
-.supplierPanel:hover b {
+.supplierPanel:hover p {
   text-decoration: underline;
   color: var(--ac-link-panel-hover-text, var(--a-text-action-hover));
 }
@@ -41,4 +42,11 @@
 
 .chevron {
   flex-shrink: 0;
+}
+
+.supplierPanelContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--a-spacing-6);
+  max-width: 55rem;
 }

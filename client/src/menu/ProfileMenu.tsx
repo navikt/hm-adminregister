@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
 import {
-  BagdeIcon,
   Buldings3Icon,
   ChevronDownIcon,
   LeaveIcon,
   PersonCircleIcon,
   PersonIcon,
+  PersonRectangleIcon,
 } from "@navikt/aksel-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -67,7 +67,12 @@ const ProfileMenu = () => {
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
             <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
-              <BagdeIcon title="Min profil" fontSize="1.5rem" aria-hidden /> Min profil
+              <PersonRectangleIcon
+                title="Min profil"
+                fontSize={loggedInUser?.isAdmin ? "2.5rem" : "1.5rem"}
+                aria-hidden
+              />
+              {loggedInUser?.isAdmin ? "Min profil og admin brukere" : "Min profil"}
             </Link>
             <span className="line" />
             <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>

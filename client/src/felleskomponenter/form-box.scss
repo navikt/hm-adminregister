@@ -1,0 +1,13 @@
+@use "../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+.form-box-conteiner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  button {
+    flex-grow: 1;
+  }
+}
