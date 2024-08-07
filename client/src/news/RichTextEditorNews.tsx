@@ -59,7 +59,7 @@ export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, d
     }
 
     if (defaultValueRef.current) {
-      const htmlAsDelta = quill.clipboard.convert( defaultValueRef.current );
+      const htmlAsDelta = quill.clipboard.convert( {html :defaultValueRef.current} );
       quill.setContents(htmlAsDelta);
     }
 
