@@ -1,23 +1,33 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, Loader, Pagination, Search } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, Loader, Pagination, Search, ToggleGroup } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import { SeriesToApproveTable } from "approval/SeriesToApproveTable";
 
+export enum ForApprovalFilterOption {
+  ALL = "ALL",
+  ADMIN = "ADMIN",
+  SUPPLIER = "SUPPLIER",
+}
+
 export const ForApproval = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
+  const [selectedFilterOption, setSelectedFilterOption] = useState<ForApprovalFilterOption>(
+    ForApprovalFilterOption.ALL,
+  );
 
   const [pageState, setPageState] = useState(1);
   const pageSize = 10;
+  const inSearchMode = searchTerm.length > 0;
 
   const { data: allData, isLoading: allDataIsLoading, error: allDataError } = useSeriesToApprove();
   const {
     data: pagedData,
     isLoading,
     error: pagedDataError,
-  } = usePagedSeriesToApprove({ page: pageState - 1, pageSize });
+  } = usePagedSeriesToApprove({ page: pageState - 1, pageSize: pageSize, filter: selectedFilterOption });
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
@@ -37,6 +47,11 @@ export const ForApproval = () => {
     );
   }
 
+  const handeFilterChange = (filter: ForApprovalFilterOption) => {
+    setSelectedFilterOption(filter);
+    setPageState(1);
+  };
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     const filteredProducts = allData?.content.filter((product) =>
@@ -50,19 +65,6 @@ export const ForApproval = () => {
       setFilteredData(filteredProducts);
     }
   };
-
-  // const handleAgreementFilter = (value: string) => {
-  //   if (searchTerm.length > 0 && filteredData) {
-  //     const filteredProducts = filteredData.filter((product) => product.agreementId === value);
-  //     setFilteredData(filteredProducts);
-  //   } else {
-  //     const filteredProducts = allData?.content.filter((product) => product.agreementId === value);
-  //     setFilteredData(filteredProducts);
-  //     if (value.length == 0) {
-  //       setFilteredData(undefined);
-  //     }
-  //   }
-  // };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
@@ -79,6 +81,23 @@ export const ForApproval = () => {
             <Loader size="3xlarge" />
           ) : (
             <>
+              {!inSearchMode && (
+                <ToggleGroup
+                  value={selectedFilterOption}
+                  onChange={(value) => handeFilterChange(value as ForApprovalFilterOption)}
+                  size="small"
+                  defaultChecked={true}
+                >
+                  <ToggleGroup.Item value={ForApprovalFilterOption.ALL} defaultChecked>
+                    Alle
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item value={ForApprovalFilterOption.ADMIN}>Opprettet av administrator</ToggleGroup.Item>
+                  <ToggleGroup.Item value={ForApprovalFilterOption.SUPPLIER}>
+                    Opprettet av leverandører
+                  </ToggleGroup.Item>
+                </ToggleGroup>
+              )}
+
               <form onSubmit={handleSubmit}>
                 <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
                   <Search
@@ -91,22 +110,6 @@ export const ForApproval = () => {
                     value={searchTerm}
                     onChange={(value) => handleSearch(value)}
                   />
-                  {/*<Select*/}
-                  {/*  size="medium"*/}
-                  {/*  id="rammeavtale"*/}
-                  {/*  name="rammeavtale"*/}
-                  {/*  label={"Filtrer på rammeavtale"}*/}
-                  {/*  onChange={(e) => {*/}
-                  {/*    handleAgreementFilter(e.target.value);*/}
-                  {/*  }}*/}
-                  {/*>*/}
-                  {/*  <option></option>*/}
-                  {/*  {agreements?.content.map((agreement) => (*/}
-                  {/*    <option key={agreement.id} value={agreement.id}>*/}
-                  {/*      {agreement.title}*/}
-                  {/*    </option>*/}
-                  {/*  ))}*/}
-                  {/*</Select>*/}
                 </HGrid>
               </form>
               {filteredData && filteredData.length === 0 ? (
