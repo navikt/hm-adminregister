@@ -19,8 +19,6 @@ const getOptionId = (comboboxId: string, option: string) =>
 
 const getAddNewOptionId = (comboboxId: string) => `${comboboxId}-combobox-new-option`;
 
-const getIsLoadingId = (comboboxId: string) => `${comboboxId}-is-loading`;
-
 const getNoHitsId = (comboboxId: string) => `${comboboxId}-no-hits`;
 
 const getMaxSelectedOptionsId = (comboboxId: string) => `${comboboxId}-max-selected-options`;
@@ -32,7 +30,6 @@ export default {
   getFilteredOptionsId,
   getAddNewOptionId,
   getOptionId,
-  getIsLoadingId,
   getNoHitsId,
   getMaxSelectedOptionsId,
   getFirstValueStartingWith,

@@ -16,7 +16,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     error,
     errorId,
     id,
-    isLoading = false,
     isMultiSelect,
     onToggleSelected,
     selectedOptions: externalSelectedOptions,
@@ -59,7 +58,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
           <FilteredOptionsProvider
             value={{
               allowNewValues,
-              isLoading,
               options,
             }}
           >

@@ -64,12 +64,6 @@ export interface ComboboxProps
    */
   inputClassName?: string | undefined;
   /**
-   * Set to `true` when doing an async search and waiting for new filteredOptions.
-   *
-   * Will show a spinner in the dropdown and announce to screen readers that it is loading.
-   */
-  isLoading?: boolean;
-  /**
    * Set to `true` to allow multiple selections.
    *
    * This will display selected values as a list of Chips in front of the input field, instead of a selection replacing the value of the input.
