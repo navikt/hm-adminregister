@@ -7,19 +7,12 @@ const isPartOfText = (value: string, text: string) => normalizeText(text).includ
 const getMatchingValuesFromList = (value: string, list: ComboboxOption[]) =>
   list.filter((listItem) => isPartOfText(value, listItem.label));
 
-const getFirstValueStartingWith = (text: string, list: ComboboxOption[]) => {
-  const normalizedText = normalizeText(text);
-  return list.find((listItem) => normalizeText(listItem.label).startsWith(normalizedText));
-};
-
 const getFilteredOptionsId = (comboboxId: string) => `${comboboxId}-filtered-options`;
 
 const getOptionId = (comboboxId: string, option: string) =>
   `${comboboxId.toLocaleLowerCase()}-option-${option.replace(" ", "-").toLocaleLowerCase()}`;
 
 const getAddNewOptionId = (comboboxId: string) => `${comboboxId}-combobox-new-option`;
-
-const getNoHitsId = (comboboxId: string) => `${comboboxId}-no-hits`;
 
 const getMaxSelectedOptionsId = (comboboxId: string) => `${comboboxId}-max-selected-options`;
 
@@ -30,7 +23,5 @@ export default {
   getFilteredOptionsId,
   getAddNewOptionId,
   getOptionId,
-  getNoHitsId,
   getMaxSelectedOptionsId,
-  getFirstValueStartingWith,
 };
