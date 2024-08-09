@@ -6,6 +6,7 @@ import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { updateSeriesKeywords } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { TEST_Combobox } from "products/about/comboboxtest/combobox";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -48,6 +49,22 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
         <Heading level="2" size="xsmall">
           Nøkkelord
         </Heading>
+        <TEST_Combobox
+          label={"test"}
+          options={[]}
+          allowNewValues={true}
+          isMultiSelect={true}
+          clearButton={true}
+          selectedOptions={updatedKeywords || []}
+          maxSelected={{ limit: 3 }}
+          shouldShowSelectedOptions={true}
+          onToggleSelected={(option: string, isSelected: boolean) =>
+            isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue)
+              ? setUpdatedKeywords([...updatedKeywords, option])
+              : setUpdatedKeywords(updatedKeywords.filter((o) => o !== option))
+          }
+          error={keywordFormatError}
+        />
         <BodyShort>Stikkord som kan søkes på i søket til FinnHjelpemiddel</BodyShort>
         {!showEditKeywordsMode && (
           <>
