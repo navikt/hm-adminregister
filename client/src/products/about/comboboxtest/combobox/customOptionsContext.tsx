@@ -15,10 +15,9 @@ const [ComboboxCustomOptionsProvider, useComboboxCustomOptions] = createContext<
   errorMessage: "useComboboxCustomOptions must be used within a ComboboxCustomOptionsProvider",
 });
 
-const CustomOptionsProvider = ({ children, value }: { children: any; value: { isMultiSelect?: boolean } }) => {
+const CustomOptionsProvider = ({ children }: { children: any }) => {
   const [customOptions, setCustomOptions] = useState<ComboboxOption[]>([]);
   const { focusInput } = useInputContext();
-  const { isMultiSelect } = value;
 
   const removeCustomOption = useCallback(
     (option: ComboboxOption) => {
@@ -30,14 +29,10 @@ const CustomOptionsProvider = ({ children, value }: { children: any; value: { is
 
   const addCustomOption = useCallback(
     (option: ComboboxOption) => {
-      if (isMultiSelect) {
-        setCustomOptions((prevOptions) => [...prevOptions, option]);
-      } else {
-        setCustomOptions([option]);
-      }
+      setCustomOptions((prevOptions) => [...prevOptions, option]);
       focusInput();
     },
-    [focusInput, isMultiSelect, setCustomOptions],
+    [focusInput, setCustomOptions],
   );
 
   const customOptionsState = {

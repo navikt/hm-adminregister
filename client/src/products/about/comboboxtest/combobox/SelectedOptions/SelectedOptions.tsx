@@ -11,7 +11,7 @@ interface SelectedOptionsProps {
 }
 
 const Option = ({ option }: { option: ComboboxOption }) => {
-  const { isMultiSelect, removeSelectedOption } = useSelectedOptionsContext();
+  const { removeSelectedOption } = useSelectedOptionsContext();
   const { focusInput } = useInputContext();
 
   const onClick = (e: { stopPropagation: () => void }) => {
@@ -19,10 +19,6 @@ const Option = ({ option }: { option: ComboboxOption }) => {
     removeSelectedOption(option);
     focusInput();
   };
-
-  if (!isMultiSelect) {
-    return <div className="navds-combobox__selected-options--no-bg">{option.label}</div>;
-  }
 
   return <Chips.Removable onClick={onClick}>{option.label}</Chips.Removable>;
 };

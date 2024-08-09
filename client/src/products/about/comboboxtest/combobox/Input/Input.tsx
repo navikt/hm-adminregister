@@ -17,7 +17,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, size, value, searchTerm, setValue } = useInputContext();
-  const { selectedOptions, removeSelectedOption, toggleOption, isMultiSelect } = useSelectedOptionsContext();
+  const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
   const {
     activeDecendantId,
     allowNewValues,
@@ -54,17 +54,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         toggleOption(selectedValue, event);
       }
     },
-    [
-      allowNewValues,
-      clearInput,
-      currentOption,
-      filteredOptions,
-      isMultiSelect,
-      isValueNew,
-      selectedOptions,
-      toggleOption,
-      value,
-    ],
+    [allowNewValues, clearInput, currentOption, filteredOptions, isValueNew, selectedOptions, toggleOption, value],
   );
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {

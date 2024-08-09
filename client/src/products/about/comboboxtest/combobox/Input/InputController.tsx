@@ -16,7 +16,7 @@ export const InputController = forwardRef<
     "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value" | "disabled"
   >
 >(function InputController(props, ref) {
-  const { clearButton = true, clearButtonLabel, inputClassName, shouldShowSelectedOptions = true, ...rest } = props;
+  const { clearButton = true, clearButtonLabel, inputClassName, ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, size = "medium", inputRef } = useInputContext();
 
@@ -26,13 +26,9 @@ export const InputController = forwardRef<
 
   return (
     <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
-      {!shouldShowSelectedOptions ? (
+      <SelectedOptions selectedOptions={selectedOptions} size={size}>
         <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
-      ) : (
-        <SelectedOptions selectedOptions={selectedOptions} size={size}>
-          <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
-        </SelectedOptions>
-      )}
+      </SelectedOptions>
       <div>
         {value && clearButton && (
           <button type="button" onClick={clearInput} className="navds-combobox__button-clear" tabIndex={-1}>
