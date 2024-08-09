@@ -1,4 +1,4 @@
-import { Button, Heading, Modal } from "@navikt/ds-react";
+import { Button, Heading, Loader, Modal } from "@navikt/ds-react";
 import { approveMultipleSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -44,11 +44,13 @@ export const PublishMultipleSeriesModal = ({
           Ønsker du å godkjenne {seriesIds.length} valgte serier?
         </Heading>
       </Modal.Header>
+
       <Modal.Footer>
+        {isLoading && <Loader size={"small"} />}
         <Button onClick={onPublishMultipleSeries} disabled={isLoading}>
           OK
         </Button>
-        <Button variant="secondary" onClick={() => setIsOpen(false)}>
+        <Button variant="secondary" onClick={() => setIsOpen(false)} disabled={isLoading}>
           Avbryt
         </Button>
       </Modal.Footer>
