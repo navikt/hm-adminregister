@@ -212,11 +212,15 @@ export function usePagedSeriesToApprove({
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc${queryParamFilter}`;
 
-  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(
+    loggedInUser ? path : null,
+    fetcherGET,
+  );
 
   return {
     data,
     isLoading,
+    mutate,
     error,
   };
 }

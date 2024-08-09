@@ -1,5 +1,5 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, Loader, Pagination, Search, ToggleGroup } from "@navikt/ds-react";
+import { Alert, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
@@ -15,6 +15,7 @@ export enum ForApprovalFilterOption {
 export const ForApproval = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
+  const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
   const [selectedFilterOption, setSelectedFilterOption] = useState<ForApprovalFilterOption>(
@@ -28,8 +29,9 @@ export const ForApproval = () => {
   const {
     data: pagedData,
     isLoading,
+    mutate: mutatePagedData,
     error: pagedDataError,
-  } = usePagedSeriesToApprove({ page: pageState - 1, pageSize: pageSize, filter: selectedFilterOption });
+  } = usePagedSeriesToApprove({ page: pageState - 1, pageSize: pageSizeState, filter: selectedFilterOption });
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -125,32 +127,56 @@ export const ForApproval = () => {
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
-                <SeriesToApproveTable series={filteredData || []} />
+                <SeriesToApproveTable
+                  mutateSeries={mutatePagedData}
+                  series={filteredData || []}
+                  seriesToApproveFilter={ForApprovalFilterOption.ALL}
+                />
               ) : pagedData?.content && pagedData.content.length > 0 ? (
-                <SeriesToApproveTable series={pagedData?.content} />
+                <SeriesToApproveTable
+                  mutateSeries={mutatePagedData}
+                  series={pagedData?.content}
+                  seriesToApproveFilter={selectedFilterOption}
+                />
               ) : (
                 <Alert variant="info">Ingen produkter som venter på godkjenning.</Alert>
               )}
 
-              {!filteredData &&
-              pagedData &&
-              pagedData.totalPages &&
-              pagedData.totalPages > 1 &&
-              searchTerm.length == 0 ? (
-                <Pagination
-                  page={pageState}
-                  onPageChange={(x) => {
-                    searchParams.set("page", x.toString());
-                    setSearchParams(searchParams);
-                    setPageState(x);
-                  }}
-                  count={pagedData.totalPages}
-                  size="small"
-                  prevNextTexts
-                />
-              ) : (
-                <div></div>
-              )}
+              <HStack gap="8" align={"center"}>
+                {!filteredData &&
+                  pagedData &&
+                  pagedData.totalPages &&
+                  pagedData.totalPages > 1 &&
+                  searchTerm.length == 0 && (
+                    <Pagination
+                      page={pageState}
+                      onPageChange={(x) => {
+                        searchParams.set("page", x.toString());
+                        setSearchParams(searchParams);
+                        setPageState(x);
+                      }}
+                      count={pagedData.totalPages}
+                      size="small"
+                      prevNextTexts
+                    />
+                  )}
+                {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
+                  <Select
+                    label="Antall produkter per side"
+                    size="small"
+                    defaultValue={pageSizeState}
+                    onChange={(e) => {
+                      searchParams.set("size", e.target.value);
+                      setSearchParams(searchParams);
+                      setPageSizeState(parseInt(e.target.value));
+                    }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={100}>100</option>
+                  </Select>
+                )}
+              </HStack>
             </>
           )}
         </div>

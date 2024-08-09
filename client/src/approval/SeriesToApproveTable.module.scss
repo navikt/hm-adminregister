@@ -9,6 +9,11 @@
     border: 0;
   }
 
+
+  thead td {
+    border: 0;
+  }
+
   tbody tr {
     background-color: var(--a-white);
     border: 0;
@@ -27,7 +32,7 @@
   tbody th {
     padding: 15px 25px;
     border: 1px solid var(--a-gray-300);
-    border-right: 0;
+    border: 0;
   }
 
   td {
