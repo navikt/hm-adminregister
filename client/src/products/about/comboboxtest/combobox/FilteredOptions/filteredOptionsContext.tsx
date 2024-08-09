@@ -11,7 +11,7 @@ import useVirtualFocus, { VirtualFocusType } from "./useVirtualFocus";
 
 type FilteredOptionsProps = {
   children: React.ReactNode;
-  value: Pick<ComboboxProps, "allowNewValues"> & {
+  value: {
     filteredOptions?: ComboboxOption[];
     options: ComboboxOption[];
   };
@@ -19,7 +19,6 @@ type FilteredOptionsProps = {
 
 type FilteredOptionsContextValue = {
   activeDecendantId?: string;
-  allowNewValues?: boolean;
   ariaDescribedBy?: string;
   setFilteredOptionsRef: React.Dispatch<React.SetStateAction<HTMLUListElement | null>>;
   filteredOptions: ComboboxOption[];
@@ -35,7 +34,7 @@ const [FilteredOptionsContextProvider, useFilteredOptionsContext] = createContex
 });
 
 const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProps) => {
-  const { allowNewValues, filteredOptions: externalFilteredOptions, options } = props;
+  const { filteredOptions: externalFilteredOptions, options } = props;
   const [filteredOptionsRef, setFilteredOptionsRef] = useState<HTMLUListElement | null>(null);
   const virtualFocus = useVirtualFocus(filteredOptionsRef);
   const {
@@ -58,7 +57,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const filteredOptionsMap = useMemo(() => {
     const initialMap = {
-      [filteredOptionsUtils.getAddNewOptionId(id)]: allowNewValues ? toComboboxOption(value) : undefined,
+      [filteredOptionsUtils.getAddNewOptionId(id)]: toComboboxOption(value),
       ...customOptions.reduce((acc, customOption) => {
         const _id = filteredOptionsUtils.getOptionId(id, customOption.label);
         acc[_id] = customOption;
@@ -74,15 +73,13 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     }, initialMap);
 
     return finalMap;
-  }, [allowNewValues, customOptions, id, options, value]);
+  }, [customOptions, id, options, value]);
 
   const isValueNew = useMemo(() => Boolean(value), [filteredOptionsMap, id, value]);
 
   const ariaDescribedBy = useMemo(() => {
     let activeOption: string = "";
-    if (filteredOptions.length === 0 && !allowNewValues) {
-      activeOption = filteredOptionsUtils.getNoHitsId(id);
-    } else if (value) {
+    if (value) {
       if (filteredOptions[0]) {
         activeOption = filteredOptionsUtils.getOptionId(id, filteredOptions[0].label);
       }
@@ -90,7 +87,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     const maybeMaxSelectedOptionsId = maxSelected?.isLimitReached && filteredOptionsUtils.getMaxSelectedOptionsId(id);
 
     return cl(activeOption, maybeMaxSelectedOptionsId, partialAriaDescribedBy) || undefined;
-  }, [maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id, allowNewValues]);
+  }, [maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id]);
 
   const currentOption = useMemo(
     () => filteredOptionsMap[virtualFocus.activeElement?.getAttribute("id") || -1],
@@ -104,7 +101,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const filteredOptionsState = {
     activeDecendantId,
-    allowNewValues,
     setFilteredOptionsRef,
     filteredOptions,
     isMouseLastUsedInputDevice,

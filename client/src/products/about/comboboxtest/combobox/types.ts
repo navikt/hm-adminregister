@@ -39,10 +39,6 @@ export interface ComboboxProps
    */
   options: string[] | ComboboxOption[];
   /**
-   * If enabled, adds an option to add the value of the input as an option whenever there are no options matching the value.
-   */
-  allowNewValues?: boolean;
-  /**
    * If `true` adds a button to clear the value in the input field
    */
   clearButton?: boolean;

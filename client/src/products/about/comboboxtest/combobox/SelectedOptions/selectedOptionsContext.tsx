@@ -23,14 +23,14 @@ const SelectedOptionsProvider = ({
   value,
 }: {
   children: JSX.Element | JSX.Element[];
-  value: Pick<ComboboxProps, "allowNewValues" | "onToggleSelected" | "maxSelected"> & {
+  value: Pick<ComboboxProps, "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
   };
 }) => {
   const { clearInput, focusInput } = useInputContext();
   const { customOptions, removeCustomOption, addCustomOption, setCustomOptions } = useComboboxCustomOptions();
-  const { allowNewValues, selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
+  const { selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
   const [internalSelectedOptions, setSelectedOptions] = useState<ComboboxOption[]>([]);
   const selectedOptions = useMemo(
     () => externalSelectedOptions ?? [...customOptions, ...internalSelectedOptions],
@@ -41,7 +41,7 @@ const SelectedOptionsProvider = ({
     (option: ComboboxOption) => {
       const isCustomOption = !isInList(option, options);
       if (isCustomOption) {
-        allowNewValues && addCustomOption(option);
+        addCustomOption(option);
       } else if (!isCustomOption) {
         setSelectedOptions((oldSelectedOptions) => [...oldSelectedOptions, option]);
       } else {
@@ -50,7 +50,7 @@ const SelectedOptionsProvider = ({
       }
       onToggleSelected?.(option.value, true, isCustomOption);
     },
-    [addCustomOption, allowNewValues, onToggleSelected, options, setCustomOptions],
+    [addCustomOption, onToggleSelected, options, setCustomOptions],
   );
 
   const removeSelectedOption = useCallback(

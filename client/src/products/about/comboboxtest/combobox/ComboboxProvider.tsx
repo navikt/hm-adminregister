@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import Combobox from "./Combobox";
 import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContext";
 import { InputContextProvider } from "./Input/Input.context";
@@ -9,7 +9,6 @@ import { ComboboxProps } from "./types";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
-    allowNewValues = false,
     children,
     defaultValue,
     disabled,
@@ -46,7 +45,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
       <CustomOptionsProvider>
         <SelectedOptionsProvider
           value={{
-            allowNewValues,
             selectedOptions,
             maxSelected,
             onToggleSelected,
@@ -55,7 +53,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
         >
           <FilteredOptionsProvider
             value={{
-              allowNewValues,
               options,
             }}
           >

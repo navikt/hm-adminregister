@@ -20,7 +20,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
   const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
   const {
     activeDecendantId,
-    allowNewValues,
     currentOption,
     filteredOptions,
     isValueNew,
@@ -42,10 +41,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         event.preventDefault();
         // Trying to set the same value that is already set, so just clearing the input
         clearInput(event);
-      } else if (allowNewValues && value !== "") {
+      } else if (value !== "") {
         event.preventDefault();
         // Autocompleting or adding a new value
-        const selectedValue = allowNewValues && isValueNew ? { label: value, value } : filteredOptions[0];
+        const selectedValue = isValueNew ? { label: value, value } : filteredOptions[0];
 
         if (!selectedValue) {
           return;
@@ -54,7 +53,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         toggleOption(selectedValue, event);
       }
     },
-    [allowNewValues, clearInput, currentOption, filteredOptions, isValueNew, selectedOptions, toggleOption, value],
+    [clearInput, currentOption, filteredOptions, isValueNew, selectedOptions, toggleOption, value],
   );
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
