@@ -1,8 +1,8 @@
 import cl from "clsx";
-import { useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 
 type ComboboxWrapperProps = {
-  children: JSX.Element | JSX.Element[];
+  children: ReactNode;
   className?: string;
   hasError: boolean;
 };
