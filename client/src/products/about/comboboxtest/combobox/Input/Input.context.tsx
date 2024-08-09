@@ -14,7 +14,6 @@ interface InputContextValue extends FormFieldType {
   onChange: (newValue: string) => void;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  toggleOpenButtonRef: React.RefObject<HTMLButtonElement>;
 }
 
 const [InputContextProvider, useInputContext] = createContext<InputContextValue>({
@@ -49,6 +48,7 @@ const InputProvider = ({ children, value: props }: Props) => {
     value: externalValue,
     onChange: externalOnChange,
     onClear,
+
     size,
   } = props;
   const formFieldProps = useFormField(
@@ -63,7 +63,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     "comboboxfield",
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const toggleOpenButtonRef = useRef<HTMLButtonElement>(null);
   const [internalValue, setInternalValue] = useState<string>(defaultValue);
 
   const value = useMemo(() => String(externalValue ?? internalValue), [externalValue, internalValue]);
@@ -110,8 +109,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     onChange,
     searchTerm,
     setSearchTerm,
-
-    toggleOpenButtonRef,
   };
 
   return <InputContextProvider {...contextValue}>{children}</InputContextProvider>;
