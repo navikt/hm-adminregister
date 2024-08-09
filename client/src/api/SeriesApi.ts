@@ -21,6 +21,10 @@ export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrat
   return await fetchAPI(getPath(true, `/api/v1/series/approve/${seriesUUID}`), "PUT");
 };
 
+export const approveMultipleSeries = async (seriesIds: string[]): Promise<SeriesRegistrationDTO[]> => {
+  return await fetchAPI(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
+};
+
 export const rejectSeries = async (
   seriesUUID: string,
   rejectSeriesDTO: RejectSeriesDTO,

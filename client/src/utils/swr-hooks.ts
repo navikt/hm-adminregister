@@ -21,6 +21,7 @@ import { HM_REGISTER_URL } from "environments";
 import { LoggedInUser } from "./user-util";
 import { AgreementFilterOption } from "agreements/Agreements";
 import { getPath } from "api/fetch";
+import { ForApprovalFilterOption } from "approval/ForApproval";
 
 export function baseUrl(url: string = "") {
   if (process.env.NODE_ENV === "production") {
@@ -189,16 +190,37 @@ export function useSeriesToApprove() {
   };
 }
 
-export function usePagedSeriesToApprove({ page, pageSize }: { page: number; pageSize: number }) {
+export function usePagedSeriesToApprove({
+  page,
+  pageSize,
+  filter,
+}: {
+  page: number;
+  pageSize: number;
+  filter: ForApprovalFilterOption;
+}) {
   const { loggedInUser } = useAuthStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc`;
+  let queryParamFilter = "";
+  if (filter !== ForApprovalFilterOption.ALL) {
+    if (filter === ForApprovalFilterOption.ADMIN) {
+      queryParamFilter = `&createdByAdmin=${true}`;
+    } else if (filter === ForApprovalFilterOption.SUPPLIER) {
+      queryParamFilter = `&createdByAdmin=${false}`;
+    }
+  }
 
-  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc${queryParamFilter}`;
+
+  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(
+    loggedInUser ? path : null,
+    fetcherGET,
+  );
 
   return {
     data,
     isLoading,
+    mutate,
     error,
   };
 }

@@ -1,18 +1,25 @@
-import { SortState, Table } from "@navikt/ds-react";
+import { Button, Checkbox, Link, SortState, Table } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import styles from "./SeriesToApproveTable.module.scss";
 import { SeriesThumbnail } from "approval/SeriesThumbnail";
 import { useNavigate } from "react-router-dom";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import { ForApprovalFilterOption } from "approval/ForApproval";
+import { Avstand } from "felleskomponenter/Avstand";
+import { PublishMultipleSeriesModal } from "approval/PublishMultipleSeriesModal";
 
 interface SeriesTableProps {
   series: SeriesToApproveDto[];
+  seriesToApproveFilter: ForApprovalFilterOption;
+  mutateSeries: () => void;
 }
 
-export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
+export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeries }: SeriesTableProps) => {
   const [sort, setSort] = useState<SortState | undefined>();
   const navigate = useNavigate();
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleSort = (sortKey: string | undefined) => {
     if (!sortKey) return;
@@ -49,53 +56,110 @@ export const SeriesToApproveTable = ({ series }: SeriesTableProps) => {
     navigate(`/produkter/${seriesUUID}`);
   };
 
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const toggleSelectedRow = (value: string) =>
+    setSelectedRows((list) => (list.includes(value) ? list.filter((id) => id !== value) : [...list, value]));
+
   return (
-    <div className={styles.seriesToApproveTable}>
-      <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell> </Table.HeaderCell>
-            <Table.HeaderCell>Produkt</Table.HeaderCell>
-            <Table.ColumnHeader sortKey="status" sortable>
-              Status
-            </Table.ColumnHeader>
-            {/*<Table.ColumnHeader sortKey="delkontrakttittel" sortable>*/}
-            {/*  Delkontrakt*/}
-            {/*</Table.ColumnHeader>*/}
-            <Table.ColumnHeader sortKey="supplierName" sortable>
-              Leverandør
-            </Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {sortedData.map((series, i) => {
-            return (
-              <Table.Row
-                key={i + series.title}
-                onClick={() => {
-                  onNavigateToProduct(series.seriesUUID);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    onNavigateToProduct(series.seriesUUID);
-                  }
-                }}
-                tabIndex={0}
-              >
-                <Table.DataCell className={styles.imgTd}>
-                  {series.thumbnail && <SeriesThumbnail mediaInfo={series.thumbnail} />}
-                </Table.DataCell>
+    <>
+      <PublishMultipleSeriesModal
+        seriesIds={selectedRows}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        mutateSeries={mutateSeries}
+        setSelectedRows={setSelectedRows}
+      />
+      <div className={styles.seriesToApproveTable}>
+        <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
+          <Table.Header>
+            <Table.Row>
+              {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
                 <Table.DataCell>
-                  <div>{series.title}</div>
+                  <Checkbox
+                    checked={selectedRows.length === series.length}
+                    indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
+                    onChange={() => {
+                      selectedRows.length
+                        ? setSelectedRows([])
+                        : setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
+                    }}
+                    hideLabel
+                  >
+                    Velg alle rader
+                  </Checkbox>
                 </Table.DataCell>
-                <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
-                <Table.DataCell>{series.supplierName}</Table.DataCell>
-              </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table>
-    </div>
+              )}
+              <Table.HeaderCell> </Table.HeaderCell>
+              <Table.HeaderCell>Produkt</Table.HeaderCell>
+              <Table.ColumnHeader sortKey="status" sortable>
+                Status
+              </Table.ColumnHeader>
+              <Table.ColumnHeader sortKey="supplierName" sortable>
+                Leverandør
+              </Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {sortedData.map((series, i) => {
+              return (
+                <Table.Row key={i + series.title} tabIndex={0}>
+                  {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
+                    <Table.DataCell>
+                      <Checkbox
+                        hideLabel
+                        checked={selectedRows.includes(series.seriesUUID)}
+                        onChange={() => toggleSelectedRow(series.seriesUUID)}
+                        aria-labelledby={`id-${series.seriesUUID}`}
+                      >
+                        {" "}
+                      </Checkbox>
+                    </Table.DataCell>
+                  )}
+                  <Table.DataCell className={styles.imgTd}>
+                    {series.thumbnail && <SeriesThumbnail mediaInfo={series.thumbnail} />}
+                  </Table.DataCell>
+                  <Table.DataCell
+                    onClick={() => {
+                      onNavigateToProduct(series.seriesUUID);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        onNavigateToProduct(series.seriesUUID);
+                      }
+                    }}
+                  >
+                    <Link
+                      tabIndex={0}
+                      onClick={() => {
+                        onNavigateToProduct(series.seriesUUID);
+                      }}
+                    >
+                      {series.title}
+                    </Link>
+                  </Table.DataCell>
+                  <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
+                  <Table.DataCell>{series.supplierName}</Table.DataCell>
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
+        </Table>
+
+        {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
+          <Avstand marginTop={6}>
+            <Button
+              onClick={() => {
+                setIsOpen(true);
+              }}
+              disabled={selectedRows.length === 0}
+            >
+              Publiser valgte produkter
+            </Button>
+          </Avstand>
+        )}
+      </div>
+    </>
   );
 };
 
