@@ -3,7 +3,6 @@ import Combobox from "./Combobox";
 import { InputContextProvider } from "./Input/Input.context";
 import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "./combobox-utils";
-import { CustomOptionsProvider } from "./customOptionsContext";
 import { ComboboxProps } from "./types";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
@@ -37,20 +36,18 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
         onClear,
       }}
     >
-      <CustomOptionsProvider>
-        <SelectedOptionsProvider
-          value={{
-            selectedOptions,
-            maxSelected,
-            onToggleSelected,
-            options,
-          }}
-        >
-          <Combobox ref={ref} {...rest}>
-            {children}
-          </Combobox>
-        </SelectedOptionsProvider>
-      </CustomOptionsProvider>
+      <SelectedOptionsProvider
+        value={{
+          selectedOptions,
+          maxSelected,
+          onToggleSelected,
+          options,
+        }}
+      >
+        <Combobox ref={ref} {...rest}>
+          {children}
+        </Combobox>
+      </SelectedOptionsProvider>
     </InputContextProvider>
   );
 });
