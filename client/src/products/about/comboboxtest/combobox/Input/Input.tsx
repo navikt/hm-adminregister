@@ -16,7 +16,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
-  const { clearInput, inputProps, onChange, size, value, searchTerm, setValue } = useInputContext();
+  const { clearInput, inputProps, onChange, size, value, setValue } = useInputContext();
   const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
   const {
     activeDecendantId,
@@ -99,18 +99,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
          * In case user has an active selection and 'completes' the selection with ArrowLeft or ArrowRight
          * we need to make sure to update the filter.
          */
-        if (value !== "" && value !== searchTerm) {
+        if (value !== "") {
           onChange(value);
         }
       } else if (e.key === "ArrowDown") {
         // Reset the value to the search term to cancel autocomplete
         // if the user moves focus down to the FilteredOptions
-        if (value !== searchTerm) {
-          setValue(searchTerm);
-        }
         virtualFocus.moveFocusDown();
       } else if (e.key === "ArrowUp") {
-        if (value !== "" && value !== searchTerm) {
+        if (value !== "") {
           onChange(value);
         }
         // Check that the FilteredOptions list is open and has virtual focus.
@@ -131,7 +128,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       onChange,
       virtualFocus,
       setValue,
-      searchTerm,
     ],
   );
 
@@ -151,7 +147,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       ref={mergedRefs}
       value={value}
       onBlur={() => virtualFocus.moveFocusToTop()}
-      onClick={() => value !== searchTerm && onChange(value)}
+      onClick={() => onChange(value)}
       onInput={onChangeHandler}
       type="text"
       onKeyUp={handleKeyUp}

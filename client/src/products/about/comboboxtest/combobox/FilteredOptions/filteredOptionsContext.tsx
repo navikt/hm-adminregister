@@ -41,7 +41,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   const {
     inputProps: { "aria-describedby": partialAriaDescribedBy, id },
     value,
-    searchTerm,
   } = useInputContext();
   const { maxSelected } = useSelectedOptionsContext();
 
@@ -52,8 +51,8 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
       return externalFilteredOptions;
     }
     const opts = [...customOptions, ...options];
-    return filteredOptionsUtils.getMatchingValuesFromList(searchTerm, opts);
-  }, [customOptions, externalFilteredOptions, options, searchTerm]);
+    return filteredOptionsUtils.getMatchingValuesFromList(value, opts);
+  }, [customOptions, externalFilteredOptions, options]);
 
   const [isMouseLastUsedInputDevice, setIsMouseLastUsedInputDevice] = useState(false);
 

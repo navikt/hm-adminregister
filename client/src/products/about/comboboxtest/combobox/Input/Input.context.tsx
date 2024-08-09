@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createContext } from "../../util/create-context";
-import { useClientLayoutEffect } from "../../util/hooks";
 import { FormFieldType, useFormField } from "../../useFormField";
 import { ComboboxProps } from "../types";
 
@@ -12,8 +11,6 @@ interface InputContextValue extends FormFieldType {
   value: string;
   setValue: (text: string) => void;
   onChange: (newValue: string) => void;
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const [InputContextProvider, useInputContext] = createContext<InputContextValue>({
@@ -67,12 +64,9 @@ const InputProvider = ({ children, value: props }: Props) => {
 
   const value = useMemo(() => String(externalValue ?? internalValue), [externalValue, internalValue]);
 
-  const [searchTerm, setSearchTerm] = useState(value);
-
   const onChange = useCallback(
     (newValue: string) => {
       externalValue ?? setInternalValue(newValue);
-      setSearchTerm(newValue);
       externalOnChange?.(newValue);
     },
     [externalValue, externalOnChange],
@@ -83,7 +77,6 @@ const InputProvider = ({ children, value: props }: Props) => {
       onClear?.(event);
       externalOnChange?.("");
       setInternalValue("");
-      setSearchTerm("");
     },
     [externalOnChange, onClear, setInternalValue],
   );
@@ -91,12 +84,6 @@ const InputProvider = ({ children, value: props }: Props) => {
   const focusInput = useCallback(() => {
     inputRef.current?.focus?.();
   }, []);
-
-  useClientLayoutEffect(() => {
-    if (inputRef && value !== searchTerm) {
-      inputRef.current?.setSelectionRange?.(searchTerm.length, value.length);
-    }
-  }, [value, searchTerm]);
 
   const contextValue = {
     ...formFieldProps,
@@ -107,8 +94,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     value,
     setValue: setInternalValue,
     onChange,
-    searchTerm,
-    setSearchTerm,
   };
 
   return <InputContextProvider {...contextValue}>{children}</InputContextProvider>;
