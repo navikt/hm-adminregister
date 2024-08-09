@@ -45,12 +45,6 @@ export interface ComboboxProps
    */
   hideLabel?: boolean;
   /**
-   * Custom class name for the input field.
-   *
-   * If used for styling, please consider using tokens instead.
-   */
-  inputClassName?: string | undefined;
-  /**
    * Callback function triggered whenever the value of the input field is triggered.
    *
    * @param value The value after change

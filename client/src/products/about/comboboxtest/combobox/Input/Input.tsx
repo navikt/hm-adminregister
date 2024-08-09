@@ -6,11 +6,10 @@ import { useInputContext } from "./Input.context";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;
-  inputClassName?: string;
   value?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, value, setValue } = useInputContext();
@@ -91,7 +90,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       onKeyDown={handleKeyDown}
       autoComplete="off"
       aria-invalid={inputProps["aria-invalid"]}
-      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
+      className={cl("navds-combobox__input", "navds-body-short", "navds-body-short--medium")}
     />
   );
 });

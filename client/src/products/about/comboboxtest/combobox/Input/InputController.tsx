@@ -12,7 +12,7 @@ export const InputController = forwardRef<
   HTMLInputElement,
   Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
-  const { inputClassName, ...rest } = props;
+  const { ...rest } = props;
 
   const { focusInput, inputProps, inputRef } = useInputContext();
 
@@ -23,7 +23,7 @@ export const InputController = forwardRef<
   return (
     <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
       <SelectedOptions selectedOptions={selectedOptions}>
-        <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
+        <Input id={inputProps.id} ref={mergedInputRef} {...rest} />
       </SelectedOptions>
     </div>
   );
