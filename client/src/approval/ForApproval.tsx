@@ -18,10 +18,10 @@ export const ForApproval = () => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
-  const [selectedFilterOption, setSelectedFilterOption] = useState<ForApprovalFilterOption>(
-    ForApprovalFilterOption.ALL,
-  );
 
+  const [selectedFilterOption, setSelectedFilterOption] = useState<ForApprovalFilterOption>(
+    (searchParams.get("filter") as ForApprovalFilterOption) || "ALL",
+  );
   const pageSize = 10;
   const inSearchMode = searchTerm.length > 0;
 
@@ -60,6 +60,8 @@ export const ForApproval = () => {
   }
 
   const handeFilterChange = (filter: ForApprovalFilterOption) => {
+    searchParams.set("filter", filter.toString());
+    setSearchParams(searchParams);
     setSelectedFilterOption(filter);
     setPageState(1);
   };
