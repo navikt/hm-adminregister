@@ -38,16 +38,7 @@ export interface ComboboxProps
    * List of options
    */
   options: string[] | ComboboxOption[];
-  /**
-   * If `true` adds a button to clear the value in the input field
-   */
-  clearButton?: boolean;
-  /**
-   * Custom name for the clear button. Requires `clearButton` to be `true`.
-   *
-   * @default "Tøm"
-   */
-  clearButtonLabel?: string;
+
   /**
    * Optionally hide the label visually.
    * Not recommended, but can be considered for e.g. search fields in the top menu.
