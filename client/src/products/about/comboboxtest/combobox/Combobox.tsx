@@ -13,7 +13,7 @@ export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChan
     const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg } = useInputContext();
 
     return (
-      <ComboboxWrapper className={className} hasError={hasError} inputProps={inputProps}>
+      <ComboboxWrapper className={className} hasError={hasError}>
         <Label
           htmlFor={inputProps.id}
           className={cl("navds-form-field__label", {
