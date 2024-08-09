@@ -1,9 +1,10 @@
 import "./til-godkjenning.scss";
 import { Alert, Heading, HGrid, Loader, Pagination, Search, ToggleGroup } from "@navikt/ds-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import { SeriesToApproveTable } from "approval/SeriesToApproveTable";
+import { useSearchParams } from "react-router-dom";
 
 export enum ForApprovalFilterOption {
   ALL = "ALL",
@@ -12,13 +13,14 @@ export enum ForApprovalFilterOption {
 }
 
 export const ForApproval = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
   const [selectedFilterOption, setSelectedFilterOption] = useState<ForApprovalFilterOption>(
     ForApprovalFilterOption.ALL,
   );
 
-  const [pageState, setPageState] = useState(1);
   const pageSize = 10;
   const inSearchMode = searchTerm.length > 0;
 
@@ -28,6 +30,14 @@ export const ForApproval = () => {
     isLoading,
     error: pagedDataError,
   } = usePagedSeriesToApprove({ page: pageState - 1, pageSize: pageSize, filter: selectedFilterOption });
+
+  useEffect(() => {
+    if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
+      searchParams.set("page", String(pagedData.totalPages));
+      setSearchParams(searchParams);
+      setPageState(pagedData.totalPages);
+    }
+  }, [pagedData]);
 
   const { data: agreements, isLoading: agreementsIsLoading } = useAgreements();
 
@@ -91,10 +101,10 @@ export const ForApproval = () => {
                   <ToggleGroup.Item value={ForApprovalFilterOption.ALL} defaultChecked>
                     Alle
                   </ToggleGroup.Item>
-                  <ToggleGroup.Item value={ForApprovalFilterOption.ADMIN}>Opprettet av administrator</ToggleGroup.Item>
                   <ToggleGroup.Item value={ForApprovalFilterOption.SUPPLIER}>
                     Opprettet av leverandører
                   </ToggleGroup.Item>
+                  <ToggleGroup.Item value={ForApprovalFilterOption.ADMIN}>Opprettet av administrator</ToggleGroup.Item>
                 </ToggleGroup>
               )}
 
@@ -129,7 +139,11 @@ export const ForApproval = () => {
               searchTerm.length == 0 ? (
                 <Pagination
                   page={pageState}
-                  onPageChange={(x) => setPageState(x)}
+                  onPageChange={(x) => {
+                    searchParams.set("page", x.toString());
+                    setSearchParams(searchParams);
+                    setPageState(x);
+                  }}
                   count={pagedData.totalPages}
                   size="small"
                   prevNextTexts
