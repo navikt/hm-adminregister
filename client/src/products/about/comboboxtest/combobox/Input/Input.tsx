@@ -63,12 +63,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       case "Accept":
         onEnter(e);
         break;
-      case "Home":
-        virtualFocus.moveFocusToTop();
-        break;
-      case "End":
-        virtualFocus.moveFocusToBottom();
-        break;
       default:
         break;
     }
@@ -92,28 +86,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         if (value) {
           e.preventDefault(); // Prevents closing an encasing Modal, as Combobox reacts on keyup.
           clearInput(e);
-        }
-      } else if (["ArrowLeft", "ArrowRight"].includes(e.key)) {
-        /**
-         * In case user has an active selection and 'completes' the selection with ArrowLeft or ArrowRight
-         * we need to make sure to update the filter.
-         */
-        if (value !== "") {
-          onChange(value);
-        }
-      } else if (e.key === "ArrowDown") {
-        // Reset the value to the search term to cancel autocomplete
-        // if the user moves focus down to the FilteredOptions
-        virtualFocus.moveFocusDown();
-      } else if (e.key === "ArrowUp") {
-        if (value !== "") {
-          onChange(value);
-        }
-        // Check that the FilteredOptions list is open and has virtual focus.
-        // Otherwise ignore keystrokes, so it doesn't interfere with text editing
-        if (activeDecendantId) {
-          e.preventDefault();
-          virtualFocus.moveFocusUp();
         }
       }
     },
