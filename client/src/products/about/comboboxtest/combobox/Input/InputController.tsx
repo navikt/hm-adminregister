@@ -15,7 +15,7 @@ export const InputController = forwardRef<
     ComboboxProps,
     "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value" | "disabled"
   >
->((props, ref) => {
+>(function InputController(props, ref) {
   const { clearButton = true, clearButtonLabel, inputClassName, shouldShowSelectedOptions = true, ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, size = "medium", inputRef } = useInputContext();

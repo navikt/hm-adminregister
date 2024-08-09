@@ -7,7 +7,7 @@ import { mapToComboboxOptionArray } from "./combobox-utils";
 import { CustomOptionsProvider } from "./customOptionsContext";
 import { ComboboxProps } from "./types";
 
-const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
+const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
     allowNewValues = false,
     children,

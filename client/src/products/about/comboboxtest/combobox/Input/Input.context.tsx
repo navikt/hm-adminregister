@@ -49,7 +49,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     value: externalValue,
     onChange: externalOnChange,
     onClear,
-
     size,
   } = props;
   const formFieldProps = useFormField(

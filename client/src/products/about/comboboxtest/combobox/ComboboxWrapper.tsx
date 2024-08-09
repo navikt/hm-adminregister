@@ -2,7 +2,7 @@ import cl from "clsx";
 import { useRef, useState } from "react";
 
 type ComboboxWrapperProps = {
-  children: any;
+  children: JSX.Element | JSX.Element[];
   className?: string;
   hasError: boolean;
   inputProps: {
@@ -15,13 +15,13 @@ const ComboboxWrapper = ({ children, className, hasError, inputProps, inputSize 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
 
-  function onFocusInsideWrapper(e) {
+  function onFocusInsideWrapper(e: { relatedTarget: Node | null }) {
     if (!wrapperRef.current?.contains(e.relatedTarget)) {
       setHasFocusWithin(true);
     }
   }
 
-  function onBlurWrapper(e) {
+  function onBlurWrapper(e: { relatedTarget: Node | null }) {
     if (!wrapperRef.current?.contains(e.relatedTarget)) {
       setHasFocusWithin(false);
     }

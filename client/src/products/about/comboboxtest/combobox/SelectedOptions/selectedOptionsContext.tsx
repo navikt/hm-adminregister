@@ -13,7 +13,7 @@ type SelectedOptionsContextValue = {
   prevSelectedOptions?: ComboboxOption[];
   selectedOptions: ComboboxOption[];
   maxSelected?: MaxSelected & { isLimitReached: boolean };
-  setSelectedOptions: (any) => void;
+  setSelectedOptions: (option: ComboboxOption[]) => void;
   toggleOption: (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent) => void;
 };
 
@@ -23,7 +23,7 @@ const SelectedOptionsProvider = ({
   children,
   value,
 }: {
-  children: any;
+  children: JSX.Element | JSX.Element[];
   value: Pick<ComboboxProps, "allowNewValues" | "isMultiSelect" | "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];

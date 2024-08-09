@@ -14,7 +14,7 @@ const Option = ({ option }: { option: ComboboxOption }) => {
   const { isMultiSelect, removeSelectedOption } = useSelectedOptionsContext();
   const { focusInput } = useInputContext();
 
-  const onClick = (e) => {
+  const onClick = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     removeSelectedOption(option);
     focusInput();

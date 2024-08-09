@@ -9,7 +9,7 @@ import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 export const Combobox = forwardRef<
   HTMLInputElement,
   Omit<ComboboxProps, "onChange" | "options" | "size" | "onClear" | "value" | "disabled">
->((props, ref) => {
+>(function Combobox(props, ref) {
   const { className, hideLabel = false, description, label, ...rest } = props;
 
   const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg, size = "medium" } = useInputContext();
@@ -25,18 +25,20 @@ export const Combobox = forwardRef<
       >
         {label}
       </Label>
-      {!!description && (
-        <BodyShort
-          as="div"
-          className={cl("navds-form-field__description", {
-            "navds-sr-only": hideLabel,
-          })}
-          id={inputDescriptionId}
-          size={size}
-        >
-          {description}
-        </BodyShort>
-      )}
+      <>
+        {!!description && (
+          <BodyShort
+            as="div"
+            className={cl("navds-form-field__description", {
+              "navds-sr-only": hideLabel,
+            })}
+            id={inputDescriptionId}
+            size={size}
+          >
+            {description}
+          </BodyShort>
+        )}
+      </>
       <div className="navds-combobox__wrapper">
         <InputController ref={ref} {...rest} />
       </div>
