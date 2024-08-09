@@ -13,10 +13,6 @@ export interface FormFieldProps {
    */
   errorId?: string;
   /**
-   * Changes font-size, padding and gaps.
-   */
-  size?: "medium" | "small";
-  /**
    * **Avoid using if possible for accessibility purposes**.
    *
    * Disables element.
@@ -43,7 +39,6 @@ export interface FormFieldType {
   hasError: boolean;
   errorId: string;
   inputDescriptionId: string;
-  size: "small" | "medium";
   inputProps: {
     id: string;
     "aria-invalid"?: boolean;
@@ -57,7 +52,7 @@ export interface FormFieldType {
  * Handles props and their state for various form-fields in context with Fieldset
  */
 export const useFormField = (props: FormFieldProps, prefix: string): FormFieldType => {
-  const { size, error, errorId: propErrorId } = props;
+  const { error, errorId: propErrorId } = props;
 
   const fieldset = useContext(FieldsetContext);
 
@@ -80,7 +75,6 @@ export const useFormField = (props: FormFieldProps, prefix: string): FormFieldTy
     hasError,
     errorId,
     inputDescriptionId,
-    size: size ?? fieldset?.size ?? "medium",
     readOnly,
     inputProps: {
       id,
@@ -91,7 +85,6 @@ export const useFormField = (props: FormFieldProps, prefix: string): FormFieldTy
           [errorId]: showErrorMsg,
           [fieldset?.errorId ?? ""]: hasError && !!fieldset?.error,
         }) || undefined,
-
       disabled,
     },
   };

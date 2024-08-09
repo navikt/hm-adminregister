@@ -8,17 +8,16 @@ import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 
 export const Combobox = forwardRef<
   HTMLInputElement,
-  Omit<ComboboxProps, "onChange" | "options" | "size" | "onClear" | "value" | "disabled">
+  Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value" | "disabled">
 >(function Combobox(props, ref) {
   const { className, hideLabel = false, description, label, ...rest } = props;
 
-  const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg, size = "medium" } = useInputContext();
+  const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg } = useInputContext();
 
   return (
-    <ComboboxWrapper className={className} hasError={hasError} inputProps={inputProps} inputSize={size}>
+    <ComboboxWrapper className={className} hasError={hasError} inputProps={inputProps}>
       <Label
         htmlFor={inputProps.id}
-        size={size}
         className={cl("navds-form-field__label", {
           "navds-sr-only": hideLabel,
         })}
@@ -33,7 +32,6 @@ export const Combobox = forwardRef<
               "navds-sr-only": hideLabel,
             })}
             id={inputDescriptionId}
-            size={size}
           >
             {description}
           </BodyShort>
@@ -43,7 +41,7 @@ export const Combobox = forwardRef<
         <InputController ref={ref} {...rest} />
       </div>
       <div className="navds-form-field__error" id={errorId} aria-relevant="additions removals" aria-live="polite">
-        {showErrorMsg && <ErrorMessage size={size}>{error}</ErrorMessage>}
+        {showErrorMsg && <ErrorMessage>{error}</ErrorMessage>}
       </div>
     </ComboboxWrapper>
   );

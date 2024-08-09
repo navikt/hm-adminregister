@@ -6,7 +6,6 @@ import { Chips } from "@navikt/ds-react";
 
 interface SelectedOptionsProps {
   selectedOptions?: ComboboxOption[];
-  size?: "medium" | "small";
   children: React.ReactNode;
 }
 
@@ -23,9 +22,9 @@ const Option = ({ option }: { option: ComboboxOption }) => {
   return <Chips.Removable onClick={onClick}>{option.label}</Chips.Removable>;
 };
 
-const SelectedOptions: React.FC<SelectedOptionsProps> = ({ selectedOptions = [], size, children }) => {
+const SelectedOptions: React.FC<SelectedOptionsProps> = ({ selectedOptions = [], children }) => {
   return (
-    <Chips className="navds-combobox__selected-options" size={size}>
+    <Chips className="navds-combobox__selected-options">
       {selectedOptions.length
         ? selectedOptions.map((option, i) => <Option key={option.label + i} option={option} />)
         : []}

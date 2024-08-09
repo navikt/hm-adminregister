@@ -30,7 +30,6 @@ interface Props {
     value: ComboboxProps["value"];
     onChange: ComboboxProps["onChange"];
     onClear: ComboboxProps["onClear"];
-    size: ComboboxProps["size"];
   };
 }
 
@@ -45,7 +44,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     value: externalValue,
     onChange: externalOnChange,
     onClear,
-    size,
   } = props;
   const formFieldProps = useFormField(
     {
@@ -54,7 +52,6 @@ const InputProvider = ({ children, value: props }: Props) => {
       error,
       errorId,
       id: externalId,
-      size,
     },
     "comboboxfield",
   );

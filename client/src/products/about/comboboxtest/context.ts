@@ -10,10 +10,6 @@ export type FieldsetContextProps = {
    */
   errorId: string;
   /**
-   * Changes paddings, margins and font-sizes
-   */
-  size: "medium" | "small";
-  /**
    * Sets fieldset and all form-children to disabled
    */
   disabled: boolean;

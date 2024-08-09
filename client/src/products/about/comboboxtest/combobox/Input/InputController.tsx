@@ -11,14 +11,11 @@ import { useInputContext } from "./Input.context";
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<
   HTMLInputElement,
-  Omit<
-    ComboboxProps,
-    "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value" | "disabled"
-  >
+  Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "onClear" | "value" | "disabled">
 >(function InputController(props, ref) {
   const { clearButton = true, clearButtonLabel, inputClassName, ...rest } = props;
 
-  const { clearInput, focusInput, inputProps, value, size = "medium", inputRef } = useInputContext();
+  const { clearInput, focusInput, inputProps, value, inputRef } = useInputContext();
 
   const { selectedOptions } = useSelectedOptionsContext();
 
@@ -26,7 +23,7 @@ export const InputController = forwardRef<
 
   return (
     <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
-      <SelectedOptions selectedOptions={selectedOptions} size={size}>
+      <SelectedOptions selectedOptions={selectedOptions}>
         <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
       </SelectedOptions>
       <div>

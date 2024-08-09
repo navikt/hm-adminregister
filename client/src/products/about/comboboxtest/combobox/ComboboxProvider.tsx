@@ -21,7 +21,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     value,
     onChange,
     onClear,
-    size,
     ...rest
   } = props;
   const options = mapToComboboxOptionArray(externalOptions) || [];
@@ -38,7 +37,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
         value,
         onChange,
         onClear,
-        size,
       }}
     >
       <CustomOptionsProvider>

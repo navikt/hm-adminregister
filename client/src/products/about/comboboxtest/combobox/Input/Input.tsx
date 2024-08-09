@@ -1,7 +1,6 @@
 import cl from "clsx";
 import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
-import { omit } from "../../util";
-import { useMergeRefs } from "../../util";
+import { omit, useMergeRefs } from "../../util";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { useInputContext } from "./Input.context";
 
@@ -14,7 +13,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
-  const { clearInput, inputProps, onChange, size, value, setValue } = useInputContext();
+  const { clearInput, inputProps, onChange, value, setValue } = useInputContext();
   const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
 
   const onEnter = useCallback(
@@ -76,7 +75,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       const newValue = event.target.value;
       onChange(newValue);
     },
-    [onChange,
+    [onChange],
   );
 
   return (
@@ -92,7 +91,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       onKeyDown={handleKeyDown}
       autoComplete="off"
       aria-invalid={inputProps["aria-invalid"]}
-      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--${size}`)}
+      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
     />
   );
 });

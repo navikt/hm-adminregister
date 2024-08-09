@@ -8,10 +8,9 @@ type ComboboxWrapperProps = {
   inputProps: {
     disabled?: boolean;
   };
-  inputSize: string;
 };
 
-const ComboboxWrapper = ({ children, className, hasError, inputProps, inputSize }: ComboboxWrapperProps) => {
+const ComboboxWrapper = ({ children, className, hasError, inputProps }: ComboboxWrapperProps) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
 
@@ -30,7 +29,7 @@ const ComboboxWrapper = ({ children, className, hasError, inputProps, inputSize 
   return (
     <div
       ref={wrapperRef}
-      className={cl(className, "navds-form-field", `navds-form-field--${inputSize}`, {
+      className={cl(className, "navds-form-field", `navds-form-field--medium`, {
         "navds-combobox--error": hasError,
         "navds-combobox--disabled": !!inputProps.disabled,
         "navds-combobox--focused": hasFocusWithin,
