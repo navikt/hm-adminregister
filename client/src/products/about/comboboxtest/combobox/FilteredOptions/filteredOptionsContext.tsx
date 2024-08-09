@@ -31,7 +31,6 @@ type FilteredOptionsContextValue = {
   isValueNew: boolean;
   toggleIsListOpen: (newState?: boolean) => void;
   currentOption?: ComboboxOption;
-  shouldAutocomplete?: boolean;
   virtualFocus: VirtualFocusType;
 };
 const [FilteredOptionsContextProvider, useFilteredOptionsContext] = createContext<FilteredOptionsContextValue>({
@@ -53,9 +52,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     inputProps: { "aria-describedby": partialAriaDescribedBy, id },
     value,
     searchTerm,
-    setValue,
-    setSearchTerm,
-    shouldAutocomplete,
   } = useInputContext();
   const { maxSelected } = useSelectedOptionsContext();
 
@@ -69,8 +65,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     const opts = [...customOptions, ...options];
     return filteredOptionsUtils.getMatchingValuesFromList(searchTerm, opts);
   }, [customOptions, externalFilteredOptions, options, searchTerm]);
-
-  const previousSearchTerm = usePrevious(searchTerm);
 
   const [isMouseLastUsedInputDevice, setIsMouseLastUsedInputDevice] = useState(false);
 
@@ -94,13 +88,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     return finalMap;
   }, [allowNewValues, customOptions, id, options, value]);
 
-  useClientLayoutEffect(() => {
-    const autoCompleteCandidate = filteredOptionsUtils.getFirstValueStartingWith(searchTerm, filteredOptions)?.label;
-    if (shouldAutocomplete && autoCompleteCandidate && (previousSearchTerm?.length || 0) < searchTerm.length) {
-      setValue(`${searchTerm}${autoCompleteCandidate.substring(searchTerm.length)}`);
-    }
-  }, [filteredOptions, previousSearchTerm, searchTerm, setSearchTerm, setValue, shouldAutocomplete]);
-
   const isListOpen = useMemo(() => {
     return isExternalListOpen ?? isInternalListOpen;
   }, [isExternalListOpen, isInternalListOpen]);
@@ -113,17 +100,14 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     [virtualFocus],
   );
 
-  const isValueNew = useMemo(
-    () => Boolean(value) && !filteredOptionsMap[filteredOptionsUtils.getOptionId(id, value)],
-    [filteredOptionsMap, id, value],
-  );
+  const isValueNew = useMemo(() => Boolean(value), [filteredOptionsMap, id, value]);
 
   const ariaDescribedBy = useMemo(() => {
     let activeOption: string = "";
     if (!isLoading && filteredOptions.length === 0 && !allowNewValues) {
       activeOption = filteredOptionsUtils.getNoHitsId(id);
     } else if (value || isLoading) {
-      if (shouldAutocomplete && filteredOptions[0]) {
+      if (filteredOptions[0]) {
         activeOption = filteredOptionsUtils.getOptionId(id, filteredOptions[0].label);
       } else if (isListOpen && isLoading) {
         activeOption = filteredOptionsUtils.getIsLoadingId(id);
@@ -138,7 +122,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     maxSelected?.isLimitReached,
     value,
     partialAriaDescribedBy,
-    shouldAutocomplete,
     filteredOptions,
     id,
     allowNewValues,
@@ -158,7 +141,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     activeDecendantId,
     allowNewValues,
     setFilteredOptionsRef,
-    shouldAutocomplete,
     isListOpen,
     isLoading,
     filteredOptions,

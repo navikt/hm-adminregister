@@ -118,12 +118,6 @@ export interface ComboboxProps
    */
   maxSelected?: MaxSelected;
   /**
-   * Set to `true` to enable inline autocomplete.
-   *
-   * @default false
-   */
-  shouldAutocomplete?: boolean;
-  /**
    * When set to `true` displays selected options as Chips before the input field
    *
    * @default true

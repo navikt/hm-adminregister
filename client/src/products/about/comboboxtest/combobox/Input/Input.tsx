@@ -28,7 +28,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ inputClassName, ...res
     isListOpen,
     ariaDescribedBy,
     setIsMouseLastUsedInputDevice,
-    shouldAutocomplete,
     virtualFocus,
   } = useFilteredOptionsContext();
 
@@ -48,7 +47,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ inputClassName, ...res
         event.preventDefault();
         // Trying to set the same value that is already set, so just clearing the input
         clearInput(event);
-      } else if ((allowNewValues || shouldAutocomplete) && value !== "") {
+      } else if (allowNewValues && value !== "") {
         event.preventDefault();
         // Autocompleting or adding a new value
         const selectedValue = allowNewValues && isValueNew ? { label: value, value } : filteredOptions[0];
@@ -71,7 +70,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ inputClassName, ...res
       isMultiSelect,
       isValueNew,
       selectedOptions,
-      shouldAutocomplete,
       toggleIsListOpen,
       toggleOption,
       value,
@@ -197,7 +195,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ inputClassName, ...res
       aria-controls={filteredOptionsUtil.getFilteredOptionsId(inputProps.id)}
       aria-expanded={!!isListOpen}
       autoComplete="off"
-      aria-autocomplete={shouldAutocomplete ? "both" : "list"}
       aria-activedescendant={activeDecendantId}
       aria-describedby={ariaDescribedBy}
       aria-invalid={inputProps["aria-invalid"]}

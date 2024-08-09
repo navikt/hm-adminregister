@@ -24,7 +24,7 @@ import { ComboboxProps } from "./types";
  *      label="Velg en verdi"
  *      options={options}
  *      id="my-combobox"
- *      shouldAutoComplete
+ *
  *    />
  * )
  * ```
@@ -49,7 +49,7 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
     value,
     onChange,
     onClear,
-    shouldAutocomplete,
+
     size,
     ...rest
   } = props;
@@ -68,7 +68,7 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
         value,
         onChange,
         onClear,
-        shouldAutocomplete,
+
         size,
       }}
     >
