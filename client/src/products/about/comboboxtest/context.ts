@@ -10,10 +10,6 @@ export type FieldsetContextProps = {
    */
   errorId: string;
   /**
-   * Sets fieldset and all form-children to disabled
-   */
-  disabled: boolean;
-  /**
    * Read only-state
    */
   readOnly?: boolean;

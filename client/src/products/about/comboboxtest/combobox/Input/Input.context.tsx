@@ -23,7 +23,6 @@ interface Props {
   value: {
     defaultValue: ComboboxProps["defaultValue"];
     description: ComboboxProps["description"];
-    disabled: ComboboxProps["disabled"];
     error: ComboboxProps["error"];
     errorId: ComboboxProps["errorId"];
     id: ComboboxProps["id"];
@@ -37,7 +36,6 @@ const InputProvider = ({ children, value: props }: Props) => {
   const {
     defaultValue = "",
     description,
-    disabled,
     error,
     errorId,
     id: externalId,
@@ -48,7 +46,6 @@ const InputProvider = ({ children, value: props }: Props) => {
   const formFieldProps = useFormField(
     {
       description,
-      disabled,
       error,
       errorId,
       id: externalId,

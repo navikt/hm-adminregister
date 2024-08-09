@@ -13,12 +13,6 @@ export interface FormFieldProps {
    */
   errorId?: string;
   /**
-   * **Avoid using if possible for accessibility purposes**.
-   *
-   * Disables element.
-   */
-  disabled?: boolean;
-  /**
    * Adds a description to extend the labeling.
    */
   description?: React.ReactNode;
@@ -43,7 +37,6 @@ export interface FormFieldType {
     id: string;
     "aria-invalid"?: boolean;
     "aria-describedby"?: string;
-    disabled?: boolean;
   };
   readOnly?: boolean;
 }
@@ -62,11 +55,10 @@ export const useFormField = (props: FormFieldProps, prefix: string): FormFieldTy
   const errorId = propErrorId ?? `${prefix}-error-${genId}`;
   const inputDescriptionId = `${prefix}-description-${genId}`;
 
-  const disabled = fieldset?.disabled || props.disabled;
-  const readOnly = ((fieldset?.readOnly || props.readOnly) && !disabled) || undefined;
+  const readOnly = fieldset?.readOnly || props.readOnly || undefined;
 
-  const hasError: boolean = !disabled && !readOnly && !!(error || fieldset?.error);
-  const showErrorMsg = !disabled && !readOnly && !!error && typeof error !== "boolean";
+  const hasError: boolean = !readOnly && !!(error || fieldset?.error);
+  const showErrorMsg = !readOnly && !!error && typeof error !== "boolean";
 
   const ariaInvalid = { ...(hasError ? { "aria-invalid": true } : {}) };
 
@@ -85,7 +77,6 @@ export const useFormField = (props: FormFieldProps, prefix: string): FormFieldTy
           [errorId]: showErrorMsg,
           [fieldset?.errorId ?? ""]: hasError && !!fieldset?.error,
         }) || undefined,
-      disabled,
     },
   };
 };

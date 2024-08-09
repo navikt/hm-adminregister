@@ -10,7 +10,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
   const {
     children,
     defaultValue,
-    disabled,
     error,
     errorId,
     id,
@@ -30,7 +29,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
       value={{
         defaultValue,
         description: rest.description,
-        disabled,
         error,
         errorId,
         id,
