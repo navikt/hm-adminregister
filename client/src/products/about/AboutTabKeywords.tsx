@@ -19,7 +19,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
   const keywords = series.seriesData.attributes.keywords;
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue] = useState("");
   const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : []);
 
   const { setGlobalError } = useErrorStore();
