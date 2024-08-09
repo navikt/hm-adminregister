@@ -1,6 +1,6 @@
 import cl from "clsx";
 import React, { useContext } from "react";
-import { useId } from "./util/hooks";
+import { useId } from "./util";
 import { FieldsetContext } from "./context";
 
 export interface FormFieldProps {

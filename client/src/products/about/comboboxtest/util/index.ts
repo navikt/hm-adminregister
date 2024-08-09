@@ -1,2 +1,3 @@
 export { omit } from "./omit";
-export { useId } from "./hooks/useId";
+export { useId } from "./useId";
+export { useMergeRefs } from "./useMergeRefs";

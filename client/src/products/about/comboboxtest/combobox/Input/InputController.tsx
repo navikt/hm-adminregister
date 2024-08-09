@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { forwardRef } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
-import { useMergeRefs } from "../../util/hooks";
+import { useMergeRefs } from "../../util";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { ComboboxProps } from "../types";

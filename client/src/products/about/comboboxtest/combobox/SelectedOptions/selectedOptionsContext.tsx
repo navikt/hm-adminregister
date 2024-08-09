@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { createContext } from "../../util/create-context";
-import { usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
 import { isInList } from "../combobox-utils";
 import { useComboboxCustomOptions } from "../customOptionsContext";
@@ -9,7 +8,6 @@ import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
 type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
   removeSelectedOption: (option: ComboboxOption) => void;
-  prevSelectedOptions?: ComboboxOption[];
   selectedOptions: ComboboxOption[];
   maxSelected?: MaxSelected & { isLimitReached: boolean };
   setSelectedOptions: (option: ComboboxOption[]) => void;
@@ -81,14 +79,11 @@ const SelectedOptionsProvider = ({
     [addSelectedOption, clearInput, focusInput, removeSelectedOption, selectedOptions],
   );
 
-  const prevSelectedOptions = usePrevious<ComboboxOption[]>(selectedOptions);
-
   const isLimitReached = !!maxSelected?.limit && selectedOptions.length >= maxSelected.limit;
 
   const selectedOptionsState = {
     addSelectedOption,
     removeSelectedOption,
-    prevSelectedOptions,
     selectedOptions,
     setSelectedOptions,
     toggleOption,

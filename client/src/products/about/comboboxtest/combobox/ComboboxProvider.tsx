@@ -1,6 +1,5 @@
 import { forwardRef } from "react";
 import Combobox from "./Combobox";
-import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContext";
 import { InputContextProvider } from "./Input/Input.context";
 import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "./combobox-utils";
@@ -51,15 +50,9 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
             options,
           }}
         >
-          <FilteredOptionsProvider
-            value={{
-              options,
-            }}
-          >
-            <Combobox ref={ref} {...rest}>
-              {children}
-            </Combobox>
-          </FilteredOptionsProvider>
+          <Combobox ref={ref} {...rest}>
+            {children}
+          </Combobox>
         </SelectedOptionsProvider>
       </CustomOptionsProvider>
     </InputContextProvider>

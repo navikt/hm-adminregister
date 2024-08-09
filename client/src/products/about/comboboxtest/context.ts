@@ -1,10 +1,10 @@
-import { createContext } from "react";
+import { createContext, ReactNode } from "react";
 
 export type FieldsetContextProps = {
   /**
    * Error message applied to element,
    */
-  error?: React.ReactNode;
+  error?: ReactNode;
   /**
    * Overrides internal errorId
    */

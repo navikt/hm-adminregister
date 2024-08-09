@@ -32,7 +32,7 @@ export function createContext<T>(options: CreateContextOptions<T> = {}) {
    */
   const Provider = forwardRef(function Provider({ children, ...context }: ProviderProps<T>, ref) {
     // Only re-memoize when prop values change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // @ts-expect-error react-hooks/exhaustive-deps
     const value = React.useMemo(() => context, Object.values(context)) as T;
 
     return <Context.Provider value={ref ? { ...value, ref } : value}>{children}</Context.Provider>;
