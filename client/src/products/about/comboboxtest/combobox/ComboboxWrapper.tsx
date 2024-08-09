@@ -1,6 +1,5 @@
 import cl from "clsx";
-import React, { useRef, useState } from "react";
-import { useInputContext } from "./Input/Input.context";
+import { useRef, useState } from "react";
 
 type ComboboxWrapperProps = {
   children: any;
@@ -10,32 +9,20 @@ type ComboboxWrapperProps = {
     disabled?: boolean;
   };
   inputSize: string;
-  toggleIsListOpen: (isListOpen: boolean) => void;
 };
 
-const ComboboxWrapper = ({
-  children,
-  className,
-  hasError,
-  inputProps,
-  inputSize,
-  toggleIsListOpen,
-}: ComboboxWrapperProps) => {
-  const { toggleOpenButtonRef } = useInputContext();
-
+const ComboboxWrapper = ({ children, className, hasError, inputProps, inputSize }: ComboboxWrapperProps) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
 
   function onFocusInsideWrapper(e) {
-    if (!wrapperRef.current?.contains(e.relatedTarget) && toggleOpenButtonRef?.current !== e.target) {
-      toggleIsListOpen(true);
+    if (!wrapperRef.current?.contains(e.relatedTarget)) {
       setHasFocusWithin(true);
     }
   }
 
   function onBlurWrapper(e) {
     if (!wrapperRef.current?.contains(e.relatedTarget)) {
-      toggleIsListOpen(false);
       setHasFocusWithin(false);
     }
   }

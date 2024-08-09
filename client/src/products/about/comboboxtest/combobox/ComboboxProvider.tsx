@@ -7,28 +7,6 @@ import { mapToComboboxOptionArray } from "./combobox-utils";
 import { CustomOptionsProvider } from "./customOptionsContext";
 import { ComboboxProps } from "./types";
 
-/**
- * A component that allows the user to search in a list of options
- *
- * Has options for allowing only one or multiple options to be selected,
- * or adding new, user-submitted values.
- *
- * @see [📝 Documentation](https://aksel.nav.no/komponenter/core/combobox)
- *
- * @example
- * ```jsx
- * const options = ["apple", "banana", "orange"];
- *
- * return (
- *    <Combobox
- *      label="Velg en verdi"
- *      options={options}
- *      id="my-combobox"
- *
- *    />
- * )
- * ```
- */
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref) => {
   const {
     allowNewValues = false,
@@ -37,9 +15,7 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
     disabled,
     error,
     errorId,
-    filteredOptions: externalFilteredOptions,
     id,
-    isListOpen,
     isLoading = false,
     isMultiSelect,
     onToggleSelected,
@@ -49,12 +25,10 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
     value,
     onChange,
     onClear,
-
     size,
     ...rest
   } = props;
   const options = mapToComboboxOptionArray(externalOptions) || [];
-  const filteredOptions = mapToComboboxOptionArray(externalFilteredOptions);
   const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions);
   return (
     <InputContextProvider
@@ -68,7 +42,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
         value,
         onChange,
         onClear,
-
         size,
       }}
     >
@@ -86,8 +59,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>((props, ref
           <FilteredOptionsProvider
             value={{
               allowNewValues,
-              filteredOptions,
-              isListOpen,
               isLoading,
               options,
             }}

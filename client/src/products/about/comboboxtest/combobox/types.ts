@@ -53,12 +53,6 @@ export interface ComboboxProps
    */
   clearButtonLabel?: string;
   /**
-   * A list of options to display in the dropdown list.
-   * If provided, this overrides the internal search logic in the component.
-   * Useful for e.g. searching on a server or when overriding the search algorithm to search for synonyms or similar.
-   */
-  filteredOptions?: string[] | ComboboxOption[];
-  /**
    * Optionally hide the label visually.
    * Not recommended, but can be considered for e.g. search fields in the top menu.
    */
@@ -69,10 +63,6 @@ export interface ComboboxProps
    * If used for styling, please consider using tokens instead.
    */
   inputClassName?: string | undefined;
-  /**
-   * Controlled open/closed state for the dropdown list
-   */
-  isListOpen?: boolean;
   /**
    * Set to `true` when doing an async search and waiting for new filteredOptions.
    *

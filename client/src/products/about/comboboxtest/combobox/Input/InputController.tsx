@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import cl from "clsx";
+import { forwardRef } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "../../util/hooks";
-import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { ComboboxProps } from "../types";
@@ -21,18 +20,12 @@ export const InputController = forwardRef<
 
   const { clearInput, focusInput, inputProps, value, size = "medium", inputRef } = useInputContext();
 
-  const { activeDecendantId } = useFilteredOptionsContext();
   const { selectedOptions } = useSelectedOptionsContext();
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
   return (
-    <div
-      className={cl("navds-combobox__wrapper-inner navds-text-field__input", {
-        "navds-combobox__wrapper-inner--virtually-unfocused": activeDecendantId !== undefined,
-      })}
-      onClick={focusInput}
-    >
+    <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
       {!shouldShowSelectedOptions ? (
         <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
       ) : (
