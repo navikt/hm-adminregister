@@ -91,12 +91,6 @@ export interface ComboboxProps
    */
   maxSelected?: MaxSelected;
   /**
-   * When set to `true` displays selected options as Chips before the input field
-   *
-   * @default true
-   */
-  shouldShowSelectedOptions?: boolean;
-  /**
    * Set this to override the value of the input field.
    *
    * This converts the input to a controlled input, so you have to use onChange to update the value.

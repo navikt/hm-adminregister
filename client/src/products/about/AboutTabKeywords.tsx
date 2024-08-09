@@ -52,12 +52,9 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
         <TEST_Combobox
           label={"test"}
           options={[]}
-          allowNewValues={true}
-          isMultiSelect={true}
           clearButton={true}
           selectedOptions={updatedKeywords || []}
           maxSelected={{ limit: 3 }}
-          shouldShowSelectedOptions={true}
           onToggleSelected={(option: string, isSelected: boolean) =>
             isSelected && isValidKeyword(inputValue) && validKeywordLetters.test(inputValue)
               ? setUpdatedKeywords([...updatedKeywords, option])
