@@ -13,7 +13,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"
   value?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ inputClassName, ...rest }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, size, value, searchTerm, setValue } = useInputContext();

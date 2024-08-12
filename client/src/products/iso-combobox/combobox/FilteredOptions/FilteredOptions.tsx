@@ -1,5 +1,4 @@
 import cl from "clsx";
-import React from "react";
 import { CheckmarkIcon, PlusIcon } from "@navikt/aksel-icons";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ReactNode, useCallback, useMemo, useState } from "react";
 import { createContext } from "../../util/create-context";
 import { usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
@@ -23,7 +23,7 @@ const SelectedOptionsProvider = ({
   children,
   value,
 }: {
-  children: any;
+  children: ReactNode;
   value: Pick<ComboboxProps, "allowNewValues" | "isMultiSelect" | "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
