@@ -27,7 +27,6 @@ interface Props {
     defaultValue: ComboboxProps["defaultValue"];
     description: ComboboxProps["description"];
     error: ComboboxProps["error"];
-    errorId: ComboboxProps["errorId"];
     id: ComboboxProps["id"];
     value: ComboboxProps["value"];
     onChange: ComboboxProps["onChange"];
@@ -40,7 +39,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     defaultValue = "",
     description,
     error,
-    errorId,
     id: externalId,
     value: externalValue,
     onChange: externalOnChange,
@@ -50,7 +48,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     {
       description,
       error,
-      errorId,
       id: externalId,
     },
     "comboboxfield",

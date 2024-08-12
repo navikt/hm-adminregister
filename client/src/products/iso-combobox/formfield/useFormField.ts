@@ -9,10 +9,6 @@ export interface FormFieldProps {
    */
   error?: React.ReactNode;
   /**
-   * Override internal errorId.
-   */
-  errorId?: string;
-  /**
    * Adds a description to extend the labeling.
    */
   description?: React.ReactNode;
@@ -44,14 +40,14 @@ export interface FormFieldType {
  * Handles props and their state for various form-fields in context with Fieldset
  */
 export const useFormField = (props: FormFieldProps, prefix: string): FormFieldType => {
-  const { error, errorId: propErrorId } = props;
+  const { error } = props;
 
   const fieldset = useContext(FieldsetContext);
 
   const genId = useId();
 
   const id = props.id ?? `${prefix}-${genId}`;
-  const errorId = propErrorId ?? `${prefix}-error-${genId}`;
+  const errorId = `${prefix}-error-${genId}`;
   const inputDescriptionId = `${prefix}-description-${genId}`;
 
   const readOnly = fieldset?.readOnly || props.readOnly || undefined;

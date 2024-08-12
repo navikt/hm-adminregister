@@ -6,10 +6,6 @@ export type FieldsetContextProps = {
    */
   error?: React.ReactNode;
   /**
-   * Overrides internal errorId
-   */
-  errorId: string;
-  /**
    * Read only-state
    */
   readOnly?: boolean;
