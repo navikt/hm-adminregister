@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import cl from "clsx";
-import { forwardRef } from "react";
+import { forwardRef, MouseEvent } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "../../util/hooks";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
@@ -25,8 +25,7 @@ export const InputController = forwardRef<
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
-  // @ts-expect-error event
-  const clearField = (event) => {
+  const clearField = (event: MouseEvent<HTMLButtonElement>) => {
     clearInput(event);
     removeSelectedOption(selectedOptions[0]);
   };
