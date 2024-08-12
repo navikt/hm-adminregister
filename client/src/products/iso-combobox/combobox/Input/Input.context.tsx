@@ -24,7 +24,6 @@ const [InputContextProvider, useInputContext] = createContext<InputContextValue>
 interface Props {
   children: React.ReactNode;
   value: {
-    defaultValue: ComboboxProps["defaultValue"];
     description: ComboboxProps["description"];
     error: ComboboxProps["error"];
     id: ComboboxProps["id"];
@@ -35,15 +34,7 @@ interface Props {
 }
 
 const InputProvider = ({ children, value: props }: Props) => {
-  const {
-    defaultValue = "",
-    description,
-    error,
-    id: externalId,
-    value: externalValue,
-    onChange: externalOnChange,
-    onClear,
-  } = props;
+  const { description, error, id: externalId, value: externalValue, onChange: externalOnChange, onClear } = props;
   const formFieldProps = useFormField(
     {
       description,
@@ -54,7 +45,7 @@ const InputProvider = ({ children, value: props }: Props) => {
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
   const toggleOpenButtonRef = useRef<HTMLButtonElement>(null);
-  const [internalValue, setInternalValue] = useState<string>(defaultValue);
+  const [internalValue, setInternalValue] = useState<string>("");
 
   const value = useMemo(() => String(externalValue ?? internalValue), [externalValue, internalValue]);
 

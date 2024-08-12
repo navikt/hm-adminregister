@@ -34,11 +34,6 @@ export interface ComboboxProps
    */
   filteredOptions?: string[] | ComboboxOption[];
   /**
-   * Optionally hide the label visually.
-   * Not recommended, but can be considered for e.g. search fields in the top menu.
-   */
-  hideLabel?: boolean;
-  /**
    * Custom class name for the input field.
    *
    * If used for styling, please consider using tokens instead.
@@ -81,19 +76,9 @@ export interface ComboboxProps
    */
   selectedOptions?: string[] | ComboboxOption[];
   /**
-   * When set to `true` displays selected options as Chips before the input field
-   *
-   * @default true
-   */
-  shouldShowSelectedOptions?: boolean;
-  /**
    * Set this to override the value of the input field.
    *
    * This converts the input to a controlled input, so you have to use onChange to update the value.
    */
   value?: string;
-  /**
-   * Initial value of the input field. Only works when the input is uncontrolled.
-   */
-  defaultValue?: string;
 }

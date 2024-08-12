@@ -10,7 +10,7 @@ import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 
 export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
   function Combobox(props, ref) {
-    const { className, hideLabel = false, description, label, ...rest } = props;
+    const { className, description, label, ...rest } = props;
 
     const { toggleIsListOpen } = useFilteredOptionsContext();
 
@@ -18,22 +18,11 @@ export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChan
 
     return (
       <ComboboxWrapper className={className} hasError={hasError} toggleIsListOpen={toggleIsListOpen}>
-        <Label
-          htmlFor={inputProps.id}
-          className={cl("navds-form-field__label", {
-            "navds-sr-only": hideLabel,
-          })}
-        >
+        <Label htmlFor={inputProps.id} className={"navds-form-field__label"}>
           {label}
         </Label>
         {!!description && (
-          <BodyShort
-            as="div"
-            className={cl("navds-form-field__description", {
-              "navds-sr-only": hideLabel,
-            })}
-            id={inputDescriptionId}
-          >
+          <BodyShort as="div" className={"navds-form-field__description"} id={inputDescriptionId}>
             {description}
           </BodyShort>
         )}
