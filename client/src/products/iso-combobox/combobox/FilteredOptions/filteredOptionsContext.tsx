@@ -4,7 +4,6 @@ import { createContext } from "../../util/create-context";
 import { useClientLayoutEffect, usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { toComboboxOption } from "../combobox-utils";
 import { useComboboxCustomOptions } from "../customOptionsContext";
 import { ComboboxOption, ComboboxProps } from "../types";
 import filteredOptionsUtils from "./filtered-options-util";
@@ -12,7 +11,7 @@ import useVirtualFocus, { VirtualFocusType } from "./useVirtualFocus";
 
 type FilteredOptionsProps = {
   children: React.ReactNode;
-  value: Pick<ComboboxProps, "allowNewValues" | "isListOpen" | "isLoading"> & {
+  value: Pick<ComboboxProps, "isListOpen" | "isLoading"> & {
     filteredOptions?: ComboboxOption[];
     options: ComboboxOption[];
   };
@@ -20,7 +19,6 @@ type FilteredOptionsProps = {
 
 type FilteredOptionsContextValue = {
   activeDecendantId?: string;
-  allowNewValues?: boolean;
   ariaDescribedBy?: string;
   setFilteredOptionsRef: React.Dispatch<React.SetStateAction<HTMLUListElement | null>>;
   isListOpen: boolean;
@@ -39,13 +37,7 @@ const [FilteredOptionsContextProvider, useFilteredOptionsContext] = createContex
 });
 
 const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProps) => {
-  const {
-    allowNewValues,
-    filteredOptions: externalFilteredOptions,
-    isListOpen: isExternalListOpen,
-    isLoading,
-    options,
-  } = props;
+  const { filteredOptions: externalFilteredOptions, isListOpen: isExternalListOpen, isLoading, options } = props;
   const [filteredOptionsRef, setFilteredOptionsRef] = useState<HTMLUListElement | null>(null);
   const virtualFocus = useVirtualFocus(filteredOptionsRef);
   const {
@@ -74,7 +66,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const filteredOptionsMap = useMemo(() => {
     const initialMap = {
-      [filteredOptionsUtils.getAddNewOptionId(id)]: allowNewValues ? toComboboxOption(value) : undefined,
+      [filteredOptionsUtils.getAddNewOptionId(id)]: undefined,
       ...customOptions.reduce((acc, customOption) => {
         const _id = filteredOptionsUtils.getOptionId(id, customOption.label);
         acc[_id] = customOption;
@@ -90,7 +82,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     }, initialMap);
 
     return finalMap;
-  }, [allowNewValues, customOptions, id, options, value]);
+  }, [customOptions, id, options, value]);
 
   useClientLayoutEffect(() => {
     if ((previousSearchTerm?.length || 0) < searchTerm.length) {
@@ -117,7 +109,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const ariaDescribedBy = useMemo(() => {
     let activeOption: string = "";
-    if (!isLoading && filteredOptions.length === 0 && !allowNewValues) {
+    if (!isLoading && filteredOptions.length === 0) {
       activeOption = filteredOptionsUtils.getNoHitsId(id);
     } else if (value || isLoading) {
       if (isListOpen && isLoading) {
@@ -127,16 +119,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     const maybeMaxSelectedOptionsId = maxSelected?.isLimitReached && filteredOptionsUtils.getMaxSelectedOptionsId(id);
 
     return cl(activeOption, maybeMaxSelectedOptionsId, partialAriaDescribedBy) || undefined;
-  }, [
-    isListOpen,
-    isLoading,
-    maxSelected?.isLimitReached,
-    value,
-    partialAriaDescribedBy,
-    filteredOptions,
-    id,
-    allowNewValues,
-  ]);
+  }, [isListOpen, isLoading, maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id]);
 
   const currentOption = useMemo(
     () => filteredOptionsMap[virtualFocus.activeElement?.getAttribute("id") || -1],
@@ -150,7 +133,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const filteredOptionsState = {
     activeDecendantId,
-    allowNewValues,
     setFilteredOptionsRef,
     isListOpen,
     isLoading,

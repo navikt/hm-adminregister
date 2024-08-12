@@ -39,10 +39,6 @@ export interface ComboboxProps
    */
   options: string[] | ComboboxOption[];
   /**
-   * If enabled, adds an option to add the value of the input as an option whenever there are no options matching the value.
-   */
-  allowNewValues?: boolean;
-  /**
    * If `true` adds a button to clear the value in the input field
    */
   clearButton?: boolean;
@@ -96,9 +92,8 @@ export interface ComboboxProps
    *
    * @param option The option value
    * @param isSelected Whether the option has been selected or unselected
-   * @param isCustomOption Whether the option comes from user input, instead of from the list
    */
-  onToggleSelected?: (option: ComboboxOption["value"], isSelected: boolean, isCustomOption: boolean) => void;
+  onToggleSelected?: (option: ComboboxOption["value"], isSelected: boolean) => void;
   /**
    * List of selected options.
    *

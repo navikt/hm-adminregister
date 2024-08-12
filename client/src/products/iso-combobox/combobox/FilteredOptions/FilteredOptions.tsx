@@ -15,7 +15,6 @@ const FilteredOptions = () => {
     value,
   } = useInputContext();
   const {
-    allowNewValues,
     isLoading,
     isListOpen,
     filteredOptions,
@@ -35,11 +34,9 @@ const FilteredOptions = () => {
   const shouldRenderNonSelectables =
     maxSelected?.isLimitReached || // Render maxSelected message
     isLoading || // Render loading message
-    (!isLoading && filteredOptions.length === 0 && !allowNewValues); // Render no hits message
+    (!isLoading && filteredOptions.length === 0); // Render no hits message
 
-  const shouldRenderFilteredOptionsList =
-    (allowNewValues && isValueNew && !maxSelected?.isLimitReached) || // Render add new option
-    filteredOptions.length > 0; // Render filtered options
+  const shouldRenderFilteredOptionsList = filteredOptions.length > 0; // Render filtered options
 
   return (
     <div
@@ -65,7 +62,7 @@ const FilteredOptions = () => {
               <Loader title="Søker..." />
             </div>
           )}
-          {!isLoading && filteredOptions.length === 0 && !allowNewValues && (
+          {!isLoading && filteredOptions.length === 0 && (
             <div className="navds-combobox__list-item--no-options" id={filteredOptionsUtil.getNoHitsId(id)}>
               Ingen søketreff
             </div>
@@ -75,36 +72,6 @@ const FilteredOptions = () => {
 
       {shouldRenderFilteredOptionsList && (
         <ul ref={setFilteredOptionsRef} role="listbox" className="navds-combobox__list-options">
-          {isValueNew && !maxSelected?.isLimitReached && allowNewValues && (
-            <li
-              tabIndex={-1}
-              onMouseMove={() => {
-                if (activeDecendantId !== filteredOptionsUtil.getAddNewOptionId(id)) {
-                  virtualFocus.moveFocusToElement(filteredOptionsUtil.getAddNewOptionId(id));
-                  setIsMouseLastUsedInputDevice(true);
-                }
-              }}
-              onPointerUp={(event) => {
-                toggleOption(toComboboxOption(value), event);
-                if (!isInList(value, selectedOptions)) toggleIsListOpen(false);
-              }}
-              id={filteredOptionsUtil.getAddNewOptionId(id)}
-              className={cl("navds-combobox__list-item navds-combobox__list-item--new-option", {
-                "navds-combobox__list-item--new-option--focus":
-                  activeDecendantId === filteredOptionsUtil.getAddNewOptionId(id),
-              })}
-              role="option"
-              aria-selected={false}
-            >
-              <PlusIcon aria-hidden />
-              <BodyShort size={size}>
-                Legg til{" "}
-                <Label as="span" size={size}>
-                  &#8220;{value}&#8221;
-                </Label>
-              </BodyShort>
-            </li>
-          )}
           {filteredOptions.map((option) => (
             <li
               className={cl("navds-combobox__list-item", {

@@ -3,7 +3,6 @@ import { createContext } from "../../util/create-context";
 import { usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
 import { isInList } from "../combobox-utils";
-import { useComboboxCustomOptions } from "../customOptionsContext";
 import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
 
 type SelectedOptionsContextValue = {
@@ -23,48 +22,35 @@ const SelectedOptionsProvider = ({
   value,
 }: {
   children: ReactNode;
-  value: Pick<ComboboxProps, "allowNewValues" | "onToggleSelected" | "maxSelected"> & {
+  value: Pick<ComboboxProps, "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
   };
 }) => {
   const { clearInput, focusInput } = useInputContext();
-  const { customOptions, removeCustomOption, addCustomOption, setCustomOptions } = useComboboxCustomOptions();
-  const { allowNewValues, selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
+  const { selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
   const [internalSelectedOptions, setSelectedOptions] = useState<ComboboxOption[]>([]);
   const selectedOptions = useMemo(
-    () => externalSelectedOptions ?? [...customOptions, ...internalSelectedOptions],
-    [customOptions, externalSelectedOptions, internalSelectedOptions],
+    () => externalSelectedOptions ?? [...internalSelectedOptions],
+    [externalSelectedOptions, internalSelectedOptions],
   );
 
   const addSelectedOption = useCallback(
     (option: ComboboxOption) => {
-      const isCustomOption = !isInList(option, options);
-      if (isCustomOption) {
-        allowNewValues && addCustomOption(option);
-        setSelectedOptions([]);
-      } else {
-        setSelectedOptions([option]);
-        setCustomOptions([]);
-      }
-      onToggleSelected?.(option.value, true, isCustomOption);
+      setSelectedOptions([option]);
+      onToggleSelected?.(option.value, true);
     },
-    [addCustomOption, allowNewValues, onToggleSelected, options, setCustomOptions],
+    [onToggleSelected, options],
   );
 
   const removeSelectedOption = useCallback(
     (option: ComboboxOption) => {
-      const isCustomOption = isInList(option, customOptions);
-      if (isCustomOption) {
-        removeCustomOption(option);
-      } else {
-        setSelectedOptions((oldSelectedOptions) =>
-          oldSelectedOptions.filter((selectedOption) => selectedOption !== option),
-        );
-      }
-      onToggleSelected?.(option.value, false, isCustomOption);
+      setSelectedOptions((oldSelectedOptions) =>
+        oldSelectedOptions.filter((selectedOption) => selectedOption !== option,
+      );
+      onToggleSelected?.(option.value, false);
     },
-    [customOptions, onToggleSelected, removeCustomOption],
+    [onToggleSelected]
   );
 
   const toggleOption = useCallback(
