@@ -115,7 +115,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   const currentOption = useMemo(
     // @ts-expect-error ukjent
     () => filteredOptionsMap[virtualFocus.activeElement?.getAttribute("id") || -1],
-    [filteredOptionsMap, virtualFocus,
+    [filteredOptionsMap, virtualFocus],
   );
 
   const activeDecendantId = useMemo(
