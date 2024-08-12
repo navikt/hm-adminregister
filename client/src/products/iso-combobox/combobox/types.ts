@@ -16,17 +16,6 @@ export type ComboboxOption = {
   value: string;
 };
 
-export type MaxSelected = {
-  /**
-   * The limit for maximum selected options
-   */
-  limit: number;
-  /**
-   * Override the message to display when the limit for maximum selected options has been reached
-   */
-  message?: string;
-};
-
 export interface ComboboxProps
   extends FormFieldProps,
     Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "onChange" | "value" | "defaultValue"> {
@@ -101,10 +90,6 @@ export interface ComboboxProps
    * e.g. for a filter, where options can be toggled elsewhere/programmatically.
    */
   selectedOptions?: string[] | ComboboxOption[];
-  /**
-   * Options for the maximum number of selected options.
-   */
-  maxSelected?: MaxSelected;
   /**
    * When set to `true` displays selected options as Chips before the input field
    *

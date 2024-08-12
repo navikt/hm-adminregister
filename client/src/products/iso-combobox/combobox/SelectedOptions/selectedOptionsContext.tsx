@@ -3,14 +3,14 @@ import { createContext } from "../../util/create-context";
 import { usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
 import { isInList } from "../combobox-utils";
-import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
+import { ComboboxOption, ComboboxProps } from "../types";
 
 type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
   removeSelectedOption: (option: ComboboxOption) => void;
   prevSelectedOptions?: ComboboxOption[];
   selectedOptions: ComboboxOption[];
-  maxSelected?: MaxSelected & { isLimitReached: boolean };
+  maxSelected?: { isLimitReached: boolean };
   setSelectedOptions: (options: ComboboxOption[]) => void | ComboboxOption[];
   toggleOption: (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent) => void;
 };
@@ -22,13 +22,13 @@ const SelectedOptionsProvider = ({
   value,
 }: {
   children: ReactNode;
-  value: Pick<ComboboxProps, "onToggleSelected" | "maxSelected"> & {
+  value: Pick<ComboboxProps, "onToggleSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
   };
 }) => {
   const { clearInput, focusInput } = useInputContext();
-  const { selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
+  const { selectedOptions: externalSelectedOptions, onToggleSelected, options } = value;
   const [internalSelectedOptions, setSelectedOptions] = useState<ComboboxOption[]>([]);
   const selectedOptions = useMemo(
     () => externalSelectedOptions ?? [...internalSelectedOptions],
@@ -68,7 +68,7 @@ const SelectedOptionsProvider = ({
 
   const prevSelectedOptions = usePrevious<ComboboxOption[]>(selectedOptions);
 
-  const isLimitReached = !!maxSelected?.limit && selectedOptions.length >= maxSelected.limit;
+  const isLimitReached = selectedOptions.length >= 1;
 
   const selectedOptionsState = {
     addSelectedOption,
@@ -77,8 +77,7 @@ const SelectedOptionsProvider = ({
     selectedOptions,
     setSelectedOptions,
     toggleOption,
-    maxSelected: maxSelected && {
-      ...maxSelected,
+    maxSelected: {
       isLimitReached,
     },
   };

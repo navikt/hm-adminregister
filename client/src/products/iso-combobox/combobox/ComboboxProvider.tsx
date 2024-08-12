@@ -18,7 +18,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     isLoading = false,
     onToggleSelected,
     selectedOptions: externalSelectedOptions,
-    maxSelected,
     options: externalOptions,
     value,
     onChange,
@@ -46,7 +45,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
       <SelectedOptionsProvider
         value={{
           selectedOptions,
-          maxSelected,
           onToggleSelected,
           options,
         }}
