@@ -60,6 +60,26 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const [isMouseLastUsedInputDevice, setIsMouseLastUsedInputDevice] = useState(false);
 
+  const filteredOptionsMap = useMemo(() => {
+    const initialMap = {
+      // eslint-disable-next-line react/prop-types
+      ...options.reduce((acc, option) => {
+        const _id = filteredOptionsUtils.getOptionId(id, option.label);
+        // @ts-expect-error ukjent
+        acc[_id] = option;
+        return acc;
+      }, {}),
+    };
+    // Add the options to the map
+    // eslint-disable-next-line react/prop-types
+    return options.reduce((map, _option) => {
+      const _id = filteredOptionsUtils.getOptionId(id, _option.label);
+      // @ts-expect-error ukjent
+      map[_id] = _option;
+      return map;
+    }, initialMap);
+  }, [id, options, value]);
+
   useClientLayoutEffect(() => {
     if ((previousSearchTerm?.length || 0) < searchTerm.length) {
       setValue(`${searchTerm}`);
@@ -93,9 +113,9 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   }, [isListOpen, isLoading, maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id]);
 
   const currentOption = useMemo(
-    // @ts-expect-error test
-    () => options[virtualFocus.activeElement?.getAttribute("id") || -1],
-    [options, virtualFocus],
+    // @ts-expect-error ukjent
+    () => filteredOptionsMap[virtualFocus.activeElement?.getAttribute("id") || -1],
+    [filteredOptionsMap, virtualFocus,
   );
 
   const activeDecendantId = useMemo(

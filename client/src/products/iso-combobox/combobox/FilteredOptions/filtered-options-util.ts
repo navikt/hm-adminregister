@@ -12,6 +12,8 @@ const getFilteredOptionsId = (comboboxId: string) => `${comboboxId}-filtered-opt
 const getOptionId = (comboboxId: string, option: string) =>
   `${comboboxId.toLocaleLowerCase()}-option-${option.replace(" ", "-").toLocaleLowerCase()}`;
 
+const getAddNewOptionId = (comboboxId: string) => `${comboboxId}-combobox-new-option`;
+
 const getIsLoadingId = (comboboxId: string) => `${comboboxId}-is-loading`;
 
 const getNoHitsId = (comboboxId: string) => `${comboboxId}-no-hits`;
@@ -23,6 +25,7 @@ export default {
   isPartOfText,
   getMatchingValuesFromList,
   getFilteredOptionsId,
+  getAddNewOptionId,
   getOptionId,
   getIsLoadingId,
   getNoHitsId,
