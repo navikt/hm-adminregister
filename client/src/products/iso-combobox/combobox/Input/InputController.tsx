@@ -44,7 +44,7 @@ export const InputController = forwardRef<
       <div>
         {(value || selectedOptions.length > 0) && (
           <button type="button" onClick={clearField} className="navds-combobox__button-clear" tabIndex={-1}>
-            <span className="navds-sr-only">{"Tøm"}</span>
+            <span className="navds-sr-only">Tøm</span>
             <XMarkIcon aria-hidden />
           </button>
         )}

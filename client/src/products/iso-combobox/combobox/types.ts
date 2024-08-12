@@ -28,16 +28,6 @@ export interface ComboboxProps
    */
   options: string[] | ComboboxOption[];
   /**
-   * If `true` adds a button to clear the value in the input field
-   */
-  clearButton?: boolean;
-  /**
-   * Custom name for the clear button. Requires `clearButton` to be `true`.
-   *
-   * @default "Tøm"
-   */
-  clearButtonLabel?: string;
-  /**
    * A list of options to display in the dropdown list.
    * If provided, this overrides the internal search logic in the component.
    * Useful for e.g. searching on a server or when overriding the search algorithm to search for synonyms or similar.
