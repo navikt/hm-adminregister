@@ -146,22 +146,24 @@ export const ForApproval = () => {
 
               <HStack gap="8" align={"center"}>
                 {!filteredData &&
-                  pagedData &&
-                  pagedData.totalPages &&
-                  pagedData.totalPages > 1 &&
-                  searchTerm.length == 0 && (
-                    <Pagination
-                      page={pageState}
-                      onPageChange={(x) => {
-                        searchParams.set("page", x.toString());
-                        setSearchParams(searchParams);
-                        setPageState(x);
-                      }}
-                      count={pagedData.totalPages}
-                      size="small"
-                      prevNextTexts
-                    />
-                  )}
+                pagedData &&
+                pagedData.totalPages &&
+                pagedData.totalPages > 1 &&
+                searchTerm.length == 0 ? (
+                  <Pagination
+                    page={pageState}
+                    onPageChange={(x) => {
+                      searchParams.set("page", x.toString());
+                      setSearchParams(searchParams);
+                      setPageState(x);
+                    }}
+                    count={pagedData.totalPages}
+                    size="small"
+                    prevNextTexts
+                  />
+                ) : (
+                  <></>
+                )}
                 {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
                   <Select
                     label="Antall produkter per side"
