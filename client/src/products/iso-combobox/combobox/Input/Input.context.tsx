@@ -14,7 +14,6 @@ interface InputContextValue extends FormFieldType {
   onChange: (newValue: string) => void;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  shouldAutocomplete?: boolean;
   toggleOpenButtonRef: React.RefObject<HTMLButtonElement>;
 }
 
@@ -34,7 +33,6 @@ interface Props {
     value: ComboboxProps["value"];
     onChange: ComboboxProps["onChange"];
     onClear: ComboboxProps["onClear"];
-    shouldAutocomplete: ComboboxProps["shouldAutocomplete"];
     size: ComboboxProps["size"];
   };
 }
@@ -49,7 +47,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     value: externalValue,
     onChange: externalOnChange,
     onClear,
-    shouldAutocomplete,
     size,
   } = props;
   const formFieldProps = useFormField(
@@ -93,12 +90,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     inputRef.current?.focus?.();
   }, []);
 
-  useClientLayoutEffect(() => {
-    if (shouldAutocomplete && inputRef && value !== searchTerm) {
-      inputRef.current?.setSelectionRange?.(searchTerm.length, value.length);
-    }
-  }, [value, searchTerm, shouldAutocomplete]);
-
   const contextValue = {
     ...formFieldProps,
     clearInput,
@@ -110,7 +101,6 @@ const InputProvider = ({ children, value: props }: Props) => {
     onChange,
     searchTerm,
     setSearchTerm,
-    shouldAutocomplete,
     toggleOpenButtonRef,
   };
 

@@ -25,7 +25,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     value,
     onChange,
     onClear,
-    shouldAutocomplete,
     size,
     ...rest
   } = props;
@@ -43,7 +42,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
         value,
         onChange,
         onClear,
-        shouldAutocomplete,
         size,
       }}
     >

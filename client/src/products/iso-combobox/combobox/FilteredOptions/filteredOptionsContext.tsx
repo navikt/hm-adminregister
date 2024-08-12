@@ -31,7 +31,6 @@ type FilteredOptionsContextValue = {
   isValueNew: boolean;
   toggleIsListOpen: (newState?: boolean) => void;
   currentOption?: ComboboxOption;
-  shouldAutocomplete?: boolean;
   virtualFocus: VirtualFocusType;
 };
 const [FilteredOptionsContextProvider, useFilteredOptionsContext] = createContext<FilteredOptionsContextValue>({
@@ -55,7 +54,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     searchTerm,
     setValue,
     setSearchTerm,
-    shouldAutocomplete,
   } = useInputContext();
   const { maxSelected } = useSelectedOptionsContext();
 
@@ -95,11 +93,10 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   }, [allowNewValues, customOptions, id, options, value]);
 
   useClientLayoutEffect(() => {
-    const autoCompleteCandidate = filteredOptionsUtils.getFirstValueStartingWith(searchTerm, filteredOptions)?.label;
-    if (shouldAutocomplete && autoCompleteCandidate && (previousSearchTerm?.length || 0) < searchTerm.length) {
-      setValue(`${searchTerm}${autoCompleteCandidate.substring(searchTerm.length)}`);
+    if ((previousSearchTerm?.length || 0) < searchTerm.length) {
+      setValue(`${searchTerm}`);
     }
-  }, [filteredOptions, previousSearchTerm, searchTerm, setSearchTerm, setValue, shouldAutocomplete]);
+  }, [filteredOptions, previousSearchTerm, searchTerm, setSearchTerm, setValue]);
 
   const isListOpen = useMemo(() => {
     return isExternalListOpen ?? isInternalListOpen;
@@ -123,9 +120,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     if (!isLoading && filteredOptions.length === 0 && !allowNewValues) {
       activeOption = filteredOptionsUtils.getNoHitsId(id);
     } else if (value || isLoading) {
-      if (shouldAutocomplete && filteredOptions[0]) {
-        activeOption = filteredOptionsUtils.getOptionId(id, filteredOptions[0].label);
-      } else if (isListOpen && isLoading) {
+      if (isListOpen && isLoading) {
         activeOption = filteredOptionsUtils.getIsLoadingId(id);
       }
     }
@@ -138,7 +133,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     maxSelected?.isLimitReached,
     value,
     partialAriaDescribedBy,
-    shouldAutocomplete,
     filteredOptions,
     id,
     allowNewValues,
@@ -158,7 +152,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     activeDecendantId,
     allowNewValues,
     setFilteredOptionsRef,
-    shouldAutocomplete,
     isListOpen,
     isLoading,
     filteredOptions,

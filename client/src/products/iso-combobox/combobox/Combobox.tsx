@@ -19,13 +19,7 @@ export const Combobox = forwardRef<
   const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg, size = "medium" } = useInputContext();
 
   return (
-    <ComboboxWrapper
-      className={className}
-      hasError={hasError}
-      inputProps={inputProps}
-      inputSize={size}
-      toggleIsListOpen={toggleIsListOpen}
-    >
+    <ComboboxWrapper className={className} hasError={hasError} inputSize={size} toggleIsListOpen={toggleIsListOpen}>
       <Label
         htmlFor={inputProps.id}
         size={size}
