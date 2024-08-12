@@ -39,7 +39,6 @@ export default function Combobox({ defaultValue, options, setValue, label, error
       }}
       filteredOptions={filteredOptions}
       options={options || []}
-      clearButton={true}
       onToggleSelected={onToggleSelected}
       error={errorMessage && errorMessage}
     />

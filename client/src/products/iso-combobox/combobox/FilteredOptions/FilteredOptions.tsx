@@ -3,7 +3,6 @@ import { CheckmarkIcon } from "@navikt/aksel-icons";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { isInList } from "../combobox-utils";
-import { ComboboxOption } from "../types";
 import filteredOptionsUtil from "./filtered-options-util";
 import { useFilteredOptionsContext } from "./filteredOptionsContext";
 import { BodyShort, Loader } from "@navikt/ds-react";
@@ -23,13 +22,9 @@ const FilteredOptions = () => {
     activeDecendantId,
     virtualFocus,
   } = useFilteredOptionsContext();
-  const { selectedOptions, toggleOption, maxSelected } = useSelectedOptionsContext();
-
-  const isDisabled = (option: ComboboxOption) =>
-    maxSelected?.isLimitReached && !isInList(option.value, selectedOptions);
+  const { selectedOptions, toggleOption } = useSelectedOptionsContext();
 
   const shouldRenderNonSelectables =
-    maxSelected?.isLimitReached || // Render maxSelected message
     isLoading || // Render loading message
     (!isLoading && filteredOptions.length === 0); // Render no hits message
 
@@ -46,14 +41,6 @@ const FilteredOptions = () => {
     >
       {shouldRenderNonSelectables && (
         <div className="navds-combobox__list_non-selectables" role="status">
-          {maxSelected?.isLimitReached && (
-            <div
-              className="navds-combobox__list-item--max-selected"
-              id={filteredOptionsUtil.getMaxSelectedOptionsId(id)}
-            >
-              {`${selectedOptions.length} av 1 er valgt.`}
-            </div>
-          )}
           {isLoading && (
             <div className="navds-combobox__list-item--loading" id={filteredOptionsUtil.getIsLoadingId(id)}>
               <Loader title="Søker..." />
@@ -76,7 +63,6 @@ const FilteredOptions = () => {
                   activeDecendantId === filteredOptionsUtil.getOptionId(id, option.label),
                 "navds-combobox__list-item--selected": isInList(option.value, selectedOptions),
               })}
-              data-no-focus={isDisabled(option) || undefined}
               id={filteredOptionsUtil.getOptionId(id, option.label)}
               key={option.label}
               tabIndex={-1}
@@ -87,9 +73,6 @@ const FilteredOptions = () => {
                 }
               }}
               onPointerUp={(event) => {
-                if (isDisabled(option)) {
-                  return;
-                }
                 toggleOption(option, event);
                 if (!isInList(option.value, selectedOptions)) {
                   toggleIsListOpen(false);
@@ -97,7 +80,6 @@ const FilteredOptions = () => {
               }}
               role="option"
               aria-selected={isInList(option.value, selectedOptions)}
-              aria-disabled={isDisabled(option) || undefined}
             >
               <BodyShort>{option.label}</BodyShort>
               {isInList(option.value, selectedOptions) && <CheckmarkIcon />}
