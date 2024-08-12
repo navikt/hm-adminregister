@@ -16,22 +16,20 @@ export const InputController = forwardRef<
   HTMLInputElement,
   Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
-  const {
-    clearButton = true,
-    clearButtonLabel,
-    toggleListButton = true,
-    toggleListButtonLabel,
-    inputClassName,
-    shouldShowSelectedOptions = true,
-    ...rest
-  } = props;
+  const { inputClassName, ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
 
   const { activeDecendantId } = useFilteredOptionsContext();
-  const { selectedOptions } = useSelectedOptionsContext();
+  const { selectedOptions, removeSelectedOption } = useSelectedOptionsContext();
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
+
+  // @ts-expect-error event
+  const clearField = (event) => {
+    clearInput(event);
+    removeSelectedOption(selectedOptions[0]);
+  };
 
   return (
     <div
@@ -40,23 +38,17 @@ export const InputController = forwardRef<
       })}
       onClick={focusInput}
     >
-      {!shouldShowSelectedOptions ? (
+      <SelectedOptions selectedOptions={selectedOptions}>
         <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
-      ) : (
-        <SelectedOptions selectedOptions={selectedOptions}>
-          <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
-        </SelectedOptions>
-      )}
+      </SelectedOptions>
       <div>
-        {value && clearButton && (
-          <button type="button" onClick={clearInput} className="navds-combobox__button-clear" tabIndex={-1}>
-            <span className="navds-sr-only">{clearButtonLabel ? clearButtonLabel : "Tøm"}</span>
+        {(value || selectedOptions.length > 0) && (
+          <button type="button" onClick={clearField} className="navds-combobox__button-clear" tabIndex={-1}>
+            <span className="navds-sr-only">{"Tøm"}</span>
             <XMarkIcon aria-hidden />
           </button>
         )}
-        {toggleListButton && (
-          <ToggleListButton toggleListButtonLabel={toggleListButtonLabel} ref={toggleOpenButtonRef} />
-        )}
+        <ToggleListButton ref={toggleOpenButtonRef} />
       </div>
     </div>
   );

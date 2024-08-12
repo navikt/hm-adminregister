@@ -21,7 +21,7 @@ export const ToggleListButton = forwardRef<HTMLButtonElement, ToggleListButtonPr
       tabIndex={-1}
       ref={ref}
     >
-      <span className="navds-sr-only">{toggleListButtonLabel ?? "Alternativer"}</span>
+      <span className="navds-sr-only">Alternativer</span>
       {isListOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
     </button>
   );

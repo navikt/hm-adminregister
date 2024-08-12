@@ -97,18 +97,6 @@ export interface ComboboxProps
    */
   shouldShowSelectedOptions?: boolean;
   /**
-   * When set to `true` displays the toggle button for opening/closing the dropdown list
-   *
-   * @default true
-   */
-  toggleListButton?: boolean;
-  /**
-   * Custom name for the toggle list-button. Requires "toggleListButton" to be `true`.
-   *
-   * @default "Alternativer"
-   */
-  toggleListButtonLabel?: string;
-  /**
    * Set this to override the value of the input field.
    *
    * This converts the input to a controlled input, so you have to use onChange to update the value.
