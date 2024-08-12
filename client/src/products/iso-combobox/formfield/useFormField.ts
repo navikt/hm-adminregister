@@ -28,6 +28,7 @@ export interface FormFieldProps {
    * Read-only state.
    */
   readOnly?: boolean;
+  "aria-describedby"?: string;
 }
 
 export interface FormFieldType {

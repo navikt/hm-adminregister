@@ -46,11 +46,11 @@ const SelectedOptionsProvider = ({
   const removeSelectedOption = useCallback(
     (option: ComboboxOption) => {
       setSelectedOptions((oldSelectedOptions) =>
-        oldSelectedOptions.filter((selectedOption) => selectedOption !== option,
+        oldSelectedOptions.filter((selectedOption) => selectedOption !== option),
       );
       onToggleSelected?.(option.value, false);
     },
-    [onToggleSelected]
+    [onToggleSelected],
   );
 
   const toggleOption = useCallback(

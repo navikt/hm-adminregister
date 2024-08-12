@@ -1,18 +1,17 @@
 import cl from "clsx";
-import { CheckmarkIcon, PlusIcon } from "@navikt/aksel-icons";
+import { CheckmarkIcon } from "@navikt/aksel-icons";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { isInList, toComboboxOption } from "../combobox-utils";
+import { isInList } from "../combobox-utils";
 import { ComboboxOption } from "../types";
 import filteredOptionsUtil from "./filtered-options-util";
 import { useFilteredOptionsContext } from "./filteredOptionsContext";
-import { BodyShort, Label, Loader } from "@navikt/ds-react";
+import { BodyShort, Loader } from "@navikt/ds-react";
 
 const FilteredOptions = () => {
   const {
     inputProps: { id },
     size,
-    value,
   } = useInputContext();
   const {
     isLoading,
@@ -21,7 +20,6 @@ const FilteredOptions = () => {
     setFilteredOptionsRef,
     isMouseLastUsedInputDevice,
     setIsMouseLastUsedInputDevice,
-    isValueNew,
     toggleIsListOpen,
     activeDecendantId,
     virtualFocus,

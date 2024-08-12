@@ -4,7 +4,6 @@ import { createContext } from "../../util/create-context";
 import { useClientLayoutEffect, usePrevious } from "../../util/hooks";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { useComboboxCustomOptions } from "../customOptionsContext";
 import { ComboboxOption, ComboboxProps } from "../types";
 import filteredOptionsUtils from "./filtered-options-util";
 import useVirtualFocus, { VirtualFocusType } from "./useVirtualFocus";
@@ -26,7 +25,6 @@ type FilteredOptionsContextValue = {
   filteredOptions: ComboboxOption[];
   isMouseLastUsedInputDevice: boolean;
   setIsMouseLastUsedInputDevice: React.Dispatch<SetStateAction<boolean>>;
-  isValueNew: boolean;
   toggleIsListOpen: (newState?: boolean) => void;
   currentOption?: ComboboxOption;
   virtualFocus: VirtualFocusType;
@@ -50,39 +48,17 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   const { maxSelected } = useSelectedOptionsContext();
 
   const [isInternalListOpen, setInternalListOpen] = useState(false);
-  const { customOptions } = useComboboxCustomOptions();
 
   const filteredOptions = useMemo(() => {
     if (externalFilteredOptions) {
       return externalFilteredOptions;
     }
-    const opts = [...customOptions, ...options];
-    return filteredOptionsUtils.getMatchingValuesFromList(searchTerm, opts);
-  }, [customOptions, externalFilteredOptions, options, searchTerm]);
+    return filteredOptionsUtils.getMatchingValuesFromList(searchTerm, options);
+  }, [externalFilteredOptions, options, searchTerm]);
 
   const previousSearchTerm = usePrevious(searchTerm);
 
   const [isMouseLastUsedInputDevice, setIsMouseLastUsedInputDevice] = useState(false);
-
-  const filteredOptionsMap = useMemo(() => {
-    const initialMap = {
-      [filteredOptionsUtils.getAddNewOptionId(id)]: undefined,
-      ...customOptions.reduce((acc, customOption) => {
-        const _id = filteredOptionsUtils.getOptionId(id, customOption.label);
-        acc[_id] = customOption;
-        return acc;
-      }, {}),
-    };
-
-    // Add the options to the map
-    const finalMap = options.reduce((map, _option) => {
-      const _id = filteredOptionsUtils.getOptionId(id, _option.label);
-      map[_id] = _option;
-      return map;
-    }, initialMap);
-
-    return finalMap;
-  }, [customOptions, id, options, value]);
 
   useClientLayoutEffect(() => {
     if ((previousSearchTerm?.length || 0) < searchTerm.length) {
@@ -102,11 +78,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     [virtualFocus],
   );
 
-  const isValueNew = useMemo(
-    () => Boolean(value) && !filteredOptionsMap[filteredOptionsUtils.getOptionId(id, value)],
-    [filteredOptionsMap, id, value],
-  );
-
   const ariaDescribedBy = useMemo(() => {
     let activeOption: string = "";
     if (!isLoading && filteredOptions.length === 0) {
@@ -122,8 +93,8 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   }, [isListOpen, isLoading, maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id]);
 
   const currentOption = useMemo(
-    () => filteredOptionsMap[virtualFocus.activeElement?.getAttribute("id") || -1],
-    [filteredOptionsMap, virtualFocus],
+    () => options[virtualFocus.activeElement?.getAttribute("id") || -1],
+    [options, virtualFocus],
   );
 
   const activeDecendantId = useMemo(
@@ -139,7 +110,6 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     filteredOptions,
     isMouseLastUsedInputDevice,
     setIsMouseLastUsedInputDevice,
-    isValueNew,
     toggleIsListOpen,
     currentOption,
     virtualFocus,

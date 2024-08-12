@@ -1,5 +1,5 @@
 import cl from "clsx";
-import React, { InputHTMLAttributes, forwardRef, useCallback, useRef } from "react";
+import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
 import { omit } from "../../util";
 import { useMergeRefs } from "../../util/hooks";
 import filteredOptionsUtil from "../FilteredOptions/filtered-options-util";
@@ -22,7 +22,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
     activeDecendantId,
     currentOption,
     filteredOptions,
-    isValueNew,
     toggleIsListOpen,
     isListOpen,
     ariaDescribedBy,
@@ -48,7 +47,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         clearInput(event);
       }
     },
-    [clearInput, currentOption, filteredOptions, isValueNew, selectedOptions, toggleIsListOpen, toggleOption, value],
+    [clearInput, currentOption, filteredOptions, selectedOptions, toggleIsListOpen, toggleOption, value],
   );
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {

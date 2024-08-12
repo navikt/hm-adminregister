@@ -4,7 +4,6 @@ import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContex
 import { InputContextProvider } from "./Input/Input.context";
 import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "./combobox-utils";
-import { CustomOptionsProvider } from "./customOptionsContext";
 import { ComboboxProps } from "./types";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
@@ -44,29 +43,27 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
         size,
       }}
     >
-      <CustomOptionsProvider>
-        <SelectedOptionsProvider
+      <SelectedOptionsProvider
+        value={{
+          selectedOptions,
+          maxSelected,
+          onToggleSelected,
+          options,
+        }}
+      >
+        <FilteredOptionsProvider
           value={{
-            selectedOptions,
-            maxSelected,
-            onToggleSelected,
+            filteredOptions,
+            isListOpen,
+            isLoading,
             options,
           }}
         >
-          <FilteredOptionsProvider
-            value={{
-              filteredOptions,
-              isListOpen,
-              isLoading,
-              options,
-            }}
-          >
-            <Combobox ref={ref} {...rest}>
-              {children}
-            </Combobox>
-          </FilteredOptionsProvider>
-        </SelectedOptionsProvider>
-      </CustomOptionsProvider>
+          <Combobox ref={ref} {...rest}>
+            {children}
+          </Combobox>
+        </FilteredOptionsProvider>
+      </SelectedOptionsProvider>
     </InputContextProvider>
   );
 });
