@@ -14,10 +14,7 @@ import ToggleListButton from "./ToggleListButton";
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<
   HTMLInputElement,
-  Omit<
-    ComboboxProps,
-    "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value" | "disabled"
-  >
+  Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value">
 >(function InputController(props, ref) {
   const {
     clearButton = true,

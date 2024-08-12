@@ -7,7 +7,7 @@ import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsCon
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { useInputContext } from "./Input.context";
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "disabled"> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;
   inputClassName?: string;
   value?: string;

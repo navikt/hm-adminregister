@@ -10,7 +10,7 @@ import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 
 export const Combobox = forwardRef<
   HTMLInputElement,
-  Omit<ComboboxProps, "onChange" | "options" | "size" | "onClear" | "value" | "disabled">
+  Omit<ComboboxProps, "onChange" | "options" | "size" | "onClear" | "value">
 >(function Combobox(props, ref) {
   const { className, hideLabel = false, description, label, ...rest } = props;
 
