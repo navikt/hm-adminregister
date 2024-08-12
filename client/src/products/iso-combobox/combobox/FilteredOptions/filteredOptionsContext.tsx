@@ -93,6 +93,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
   }, [isListOpen, isLoading, maxSelected?.isLimitReached, value, partialAriaDescribedBy, filteredOptions, id]);
 
   const currentOption = useMemo(
+    // @ts-expect-error test
     () => options[virtualFocus.activeElement?.getAttribute("id") || -1],
     [options, virtualFocus],
   );
