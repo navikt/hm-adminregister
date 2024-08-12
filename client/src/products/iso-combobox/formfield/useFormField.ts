@@ -13,10 +13,6 @@ export interface FormFieldProps {
    */
   errorId?: string;
   /**
-   * Changes font-size, padding and gaps.
-   */
-  size?: "medium" | "small";
-  /**
    * Adds a description to extend the labeling.
    */
   description?: React.ReactNode;
@@ -36,7 +32,6 @@ export interface FormFieldType {
   hasError: boolean;
   errorId: string;
   inputDescriptionId: string;
-  size: "small" | "medium";
   inputProps: {
     id: string;
     "aria-invalid"?: boolean;
@@ -49,7 +44,7 @@ export interface FormFieldType {
  * Handles props and their state for various form-fields in context with Fieldset
  */
 export const useFormField = (props: FormFieldProps, prefix: string): FormFieldType => {
-  const { size, error, errorId: propErrorId } = props;
+  const { error, errorId: propErrorId } = props;
 
   const fieldset = useContext(FieldsetContext);
 
@@ -76,7 +71,6 @@ export const useFormField = (props: FormFieldProps, prefix: string): FormFieldTy
     hasError,
     errorId,
     inputDescriptionId,
-    size: size ?? fieldset?.size ?? "medium",
     readOnly,
     inputProps: {
       id,

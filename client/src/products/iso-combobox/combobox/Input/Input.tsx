@@ -16,7 +16,7 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
-  const { clearInput, inputProps, onChange, size, value, searchTerm, setValue } = useInputContext();
+  const { clearInput, inputProps, onChange, value, searchTerm, setValue } = useInputContext();
   const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
   const {
     activeDecendantId,
@@ -173,7 +173,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       aria-activedescendant={activeDecendantId}
       aria-describedby={ariaDescribedBy}
       aria-invalid={inputProps["aria-invalid"]}
-      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--${size}`)}
+      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
     />
   );
 });

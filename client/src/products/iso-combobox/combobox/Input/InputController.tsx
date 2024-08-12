@@ -14,7 +14,7 @@ import ToggleListButton from "./ToggleListButton";
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<
   HTMLInputElement,
-  Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "size" | "onClear" | "value">
+  Omit<ComboboxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
   const {
     clearButton = true,
@@ -26,15 +26,7 @@ export const InputController = forwardRef<
     ...rest
   } = props;
 
-  const {
-    clearInput,
-    focusInput,
-    inputProps,
-    value,
-    size = "medium",
-    inputRef,
-    toggleOpenButtonRef,
-  } = useInputContext();
+  const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
 
   const { activeDecendantId } = useFilteredOptionsContext();
   const { selectedOptions } = useSelectedOptionsContext();
@@ -51,7 +43,7 @@ export const InputController = forwardRef<
       {!shouldShowSelectedOptions ? (
         <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
       ) : (
-        <SelectedOptions selectedOptions={selectedOptions} size={size}>
+        <SelectedOptions selectedOptions={selectedOptions}>
           <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
         </SelectedOptions>
       )}

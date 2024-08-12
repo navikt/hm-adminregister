@@ -18,7 +18,7 @@ export type ComboboxOption = {
 
 export interface ComboboxProps
   extends FormFieldProps,
-    Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "onChange" | "value" | "defaultValue"> {
+    Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "defaultValue"> {
   /**
    * Combobox label.
    */

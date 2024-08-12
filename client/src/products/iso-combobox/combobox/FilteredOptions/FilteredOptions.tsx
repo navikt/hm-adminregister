@@ -11,7 +11,6 @@ import { BodyShort, Loader } from "@navikt/ds-react";
 const FilteredOptions = () => {
   const {
     inputProps: { id },
-    size,
   } = useInputContext();
   const {
     isLoading,
@@ -52,7 +51,7 @@ const FilteredOptions = () => {
               className="navds-combobox__list-item--max-selected"
               id={filteredOptionsUtil.getMaxSelectedOptionsId(id)}
             >
-              {maxSelected.message ?? `${selectedOptions.length} av ${maxSelected.limit} er valgt.`}
+              {`${selectedOptions.length} av 1 er valgt.`}
             </div>
           )}
           {isLoading && (
@@ -100,7 +99,7 @@ const FilteredOptions = () => {
               aria-selected={isInList(option.value, selectedOptions)}
               aria-disabled={isDisabled(option) || undefined}
             >
-              <BodyShort size={size}>{option.label}</BodyShort>
+              <BodyShort>{option.label}</BodyShort>
               {isInList(option.value, selectedOptions) && <CheckmarkIcon />}
             </li>
           ))}

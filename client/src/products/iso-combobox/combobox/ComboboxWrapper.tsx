@@ -6,11 +6,10 @@ type ComboboxWrapperProps = {
   children: ReactNode;
   className?: string;
   hasError: boolean;
-  inputSize: string;
   toggleIsListOpen: (isListOpen: boolean) => void;
 };
 
-const ComboboxWrapper = ({ children, className, hasError, inputSize, toggleIsListOpen }: ComboboxWrapperProps) => {
+const ComboboxWrapper = ({ children, className, hasError, toggleIsListOpen }: ComboboxWrapperProps) => {
   const { toggleOpenButtonRef } = useInputContext();
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -35,7 +34,7 @@ const ComboboxWrapper = ({ children, className, hasError, inputSize, toggleIsLis
   return (
     <div
       ref={wrapperRef}
-      className={cl(className, "navds-form-field", `navds-form-field--${inputSize}`, {
+      className={cl(className, "navds-form-field", `navds-form-field--medium`, {
         "navds-combobox--error": hasError,
         "navds-combobox--focused": hasFocusWithin,
       })}
