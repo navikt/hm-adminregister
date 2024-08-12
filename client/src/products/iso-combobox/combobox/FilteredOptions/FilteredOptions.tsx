@@ -27,7 +27,7 @@ const FilteredOptions = () => {
     activeDecendantId,
     virtualFocus,
   } = useFilteredOptionsContext();
-  const { isMultiSelect, selectedOptions, toggleOption, maxSelected } = useSelectedOptionsContext();
+  const { selectedOptions, toggleOption, maxSelected } = useSelectedOptionsContext();
 
   const isDisabled = (option: ComboboxOption) =>
     maxSelected?.isLimitReached && !isInList(option.value, selectedOptions);
@@ -86,7 +86,7 @@ const FilteredOptions = () => {
               }}
               onPointerUp={(event) => {
                 toggleOption(toComboboxOption(value), event);
-                if (!isMultiSelect && !isInList(value, selectedOptions)) toggleIsListOpen(false);
+                if (!isInList(value, selectedOptions)) toggleIsListOpen(false);
               }}
               id={filteredOptionsUtil.getAddNewOptionId(id)}
               className={cl("navds-combobox__list-item navds-combobox__list-item--new-option", {
@@ -127,7 +127,7 @@ const FilteredOptions = () => {
                   return;
                 }
                 toggleOption(option, event);
-                if (!isMultiSelect && !isInList(option.value, selectedOptions)) {
+                if (!isInList(option.value, selectedOptions)) {
                   toggleIsListOpen(false);
                 }
               }}

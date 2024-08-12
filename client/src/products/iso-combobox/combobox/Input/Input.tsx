@@ -17,7 +17,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, size, value, searchTerm, setValue } = useInputContext();
-  const { selectedOptions, removeSelectedOption, toggleOption, isMultiSelect } = useSelectedOptionsContext();
+  const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
   const {
     activeDecendantId,
     allowNewValues,
@@ -41,7 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         event.preventDefault();
         // Selecting a value from the dropdown / FilteredOptions
         toggleOption(currentOption, event);
-        if (!isMultiSelect && !isTextInSelectedOptions(currentOption.label)) {
+        if (!isTextInSelectedOptions(currentOption.label)) {
           toggleIsListOpen(false);
         }
       } else if (isTextInSelectedOptions(value)) {
@@ -58,7 +58,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
         }
 
         toggleOption(selectedValue, event);
-        if (!isMultiSelect && !isTextInSelectedOptions(selectedValue.label)) {
+        if (!isTextInSelectedOptions(selectedValue.label)) {
           toggleIsListOpen(false);
         }
       }
@@ -68,7 +68,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       clearInput,
       currentOption,
       filteredOptions,
-      isMultiSelect,
       isValueNew,
       selectedOptions,
       shouldAutocomplete,

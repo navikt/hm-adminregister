@@ -8,7 +8,6 @@ import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
 
 type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
-  isMultiSelect?: boolean;
   removeSelectedOption: (option: ComboboxOption) => void;
   prevSelectedOptions?: ComboboxOption[];
   selectedOptions: ComboboxOption[];
@@ -24,21 +23,14 @@ const SelectedOptionsProvider = ({
   value,
 }: {
   children: ReactNode;
-  value: Pick<ComboboxProps, "allowNewValues" | "isMultiSelect" | "onToggleSelected" | "maxSelected"> & {
+  value: Pick<ComboboxProps, "allowNewValues" | "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
   };
 }) => {
   const { clearInput, focusInput } = useInputContext();
   const { customOptions, removeCustomOption, addCustomOption, setCustomOptions } = useComboboxCustomOptions();
-  const {
-    allowNewValues,
-    isMultiSelect,
-    selectedOptions: externalSelectedOptions,
-    onToggleSelected,
-    options,
-    maxSelected,
-  } = value;
+  const { allowNewValues, selectedOptions: externalSelectedOptions, onToggleSelected, options, maxSelected } = value;
   const [internalSelectedOptions, setSelectedOptions] = useState<ComboboxOption[]>([]);
   const selectedOptions = useMemo(
     () => externalSelectedOptions ?? [...customOptions, ...internalSelectedOptions],
@@ -50,16 +42,14 @@ const SelectedOptionsProvider = ({
       const isCustomOption = !isInList(option, options);
       if (isCustomOption) {
         allowNewValues && addCustomOption(option);
-        !isMultiSelect && setSelectedOptions([]);
-      } else if (isMultiSelect) {
-        setSelectedOptions((oldSelectedOptions) => [...oldSelectedOptions, option]);
+        setSelectedOptions([]);
       } else {
         setSelectedOptions([option]);
         setCustomOptions([]);
       }
       onToggleSelected?.(option.value, true, isCustomOption);
     },
-    [addCustomOption, allowNewValues, isMultiSelect, onToggleSelected, options, setCustomOptions],
+    [addCustomOption, allowNewValues, onToggleSelected, options, setCustomOptions],
   );
 
   const removeSelectedOption = useCallback(
@@ -96,7 +86,6 @@ const SelectedOptionsProvider = ({
 
   const selectedOptionsState = {
     addSelectedOption,
-    isMultiSelect,
     removeSelectedOption,
     prevSelectedOptions,
     selectedOptions,
