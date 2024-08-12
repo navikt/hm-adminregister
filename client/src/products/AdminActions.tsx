@@ -1,6 +1,5 @@
 import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useState } from "react";
@@ -49,11 +48,6 @@ const AdminActions = ({
   async function onPublish() {
     setIsValid(productIsValid());
     if (productIsValid()) {
-      publishProducts(products?.map((product) => product.id) || [])
-        .then(() => mutateProducts())
-        .catch((error) => {
-          setGlobalError(error.status, error.message);
-        });
       approveSeries(series.id)
         .then(() => mutateSeries())
         .catch((error) => {
