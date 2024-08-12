@@ -1,5 +1,5 @@
-import { UNSAFE_Combobox } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
+import { ISO_Combobox } from "products/iso-combobox/combobox";
 
 type Props = {
   defaultValue?: string;
@@ -30,16 +30,15 @@ export default function Combobox({ defaultValue, options, setValue, label, error
   }, [inputValue, options]);
 
   return (
-    <UNSAFE_Combobox
+    <ISO_Combobox
       label={label || ""}
       description={"Søk etter isokategori produktet passer best inn i"}
       selectedOptions={selectedOptions}
-      onChange={(event) => {
-        setInputValue(event?.target.value || "");
+      onChange={(value) => {
+        setInputValue(value || "");
       }}
       filteredOptions={filteredOptions}
       options={options || []}
-      shouldAutocomplete={false}
       clearButton={true}
       onToggleSelected={onToggleSelected}
       error={errorMessage && errorMessage}
