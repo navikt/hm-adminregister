@@ -52,7 +52,10 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
         const productAgreeementsToValidate = response.productAgreementsWithInformation.map((productAgreement) => {
           return productAgreement.first;
         });
+        setProductAgreementsWithInformation(response.productAgreementsWithInformation);
         setProductAgreementsToValidate(productAgreeementsToValidate);
+        const importData_ = groupProductAgreementsBySeries(productAgreeementsToValidate, response.createdSeries);
+        setImportData(importData_);
         setIsLoading(false);
         setImportSuccessful(true);
       })
@@ -71,11 +74,18 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload }: Prop
               Importer produkter
             </Heading>
             <p>
-              <BodyShort>
-                Importeringen var vellykket. Du kan nå gå til{" "}
-                <a href={baseUrl(`/rammeavtaler/${productAgreementsToValidate[0].agreementId}`)}>rammeavtalen</a> for å
-                se de importerte produktene.
-              </BodyShort>
+              {importData?.newAccessories || importData?.newHovedprodukts || importData?.newSpareParts ? (
+                <BodyShort>
+                  Det ble opprettet nye produkter i import som ligger{" "}
+                  <a href={baseUrl(`/rammeavtaler/${productAgreementsToValidate[0].agreementId}`)}>til godkjenning</a>
+                </BodyShort>
+              ) : (
+                <BodyShort>
+                  Importeringen var vellykket. Du kan nå gå til{" "}
+                  <a href={baseUrl(`/rammeavtaler/${productAgreementsToValidate[0].agreementId}`)}>rammeavtalen</a> for
+                  å se de importerte produktene.
+                </BodyShort>
+              )}
             </p>
           </div>
         </div>
