@@ -38,7 +38,9 @@ export const InputController = forwardRef<
       onClick={focusInput}
     >
       <SelectedOptions selectedOptions={selectedOptions}>
-        <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
+        {selectedOptions.length === 0 && (
+          <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
+        )}
       </SelectedOptions>
       <div>
         {(value || selectedOptions.length > 0) && (
