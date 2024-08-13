@@ -8,7 +8,6 @@ import { ComboboxProps } from "./types";
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
-    defaultValue,
     error,
     errorId,
     id,
@@ -26,7 +25,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
   return (
     <InputContextProvider
       value={{
-        defaultValue,
         description: rest.description,
         error,
         errorId,

@@ -23,6 +23,5 @@ export interface ComboboxProps
   onToggleSelected?: (option: ComboboxOption["value"], isSelected: boolean) => void;
   selectedOptions?: string[] | ComboboxOption[];
   value?: string;
-  defaultValue?: string;
   maxSelected?: MaxSelected;
 }
