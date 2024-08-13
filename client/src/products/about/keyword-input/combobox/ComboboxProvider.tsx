@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
-import Combobox from "./Combobox";
 import { InputContextProvider } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { SelectedOptionsProvider } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
 import { ComboboxProps } from "./index";
+import { KeywordCombobox } from "products/about/keyword-input/combobox/KeywordCombobox";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
@@ -40,9 +40,9 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
           options,
         }}
       >
-        <Combobox ref={ref} {...rest}>
+        <KeywordCombobox ref={ref} {...rest}>
           {children}
-        </Combobox>
+        </KeywordCombobox>
       </SelectedOptionsProvider>
     </InputContextProvider>
   );

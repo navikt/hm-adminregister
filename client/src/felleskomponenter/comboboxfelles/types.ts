@@ -24,4 +24,5 @@ export interface ComboboxProps
   selectedOptions?: string[] | ComboboxOption[];
   value?: string;
   maxSelected?: MaxSelected;
+  toggleIsListOpen?: (isListOpen?: boolean) => void;
 }

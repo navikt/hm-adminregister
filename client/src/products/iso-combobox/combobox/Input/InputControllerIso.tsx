@@ -12,9 +12,9 @@ import ToggleListButton from "./ToggleListButton";
 import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-export const InputController = forwardRef<
+export const InputControllerIso = forwardRef<
   HTMLInputElement,
-  Omit<IsoBoxProps, "label" | "description" | "onChange" | "options" | "onClear" | "value">
+  Omit<IsoBoxProps, "label" | "description" | "hideLabel" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
   const { ...rest } = props;
 

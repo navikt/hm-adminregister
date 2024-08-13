@@ -2,18 +2,16 @@ import cl from "clsx";
 import { forwardRef } from "react";
 import ComboboxWrapper from "felleskomponenter/comboboxfelles/ComboboxWrapper";
 import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
-import { InputController } from "./Input/InputController";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
-import { ComboboxProps } from "./index";
+import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 
 export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
-  function Combobox(props, ref) {
-    const { className, hideLabel = false, description, label, ...rest } = props;
-
+  function Combobox(props) {
+    const { children, toggleIsListOpen, className, hideLabel = false, description, label } = props;
     const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg } = useInputContext();
 
     return (
-      <ComboboxWrapper className={className} hasError={hasError}>
+      <ComboboxWrapper className={className} hasError={hasError} toggleIsListOpen={toggleIsListOpen}>
         <Label
           htmlFor={inputProps.id}
           className={cl("navds-form-field__label", {
@@ -35,9 +33,7 @@ export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChan
             </BodyShort>
           )}
         </>
-        <div className="navds-combobox__wrapper">
-          <InputController ref={ref} {...rest} />
-        </div>
+        <div className="navds-combobox__wrapper">{children}</div>
         <div className="navds-form-field__error" id={errorId} aria-relevant="additions removals" aria-live="polite">
           {showErrorMsg && <ErrorMessage>{error}</ErrorMessage>}
         </div>

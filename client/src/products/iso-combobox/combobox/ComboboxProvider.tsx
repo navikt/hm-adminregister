@@ -1,31 +1,31 @@
 import { forwardRef } from "react";
-import Combobox from "./Combobox";
 import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContext";
 import { InputContextProvider } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { SelectedOptionsProvider } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
 import { IsoBoxProps } from "./index";
+import IsoCombobox from "products/iso-combobox/combobox/IsoCombobox";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
     error,
-    filteredOptions: externalFilteredOptions,
     id,
-    isListOpen,
-    isLoading = false,
     onToggleSelected,
     selectedOptions: externalSelectedOptions,
+    maxSelected,
     options: externalOptions,
     value,
     onChange,
     onClear,
-    maxSelected,
+    filteredOptions: externalFilteredOptions,
+    isListOpen,
+    isLoading = false,
     ...rest
   } = props;
   const options = mapToComboboxOptionArray(externalOptions) || [];
-  const filteredOptions = mapToComboboxOptionArray(externalFilteredOptions);
   const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions);
+  const filteredOptions = mapToComboboxOptionArray(externalFilteredOptions);
   return (
     <InputContextProvider
       value={{
@@ -53,9 +53,9 @@ const ComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function Comb
             options,
           }}
         >
-          <Combobox ref={ref} {...rest}>
+          <IsoCombobox ref={ref} {...rest}>
             {children}
-          </Combobox>
+          </IsoCombobox>
         </FilteredOptionsProvider>
       </SelectedOptionsProvider>
     </InputContextProvider>
