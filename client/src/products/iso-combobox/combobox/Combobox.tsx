@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
-import ComboboxWrapper from "./ComboboxWrapper";
+import ComboboxWrapper from "felleskomponenter/comboboxfelles/ComboboxWrapper";
 import FilteredOptions from "./FilteredOptions/FilteredOptions";
 import { useFilteredOptionsContext } from "./FilteredOptions/filteredOptionsContext";
-import { useInputContext } from "./Input/Input.context";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { InputController } from "./Input/InputController";
 import { IsoBoxProps } from "./index";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";

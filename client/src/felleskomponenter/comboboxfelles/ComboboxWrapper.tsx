@@ -6,7 +6,7 @@ type ComboboxWrapperProps = {
   children: ReactNode;
   className?: string;
   hasError: boolean;
-  toggleIsListOpen: (isListOpen: boolean) => void;
+  toggleIsListOpen?: (isListOpen: boolean) => void;
 };
 
 const ComboboxWrapper = ({ children, className, hasError, toggleIsListOpen }: ComboboxWrapperProps) => {
@@ -17,14 +17,14 @@ const ComboboxWrapper = ({ children, className, hasError, toggleIsListOpen }: Co
 
   function onFocusInsideWrapper(e: FocusEvent) {
     if (!wrapperRef.current?.contains(e.relatedTarget) && toggleOpenButtonRef?.current !== e.target) {
-      toggleIsListOpen(true);
+      toggleIsListOpen && toggleIsListOpen(true);
       setHasFocusWithin(true);
     }
   }
 
   function onBlurWrapper(e: FocusEvent) {
     if (!wrapperRef.current?.contains(e.relatedTarget)) {
-      toggleIsListOpen(false);
+      toggleIsListOpen && toggleIsListOpen(false);
       setHasFocusWithin(false);
     }
   }

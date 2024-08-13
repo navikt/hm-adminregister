@@ -1,10 +1,10 @@
 import cl from "clsx";
 import { forwardRef } from "react";
-import ComboboxWrapper from "./ComboboxWrapper";
-import { useInputContext } from "./Input/Input.context";
+import ComboboxWrapper from "felleskomponenter/comboboxfelles/ComboboxWrapper";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { InputController } from "./Input/InputController";
-import { ComboboxProps } from "./index";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
+import { ComboboxProps } from "./index";
 
 export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
   function Combobox(props, ref) {
