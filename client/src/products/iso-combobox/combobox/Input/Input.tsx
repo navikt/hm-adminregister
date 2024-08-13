@@ -1,7 +1,6 @@
 import cl from "clsx";
 import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
-import { omit } from "felleskomponenter/comboboxfelles/utils";
-import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
+import { omit, useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import filteredOptionsUtil from "../FilteredOptions/filtered-options-util";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
@@ -9,11 +8,10 @@ import { useInputContext } from "./Input.context";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;
-  inputClassName?: string;
   value?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputClassName, ...rest }, ref) {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest }, ref) {
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, value, searchTerm, setValue } = useInputContext();
@@ -173,7 +171,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ inputCla
       aria-activedescendant={activeDecendantId}
       aria-describedby={ariaDescribedBy}
       aria-invalid={inputProps["aria-invalid"]}
-      className={cl(inputClassName, "navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
+      className={cl("navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
     />
   );
 });

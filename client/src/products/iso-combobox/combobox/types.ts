@@ -18,7 +18,6 @@ export interface ComboboxProps
   label: React.ReactNode;
   options: string[] | ComboboxOption[];
   filteredOptions?: string[] | ComboboxOption[];
-  inputClassName?: string | undefined;
   isListOpen?: boolean;
   isLoading?: boolean;
   onChange?: (value: string) => void;

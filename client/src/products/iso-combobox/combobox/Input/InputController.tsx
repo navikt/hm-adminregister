@@ -16,7 +16,7 @@ export const InputController = forwardRef<
   HTMLInputElement,
   Omit<ComboboxProps, "label" | "description" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
-  const { inputClassName, ...rest } = props;
+  const { ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
 
@@ -38,9 +38,7 @@ export const InputController = forwardRef<
       onClick={focusInput}
     >
       <SelectedOptions selectedOptions={selectedOptions}>
-        {maxSelected && !maxSelected?.isLimitReached && (
-          <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
-        )}
+        {maxSelected && !maxSelected?.isLimitReached && <Input id={inputProps.id} ref={mergedInputRef} {...rest} />}
       </SelectedOptions>
       <div>
         {(value || selectedOptions.length > 0) && (
