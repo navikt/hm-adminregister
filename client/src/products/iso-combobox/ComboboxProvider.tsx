@@ -1,11 +1,12 @@
 import { forwardRef } from "react";
+import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContext";
 import { InputContextProvider } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { SelectedOptionsProvider } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
-import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
-import { KeywordCombobox } from "products/about/keyword-input/combobox/KeywordCombobox";
+import { IsoBoxProps } from "./types";
+import IsoCombobox from "products/iso-combobox/IsoCombobox";
 
-const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
+const ComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
     error,
@@ -17,10 +18,14 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     value,
     onChange,
     onClear,
+    filteredOptions: externalFilteredOptions,
+    isListOpen,
+    isLoading = false,
     ...rest
   } = props;
   const options = mapToComboboxOptionArray(externalOptions) || [];
   const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions);
+  const filteredOptions = mapToComboboxOptionArray(externalFilteredOptions);
   return (
     <InputContextProvider
       value={{
@@ -35,14 +40,23 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
       <SelectedOptionsProvider
         value={{
           selectedOptions,
-          maxSelected,
           onToggleSelected,
           options,
+          maxSelected,
         }}
       >
-        <KeywordCombobox ref={ref} {...rest}>
-          {children}
-        </KeywordCombobox>
+        <FilteredOptionsProvider
+          value={{
+            filteredOptions,
+            isListOpen,
+            isLoading,
+            options,
+          }}
+        >
+          <IsoCombobox ref={ref} {...rest}>
+            {children}
+          </IsoCombobox>
+        </FilteredOptionsProvider>
       </SelectedOptionsProvider>
     </InputContextProvider>
   );

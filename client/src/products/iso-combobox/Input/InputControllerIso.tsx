@@ -5,7 +5,7 @@ import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import SelectedOptions from "felleskomponenter/comboboxfelles/SelectedOptions/SelectedOptions";
-import { IsoBoxProps } from "../index";
+import { IsoBoxProps } from "../types";
 import Input from "./Input";
 import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import ToggleListButton from "./ToggleListButton";

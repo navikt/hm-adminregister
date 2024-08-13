@@ -6,7 +6,7 @@ import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { updateSeriesKeywords } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { KeywordInput } from "products/about/keyword-input/combobox";
+import { KeywordInput } from "products/about/keyword-input";
 
 interface Props {
   series: SeriesRegistrationDTO;

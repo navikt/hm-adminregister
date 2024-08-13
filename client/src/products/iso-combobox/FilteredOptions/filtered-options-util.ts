@@ -1,4 +1,4 @@
-import { ComboboxOption } from "../index";
+import { ComboboxOption } from "felleskomponenter/comboboxfelles/types";
 
 const normalizeText = (text: string): string => (typeof text === "string" ? text.toLocaleLowerCase().trim() : "");
 

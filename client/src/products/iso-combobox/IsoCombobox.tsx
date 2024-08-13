@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
-import { IsoBoxProps } from "products/iso-combobox/combobox/types";
+import { IsoBoxProps } from "products/iso-combobox/types";
 import Combobox from "felleskomponenter/comboboxfelles/Combobox";
-import FilteredOptions from "products/iso-combobox/combobox/FilteredOptions/FilteredOptions";
-import { useFilteredOptionsContext } from "products/iso-combobox/combobox/FilteredOptions/filteredOptionsContext";
-import { InputControllerIso } from "products/iso-combobox/combobox/Input/InputControllerIso";
+import FilteredOptions from "products/iso-combobox/FilteredOptions/FilteredOptions";
+import { useFilteredOptionsContext } from "products/iso-combobox/FilteredOptions/filteredOptionsContext";
+import { InputControllerIso } from "products/iso-combobox/Input/InputControllerIso";
 
 export const IsoCombobox = forwardRef<
   HTMLInputElement,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ISO_Combobox } from "products/iso-combobox/combobox";
+import { ISO_Combobox } from "products/iso-combobox";
 
 type Props = {
   defaultValue?: string;

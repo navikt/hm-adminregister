@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 import Combobox from "felleskomponenter/comboboxfelles/Combobox";
-import { InputController } from "products/about/keyword-input/combobox/Input/InputController";
+import { InputController } from "products/about/keyword-input/Input/InputController";
 
 export const KeywordCombobox = forwardRef<
   HTMLInputElement,
