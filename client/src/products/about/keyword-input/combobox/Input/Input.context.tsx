@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { createContext } from "../../util/create-context";
-import { FormFieldType, useFormField } from "../../formfield/useFormField";
+import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
+import { FormFieldType, useFormField } from "felleskomponenter/comboboxfelles/formfield/useFormField";
 import { ComboboxProps } from "../types";
 
 interface InputContextValue extends FormFieldType {
@@ -23,7 +23,6 @@ interface Props {
   value: {
     description: ComboboxProps["description"];
     error: ComboboxProps["error"];
-    errorId: ComboboxProps["errorId"];
     id: ComboboxProps["id"];
     value: ComboboxProps["value"];
     onChange: ComboboxProps["onChange"];
@@ -32,20 +31,11 @@ interface Props {
 }
 
 const InputProvider = ({ children, value: props }: Props) => {
-  const {
-    description,
-    error,
-    errorId,
-    id: externalId,
-    value: externalValue,
-    onChange: externalOnChange,
-    onClear,
-  } = props;
+  const { description, error, id: externalId, value: externalValue, onChange: externalOnChange, onClear } = props;
   const formFieldProps = useFormField(
     {
       description,
       error,
-      errorId,
       id: externalId,
     },
     "comboboxfield",

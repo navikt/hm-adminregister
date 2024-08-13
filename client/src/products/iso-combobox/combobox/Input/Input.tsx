@@ -1,7 +1,7 @@
 import cl from "clsx";
 import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
-import { omit } from "../../util";
-import { useMergeRefs } from "../../util";
+import { omit } from "felleskomponenter/comboboxfelles/utils";
+import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import filteredOptionsUtil from "../FilteredOptions/filtered-options-util";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";

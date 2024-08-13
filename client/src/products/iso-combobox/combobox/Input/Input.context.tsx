@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { createContext } from "../../util/create-context";
-import { FormFieldType, useFormField } from "../../formfield/useFormField";
+import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
+import { FormFieldType, useFormField } from "felleskomponenter/comboboxfelles/formfield/useFormField";
 import { ComboboxProps } from "../types";
 
 interface InputContextValue extends FormFieldType {

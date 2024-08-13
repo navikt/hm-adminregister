@@ -2,7 +2,7 @@
 import cl from "clsx";
 import { forwardRef, MouseEvent } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
-import { useMergeRefs } from "../../util";
+import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";

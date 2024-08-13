@@ -1,5 +1,5 @@
 import React, { InputHTMLAttributes } from "react";
-import { FormFieldProps } from "../formfield/useFormField";
+import { FormFieldProps } from "felleskomponenter/comboboxfelles/formfield/useFormField";
 
 export type ComboboxOption = {
   label: string;

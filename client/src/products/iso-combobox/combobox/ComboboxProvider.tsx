@@ -3,7 +3,7 @@ import Combobox from "./Combobox";
 import { FilteredOptionsProvider } from "./FilteredOptions/filteredOptionsContext";
 import { InputContextProvider } from "./Input/Input.context";
 import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
-import { mapToComboboxOptionArray } from "./combobox-utils";
+import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
 import { ComboboxProps } from "./types";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {

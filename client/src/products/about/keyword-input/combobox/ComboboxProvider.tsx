@@ -2,14 +2,13 @@ import { forwardRef } from "react";
 import Combobox from "./Combobox";
 import { InputContextProvider } from "./Input/Input.context";
 import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
-import { mapToComboboxOptionArray } from "./combobox-utils";
+import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
 import { ComboboxProps } from "./types";
 
 const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
     error,
-    errorId,
     id,
     onToggleSelected,
     selectedOptions: externalSelectedOptions,
@@ -27,7 +26,6 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
       value={{
         description: rest.description,
         error,
-        errorId,
         id,
         value,
         onChange,

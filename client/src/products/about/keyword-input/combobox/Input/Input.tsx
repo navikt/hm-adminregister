@@ -1,6 +1,6 @@
 import cl from "clsx";
 import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
-import { omit, useMergeRefs } from "../../util";
+import { omit, useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { useInputContext } from "./Input.context";
 
