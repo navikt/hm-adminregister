@@ -1,6 +1,6 @@
 import React from "react";
 import { useInputContext } from "../Input/Input.context";
-import { ComboboxOption } from "../types";
+import { ComboboxOption } from "../index";
 import { useSelectedOptionsContext } from "./selectedOptionsContext";
 import { Chips } from "@navikt/ds-react";
 

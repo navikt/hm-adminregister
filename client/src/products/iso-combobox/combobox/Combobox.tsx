@@ -4,10 +4,10 @@ import FilteredOptions from "./FilteredOptions/FilteredOptions";
 import { useFilteredOptionsContext } from "./FilteredOptions/filteredOptionsContext";
 import { useInputContext } from "./Input/Input.context";
 import { InputController } from "./Input/InputController";
-import { ComboboxProps } from "./types";
+import { IsoBoxProps } from "./index";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 
-export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
+export const Combobox = forwardRef<HTMLInputElement, Omit<IsoBoxProps, "onChange" | "options" | "onClear" | "value">>(
   function Combobox(props, ref) {
     const { className, description, label, ...rest } = props;
 

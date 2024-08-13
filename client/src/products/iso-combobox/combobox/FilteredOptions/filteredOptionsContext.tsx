@@ -4,13 +4,13 @@ import { createContext } from "felleskomponenter/comboboxfelles/utils/create-con
 import { useClientLayoutEffect, usePrevious } from "felleskomponenter/comboboxfelles/utils";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { ComboboxOption, ComboboxProps } from "../types";
+import { ComboboxOption, IsoBoxProps } from "../index";
 import filteredOptionsUtils from "./filtered-options-util";
 import useVirtualFocus, { VirtualFocusType } from "./useVirtualFocus";
 
 type FilteredOptionsProps = {
   children: React.ReactNode;
-  value: Pick<ComboboxProps, "isListOpen" | "isLoading"> & {
+  value: Pick<IsoBoxProps, "isListOpen" | "isLoading"> & {
     filteredOptions?: ComboboxOption[];
     options: ComboboxOption[];
   };

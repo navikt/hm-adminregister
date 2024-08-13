@@ -3,7 +3,7 @@ import { createContext } from "felleskomponenter/comboboxfelles/utils/create-con
 import { usePrevious } from "felleskomponenter/comboboxfelles/utils";
 import { useInputContext } from "../Input/Input.context";
 import { isInList } from "felleskomponenter/comboboxfelles/combobox-utils";
-import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
+import { ComboboxOption, IsoBoxProps, MaxSelected } from "../index";
 
 type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
@@ -22,7 +22,7 @@ const SelectedOptionsProvider = ({
   value,
 }: {
   children: ReactNode;
-  value: Pick<ComboboxProps, "onToggleSelected" | "maxSelected"> & {
+  value: Pick<IsoBoxProps, "onToggleSelected" | "maxSelected"> & {
     options: ComboboxOption[];
     selectedOptions?: ComboboxOption[];
   };

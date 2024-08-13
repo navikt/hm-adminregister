@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import ComboboxWrapper from "./ComboboxWrapper";
 import { useInputContext } from "./Input/Input.context";
 import { InputController } from "./Input/InputController";
-import { ComboboxProps } from "./types";
+import { ComboboxProps } from "./index";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
 
 export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
 import { FormFieldType, useFormField } from "felleskomponenter/comboboxfelles/formfield/useFormField";
-import { ComboboxProps } from "../types";
+import { IsoBoxProps } from "../types";
 
 interface InputContextValue extends FormFieldType {
-  clearInput: NonNullable<ComboboxProps["onClear"]>;
-  error?: ComboboxProps["error"];
+  clearInput: NonNullable<IsoBoxProps["onClear"]>;
+  error?: IsoBoxProps["error"];
   focusInput: () => void;
   inputRef: React.RefObject<HTMLInputElement>;
   value: string;
@@ -24,12 +24,12 @@ const [InputContextProvider, useInputContext] = createContext<InputContextValue>
 interface Props {
   children: React.ReactNode;
   value: {
-    description: ComboboxProps["description"];
-    error: ComboboxProps["error"];
-    id: ComboboxProps["id"];
-    value: ComboboxProps["value"];
-    onChange: ComboboxProps["onChange"];
-    onClear: ComboboxProps["onClear"];
+    description: IsoBoxProps["description"];
+    error: IsoBoxProps["error"];
+    id: IsoBoxProps["id"];
+    value: IsoBoxProps["value"];
+    onChange: IsoBoxProps["onChange"];
+    onClear: IsoBoxProps["onClear"];
   };
 }
 

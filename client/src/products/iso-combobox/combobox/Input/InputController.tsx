@@ -6,7 +6,7 @@ import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { ComboboxProps } from "../types";
+import { IsoBoxProps } from "../index";
 import Input from "./Input";
 import { useInputContext } from "./Input.context";
 import ToggleListButton from "./ToggleListButton";
@@ -14,7 +14,7 @@ import ToggleListButton from "./ToggleListButton";
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<
   HTMLInputElement,
-  Omit<ComboboxProps, "label" | "description" | "onChange" | "options" | "onClear" | "value">
+  Omit<IsoBoxProps, "label" | "description" | "onChange" | "options" | "onClear" | "value">
 >(function InputController(props, ref) {
   const { ...rest } = props;
 
