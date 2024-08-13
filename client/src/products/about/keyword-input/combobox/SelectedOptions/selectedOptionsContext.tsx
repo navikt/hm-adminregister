@@ -8,7 +8,7 @@ type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
   removeSelectedOption: (option: ComboboxOption) => void;
   selectedOptions: ComboboxOption[];
-  maxSelected?: MaxSelected & { isLimitReached: boolean };
+  maxSelected?: MaxSelected;
   setSelectedOptions: (option: ComboboxOption[]) => void;
   toggleOption: (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent) => void;
 };

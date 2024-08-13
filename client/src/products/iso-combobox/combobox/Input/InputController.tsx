@@ -21,7 +21,7 @@ export const InputController = forwardRef<
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
 
   const { activeDecendantId } = useFilteredOptionsContext();
-  const { selectedOptions, removeSelectedOption } = useSelectedOptionsContext();
+  const { selectedOptions, removeSelectedOption, maxSelected } = useSelectedOptionsContext();
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
@@ -38,7 +38,7 @@ export const InputController = forwardRef<
       onClick={focusInput}
     >
       <SelectedOptions selectedOptions={selectedOptions}>
-        {selectedOptions.length === 0 && (
+        {maxSelected && !maxSelected?.isLimitReached && (
           <Input id={inputProps.id} ref={mergedInputRef} inputClassName={inputClassName} {...rest} />
         )}
       </SelectedOptions>

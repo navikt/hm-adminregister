@@ -6,6 +6,12 @@ export type ComboboxOption = {
   value: string;
 };
 
+export type MaxSelected = {
+  limit: number;
+  message?: string;
+  isLimitReached?: boolean;
+};
+
 export interface ComboboxProps
   extends FormFieldProps,
     Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "defaultValue"> {
@@ -20,4 +26,5 @@ export interface ComboboxProps
   onToggleSelected?: (option: ComboboxOption["value"], isSelected: boolean) => void;
   selectedOptions?: string[] | ComboboxOption[];
   value?: string;
+  maxSelected?: MaxSelected;
 }

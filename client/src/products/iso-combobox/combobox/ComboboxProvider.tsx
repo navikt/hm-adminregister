@@ -20,6 +20,7 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
     value,
     onChange,
     onClear,
+    maxSelected,
     ...rest
   } = props;
   const options = mapToComboboxOptionArray(externalOptions) || [];
@@ -41,6 +42,7 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
           selectedOptions,
           onToggleSelected,
           options,
+          maxSelected,
         }}
       >
         <FilteredOptionsProvider

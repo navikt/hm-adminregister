@@ -41,6 +41,7 @@ export default function Combobox({ defaultValue, options, setValue, label, error
       options={options || []}
       onToggleSelected={onToggleSelected}
       error={errorMessage && errorMessage}
+      maxSelected={{ limit: 1 }}
     />
   );
 }
