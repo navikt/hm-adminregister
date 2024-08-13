@@ -1,9 +1,9 @@
 import cl from "clsx";
 import { forwardRef } from "react";
-import ComboboxWrapper from "felleskomponenter/comboboxfelles/ComboboxWrapper";
-import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { BodyShort, ErrorMessage, Label } from "@navikt/ds-react";
-import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
+import ComboboxWrapper from "./ComboboxWrapper";
+import { useInputContext } from "./Input/Input.context";
+import { ComboboxProps } from "./types";
 
 export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
   function Combobox(props) {

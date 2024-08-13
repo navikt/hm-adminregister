@@ -1,4 +1,4 @@
-import { ComboboxOption } from "products/about/keyword-input/combobox/types";
+import { ComboboxOption } from "./types";
 
 /**
  *

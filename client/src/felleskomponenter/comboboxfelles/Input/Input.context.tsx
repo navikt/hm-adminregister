@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
-import { FormFieldType, useFormField } from "felleskomponenter/comboboxfelles/formfield/useFormField";
-import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
+import { createContext } from "../utils/create-context";
+import { FormFieldType, useFormField } from "../formfield/useFormField";
+import { ComboboxProps } from "../types";
 
 interface InputContextValue extends FormFieldType {
   clearInput: NonNullable<ComboboxProps["onClear"]>;

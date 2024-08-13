@@ -1,6 +1,6 @@
 import cl from "clsx";
 import { FocusEvent, ReactNode, useRef, useState } from "react";
-import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
+import { useInputContext } from "./Input/Input.context";
 
 type ComboboxWrapperProps = {
   children: ReactNode;

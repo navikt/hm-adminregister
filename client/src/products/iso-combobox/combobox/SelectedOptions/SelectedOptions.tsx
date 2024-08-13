@@ -1,5 +1,5 @@
 import React from "react";
-import { ComboboxOption } from "../index";
+import { ComboboxOption } from "felleskomponenter/comboboxfelles/types";
 import { Chips } from "@navikt/ds-react";
 
 interface SelectedOptionsProps {

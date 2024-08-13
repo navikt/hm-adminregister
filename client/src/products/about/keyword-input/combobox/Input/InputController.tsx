@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
-import { ComboboxProps } from "../index";
+import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 import Input from "./Input";
 import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 

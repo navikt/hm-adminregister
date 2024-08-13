@@ -1,8 +1,8 @@
 import React, { ReactNode, useCallback, useMemo, useState } from "react";
-import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
+import { createContext } from "../utils/create-context";
 import { useInputContext } from "../Input/Input.context";
-import { isInList } from "felleskomponenter/comboboxfelles/combobox-utils";
-import { ComboboxOption, ComboboxProps, MaxSelected } from "felleskomponenter/comboboxfelles/types";
+import { isInList } from "../combobox-utils";
+import { ComboboxOption, ComboboxProps, MaxSelected } from "../types";
 
 type SelectedOptionsContextValue = {
   addSelectedOption: (option: ComboboxOption) => void;
