@@ -1,4 +1,3 @@
-import cl from "clsx";
 import { forwardRef } from "react";
 import ComboboxWrapper from "./ComboboxWrapper";
 import FilteredOptions from "./FilteredOptions/FilteredOptions";

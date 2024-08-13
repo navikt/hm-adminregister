@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useMemo, useState } from "react";
 import { createContext } from "../../util/create-context";
-import { usePrevious } from "../../util/hooks";
+import { usePrevious } from "../../util";
 import { useInputContext } from "../Input/Input.context";
 import { isInList } from "../combobox-utils";
 import { ComboboxOption, ComboboxProps } from "../types";

@@ -1,7 +1,7 @@
 import cl from "clsx";
 import React, { SetStateAction, useCallback, useMemo, useState } from "react";
 import { createContext } from "../../util/create-context";
-import { useClientLayoutEffect, usePrevious } from "../../util/hooks";
+import { useClientLayoutEffect, usePrevious } from "../../util";
 import { useInputContext } from "../Input/Input.context";
 import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { ComboboxOption, ComboboxProps } from "../types";
