@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { forwardRef } from "react";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
-import SelectedOptions from "../SelectedOptions/SelectedOptions";
+import SelectedOptions from "felleskomponenter/comboboxfelles/SelectedOptions/SelectedOptions";
 import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 import Input from "./Input";
@@ -22,7 +22,7 @@ export const InputController = forwardRef<
 
   return (
     <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
-      <SelectedOptions selectedOptions={selectedOptions}>
+      <SelectedOptions selectedOptions={selectedOptions} removable={true}>
         <Input id={inputProps.id} ref={mergedInputRef} {...rest} />
       </SelectedOptions>
     </div>

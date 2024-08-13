@@ -4,7 +4,7 @@ import { forwardRef, MouseEvent } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
-import SelectedOptions from "../SelectedOptions/SelectedOptions";
+import SelectedOptions from "felleskomponenter/comboboxfelles/SelectedOptions/SelectedOptions";
 import { IsoBoxProps } from "../index";
 import Input from "./Input";
 import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
@@ -37,7 +37,7 @@ export const InputControllerIso = forwardRef<
       })}
       onClick={focusInput}
     >
-      <SelectedOptions selectedOptions={selectedOptions}>
+      <SelectedOptions selectedOptions={selectedOptions} removable={false}>
         {maxSelected && !maxSelected?.isLimitReached && <Input id={inputProps.id} ref={mergedInputRef} {...rest} />}
       </SelectedOptions>
       <div>
