@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import Combobox from "./Combobox";
-import { InputContextProvider } from "./Input/Input.context";
-import { SelectedOptionsProvider } from "./SelectedOptions/selectedOptionsContext";
+import { InputContextProvider } from "felleskomponenter/comboboxfelles/Input/Input.context";
+import { SelectedOptionsProvider } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
 import { ComboboxProps } from "./index";
 

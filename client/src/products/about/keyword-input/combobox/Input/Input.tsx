@@ -1,8 +1,8 @@
 import cl from "clsx";
 import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "react";
 import { omit, useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { useInputContext } from "./Input.context";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;

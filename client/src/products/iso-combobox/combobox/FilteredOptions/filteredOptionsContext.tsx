@@ -2,11 +2,11 @@ import cl from "clsx";
 import React, { SetStateAction, useCallback, useMemo, useState } from "react";
 import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
 import { useClientLayoutEffect, usePrevious } from "felleskomponenter/comboboxfelles/utils";
-import { useInputContext } from "../Input/Input.context";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { ComboboxOption, IsoBoxProps } from "../index";
 import filteredOptionsUtils from "./filtered-options-util";
 import useVirtualFocus, { VirtualFocusType } from "./useVirtualFocus";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 
 type FilteredOptionsProps = {
   children: React.ReactNode;

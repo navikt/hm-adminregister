@@ -1,7 +1,7 @@
 import React from "react";
-import { useInputContext } from "../Input/Input.context";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { ComboboxOption } from "../index";
-import { useSelectedOptionsContext } from "./selectedOptionsContext";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { Chips } from "@navikt/ds-react";
 
 interface SelectedOptionsProps {

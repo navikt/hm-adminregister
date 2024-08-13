@@ -5,11 +5,11 @@ import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
 import { IsoBoxProps } from "../index";
 import Input from "./Input";
-import { useInputContext } from "./Input.context";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import ToggleListButton from "./ToggleListButton";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createContext } from "felleskomponenter/comboboxfelles/utils/create-context";
 import { FormFieldType, useFormField } from "felleskomponenter/comboboxfelles/formfield/useFormField";
-import { ComboboxProps } from "../index";
+import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 
 interface InputContextValue extends FormFieldType {
   clearInput: NonNullable<ComboboxProps["onClear"]>;
@@ -11,6 +11,9 @@ interface InputContextValue extends FormFieldType {
   value: string;
   setValue: (text: string) => void;
   onChange: (newValue: string) => void;
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  toggleOpenButtonRef: React.RefObject<HTMLButtonElement>;
 }
 
 const [InputContextProvider, useInputContext] = createContext<InputContextValue>({
@@ -41,13 +44,17 @@ const InputProvider = ({ children, value: props }: Props) => {
     "comboboxfield",
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const toggleOpenButtonRef = useRef<HTMLButtonElement>(null);
   const [internalValue, setInternalValue] = useState<string>("");
 
   const value = useMemo(() => String(externalValue ?? internalValue), [externalValue, internalValue]);
 
+  const [searchTerm, setSearchTerm] = useState(value);
+
   const onChange = useCallback(
     (newValue: string) => {
       externalValue ?? setInternalValue(newValue);
+      setSearchTerm(newValue);
       externalOnChange?.(newValue);
     },
     [externalValue, externalOnChange],
@@ -58,6 +65,7 @@ const InputProvider = ({ children, value: props }: Props) => {
       onClear?.(event);
       externalOnChange?.("");
       setInternalValue("");
+      setSearchTerm("");
     },
     [externalOnChange, onClear, setInternalValue],
   );
@@ -75,6 +83,9 @@ const InputProvider = ({ children, value: props }: Props) => {
     value,
     setValue: setInternalValue,
     onChange,
+    searchTerm,
+    setSearchTerm,
+    toggleOpenButtonRef,
   };
 
   return <InputContextProvider {...contextValue}>{children}</InputContextProvider>;

@@ -3,8 +3,8 @@ import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "rea
 import { omit, useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import filteredOptionsUtil from "../FilteredOptions/filtered-options-util";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
-import { useInputContext } from "./Input.context";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;

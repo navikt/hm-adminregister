@@ -1,11 +1,11 @@
 import cl from "clsx";
 import { CheckmarkIcon } from "@navikt/aksel-icons";
-import { useInputContext } from "../Input/Input.context";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 import { isInList } from "felleskomponenter/comboboxfelles/combobox-utils";
 import filteredOptionsUtil from "./filtered-options-util";
 import { useFilteredOptionsContext } from "./filteredOptionsContext";
 import { BodyShort, Loader } from "@navikt/ds-react";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 
 const FilteredOptions = () => {
   const {

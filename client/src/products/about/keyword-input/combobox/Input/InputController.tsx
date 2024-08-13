@@ -2,10 +2,10 @@
 import { forwardRef } from "react";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import SelectedOptions from "../SelectedOptions/SelectedOptions";
-import { useSelectedOptionsContext } from "../SelectedOptions/selectedOptionsContext";
+import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { ComboboxProps } from "../index";
 import Input from "./Input";
-import { useInputContext } from "./Input.context";
+import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
 
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 export const InputController = forwardRef<
