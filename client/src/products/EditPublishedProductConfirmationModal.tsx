@@ -1,17 +1,15 @@
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { Button, Modal } from "@navikt/ds-react";
 import { setPublishedSeriesToDraft } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 
 export const EditPublishedProductConfirmationModal = ({
   series,
-  mutateProducts,
   mutateSeries,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
@@ -22,7 +20,6 @@ export const EditPublishedProductConfirmationModal = ({
     setPublishedSeriesToDraft(series.id)
       .then(() => {
         mutateSeries();
-        mutateProducts();
       })
       .catch((error) => {
         setGlobalError(error);

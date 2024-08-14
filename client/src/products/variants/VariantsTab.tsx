@@ -1,40 +1,35 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
-import { deleteDraftProducts, updateProductVariant } from "api/ProductApi";
+import { deleteDraftProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
 import { DeleteVariantConfirmationModal } from "products/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { tenYearsFromTodayTimestamp, todayTimestamp } from "utils/date-util";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 
 const VariantsTab = ({
-  seriesUUID,
-  products,
+  series,
   isEditable,
   showInputError,
   mutateSeries,
-  isInAgreement,
 }: {
-  seriesUUID: string;
-  products: ProductRegistrationDTO[];
+  series: SeriesRegistrationDTOV2;
   isEditable: boolean;
   showInputError: boolean;
   mutateSeries: () => void;
-  isInAgreement: boolean;
 }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
-  const techKeys = getAllUniqueTechDataKeys(products);
+  const techKeys = getAllUniqueTechDataKeys(series.variants);
   const columnsPerPage = 5;
-  const totalPages = Math.ceil(products.length / columnsPerPage);
+  const totalPages = Math.ceil(series.variants.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
 
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
@@ -45,11 +40,11 @@ const VariantsTab = ({
     variantId: undefined,
   });
 
-  const { mutateVariants } = userProductVariantsBySeriesId(seriesUUID!);
+  const { mutateVariants } = userProductVariantsBySeriesId(series.id);
 
-  const hasNoVariants = products.length === 0;
+  const hasNoVariants = series.variants.length === 0;
 
-  const techValue = (product: ProductRegistrationDTO, key: string): string | undefined => {
+  const techValue = (product: ProductRegistrationDTOV2, key: string): string | undefined => {
     const data = product.productData.techData.find((data) => data.key === key);
     if (data && data.value) {
       return toValueAndUnit(data.value, data.unit);
@@ -64,7 +59,7 @@ const VariantsTab = ({
         mutateSeries();
 
         const deletingSingleVariantOnPage =
-          pageState > 1 && pageState == totalPages && products.length % columnsPerPage == 1;
+          pageState > 1 && pageState == totalPages && series.variants.length % columnsPerPage == 1;
 
         if (deletingSingleVariantOnPage) {
           searchParams.set("page", (pageState - 1).toString());
@@ -77,20 +72,13 @@ const VariantsTab = ({
       });
   }
 
-  const paginatedVariants = products.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
+  const paginatedVariants = series.variants.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
 
-  const anyNonActive = products.some((product) => product.registrationStatus !== "ACTIVE");
+  const anyExpired = series.variants.some((variant) => variant.isExpired);
 
-  const setAsExpired = (product: ProductRegistrationDTO) => {
-    const productRegistrationUpdated: ProductRegistrationDTO = {
-      ...product,
-      registrationStatus: "INACTIVE",
-      expired: todayTimestamp(),
-    };
-
-    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+  const setAsExpired = (product: ProductRegistrationDTOV2) => {
+    setVariantToExpired(product.id, loggedInUser?.isAdmin || false)
       .then(() => {
-        mutateVariants();
         mutateSeries();
       })
       .catch((error) => {
@@ -98,22 +86,17 @@ const VariantsTab = ({
       });
   };
 
-  const setAsActive = (product: ProductRegistrationDTO) => {
-    const productRegistrationUpdated: ProductRegistrationDTO = {
-      ...product,
-      registrationStatus: "ACTIVE",
-      expired: tenYearsFromTodayTimestamp(),
-    };
-
-    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+  const setAsActive = (product: ProductRegistrationDTOV2) => {
+    setVariantToActive(product.id, loggedInUser?.isAdmin || false)
       .then(() => {
-        mutateVariants();
         mutateSeries();
       })
       .catch((error) => {
         setGlobalError(error);
       });
   };
+
+  const showDropdownMenu = series.status === "EDITABLE" || series.status === "DONE";
 
   return (
     <>
@@ -140,53 +123,54 @@ const VariantsTab = ({
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
-                          <Dropdown>
-                            <Button
-                              variant="tertiary"
-                              size="small"
-                              icon={<MenuElipsisHorizontalCircleIcon title="Meny" />}
-                              as={Dropdown.Toggle}
-                            ></Button>
-                            <Dropdown.Menu>
-                              <Dropdown.Menu.List>
-                                {isEditable && (
-                                  <Dropdown.Menu.List.Item
-                                    onClick={() => {
-                                      navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
-                                    }}
-                                    disabled={isInAgreement}
-                                  >
-                                    Endre
-                                    <PencilIcon aria-hidden />
-                                  </Dropdown.Menu.List.Item>
-                                )}
-                                {product.draftStatus === "DRAFT" && product.published == null ? (
-                                  <Dropdown.Menu.List.Item
-                                    onClick={() =>
-                                      setDeleteVariantConfirmationModalIsOpen({
-                                        open: true,
-                                        variantId: product.id,
-                                      })
-                                    }
-                                  >
-                                    Slett
-                                    <TrashIcon aria-hidden />
-                                  </Dropdown.Menu.List.Item>
-                                ) : product.registrationStatus === "ACTIVE" ? (
-                                  <Dropdown.Menu.List.Item
-                                    disabled={product.draftStatus === "DRAFT"}
-                                    onClick={() => setAsExpired(product)}
-                                  >
-                                    Marker variant som utgått
-                                  </Dropdown.Menu.List.Item>
-                                ) : (
-                                  <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
-                                    Marker variant som aktiv
-                                  </Dropdown.Menu.List.Item>
-                                )}
-                              </Dropdown.Menu.List>
-                            </Dropdown.Menu>
-                          </Dropdown>
+                          {showDropdownMenu && (
+                            <Dropdown>
+                              <Button
+                                variant="tertiary"
+                                size="small"
+                                icon={<MenuElipsisHorizontalCircleIcon title="Meny" />}
+                                as={Dropdown.Toggle}
+                              ></Button>
+                              <Dropdown.Menu>
+                                <Dropdown.Menu.List>
+                                  {series.status === "EDITABLE" && (
+                                    <Dropdown.Menu.List.Item
+                                      onClick={() => {
+                                        navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
+                                      }}
+                                      disabled={series.inAgreement}
+                                    >
+                                      Endre
+                                      <PencilIcon aria-hidden />
+                                    </Dropdown.Menu.List.Item>
+                                  )}
+                                  {series.status === "EDITABLE" && !series.isPublised && (
+                                    <Dropdown.Menu.List.Item
+                                      onClick={() =>
+                                        setDeleteVariantConfirmationModalIsOpen({
+                                          open: true,
+                                          variantId: product.id,
+                                        })
+                                      }
+                                    >
+                                      Slett
+                                      <TrashIcon aria-hidden />
+                                    </Dropdown.Menu.List.Item>
+                                  )}
+                                  {series.isPublised &&
+                                    (product.isExpired ? (
+                                      <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
+                                        Marker variant som aktiv
+                                      </Dropdown.Menu.List.Item>
+                                    ) : (
+                                      <Dropdown.Menu.List.Item onClick={() => setAsExpired(product)}>
+                                        Marker variant som utgått
+                                      </Dropdown.Menu.List.Item>
+                                    ))}
+                                </Dropdown.Menu.List>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          )}
                         </Table.HeaderCell>
                       ))}
                     </Table.Row>
@@ -199,13 +183,12 @@ const VariantsTab = ({
                         <Table.DataCell key={`articleName-${i}`}>{product.articleName || "-"}</Table.DataCell>
                       ))}
                     </Table.Row>
-                    {anyNonActive && (
+                    {anyExpired && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
                         {paginatedVariants.map((product, i) => (
                           <Table.DataCell key={`expired-${i}`}>
-                            {product.registrationStatus === "INACTIVE" && <Tag variant="warning-moderate">Utgått</Tag>}
-                            {product.registrationStatus === "DELETED" && <Tag variant="error-moderate">Slettet</Tag>}
+                            {product.isExpired && <Tag variant="warning-moderate">Utgått</Tag>}
                           </Table.DataCell>
                         ))}
                       </Table.Row>
@@ -250,7 +233,7 @@ const VariantsTab = ({
             </VStack>
           </Box>
         )}
-        {isEditable && (
+        {series.status === "EDITABLE" && (
           <Button
             className="fit-content"
             variant="tertiary"
@@ -258,7 +241,9 @@ const VariantsTab = ({
             style={{ marginTop: "16px" }}
             onClick={() => {
               navigate(
-                `${pathname}/opprett-variant/${seriesUUID}?page=${Math.floor(products.length / columnsPerPage) + 1}`,
+                `${pathname}/opprett-variant/${series.id}?page=${
+                  Math.floor(series.variants.length / columnsPerPage) + 1
+                }`
               );
             }}
           >

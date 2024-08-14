@@ -62,6 +62,7 @@ export type NewsChunk = {
 
 export type SeriesGroupDTO = components["schemas"]["SeriesGroupDTO"][];
 export type ProductRegistrationDTO = components["schemas"]["ProductRegistrationDTO"];
+export type ProductRegistrationDTOV2 = components["schemas"]["ProductRegistrationDTOV2"];
 export type ProductAgreementRegistrationDTO = components["schemas"]["ProductAgreementRegistrationDTO"];
 export type ProductAgreementRegistrationDTOList = components["schemas"]["ProductAgreementRegistrationDTO"][];
 export type ProduktvarianterForDelkontrakterDTO = components["schemas"]["ProduktvarianterForDelkontrakterDTO"];
@@ -85,6 +86,7 @@ export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVar
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
+export type SeriesRegistrationDTOV2 = components["schemas"]["SeriesRegistrationDTOV2"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
 export type NewsRegistrationDTO = components["schemas"]["NewsRegistrationDTO"];
 export type CreateUpdateNewsDTO = components["schemas"]["CreateUpdateNewsDTO"];

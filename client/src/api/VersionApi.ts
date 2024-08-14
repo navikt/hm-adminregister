@@ -1,5 +1,5 @@
 import { fetchAPI, getPath } from "api/fetch";
-import { DifferenceDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { DifferenceDTO, ProductRegistrationDTOV2 } from "utils/types/response-types";
 
 export const getDifferenceFromPublishedSeries = async (seriesUUID: string, version: number): Promise<DifferenceDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/series/versions/${seriesUUID}/compare/${version}/approved`), "GET");
@@ -10,7 +10,7 @@ const getDifferenceFromPublishedVariant = async (productId: string, version: num
 };
 
 export const getDifferencesFromPublishedVariants = async (
-  products: ProductRegistrationDTO[],
+  products: ProductRegistrationDTOV2[]
 ): Promise<ProductDifferenceDTO[]> => {
   return await Promise.all(
     products.map(async (product) => {
@@ -19,11 +19,11 @@ export const getDifferencesFromPublishedVariants = async (
         product: product,
         difference: difference,
       };
-    }),
+    })
   );
 };
 
 export type ProductDifferenceDTO = {
-  product: ProductRegistrationDTO;
+  product: ProductRegistrationDTOV2;
   difference: DifferenceDTO;
 };

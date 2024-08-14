@@ -1,4 +1,4 @@
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { ProductRegistrationDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { rejectProducts } from "api/ProductApi";
 import { Box, Button, Modal, Textarea } from "@navikt/ds-react";
 import { rejectSeries } from "api/SeriesApi";
@@ -7,15 +7,11 @@ import { useState } from "react";
 
 export const RejectApprovalModal = ({
   series,
-  products,
-  mutateProducts,
   mutateSeries,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
@@ -25,11 +21,9 @@ export const RejectApprovalModal = ({
   const [message, setMessage] = useState<string | null>(series.message ?? null);
 
   async function onRejectApproval(message: string | null) {
-    rejectProducts(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
-      .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
+    rejectProducts(series.variants.map((variant) => variant.id) || []).catch((error) => {
+      setGlobalError(error.status, error.message);
+    });
     rejectSeries(series.id, { message: message })
       .then(() => mutateSeries())
       .catch((error) => {

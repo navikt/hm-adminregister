@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
@@ -362,6 +363,10 @@ export interface paths {
   "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setPublishedSeriesToDraft"];
   };
+  "/admreg/vendor/api/v1/series/v2/{id}": {
+    get: operations["readSeriesV2"];
+    put: operations["updateSeriesV2"];
+  };
   "/admreg/vendor/api/v1/series/{id}": {
     get: operations["readSeries_1"];
     put: operations["updateSeries_1"];
@@ -566,6 +571,8 @@ export interface components {
       articleName: string;
       supplierRef: string;
     };
+    /** @enum {string} */
+    EditStatus: "EDITABLE" | "PENDING_APPROVAL" | "REJECTED" | "DONE";
     Information: {
       message: string;
       type: components["schemas"]["Type"];
@@ -943,6 +950,22 @@ export interface components {
       /** Format: int64 */
       version?: number | null;
     };
+    ProductRegistrationDTOV2: {
+      /** Format: uuid */
+      id: string;
+      hmsArtNr?: string | null;
+      supplierRef: string;
+      articleName: string;
+      accessory: boolean;
+      sparePart: boolean;
+      /** Format: date-time */
+      created: string;
+      productData: components["schemas"]["ProductData"];
+      agreements: components["schemas"]["AgreementInfo"][];
+      /** Format: int64 */
+      version?: number | null;
+      isExpired: boolean;
+    };
     ProductRegistrationDryRunDTO: {
       /** Format: uuid */
       id?: string | null;
@@ -1147,6 +1170,33 @@ export interface components {
       version?: number | null;
       titleLowercase: string;
       isPublishedProduct?: boolean;
+    };
+    SeriesRegistrationDTOV2: {
+      /** Format: uuid */
+      id: string;
+      supplierName: string;
+      title: string;
+      text: string;
+      isoCategory: components["schemas"]["IsoCategoryDTO"];
+      message?: string | null;
+      status: components["schemas"]["EditStatus"];
+      seriesData: components["schemas"]["SeriesDataDTO"];
+      /** Format: date-time */
+      created: string;
+      /** Format: date-time */
+      updated: string;
+      /** Format: date-time */
+      published?: string | null;
+      /** Format: date-time */
+      expired: string;
+      updatedByUser: string;
+      createdByUser: string;
+      variants: components["schemas"]["ProductRegistrationDTOV2"][];
+      /** Format: int64 */
+      version?: number | null;
+      isExpired: boolean;
+      isPublised: boolean;
+      inAgreement: boolean;
     };
     SeriesRegistrationVersionDTO: {
       /** Format: uuid */
@@ -1387,6 +1437,10 @@ export interface components {
     /** @enum {string} */
     Type: "INFO" | "WARNING";
     Unit: Record<string, never>;
+    UpdateSeriesRegistrationDTO: {
+      title?: string | null;
+      text?: string | null;
+    };
     UserDTO: {
       /** Format: uuid */
       id: string;
@@ -1431,6 +1485,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   createDelkontrakt: {
     requestBody: {
       content: {
@@ -3644,6 +3699,41 @@ export interface operations {
     };
     responses: {
       /** @description setPublishedSeriesToDraft 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  readSeriesV2: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description readSeriesV2 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTOV2"];
+        };
+      };
+    };
+  };
+  updateSeriesV2: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateSeriesRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description updateSeriesV2 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

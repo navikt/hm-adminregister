@@ -1,11 +1,11 @@
 import { Heading, Tabs, VStack } from "@navikt/ds-react";
-import { IsoCategoryDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { IsoCategoryDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import AboutTabDescription from "products/about/AboutTabDescription";
 import AboutTabURL from "products/about/AboutTabURL";
 import AboutTabKeywords from "products/about/AboutTabKeywords";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   isAdmin: boolean;
   mutateSeries: () => void;
   isoCategory?: IsoCategoryDTO;

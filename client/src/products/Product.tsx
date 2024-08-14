@@ -1,11 +1,9 @@
 import { useState } from "react";
 
-import useSWR from "swr";
-
 import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { updateProductTitle } from "api/SeriesApi";
+import { updateProductTitle, useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import AdminActions from "products/AdminActions";
 import { DeleteConfirmationModal } from "products/DeleteConfirmationModal";
@@ -17,8 +15,6 @@ import SupplierActions from "products/SupplierActions";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
-import { IsoCategoryDTO } from "utils/types/response-types";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import AboutTab from "./about/AboutTab";
@@ -26,7 +22,6 @@ import DocumentTab from "products/files/DocumentsTab";
 import ImageTab from "products/files/images/ImagesTab";
 import VideosTab from "products/videos/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
-import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -53,19 +48,9 @@ const Product = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
 
-  const { variants, isLoadingVariants, errorVariants, mutateVariants } = userProductVariantsBySeriesId(seriesId!);
-  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
+  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeriesV2(seriesId!);
 
-  const { data: isoCategory } = useSWR<IsoCategoryDTO>(
-    series?.isoCategory && series.isoCategory !== "0"
-      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${series.isoCategory}`
-      : null,
-    fetcherGET,
-  );
-
-  const { data: isInAgreement } = useIsSeriesInAgreement(seriesId!);
-
-  if (isLoadingSeries || isLoadingVariants) {
+  if (isLoadingSeries) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -73,7 +58,7 @@ const Product = () => {
     );
   }
 
-  if (!series || errorVariants || errorSeries) {
+  if (!series || errorSeries) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -94,12 +79,7 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(
-      !series.text ||
-      series.formattedText ||
-      (!loggedInUser?.isAdmin && numberOfImages(series) === 0) ||
-      series.count === 0
-    );
+    return !(!series.text || (!loggedInUser?.isAdmin && numberOfImages(series) === 0) || series.variants.length === 0);
   };
 
   const handleSaveProductTitle = () => {
@@ -109,9 +89,7 @@ const Product = () => {
       .catch((error) => setGlobalError(error.status, error.message));
   };
 
-  const isEditable =
-    (series.draftStatus === "DRAFT" && series.status !== "DELETED") ||
-    (loggedInUser?.isAdmin === true && series.status === "ACTIVE");
+  const isEditable = series.status === "EDITABLE";
 
   const TabLabel = ({
     title,
@@ -140,8 +118,6 @@ const Product = () => {
     <main className="show-menu">
       <RequestApprovalModal
         series={series}
-        products={variants ?? []}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isValid={isValid}
         isOpen={approvalModalIsOpen}
@@ -149,8 +125,6 @@ const Product = () => {
       />
       <DeleteConfirmationModal
         series={series}
-        products={variants ?? []}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isOpen={deleteConfirmationModalIsOpen}
         setIsOpen={setDeleteConfirmationModalIsOpen}
@@ -158,13 +132,11 @@ const Product = () => {
       <SetExpiredSeriesConfirmationModal
         series={series}
         mutateSeries={mutateSeries}
-        mutateProducts={mutateVariants}
         params={expiredSeriesModalIsOpen}
         setParams={setExpiredSeriesModalIsOpen}
       />
       <EditPublishedProductConfirmationModal
         series={series}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isOpen={editProductModalIsOpen}
         setIsOpen={setEditProductModalIsOpen}
@@ -179,7 +151,7 @@ const Product = () => {
                 <Heading level="1" size="xlarge">
                   {loggedInUser?.isAdmin && series.published ? (
                     <a
-                      href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`}
+                      href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
                       target="_blank"
                       className="heading-link"
                       rel="noreferrer"
@@ -230,15 +202,13 @@ const Product = () => {
                 label={
                   <>
                     Om produktet
-                    {!series.text && !series.formattedText && !isValid && (
-                      <ExclamationmarkTriangleIcon className="product-error-text" />
-                    )}
+                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
                   </>
                 }
               />
               <Tabs.Tab
                 value="variants"
-                label={<TabLabel title="Egenskaper" numberOfElements={series.count} showAlert={true} />}
+                label={<TabLabel title="Egenskaper" numberOfElements={series.variants.length} showAlert={true} />}
               />
               <Tabs.Tab
                 value="images"
@@ -257,7 +227,7 @@ const Product = () => {
               series={series}
               isAdmin={loggedInUser?.isAdmin || false}
               mutateSeries={mutateSeries}
-              isoCategory={isoCategory}
+              isoCategory={series.isoCategory}
               isEditable={isEditable}
               showInputError={!isValid}
             />
@@ -270,12 +240,10 @@ const Product = () => {
             />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
             <VariantsTab
-              seriesUUID={series.id}
+              series={series}
               mutateSeries={mutateSeries}
-              products={variants || []}
               isEditable={isEditable}
               showInputError={!isValid}
-              isInAgreement={isInAgreement ?? false}
             />
           </Tabs>
         </VStack>
@@ -283,8 +251,6 @@ const Product = () => {
           {loggedInUser?.isAdmin && (
             <AdminActions
               series={series}
-              products={variants || []}
-              mutateProducts={mutateVariants}
               mutateSeries={mutateSeries}
               setIsValid={setIsValid}
               productIsValid={productIsValid}
@@ -298,7 +264,6 @@ const Product = () => {
               series={series}
               setIsValid={setIsValid}
               productIsValid={productIsValid}
-              isInAgreement={isInAgreement ?? false}
               setApprovalModalIsOpen={setApprovalModalIsOpen}
               setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
