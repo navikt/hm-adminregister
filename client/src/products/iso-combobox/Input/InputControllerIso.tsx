@@ -20,7 +20,7 @@ export const InputControllerIso = forwardRef<
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
 
-  const { activeDecendantId } = useFilteredOptionsContext();
+  const { activeDecendantId, toggleIsListOpen } = useFilteredOptionsContext();
   const { selectedOptions, removeSelectedOption, maxSelected } = useSelectedOptionsContext();
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
@@ -28,6 +28,7 @@ export const InputControllerIso = forwardRef<
   const clearField = (event: MouseEvent<HTMLButtonElement>) => {
     clearInput(event);
     removeSelectedOption(selectedOptions[0]);
+    toggleIsListOpen(false);
   };
 
   return (
@@ -42,7 +43,7 @@ export const InputControllerIso = forwardRef<
       </SelectedOptions>
       <div>
         {(value || selectedOptions.length > 0) && (
-          <button type="button" onClick={clearField} className="navds-combobox__button-clear" tabIndex={-1}>
+          <button type="button" onClick={clearField} className="navds-combobox__button-clear">
             <span className="navds-sr-only">Tøm</span>
             <XMarkIcon aria-hidden />
           </button>
