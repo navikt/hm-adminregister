@@ -239,12 +239,7 @@ const Product = () => {
               showInputError={!isValid}
             />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
-            <VariantsTab
-              series={series}
-              mutateSeries={mutateSeries}
-              isEditable={isEditable}
-              showInputError={!isValid}
-            />
+            <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
         <VStack gap={{ xs: "2", md: "4" }}>
