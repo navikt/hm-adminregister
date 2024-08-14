@@ -13,12 +13,10 @@ import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/r
 
 const VariantsTab = ({
   series,
-  isEditable,
   showInputError,
   mutateSeries,
 }: {
   series: SeriesRegistrationDTOV2;
-  isEditable: boolean;
   showInputError: boolean;
   mutateSeries: () => void;
 }) => {
@@ -96,8 +94,6 @@ const VariantsTab = ({
       });
   };
 
-  const showDropdownMenu = series.status === "EDITABLE" || series.status === "DONE";
-
   return (
     <>
       <DeleteVariantConfirmationModal
@@ -123,7 +119,7 @@ const VariantsTab = ({
                       <Table.HeaderCell scope="row"></Table.HeaderCell>
                       {paginatedVariants.map((product) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
-                          {showDropdownMenu && (
+                          {series.status === "EDITABLE" && (
                             <Dropdown>
                               <Button
                                 variant="tertiary"
@@ -134,39 +130,39 @@ const VariantsTab = ({
                               <Dropdown.Menu>
                                 <Dropdown.Menu.List>
                                   {series.status === "EDITABLE" && (
-                                    <Dropdown.Menu.List.Item
-                                      onClick={() => {
-                                        navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
-                                      }}
-                                      disabled={series.inAgreement}
-                                    >
-                                      Endre
-                                      <PencilIcon aria-hidden />
-                                    </Dropdown.Menu.List.Item>
-                                  )}
-                                  {series.status === "EDITABLE" && !series.isPublised && (
-                                    <Dropdown.Menu.List.Item
-                                      onClick={() =>
-                                        setDeleteVariantConfirmationModalIsOpen({
-                                          open: true,
-                                          variantId: product.id,
-                                        })
-                                      }
-                                    >
-                                      Slett
-                                      <TrashIcon aria-hidden />
-                                    </Dropdown.Menu.List.Item>
-                                  )}
-                                  {series.isPublised &&
-                                    (product.isExpired ? (
-                                      <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
-                                        Marker variant som aktiv
+                                    <>
+                                      <Dropdown.Menu.List.Item
+                                        onClick={() => {
+                                          navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
+                                        }}
+                                        disabled={series.inAgreement}
+                                      >
+                                        Endre
+                                        <PencilIcon aria-hidden />
                                       </Dropdown.Menu.List.Item>
-                                    ) : (
-                                      <Dropdown.Menu.List.Item onClick={() => setAsExpired(product)}>
-                                        Marker variant som utgått
-                                      </Dropdown.Menu.List.Item>
-                                    ))}
+                                      {!series.isPublised ? (
+                                        <Dropdown.Menu.List.Item
+                                          onClick={() =>
+                                            setDeleteVariantConfirmationModalIsOpen({
+                                              open: true,
+                                              variantId: product.id,
+                                            })
+                                          }
+                                        >
+                                          Slett
+                                          <TrashIcon aria-hidden />
+                                        </Dropdown.Menu.List.Item>
+                                      ) : product.isExpired ? (
+                                        <Dropdown.Menu.List.Item onClick={() => setAsActive(product)}>
+                                          Marker variant som aktiv
+                                        </Dropdown.Menu.List.Item>
+                                      ) : (
+                                        <Dropdown.Menu.List.Item onClick={() => setAsExpired(product)}>
+                                          Marker variant som utgått
+                                        </Dropdown.Menu.List.Item>
+                                      )}
+                                    </>
+                                  )}
                                 </Dropdown.Menu.List>
                               </Dropdown.Menu>
                             </Dropdown>
