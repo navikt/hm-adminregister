@@ -18,7 +18,7 @@ export const setSeriesToActive = async (seriesUUID: string, isAdmin: boolean): P
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/approve/${seriesUUID}`), "PUT");
+  return await fetchAPI(getPath(true, `/api/v1/series/approve-v2/${seriesUUID}`), "PUT");
 };
 
 export const approveMultipleSeries = async (seriesIds: string[]): Promise<SeriesRegistrationDTO[]> => {
