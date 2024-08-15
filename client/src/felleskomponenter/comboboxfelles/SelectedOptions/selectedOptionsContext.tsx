@@ -10,7 +10,7 @@ type SelectedOptionsContextValue = {
   selectedOptions: ComboboxOption[];
   maxSelected?: MaxSelected;
   setSelectedOptions: (option: ComboboxOption[]) => void;
-  toggleOption: (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent) => void;
+  toggleOption: (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent | React.MouseEvent) => void;
 };
 
 const [SelectedOptionsContextProvider, useSelectedOptionsContext] = createContext<SelectedOptionsContextValue>();
@@ -52,7 +52,7 @@ const SelectedOptionsProvider = ({
   );
 
   const toggleOption = useCallback(
-    (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent) => {
+    (option: ComboboxOption, event: React.KeyboardEvent | React.PointerEvent | React.MouseEvent) => {
       if (isInList(option.value, selectedOptions)) {
         removeSelectedOption(option);
       } else {

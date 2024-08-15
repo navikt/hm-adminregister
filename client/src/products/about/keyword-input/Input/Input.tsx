@@ -3,6 +3,8 @@ import React, { forwardRef, InputHTMLAttributes, useCallback, useRef } from "rea
 import { omit, useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useSelectedOptionsContext } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
 import { useInputContext } from "felleskomponenter/comboboxfelles/Input/Input.context";
+import { PlusCircleIcon } from "@navikt/aksel-icons";
+import styles from "./input-icon.module.scss";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value"> {
   ref: React.Ref<HTMLInputElement>;
@@ -13,10 +15,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
   const internalRef = useRef<HTMLInputElement>(null);
   const mergedRefs = useMergeRefs(ref, internalRef);
   const { clearInput, inputProps, onChange, value, setValue } = useInputContext();
-  const { selectedOptions, removeSelectedOption, toggleOption } = useSelectedOptionsContext();
+  const { selectedOptions, removeSelectedOption, toggleOption, maxSelected } = useSelectedOptionsContext();
 
   const onEnter = useCallback(
-    (event: React.KeyboardEvent) => {
+    (event: React.KeyboardEvent | React.MouseEvent) => {
       const isTextInSelectedOptions = (text: string) =>
         selectedOptions.some((option) => option.label.toLocaleLowerCase() === text.toLocaleLowerCase());
 
@@ -78,20 +80,29 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
   );
 
   return (
-    <input
-      {...rest}
-      {...omit(inputProps, ["aria-invalid"])}
-      ref={mergedRefs}
-      value={value}
-      onClick={() => onChange(value)}
-      onInput={onChangeHandler}
-      type="text"
-      onKeyUp={handleKeyUp}
-      onKeyDown={handleKeyDown}
-      autoComplete="off"
-      aria-invalid={inputProps["aria-invalid"]}
-      className={cl("navds-combobox__input", "navds-body-short", "navds-body-short--medium")}
-    />
+    <div className={styles.wrapper}>
+      <input
+        {...rest}
+        {...omit(inputProps, ["aria-invalid"])}
+        ref={mergedRefs}
+        value={value}
+        onClick={() => onChange(value)}
+        onInput={onChangeHandler}
+        type="text"
+        onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
+        autoComplete="off"
+        aria-invalid={inputProps["aria-invalid"]}
+        className={cl(`${styles.inputTest}`, "navds-combobox__input", "navds-body-short", "navds-body-short--medium")}
+        size={value.length || 1}
+      />
+      {!maxSelected?.isLimitReached && (
+        <button type="button" onClick={onEnter} className="navds-combobox__button-clear">
+          <span className="navds-sr-only">Legg til</span>
+          <PlusCircleIcon aria-hidden />
+        </button>
+      )}
+    </div>
   );
 });
 
