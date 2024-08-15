@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
   Button,
@@ -10,12 +13,13 @@ import {
   Loader,
   Pagination,
   Search,
+  Show,
   ToggleGroup,
+  VStack,
 } from "@navikt/ds-react";
-import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
+
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
 import { AgreementGroupDto } from "utils/types/response-types";
-import { Link, useNavigate } from "react-router-dom";
 
 export enum AgreementFilterOption {
   ALL = "ALL",
@@ -42,7 +46,8 @@ const Agreements = () => {
   const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
+  const showPageNavigator =
+    !!pagedData && !!pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length === 0;
   const inSearchMode = searchTerm.length > 0;
 
   if (allError || pagedError) {
@@ -85,128 +90,157 @@ const Agreements = () => {
   return (
     <main className="show-menu">
       <div className="page__background-container">
-        <Heading level="1" size="large" spacing>
-          Rammeavtaler
-        </Heading>
-
-        <div className="page__content-container">
-          <HStack wrap gap="4">
-            <form className="search-box" onSubmit={handleSubmit}>
-              <Search
-                className="search-button"
-                label="Søk etter et produkt"
-                variant="primary"
-                clearButton={true}
-                placeholder="Søk etter rammeavtale"
-                size="medium"
-                value={searchTerm}
-                onChange={(value) => handleSearch(value)}
-              />
-            </form>
-            <HStack gap="1">
-              <Dropdown>
-                <Button
-                  variant="tertiary"
-                  icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
-                  as={Dropdown.Toggle}
+        <VStack gap="12" maxWidth="60rem">
+          <Heading level="1" size="xlarge">
+            Rammeavtaler
+          </Heading>
+          <VStack gap="4">
+            <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="4">
+              <form onSubmit={handleSubmit}>
+                <Search
+                  className="search-button"
+                  label="Søk etter et produkt"
+                  variant="simple"
+                  clearButton={true}
+                  placeholder="Søk etter rammeavtale"
+                  size="medium"
+                  value={searchTerm}
+                  onChange={(value) => handleSearch(value)}
                 />
-                <Dropdown.Menu>
-                  <Dropdown.Menu.List>
-                    <Dropdown.Menu.List.Item
-                      onClick={() => {
-                        navigate("/rammeavtaler/opprett");
-                      }}
-                    >
-                      <PlusIcon aria-hidden />
-                      Ny rammeavtale
-                    </Dropdown.Menu.List.Item>
-                    <Dropdown.Menu.List.Item
-                      onClick={() => {
-                        navigate("/rammeavtaler/importer-katalogfil");
-                      }}
-                    >
-                      <FileExcelIcon aria-hidden />
-                      Importer katalogfil
-                    </Dropdown.Menu.List.Item>
-                  </Dropdown.Menu.List>
-                </Dropdown.Menu>
-              </Dropdown>
-            </HStack>
-          </HStack>
-
-          {!inSearchMode && (
-            <ToggleGroup
-              value={selectedFilterOption}
-              onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
-              size="small"
-              defaultChecked={true}
-            >
-              <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
-                Alle
-              </ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
-            </ToggleGroup>
-          )}
-
-          {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
-            <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
-          ) : filteredData && filteredData.length > 0 ? (
-            <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
-              {filteredData &&
-                filteredData.map((rammeavtale, i) => (
+              </form>
+              <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
+                {!inSearchMode && (
                   <>
+                    <Show above="md">
+                      <ToggleGroup
+                        value={selectedFilterOption}
+                        onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
+                        defaultChecked={true}
+                      >
+                        <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
+                          Alle
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+                      </ToggleGroup>
+                    </Show>
+                    <Show below="md">
+                      <ToggleGroup
+                        value={selectedFilterOption}
+                        onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
+                        defaultChecked={true}
+                        size="small"
+                      >
+                        <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
+                          Alle
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+                      </ToggleGroup>
+                    </Show>
+                  </>
+                )}
+                {inSearchMode && <span> </span>}
+
+                <Dropdown>
+                  <>
+                    <Show above="md">
+                      <Button
+                        variant="secondary"
+                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                        as={Dropdown.Toggle}
+                      />
+                    </Show>
+                    <Show below="md">
+                      <Button
+                        variant="secondary"
+                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                        as={Dropdown.Toggle}
+                        size="small"
+                      />
+                    </Show>
+                  </>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.List>
+                      <Dropdown.Menu.List.Item
+                        onClick={() => {
+                          navigate("/rammeavtaler/opprett");
+                        }}
+                      >
+                        <PlusIcon aria-hidden />
+                        Ny rammeavtale
+                      </Dropdown.Menu.List.Item>
+                      <Dropdown.Menu.List.Item
+                        onClick={() => {
+                          navigate("/rammeavtaler/importer-katalogfil");
+                        }}
+                      >
+                        <FileExcelIcon aria-hidden />
+                        Importer katalogfil
+                      </Dropdown.Menu.List.Item>
+                    </Dropdown.Menu.List>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </HGrid>
+            </HGrid>
+
+            {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
+              <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
+            ) : filteredData && filteredData.length > 0 ? (
+              <div className="panel-list__container">
+                {isLoading && <Loader size="3xlarge" title="venter..." />}
+                {filteredData &&
+                  filteredData.map((rammeavtale, i) => (
+                    <>
+                      <LinkPanel
+                        onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            navigate(`/rammeavtaler/${rammeavtale.id}`);
+                          }
+                        }}
+                        className="panel-list__name-panel"
+                        key={i}
+                      >
+                        <LinkPanel.Title className="panel-list__title panel-list__width">
+                          {rammeavtale.title || "Ukjent produktnavn"}
+                        </LinkPanel.Title>
+                      </LinkPanel>
+                    </>
+                  ))}
+              </div>
+            ) : (
+              <div className="panel-list__container">
+                {isLoading && <Loader size="3xlarge" title="venter..." />}
+                {pagedData?.content && pagedData?.content.length === 0 && (
+                  <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
+                )}
+                {pagedData?.content &&
+                  pagedData?.content.map((rammeavtale, i) => (
                     <LinkPanel
-                      onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          navigate(`/rammeavtaler/${rammeavtale.id}`);
-                        }
-                      }}
+                      as={Link}
+                      to={`/rammeavtaler/${rammeavtale.id}`}
                       className="panel-list__name-panel"
                       key={i}
                     >
                       <LinkPanel.Title className="panel-list__title panel-list__width">
-                        {rammeavtale.title || "Ukjent produktnavn"}
+                        {rammeavtale.title || "Ukjent avtalenavn"}
                       </LinkPanel.Title>
                     </LinkPanel>
-                  </>
-                ))}
-            </div>
-          ) : (
-            <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
-              {pagedData?.content && pagedData?.content.length === 0 && (
-                <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
-              )}
-              {pagedData?.content &&
-                pagedData?.content.map((rammeavtale, i) => (
-                  <LinkPanel
-                    as={Link}
-                    to={`/rammeavtaler/${rammeavtale.id}`}
-                    className="panel-list__name-panel"
-                    key={i}
-                  >
-                    <LinkPanel.Title className="panel-list__title panel-list__width">
-                      {rammeavtale.title || "Ukjent avtalenavn"}
-                    </LinkPanel.Title>
-                  </LinkPanel>
-                ))}
-            </div>
-          )}
+                  ))}
+              </div>
+            )}
 
-          {showPageNavigator && (
-            <Pagination
-              page={pageState}
-              onPageChange={(x) => setPageState(x)}
-              count={pagedData.totalPages!}
-              size="small"
-              prevNextTexts
-            />
-          )}
-        </div>
+            {showPageNavigator && (
+              <HStack marginBlock="2" justify="end">
+                <Pagination page={pageState} onPageChange={(x) => setPageState(x)} count={pagedData.totalPages!} />
+              </HStack>
+            )}
+          </VStack>
+        </VStack>
       </div>
     </main>
   );
