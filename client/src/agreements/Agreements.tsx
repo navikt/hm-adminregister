@@ -46,7 +46,8 @@ const Agreements = () => {
   const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>();
   const navigate = useNavigate();
 
-  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length == 0;
+  const showPageNavigator =
+    !!pagedData && !!pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length === 0;
   const inSearchMode = searchTerm.length > 0;
 
   if (allError || pagedError) {
