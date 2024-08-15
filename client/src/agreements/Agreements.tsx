@@ -111,7 +111,7 @@ const Agreements = () => {
               <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
                 {!inSearchMode && (
                   <>
-                    <Show above="md">
+                    <Show above="md" asChild>
                       <ToggleGroup
                         value={selectedFilterOption}
                         onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
@@ -125,7 +125,7 @@ const Agreements = () => {
                         <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
                       </ToggleGroup>
                     </Show>
-                    <Show below="md">
+                    <Show below="md" asChild>
                       <ToggleGroup
                         value={selectedFilterOption}
                         onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
@@ -145,23 +145,12 @@ const Agreements = () => {
                 {inSearchMode && <span> </span>}
 
                 <Dropdown>
-                  <>
-                    <Show above="md">
-                      <Button
-                        variant="secondary"
-                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
-                        as={Dropdown.Toggle}
-                      />
-                    </Show>
-                    <Show below="md">
-                      <Button
-                        variant="secondary"
-                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
-                        as={Dropdown.Toggle}
-                        size="small"
-                      />
-                    </Show>
-                  </>
+                  <Button
+                    variant="secondary"
+                    icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                    as={Dropdown.Toggle}
+                    size="xsmall"
+                  />
 
                   <Dropdown.Menu>
                     <Dropdown.Menu.List>
