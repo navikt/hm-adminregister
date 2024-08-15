@@ -1,26 +1,29 @@
-import { useState } from "react";
-import classNames from "classnames";
-import ProfileMenu from "./ProfileMenu";
 import {
   Buldings3Icon,
   FileCheckmarkFillIcon,
-  MenuHamburgerIcon,
   FileXMarkFillIcon,
+  MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
-import { Button, Heading, HStack, VStack } from "@navikt/ds-react";
-import { useAuthStore } from "utils/store/useAuthStore";
+import { Button, HStack, VStack } from "@navikt/ds-react";
+import classNames from "classnames";
+import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import ProfileMenu from "./ProfileMenu";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
       <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
-        <div className="menu__logo">Finn Hjelpemiddel Admin og registrering</div>
+        <span className="menu__logo">
+          <span style={{ fontSize: "1.5rem" }}>Finn Hjelpemiddel</span>
+          <span style={{ fontSize: "1.125rem" }}> Admin og registrering</span>
+        </span>
         <Button
           className="menu__burgermenu-button"
           icon={
@@ -33,7 +36,7 @@ const Navbar = () => {
           variant="tertiary"
           onClick={() => setMenuOpen(!menuOpen)}
         />
-        <VStack gap="32" className="menu__desktop">
+        <VStack gap="8" className="menu__desktop">
           <NavigationLinks menuOpen={true} />
           <ProfileMenu />
         </VStack>

@@ -38,7 +38,8 @@ main.show-menu {
 
     @include mixins.for-size(tablet-up) {
       padding-left: $a-spacing-12;
-      padding-top: $a-spacing-12;
+      padding-top: $a-spacing-20;
+      padding-bottom: $a-spacing-20;
     }
   }
 }
@@ -250,4 +251,3 @@ main:not(.show-menu) {
     }
   }
 }
-

@@ -41,7 +41,7 @@
 
   @include mixins.for-size(tablet-up) {
     width: 270px;
-    padding: $a-spacing-3 $a-spacing-6;
+    padding: $a-spacing-8 $a-spacing-6;
   }
 
   &__desktop {
@@ -55,8 +55,9 @@
 
     @include mixins.for-size(tablet-up) {
       display: block;
-      font-size: 1.5rem;
+      font-weight: $a-font-weight-bold;
       color: #fff;
+      line-height: 2rem;
     }
   }
 
@@ -186,7 +187,7 @@
     }
   }
 
-  &__button>span {
+  &__button > span {
     display: flex;
     justify-content: space-between;
     align-items: center;
