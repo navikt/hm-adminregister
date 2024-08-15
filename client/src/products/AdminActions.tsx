@@ -5,7 +5,7 @@ import { approveSeries } from "api/SeriesApi";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ProductRegistrationDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { ShowDiffModal } from "products/diff/ShowDiffModal";
 
 const AdminActions = ({
@@ -32,13 +32,12 @@ const AdminActions = ({
   }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
-  const canSetExpiredStatus = series.status === "DONE" && series.isPublised;
+  const canSetExpiredStatus = series.status === "DONE" && series.isPublished;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
 
   const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false);
 
   const isPendingApproval = series.status === "PENDING_APPROVAL";
-  const isPublished = series.isPublised;
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -65,7 +64,7 @@ const AdminActions = ({
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
-      {isPendingApproval && isPublished && (
+      {isPendingApproval && series.isPublished && (
         <Button
           onClick={() => {
             setShowDiffModalIsOpen(true);

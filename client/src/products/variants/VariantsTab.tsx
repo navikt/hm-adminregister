@@ -140,7 +140,7 @@ const VariantsTab = ({
                                         Endre
                                         <PencilIcon aria-hidden />
                                       </Dropdown.Menu.List.Item>
-                                      {!series.isPublised ? (
+                                      {!product.isPublished ? (
                                         <Dropdown.Menu.List.Item
                                           onClick={() =>
                                             setDeleteVariantConfirmationModalIsOpen({
