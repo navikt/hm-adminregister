@@ -29,14 +29,23 @@ main.show-menu {
     margin-left: 123px;
   }
 
-  @include mixins.for-size(tablet-up) {
+  @include mixins.for-size(desktop-up) {
     margin-left: 270px;
   }
 
   > div {
     padding: $a-spacing-6 $a-spacing-3;
+    @include mixins.for-size(tablet-only) {
+      padding-left: $a-spacing-4;
+    }
 
     @include mixins.for-size(tablet-up) {
+      padding-left: $a-spacing-4;
+      padding-top: $a-spacing-12;
+      padding-bottom: $a-spacing-12;
+    }
+
+    @include mixins.for-size(desktop-up) {
       padding-left: $a-spacing-12;
       padding-top: $a-spacing-20;
       padding-bottom: $a-spacing-20;

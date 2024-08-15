@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
@@ -10,11 +13,11 @@ import {
   Loader,
   Pagination,
   Search,
+  Show,
   ToggleGroup,
   VStack,
 } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
 import { AgreementGroupDto } from "utils/types/response-types";
 
@@ -91,7 +94,7 @@ const Agreements = () => {
             Rammeavtaler
           </Heading>
           <VStack gap="4">
-            <HGrid columns={{ xs: "1fr", md: "3fr 3fr 48px" }} gap="4">
+            <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="4">
               <form onSubmit={handleSubmit}>
                 <Search
                   className="search-button"
@@ -104,49 +107,83 @@ const Agreements = () => {
                   onChange={(value) => handleSearch(value)}
                 />
               </form>
+              <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
+                {!inSearchMode && (
+                  <>
+                    <Show above="md">
+                      <ToggleGroup
+                        value={selectedFilterOption}
+                        onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
+                        defaultChecked={true}
+                      >
+                        <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
+                          Alle
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+                      </ToggleGroup>
+                    </Show>
+                    <Show below="md">
+                      <ToggleGroup
+                        value={selectedFilterOption}
+                        onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
+                        defaultChecked={true}
+                        size="small"
+                      >
+                        <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
+                          Alle
+                        </ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
+                        <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+                      </ToggleGroup>
+                    </Show>
+                  </>
+                )}
+                {inSearchMode && <span> </span>}
 
-              {!inSearchMode && (
-                <ToggleGroup
-                  value={selectedFilterOption}
-                  onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
-                  defaultChecked={true}
-                >
-                  <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
-                    Alle
-                  </ToggleGroup.Item>
-                  <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
-                  <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
-                  <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
-                </ToggleGroup>
-              )}
+                <Dropdown>
+                  <>
+                    <Show above="md">
+                      <Button
+                        variant="secondary"
+                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                        as={Dropdown.Toggle}
+                      />
+                    </Show>
+                    <Show below="md">
+                      <Button
+                        variant="secondary"
+                        icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
+                        as={Dropdown.Toggle}
+                        size="small"
+                      />
+                    </Show>
+                  </>
 
-              <Dropdown>
-                <Button
-                  variant="secondary"
-                  icon={<MenuElipsisVerticalIcon title="Importer katalogfil" fontSize="1.5rem" />}
-                  as={Dropdown.Toggle}
-                />
-                <Dropdown.Menu>
-                  <Dropdown.Menu.List>
-                    <Dropdown.Menu.List.Item
-                      onClick={() => {
-                        navigate("/rammeavtaler/opprett");
-                      }}
-                    >
-                      <PlusIcon aria-hidden />
-                      Ny rammeavtale
-                    </Dropdown.Menu.List.Item>
-                    <Dropdown.Menu.List.Item
-                      onClick={() => {
-                        navigate("/rammeavtaler/importer-katalogfil");
-                      }}
-                    >
-                      <FileExcelIcon aria-hidden />
-                      Importer katalogfil
-                    </Dropdown.Menu.List.Item>
-                  </Dropdown.Menu.List>
-                </Dropdown.Menu>
-              </Dropdown>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.List>
+                      <Dropdown.Menu.List.Item
+                        onClick={() => {
+                          navigate("/rammeavtaler/opprett");
+                        }}
+                      >
+                        <PlusIcon aria-hidden />
+                        Ny rammeavtale
+                      </Dropdown.Menu.List.Item>
+                      <Dropdown.Menu.List.Item
+                        onClick={() => {
+                          navigate("/rammeavtaler/importer-katalogfil");
+                        }}
+                      >
+                        <FileExcelIcon aria-hidden />
+                        Importer katalogfil
+                      </Dropdown.Menu.List.Item>
+                    </Dropdown.Menu.List>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </HGrid>
             </HGrid>
 
             {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
