@@ -96,7 +96,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
         className={cl(`${styles.inputTest}`, "navds-combobox__input", "navds-body-short", "navds-body-short--medium")}
         size={value.length || 1}
       />
-      {!maxSelected?.isLimitReached && (
+      {!maxSelected?.isLimitReached && value.length > 0 && (
         <button type="button" onClick={onEnter} className="navds-combobox__button-clear">
           <span className="navds-sr-only">Legg til</span>
           <PlusCircleIcon aria-hidden />
