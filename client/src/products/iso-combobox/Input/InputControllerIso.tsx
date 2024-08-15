@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import cl from "clsx";
-import { forwardRef, MouseEvent } from "react";
+import { forwardRef, MouseEvent, useState } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
@@ -19,7 +19,6 @@ export const InputControllerIso = forwardRef<
   const { ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
-
   const { activeDecendantId, toggleIsListOpen } = useFilteredOptionsContext();
   const { selectedOptions, removeSelectedOption, maxSelected } = useSelectedOptionsContext();
 
@@ -27,8 +26,11 @@ export const InputControllerIso = forwardRef<
 
   const clearField = (event: MouseEvent<HTMLButtonElement>) => {
     clearInput(event);
-    removeSelectedOption(selectedOptions[0]);
+    if (selectedOptions.length > 0) {
+      removeSelectedOption(selectedOptions[0]);
+    }
     toggleIsListOpen(false);
+    focusInput();
   };
 
   return (
@@ -43,7 +45,12 @@ export const InputControllerIso = forwardRef<
       </SelectedOptions>
       <div>
         {(value || selectedOptions.length > 0) && (
-          <button type="button" onClick={clearField} className="navds-combobox__button-clear">
+          <button
+            type="button"
+            onClick={clearField}
+            onPointerDown={(e) => e.preventDefault()}
+            className="navds-combobox__button-clear"
+          >
             <span className="navds-sr-only">Tøm</span>
             <XMarkIcon aria-hidden />
           </button>
