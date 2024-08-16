@@ -26,6 +26,7 @@ export default function CreateProduct() {
   const [error, setError] = useState<Error | undefined>(undefined);
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const validateFields = () => {
     setError(undefined);
@@ -65,8 +66,10 @@ export default function CreateProduct() {
   const onToggleSelected = (option: string, isSelected: boolean) => {
     if (isSelected) {
       setIsoCategory(option);
+      setSelectedOptions([option]);
     } else {
       setIsoCategory("");
+      setSelectedOptions([]);
     }
   };
 
@@ -86,6 +89,7 @@ export default function CreateProduct() {
         <ISO_Combobox
           label={labelRequired("Iso-kategori (kode)")}
           description={"Søk etter isokategori produktet passer best inn i"}
+          selectedOptions={selectedOptions}
           options={isoCodesAndTitles || []}
           onToggleSelected={onToggleSelected}
           error={error?.isoField ? error.message : ""}
