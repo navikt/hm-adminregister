@@ -5,28 +5,29 @@ import useSWR from "swr";
 import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 import { updateProductTitle } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
 import { DeleteConfirmationModal } from "products/DeleteConfirmationModal";
 import { EditPublishedProductConfirmationModal } from "products/EditPublishedProductConfirmationModal";
+import DocumentTab from "products/files/DocumentsTab";
+import ImageTab from "products/files/images/ImagesTab";
 import { RequestApprovalModal } from "products/RequestApprovalModal";
 import { numberOfDocuments, numberOfImages, numberOfVideos } from "products/seriesUtils";
 import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
+import VideosTab from "products/videos/VideosTab";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
 import { IsoCategoryDTO } from "utils/types/response-types";
+import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
-import AboutTab from "./about/AboutTab";
-import DocumentTab from "products/files/DocumentsTab";
-import ImageTab from "products/files/images/ImagesTab";
-import VideosTab from "products/videos/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
-import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -218,10 +219,17 @@ const Product = () => {
                   className="fit-content"
                   variant="tertiary"
                   icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
-                  onClick={() => setShowEditProductTitleMode(true)}
+                  onClick={() => {
+                    setProductTitle(series.title);
+                    setShowEditProductTitleMode(true);
+                  }}
                 ></Button>
               )}
             </HStack>
+            <DefinitionList fullWidth horizontal>
+              <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
+              <DefinitionList.Definition>{series.isoCategory}</DefinitionList.Definition>
+            </DefinitionList>
           </VStack>
           <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
             <Tabs.List>
