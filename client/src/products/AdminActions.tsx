@@ -1,12 +1,12 @@
 import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { publishProducts } from "api/ProductApi";
 import { approveSeries } from "api/SeriesApi";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { ShowDiffModal } from "products/diff/ShowDiffModal";
+import { publishProducts } from "api/ProductApi";
 
 const AdminActions = ({
   series,

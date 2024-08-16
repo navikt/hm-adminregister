@@ -1,15 +1,15 @@
 {
   "ingress": [
     "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
-    "https://finnhjelpemiddel.ekstern.dev.nav.no/adminregister"
+    "https://finnhjelpemiddel.ansatt.dev.nav.no/adminregister"
   ],
   "cluster": "dev-gcp",
   "runtime_env": "dev",
   "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
   "hm_register_url": "https://finnhjelpemiddel.intern.dev.nav.no",
-  "hm_register_external_url": "https://finnhjelpemiddel.ekstern.dev.nav.no",
+  "hm_register_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no",
   "image_proxy_url": "https://finnhjelpemiddel.intern.dev.nav.no/imageproxy",
-  "image_proxy_external_url": "https://finnhjelpemiddel.ekstern.dev.nav.no/imageproxy",
+  "image_proxy_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no/imageproxy",
   "replicas": {
     "min": 1,
     "max": 1

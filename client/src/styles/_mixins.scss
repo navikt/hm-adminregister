@@ -10,7 +10,7 @@
       @content;
     }
   } @else if $range == tablet-only {
-    @media ((max-width: 767px) and (min-width: 481px)) {
+    @media ((max-width: 1023px) and (min-width: 481px)) {
       @content;
     }
   } @else if $range == tablet-up {
