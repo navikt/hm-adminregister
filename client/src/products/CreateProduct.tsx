@@ -12,9 +12,8 @@ import { useState } from "react";
 import { ISO_Combobox } from "products/iso-combobox";
 
 type Error = {
-  titleField?: boolean | undefined;
-  isoField?: boolean | undefined;
-  message: string | undefined;
+  titleErrorMessage?: string | undefined;
+  isoCodeErrorMessage?: string | undefined;
 };
 
 export default function CreateProduct() {
@@ -23,22 +22,20 @@ export default function CreateProduct() {
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>("");
   const [isoCategory, setIsoCategory] = useState<string>("");
-  const [error, setError] = useState<Error | undefined>(undefined);
+  const [fieldError, setFieldError] = useState<Error | undefined>(undefined);
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const validateFields = () => {
-    setError(undefined);
-    if (!title || title === "") {
-      setError({ titleField: true, message: "Du må skrive en tittel" });
-      return false;
-    }
-    if (!isoCategory || isoCategory === "") {
-      setError({ isoField: true, message: "Du må velge en iso-kategori" });
-      return false;
-    }
-    return true;
+    const titleError = !title || title === "";
+    const isoError = !isoCategory || isoCategory === "";
+    setFieldError({
+      titleErrorMessage: titleError ? "Du må skrive en tittel" : undefined,
+      isoCodeErrorMessage: isoError ? "Du må velge en iso-kategori" : undefined,
+    });
+
+    return !(titleError || isoError);
   };
 
   async function onSubmit() {
@@ -82,9 +79,9 @@ export default function CreateProduct() {
           name="productName"
           type="text"
           onChange={(event) => setTitle(event.target.value)}
-          onBlur={() => setError(undefined)}
-          onFocus={() => setError(undefined)}
-          error={error?.titleField ? error.message : ""}
+          onBlur={() => setFieldError({ ...fieldError, titleErrorMessage: undefined })}
+          onFocus={() => setFieldError({ ...fieldError, titleErrorMessage: undefined })}
+          error={fieldError?.titleErrorMessage ?? ""}
         />
         <ISO_Combobox
           label={labelRequired("Iso-kategori (kode)")}
@@ -92,7 +89,9 @@ export default function CreateProduct() {
           selectedOptions={selectedOptions}
           options={isoCodesAndTitles || []}
           onToggleSelected={onToggleSelected}
-          error={error?.isoField ? error.message : ""}
+          onBlur={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+          onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+          error={fieldError?.isoCodeErrorMessage ?? ""}
           maxSelected={{ limit: 1 }}
         />
         <HStack gap="4">
