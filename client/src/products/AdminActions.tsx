@@ -64,6 +64,17 @@ const AdminActions = ({
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
+      {series.status === "EDITABLE" && (
+        <Button
+          style={{ marginTop: "20px" }}
+          onClick={() => {
+            setIsValid(productIsValid());
+            setApprovalModalIsOpen(true);
+          }}
+        >
+          Send til godkjenning
+        </Button>
+      )}
       {isPendingApproval && series.isPublished && (
         <Button
           onClick={() => {
