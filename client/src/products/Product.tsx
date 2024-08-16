@@ -1,10 +1,11 @@
 import { useState } from "react";
 
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import useSWR from "swr";
 
+import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 
-import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 import { updateProductTitle } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
@@ -19,7 +20,7 @@ import { numberOfDocuments, numberOfImages, numberOfVideos } from "products/seri
 import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
 import VideosTab from "products/videos/VideosTab";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";

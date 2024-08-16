@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import {
   Buldings3Icon,
   ChevronDownIcon,
@@ -7,9 +10,8 @@ import {
   PersonRectangleIcon,
 } from "@navikt/aksel-icons";
 import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
+
 import { HM_REGISTER_URL } from "environments";
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 
 const ProfileMenu = () => {

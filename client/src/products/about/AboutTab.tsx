@@ -1,4 +1,5 @@
 import { Tabs, VStack } from "@navikt/ds-react";
+
 import AboutTabDescription from "products/about/AboutTabDescription";
 import AboutTabKeywords from "products/about/AboutTabKeywords";
 import AboutTabURL from "products/about/AboutTabURL";

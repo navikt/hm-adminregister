@@ -1,9 +1,10 @@
-import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
-import { updateProductVariant } from "api/ProductApi";
-import { HM_REGISTER_URL } from "environments";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useSWR from "swr";
+
+import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
+import { updateProductVariant } from "api/ProductApi";
+import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, labelRequired } from "utils/string-util";
