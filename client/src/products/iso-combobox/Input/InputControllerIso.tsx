@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import cl from "clsx";
-import { forwardRef, MouseEvent, useState } from "react";
+import { forwardRef, MouseEvent, useEffect, useState } from "react";
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { useMergeRefs } from "felleskomponenter/comboboxfelles/utils";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
@@ -19,8 +19,9 @@ export const InputControllerIso = forwardRef<
   const { ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
-  const { activeDecendantId, toggleIsListOpen } = useFilteredOptionsContext();
+  const { activeDecendantId } = useFilteredOptionsContext();
   const { selectedOptions, removeSelectedOption, maxSelected } = useSelectedOptionsContext();
+  const [focusing, setFocusing] = useState(false);
 
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
@@ -29,9 +30,15 @@ export const InputControllerIso = forwardRef<
     if (selectedOptions.length > 0) {
       removeSelectedOption(selectedOptions[0]);
     }
-    toggleIsListOpen(false);
-    focusInput();
+    setFocusing(true);
   };
+
+  useEffect(() => {
+    if (focusing) {
+      focusInput();
+      setFocusing(false);
+    }
+  }, [focusing]);
 
   return (
     <div
