@@ -62,22 +62,12 @@ export default function CreateProduct() {
     return parts[1].replace(/\s/g, ""); // Remove spaces
   };
 
-  const [inputValue, setInputValue] = useState("");
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [filteredOptions, setFilteredOptions] = useState<string[]>();
-
   const onToggleSelected = (option: string, isSelected: boolean) => {
     if (isSelected) {
-      setSelectedOptions([option]);
       setIsoCategory(option);
     } else {
-      setSelectedOptions([]);
       setIsoCategory("");
     }
-  };
-  const filter = () => {
-    const filtered = isoCodesAndTitles?.filter((option) => option.toLowerCase().includes(inputValue.toLowerCase()));
-    setFilteredOptions(filtered);
   };
 
   return (
@@ -96,12 +86,6 @@ export default function CreateProduct() {
         <ISO_Combobox
           label={labelRequired("Iso-kategori (kode)")}
           description={"Søk etter isokategori produktet passer best inn i"}
-          selectedOptions={selectedOptions}
-          onChange={(value) => {
-            setInputValue(value || "");
-            filter();
-          }}
-          filteredOptions={filteredOptions}
           options={isoCodesAndTitles || []}
           onToggleSelected={onToggleSelected}
           error={error?.isoField ? error.message : ""}
