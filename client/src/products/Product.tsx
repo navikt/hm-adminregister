@@ -229,7 +229,9 @@ const Product = () => {
             </HStack>
             <DefinitionList fullWidth horizontal>
               <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
-              <DefinitionList.Definition>{series.isoCategory}</DefinitionList.Definition>
+              <DefinitionList.Definition>
+                {isoCategory?.isoTitle} ({isoCategory?.isoCode})
+              </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
           <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
@@ -266,7 +268,6 @@ const Product = () => {
               series={series}
               isAdmin={loggedInUser?.isAdmin || false}
               mutateSeries={mutateSeries}
-              isoCategory={isoCategory}
               isEditable={isEditable}
               showInputError={!isValid}
             />
