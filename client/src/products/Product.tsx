@@ -230,7 +230,7 @@ const Product = () => {
             <DefinitionList fullWidth horizontal>
               <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
               <DefinitionList.Definition>
-                {isoCategory?.isoTitle} ({isoCategory?.isoCode})
+                {isoCategory ? `${isoCategory?.isoTitle} (${isoCategory?.isoCode})` : "Ingen"}
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
