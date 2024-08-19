@@ -44,7 +44,7 @@ export const mapImagesAndPDFfromMedia = (
   };
 };
 
-export const seriesStatus = (series: SeriesRegistrationDTO) => {
+export const seriesStatus = (series: SeriesRegistrationDTO): SeriesStatus => {
   const isDraft = series.draftStatus === "DRAFT" && !series.published;
   const isPending = series.adminStatus === "PENDING";
   const isRejected = series.adminStatus === "REJECTED";

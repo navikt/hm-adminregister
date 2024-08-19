@@ -1,11 +1,11 @@
 import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, HStack } from "@navikt/ds-react";
+import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { approveSeries } from "api/SeriesApi";
+import { ShowDiffModal } from "products/diff/ShowDiffModal";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { ShowDiffModal } from "products/diff/ShowDiffModal";
 
 const AdminActions = ({
   series,
@@ -59,7 +59,7 @@ const AdminActions = ({
   }
 
   return (
-    <HStack align={"end"} gap="2">
+    <VStack gap="2">
       <ShowDiffModal
         series={series}
         products={products}
@@ -86,47 +86,53 @@ const AdminActions = ({
         </Button>
       )}
 
-      {shouldPublish && <Button onClick={onPublish}>Publiser</Button>}
-      {isDeleted ? (
-        <></>
-      ) : (
-        <Dropdown>
-          <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
-          <Dropdown.Menu>
-            <Dropdown.Menu.List>
-              {isPending && shouldPublish && (
-                <>
-                  <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
-                    Avslå
-                    <ExclamationmarkTriangleIcon aria-hidden />
-                  </Dropdown.Menu.List.Item>
-                  <Dropdown.Menu.Divider />
-                </>
-              )}
-              <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                Slett
-                <TrashIcon aria-hidden />
-              </Dropdown.Menu.List.Item>
+      <HStack gap="2">
+        {shouldPublish && (
+          <Button onClick={onPublish} style={{ flexGrow: 1 }}>
+            Publiser
+          </Button>
+        )}
+        {isDeleted ? (
+          <></>
+        ) : (
+          <Dropdown>
+            <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
+            <Dropdown.Menu>
+              <Dropdown.Menu.List>
+                {isPending && shouldPublish && (
+                  <>
+                    <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
+                      Avslå
+                      <ExclamationmarkTriangleIcon aria-hidden />
+                    </Dropdown.Menu.List.Item>
+                    <Dropdown.Menu.Divider />
+                  </>
+                )}
+                <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                  Slett
+                  <TrashIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
 
-              {canSetExpiredStatus &&
-                (series.status === "ACTIVE" ? (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                  >
-                    Marker som utgått
-                  </Dropdown.Menu.List.Item>
-                ) : (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
-                  >
-                    Marker som aktiv
-                  </Dropdown.Menu.List.Item>
-                ))}
-            </Dropdown.Menu.List>
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
-    </HStack>
+                {canSetExpiredStatus &&
+                  (series.status === "ACTIVE" ? (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                    >
+                      Marker som utgått
+                    </Dropdown.Menu.List.Item>
+                  ) : (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                    >
+                      Marker som aktiv
+                    </Dropdown.Menu.List.Item>
+                  ))}
+              </Dropdown.Menu.List>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </HStack>
+    </VStack>
   );
 };
 
