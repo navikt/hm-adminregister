@@ -26,6 +26,7 @@ export const InputControllerIso = forwardRef<
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
   const clearField = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     clearInput(event);
     if (selectedOptions.length > 0) {
       removeSelectedOption(selectedOptions[0]);
