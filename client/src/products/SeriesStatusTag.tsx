@@ -6,7 +6,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   if (seriesStatus === SeriesStatus.DELETED) {
     return (
       <TagWithIcon
-        icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status slettet" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Slettet"}
         color={colors.RED}
       />
@@ -14,7 +14,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.INACTIVE) {
     return (
       <TagWithIcon
-        icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status slettet" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Utgått"}
         color={colors.RED}
       />
@@ -22,7 +22,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.REJECTED) {
     return (
       <TagWithIcon
-        icon={<XMarkOctagonIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<XMarkOctagonIcon aria-hidden={!iconOnly} title="Status Avvist" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Avvist"}
         color={colors.RED}
       />
@@ -30,7 +30,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.DRAFT) {
     return (
       <TagWithIcon
-        icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status ikke publisert" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Ikke publisert"}
         color={colors.GREY}
       />
@@ -38,7 +38,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.PENDING) {
     return (
       <TagWithIcon
-        icon={<ClockDashedIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<ClockDashedIcon aria-hidden={!iconOnly} title="Venter på godkjenning" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Venter på godkjenning"}
         color={colors.ORANGE}
       />
@@ -46,7 +46,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.PUBLISHED) {
     return (
       <TagWithIcon
-        icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />}
+        icon={<EyeIcon aria-hidden={!iconOnly} title="Status publisert" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Publisert"}
         color={colors.GREEN}
       />
@@ -54,8 +54,8 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.DRAFT_CHANGE) {
     return (
       <TagWithIcon
-        icon={<PencilWritingIcon aria-hidden fontSize={"1.5rem"} />}
-        text={iconOnly ? "" : "Redigeres"}
+        icon={<PencilWritingIcon aria-hidden={!iconOnly} title="Under redigering" fontSize={"1.5rem"} />}
+        text={iconOnly ? "" : "Under redigering"}
         color={colors.BLUE}
       />
     );
