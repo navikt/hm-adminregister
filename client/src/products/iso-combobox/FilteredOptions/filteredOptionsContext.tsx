@@ -46,7 +46,7 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
     setValue,
     setSearchTerm,
   } = useInputContext();
-  const { maxSelected } = useSelectedOptionsContext();
+  const { maxSelected, selectedOptions } = useSelectedOptionsContext();
 
   const [isInternalListOpen, setInternalListOpen] = useState(false);
 
@@ -93,7 +93,11 @@ const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProp
 
   const toggleIsListOpen = useCallback(
     (newState?: boolean) => {
-      virtualFocus.moveFocusToTop();
+      if (selectedOptions.length > 0) {
+        virtualFocus.moveFocusToElement(filteredOptionsUtils.getOptionId(id, selectedOptions[0].label));
+      } else {
+        virtualFocus.moveFocusToTop();
+      }
       setInternalListOpen((oldState) => newState ?? !oldState);
     },
     [virtualFocus],
