@@ -1,12 +1,12 @@
-import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
+import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { approveSeries } from "api/SeriesApi";
+import { approveSeries, setPublishedSeriesToDraft } from "api/SeriesApi";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { ShowDiffModal } from "products/diff/ShowDiffModal";
-import { publishProducts } from "api/ProductApi";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const AdminActions = ({
   series,
@@ -32,10 +32,11 @@ const AdminActions = ({
   }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
-  const canSetExpiredStatus = series.status === "DONE" && series.isPublished;
+  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
-
   const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false);
+  const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
 
   const isPendingApproval = series.status === "PENDING_APPROVAL";
 
@@ -47,16 +48,47 @@ const AdminActions = ({
         .catch((error) => {
           setGlobalError(error.status, error.message);
         });
-      publishProducts(series.variants.map((variant) => variant.id) || []).catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
+      setConfirmApproveModalIsOpen(false);
     } else {
       setApprovalModalIsOpen(true);
     }
   }
 
+  async function onSetToDraft() {
+    setPublishedSeriesToDraft(true, series.id)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+    setEditProductModalIsOpen(false);
+  }
+
   return (
     <HStack align={"end"} gap="2">
+      <ConfirmModal
+        title={"Vil du publisere produktet?"}
+        text=""
+        onClick={onPublish}
+        onClose={() => {
+          setConfirmApproveModalIsOpen(false);
+        }}
+        isModalOpen={confirmApproveModalIsOpen}
+        confirmButtonText={"Publiser"}
+        variant="primary"
+      />
+      <ConfirmModal
+        title={"Vil du sette produktet i redigeringsmodus?"}
+        text=""
+        onClick={onSetToDraft}
+        onClose={() => {
+          setEditProductModalIsOpen(false);
+        }}
+        isModalOpen={editProductModalIsOpen}
+        confirmButtonText={"OK"}
+        variant="primary"
+      />
       <ShowDiffModal series={series} isOpen={showDiffModalIsOpen} setIsOpen={setShowDiffModalIsOpen} />
       <RejectApprovalModal
         series={series}
@@ -64,17 +96,6 @@ const AdminActions = ({
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
-      {series.status === "EDITABLE" && (
-        <Button
-          style={{ marginTop: "20px" }}
-          onClick={() => {
-            setIsValid(productIsValid());
-            setApprovalModalIsOpen(true);
-          }}
-        >
-          Send til godkjenning
-        </Button>
-      )}
       {isPendingApproval && series.isPublished && (
         <Button
           onClick={() => {
@@ -87,12 +108,26 @@ const AdminActions = ({
         </Button>
       )}
 
-      {isPendingApproval && <Button onClick={onPublish}>Publiser</Button>}
+      {(series.status === "EDITABLE" || isPendingApproval) && (
+        <Button
+          onClick={() => {
+            setConfirmApproveModalIsOpen(true);
+          }}
+        >
+          Publiser
+        </Button>
+      )}
       {
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
             <Dropdown.Menu.List>
+              {series.status !== "EDITABLE" && (
+                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                  Endre produkt
+                  <PencilIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
+              )}
               {isPendingApproval && (
                 <>
                   <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>

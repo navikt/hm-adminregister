@@ -21,9 +21,6 @@ export const RejectApprovalModal = ({
   const [message, setMessage] = useState<string | null>(series.message ?? null);
 
   async function onRejectApproval(message: string | null) {
-    rejectProducts(series.variants.map((variant) => variant.id) || []).catch((error) => {
-      setGlobalError(error.status, error.message);
-    });
     rejectSeries(series.id, { message: message })
       .then(() => mutateSeries())
       .catch((error) => {

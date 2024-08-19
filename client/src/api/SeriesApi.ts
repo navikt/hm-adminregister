@@ -14,8 +14,11 @@ export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRe
   return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
 };
 
-export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
+export const setPublishedSeriesToDraft = async (
+  isAdmin: boolean,
+  seriesUUID: string
+): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
 };
 
 export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
@@ -38,7 +41,7 @@ export const rejectSeries = async (
   seriesUUID: string,
   rejectSeriesDTO: RejectSeriesDTO
 ): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/reject/${seriesUUID}`), "PUT", rejectSeriesDTO);
+  return await fetchAPI(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {

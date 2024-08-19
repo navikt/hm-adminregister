@@ -25,11 +25,11 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         <Content>{text}</Content>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="tertiary" onClick={onClose}>
-          Avbryt
-        </Button>
         <Button onClick={onClick} variant={variant ?? "primary"}>
           {confirmButtonText}
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Avbryt
         </Button>
       </Modal.Footer>
     </Modal>

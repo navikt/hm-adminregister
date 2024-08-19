@@ -30,7 +30,7 @@ const SupplierActions = ({
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
   const isEditable = series.status === "EDITABLE";
-  const canSetExpiredStatus = series.status === "DONE" && !!series.published;
+  const canSetExpiredStatus = series.status === "EDITABLE" && !!series.published;
   const canSetToEditMode = series.status !== "EDITABLE";
   const isPendingApproval = series.status === "PENDING_APPROVAL";
   const { loggedInUser } = useAuthStore();

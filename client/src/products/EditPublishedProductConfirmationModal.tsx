@@ -17,7 +17,7 @@ export const EditPublishedProductConfirmationModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onClick() {
-    setPublishedSeriesToDraft(series.id)
+    setPublishedSeriesToDraft(false, series.id)
       .then(() => {
         mutateSeries();
       })
