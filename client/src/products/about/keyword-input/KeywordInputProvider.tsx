@@ -5,7 +5,7 @@ import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combo
 import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
 import { KeywordCombobox } from "products/about/keyword-input/KeywordCombobox";
 
-const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
+const KeywordInputProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
     error,
@@ -48,4 +48,4 @@ const ComboboxProvider = forwardRef<HTMLInputElement, ComboboxProps>(function Co
   );
 });
 
-export default ComboboxProvider;
+export default KeywordInputProvider;

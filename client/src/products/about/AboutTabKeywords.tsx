@@ -1,4 +1,4 @@
-import { BodyShort, Button, Heading, HStack, Tag, UNSAFE_Combobox, VStack } from "@navikt/ds-react";
+import { BodyShort, Button, Heading, HStack, Tag, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
 import { isValidKeyword } from "products/seriesUtils";
@@ -6,7 +6,7 @@ import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { updateSeriesKeywords } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { KeywordInput } from "products/about/keyword-input";
+import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
 
 interface Props {
   series: SeriesRegistrationDTO;
@@ -96,7 +96,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
         {showEditKeywordsMode && (
           <>
-            <KeywordInput
+            <KeywordInputProvider
               label={"Nøkkelord input"}
               hideLabel
               options={[]}
