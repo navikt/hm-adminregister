@@ -6,7 +6,7 @@ import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combo
 import { IsoBoxProps } from "./types";
 import IsoCombobox from "products/iso-combobox/IsoCombobox";
 
-const ComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function ComboboxProvider(props, ref) {
+const IsoComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function ComboboxProvider(props, ref) {
   const {
     children,
     error,
@@ -62,4 +62,4 @@ const ComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function Comb
   );
 });
 
-export default ComboboxProvider;
+export default IsoComboboxProvider;
