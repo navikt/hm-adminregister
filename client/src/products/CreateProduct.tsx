@@ -9,7 +9,7 @@ import { draftNewSeries } from "api/SeriesApi";
 import FormBox from "felleskomponenter/FormBox";
 import { PackageIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
-import { ISO_Combobox } from "products/iso-combobox";
+import IsoComboboxProvider from "products/iso-combobox/IsoComboboxProvider";
 
 type Error = {
   titleErrorMessage?: string | undefined;
@@ -83,7 +83,7 @@ export default function CreateProduct() {
           onFocus={() => setFieldError({ ...fieldError, titleErrorMessage: undefined })}
           error={fieldError?.titleErrorMessage ?? ""}
         />
-        <ISO_Combobox
+        <IsoComboboxProvider
           label={labelRequired("Iso-kategori (kode)")}
           description={"Søk etter isokategori produktet passer best inn i"}
           selectedOptions={selectedOptions}
