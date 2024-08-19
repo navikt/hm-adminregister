@@ -1,9 +1,10 @@
-import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
-import { updateProductVariant } from "api/ProductApi";
-import { HM_REGISTER_URL } from "environments";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useSWR from "swr";
+
+import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
+import { updateProductVariant } from "api/ProductApi";
+import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, labelRequired } from "utils/string-util";
@@ -102,7 +103,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         name="articleName"
         type="text"
         defaultValue={product.articleName}
-        error={errors?.articleName?.message}
+        error={errors?.articleName && "Artikkelnavn er påkrevd"}
       />
       <TextField
         {...register("supplierRef", { required: true })}
@@ -110,8 +111,8 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         id="supplierRef"
         name="supplierRef"
         type="text"
-        error={errors?.supplierRef?.message}
-        disabled={product.published !== undefined}
+        error={errors?.supplierRef && "Artikkelnummer er påkrevd"}
+        readOnly={product.published !== undefined}
       />
       {loggedInUser?.isAdmin && (
         <TextField
@@ -187,11 +188,11 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
           type="reset"
           variant="secondary"
           size="medium"
-          onClick={() => navigate(`/produkter/${product.seriesId}?tab=variants&page=${page}`)}
+          onClick={() => navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`)}
         >
           Avbryt
         </Button>
-        <Button type="submit" size="medium" disabled={!isValid}>
+        <Button type="submit" size="medium">
           Lagre
         </Button>
       </div>
