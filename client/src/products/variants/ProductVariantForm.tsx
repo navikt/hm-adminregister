@@ -112,6 +112,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         name="supplierRef"
         type="text"
         error={errors?.supplierRef && "Artikkelnummer er påkrevd"}
+        readOnly={product.published !== undefined}
       />
       {loggedInUser?.isAdmin && (
         <TextField
