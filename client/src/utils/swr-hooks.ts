@@ -1,3 +1,13 @@
+import { useEffect } from "react";
+import useSWR, { Fetcher } from "swr";
+
+import { AgreementFilterOption } from "agreements/Agreements";
+import { getPath } from "api/fetch";
+import { ForApprovalFilterOption } from "approval/ForApproval";
+import { HM_REGISTER_URL } from "environments";
+import { useAuthStore } from "./store/useAuthStore";
+import { useErrorStore } from "./store/useErrorStore";
+import { mapSuppliers } from "./supplier-util";
 import {
   AdminUserChunk,
   AgreementsChunk,
@@ -12,16 +22,7 @@ import {
   SupplierRegistrationDTO,
   UserDTO,
 } from "./types/response-types";
-import { mapSuppliers } from "./supplier-util";
-import { useErrorStore } from "./store/useErrorStore";
-import { useEffect } from "react";
-import { useAuthStore } from "./store/useAuthStore";
-import useSWR, { Fetcher } from "swr";
-import { HM_REGISTER_URL } from "environments";
 import { LoggedInUser } from "./user-util";
-import { AgreementFilterOption } from "agreements/Agreements";
-import { getPath } from "api/fetch";
-import { ForApprovalFilterOption } from "approval/ForApproval";
 
 export function baseUrl(url: string = "") {
   if (process.env.NODE_ENV === "production") {
@@ -97,7 +98,6 @@ export function useSeriesByHmsNr(hmsNr: string) {
 
 export function useSeriesBySupplierRef(supplierRef: string) {
   const { loggedInUser } = useAuthStore();
-
   const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/supplierRef/${supplierRef}`);
 
   const {

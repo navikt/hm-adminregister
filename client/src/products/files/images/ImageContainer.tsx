@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { FileImageIcon } from "@navikt/aksel-icons";
 import classNames from "classnames";
 import { smallImageLoader } from "utils/image-util";
 
@@ -19,21 +21,7 @@ export const ImageContainer = ({
     <div className={classNames("image-container", { "image-container--xsmall": size == "xsmall" })}>
       <button type="button" className="button-image" onClick={onClick}>
         {imageLoadingError || !uri ? (
-          <img
-            src={"/adminregister/assets/image-error.png"}
-            alt="Produktbilde"
-            draggable="false"
-            style={{
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              inset: "0px",
-              objectFit: "contain",
-              color: "transparent",
-              padding: "10px",
-            }}
-            sizes="50vw"
-          />
+          <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
         ) : (
           <img
             src={smallImageLoader({ src: uri, width: 400 })}
@@ -49,7 +37,7 @@ export const ImageContainer = ({
               inset: "0px",
               objectFit: "contain",
               color: "transparent",
-              padding: "10px",
+              padding: "6px",
             }}
             sizes="50vw"
           />

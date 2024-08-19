@@ -191,7 +191,7 @@ const Product = () => {
         columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
         className="product-page"
       >
-        <VStack gap={{ xs: "4", md: "8" }}>
+        <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
             <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />

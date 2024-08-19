@@ -21,6 +21,7 @@ main {
   @include mixins.for-size(tablet-up) {
     flex: auto;
   }
+  min-height: 100vh;
   /* Page content. The value of the margin-left property should match the value of the sidemenu's width property */
 }
 
@@ -40,12 +41,14 @@ main.show-menu {
     }
 
     @include mixins.for-size(tablet-up) {
+      padding-right: $a-spacing-4;
       padding-left: $a-spacing-4;
       padding-top: $a-spacing-12;
       padding-bottom: $a-spacing-12;
     }
 
     @include mixins.for-size(desktop-up) {
+      padding-right: $a-spacing-12;
       padding-left: $a-spacing-12;
       padding-top: $a-spacing-20;
       padding-bottom: $a-spacing-20;
@@ -159,6 +162,19 @@ main:not(.show-menu) {
   max-width: 120px;
 }
 
+.text-overflow-hidden-small-2-lines {
+  display: -webkit-box;
+  line-clamp: 2;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  display: -moz-box;
+  -moz-box-orient: vertical;
+
+  overflow: hidden;
+}
+
 .text-overflow-hidden-large {
   white-space: nowrap;
   overflow: hidden;
@@ -179,15 +195,11 @@ main:not(.show-menu) {
 }
 
 .page {
-  &__background-container {
-    min-height: 100vh;
-  }
-
   &__content-container {
     display: flex;
     flex-direction: column;
     gap: $a-spacing-12;
-    max-width: 55rem;
+    max-width: 64rem;
   }
 }
 
