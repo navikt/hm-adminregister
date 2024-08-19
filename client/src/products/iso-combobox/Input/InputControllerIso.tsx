@@ -19,7 +19,7 @@ export const InputControllerIso = forwardRef<
   const { ...rest } = props;
 
   const { clearInput, focusInput, inputProps, value, inputRef, toggleOpenButtonRef } = useInputContext();
-  const { activeDecendantId } = useFilteredOptionsContext();
+  const { activeDecendantId, isListOpen, toggleIsListOpen } = useFilteredOptionsContext();
   const { selectedOptions, removeSelectedOption, maxSelected } = useSelectedOptionsContext();
   const [focusing, setFocusing] = useState(false);
 
@@ -40,12 +40,19 @@ export const InputControllerIso = forwardRef<
     }
   }, [focusing]);
 
+  const onClick = () => {
+    toggleIsListOpen(!isListOpen);
+  };
+
   return (
     <div
       className={cl("navds-combobox__wrapper-inner navds-text-field__input", {
         "navds-combobox__wrapper-inner--virtually-unfocused": activeDecendantId !== undefined,
       })}
-      onClick={focusInput}
+      onClick={() => {
+        focusInput();
+        onClick();
+      }}
     >
       <SelectedOptions selectedOptions={selectedOptions} removable={false}>
         {maxSelected && !maxSelected?.isLimitReached && <Input id={inputProps.id} ref={mergedInputRef} {...rest} />}

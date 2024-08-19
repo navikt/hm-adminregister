@@ -16,8 +16,7 @@ const ComboboxWrapper = ({ children, className, hasError, toggleIsListOpen }: Co
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
 
   function onFocusInsideWrapper(e: FocusEvent) {
-    if (!wrapperRef.current?.contains(e.relatedTarget) && toggleOpenButtonRef?.current !== e.target) {
-      toggleIsListOpen && toggleIsListOpen(true);
+    if (toggleOpenButtonRef?.current !== e.target) {
       setHasFocusWithin(true);
     }
   }
