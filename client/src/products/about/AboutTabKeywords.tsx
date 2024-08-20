@@ -3,13 +3,13 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import { useState } from "react";
 import { isValidKeyword } from "products/seriesUtils";
 import "./about-tab-keywords.scss";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { updateSeriesKeywords } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   isAdmin: boolean;
   mutateSeries: () => void;
   isEditable: boolean;

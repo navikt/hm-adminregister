@@ -1,16 +1,15 @@
-import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, TrashIcon } from "@navikt/aksel-icons";
+import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { approveSeries } from "api/SeriesApi";
+import { approveSeries, setPublishedSeriesToDraft } from "api/SeriesApi";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { ShowDiffModal } from "products/diff/ShowDiffModal";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const AdminActions = ({
   series,
-  products,
-  mutateProducts,
   mutateSeries,
   setIsValid,
   productIsValid,
@@ -18,9 +17,7 @@ const AdminActions = ({
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
@@ -35,15 +32,13 @@ const AdminActions = ({
   }) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
-  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
+  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false);
-
   const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false);
+  const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
 
-  const isPending = series.adminStatus === "PENDING";
-  const shouldPublish = series.adminStatus !== "APPROVED" && series.draftStatus === "DONE";
-  const isPublished = series.published ?? false;
-  const isDeleted = series.status === "DELETED";
+  const isPendingApproval = series.status === "PENDING_APPROVAL";
 
   async function onPublish() {
     setIsValid(productIsValid());
@@ -53,28 +48,55 @@ const AdminActions = ({
         .catch((error) => {
           setGlobalError(error.status, error.message);
         });
+      setConfirmApproveModalIsOpen(false);
     } else {
       setApprovalModalIsOpen(true);
     }
   }
 
+  async function onSetToDraft() {
+    setPublishedSeriesToDraft(true, series.id)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+    setEditProductModalIsOpen(false);
+  }
+
   return (
     <HStack align={"end"} gap="2">
-      <ShowDiffModal
-        series={series}
-        products={products}
-        isOpen={showDiffModalIsOpen}
-        setIsOpen={setShowDiffModalIsOpen}
+      <ConfirmModal
+        title={"Vil du publisere produktet?"}
+        text=""
+        onClick={onPublish}
+        onClose={() => {
+          setConfirmApproveModalIsOpen(false);
+        }}
+        isModalOpen={confirmApproveModalIsOpen}
+        confirmButtonText={"Publiser"}
+        variant="primary"
       />
+      <ConfirmModal
+        title={"Vil du sette produktet i redigeringsmodus?"}
+        text=""
+        onClick={onSetToDraft}
+        onClose={() => {
+          setEditProductModalIsOpen(false);
+        }}
+        isModalOpen={editProductModalIsOpen}
+        confirmButtonText={"OK"}
+        variant="primary"
+      />
+      <ShowDiffModal series={series} isOpen={showDiffModalIsOpen} setIsOpen={setShowDiffModalIsOpen} />
       <RejectApprovalModal
         series={series}
-        products={products}
-        mutateProducts={mutateProducts}
         mutateSeries={mutateSeries}
         isOpen={rejectApprovalModalIsOpen}
         setIsOpen={setRejectApprovalModalIsOpen}
       />
-      {shouldPublish && isPublished && (
+      {isPendingApproval && series.isPublished && (
         <Button
           onClick={() => {
             setShowDiffModalIsOpen(true);
@@ -86,15 +108,27 @@ const AdminActions = ({
         </Button>
       )}
 
-      {shouldPublish && <Button onClick={onPublish}>Publiser</Button>}
-      {isDeleted ? (
-        <></>
-      ) : (
+      {(series.status === "EDITABLE" || isPendingApproval) && (
+        <Button
+          onClick={() => {
+            setConfirmApproveModalIsOpen(true);
+          }}
+        >
+          Publiser
+        </Button>
+      )}
+      {
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
             <Dropdown.Menu.List>
-              {isPending && shouldPublish && (
+              {series.status !== "EDITABLE" && (
+                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                  Endre produkt
+                  <PencilIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
+              )}
+              {isPendingApproval && (
                 <>
                   <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
                     Avslå
@@ -109,23 +143,23 @@ const AdminActions = ({
               </Dropdown.Menu.List.Item>
 
               {canSetExpiredStatus &&
-                (series.status === "ACTIVE" ? (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                  >
-                    Marker som utgått
-                  </Dropdown.Menu.List.Item>
-                ) : (
+                (series.isExpired ? (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
                   >
                     Marker som aktiv
                   </Dropdown.Menu.List.Item>
+                ) : (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                  >
+                    Marker som utgått
+                  </Dropdown.Menu.List.Item>
                 ))}
             </Dropdown.Menu.List>
           </Dropdown.Menu>
         </Dropdown>
-      )}
+      }
     </HStack>
   );
 };

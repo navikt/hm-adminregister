@@ -12,6 +12,7 @@ import { draftProductVariantV2 } from "api/ProductApi";
 import { useSeries } from "utils/swr-hooks";
 import FormBox from "felleskomponenter/FormBox";
 import { LayersIcon } from "@navikt/aksel-icons";
+import { useSeriesV2 } from "api/SeriesApi";
 
 type FormData = z.infer<typeof newProductVariantSchema>;
 
@@ -33,7 +34,7 @@ const CreateProductVariant = () => {
     mode: "onSubmit",
   });
 
-  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
+  const { series } = useSeriesV2(seriesId!);
 
   const hasTechData = series?.isoCategory || false;
 
@@ -43,7 +44,7 @@ const CreateProductVariant = () => {
       supplierRef: data.supplierRef,
     };
 
-    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, series!.supplierId, newVariant)
+    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant)
       .then((product) => {
         const hasTechData = product.productData.techData.length > 0;
         if (hasTechData) {

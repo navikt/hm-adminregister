@@ -1,6 +1,6 @@
 import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { supplierCanChangeAgreementProduct } from "utils/supplier-util";
 import { exportProducts } from "api/ImportExportApi";
@@ -10,16 +10,14 @@ const SupplierActions = ({
   series,
   setIsValid,
   productIsValid,
-  isInAgreement,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
-  isInAgreement: boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
   setExpiredSeriesModalIsOpen: ({
@@ -31,11 +29,10 @@ const SupplierActions = ({
   }) => void;
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
-  const isDraft = series.draftStatus === "DRAFT";
-  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
-  const canSetToEditMode =
-    series.status !== "DELETED" && series.draftStatus === "DONE" && series.adminStatus !== "PENDING";
-  const isPendingApproval = series.adminStatus === "PENDING" && series.draftStatus === "DONE";
+  const isEditable = series.status === "EDITABLE";
+  const canSetExpiredStatus = series.status === "EDITABLE" && !!series.published;
+  const canSetToEditMode = series.status !== "EDITABLE";
+  const isPendingApproval = series.status === "PENDING_APPROVAL";
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
 
@@ -54,7 +51,7 @@ const SupplierActions = ({
 
   return (
     <HStack align={"end"} gap="2">
-      {isDraft && (
+      {isEditable && (
         <Button
           style={{ marginTop: "20px" }}
           onClick={() => {
@@ -66,12 +63,12 @@ const SupplierActions = ({
         </Button>
       )}
 
-      {((isDraft && !series.published) || canSetToEditMode || canSetExpiredStatus) && (
+      {((isEditable && !series.published) || canSetToEditMode || canSetExpiredStatus) && (
         <Dropdown>
           <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
           <Dropdown.Menu>
             <Dropdown.Menu.List>
-              {isDraft && !series.published && (
+              {isEditable && !series.published && (
                 <Dropdown.Menu.List.Item
                   onClick={() => setDeleteConfirmationModalIsOpen(true)}
                   // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
@@ -90,18 +87,18 @@ const SupplierActions = ({
                 </Dropdown.Menu.List.Item>
               )}
               {canSetExpiredStatus &&
-                (series.status === "ACTIVE" ? (
+                (series.isExpired ? (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                  >
+                    Marker som aktiv
+                  </Dropdown.Menu.List.Item>
+                ) : (
                   <Dropdown.Menu.List.Item
                     onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
                     // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                   >
                     Marker som utgått
-                  </Dropdown.Menu.List.Item>
-                ) : (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
-                  >
-                    Marker som aktiv
                   </Dropdown.Menu.List.Item>
                 ))}
               {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}

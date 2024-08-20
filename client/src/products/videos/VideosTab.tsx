@@ -1,5 +1,5 @@
 import { Alert, Button, HStack, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 
 import { useState } from "react";
@@ -15,7 +15,7 @@ const VideoTab = ({
   mutateSeries,
   isEditable,
 }: {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isEditable: boolean;
 }) => {
@@ -36,7 +36,7 @@ const VideoTab = ({
       },
       (error) => {
         setGlobalError(error.status, error.statusText);
-      },
+      }
     );
   }
 

@@ -1,4 +1,4 @@
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
@@ -8,16 +8,12 @@ import { useErrorStore } from "utils/store/useErrorStore";
 
 export const RequestApprovalModal = ({
   series,
-  products,
-  mutateProducts,
   mutateSeries,
   isValid,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isValid: boolean;
   isOpen: boolean;
@@ -26,13 +22,11 @@ export const RequestApprovalModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onSendTilGodkjenning() {
+    sendFlereTilGodkjenning(series.variants.map((product) => product.id) || []).catch((error) => {
+      setGlobalError(error);
+    });
     sendSeriesToApproval(series.id)
       .then(() => mutateSeries())
-      .catch((error) => {
-        setGlobalError(error);
-      });
-    sendFlereTilGodkjenning(products?.map((product) => product.id) || [])
-      .then(() => mutateProducts())
       .catch((error) => {
         setGlobalError(error);
       });
@@ -47,7 +41,7 @@ export const RequestApprovalModal = ({
           <ul className="product-error-text">
             {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
-            {series.count === 0 && <li>Produktet mangler teknisk data</li>}
+            {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}
           </ul>
         </Modal.Body>
         <Modal.Footer>

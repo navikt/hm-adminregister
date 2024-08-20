@@ -2,19 +2,17 @@ import { Button, Heading, Modal } from "@navikt/ds-react";
 import { setSeriesToActive, setSeriesToInactive } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import styles from "./SetExpiredSeriesConfirmationModal.module.scss";
 
 export const SetExpiredSeriesConfirmationModal = ({
   series,
   mutateSeries,
-  mutateProducts,
   params,
   setParams,
 }: {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
-  mutateProducts: () => void;
   params: { open: boolean; newStatus: "ACTIVE" | "INACTIVE" | undefined };
   setParams: (params: { open: boolean; newStatus: "ACTIVE" | "INACTIVE" | undefined }) => void;
 }) => {
@@ -26,7 +24,6 @@ export const SetExpiredSeriesConfirmationModal = ({
       setSeriesToActive(series.id, loggedInUser?.isAdmin || false)
         .then(() => {
           mutateSeries();
-          mutateProducts();
         })
         .catch((error) => {
           setGlobalError(error);
@@ -35,7 +32,6 @@ export const SetExpiredSeriesConfirmationModal = ({
       setSeriesToInactive(series.id, loggedInUser?.isAdmin || false)
         .then(() => {
           mutateSeries();
-          mutateProducts();
         })
         .catch((error) => {
           setGlobalError(error);
