@@ -1,7 +1,7 @@
 import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown } from "@navikt/ds-react";
-import "./more-menu.scss";
 import { MediaInfoDTO } from "utils/types/response-types";
+import "./more-menu.scss";
 
 export const MoreMenu = ({
   mediaInfo,

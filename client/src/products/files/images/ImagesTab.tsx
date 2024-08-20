@@ -1,15 +1,16 @@
+import { useState } from "react";
+
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import "../../product-page.scss";
-import UploadModal from "../UploadModal";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries } from "api/SeriesApi";
+import SeriesSortingArea from "products/files/images/SeriesSortingArea";
+import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import SeriesSortingArea from "products/files/images/SeriesSortingArea";
-import styles from "./imagesTab.module.scss";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
+import "../../product-page.scss";
+import UploadModal from "../UploadModal";
+import styles from "./ImagesTab.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTO;

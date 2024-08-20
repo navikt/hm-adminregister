@@ -1,13 +1,13 @@
 import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, Heading, HGrid, Hide, Show, VStack } from "@navikt/ds-react";
-import SeriesStatusTag from "products/SeriesStatusTag";
-import styles from "products/SeriesTable.module.scss";
 import { seriesStatus } from "products/seriesUtils";
 import { Link } from "react-router-dom";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
+import styles from "./ProductList.module.scss";
+import SeriesStatusTag from "./SeriesStatusTag";
 
-export const SeriesTable = ({ seriesList, heading }: { seriesList: SeriesRegistrationDTO[]; heading?: string }) => {
+export const ProductList = ({ seriesList, heading }: { seriesList: SeriesRegistrationDTO[]; heading?: string }) => {
   console.log({ seriesList });
 
   return (
@@ -37,7 +37,6 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
     .filter((media) => media.type === "IMAGE")
     .find((media) => media.priority === 1);
 
-  console.log({ imgUrl });
   return (
     <HGrid
       as={Link}
@@ -48,7 +47,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
       className={styles.seriesPanel}
     >
       <Box
-        className={styles.imageBox}
+        className={"image-box"}
         borderRadius="medium"
         borderWidth="1"
         width="75px"

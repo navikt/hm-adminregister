@@ -1,14 +1,15 @@
-import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 import React, { useEffect } from "react";
-import { MediaInfoDTO } from "utils/types/response-types";
-import styles from "./seriesSortingArea.module.scss";
+import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
+
 import { HStack } from "@navikt/ds-react";
 import { updateSeriesMedia } from "api/SeriesApi";
+import { ProductImageCard } from "products/files/images/ProductImageCard";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { ProductImageCard } from "products/files/images/ProductImageCard";
-import { LoggedInUser } from "utils/user-util";
 import { useSeries } from "utils/swr-hooks";
+import { MediaInfoDTO } from "utils/types/response-types";
+import { LoggedInUser } from "utils/user-util";
+import styles from "./SeriesSortingArea.module.scss";
 
 interface Props {
   seriesId: string;
@@ -64,7 +65,7 @@ export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFil
 
   return (
     <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
-      <HStack as="ol" gap="2" className="images">
+      <HStack as="ol" gap="2">
         {imagesArr && imagesArr.length > 0
           ? imagesArr
               .sort((a, b) => a.priority - b.priority)

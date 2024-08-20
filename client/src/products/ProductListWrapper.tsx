@@ -18,7 +18,7 @@ import {
   Select,
   VStack,
 } from "@navikt/ds-react";
-import { SeriesTable } from "products/SeriesTable";
+import { ProductList } from "./ProductList";
 
 type productPropsType = { isRejectedPage: boolean };
 
@@ -131,11 +131,11 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
 
         <VStack gap="4">
           {seriesByHmsNr ? (
-            <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
+            <ProductList seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
           ) : seriesBySupplierRef ? (
-            <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
+            <ProductList seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
           ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-            <SeriesTable seriesList={pagedData.content} />
+            <ProductList seriesList={pagedData.content} />
           ) : (
             <Alert variant="info">
               {searchTerm !== ""

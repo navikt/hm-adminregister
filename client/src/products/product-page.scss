@@ -15,7 +15,6 @@ pre {
 }
 
 .heading-link {
-
   color: black;
 
   &:hover {
@@ -44,9 +43,11 @@ pre {
 .images-inline {
   list-style: none;
   padding-left: 0;
+  margin: 0;
+  margin-top: 1rem;
 
   li {
-    padding: $a-spacing-4 $a-spacing-4;
+    padding: $a-spacing-3 $a-spacing-3;
     background-color: #ffffff;
     box-shadow: $a-shadow-xsmall;
     border-radius: $a-border-radius-medium;
@@ -62,56 +63,45 @@ pre {
   }
 }
 
-.images {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: $a-spacing-3;
-
-  .image-card {
-    padding: $a-spacing-4 $a-spacing-2 $a-spacing-1 $a-spacing-2;
-    width: 10rem;
-    height: 15rem;
-    position: relative;
-    background-color: #ffffff;
-    box-shadow: $a-shadow-xsmall;
-    border-radius: $a-border-radius-medium;
-    text-align: center;
-  }
-  .image-card:hover{
-    background-color: var(--a-surface-hover);
-  }
+.button-image {
+  border: none;
+  background: none;
+  height: fit-content;
+  width: fit-content;
 }
 
 .image-container {
   display: flex;
   justify-content: center;
+  width: 100%;
   position: relative;
 
-  :hover {
-    cursor: pointer;
-    opacity: 0.7;
-  }
-
-  .button-image {
+  &__image {
     width: 130px;
     height: 130px;
     position: relative;
-    border: none;
-    background: none;
   }
 
   &--xsmall {
-    .button-image {
+    .image-container__image {
       width: 75px;
       height: 75px;
-      position: relative;
-      border: none;
-      background: none;
     }
   }
+
+  img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    inset: 0px;
+    object-fit: contain;
+    color: transparent;
+    padding: 6px;
+  }
+}
+
+.image-box {
+  border-color: var(--a-grayalpha-200);
 }
 
 .more-menu-container {
