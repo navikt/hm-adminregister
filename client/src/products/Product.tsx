@@ -1,26 +1,28 @@
 import { useState } from "react";
 
-import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { updateProductTitle, useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
 import { DeleteConfirmationModal } from "products/DeleteConfirmationModal";
 import { EditPublishedProductConfirmationModal } from "products/EditPublishedProductConfirmationModal";
+import DocumentTab from "products/files/DocumentsTab";
+import ImageTab from "products/files/images/ImagesTab";
 import { RequestApprovalModal } from "products/RequestApprovalModal";
 import { numberOfDocuments, numberOfImages, numberOfVideos } from "products/seriesUtils";
 import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import VideosTab from "products/videos/VideosTab";
+
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
+import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
-import AboutTab from "./about/AboutTab";
-import DocumentTab from "products/files/DocumentsTab";
-import ImageTab from "products/files/images/ImagesTab";
-import VideosTab from "products/videos/VideosTab";
 import VariantsTab from "./variants/VariantsTab";
 
 const Product = () => {
@@ -190,10 +192,19 @@ const Product = () => {
                   className="fit-content"
                   variant="tertiary"
                   icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
-                  onClick={() => setShowEditProductTitleMode(true)}
+                  onClick={() => {
+                    setProductTitle(series.title);
+                    setShowEditProductTitleMode(true);
+                  }}
                 ></Button>
               )}
             </HStack>
+            <DefinitionList fullWidth horizontal>
+              <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
+              <DefinitionList.Definition>
+                {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
+              </DefinitionList.Definition>
+            </DefinitionList>
           </VStack>
           <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
             <Tabs.List>
@@ -227,7 +238,6 @@ const Product = () => {
               series={series}
               isAdmin={loggedInUser?.isAdmin || false}
               mutateSeries={mutateSeries}
-              isoCategory={series.isoCategory}
               isEditable={isEditable}
               showInputError={!isValid}
             />

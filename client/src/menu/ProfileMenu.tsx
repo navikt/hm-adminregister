@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import {
   Buldings3Icon,
   ChevronDownIcon,
@@ -8,9 +9,10 @@ import {
   PersonIcon,
   PersonRectangleIcon,
 } from "@navikt/aksel-icons";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
+import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
+
 import { HM_REGISTER_URL } from "environments";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 const ProfileMenu = () => {
   const [error, setError] = useState<Error | null>(null);
@@ -59,7 +61,9 @@ const ProfileMenu = () => {
               <BodyShort className="text-overflow-hidden-small">
                 {loggedInUser?.isAdmin ? "Administrator" : loggedInUser?.supplierName}
               </BodyShort>
-              <BodyShort size="small">{loggedInUser?.userName}</BodyShort>
+              <BodyShort size="small" style={{ textAlign: "start" }}>
+                {loggedInUser?.userName}
+              </BodyShort>
             </VStack>
           </span>
           <ChevronDownIcon aria-hidden fontSize="1.5rem" />
