@@ -5,11 +5,11 @@ import parse from "html-react-parser";
 import { RichTextEditor } from "products/about/RichTextEditor";
 import { useState } from "react";
 import { updateProductDescription } from "api/SeriesApi";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   isAdmin: boolean;
   mutateSeries: () => void;
   showInputError: boolean;

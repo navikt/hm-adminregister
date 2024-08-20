@@ -3,7 +3,7 @@ import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react
 import { useRef, useState } from "react";
 import "../product-page.scss";
 import UploadModal from "./UploadModal";
-import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
@@ -12,7 +12,7 @@ import { changeFilenameOnAttachedFile, deleteFileFromSeries } from "api/SeriesAp
 import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;

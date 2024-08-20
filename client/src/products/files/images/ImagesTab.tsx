@@ -7,13 +7,13 @@ import SeriesSortingArea from "products/files/images/SeriesSortingArea";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import "../../product-page.scss";
 import UploadModal from "../UploadModal";
 import styles from "./ImagesTab.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;

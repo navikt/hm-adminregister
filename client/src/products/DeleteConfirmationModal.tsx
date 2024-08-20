@@ -1,5 +1,4 @@
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { markProductsAsDeleted } from "api/ProductApi";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { deleteSeries } from "api/SeriesApi";
@@ -7,15 +6,11 @@ import { useErrorStore } from "utils/store/useErrorStore";
 
 export const DeleteConfirmationModal = ({
   series,
-  products,
-  mutateProducts,
   mutateSeries,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
@@ -27,7 +22,6 @@ export const DeleteConfirmationModal = ({
     deleteSeries(loggedInUser?.isAdmin ?? true, series.id)
       .then(() => {
         mutateSeries();
-        mutateProducts();
       })
       .catch((error) => {
         setGlobalError(error);

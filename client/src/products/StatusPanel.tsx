@@ -1,33 +1,23 @@
 import { Heading, VStack } from "@navikt/ds-react";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
+import SeriesStatusTag from "products/SeriesStatusTag";
+import { seriesStatusV2 } from "products/seriesUtils";
 import { toReadableDateTimeString } from "utils/date-util";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useSupplier } from "utils/swr-hooks";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
-import SeriesStatusTag from "./SeriesStatusTag";
-import { seriesStatus } from "./seriesUtils";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 
-interface Props {
-  series: SeriesRegistrationDTO;
-}
-
-const StatusPanel = ({ series }: Props) => {
-  const { loggedInUser } = useAuthStore();
-  const { supplier } = useSupplier(loggedInUser?.isAdmin, series?.supplierId);
-
+const StatusPanel = ({ series }: { series: SeriesRegistrationDTOV2 }) => {
   return (
     <VStack gap={{ xs: "6", md: "10" }}>
       <VStack gap="3">
         <Heading level="1" size="medium">
           Status
         </Heading>
-
-        <SeriesStatusTag seriesStatus={seriesStatus(series)} />
+        <SeriesStatusTag seriesStatus={seriesStatusV2(series)} />
       </VStack>
 
       <DefinitionList>
         <DefinitionList.Term>Leverandør</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.name}</DefinitionList.Definition>
+        <DefinitionList.Definition>{series.supplierName}</DefinitionList.Definition>
 
         {series.message && (
           <>
