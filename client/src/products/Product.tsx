@@ -108,7 +108,6 @@ const Product = () => {
   };
 
   const isEditable = series.status === "EDITABLE";
-  const isPublished = !!series.published;
 
   const TabLabel = ({
     title,
@@ -236,7 +235,7 @@ const Product = () => {
                     <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
                       <circle cx="3" cy="3.5" r="3" fill="#8269A2" />
                     </svg>
-                    <BodyShort>{isPublished ? "Nye endringer" : "Nytt produkt"}</BodyShort>
+                    <BodyShort>{series.isPublished ? "Nye endringer" : "Nytt produkt"}</BodyShort>
                   </HStack>
                 </Box>
               )}
