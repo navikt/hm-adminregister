@@ -451,6 +451,7 @@ export interface components {
       text?: string | null;
       identifier: string;
       attachments: components["schemas"]["AgreementAttachment"][];
+      /** @deprecated */
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
@@ -895,6 +896,7 @@ export interface components {
     ProductData: {
       attributes: components["schemas"]["Attributes"];
       techData: components["schemas"]["TechData"][];
+      /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
@@ -953,8 +955,11 @@ export interface components {
       hmsArtNr?: string | null;
       /** Format: uuid */
       seriesUUID: string;
+      /** @deprecated */
       seriesId: string;
+      /** @deprecated */
       isoCategory: string;
+      /** @deprecated */
       title: string;
       articleName: string;
       accessory: boolean;
