@@ -135,7 +135,6 @@ const VariantsTab = ({
                                         onClick={() => {
                                           navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
                                         }}
-                                        disabled={series.inAgreement}
                                       >
                                         Endre
                                         <PencilIcon aria-hidden />
