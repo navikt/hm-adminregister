@@ -1,5 +1,10 @@
 import { HM_REGISTER_URL } from "environments";
-import { AgreementAttachment, AgreementDraftWithDTO, AgreementRegistrationDTO } from "utils/types/response-types";
+import {
+  AgreementAttachment,
+  AgreementDraftWithDTO,
+  AgreementRegistrationDTO,
+  MediaDTO,
+} from "utils/types/response-types";
 import { EditCommonInfoAgreement } from "agreements/agreement/Agreement";
 import { v4 as uuidv4 } from "uuid";
 import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
@@ -8,12 +13,16 @@ import {
   getAgreeementWithNewAttachmentGroup,
   getAgreeementWithoutDeletedAttachmentDTO,
   getEditedAgreementDTO,
+  getEditedAgreementDTOAddFiles,
+  getEditedAgreementDTOchangeTextOnFile,
   getEditedAgreementDTORemoveFiles,
   getEditedAgreementWithNewAttachmentGroupInfo,
   getEditedAgreementWithNewInfoDTO,
 } from "utils/agreement-util";
 import { NyAttachmentGroupFormData } from "agreements/agreement/vedlegg/NewAttachmentGroupModal";
-import { fetchAPI, getPath } from "api/fetch";
+import { fetchAPI, fetchAPIAttachment, getPath } from "api/fetch";
+import { FileUpload } from "products/files/UploadModal";
+import { mapToMediaInfoWithFilename } from "api/MediaApi";
 
 export const getAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "GET");
@@ -49,6 +58,53 @@ export const deleteFileFromAttachmentGroup = async (
 ): Promise<AgreementRegistrationDTO> => {
   const agreementToUpdate = await getAgreement(agreementId);
   const editedAgreementDTO = getEditedAgreementDTORemoveFiles(agreementToUpdate, attachmentIdToUpdate, uri);
+
+  return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO);
+};
+
+export const uploadFilesToAgreement = async (
+  agreementId: string,
+  agreementAttachmentId: string,
+  uploads: FileUpload[],
+) => {
+  const formData = new FormData();
+  for (const upload of uploads) {
+    formData.append("files", upload.file);
+  }
+
+  const createdMediaDTOs: MediaDTO[] = await fetchAPIAttachment(
+    getPath(true, `/api/v1/media/agreement/files/${agreementId}`),
+    "POST",
+    formData,
+  );
+
+  const agreementToUpdate = await fetchAPI(getPath(true, `/api/v1/agreement/registrations/${agreementId}`), "GET");
+
+  const mediaInfos = mapToMediaInfoWithFilename(createdMediaDTOs, uploads);
+
+  const editedAgreementRegistrationDTO =
+    mediaInfos && getEditedAgreementDTOAddFiles(agreementToUpdate, agreementAttachmentId, mediaInfos);
+
+  return await fetchAPI(
+    getPath(true, `/api/v1/agreement/registrations/${agreementToUpdate.id}`),
+    "PUT",
+    editedAgreementRegistrationDTO,
+  );
+};
+
+export const updateFilenameOfAgreementAttachment = async (
+  agreementId: string,
+  uri: string,
+  attachmentIdToUpdate: string,
+  editedText: string,
+): Promise<AgreementRegistrationDTO> => {
+  const agreementToUpdate = await getAgreement(agreementId);
+  const editedAgreementDTO = getEditedAgreementDTOchangeTextOnFile(
+    agreementToUpdate,
+    attachmentIdToUpdate,
+    uri,
+    editedText,
+  );
 
   return await updateAgreement(editedAgreementDTO.id, editedAgreementDTO);
 };
