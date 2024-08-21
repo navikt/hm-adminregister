@@ -1,18 +1,18 @@
-import React, { useEffect } from "react";
-import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { newSupplierSchema } from "utils/zodSchema/newSupplier";
-import { useNavigate, useParams } from "react-router-dom";
-import { labelRequired } from "utils/string-util";
-import { useSupplier } from "utils/swr-hooks";
-import { SupplierDTOBody } from "utils/supplier-util";
-import { updateSupplier } from "api/SupplierApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useAuthStore } from "utils/store/useAuthStore";
-import FormBox from "felleskomponenter/FormBox";
 import { Buldings3Icon } from "@navikt/aksel-icons";
+import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
+import { updateSupplier } from "api/SupplierApi";
+import FormBox from "felleskomponenter/FormBox";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { labelRequired } from "utils/string-util";
+import { SupplierDTOBody } from "utils/supplier-util";
+import { useSupplier } from "utils/swr-hooks";
+import { newSupplierSchema } from "utils/zodSchema/newSupplier";
+import { z } from "zod";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 export default function EditSupplier() {
@@ -64,8 +64,10 @@ export default function EditSupplier() {
     const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, "");
 
     const editedSupplier: SupplierDTOBody = {
+      ...supplier,
       name: data.name,
       supplierData: {
+        ...supplier?.supplierData,
         email: data.email,
         homepage: data.homepage,
         phone: cleanedPhoneNumber,
@@ -84,9 +86,8 @@ export default function EditSupplier() {
 
   return (
     <FormBox title="Endre leverandørinformasjon" icon={<Buldings3Icon />}>
-
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7" width="300px" >
+        <VStack gap="7" width="300px">
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -136,7 +137,6 @@ export default function EditSupplier() {
           </HStack>
         </VStack>
       </form>
-
-    </FormBox >
+    </FormBox>
   );
 }

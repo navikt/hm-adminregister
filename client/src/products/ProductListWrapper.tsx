@@ -1,11 +1,9 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import {
-  usePagedProducts,
-  useSeriesByHmsNr,
-  useSeriesBySupplierRef,
-} from "utils/swr-hooks";
+import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
+
+import { PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
   Button,
@@ -20,8 +18,7 @@ import {
   Select,
   VStack,
 } from "@navikt/ds-react";
-import { SeriesTable } from "products/SeriesTable";
-import { PlusIcon } from "@navikt/aksel-icons";
+import { ProductList } from "./ProductList";
 
 type productPropsType = { isRejectedPage: boolean };
 
@@ -52,7 +49,6 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const handleSearch = (value: string) => {
     setSearchTerm(value);
   };
-
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -87,14 +83,14 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
 
   return (
     <main className="show-menu">
-      <div className="page__background-container">
+      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
         <Heading level="1" size="large" spacing>
           {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
         </Heading>
         <VStack gap="4">
-          <div className="page__content-container">
-            <HStack justify="space-between" wrap gap="4">
-              <form className="search-box" onSubmit={handleSubmit}>
+          <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
+            <HStack gap="4">
+              <form onSubmit={handleSubmit} style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
@@ -106,74 +102,87 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                   onChange={(value) => handleSearch(value)}
                 />
               </form>
-              {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
-                <HStack gap="2">
-                  <Button
-                    variant="secondary"
-                    size="medium"
-                    icon={<PlusIcon aria-hidden />}
-                    iconPosition="left"
-                    onClick={() => navigate("/produkter/opprett")}
-                  >
-                    Nytt produkt
-                  </Button>
-                </HStack>
-              )}
+              <CheckboxGroup
+                legend="Filter"
+                hideLegend
+                onChange={setStatusFilters}
+                value={statusFilters}
+                style={{ minWidth: "111px", flex: 1 }}
+              >
+                {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
+              </CheckboxGroup>
             </HStack>
-          </div>
-          <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
-            {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
-          </CheckboxGroup>
-          <VStack className="products-page__products">
-            <div className="page__content-container">
-              {isLoadingPagedData && <Loader size="3xlarge" />}
 
-
-              {seriesByHmsNr ? (
-                <SeriesTable seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
-              ) : seriesBySupplierRef ? (
-                <SeriesTable seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-              ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-                <SeriesTable seriesList={pagedData.content} />
-              ) :
-                <Alert variant="info">{searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : isRejectedPage ? "Ingen avslåtte produkter funnet." : "Ingen produkter funnet."}</Alert>
-              }
-
-              <HStack gap="8" align={"center"}>
-                {showPageNavigator === true && pagedData && (
-                  <Pagination
-                    page={pageState}
-                    onPageChange={(x) => {
-                      searchParams.set("page", x.toString());
-                      setSearchParams(searchParams);
-                      setPageState(x);
-                    }}
-                    count={pagedData.totalPages!}
-                    size="small"
-                    prevNextTexts
-                  />
-                )}
-                {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
-                  <Select
-                    label="Antall produkter per side"
-                    size="small"
-                    defaultValue={pageSizeState}
-                    onChange={(e) => {
-                      searchParams.set("size", e.target.value);
-                      setSearchParams(searchParams);
-                      setPageSizeState(parseInt(e.target.value));
-                    }}
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={100}>100</option>
-                  </Select>
-                )}
-              </HStack>
-            </div>
-          </VStack>
+            {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
+              <Button
+                variant="secondary"
+                icon={<PlusIcon aria-hidden />}
+                iconPosition="left"
+                onClick={() => navigate("/produkter/opprett")}
+                style={{ maxHeight: "3rem" }}
+              >
+                Opprett nytt produkt
+              </Button>
+            )}
+          </HGrid>
         </VStack>
-      </div>
+
+        {isLoadingPagedData && <Loader size="3xlarge" />}
+
+        <VStack gap="4">
+          {seriesByHmsNr ? (
+            <ProductList seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
+          ) : seriesBySupplierRef ? (
+            <ProductList seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
+          ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
+            <ProductList seriesList={pagedData.content} />
+          ) : (
+            <Alert variant="info">
+              {searchTerm !== ""
+                ? `Ingen produkter funnet med søket: "${searchTerm}"`
+                : isRejectedPage
+                  ? "Ingen avslåtte produkter funnet."
+                  : "Ingen produkter funnet."}
+            </Alert>
+          )}
+
+          <HStack
+            justify={{ xs: "center", md: "space-between" }}
+            align="center"
+            gap={"4"}
+            style={{ flexWrap: "wrap-reverse" }}
+          >
+            {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
+              <Select
+                label="Ant produkter per side"
+                size="small"
+                defaultValue={pageSizeState}
+                onChange={(e) => {
+                  searchParams.set("size", e.target.value);
+                  setSearchParams(searchParams);
+                  setPageSizeState(parseInt(e.target.value));
+                }}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={100}>100</option>
+              </Select>
+            )}
+            {showPageNavigator === true && pagedData && (
+              <Pagination
+                page={pageState}
+                onPageChange={(x) => {
+                  searchParams.set("page", x.toString());
+                  setSearchParams(searchParams);
+                  setPageState(x);
+                }}
+                count={pagedData.totalPages!}
+                size="small"
+              />
+            )}
+          </HStack>
+        </VStack>
+      </VStack>
     </main>
   );
 };

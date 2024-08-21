@@ -1,19 +1,19 @@
-import { Button, HStack, VStack } from "@navikt/ds-react";
-import { forwardRef, useState } from "react";
-import { MediaInfoDTO } from "utils/types/response-types";
 import { ChevronLeftIcon, ChevronRightIcon, MenuGridIcon } from "@navikt/aksel-icons";
-import { ImageContainer } from "products/files/images/ImageContainer";
+import { Button, HStack, VStack } from "@navikt/ds-react";
 import ImageModal from "felleskomponenter/ImageModal";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
-import styles from "./productImageCard.module.scss";
+import { ImageContainer } from "products/files/images/ImageContainer";
 import {
   handleUpdateOfSeriesMedia,
   moveItemInArray,
   updateImagePriority,
 } from "products/files/images/SeriesSortingArea";
+import { forwardRef, useState } from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useSeries } from "utils/swr-hooks";
+import { MediaInfoDTO } from "utils/types/response-types";
+import styles from "./ProductImageCard.module.scss";
 
 interface Props {
   seriesId: string;
@@ -61,11 +61,14 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
       />
       <div className={styles.imageCard} ref={ref}>
         <VStack gap="2">
-          <ImageContainer
-            uri={imagesArr[index].uri}
-            text={imagesArr[index].text}
+          <button
+            type="button"
+            className="button-image"
             onClick={() => setImageModalIsOpen(true)}
-          />
+            style={{ cursor: "pointer" }}
+          >
+            <ImageContainer uri={imagesArr[index].uri} text={imagesArr[index].text} />
+          </button>
           <VStack gap="1" align="center">
             <i>Filnavn</i>
             <span className="text-overflow-hidden-small">{imagesArr[index].filename ?? "OBS mangler beskrivelse"}</span>

@@ -1,58 +1,46 @@
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { BodyLong, Box, Heading, VStack } from "@navikt/ds-react";
+import { Heading, VStack } from "@navikt/ds-react";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import SeriesStatusTag from "products/SeriesStatusTag";
-import { toReadableDateTimeString } from "utils/date-util";
 import { seriesStatusV2 } from "products/seriesUtils";
+import { toReadableDateTimeString } from "utils/date-util";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 
 const StatusPanel = ({ series }: { series: SeriesRegistrationDTOV2 }) => {
   return (
-    <VStack gap="4">
-      <Heading level="1" size="medium">
-        Status
-      </Heading>
+    <VStack gap={{ xs: "6", md: "10" }}>
+      <VStack gap="3">
+        <Heading level="1" size="medium">
+          Status
+        </Heading>
+        <SeriesStatusTag seriesStatus={seriesStatusV2(series)} />
+      </VStack>
 
-      <SeriesStatusTag seriesStatus={seriesStatusV2(series)} />
+      <DefinitionList>
+        <DefinitionList.Term>Leverandør</DefinitionList.Term>
+        <DefinitionList.Definition>{series.supplierName}</DefinitionList.Definition>
 
-      <Box>
-        <BodyLong size="small" weight="semibold">
-          Leverandør
-        </BodyLong>
-        <BodyLong size="small">{series.supplierName}</BodyLong>
-      </Box>
+        {series.message && (
+          <>
+            <DefinitionList.Term>Melding til leverandør</DefinitionList.Term>
+            <DefinitionList.Definition>{series.message}</DefinitionList.Definition>
+          </>
+        )}
+        {series.published && (
+          <>
+            <DefinitionList.Term>Publisert</DefinitionList.Term>
+            <DefinitionList.Definition>{toReadableDateTimeString(series.published)}</DefinitionList.Definition>
+          </>
+        )}
 
-      {series.message && (
-        <Box>
-          <BodyLong size="small" weight="semibold">
-            Melding til leverandør
-          </BodyLong>
-          <BodyLong size="small">{series.message}</BodyLong>
-        </Box>
-      )}
-
-      {series.published && <StatusBox title="Publisert" date={series.published} />}
-
-      <StatusBox title="Endret" date={series.updated} />
-
-      <Box>
-        <BodyLong size="small" weight="semibold">
-          Endret av
-        </BodyLong>
-        <BodyLong size="small">{series.updatedByUser}</BodyLong>
-      </Box>
-
-      <StatusBox title="Opprettet" date={series.created} />
+        <DefinitionList.Term>Endret</DefinitionList.Term>
+        <DefinitionList.Definition>{toReadableDateTimeString(series.updated)}</DefinitionList.Definition>
+        <DefinitionList.Term>Endret av</DefinitionList.Term>
+        <DefinitionList.Definition>{series.updatedByUser}</DefinitionList.Definition>
+        <DefinitionList.Term>Opprettet</DefinitionList.Term>
+        <DefinitionList.Definition>{toReadableDateTimeString(series.created)}</DefinitionList.Definition>
+      </DefinitionList>
     </VStack>
   );
 };
 
-const StatusBox = ({ title, date }: { title: string; date: string }) => {
-  return (
-    <Box>
-      <BodyLong size="small" weight="semibold">
-        {title}
-      </BodyLong>
-      <BodyLong size="small">{toReadableDateTimeString(date)}</BodyLong>
-    </Box>
-  );
-};
 export default StatusPanel;

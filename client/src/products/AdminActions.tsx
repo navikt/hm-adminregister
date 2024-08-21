@@ -1,12 +1,13 @@
+import { useState } from "react";
+
 import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, HStack } from "@navikt/ds-react";
+import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { approveSeries, setPublishedSeriesToDraft } from "api/SeriesApi";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { ShowDiffModal } from "products/diff/ShowDiffModal";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
-import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { ShowDiffModal } from "products/diff/ShowDiffModal";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const AdminActions = ({
   series,
@@ -66,7 +67,7 @@ const AdminActions = ({
   }
 
   return (
-    <HStack align={"end"} gap="2">
+    <VStack gap="2">
       <ConfirmModal
         title={"Vil du publisere produktet?"}
         text=""
@@ -107,60 +108,62 @@ const AdminActions = ({
           Se endringer
         </Button>
       )}
-
-      {(series.status === "EDITABLE" || isPendingApproval) && (
-        <Button
-          onClick={() => {
-            setConfirmApproveModalIsOpen(true);
-          }}
-        >
-          Publiser
-        </Button>
-      )}
-      {
-        <Dropdown>
-          <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
-          <Dropdown.Menu>
-            <Dropdown.Menu.List>
-              {series.status !== "EDITABLE" && (
-                <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
-                  Endre produkt
-                  <PencilIcon aria-hidden />
+      <HStack gap="2">
+        {(series.status === "EDITABLE" || isPendingApproval) && (
+          <Button
+            style={{ flexGrow: 1 }}
+            onClick={() => {
+              setConfirmApproveModalIsOpen(true);
+            }}
+          >
+            Publiser
+          </Button>
+        )}
+        {
+          <Dropdown>
+            <Button variant="secondary" icon={<CogIcon title="Avslå eller slett" />} as={Dropdown.Toggle}></Button>
+            <Dropdown.Menu>
+              <Dropdown.Menu.List>
+                {series.status !== "EDITABLE" && (
+                  <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
+                    Endre produkt
+                    <PencilIcon aria-hidden />
+                  </Dropdown.Menu.List.Item>
+                )}
+                {isPendingApproval && (
+                  <>
+                    <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
+                      Avslå
+                      <ExclamationmarkTriangleIcon aria-hidden />
+                    </Dropdown.Menu.List.Item>
+                    <Dropdown.Menu.Divider />
+                  </>
+                )}
+                <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
+                  Slett
+                  <TrashIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
-              )}
-              {isPendingApproval && (
-                <>
-                  <Dropdown.Menu.List.Item onClick={() => setRejectApprovalModalIsOpen(true)}>
-                    Avslå
-                    <ExclamationmarkTriangleIcon aria-hidden />
-                  </Dropdown.Menu.List.Item>
-                  <Dropdown.Menu.Divider />
-                </>
-              )}
-              <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                Slett
-                <TrashIcon aria-hidden />
-              </Dropdown.Menu.List.Item>
 
-              {canSetExpiredStatus &&
-                (series.isExpired ? (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
-                  >
-                    Marker som aktiv
-                  </Dropdown.Menu.List.Item>
-                ) : (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
-                  >
-                    Marker som utgått
-                  </Dropdown.Menu.List.Item>
-                ))}
-            </Dropdown.Menu.List>
-          </Dropdown.Menu>
-        </Dropdown>
-      }
-    </HStack>
+                {canSetExpiredStatus &&
+                  (series.isExpired ? (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                    >
+                      Marker som aktiv
+                    </Dropdown.Menu.List.Item>
+                  ) : (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                    >
+                      Marker som utgått
+                    </Dropdown.Menu.List.Item>
+                  ))}
+              </Dropdown.Menu.List>
+            </Dropdown.Menu>
+          </Dropdown>
+        }
+      </HStack>
+    </VStack>
   );
 };
 
