@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, Buldings3Icon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { BodyShort, Button, Heading, HStack, VStack } from "@navikt/ds-react";
-import { Link, useNavigate } from "react-router-dom";
+import { BodyShort, Button, Heading, HStack, Link, VStack } from "@navikt/ds-react";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
 import { SupplierDTO } from "utils/supplier-util";
@@ -13,7 +13,7 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
     <VStack gap="8">
       <VStack gap="6">
         {loggedInUser?.isAdmin && (
-          <Link className="supplier-info__parent-page-link" to="/leverandor">
+          <Link className="supplier-info__parent-page-link" onClick={() => navigate(-1)}>
             <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
             Tilbake til oversikt
           </Link>

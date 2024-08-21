@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
@@ -12,6 +12,7 @@ import {
   HGrid,
   HStack,
   Label,
+  Link,
   Loader,
   Tabs,
   TextField,
@@ -166,7 +167,10 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
+            <Link
+              style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}
+              onClick={() => navigate(-1)}
+            >
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
               Tilbake til alle produkter
             </Link>
