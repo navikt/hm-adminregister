@@ -98,6 +98,7 @@ export const getEditedAgreementWithNewInfoDTO = (
     published: editedInfo.avtaleperiodeStart,
     expired: editedInfo.avtaleperiodeSlutt,
     reference: editedInfo.anbudsnummer,
+    previousAgreement: editedInfo.previousAgreement,
   };
 };
 

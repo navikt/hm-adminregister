@@ -34,6 +34,7 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       anbudsnummer: agreement?.reference,
       avtaleperiodeStart: toDate(agreement?.published),
       avtaleperiodeSlutt: toDate(agreement?.expired),
+      previousAgreement: agreement?.previousAgreement ?? null,
     },
   });
 
@@ -70,6 +71,7 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       anbudsnummer: data.anbudsnummer,
       avtaleperiodeStart: toDateTimeString(data.avtaleperiodeStart),
       avtaleperiodeSlutt: toDateTimeString(data.avtaleperiodeSlutt),
+      previousAgreement: data.previousAgreement ?? null,
     };
 
     updateAgreementInfo(agreement.id, editAgreementFormDataDto)
@@ -139,6 +141,16 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
                 defaultValue={agreement?.reference}
                 type="text"
                 error={errors?.anbudsnummer?.message}
+              />
+              <TextField
+                  disabled={false}
+                  {...register("previousAgreement", { required: false })}
+                  label={"Tidligere avtale"}
+                  id="previousAgreement"
+                  name="previousAgreement"
+                  defaultValue={ agreement?.previousAgreement ?? undefined}
+                  type="text"
+                  error = {errors?.previousAgreement?.message}
               />
             </VStack>
           </Content>
