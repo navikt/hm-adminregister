@@ -11,7 +11,7 @@ export const editAgreementSchema = z.object({
     invalid_type_error: "Dato er ikke gyldig",
   }),
   anbudsnummer: z.string().min(1, { message: "Anbudsnummer kan ikke være tomt" }),
-  previousAgreement: z.string().uuid("Må være gyldig uuid").or(z.string().max(0))
+  previousAgreement: z.string().uuid("Må være gyldig uuid").or(z.string().max(0)).nullable(),
 });
 
 export type EditAgreementFormData = z.infer<typeof editAgreementSchema>;
