@@ -1,4 +1,9 @@
-import { DifferenceDTO, ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import {
+  DifferenceDTO,
+  ProductRegistrationDTO,
+  SeriesRegistrationDTO,
+  SeriesRegistrationDTOV2,
+} from "utils/types/response-types";
 import { BodyLong, BodyShort, Button, Modal } from "@navikt/ds-react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useEffect, useState } from "react";
@@ -15,12 +20,10 @@ import { SeriesDiff } from "products/diff/SeriesDiff";
 
 export const ShowDiffModal = ({
   series,
-  products,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
+  series: SeriesRegistrationDTOV2;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
@@ -36,7 +39,7 @@ export const ShowDiffModal = ({
       const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0);
       setSeriesDifference(seriesDifferenceResult);
 
-      const variantsDifferencesResult = await getDifferencesFromPublishedVariants(products);
+      const variantsDifferencesResult = await getDifferencesFromPublishedVariants(series.variants);
       setVariantsDifferences(variantsDifferencesResult);
     };
 

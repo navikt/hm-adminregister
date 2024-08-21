@@ -1,12 +1,24 @@
 import { fetchAPI, getPath } from "api/fetch";
-import { MediaInfoDTO, RejectSeriesDTO, SeriesDraftWithDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import {
+  MediaInfoDTO,
+  RejectSeriesDTO,
+  SeriesDraftWithDTO,
+  SeriesRegistrationDTO,
+  SeriesRegistrationDTOV2,
+} from "utils/types/response-types";
+import { useAuthStore } from "utils/store/useAuthStore";
+import useSWR from "swr";
+import { fetcherGET } from "utils/swr-hooks";
 
-export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
+export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
 };
 
-export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
+export const setPublishedSeriesToDraft = async (
+  isAdmin: boolean,
+  seriesUUID: string
+): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
 };
 
 export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
@@ -27,9 +39,9 @@ export const approveMultipleSeries = async (seriesIds: string[]): Promise<Series
 
 export const rejectSeries = async (
   seriesUUID: string,
-  rejectSeriesDTO: RejectSeriesDTO,
+  rejectSeriesDTO: RejectSeriesDTO
 ): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/reject/${seriesUUID}`), "PUT", rejectSeriesDTO);
+  return await fetchAPI(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
@@ -39,7 +51,7 @@ export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promi
 const updateSeriesData = async (
   seriesUUID: string,
   isAdmin: boolean,
-  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
+  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO
 ): Promise<SeriesRegistrationDTO> => {
   const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
   const updatedSeriesData = modifySeriesData(seriesToUpdate);
@@ -49,7 +61,7 @@ const updateSeriesData = async (
 export const updateProductTitle = async (
   seriesUUID: string,
   productTitle: string,
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = productTitle;
@@ -60,7 +72,7 @@ export const updateProductTitle = async (
 export const updateProductDescription = async (
   seriesUUID: string,
   productDescription: string,
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.text = productDescription;
@@ -71,7 +83,7 @@ export const updateProductDescription = async (
 export const updateSeriesMedia = async (
   seriesUUID: string,
   mediaInfoBody: MediaInfoDTO[],
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.media = mediaInfoBody;
@@ -82,7 +94,7 @@ export const updateSeriesMedia = async (
 export const updateSeriesKeywords = async (
   seriesUUID: string,
   keywords: string[],
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.attributes.keywords = keywords;
@@ -93,7 +105,7 @@ export const updateSeriesKeywords = async (
 export const updateSeriesURL = async (
   seriesUUID: string,
   url: string,
-  isAdmin: boolean,
+  isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.attributes.url = url;
@@ -126,7 +138,7 @@ export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
   isAdmin: boolean,
   uri: string,
-  editedText: string,
+  editedText: string
 ) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     const mediaIndex = series.seriesData.media.findIndex((media) => media.uri === uri);
@@ -140,3 +152,23 @@ export const changeFilenameOnAttachedFile = async (
 export const deleteSeries = async (isAdmin: boolean, seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "DELETE");
 };
+
+export function useSeriesV2(seriesUUID: string) {
+  const { loggedInUser } = useAuthStore();
+
+  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/v2/${seriesUUID}`);
+
+  const {
+    data: series,
+    error: errorSeries,
+    isLoading: isLoadingSeries,
+    mutate: mutateSeries,
+  } = useSWR<SeriesRegistrationDTOV2>(loggedInUser ? seriesIdPath : null, fetcherGET);
+
+  return {
+    series,
+    isLoadingSeries,
+    errorSeries,
+    mutateSeries,
+  };
+}

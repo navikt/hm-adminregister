@@ -1,6 +1,6 @@
+import { Tag } from "@navikt/ds-react";
 import { ReactNode } from "react";
 import "./tags.scss";
-import { Tag } from "@navikt/ds-react";
 
 export enum colors {
   "GREY" = "neutral",

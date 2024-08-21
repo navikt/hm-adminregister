@@ -1,33 +1,30 @@
-import { ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
-import { markProductsAsDeleted } from "api/ProductApi";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { deleteSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { useNavigate } from "react-router-dom";
 
 export const DeleteConfirmationModal = ({
   series,
-  products,
-  mutateProducts,
   mutateSeries,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
-  products: ProductRegistrationDTO[];
-  mutateProducts: () => void;
+  series: SeriesRegistrationDTOV2;
   mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
+  const navigate = useNavigate();
 
   async function onDelete() {
     deleteSeries(loggedInUser?.isAdmin ?? true, series.id)
       .then(() => {
         mutateSeries();
-        mutateProducts();
+        navigate("/produkter");
       })
       .catch((error) => {
         setGlobalError(error);

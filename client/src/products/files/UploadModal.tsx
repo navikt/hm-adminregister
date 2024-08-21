@@ -1,6 +1,8 @@
+import { FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import {
   BodyLong,
   BodyShort,
+  Box,
   Button,
   Heading,
   HStack,
@@ -10,14 +12,13 @@ import {
   TextField,
   VStack,
 } from "@navikt/ds-react";
+import { uploadFilesToSeries } from "api/MediaApi";
+import { ImageContainer } from "products/files/images/ImageContainer";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { ImageContainer } from "products/files/images/ImageContainer";
 import { fileToUri } from "utils/file-util";
-import { uploadFilesToSeries } from "api/MediaApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
+import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -292,11 +293,21 @@ const Upload = ({
         </>
       ) : (
         <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
-          <ImageContainer uri={upload.previewUrl} size="xsmall" />
+          <Box
+            className={"image-box"}
+            borderRadius="medium"
+            borderWidth="1"
+            width="75px"
+            height="75px"
+            style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+          >
+            <ImageContainer uri={upload.previewUrl} size="xsmall" />
+          </Box>
+
           <Label className="text-overflow-hidden-large">{fileName}</Label>
         </HStack>
       )}
-      <HStack align="end">
+      <HStack>
         <Button
           variant="tertiary"
           title="slett"

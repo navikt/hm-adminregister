@@ -1,13 +1,26 @@
 import { useState } from "react";
 
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import useSWR from "swr";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Heading, HGrid, HStack, Label, Loader, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import {
+  Alert,
+  BodyShort,
+  Box,
+  Button,
+  Heading,
+  HGrid,
+  HStack,
+  Label,
+  Loader,
+  Tabs,
+  TextField,
+  VStack,
+} from "@navikt/ds-react";
 
-import { useIsSeriesInAgreement } from "api/AgreementProductApi";
 import { updateProductTitle } from "api/SeriesApi";
+
+import { useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
@@ -23,8 +36,6 @@ import VideosTab from "products/videos/VideosTab";
 
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { fetcherGET, userProductVariantsBySeriesId, useSeries } from "utils/swr-hooks";
-import { IsoCategoryDTO } from "utils/types/response-types";
 import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
@@ -55,19 +66,9 @@ const Product = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
 
-  const { variants, isLoadingVariants, errorVariants, mutateVariants } = userProductVariantsBySeriesId(seriesId!);
-  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeries(seriesId!);
+  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeriesV2(seriesId!);
 
-  const { data: isoCategory } = useSWR<IsoCategoryDTO>(
-    series?.isoCategory && series.isoCategory !== "0"
-      ? `${HM_REGISTER_URL()}/admreg/api/v1/isocategories/${series.isoCategory}`
-      : null,
-    fetcherGET,
-  );
-
-  const { data: isInAgreement } = useIsSeriesInAgreement(seriesId!);
-
-  if (isLoadingSeries || isLoadingVariants) {
+  if (isLoadingSeries) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -75,7 +76,7 @@ const Product = () => {
     );
   }
 
-  if (!series || errorVariants || errorSeries) {
+  if (!series || errorSeries) {
     return (
       <main className="show-menu">
         <HGrid gap="12" columns="minmax(16rem, 55rem)">
@@ -96,12 +97,7 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(
-      !series.text ||
-      series.formattedText ||
-      (!loggedInUser?.isAdmin && numberOfImages(series) === 0) ||
-      series.count === 0
-    );
+    return !(!series.text || (!loggedInUser?.isAdmin && numberOfImages(series) === 0) || series.variants.length === 0);
   };
 
   const handleSaveProductTitle = () => {
@@ -111,9 +107,7 @@ const Product = () => {
       .catch((error) => setGlobalError(error.status, error.message));
   };
 
-  const isEditable =
-    (series.draftStatus === "DRAFT" && series.status !== "DELETED") ||
-    (loggedInUser?.isAdmin === true && series.status === "ACTIVE");
+  const isEditable = series.status === "EDITABLE";
 
   const TabLabel = ({
     title,
@@ -142,8 +136,6 @@ const Product = () => {
     <main className="show-menu">
       <RequestApprovalModal
         series={series}
-        products={variants ?? []}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isValid={isValid}
         isOpen={approvalModalIsOpen}
@@ -151,8 +143,6 @@ const Product = () => {
       />
       <DeleteConfirmationModal
         series={series}
-        products={variants ?? []}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isOpen={deleteConfirmationModalIsOpen}
         setIsOpen={setDeleteConfirmationModalIsOpen}
@@ -160,77 +150,100 @@ const Product = () => {
       <SetExpiredSeriesConfirmationModal
         series={series}
         mutateSeries={mutateSeries}
-        mutateProducts={mutateVariants}
         params={expiredSeriesModalIsOpen}
         setParams={setExpiredSeriesModalIsOpen}
       />
       <EditPublishedProductConfirmationModal
         series={series}
-        mutateProducts={mutateVariants}
         mutateSeries={mutateSeries}
         isOpen={editProductModalIsOpen}
         setIsOpen={setEditProductModalIsOpen}
       />
-      <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="product-page">
-        <VStack gap={{ xs: "4", md: "8" }}>
-          <VStack gap="1">
-            <Label> Produktnavn</Label>
+      <HGrid
+        gap="12"
+        columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
+        className="product-page"
+      >
+        <VStack gap={{ xs: "6", md: "10" }}>
+          <VStack gap="6">
+            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
+              <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
+              Tilbake til alle produkter
+            </Link>
+            <VStack gap="2">
+              <Label> Produktnavn</Label>
 
-            <HStack gap="1">
-              {!showEditProductTitleMode && (
-                <Heading level="1" size="xlarge">
-                  {loggedInUser?.isAdmin && series.published ? (
-                    <a
-                      href={`${HM_REGISTER_URL()}/produkt/${series.identifier}`}
-                      target="_blank"
-                      className="heading-link"
-                      rel="noreferrer"
+              <HStack gap="1">
+                {!showEditProductTitleMode && (
+                  <Heading level="1" size="xlarge">
+                    {loggedInUser?.isAdmin && series.published ? (
+                      <a
+                        href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
+                        target="_blank"
+                        className="heading-link"
+                        rel="noreferrer"
+                      >
+                        {series.title ?? ""}
+                      </a>
+                    ) : (
+                      <>{series.title ?? ""}</>
+                    )}
+                  </Heading>
+                )}
+                {showEditProductTitleMode && (
+                  <>
+                    <TextField
+                      defaultValue={series.title ?? ""}
+                      label={""}
+                      aria-label="Rediger tittel"
+                      id="title"
+                      name="title"
+                      onChange={(event) => setProductTitle(event.currentTarget.value)}
+                    />
+                    <Button
+                      className="fit-content"
+                      variant="tertiary"
+                      icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
+                      onClick={handleSaveProductTitle}
                     >
-                      {series.title ?? ""}
-                    </a>
-                  ) : (
-                    <>{series.title ?? ""}</>
-                  )}
-                </Heading>
-              )}
+                      Lagre
+                    </Button>
+                  </>
+                )}
 
-              {showEditProductTitleMode && (
-                <>
-                  <TextField
-                    defaultValue={series.title ?? ""}
-                    label={""}
-                    aria-label="Rediger tittel"
-                    id="title"
-                    name="title"
-                    onChange={(event) => setProductTitle(event.currentTarget.value)}
-                  />
+                {isEditable && !showEditProductTitleMode && (
                   <Button
                     className="fit-content"
                     variant="tertiary"
-                    icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
-                    onClick={handleSaveProductTitle}
-                  >
-                    Lagre
-                  </Button>
-                </>
+                    icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
+                    onClick={() => {
+                      setProductTitle(series.title);
+                      setShowEditProductTitleMode(true);
+                    }}
+                  ></Button>
+                )}
+              </HStack>
+              {series.status !== "DONE" && (
+                <Box
+                  paddingInline="4"
+                  paddingBlock="1"
+                  borderRadius="small"
+                  width="fit-content"
+                  style={{ backgroundColor: "#EFECF4" }}
+                >
+                  <HStack gap="2" align="center">
+                    <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
+                      <circle cx="3" cy="3.5" r="3" fill="#8269A2" />
+                    </svg>
+                    <BodyShort>{series.isPublished ? "Nye endringer" : "Nytt produkt"}</BodyShort>
+                  </HStack>
+                </Box>
               )}
-
-              {isEditable && !showEditProductTitleMode && (
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
-                  onClick={() => {
-                    setProductTitle(series.title);
-                    setShowEditProductTitleMode(true);
-                  }}
-                ></Button>
-              )}
-            </HStack>
+            </VStack>
             <DefinitionList fullWidth horizontal>
               <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
               <DefinitionList.Definition>
-                {isoCategory ? `${isoCategory?.isoTitle} (${isoCategory?.isoCode})` : "Ingen"}
+                {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
@@ -241,15 +254,13 @@ const Product = () => {
                 label={
                   <>
                     Om produktet
-                    {!series.text && !series.formattedText && !isValid && (
-                      <ExclamationmarkTriangleIcon className="product-error-text" />
-                    )}
+                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
                   </>
                 }
               />
               <Tabs.Tab
                 value="variants"
-                label={<TabLabel title="Egenskaper" numberOfElements={series.count} showAlert={true} />}
+                label={<TabLabel title="Egenskaper" numberOfElements={series.variants.length} showAlert={true} />}
               />
               <Tabs.Tab
                 value="images"
@@ -279,22 +290,13 @@ const Product = () => {
               showInputError={!isValid}
             />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
-            <VariantsTab
-              seriesUUID={series.id}
-              mutateSeries={mutateSeries}
-              products={variants || []}
-              isEditable={isEditable}
-              showInputError={!isValid}
-              isInAgreement={isInAgreement ?? false}
-            />
+            <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
-        <VStack gap={{ xs: "2", md: "4" }}>
+        <VStack gap={{ xs: "6", md: "10" }}>
           {loggedInUser?.isAdmin && (
             <AdminActions
               series={series}
-              products={variants || []}
-              mutateProducts={mutateVariants}
               mutateSeries={mutateSeries}
               setIsValid={setIsValid}
               productIsValid={productIsValid}
@@ -308,13 +310,13 @@ const Product = () => {
               series={series}
               setIsValid={setIsValid}
               productIsValid={productIsValid}
-              isInAgreement={isInAgreement ?? false}
               setApprovalModalIsOpen={setApprovalModalIsOpen}
               setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               setEditProductModalIsOpen={setEditProductModalIsOpen}
             />
           )}
+
           <StatusPanel series={series} />
         </VStack>
       </HGrid>

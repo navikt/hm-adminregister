@@ -3,11 +3,11 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import { useState } from "react";
 import { isValidUrl } from "products/seriesUtils";
 import { updateSeriesURL } from "api/SeriesApi";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   isAdmin: boolean;
   mutateSeries: () => void;
   isEditable: boolean;

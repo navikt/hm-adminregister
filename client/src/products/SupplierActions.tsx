@@ -1,25 +1,23 @@
-import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, HStack } from "@navikt/ds-react";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { supplierCanChangeAgreementProduct } from "utils/supplier-util";
-import { exportProducts } from "api/ImportExportApi";
 import { useNavigate } from "react-router-dom";
+
+import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
+import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
+import { exportProducts } from "api/ImportExportApi";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 
 const SupplierActions = ({
   series,
   setIsValid,
   productIsValid,
-  isInAgreement,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
-  series: SeriesRegistrationDTO;
+  series: SeriesRegistrationDTOV2;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
-  isInAgreement: boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
   setExpiredSeriesModalIsOpen: ({
@@ -31,11 +29,10 @@ const SupplierActions = ({
   }) => void;
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
-  const isDraft = series.draftStatus === "DRAFT";
-  const canSetExpiredStatus = series.draftStatus === "DONE" && !!series.published;
-  const canSetToEditMode =
-    series.status !== "DELETED" && series.draftStatus === "DONE" && series.adminStatus !== "PENDING";
-  const isPendingApproval = series.adminStatus === "PENDING" && series.draftStatus === "DONE";
+  const isEditable = series.status === "EDITABLE";
+  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
+  const canSetToEditMode = series.status !== "EDITABLE";
+  const isPendingApproval = series.status === "PENDING_APPROVAL";
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
 
@@ -53,76 +50,79 @@ const SupplierActions = ({
   };
 
   return (
-    <HStack align={"end"} gap="2">
-      {isDraft && (
-        <Button
-          style={{ marginTop: "20px" }}
-          onClick={() => {
-            setIsValid(productIsValid());
-            setApprovalModalIsOpen(true);
-          }}
-        >
-          Send til godkjenning
-        </Button>
-      )}
+    <VStack gap="2">
+      {/* Todo: legg inn "Se endringer" knapp */}
+      <HStack gap="2">
+        {isEditable && (
+          <Button
+            style={{ flexGrow: 1, paddingInline: "0.75rem" }}
+            onClick={() => {
+              setIsValid(productIsValid());
+              setApprovalModalIsOpen(true);
+            }}
+          >
+            Send til godkjenning
+          </Button>
+        )}
 
-      {((isDraft && !series.published) || canSetToEditMode || canSetExpiredStatus) && (
-        <Dropdown>
-          <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
-          <Dropdown.Menu>
-            <Dropdown.Menu.List>
-              {isDraft && !series.published && (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setDeleteConfirmationModalIsOpen(true)}
-                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
-                >
-                  <TrashIcon aria-hidden />
-                  Slett
-                </Dropdown.Menu.List.Item>
-              )}
-              {canSetToEditMode && (
-                <Dropdown.Menu.List.Item
-                  onClick={() => setEditProductModalIsOpen(true)}
-                  // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
-                >
-                  Endre produkt
-                  <PencilIcon aria-hidden />
-                </Dropdown.Menu.List.Item>
-              )}
-              {canSetExpiredStatus &&
-                (series.status === "ACTIVE" ? (
+        {((isEditable && !series.isPublished) || canSetToEditMode || canSetExpiredStatus) && (
+          <Dropdown>
+            <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
+            <Dropdown.Menu>
+              <Dropdown.Menu.List>
+                {isEditable && !series.isPublished && (
                   <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                    onClick={() => setDeleteConfirmationModalIsOpen(true)}
                     // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                   >
-                    Marker som utgått
+                    <TrashIcon aria-hidden />
+                    Slett
                   </Dropdown.Menu.List.Item>
-                ) : (
+                )}
+                {canSetToEditMode && (
                   <Dropdown.Menu.List.Item
-                    onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                    onClick={() => setEditProductModalIsOpen(true)}
+                    // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                   >
-                    Marker som aktiv
+                    Endre produkt
+                    <PencilIcon aria-hidden />
                   </Dropdown.Menu.List.Item>
-                ))}
-              {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
-              {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
-              {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
-              {/*  </Dropdown.Menu.GroupedList.Heading>*/}
-              {/*)}*/}
-              <Dropdown.Menu.Divider />
-              <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
-                Eksporter varianter
-              </Dropdown.Menu.List.Item>
-              {!isPendingApproval && (
-                <Dropdown.Menu.List.Item onClick={() => navigate(`/produkt/${series.id}/importer-produkter`)}>
-                  Importer varianter
+                )}
+                {canSetExpiredStatus &&
+                  (series.isExpired ? (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                    >
+                      Marker som aktiv
+                    </Dropdown.Menu.List.Item>
+                  ) : (
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                      // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
+                    >
+                      Marker som utgått
+                    </Dropdown.Menu.List.Item>
+                  ))}
+                {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
+                {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
+                {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
+                {/*  </Dropdown.Menu.GroupedList.Heading>*/}
+                {/*)}*/}
+                <Dropdown.Menu.Divider />
+                <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
+                  Eksporter varianter
                 </Dropdown.Menu.List.Item>
-              )}
-            </Dropdown.Menu.List>
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
-    </HStack>
+                {!isPendingApproval && (
+                  <Dropdown.Menu.List.Item onClick={() => navigate(`/produkt/${series.id}/importer-produkter`)}>
+                    Importer varianter
+                  </Dropdown.Menu.List.Item>
+                )}
+              </Dropdown.Menu.List>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </HStack>
+    </VStack>
   );
 };
 

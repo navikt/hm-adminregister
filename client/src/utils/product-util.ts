@@ -1,8 +1,14 @@
-import { MediaDTO, MediaInfo, ProductRegistrationDTO, TechData } from "./types/response-types";
+import {
+  MediaDTO,
+  MediaInfo,
+  ProductRegistrationDTO,
+  ProductRegistrationDTOV2,
+  TechData,
+} from "./types/response-types";
 import { Product } from "utils/types/types";
 import * as _ from "lodash";
 
-export function getAllUniqueTechDataKeys(products: ProductRegistrationDTO[]): string[] {
+export function getAllUniqueTechDataKeys(products: ProductRegistrationDTOV2[]): string[] {
   const uniqueKeys = new Set<string>();
   products
     .flatMap((product) => product.productData.techData.map((techData) => techData.key))
@@ -69,7 +75,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
               {},
               ...dto.productData.techData
                 .filter((data: TechData) => data.key && data.value)
-                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } })),
+                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } }))
             ),
             hasAgreement: false,
             filters: {},

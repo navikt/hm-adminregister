@@ -12,7 +12,7 @@ export const getDelkontrakt = (delkontraktId: string): Promise<DelkontraktRegist
 export const createDelkontrakt = (
   agreementId: string,
   data: NyDelkontraktFormData,
-  sortnr: number,
+  sortnr: number
 ): Promise<DelkontraktRegistrationDTO> => {
   const newDelkontrakt: DelkontraktRegistrationDTO = {
     id: uuidv4(),
@@ -26,23 +26,24 @@ export const createDelkontrakt = (
       description: data.beskrivelse,
       sortNr: sortnr,
     },
+    type: "WITH_DELKONTRAKT",
   };
 
   return fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/`,
     "POST",
-    newDelkontrakt,
+    newDelkontrakt
   );
 };
 
 export const updateDelkontrakt = (
   delkontraktId: string,
-  updatedDelkontrakt: DelkontraktRegistrationDTO,
+  updatedDelkontrakt: DelkontraktRegistrationDTO
 ): Promise<DelkontraktRegistrationDTO> =>
   fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`,
     "PUT",
-    updatedDelkontrakt,
+    updatedDelkontrakt
   );
 
 export const deleteDelkontrakt = (delkontraktId: string): Promise<void> =>
@@ -50,7 +51,7 @@ export const deleteDelkontrakt = (delkontraktId: string): Promise<void> =>
 
 export const updateDelkontraktinfo = async (
   delkontraktId: string,
-  data: EditDelkontraktFormData,
+  data: EditDelkontraktFormData
 ): Promise<DelkontraktRegistrationDTO> => {
   const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId);
 

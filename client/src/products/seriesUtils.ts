@@ -1,15 +1,15 @@
-import { MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { SeriesStatus } from "utils/types/types";
 
-export const numberOfImages = (series: SeriesRegistrationDTO) => {
+export const numberOfImages = (series: SeriesRegistrationDTOV2) => {
   return series.seriesData.media.filter((media) => media.type == "IMAGE").length;
 };
 
-export const numberOfDocuments = (series: SeriesRegistrationDTO) => {
+export const numberOfDocuments = (series: SeriesRegistrationDTOV2) => {
   return series.seriesData.media.filter((media) => media.type == "PDF").length;
 };
 
-export const numberOfVideos = (series: SeriesRegistrationDTO) => {
+export const numberOfVideos = (series: SeriesRegistrationDTOV2) => {
   return series.seriesData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
 };
 
@@ -18,7 +18,7 @@ export const mapThumbnail = (series: SeriesRegistrationDTO): MediaInfoDTO | null
 };
 
 export const mapImagesAndPDFfromMedia = (
-  series: SeriesRegistrationDTO,
+  series: SeriesRegistrationDTOV2
 ): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
   const seen: { [uri: string]: boolean } = {};
   const pdfs: MediaInfoDTO[] = [];
@@ -44,7 +44,7 @@ export const mapImagesAndPDFfromMedia = (
   };
 };
 
-export const seriesStatus = (series: SeriesRegistrationDTO) => {
+export const seriesStatus = (series: SeriesRegistrationDTO): SeriesStatus => {
   const isDraft = series.draftStatus === "DRAFT" && !series.published;
   const isPending = series.adminStatus === "PENDING";
   const isRejected = series.adminStatus === "REJECTED";
@@ -55,6 +55,28 @@ export const seriesStatus = (series: SeriesRegistrationDTO) => {
   if (isDeleted) {
     return SeriesStatus.DELETED;
   } else if (isInactive) {
+    return SeriesStatus.INACTIVE;
+  } else if (isRejected) {
+    return SeriesStatus.REJECTED;
+  } else if (isDraft && !isRejected) {
+    return SeriesStatus.DRAFT;
+  } else if (isDraftChange && !isRejected) {
+    return SeriesStatus.DRAFT_CHANGE;
+  } else if (isPending) {
+    return SeriesStatus.PENDING;
+  } else {
+    return SeriesStatus.PUBLISHED;
+  }
+};
+
+export const seriesStatusV2 = (series: SeriesRegistrationDTOV2) => {
+  const isDraft = series.status === "EDITABLE" && !series.published;
+  const isPending = series.status === "PENDING_APPROVAL";
+  const isRejected = series.status === "REJECTED";
+  const isExpired = series.isExpired;
+  const isDraftChange = series.status === "EDITABLE" && series.published;
+
+  if (isExpired) {
     return SeriesStatus.INACTIVE;
   } else if (isRejected) {
     return SeriesStatus.REJECTED;
