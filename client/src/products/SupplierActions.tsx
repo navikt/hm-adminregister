@@ -30,7 +30,7 @@ const SupplierActions = ({
   setEditProductModalIsOpen: (newState: boolean) => void;
 }) => {
   const isEditable = series.status === "EDITABLE";
-  const canSetExpiredStatus = series.status === "EDITABLE" && !!series.published;
+  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
   const canSetToEditMode = series.status !== "EDITABLE";
   const isPendingApproval = series.status === "PENDING_APPROVAL";
   const { loggedInUser } = useAuthStore();
@@ -65,12 +65,12 @@ const SupplierActions = ({
           </Button>
         )}
 
-        {((isEditable && !series.published) || canSetToEditMode || canSetExpiredStatus) && (
+        {((isEditable && !series.isPublished) || canSetToEditMode || canSetExpiredStatus) && (
           <Dropdown>
             <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
-                {isEditable && !series.published && (
+                {isEditable && !series.isPublished && (
                   <Dropdown.Menu.List.Item
                     onClick={() => setDeleteConfirmationModalIsOpen(true)}
                     // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
@@ -97,11 +97,10 @@ const SupplierActions = ({
                     </Dropdown.Menu.List.Item>
                   ) : (
                     <Dropdown.Menu.List.Item
-                      onClick={() => setDeleteConfirmationModalIsOpen(true)}
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
                       // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                     >
-                      <TrashIcon aria-hidden />
-                      Slett
+                      Marker som utgått
                     </Dropdown.Menu.List.Item>
                   ))}
                 {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
