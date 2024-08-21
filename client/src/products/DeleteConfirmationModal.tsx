@@ -3,6 +3,7 @@ import { Button, Modal } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { deleteSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
+import { useNavigate } from "react-router-dom";
 
 export const DeleteConfirmationModal = ({
   series,
@@ -17,11 +18,13 @@ export const DeleteConfirmationModal = ({
 }) => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
+  const navigate = useNavigate();
 
   async function onDelete() {
     deleteSeries(loggedInUser?.isAdmin ?? true, series.id)
       .then(() => {
         mutateSeries();
+        navigate("/produkter");
       })
       .catch((error) => {
         setGlobalError(error);
