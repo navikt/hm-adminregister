@@ -1,12 +1,12 @@
 import { fireEvent, render, renderHook, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import Product from "products/Product";
-import { useAuthStore } from "utils/store/useAuthStore";
 import { axe } from "jest-axe";
+import { apiPath } from "mocks/apiPath";
 import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
-import { apiPath } from "mocks/apiPath";
+import Product from "products/Product";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { describe, expect, test } from "vitest";
 
 const dummyProduct = (id: string, title: string, status: string) => {
   return {
@@ -81,7 +81,7 @@ describe("Produktside", () => {
         <Routes>
           <Route path={"/produkter/:seriesId"} element={<Product />}></Route>
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(await screen.findByRole("heading", { level: 1, name: "defaultTitle" })).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("Produktside", () => {
     server.use(
       http.get(apiPath("vendor/api/v1/series/*"), () => {
         return HttpResponse.json(dummyProduct("test2", "title", "PENDING_APPROVAL"));
-      })
+      }),
     );
 
     render(
@@ -132,10 +132,10 @@ describe("Produktside", () => {
         <Routes>
           <Route path={"/produkter/:seriesId"} element={<Product />}></Route>
         </Routes>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
-    expect(await screen.findByText("Venter på godkjenning")).toBeInTheDocument();
+    expect(await screen.findAllByText("Venter på godkjenning")).toHaveLength(2);
 
     //Redigeringsknapper vises ikke
     expect(screen.queryByRole("button", { name: approvalButton })).not.toBeInTheDocument();

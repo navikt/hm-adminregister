@@ -22,8 +22,8 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.REJECTED) {
     return (
       <TagWithIcon
-        icon={<XMarkOctagonIcon aria-hidden={!iconOnly} title="Status Avvist" fontSize={"1.5rem"} />}
-        text={iconOnly ? "" : "Avvist"}
+        icon={<XMarkOctagonIcon aria-hidden={!iconOnly} title="Status avslått" fontSize={"1.5rem"} />}
+        text={iconOnly ? "" : "Avslått"}
         color={colors.RED}
       />
     );
