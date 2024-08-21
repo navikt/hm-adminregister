@@ -10,8 +10,8 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 
-export const sendSeriesToApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/serie-til-godkjenning/${seriesUUID}`), "PUT");
+export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
 };
 
 export const setPublishedSeriesToDraft = async (

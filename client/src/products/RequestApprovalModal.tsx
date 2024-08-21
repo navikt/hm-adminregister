@@ -1,9 +1,8 @@
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { sendFlereTilGodkjenning } from "api/ProductApi";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "products/seriesUtils";
-import { sendSeriesToApproval } from "api/SeriesApi";
+import { requestApproval } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 
 export const RequestApprovalModal = ({
@@ -22,10 +21,7 @@ export const RequestApprovalModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onSendTilGodkjenning() {
-    sendFlereTilGodkjenning(series.variants.map((product) => product.id) || []).catch((error) => {
-      setGlobalError(error);
-    });
-    sendSeriesToApproval(series.id)
+    requestApproval(series.id)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);

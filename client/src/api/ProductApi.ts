@@ -1,4 +1,4 @@
-import { DraftVariantDTO, ProductRegistrationDTO, SeriesRegistrationDTO } from "utils/types/response-types";
+import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, getPath } from "api/fetch";
 
@@ -21,10 +21,6 @@ export const draftProductVariantV2 = async (
     "POST",
     newVariant
   );
-};
-
-export const sendFlereTilGodkjenning = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
-  return await fetchAPI(getPath(false, `/api/v1/product/registrations/til-godkjenning`), "PUT", productIds);
 };
 
 export const rejectProducts = async (productIds: string[]): Promise<ProductRegistrationDTO[]> => {
