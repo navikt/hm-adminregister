@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
@@ -12,16 +12,13 @@ import {
   HGrid,
   HStack,
   Label,
-  Link,
   Loader,
   Tabs,
   TextField,
   VStack,
 } from "@navikt/ds-react";
 
-import { updateProductTitle } from "api/SeriesApi";
-
-import { useSeriesV2 } from "api/SeriesApi";
+import { updateProductTitle, useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
@@ -167,10 +164,7 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <Link
-              style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}
-              onClick={() => navigate(-1)}
-            >
+            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
               Tilbake til alle produkter
             </Link>

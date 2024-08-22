@@ -8,8 +8,6 @@ import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
 
 export const ProductList = ({ seriesList, heading }: { seriesList: SeriesRegistrationDTO[]; heading?: string }) => {
-  console.log({ seriesList });
-
   return (
     <VStack gap={"1-alt"} className={styles.seriesList}>
       {heading && <Heading size="medium">{heading}</Heading>}
