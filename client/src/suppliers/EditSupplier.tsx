@@ -58,7 +58,11 @@ export default function EditSupplier() {
   }, [supplier]);
 
   if (supplierIsLoading) {
-    return <Loader size="3xlarge" title="venter..."></Loader>;
+    return (
+      <HStack justify="center" style={{ marginTop: "60px" }}>
+        <Loader size="3xlarge" title="venter..."></Loader>
+      </HStack>
+    );
   }
 
   if (supplierError) {

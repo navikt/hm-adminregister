@@ -16,11 +16,11 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
         {loggedInUser?.isAdmin && (
           <Link to="/leverandor" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
             <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-            Tilbake til alle produkter
+            Tilbake til alle leverandører
           </Link>
         )}
         <Buldings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
-        <HStack gap="8" align="start">
+        <HStack gap="8" align="start" style={{ alignItems: "center" }}>
           <div style={{ minWidth: "300px" }}>
             <Heading level="1" size="large">
               {supplier?.name}
@@ -43,7 +43,7 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
                     navigate(
                       loggedInUser?.isAdmin
                         ? `/leverandor/rediger-leverandor/${supplier.id}`
-                        : "profil/rediger-leverandor",
+                        : "/profil/rediger-leverandor",
                     );
                   }}
                 >
