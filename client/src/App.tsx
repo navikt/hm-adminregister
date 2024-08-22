@@ -83,9 +83,10 @@ export function App() {
             <Route path="/admin/adminopplysninger" element={<FirstTimeAdminInfo />} />
 
             <Route path="/profil/rediger-brukerprofil" element={<EditSupplierUser />} />
+            <Route path="/profil/rediger-leverandor" element={<EditSupplier />} />
 
             <Route path="/leverandor/opprett-leverandor" element={<CreateSupplier />} />
-            <Route path="/leverandor/endre-leverandor/:supplierId" element={<EditSupplier />} />
+            <Route path="/leverandor/rediger-leverandor/:supplierId" element={<EditSupplier />} />
             <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUser />} />
 
             <Route path="/rammeavtaler/importer-katalogfil" element={<ImporterOgValiderKatalogfil />} />

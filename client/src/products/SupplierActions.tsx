@@ -67,7 +67,7 @@ const SupplierActions = ({
 
         {((isEditable && !series.isPublished) || canSetToEditMode || canSetExpiredStatus) && (
           <Dropdown>
-            <Button variant="secondary" icon={<CogIcon title="Slett" />} as={Dropdown.Toggle}></Button>
+            <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
                 {isEditable && !series.isPublished && (

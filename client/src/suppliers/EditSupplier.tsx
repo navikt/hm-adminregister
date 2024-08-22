@@ -17,13 +17,12 @@ import { z } from "zod";
 type FormData = z.infer<typeof newSupplierSchema>;
 export default function EditSupplier() {
   const { supplierId } = useParams();
+  const { loggedInUser } = useAuthStore();
+  const { setGlobalError } = useErrorStore();
 
-  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(true, supplierId);
+  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin, supplierId);
 
   const navigate = useNavigate();
-
-  const { setGlobalError } = useErrorStore();
-  const { loggedInUser } = useAuthStore();
 
   const {
     handleSubmit,
@@ -86,7 +85,7 @@ export default function EditSupplier() {
     updateSupplier(loggedInUser?.isAdmin || false, supplierId!, editedSupplier)
       .then(() => {
         supplierMutate();
-        navigate(`/leverandor/${supplierId}`);
+        navigate(loggedInUser?.isAdmin ? `/leverandor/${supplierId}` : "/profil");
       })
       .catch((error) => {
         setGlobalError(error);

@@ -2,17 +2,16 @@ import { useEffect, useState } from "react";
 
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
-import "./supplier-info.scss";
-import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
-import { useParams } from "react-router-dom";
-import { HM_REGISTER_URL } from "environments";
-import SupplierInfo from "suppliers/SupplierInfo";
-import SupplierUsers from "suppliers/SupplierUsers";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { DeactivateSupplierConfirmationModal } from "suppliers/DeactivateSupplierConfirmationModal";
 import { getSupplier } from "api/SupplierApi";
+import { HM_REGISTER_URL } from "environments";
+import { useParams } from "react-router-dom";
+import { DeactivateSupplierConfirmationModal } from "suppliers/DeactivateSupplierConfirmationModal";
+import SupplierInfo from "suppliers/SupplierInfo";
 import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
+import SupplierUsers from "suppliers/SupplierUsers";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
 
 const Supplier = () => {
   const [supplier, setSupplier] = useState<SupplierDTO>();
