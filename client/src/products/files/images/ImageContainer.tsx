@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { FileImageIcon } from "@navikt/aksel-icons";
+import { HStack } from "@navikt/ds-react";
 import classNames from "classnames";
 import { smallImageLoader } from "utils/image-util";
 
@@ -11,7 +12,9 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
     <div className={classNames("image-container", { "image-container--xsmall": size == "xsmall" })}>
       <div className="image-container__image">
         {imageLoadingError || !uri ? (
-          <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
+          <HStack height="100%" justify="center" align="center">
+            <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
+          </HStack>
         ) : (
           <img
             src={smallImageLoader({ src: uri, width: 400 })}
@@ -21,6 +24,7 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
             alt={text ?? "OBS mangler alt-tekst"}
             draggable="false"
             sizes="50vw"
+            placeholder="blur"
           />
         )}
       </div>

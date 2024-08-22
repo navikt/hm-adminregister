@@ -1,0 +1,21 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.edit-attachment-menu {
+  .edit-attachment-menu-content {
+    padding: 0;
+
+    li {
+      padding: 0.3rem !important;
+      width: auto !important;
+    }
+  }
+
+  .edit-attachment-menu-button {
+    justify-content: flex-start;
+    padding: 1rem 2rem;
+
+    &:hover {
+      border-radius: 0;
+    }
+  }
+}

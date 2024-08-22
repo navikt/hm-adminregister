@@ -1,4 +1,4 @@
-import { AgreementAttachment, AgreementPostDTO, AgreementRegistrationDTO, MediaInfo } from "./types/response-types";
+import { AgreementAttachment, AgreementRegistrationDTO, MediaInfo } from "./types/response-types";
 import { EditAttachmentGroupFormData } from "agreements/agreement/vedlegg/EditAttachmentGroupModal";
 import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
 
@@ -29,6 +29,26 @@ export const getEditedAgreementDTOAddFiles = (
   };
 };
 
+export const getEditedAgreementDTOchangeTextOnFile = (
+  agreementToEdit: AgreementRegistrationDTO,
+  attachmentIdToEdit: string,
+  uri: string,
+  editedText: string,
+): AgreementRegistrationDTO => {
+  const indexOfAttachmentToEdit = agreementToEdit.agreementData.attachments.findIndex(
+    (attachment) => attachment.id === attachmentIdToEdit,
+  );
+
+  if (indexOfAttachmentToEdit !== -1) {
+    const attachmentToEdit: AgreementAttachment = agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit];
+    const mediaIndex = attachmentToEdit.media.findIndex((media) => media.uri === uri);
+    if (mediaIndex !== -1) {
+      attachmentToEdit.media[mediaIndex].text = editedText;
+    }
+  }
+
+  return agreementToEdit;
+};
 export const getEditedAgreementDTORemoveFiles = (
   agreementToEdit: AgreementRegistrationDTO,
   attachmentIdToEdit: string,
@@ -98,6 +118,7 @@ export const getEditedAgreementWithNewInfoDTO = (
     published: editedInfo.avtaleperiodeStart,
     expired: editedInfo.avtaleperiodeSlutt,
     reference: editedInfo.anbudsnummer,
+    previousAgreement: editedInfo.previousAgreement,
   };
 };
 
