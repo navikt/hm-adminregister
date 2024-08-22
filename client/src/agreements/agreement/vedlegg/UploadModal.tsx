@@ -1,13 +1,10 @@
-import { FileImageFillIcon, FilePdfIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { BodyLong, BodyShort, Button, HStack, Label, Loader, Modal, VStack } from "@navikt/ds-react";
-import { useRef, useState } from "react";
+import { FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
+import { BodyLong, BodyShort, Button, Heading, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { HM_REGISTER_URL } from "environments";
-import { AgreementRegistrationDTO, MediaDTO } from "utils/types/response-types";
-import { getEditedAgreementDTOAddFiles } from "utils/agreement-util";
-import { mapToMediaInfo } from "utils/product-util";
 import { fileToUri } from "utils/file-util";
+import { uploadFilesToAgreement } from "api/AgreementApi";
 
 interface Props {
   modalIsOpen: boolean;
@@ -17,15 +14,23 @@ interface Props {
   agreementAttachmentId: string;
 }
 
-interface Upload {
+const removeFileExtation = (fileName: string) => {
+  if (fileName.includes(".")) {
+    return fileName.split(".")[0];
+  }
+  return fileName;
+};
+
+export interface FileUpload {
   file: File;
   previewUrl?: string;
+  editedFileName?: string;
 }
 
 const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreementAttachmentId }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploads, setUploads] = useState<Upload[]>([]);
+  const [uploads, setUploads] = useState<FileUpload[]>([]);
   const [fileTypeError, setFileTypeError] = useState("");
 
   const { handleSubmit } = useForm();
@@ -33,88 +38,42 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 
   async function onSubmit() {
     setIsUploading(true);
-    const formData = new FormData();
-    for (const upload of uploads) {
-      formData.append("files", upload.file);
-    }
 
-    let res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/media/agreement/files/${oid}`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-      },
-      credentials: "include",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    const mediaDTOs: MediaDTO[] = await res.json();
-    //Fetch agreement to update the latest version
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${oid}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-
-    const agreementToUpdate: AgreementRegistrationDTO = await res.json();
-    const editedAgreementDTO =
-      mediaDTOs && getEditedAgreementDTOAddFiles(agreementToUpdate, agreementAttachmentId, mapToMediaInfo(mediaDTOs));
-
-    res = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementToUpdate.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(editedAgreementDTO),
-    });
-    if (!res.ok) {
-      setGlobalError(res.status, res.statusText);
-      return;
-    }
-    setIsUploading(false);
-    mutateAgreement();
-    setUploads([]);
-    setModalIsOpen(false);
+    uploadFilesToAgreement(oid, agreementAttachmentId, uploads)
+      .then(() => {
+        setIsUploading(false);
+        mutateAgreement();
+        setUploads([]);
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setIsUploading(false);
+        setGlobalError(error);
+      });
   }
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event?.currentTarget?.files || []);
-
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
-    setUploads(allChosenFiles);
-
-    Promise.all(files.map(fileToUri)).then((urls) => {
-      setUploads((previousState) =>
-        previousState.map((f) => ({
-          ...f,
-          previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        })),
-      );
-    });
+    handleMediaEvent(files);
   };
 
-  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, file: File) => {
-    event.preventDefault();
+  const handleDelete = (file: File) => {
     const filteredFiles = uploads.filter((upload) => upload.file !== file);
     setUploads(filteredFiles);
   };
 
+  const setEditedFileName = (upload: FileUpload, newFileName: string) => {
+    setUploads((prevUploads) =>
+      prevUploads.map((prevUpload) =>
+        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload,
+      ),
+    );
+  };
+
   const handleDragEvent = (event: React.DragEvent<HTMLDivElement>) => {
     setFileTypeError("");
-    //NB! Må sjekke at det er et bilde.. kan droppe hvilken som helst fil
+    //Check is file is a picture as it is possible to drop any type of file
     event.preventDefault();
-    const acceptedFileTypesImages = ["image/jpeg", "image/jpg", "image/png"];
     const acceptedFileTypesDocuments = ["application/pdf"];
 
     const files = Array.from(event.dataTransfer.files);
@@ -125,8 +84,23 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 
       return;
     }
-    const allChosenFiles = uploads.concat(files.map((file) => ({ file })));
-    setUploads(allChosenFiles);
+    handleMediaEvent(files);
+  };
+
+  const handleMediaEvent = (files: File[]) => {
+    const allChosenFiles = uploads.concat(
+      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) })),
+    );
+
+    const uniqueAllChosenFiles = allChosenFiles.filter(
+      (item, index, uploadList) =>
+        index ===
+        uploadList.findIndex((compareItem) => {
+          return compareItem.file.name === item.file.name;
+        }),
+    );
+
+    setUploads(uniqueAllChosenFiles);
 
     Promise.all(files.map(fileToUri)).then((urls) => {
       setUploads((previousState) =>
@@ -137,6 +111,7 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
       );
     });
   };
+
   return (
     <Modal
       open={modalIsOpen}
@@ -188,20 +163,14 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
           <VStack as="ol" gap="3" className="images-inline">
+            {uploads.length > 0 && <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>}
             {uploads.map((upload, i) => (
-              <HStack as="li" justify="space-between" align="center" key={`upload-${i}`}>
-                <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
-                  <FilePdfIcon fontSize="1.5rem" aria-hidden />
-
-                  <Label>{upload.file.name}</Label>
-                </HStack>
-                <Button
-                  variant="tertiary"
-                  icon={<TrashIcon aria-hidden />}
-                  title="slett"
-                  onClick={(event) => handleDelete(event, upload.file)}
-                />
-              </HStack>
+              <Upload
+                key={`${upload.file.name}`}
+                upload={upload}
+                handleDelete={handleDelete}
+                setEditedFileName={setEditedFileName}
+              />
             ))}
           </VStack>
         </Modal.Body>
@@ -225,3 +194,79 @@ const UploadModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement, agreem
 };
 
 export default UploadModal;
+const Upload = ({
+  upload,
+  handleDelete,
+  setEditedFileName,
+}: {
+  upload: FileUpload;
+  handleDelete: (file: File) => void;
+  setEditedFileName: (upload: FileUpload, newfileName: string) => void;
+}) => {
+  //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
+  const [fileName, setFileName] = useState(upload.editedFileName || "");
+  const [onCreation] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const fileNameInputRef = useRef<HTMLInputElement>(null);
+
+  function isTextSelected() {
+    const selection = window.getSelection();
+    return selection && selection.rangeCount > 0 && selection.toString().length > 0;
+  }
+
+  useEffect(() => {
+    if (fileNameInputRef.current && !isTextSelected()) {
+      fileNameInputRef.current.select();
+      fileNameInputRef.current.focus();
+    }
+  }, [onCreation]);
+
+  const validateFileName = () => {
+    setErrorMessage("");
+
+    if (fileName.trim().length == 0) {
+      setErrorMessage("Filen må ha et navn");
+    }
+  };
+
+  return (
+    <HStack as="li" justify="space-between" wrap={false}>
+      <>
+        <TextField
+          ref={fileNameInputRef}
+          style={{ width: "500px" }}
+          label={"Endre filnavn"}
+          value={fileName}
+          onChange={(event) => {
+            event.preventDefault();
+            setEditedFileName(upload, fileName);
+            validateFileName();
+            setFileName(event.currentTarget.value);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+            }
+          }}
+          onKeyUp={(event) => {
+            setEditedFileName(upload, fileName);
+            validateFileName();
+            setFileName(event.currentTarget.value);
+          }}
+          error={errorMessage}
+        />
+      </>
+      <HStack align="end">
+        <Button
+          variant="tertiary"
+          title="slett"
+          onClick={(event) => {
+            event.preventDefault();
+            handleDelete(upload.file);
+          }}
+          icon={<TrashIcon fontSize="2rem" aria-hidden />}
+        />
+      </HStack>
+    </HStack>
+  );
+};

@@ -11,7 +11,6 @@ export const DocumentList = styled.ol`
     padding: var(--a-spacing-2) var(--a-spacing-4);
     display: flex;
     justify-content: space-between;
-    align-items: center;
 
     background-color: #ffffff;
     box-shadow: var(--a-shadow-xsmall);
