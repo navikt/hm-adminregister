@@ -1,10 +1,9 @@
 import { ArrowLeftIcon, Buldings3Icon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { BodyShort, Button, Heading, HStack, VStack } from "@navikt/ds-react";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { formatPhoneNumber } from "utils/string-util";
 import { SupplierDTO } from "utils/supplier-util";
-import styles from "./SupplierInfo.module.scss";
 
 const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpen: (newState: boolean) => void }) => {
   const { loggedInUser } = useAuthStore();
@@ -24,14 +23,22 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
         </Heading>
         {supplier?.status === "INACTIVE" && <BodyShort>(INAKTIV)</BodyShort>}
       </VStack>
-      <dl className={styles.descriptionList}>
-        <dt>E-post</dt>
-        <dd>{supplier?.email}</dd>
-        <dt>Telefon</dt>
-        <dd>{supplier.phone && formatPhoneNumber(supplier.phone)}</dd>
-        <dt>Nettside</dt>
-        <dd>{supplier?.homepageUrl}</dd>
-      </dl>
+
+      <DefinitionList horizontal>
+        <DefinitionList.Term>E-post</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier?.email}</DefinitionList.Definition>
+        <DefinitionList.Term>Telefon</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier.phone}</DefinitionList.Definition>
+        <DefinitionList.Term>Nettside</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier?.homepageUrl}</DefinitionList.Definition>
+        <DefinitionList.Term>Adresse</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier?.address}</DefinitionList.Definition>
+        <DefinitionList.Term>Postnummer</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier.postNr}</DefinitionList.Definition>
+        <DefinitionList.Term>Sted</DefinitionList.Term>
+        <DefinitionList.Definition>{supplier.postLocation}</DefinitionList.Definition>
+      </DefinitionList>
+
       <HStack gap="4">
         {loggedInUser?.isAdmin && (
           <Button
