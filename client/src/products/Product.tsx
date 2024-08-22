@@ -18,9 +18,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 
-import { updateProductTitle } from "api/SeriesApi";
-
-import { useSeriesV2 } from "api/SeriesApi";
+import { updateProductTitle, useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
