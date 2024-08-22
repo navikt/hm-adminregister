@@ -1,20 +1,21 @@
 import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
 import ErrorAlert from "error/ErrorAlert";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
-import { Link, useNavigate } from "react-router-dom";
 import { SupplierDTO } from "utils/supplier-util";
 import { useSuppliers } from "utils/swr-hooks";
 import styles from "./SupplierList.module.scss";
 
 const Suppliers = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const { suppliers, isLoading, error } = useSuppliers();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
-  const [pageState, setPageState] = useState(1);
   const itemsPerPage = 10;
 
   const handleSearch = (value: string) => {
@@ -23,7 +24,6 @@ const Suppliers = () => {
       supplier.name.toLowerCase().includes(value.toLowerCase()),
     );
     setFilteredData(filteredSuppliers);
-    setPageState(1);
   };
 
   const renderData = filteredData ? filteredData : suppliers;
@@ -93,7 +93,11 @@ const Suppliers = () => {
           {renderData && renderData?.length > itemsPerPage && (
             <Pagination
               page={pageState}
-              onPageChange={(x) => setPageState(x)}
+              onPageChange={(x) => {
+                searchParams.set("page", x.toString());
+                setSearchParams(searchParams);
+                setPageState(x);
+              }}
               count={Math.ceil(renderData.length / itemsPerPage)}
               boundaryCount={1}
               siblingCount={0}
