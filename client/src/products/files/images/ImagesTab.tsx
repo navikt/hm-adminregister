@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { deleteFileFromSeries } from "api/SeriesApi";
+import { deleteFileFromSeries, useSeriesV2 } from "api/SeriesApi";
 import SeriesSortingArea from "products/files/images/SeriesSortingArea";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -14,20 +14,20 @@ import styles from "./ImagesTab.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
-  mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const ImagesTab = ({ series, mutateSeries, isEditable, showInputError }: Props) => {
+const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
   const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
+  const { mutateSeries } = useSeriesV2(series.id);
 
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)
-      .then(mutateSeries)
+      .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
       });

@@ -8,21 +8,21 @@ import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
-import { changeFilenameOnAttachedFile, deleteFileFromSeries } from "api/SeriesApi";
+import { changeFilenameOnAttachedFile, deleteFileFromSeries, useSeriesV2 } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
-  mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;
 }
 
-const DocumentsTab = ({ series, mutateSeries, isEditable, showInputError }: Props) => {
+const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
+  const { mutateSeries } = useSeriesV2(series.id);
 
   const allPdfsSorted = pdfs.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;
@@ -33,7 +33,7 @@ const DocumentsTab = ({ series, mutateSeries, isEditable, showInputError }: Prop
 
   async function handleDeleteFile(uri: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, uri)
-      .then(mutateSeries)
+      .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
       });
@@ -41,7 +41,7 @@ const DocumentsTab = ({ series, mutateSeries, isEditable, showInputError }: Prop
 
   const handleEditFileName = async (uri: string, editedText: string) => {
     changeFilenameOnAttachedFile(series.id, loggedInUser?.isAdmin || false, uri, editedText)
-      .then(mutateSeries)
+      .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
       });
