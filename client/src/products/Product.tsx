@@ -280,13 +280,8 @@ const Product = () => {
               isEditable={isEditable}
               showInputError={!isValid}
             />
-            <ImageTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} showInputError={!isValid} />
-            <DocumentTab
-              series={series}
-              mutateSeries={mutateSeries}
-              isEditable={isEditable}
-              showInputError={!isValid}
-            />
+            <ImageTab series={series} isEditable={isEditable} showInputError={!isValid} />
+            <DocumentTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
             <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>

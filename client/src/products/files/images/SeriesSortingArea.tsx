@@ -39,7 +39,7 @@ export const handleUpdateOfSeriesMedia = (
   setGlobalError: any,
 ) => {
   updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false)
-    .then(mutateSeries)
+    // .then(mutateSeries)
     .catch((error) => {
       setGlobalError(error);
     });
