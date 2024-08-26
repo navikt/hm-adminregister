@@ -18,7 +18,14 @@ import {
   VStack,
 } from "@navikt/ds-react";
 
-import { deleteSeries, setPublishedSeriesToDraft, updateProductTitle, useSeriesV2 } from "api/SeriesApi";
+import {
+  deleteSeries,
+  setPublishedSeriesToDraft,
+  setSeriesToActive,
+  setSeriesToInactive,
+  updateProductTitle,
+  useSeriesV2,
+} from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
@@ -34,7 +41,6 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
-import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import VariantsTab from "./variants/VariantsTab";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 
@@ -127,6 +133,26 @@ const Product = () => {
       });
   }
 
+  async function onToActive() {
+    setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onToInactive() {
+    setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   const TabLabel = ({
     title,
     numberOfElements,
@@ -162,20 +188,34 @@ const Product = () => {
       <ConfirmModal
         title={"Er du sikker på at du vil slette produktet?"}
         confirmButtonText={"Slett"}
-        onClick={onDelete}
+        onClick={() => {
+          onDelete();
+          setDeleteConfirmationModalIsOpen(false);
+        }}
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
-      <SetExpiredSeriesConfirmationModal
-        series={series}
-        mutateSeries={mutateSeries}
-        params={expiredSeriesModalIsOpen}
-        setParams={setExpiredSeriesModalIsOpen}
+      <ConfirmModal
+        title={
+          expiredSeriesModalIsOpen.newStatus === "ACTIVE"
+            ? "Ønsker du å markere dette produktet og alle dens varianter som aktiv?"
+            : "Ønsker du å markere dette produktet og alle dens varianter som utgått?"
+        }
+        confirmButtonText={expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? "Marker som aktiv" : "Marker som utgått"}
+        onClick={() => {
+          expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? onToActive() : onToInactive();
+          setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
+        }}
+        onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
+        isModalOpen={expiredSeriesModalIsOpen.open}
       />
       <ConfirmModal
         title={"Vil du sette produktet i redigeringsmodus?"}
         confirmButtonText={"OK"}
-        onClick={onEditMode}
+        onClick={() => {
+          onEditMode();
+          setEditProductModalIsOpen(false);
+        }}
         onClose={() => setEditProductModalIsOpen(false)}
         isModalOpen={editProductModalIsOpen}
       />
