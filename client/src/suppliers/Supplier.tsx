@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
-import { getSupplier } from "api/SupplierApi";
+import { deactivateSupplier, getSupplier } from "api/SupplierApi";
 import { HM_REGISTER_URL } from "environments";
 import { useParams } from "react-router-dom";
-import { DeactivateSupplierConfirmationModal } from "suppliers/DeactivateSupplierConfirmationModal";
 import SupplierInfo from "suppliers/SupplierInfo";
 import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
 import SupplierUsers from "suppliers/SupplierUsers";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const Supplier = () => {
   const [supplier, setSupplier] = useState<SupplierDTO>();
@@ -57,15 +57,25 @@ const Supplier = () => {
     fetchSupplier();
   }, [id]);
 
+  async function onDeactivate() {
+    setIsOpen(false);
+    deactivateSupplier(loggedInUser?.isAdmin ?? true, supplier!.id)
+      .then(() => fetchSupplier())
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   if (isLoading || !supplier) return <Loader size="3xlarge" title="venter..." />;
 
   return (
     <main className="show-menu">
-      <DeactivateSupplierConfirmationModal
-        supplier={supplier}
-        mutateSupplier={fetchSupplier}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+      <ConfirmModal
+        title={"Er du sikker på at du vil deaktivere leverandøren?"}
+        confirmButtonText={"Deaktiver"}
+        onClick={onDeactivate}
+        onClose={() => setIsOpen(false)}
+        isModalOpen={isOpen}
       />
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
