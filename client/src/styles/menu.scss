@@ -208,9 +208,7 @@
   }
 
   &__profile-link {
-    display: flex;
     align-items: center;
-    gap: $a-spacing-2;
     border: 1px solid $fm-border-darker;
     color: #fff;
     padding: $a-spacing-2 $a-spacing-3;
@@ -234,10 +232,10 @@
   }
 
   &__logout-link {
-    padding: $a-spacing-2 $a-spacing-4;
-    color: #fff;
-    display: flex;
     align-items: center;
+    color: #fff;
+    padding: $a-spacing-2 $a-spacing-3;
+    margin: 1px;
     gap: $a-spacing-2;
     text-decoration: none;
     border-radius: $a-border-radius-medium;

@@ -9,7 +9,7 @@ import {
   PersonIcon,
   PersonRectangleIcon,
 } from "@navikt/aksel-icons";
-import { Alert, BodyShort, Button, Detail, VStack } from "@navikt/ds-react";
+import { Alert, BodyShort, Button, Detail, HGrid, VStack } from "@navikt/ds-react";
 
 import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -70,18 +70,22 @@ const ProfileMenu = () => {
         </Button>
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
-            <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
-              <PersonRectangleIcon
-                title="Min profil"
-                fontSize={loggedInUser?.isAdmin ? "2.5rem" : "1.5rem"}
-                aria-hidden
-              />
-              {loggedInUser?.isAdmin ? "Min profil og admin brukere" : "Min profil"}
-            </Link>
+            <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+              <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
+                <PersonRectangleIcon
+                  title="Min profil"
+                  fontSize={loggedInUser?.isAdmin ? "2.5rem" : "1.5rem"}
+                  aria-hidden
+                />
+                {loggedInUser?.isAdmin ? "Min profil og admin brukere" : "Leverandør- og brukerinformasjon"}
+              </Link>
+            </HGrid>
             <span className="line" />
-            <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
-              <LeaveIcon title="Logg ut" fontSize="1.5rem" aria-hidden /> Logg ut
-            </Link>
+            <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+              <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
+                <LeaveIcon title="Logg ut" fontSize="1.5rem" aria-hidden /> Logg ut
+              </Link>
+            </HGrid>
             {error && <Alert variant="error">Feil ved utlogging. Error message: {error.message}</Alert>}
           </div>
         )}
@@ -93,9 +97,11 @@ const ProfileMenu = () => {
           className="user-menu__profile-link"
           icon={<PersonCircleIcon title="profile" fontSize="2.25rem" />}
         ></Button>
-        <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
-          <LeaveIcon fontSize="1.5rem" aria-hidden /> <Detail>Logg ut</Detail>
-        </Link>
+        <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+          <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
+            <LeaveIcon fontSize="1.5rem" aria-hidden /> <Detail>Logg ut</Detail>
+          </Link>
+        </HGrid>
       </div>
     </>
   );
