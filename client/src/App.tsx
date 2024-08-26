@@ -1,41 +1,42 @@
 import { Route, Routes } from "react-router-dom";
-import Login from "users/Login";
+
+import { LoginWrapper } from "LoginWrapper";
+import { Startside } from "Startside";
+import Agreements from "agreements/Agreements";
+import Agreement from "agreements/agreement/Agreement";
+import CreateAgreement from "agreements/agreement/CreateAgreement";
+import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
+import { getFeatureFlags } from "api/FeatureApi";
+import { ForApproval } from "approval/ForApproval";
+import { ErrorFallback } from "error/ErrorFallback";
+import ErrorModal from "error/ErrorModal";
+import { NotFound } from "error/NotFound";
+import Navbar from "menu/Navbar";
+import CreateAndEditNews from "news/CreateAndEditNews";
+import News from "news/News";
 import CreateProduct from "products/CreateProduct";
 import Product from "products/Product";
-import EditProductVariant from "products/variants/EditProductVariant";
-import CreateProductVariant from "products/variants/CreateProductVariant";
-import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
-import CreateAdminUser from "./users/admin/CreateAdminUser";
-import AdminProfile from "./users/admin/AdminProfile";
-import SupplierProfile from "users/supplier/SupplierProfile";
-import EditSupplierUser from "users/supplier/EditSupplierUser";
-import Suppliers from "suppliers/Suppliers";
-import Supplier from "suppliers/Supplier";
-import CreateSupplier from "suppliers/CreateSupplier";
-import CreateSupplierUser from "users/supplier/CreateSupplierUser";
-import Agreements from "agreements/Agreements";
-import CreateAgreement from "agreements/agreement/CreateAgreement";
-import { ErrorBoundary } from "react-error-boundary";
-import { ErrorFallback } from "error/ErrorFallback";
-import { NotFound } from "error/NotFound";
-import { Startside } from "Startside";
-import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
-import Navbar from "menu/Navbar";
-import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
-import { ForApproval } from "approval/ForApproval";
-import { LoginWrapper } from "LoginWrapper";
-import ErrorModal from "error/ErrorModal";
-import News from "news/News";
-import EditSupplier from "suppliers/EditSupplier";
-import CreateAndEditNews from "news/CreateAndEditNews";
-import DeleteAdminUser from "./users/admin/DeleteAdminUser";
-import EditAdminUser from "users/admin/EditAdminUser";
-import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
-import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
-import Agreement from "agreements/agreement/Agreement";
-import { getFeatureFlags } from "api/FeatureApi";
-import { FlagProvider } from "toggles/context";
 import ProductListWrapper from "products/ProductListWrapper";
+import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
+import CreateProductVariant from "products/variants/CreateProductVariant";
+import EditProductVariant from "products/variants/EditProductVariant";
+import { ErrorBoundary } from "react-error-boundary";
+import CreateSupplier from "suppliers/CreateSupplier";
+import EditSupplier from "suppliers/EditSupplier";
+import Supplier from "suppliers/Supplier";
+import SupplierList from "suppliers/SupplierList";
+import { FlagProvider } from "toggles/context";
+import Login from "users/Login";
+import EditAdminUser from "users/admin/EditAdminUser";
+import CreateSupplierUser from "users/supplier/CreateSupplierUser";
+import EditSupplierUser from "users/supplier/EditSupplierUser";
+import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
+import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
+import SupplierProfile from "users/supplier/SupplierProfile";
+import AdminProfile from "./users/admin/AdminProfile";
+import CreateAdminUser from "./users/admin/CreateAdminUser";
+import DeleteAdminUser from "./users/admin/DeleteAdminUser";
+import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
 
 export function App() {
   const toggles = getFeatureFlags();
@@ -51,7 +52,10 @@ export function App() {
           <Route element={<LoginWrapper />}>
             <Route element={<Navbar />}>
               <Route path="/produkter" element={<ProductListWrapper key="all-products" isRejectedPage={false} />} />
-              <Route path="/avslaatt-produkt" element={<ProductListWrapper key="rejected-products" isRejectedPage={true} />} />
+              <Route
+                path="/avslaatt-produkt"
+                element={<ProductListWrapper key="rejected-products" isRejectedPage={true} />}
+              />
               <Route path="/produkter/:seriesId" element={<Product />} />
 
               <Route path="/til-godkjenning" element={<ForApproval />} />
@@ -59,7 +63,7 @@ export function App() {
               <Route path="/admin/profil" element={<AdminProfile />} />
               <Route path="/profil" element={<SupplierProfile />} />
 
-              <Route path="/leverandor" element={<Suppliers />} />
+              <Route path="/leverandor" element={<SupplierList />} />
               <Route path="/leverandor/:id" element={<Supplier />} />
 
               <Route path="/rammeavtaler" element={<Agreements />} />
@@ -79,9 +83,10 @@ export function App() {
             <Route path="/admin/adminopplysninger" element={<FirstTimeAdminInfo />} />
 
             <Route path="/profil/rediger-brukerprofil" element={<EditSupplierUser />} />
+            <Route path="/profil/rediger-leverandor" element={<EditSupplier />} />
 
             <Route path="/leverandor/opprett-leverandor" element={<CreateSupplier />} />
-            <Route path="/leverandor/endre-leverandor/:supplierId" element={<EditSupplier />} />
+            <Route path="/leverandor/rediger-leverandor/:supplierId" element={<EditSupplier />} />
             <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUser />} />
 
             <Route path="/rammeavtaler/importer-katalogfil" element={<ImporterOgValiderKatalogfil />} />

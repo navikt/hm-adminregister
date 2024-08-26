@@ -1,11 +1,11 @@
 import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from "@navikt/ds-react";
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
 import { useAdminUsers, useUser } from "utils/swr-hooks";
-import styles from "suppliers/SupplierInfo.module.scss";
 
 export default function AdminProfile() {
   const navigate = useNavigate();
@@ -41,14 +41,17 @@ export default function AdminProfile() {
         </Heading>
         <VStack gap="5">
           <VStack gap="20">
-            <dl className={styles.descriptionList}>
-              <dt>Name</dt>
-              <dd>{user?.name}</dd>
-              <dt>E-post</dt>
-              <dd>{user?.email}</dd>
-              <dt>Telefon</dt>
-              <dd>{user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}</dd>
-            </dl>
+            <DefinitionList horizontal>
+              <DefinitionList.Term>Name</DefinitionList.Term>
+              <DefinitionList.Definition>{user?.name}</DefinitionList.Definition>
+              <DefinitionList.Term>E-post</DefinitionList.Term>
+              <DefinitionList.Definition>{user?.email}</DefinitionList.Definition>
+              <DefinitionList.Term>Telefon</DefinitionList.Term>
+              <DefinitionList.Definition>
+                {user.attributes.phone ? formatPhoneNumber(user?.attributes?.phone) : "Ikke oppgitt"}
+              </DefinitionList.Definition>
+            </DefinitionList>
+            {/* Todo: legg inn redigeringsmulighet */}
             <Heading level="2" size="medium">
               Admin brukere
             </Heading>
