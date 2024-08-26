@@ -196,17 +196,24 @@ const Product = () => {
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
-      <ConfirmModal
-        title={
-          expiredSeriesModalIsOpen.newStatus === "ACTIVE"
-            ? "Ønsker du å markere dette produktet og alle dens varianter som aktiv?"
-            : "Ønsker du å markere dette produktet og alle dens varianter som utgått?"
-        }
-        confirmButtonText={expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? "Marker som aktiv" : "Marker som utgått"}
-        onClick={expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? onToActive : onToInactive}
-        onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
-        isModalOpen={expiredSeriesModalIsOpen.open}
-      />
+      {expiredSeriesModalIsOpen.newStatus === "ACTIVE" && (
+        <ConfirmModal
+          title={"Ønsker du å markere dette produktet og alle dens varianter som aktiv?"}
+          confirmButtonText={"Marker som aktiv"}
+          onClick={onToActive}
+          onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
+          isModalOpen={expiredSeriesModalIsOpen.open}
+        />
+      )}
+      {expiredSeriesModalIsOpen.newStatus === "INACTIVE" && (
+        <ConfirmModal
+          title={"Ønsker du å markere dette produktet og alle dens varianter som utgått?"}
+          confirmButtonText={"Marker som utgått"}
+          onClick={onToInactive}
+          onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
+          isModalOpen={expiredSeriesModalIsOpen.open}
+        />
+      )}
       <ConfirmModal
         title={"Vil du sette produktet i redigeringsmodus?"}
         confirmButtonText={"OK"}
