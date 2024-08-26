@@ -42,7 +42,7 @@ const VideoTab = ({
 
   async function handleDeleteVideoLink(uri: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, uri)
-      .then(mutateSeries)
+      .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
       });
