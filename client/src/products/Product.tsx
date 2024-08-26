@@ -113,6 +113,7 @@ const Product = () => {
   const isEditable = series.status === "EDITABLE";
 
   async function onDelete() {
+    setDeleteConfirmationModalIsOpen(false);
     deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
       .then(() => {
         mutateSeries();
@@ -124,6 +125,7 @@ const Product = () => {
   }
 
   async function onEditMode() {
+    setEditProductModalIsOpen(false);
     setPublishedSeriesToDraft(false, series!.id)
       .then(() => {
         mutateSeries();
@@ -134,6 +136,7 @@ const Product = () => {
   }
 
   async function onToActive() {
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
     setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
       .then(() => {
         mutateSeries();
@@ -144,6 +147,7 @@ const Product = () => {
   }
 
   async function onToInactive() {
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
     setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
       .then(() => {
         mutateSeries();
@@ -188,10 +192,7 @@ const Product = () => {
       <ConfirmModal
         title={"Er du sikker på at du vil slette produktet?"}
         confirmButtonText={"Slett"}
-        onClick={() => {
-          onDelete();
-          setDeleteConfirmationModalIsOpen(false);
-        }}
+        onClick={onDelete}
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
@@ -202,20 +203,14 @@ const Product = () => {
             : "Ønsker du å markere dette produktet og alle dens varianter som utgått?"
         }
         confirmButtonText={expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? "Marker som aktiv" : "Marker som utgått"}
-        onClick={() => {
-          expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? onToActive() : onToInactive();
-          setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-        }}
+        onClick={expiredSeriesModalIsOpen.newStatus === "ACTIVE" ? onToActive : onToInactive}
         onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
         isModalOpen={expiredSeriesModalIsOpen.open}
       />
       <ConfirmModal
         title={"Vil du sette produktet i redigeringsmodus?"}
         confirmButtonText={"OK"}
-        onClick={() => {
-          onEditMode();
-          setEditProductModalIsOpen(false);
-        }}
+        onClick={onEditMode}
         onClose={() => setEditProductModalIsOpen(false)}
         isModalOpen={editProductModalIsOpen}
       />
