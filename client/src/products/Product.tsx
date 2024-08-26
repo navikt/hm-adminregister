@@ -18,12 +18,10 @@ import {
   VStack,
 } from "@navikt/ds-react";
 
-import { updateProductTitle, useSeriesV2 } from "api/SeriesApi";
+import { deleteSeries, setPublishedSeriesToDraft, updateProductTitle, useSeriesV2 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
-import { DeleteConfirmationModal } from "products/DeleteConfirmationModal";
-import { EditPublishedProductConfirmationModal } from "products/EditPublishedProductConfirmationModal";
 import DocumentTab from "products/files/DocumentsTab";
 import ImageTab from "products/files/images/ImagesTab";
 import { RequestApprovalModal } from "products/RequestApprovalModal";
@@ -38,6 +36,7 @@ import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
 import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import VariantsTab from "./variants/VariantsTab";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -107,6 +106,27 @@ const Product = () => {
 
   const isEditable = series.status === "EDITABLE";
 
+  async function onDelete() {
+    deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
+      .then(() => {
+        mutateSeries();
+        navigate("/produkter");
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onEditMode() {
+    setPublishedSeriesToDraft(false, series!.id)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   const TabLabel = ({
     title,
     numberOfElements,
@@ -139,11 +159,12 @@ const Product = () => {
         isOpen={approvalModalIsOpen}
         setIsOpen={setApprovalModalIsOpen}
       />
-      <DeleteConfirmationModal
-        series={series}
-        mutateSeries={mutateSeries}
-        isOpen={deleteConfirmationModalIsOpen}
-        setIsOpen={setDeleteConfirmationModalIsOpen}
+      <ConfirmModal
+        title={"Er du sikker på at du vil slette produktet?"}
+        confirmButtonText={"Slett"}
+        onClick={onDelete}
+        onClose={() => setDeleteConfirmationModalIsOpen(false)}
+        isModalOpen={deleteConfirmationModalIsOpen}
       />
       <SetExpiredSeriesConfirmationModal
         series={series}
@@ -151,11 +172,12 @@ const Product = () => {
         params={expiredSeriesModalIsOpen}
         setParams={setExpiredSeriesModalIsOpen}
       />
-      <EditPublishedProductConfirmationModal
-        series={series}
-        mutateSeries={mutateSeries}
-        isOpen={editProductModalIsOpen}
-        setIsOpen={setEditProductModalIsOpen}
+      <ConfirmModal
+        title={"Vil du sette produktet i redigeringsmodus?"}
+        confirmButtonText={"OK"}
+        onClick={onEditMode}
+        onClose={() => setEditProductModalIsOpen(false)}
+        isModalOpen={editProductModalIsOpen}
       />
       <HGrid
         gap="12"

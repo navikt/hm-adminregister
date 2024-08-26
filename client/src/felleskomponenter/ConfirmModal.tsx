@@ -3,7 +3,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 
 interface Props {
   title: string;
-  text: string;
+  text?: string;
   confirmButtonText: string;
   onClick: () => void;
   onClose: () => void;
@@ -21,9 +21,11 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
       }}
       onClose={onClose}
     >
-      <Modal.Body>
-        <Content>{text}</Content>
-      </Modal.Body>
+      {text && (
+        <Modal.Body>
+          <Content>{text}</Content>
+        </Modal.Body>
+      )}
       <Modal.Footer>
         <Button onClick={onClick} variant={variant ?? "primary"}>
           {confirmButtonText}
