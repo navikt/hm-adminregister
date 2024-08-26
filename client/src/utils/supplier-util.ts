@@ -1,5 +1,5 @@
-import { SupplierChunk, SupplierRegistrationDTO, SupplierStatus } from "./types/response-types";
 import { LoggedInUser } from "utils/user-util";
+import { SupplierChunk, SupplierRegistrationDTO, SupplierStatus } from "./types/response-types";
 
 export interface SupplierDTO {
   id: string;
@@ -58,9 +58,12 @@ export interface SupplierUserDTO {
 export interface SupplierDTOBody {
   name: string;
   supplierData: {
-    email: string;
-    phone: string;
-    homepage: string;
+    email?: string;
+    phone?: string;
+    homepage?: string;
+    address?: string;
+    postNr?: string;
+    postLocation?: string;
   };
 }
 

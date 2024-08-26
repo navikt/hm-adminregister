@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import { Alert, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
-import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
-import { useSuppliers } from "utils/swr-hooks";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { SupplierDTO } from "utils/supplier-util";
+
+import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
+import { Alert, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
 import ErrorAlert from "error/ErrorAlert";
-import styles from "./Suppliers.module.scss";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import { SupplierDTO } from "utils/supplier-util";
+import { useSuppliers } from "utils/swr-hooks";
+import styles from "./SupplierList.module.scss";
 
 const Suppliers = () => {
   const [searchParams, setSearchParams] = useSearchParams();

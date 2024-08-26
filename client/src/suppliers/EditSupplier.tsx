@@ -17,13 +17,12 @@ import { z } from "zod";
 type FormData = z.infer<typeof newSupplierSchema>;
 export default function EditSupplier() {
   const { supplierId } = useParams();
+  const { loggedInUser } = useAuthStore();
+  const { setGlobalError } = useErrorStore();
 
-  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(true, supplierId);
+  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin, supplierId);
 
   const navigate = useNavigate();
-
-  const { setGlobalError } = useErrorStore();
-  const { loggedInUser } = useAuthStore();
 
   const {
     handleSubmit,
@@ -39,6 +38,9 @@ export default function EditSupplier() {
       email: supplier?.supplierData.email || "",
       homepage: supplier?.supplierData.homepage || "",
       phone: supplier?.supplierData.phone || "",
+      address: supplier?.supplierData.address || "",
+      postNr: supplier?.supplierData.postNr || "",
+      postLocation: supplier?.supplierData.postLocation || "",
     },
   });
 
@@ -48,12 +50,19 @@ export default function EditSupplier() {
       email: supplier?.supplierData.email || "",
       homepage: supplier?.supplierData.homepage || "",
       phone: supplier?.supplierData.phone || "",
+      address: supplier?.supplierData.address || "",
+      postNr: supplier?.supplierData.postNr || "",
+      postLocation: supplier?.supplierData.postLocation || "",
     });
     trigger();
   }, [supplier]);
 
   if (supplierIsLoading) {
-    return <Loader size="3xlarge" title="venter..."></Loader>;
+    return (
+      <HStack justify="center" style={{ marginTop: "60px" }}>
+        <Loader size="3xlarge" title="venter..."></Loader>
+      </HStack>
+    );
   }
 
   if (supplierError) {
@@ -71,13 +80,16 @@ export default function EditSupplier() {
         email: data.email,
         homepage: data.homepage,
         phone: cleanedPhoneNumber,
+        address: data.address,
+        postNr: data.postNr,
+        postLocation: data.postLocation,
       },
     };
 
     updateSupplier(loggedInUser?.isAdmin || false, supplierId!, editedSupplier)
       .then(() => {
         supplierMutate();
-        navigate(`/leverandor/${supplierId}`);
+        navigate(loggedInUser?.isAdmin ? `/leverandor/${supplierId}` : "/profil");
       })
       .catch((error) => {
         setGlobalError(error);
@@ -94,7 +106,7 @@ export default function EditSupplier() {
             id="name"
             name="name"
             type="text"
-            autoComplete="on"
+            autoComplete="off"
             error={errors.name && errors.name.message}
           />
           <TextField
@@ -104,7 +116,7 @@ export default function EditSupplier() {
             type="email"
             name="email"
             description="Eksempel: e-post til kundeservice"
-            autoComplete="on"
+            autoComplete="off"
             error={errors.email && errors.email.message}
           />
           <TextField
@@ -114,7 +126,7 @@ export default function EditSupplier() {
             type="text"
             name="homepage"
             description="Eksempel: www.domene.no"
-            autoComplete="on"
+            autoComplete="off"
             error={errors.homepage && errors.homepage.message}
           />
           <TextField
@@ -124,8 +136,35 @@ export default function EditSupplier() {
             type="text"
             name="phone"
             description="Eksempel: nummer til kundeservice"
-            autoComplete="on"
+            autoComplete="off"
             error={errors.phone && errors.phone.message}
+          />
+          <TextField
+            {...register("address", { required: false })}
+            label="Adresse"
+            id="address"
+            type="text"
+            name="address"
+            autoComplete="off"
+            error={errors.address && errors.address.message}
+          />
+          <TextField
+            {...register("postNr", { required: false })}
+            label="Postnummer"
+            id="postNr"
+            type="text"
+            name="postNr"
+            autoComplete="off"
+            error={errors.postNr && errors.postNr.message}
+          />
+          <TextField
+            {...register("postLocation", { required: false })}
+            label="Sted"
+            id="postLocation"
+            type="text"
+            name="postLocation"
+            autoComplete="off"
+            error={errors.postLocation && errors.postLocation.message}
           />
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

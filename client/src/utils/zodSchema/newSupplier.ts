@@ -45,6 +45,9 @@ export const newSupplierSchema = z.object({
       },
       { message: "Telefonnummer må bestå av siffer" },
     ),
+  address: z.string(),
+  postNr: z.string(),
+  postLocation: z.string(),
 });
 
 export type newSupplier = z.infer<typeof newSupplierSchema>;
