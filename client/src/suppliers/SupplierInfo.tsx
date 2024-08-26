@@ -26,16 +26,9 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
               {supplier?.name}
             </Heading>
             {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
-            {/* {supplier.status === "ACTIVE" && <TagWithIcon icon={<></>} text="Aktiv" color={colors.GREEN} />} */}
           </div>
           <Dropdown>
-            <Button
-              variant="secondary"
-              // size="small"
-              // style={{ height: "2rem" }}
-              icon={<CogIcon title="Handlinger" />}
-              as={Dropdown.Toggle}
-            ></Button>
+            <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
                 <Dropdown.Menu.List.Item
