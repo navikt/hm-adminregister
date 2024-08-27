@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
@@ -6,6 +6,7 @@ import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "util
 import { PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -71,10 +72,6 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     );
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
-  };
-
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
@@ -84,7 +81,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
         <VStack gap="4">
           <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
             <HStack gap="4">
-              <form onSubmit={handleSubmit} style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
+              <Box role="search" style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
@@ -95,7 +92,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
                 />
-              </form>
+              </Box>
               <CheckboxGroup
                 legend="Filter"
                 hideLegend
