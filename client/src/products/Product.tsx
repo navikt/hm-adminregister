@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from "reac
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
-  Alert,
   BodyShort,
   Box,
   Button,
@@ -43,6 +42,7 @@ import AboutTab from "./about/AboutTab";
 import "./product-page.scss";
 import VariantsTab from "./variants/VariantsTab";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
+import ErrorAlert from "error/ErrorAlert";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -82,15 +82,7 @@ const Product = () => {
   if (!series || errorSeries) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise produkt. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan du sende
-            oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }
