@@ -1,6 +1,6 @@
 import "./RichTextEditorQuill.css";
 import "quill/dist/quill.snow.css";
-import React, { FocusEventHandler, forwardRef, useEffect, useLayoutEffect, useRef } from "react";
+import React, { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import Quill from "quill";
 
 // noinspection JSUnusedGlobalSymbols
