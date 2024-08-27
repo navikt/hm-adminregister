@@ -7,7 +7,8 @@ import { EditCommonInfoAgreement } from "./Agreement";
 import { labelRequired } from "utils/string-util";
 import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 import parse from "html-react-parser";
-import { AgreementDescriptionRTE } from "agreements/agreement/AgreementDescriptionRTE";
+import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
+import "./agreement-description-editor.scss";
 
 interface Props {
   agreement: AgreementRegistrationDTO;
@@ -67,11 +68,12 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
 
             {showEditDescriptionMode && (
               <>
-                <AgreementDescriptionRTE
-                  onChange={(description: string) => {
+                <RichTextEditorQuill
+                  onTextChange={(description: string) => {
                     formMethods.setValue("description", description);
                   }}
-                  textContent={agreement.agreementData.text || ""}
+                  defaultValue={agreement.agreementData.text || ""}
+                  className="editor"
                 />
                 <Button
                   className="fit-content"
