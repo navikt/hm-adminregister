@@ -30,7 +30,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
-  const [supplierFilter, setSupplierFilter] = useState<string[]>(searchParams.getAll("supplier") || []);
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -93,17 +93,17 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     if (uuid) {
       if (isSelected) {
         if (!searchParams.getAll("supplier").includes(uuid)) {
-          searchParams.append("supplier", uuid);
+          searchParams.set("supplier", uuid);
         }
       } else {
         if (searchParams.getAll("supplier").includes(uuid)) {
           const updated = searchParams.getAll("supplier").filter((supplier) => supplier !== uuid);
           searchParams.delete("supplier");
-          updated.forEach((supplier) => searchParams.append("supplier", supplier));
+          updated.forEach((supplier) => searchParams.set("supplier", supplier));
         }
       }
       setSearchParams(searchParams);
-      setSupplierFilter(searchParams.getAll("supplier"));
+      setSupplierFilter(searchParams.get("supplier") || "");
     }
   };
 
@@ -147,8 +147,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                     .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
                   onToggleSelected={onToggleSelected}
                   options={suppliers?.map((supplier) => supplier.name) || []}
-                  isMultiSelect
-                  style={{ maxWidth: "475px", minWidth: "250px" }}
+                  style={{ flex: 1, maxWidth: "475px" }}
                 />
               )}
             </HStack>
