@@ -140,12 +140,14 @@ export function usePagedProducts({
   titleSearchTerm,
   statusFilters,
   isRejectedPage,
+  supplierFilter,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
   statusFilters: string[];
   isRejectedPage: boolean;
+  supplierFilter?: string[];
 }) {
   const { loggedInUser } = useAuthStore();
 
@@ -155,8 +157,11 @@ export function usePagedProducts({
 
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
+  const supplierParams =
+    supplierFilter && supplierFilter?.length > 0 ? "&supplierFilter=" + supplierFilter?.join("&supplierFilter=") : "";
+
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${supplierParams}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);

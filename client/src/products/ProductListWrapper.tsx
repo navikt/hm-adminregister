@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef } from "utils/swr-hooks";
-
-import { PlusIcon } from "@navikt/aksel-icons";
+import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
 import {
   Alert,
   Button,
@@ -16,16 +14,23 @@ import {
   Pagination,
   Search,
   Select,
+  UNSAFE_Combobox,
   VStack,
 } from "@navikt/ds-react";
+
+import { PlusIcon } from "@navikt/aksel-icons";
 import { ProductList } from "./ProductList";
 
-type productPropsType = { isRejectedPage: boolean };
+type productPropsType = {
+  isRejectedPage: boolean;
+};
 
 const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
+  const { suppliers } = useSuppliers();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
+  const [supplierFilter, setSupplierFilter] = useState<string[]>(searchParams.getAll("supplier") || []);
   const { loggedInUser } = useAuthStore();
   const [statusFilters, setStatusFilters] = useState([""]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -39,6 +44,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     titleSearchTerm: searchTerm,
     statusFilters,
     isRejectedPage,
+    supplierFilter: supplierFilter,
   });
 
   const navigate = useNavigate();
@@ -81,6 +87,26 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     event.preventDefault(); // Prevent form submission and page reload
   };
 
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+
+    if (uuid) {
+      if (isSelected) {
+        if (!searchParams.getAll("supplier").includes(uuid)) {
+          searchParams.append("supplier", uuid);
+        }
+      } else {
+        if (searchParams.getAll("supplier").includes(uuid)) {
+          const updated = searchParams.getAll("supplier").filter((supplier) => supplier !== uuid);
+          searchParams.delete("supplier");
+          updated.forEach((supplier) => searchParams.append("supplier", supplier));
+        }
+      }
+      setSearchParams(searchParams);
+      setSupplierFilter(searchParams.getAll("supplier"));
+    }
+  };
+
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
@@ -111,6 +137,20 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
               >
                 {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
               </CheckboxGroup>
+              {loggedInUser && loggedInUser.isAdmin && suppliers && (
+                <UNSAFE_Combobox
+                  clearButton
+                  clearButtonLabel="Tøm"
+                  label="Filtrer på leverandører"
+                  selectedOptions={searchParams
+                    .getAll("supplier")
+                    .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                  onToggleSelected={onToggleSelected}
+                  options={suppliers?.map((supplier) => supplier.name) || []}
+                  isMultiSelect
+                  style={{ maxWidth: "475px", minWidth: "250px" }}
+                />
+              )}
             </HStack>
 
             {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
