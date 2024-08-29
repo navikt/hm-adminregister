@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -20,6 +21,7 @@ import {
 
 import { PlusIcon } from "@navikt/aksel-icons";
 import { ProductList } from "./ProductList";
+import ErrorAlert from "error/ErrorAlert";
 
 type productPropsType = {
   isRejectedPage: boolean;
@@ -71,14 +73,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   if (errorPaged) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise produkter. Prøv å laste siden på nytt. Hvis problemet vedvarer, kan du sende oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }
@@ -116,7 +111,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
         <VStack gap="4">
           <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
             <HStack gap="4">
-              <form onSubmit={handleSubmit} style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
+              <Box role="search" style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
@@ -127,7 +122,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
                 />
-              </form>
+              </Box>
               <CheckboxGroup
                 legend="Filter"
                 hideLegend

@@ -1,7 +1,6 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteDraftProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
-import { DeleteVariantConfirmationModal } from "products/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
@@ -10,6 +9,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const VariantsTab = ({
   series,
@@ -29,14 +29,8 @@ const VariantsTab = ({
   const columnsPerPage = 5;
   const totalPages = Math.ceil(series.variants.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-
-  const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
-    open: boolean;
-    variantId: string | undefined;
-  }>({
-    open: false,
-    variantId: undefined,
-  });
+  const [variantId, setVariantId] = useState<string>("");
+  const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false);
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id);
 
@@ -50,8 +44,8 @@ const VariantsTab = ({
     return undefined;
   };
 
-  async function onDelete(productId: string) {
-    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [productId])
+  async function onDelete() {
+    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [variantId])
       .then(() => {
         mutateVariants();
         mutateSeries();
@@ -96,11 +90,13 @@ const VariantsTab = ({
 
   return (
     <>
-      <DeleteVariantConfirmationModal
-        onDelete={onDelete}
-        params={deleteVariantConfirmationModalIsOpen}
-        setParams={setDeleteVariantConfirmationModalIsOpen}
-      ></DeleteVariantConfirmationModal>
+      <ConfirmModal
+        title={"Er du sikker på at du vil slette varianten?"}
+        confirmButtonText={"Slett"}
+        onClick={() => onDelete().then(() => setDeleteVariantConfirmationModalIsOpen(false))}
+        onClose={() => setDeleteVariantConfirmationModalIsOpen(false)}
+        isModalOpen={deleteVariantConfirmationModalIsOpen}
+      />
       <Tabs.Panel value="variants" className="tab-panel">
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
@@ -141,12 +137,10 @@ const VariantsTab = ({
                                       </Dropdown.Menu.List.Item>
                                       {!product.isPublished ? (
                                         <Dropdown.Menu.List.Item
-                                          onClick={() =>
-                                            setDeleteVariantConfirmationModalIsOpen({
-                                              open: true,
-                                              variantId: product.id,
-                                            })
-                                          }
+                                          onClick={() => {
+                                            setVariantId(product.id);
+                                            setDeleteVariantConfirmationModalIsOpen(true);
+                                          }}
                                         >
                                           Slett
                                           <TrashIcon aria-hidden />
@@ -238,7 +232,7 @@ const VariantsTab = ({
               navigate(
                 `${pathname}/opprett-variant/${series.id}?page=${
                   Math.floor(series.variants.length / columnsPerPage) + 1
-                }`
+                }`,
               );
             }}
           >
