@@ -14,6 +14,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { useSeries } from "utils/swr-hooks";
 import { MediaInfoDTO } from "utils/types/response-types";
 import styles from "./ProductImageCard.module.scss";
+import productStyles from "../../ProductPage.module.scss";
 
 interface Props {
   seriesId: string;
@@ -91,7 +92,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
             </HStack>
           </VStack>
         </VStack>
-        <div className="moreMenuContainer">
+        <div className={productStyles.moreMenuContainer}>
           <MoreMenu mediaInfo={imagesArr[index]} handleDeleteFile={handleDeleteFile} />
         </div>
       </div>

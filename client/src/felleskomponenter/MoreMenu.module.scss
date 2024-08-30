@@ -1,0 +1,19 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.content {
+  padding: 0 !important;
+
+  li {
+    padding: 0.3rem !important;
+    width: auto !important;
+  }
+}
+
+.button {
+  justify-content: flex-start;
+  padding: 1rem 2rem;
+
+  &:hover {
+    border-radius: 0;
+  }
+}

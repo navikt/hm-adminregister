@@ -1,7 +1,7 @@
 import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown } from "@navikt/ds-react";
 import { MediaInfoDTO } from "utils/types/response-types";
-import "./more-menu.scss";
+import styles from "./MoreMenu.module.scss";
 
 export const MoreMenu = ({
   mediaInfo,
@@ -13,16 +13,16 @@ export const MoreMenu = ({
   handleEditFileName?: (uri: string) => void;
 }) => {
   return (
-    <div className="more-menu">
+    <>
       <Dropdown>
         <Button
-          className="more-menu-button"
+          className={styles.button}
           size="small"
           variant="tertiary"
           icon={<MenuElipsisVerticalIcon title="Meny" fontSize="1.5rem" />}
           as={Dropdown.Toggle}
         />
-        <Dropdown.Menu className="more-menu-content">
+        <Dropdown.Menu className={styles.content}>
           <Dropdown.Menu.List>
             {handleEditFileName && (
               <Dropdown.Menu.List.Item onClick={() => handleEditFileName(mediaInfo.uri)}>
@@ -35,6 +35,6 @@ export const MoreMenu = ({
           </Dropdown.Menu.List>
         </Dropdown.Menu>
       </Dropdown>
-    </div>
+    </>
   );
 };
