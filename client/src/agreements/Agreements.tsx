@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
+  Box,
   Button,
   Dropdown,
   Heading,
@@ -76,10 +77,6 @@ const Agreements = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
-  };
-
   return (
     <main className="show-menu">
       <div className="page__background-container">
@@ -89,7 +86,7 @@ const Agreements = () => {
           </Heading>
           <VStack gap="4">
             <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="4">
-              <form onSubmit={handleSubmit}>
+              <Box role="search">
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
@@ -100,7 +97,7 @@ const Agreements = () => {
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
                 />
-              </form>
+              </Box>
               <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
                 {!inSearchMode && (
                   <>

@@ -1,5 +1,5 @@
 import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
+import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
@@ -73,10 +73,6 @@ export const ForApproval = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
-  };
-
   return (
     <main className="show-menu">
       <div>
@@ -105,7 +101,7 @@ export const ForApproval = () => {
                 </ToggleGroup>
               )}
 
-              <form onSubmit={handleSubmit}>
+              <Box role="search">
                 <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
                   <Search
                     className="search-button"
@@ -118,7 +114,7 @@ export const ForApproval = () => {
                     onChange={(value) => handleSearch(value)}
                   />
                 </HGrid>
-              </form>
+              </Box>
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (
