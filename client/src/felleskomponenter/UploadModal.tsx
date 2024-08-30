@@ -20,7 +20,7 @@ interface Props {
   modalIsOpen: boolean;
   fileType: "images" | "documents";
   setModalIsOpen: (open: boolean) => void;
-  onSubmit: (uploads: FileUpload[]) => Promise<void>;
+  uploadFiles: (uploads: FileUpload[]) => Promise<void>;
 }
 
 const removeFileExtation = (fileName: string) => {
@@ -36,7 +36,7 @@ export interface FileUpload {
   editedFileName?: string;
 }
 
-const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props) => {
+const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = useState<FileUpload[]>([]);
@@ -186,7 +186,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props)
           disabled={uploads.some((value) => value.editedFileName?.trim().length === 0) || uploads.length === 0}
           onClick={() => {
             setIsUploading(true);
-            onSubmit(uploads).finally(() => clearState());
+            uploadFiles(uploads).finally(() => clearState());
           }}
         >
           Last opp

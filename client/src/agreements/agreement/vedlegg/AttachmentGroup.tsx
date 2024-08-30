@@ -84,7 +84,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        onSubmit={uploadFiles}
+        uploadFiles={uploadFiles}
         fileType={"documents"}
       />
       <EditAttachmentGroupModal

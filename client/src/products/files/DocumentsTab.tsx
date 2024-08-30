@@ -64,7 +64,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         fileType="documents"
-        onSubmit={uploadFiles}
+        uploadFiles={uploadFiles}
       />
       <Tabs.Panel value="documents" className="tab-panel">
         <VStack gap="10">

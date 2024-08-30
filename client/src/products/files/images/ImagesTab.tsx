@@ -46,7 +46,12 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
 
   return (
     <>
-      <UploadModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} fileType="images" onSubmit={uploadFiles} />
+      <UploadModal
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+        fileType="images"
+        uploadFiles={uploadFiles}
+      />
 
       <Tabs.Panel value="images" className="tab-panel">
         <Alert variant="info" className={styles.alertSpacing}>
