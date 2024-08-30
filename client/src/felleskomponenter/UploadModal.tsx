@@ -52,7 +52,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props)
         index ===
         uploadList.findIndex((compareItem) => {
           return compareItem.file.name === item.file.name;
-        },
+        }),
     );
 
     setUploads(uniqueAllChosenFiles);
@@ -61,8 +61,8 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props)
       setUploads((previousState) =>
         previousState.map((f) => ({
           ...f,
-          previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)]
-        }))
+          previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
+        })),
       );
     });
   };
@@ -88,7 +88,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props)
     const isValidFiles = files.every((file) =>
       fileType === "images"
         ? acceptedFileTypesImages.includes(file.type)
-        : acceptedFileTypesDocuments.includes(file.type)
+        : acceptedFileTypesDocuments.includes(file.type),
     );
 
     if (!isValidFiles) {
@@ -104,8 +104,8 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, onSubmit }: Props)
   const setEditedFileName = (upload: FileUpload, newFileName: string) => {
     setUploads((prevUploads) =>
       prevUploads.map((prevUpload) =>
-        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload
-      )
+        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload,
+      ),
     );
   };
 
@@ -209,7 +209,7 @@ export default UploadModal;
 
 const Upload = ({
   upload,
-                  fileType,
+  fileType,
   handleDelete,
   setEditedFileName,
 }: {
