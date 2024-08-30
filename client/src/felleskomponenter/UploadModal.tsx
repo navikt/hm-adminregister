@@ -15,6 +15,7 @@ import {
 import { ImageContainer } from "products/files/images/ImageContainer";
 import { useEffect, useRef, useState } from "react";
 import { fileToUri } from "utils/file-util";
+import styles from "./UploadModal.module.scss";
 
 interface Props {
   modalIsOpen: boolean;
@@ -129,10 +130,10 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
           onDragLeave={handleDragEvent}
           onDragOver={handleDragEvent}
           onDrop={handleDragEvent}
-          className="images-tab__upload-container"
+          className={styles.uploadContainer}
         >
-          <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
-          <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
+          <FileImageFillIcon className={styles.uploadIcon} fontSize="4rem" aria-hidden />
+          <BodyShort className={styles.uploadText}>Slipp filen her eller</BodyShort>
           <Button
             size="small"
             variant="secondary"
@@ -165,7 +166,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
         )}
 
         {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
-        <VStack as="ol" gap="3" className="images-inline">
+        <VStack as="ol" gap="3" className={styles.uploadInline}>
           {fileType === "documents" && uploads.length > 0 && (
             <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
           )}
@@ -274,7 +275,7 @@ const Upload = ({
       ) : (
         <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
           <Box
-            className={"image-box"}
+            className={styles.uploadBox}
             borderRadius="medium"
             borderWidth="1"
             width="75px"
