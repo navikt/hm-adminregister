@@ -10,6 +10,7 @@ import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
+import styles from "../ProductPage.module.scss";
 
 const VariantsTab = ({
   series,
@@ -97,7 +98,7 @@ const VariantsTab = ({
         onClose={() => setDeleteVariantConfirmationModalIsOpen(false)}
         isModalOpen={deleteVariantConfirmationModalIsOpen}
       />
-      <Tabs.Panel value="variants" className="tab-panel">
+      <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
             Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
@@ -108,7 +109,7 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
             <VStack gap="4">
-              <div className="variant-table">
+              <div className={styles.variantTable}>
                 <Table>
                   <Table.Header>
                     <Table.Row>

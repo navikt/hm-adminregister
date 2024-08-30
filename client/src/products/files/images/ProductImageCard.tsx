@@ -63,7 +63,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
         <VStack gap="2">
           <button
             type="button"
-            className="button-image"
+            className={styles.buttonImage}
             onClick={() => setImageModalIsOpen(true)}
             style={{ cursor: "pointer" }}
           >
@@ -91,7 +91,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
             </HStack>
           </VStack>
         </VStack>
-        <div className="more-menu-container">
+        <div className="moreMenuContainer">
           <MoreMenu mediaInfo={imagesArr[index]} handleDeleteFile={handleDeleteFile} />
         </div>
       </div>

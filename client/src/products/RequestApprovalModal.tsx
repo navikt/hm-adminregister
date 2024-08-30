@@ -4,6 +4,7 @@ import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "products/seriesUtils";
 import { requestApproval } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
+import styles from "./ProductPage.module.scss";
 
 export const RequestApprovalModal = ({
   series,
@@ -33,8 +34,8 @@ export const RequestApprovalModal = ({
       <Modal open={isOpen} header={{ heading: "Produktet mangler data" }} onClose={() => setIsOpen(false)}>
         <Modal.Body>
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
-          <BodyLong className="product-error-text">Vennligst rett opp følgende feil:</BodyLong>
-          <ul className="product-error-text">
+          <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
+          <ul className={styles.errorText}>
             {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
             {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
             {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}

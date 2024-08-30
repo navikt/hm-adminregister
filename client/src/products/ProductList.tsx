@@ -45,7 +45,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
       className={styles.seriesPanel}
     >
       <Box
-        className={"image-box"}
+        className={styles.imageBox}
         borderRadius="medium"
         borderWidth="1"
         width="75px"
