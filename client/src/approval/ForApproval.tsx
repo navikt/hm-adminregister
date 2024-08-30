@@ -1,4 +1,3 @@
-import "./til-godkjenning.scss";
 import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
