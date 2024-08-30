@@ -1,4 +1,4 @@
-import "./RichTextEditorNews.css";
+import "./RichTextEditorQuill.css";
 import "quill/dist/quill.snow.css";
 import React, { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import Quill from "quill";
@@ -11,23 +11,26 @@ const bindings = {
   },
 };
 
-
-
-const modules = {
+const defaultModules = {
   toolbar: [["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]],
   keyboard: {
     bindings: bindings,
   },
 };
-const formats = ["bold", "italic", "list", "link"];
+const defaultFormats = ["bold", "italic", "list", "link"];
 
 type Props = {
   onTextChange: (html: string) => void;
   defaultValue?: any;
   className?: string;
+  toolbar?: (string[] | { list: string }[])[];
+  formats?: string[];
 };
 
-export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, defaultValue, className }: Props, ref) {
+export const RichTextEditorQuill = forwardRef(function TempComp(
+  { onTextChange, defaultValue, className, toolbar, formats }: Props,
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTextChangeRef = useRef(onTextChange);
   const defaultValueRef = useRef(defaultValue);
@@ -47,8 +50,8 @@ export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, d
     const editorContainer = container.appendChild(container.ownerDocument.createElement("div"));
 
     const quill = new Quill(editorContainer, {
-      modules,
-      formats,
+      modules: toolbar ? { ...defaultModules, toolbar: toolbar } : defaultModules,
+      formats: formats ? formats : defaultFormats,
       theme: "snow",
     });
 
@@ -59,12 +62,12 @@ export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, d
     }
 
     if (defaultValueRef.current) {
-      const htmlAsDelta = quill.clipboard.convert( {html :defaultValueRef.current} );
+      const htmlAsDelta = quill.clipboard.convert({ html: defaultValueRef.current });
       quill.setContents(htmlAsDelta);
     }
 
     quill.on(Quill.events.TEXT_CHANGE, () => {
-      onTextChange(quill.root.innerHTML);
+      onTextChange(quill.getSemanticHTML());
     });
 
     return () => {
@@ -78,4 +81,4 @@ export const RichTextNewsEditor = forwardRef(function TempComp({ onTextChange, d
   return <div ref={containerRef} className={className}></div>;
 });
 
-export default RichTextNewsEditor;
+export default RichTextEditorQuill;

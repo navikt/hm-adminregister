@@ -1,8 +1,8 @@
-.ql-toolbar, .ql-container{
+.ql-toolbar, .ql-container {
     border: none !important;
 }
 
-.ql-toolbar{
+.ql-toolbar {
     border-bottom: 1px solid var(--a-border-default) !important;
 }
 
@@ -11,32 +11,27 @@
     min-height: 10rem;
 }
 
-.ql-bold:focus{
+.ql-bold:focus {
     outline: var(--a-border-focus) var(--a-spacing-05) solid;
     border-radius: var(--a-spacing-05);
 }
 
-.ql-italic:focus{
+.ql-italic:focus {
     outline: var(--a-border-focus) var(--a-spacing-05) solid;
     border-radius: var(--a-spacing-05);
 }
 
-.ql-list:focus{
+.ql-list:focus {
     outline: var(--a-border-focus) var(--a-spacing-05) solid;
     border-radius: var(--a-spacing-05);
 }
 
-.ql-link:focus{
+.ql-link:focus {
     outline: var(--a-border-focus) var(--a-spacing-05) solid;
-    border-radius: var(--a-spacing-05);
-}
-
-.ql-editor:focus{
-    outline: var(--a-border-focus) var(--a-spacing-1) solid;
     border-radius: var(--a-spacing-05);
 }
 
 .quill-ol {
-  margin-top:0;
-  margin-bottom:0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
