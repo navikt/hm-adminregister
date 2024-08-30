@@ -78,10 +78,6 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     );
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
-  };
-
   const onToggleSelected = (option: string, isSelected: boolean) => {
     const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
 
