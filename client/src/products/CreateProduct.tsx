@@ -1,5 +1,4 @@
 import { Button, HStack, TextField, VStack } from "@navikt/ds-react";
-import "./create-product.scss";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useIsoCategories } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";

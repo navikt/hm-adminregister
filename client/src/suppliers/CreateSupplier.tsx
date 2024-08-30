@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, HStack, TextField, VStack } from "@navikt/ds-react";
-import "./create-supplier.scss";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,7 +14,6 @@ import { Buldings3Icon } from "@navikt/aksel-icons";
 
 type FormData = z.infer<typeof newSupplierSchema>;
 
-
 export default function CreateSupplier() {
   const { setGlobalError } = useErrorStore();
 
@@ -29,9 +27,8 @@ export default function CreateSupplier() {
   } = useForm<FormData>({
     resolver: zodResolver(newSupplierSchema),
     mode: "onSubmit",
-    reValidateMode: "onChange"
+    reValidateMode: "onChange",
   });
-
 
   async function onSubmit(data: FormData) {
     //remove all white spaces
@@ -70,7 +67,7 @@ export default function CreateSupplier() {
   return (
     <FormBox title="Opprett ny leverandør" icon={<Buldings3Icon />}>
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7" width="300px" >
+        <VStack gap="7" width="300px">
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -117,7 +114,7 @@ export default function CreateSupplier() {
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>
-            <Button type="submit" size="medium" >
+            <Button type="submit" size="medium">
               Opprett
             </Button>
           </HStack>
