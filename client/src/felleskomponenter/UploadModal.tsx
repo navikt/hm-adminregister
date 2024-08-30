@@ -12,20 +12,15 @@ import {
   TextField,
   VStack,
 } from "@navikt/ds-react";
-import { uploadFilesToSeries } from "api/MediaApi";
 import { ImageContainer } from "products/files/images/ImageContainer";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
 import { fileToUri } from "utils/file-util";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
   modalIsOpen: boolean;
-  oid: string;
   fileType: "images" | "documents";
   setModalIsOpen: (open: boolean) => void;
-  mutateSeries: () => void;
+  uploadFiles: (uploads: FileUpload[]) => Promise<void>;
 }
 
 const removeFileExtation = (fileName: string) => {
@@ -41,30 +36,11 @@ export interface FileUpload {
   editedFileName?: string;
 }
 
-const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries }: Props) => {
+const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = useState<FileUpload[]>([]);
   const [fileTypeError, setFileTypeError] = useState("");
-  const { loggedInUser } = useAuthStore();
-  const { handleSubmit } = useForm();
-  const { setGlobalError } = useErrorStore();
-
-  async function onSubmit() {
-    setIsUploading(true);
-
-    uploadFilesToSeries(oid, loggedInUser?.isAdmin || false, uploads)
-      .then(() => {
-        setIsUploading(false);
-        mutateSeries();
-        setUploads([]);
-        setModalIsOpen(false);
-      })
-      .catch((error) => {
-        setIsUploading(false);
-        setGlobalError(error);
-      });
-  }
 
   const handleMediaEvent = (files: File[]) => {
     const allChosenFiles = uploads.concat(
@@ -133,6 +109,11 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
     );
   };
 
+  const clearState = () => {
+    setIsUploading(false);
+    setUploads([]);
+  };
+
   return (
     <Modal
       open={modalIsOpen}
@@ -142,85 +123,84 @@ const UploadModal = ({ modalIsOpen, oid, fileType, setModalIsOpen, mutateSeries 
       }}
       onClose={() => setModalIsOpen(false)}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Body>
-          <div
-            onDragEnter={handleDragEvent}
-            onDragLeave={handleDragEvent}
-            onDragOver={handleDragEvent}
-            onDrop={handleDragEvent}
-            className="images-tab__upload-container"
-          >
-            <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
-            <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
-            <Button
-              size="small"
-              variant="secondary"
-              icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
-              iconPosition="right"
-              onClick={(event) => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = "";
-                }
-                event.preventDefault();
-                fileInputRef?.current?.click();
-              }}
-            >
-              Bla gjennom
-            </Button>
-            <input
-              id="fileInput"
-              onChange={(event) => handleChange(event)}
-              multiple={true}
-              ref={fileInputRef}
-              type="file"
-              hidden
-              accept={fileType === "images" ? "image/jpeg, image/jpg, image/png" : "application/pdf"}
-            />
-          </div>
-
-          {isUploading && (
-            <HStack justify="center">
-              <Loader size="2xlarge" title="venter..." />
-            </HStack>
-          )}
-
-          {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
-          <VStack as="ol" gap="3" className="images-inline">
-            {fileType === "documents" && uploads.length > 0 && (
-              <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
-            )}
-            {uploads.map((upload) => (
-              <Upload
-                key={`${upload.file.name}`}
-                upload={upload}
-                fileType={fileType}
-                handleDelete={handleDelete}
-                setEditedFileName={setEditedFileName}
-              />
-            ))}
-          </VStack>
-        </Modal.Body>
-        <Modal.Footer>
+      <Modal.Body>
+        <div
+          onDragEnter={handleDragEvent}
+          onDragLeave={handleDragEvent}
+          onDragOver={handleDragEvent}
+          onDrop={handleDragEvent}
+          className="images-tab__upload-container"
+        >
+          <FileImageFillIcon className="images-tab__upload-icon" fontSize="4rem" aria-hidden />
+          <BodyShort className="images-tab__text">Slipp filen her eller</BodyShort>
           <Button
-            type="submit"
-            variant="primary"
-            disabled={uploads.some((value) => value.editedFileName?.trim().length === 0) || uploads.length === 0}
-          >
-            Last opp
-          </Button>
-          <Button
-            onClick={(event) => {
-              event.preventDefault();
-              setModalIsOpen(false);
-              setUploads([]);
-            }}
+            size="small"
             variant="secondary"
+            icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
+            iconPosition="right"
+            onClick={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+              }
+              fileInputRef?.current?.click();
+            }}
           >
-            Avbryt
+            Bla gjennom
           </Button>
-        </Modal.Footer>
-      </form>
+          <input
+            id="fileInput"
+            onChange={(event) => handleChange(event)}
+            multiple={true}
+            ref={fileInputRef}
+            type="file"
+            hidden
+            accept={fileType === "images" ? "image/jpeg, image/jpg, image/png" : "application/pdf"}
+          />
+        </div>
+
+        {isUploading && (
+          <HStack justify="center">
+            <Loader size="2xlarge" title="venter..." />
+          </HStack>
+        )}
+
+        {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
+        <VStack as="ol" gap="3" className="images-inline">
+          {fileType === "documents" && uploads.length > 0 && (
+            <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
+          )}
+          {uploads.map((upload) => (
+            <Upload
+              key={`${upload.file.name}`}
+              upload={upload}
+              fileType={fileType}
+              handleDelete={handleDelete}
+              setEditedFileName={setEditedFileName}
+            />
+          ))}
+        </VStack>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="primary"
+          disabled={uploads.some((value) => value.editedFileName?.trim().length === 0) || uploads.length === 0}
+          onClick={() => {
+            setIsUploading(true);
+            uploadFiles(uploads).finally(() => clearState());
+          }}
+        >
+          Last opp
+        </Button>
+        <Button
+          onClick={() => {
+            clearState();
+            setModalIsOpen(false);
+          }}
+          variant="secondary"
+        >
+          Avbryt
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };
@@ -248,6 +228,7 @@ const Upload = ({
     const selection = window.getSelection();
     return selection && selection.rangeCount > 0 && selection.toString().length > 0;
   }
+
   useEffect(() => {
     if (fileNameInputRef.current && !isTextSelected()) {
       fileNameInputRef.current.select();
@@ -273,14 +254,13 @@ const Upload = ({
             label={"Endre filnavn"}
             value={fileName}
             onChange={(event) => {
-              event.preventDefault();
               setEditedFileName(upload, fileName);
               validateFileName();
               setFileName(event.currentTarget.value);
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                event.preventDefault();
+                event.currentTarget.blur();
               }
             }}
             onKeyUp={(event) => {
@@ -311,10 +291,7 @@ const Upload = ({
         <Button
           variant="tertiary"
           title="slett"
-          onClick={(event) => {
-            event.preventDefault();
-            handleDelete(upload.file);
-          }}
+          onClick={() => handleDelete(upload.file)}
           icon={<TrashIcon fontSize="2rem" aria-hidden />}
         />
       </HStack>
