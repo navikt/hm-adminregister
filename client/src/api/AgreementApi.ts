@@ -21,8 +21,8 @@ import {
 } from "utils/agreement-util";
 import { NyAttachmentGroupFormData } from "agreements/agreement/vedlegg/NewAttachmentGroupModal";
 import { fetchAPI, fetchAPIAttachment, getPath } from "api/fetch";
-import { FileUpload } from "products/files/UploadModal";
 import { mapToMediaInfoWithFilename } from "api/MediaApi";
+import { FileUpload } from "felleskomponenter/UploadModal";
 
 export const getAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "GET");

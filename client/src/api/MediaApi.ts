@@ -1,6 +1,6 @@
 import { MediaDTO, MediaInfo, MediaInfoDTO, SeriesRegistrationDTO } from "utils/types/response-types";
 import { fetchAPI, fetchAPIAttachment, getPath } from "api/fetch";
-import { FileUpload } from "products/files/UploadModal";
+import { FileUpload } from "felleskomponenter/UploadModal";
 
 export const uploadFilesToSeries = async (seriesUUID: string, isAdmin: boolean, uploads: FileUpload[]) => {
   const formData = new FormData();

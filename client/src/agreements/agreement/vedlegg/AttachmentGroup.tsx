@@ -1,7 +1,6 @@
 import { Button, Dropdown, ExpansionCard, HStack, TextField } from "@navikt/ds-react";
 import { FilePdfIcon, FloppydiskIcon, MenuElipsisVerticalIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { useRef, useState } from "react";
-import UploadModal from "./UploadModal";
 import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
 import { AgreementAttachment, MediaInfo } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -9,11 +8,13 @@ import {
   deleteAttachmentGroup,
   deleteFileFromAttachmentGroup,
   updateFilenameOfAgreementAttachment,
+  uploadFilesToAgreement,
 } from "api/AgreementApi";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { DocumentList } from "felleskomponenter/styledcomponents/DocumentList";
 import { uriForMediaFile } from "utils/file-util";
 import { EditAttachmentMenu } from "agreements/agreement/vedlegg/EditAttachmentMenu";
+import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 
 interface Props {
   agreementId: string;
@@ -68,14 +69,23 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
     setDeleteAttachmentIsOpen(false);
   };
 
+  const uploadFiles = async (uploads: FileUpload[]) =>
+    uploadFilesToAgreement(agreementId, attachment.id!, uploads)
+      .then(() => {
+        mutateAgreement();
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+
   return (
     <>
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        oid={agreementId}
-        mutateAgreement={mutateAgreement}
-        agreementAttachmentId={attachment.id!}
+        onSubmit={uploadFiles}
+        fileType={"documents"}
       />
       <EditAttachmentGroupModal
         modalIsOpen={editAttachmentGroupModalIsOpen}

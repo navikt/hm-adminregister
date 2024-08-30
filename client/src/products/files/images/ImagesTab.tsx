@@ -9,8 +9,9 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import "../../product-page.scss";
-import UploadModal from "../UploadModal";
 import styles from "./ImagesTab.module.scss";
+import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
+import { uploadFilesToSeries } from "api/MediaApi";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -33,15 +34,19 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
       });
   }
 
+  const uploadFiles = async (uploads: FileUpload[]) =>
+    uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+      .then(() => {
+        mutateSeries();
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+
   return (
     <>
-      <UploadModal
-        modalIsOpen={modalIsOpen}
-        setModalIsOpen={setModalIsOpen}
-        oid={series.id}
-        fileType="images"
-        mutateSeries={mutateSeries}
-      />
+      <UploadModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} fileType="images" onSubmit={uploadFiles} />
 
       <Tabs.Panel value="images" className="tab-panel">
         <Alert variant="info" className={styles.alertSpacing}>
