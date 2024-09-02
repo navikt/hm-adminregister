@@ -1,7 +1,8 @@
 import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, HGrid, Hide, Show, VStack } from "@navikt/ds-react";
+import { BodyShort, Box, HGrid, Hide, Show, Tag, VStack } from "@navikt/ds-react";
 import { seriesStatus, seriesStatusV2FromV1 } from "products/seriesUtils";
 import { Link } from "react-router-dom";
+import { toDate } from "utils/date-util";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
@@ -20,6 +21,7 @@ export const ProductList = ({ seriesList }: { seriesList: SeriesRegistrationDTO[
 };
 
 const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
+  const isExpired = toDate(series.expired) < new Date();
   const imgUrl = series.seriesData.media
     .filter((media) => media.type === "IMAGE")
     .find((media) => media.priority === 1);
@@ -47,9 +49,19 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
           <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
         )}
       </Box>
-      <BodyShort weight="semibold" className="text-overflow-hidden-small-2-lines">
-        {series.title}
-      </BodyShort>
+
+      <VStack style={isExpired ? { height: "100%" } : {}}>
+        {isExpired && (
+          <Box>
+            <Tag size="small" variant="neutral-moderate">
+              Utgått
+            </Tag>
+          </Box>
+        )}
+        <BodyShort weight="semibold" className="text-overflow-hidden-small-2-lines">
+          {series.title}
+        </BodyShort>
+      </VStack>
       <Show below="md">
         <SeriesStatusTag iconOnly seriesStatus={seriesStatusV2FromV1(series)} />
       </Show>
