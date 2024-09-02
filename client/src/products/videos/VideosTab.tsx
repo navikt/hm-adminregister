@@ -143,6 +143,7 @@ const VideoTab = ({
               value={url}
               style={{ width: "400px" }}
               label="Lenke"
+              description="Må være til en video og ikke en spilleliste, høyreklikk og kopier"
               onChange={(event) => setUrl(event.currentTarget.value)}
               error={errorMessage}
             />
