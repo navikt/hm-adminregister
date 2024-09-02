@@ -31,6 +31,7 @@ export default function CreateSupplier() {
   });
 
   async function onSubmit(data: FormData) {
+    console.log("in onsubmit");
     //remove all white spaces
     const cleanedPhoneNumber = phoneValue.replace(/\s+/g, "");
 
@@ -66,7 +67,7 @@ export default function CreateSupplier() {
 
   return (
     <FormBox title="Opprett ny leverandør" icon={<Buldings3Icon />}>
-      <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
+      <form method="POST" onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7" width="300px">
           <TextField
             {...register("name", { required: true })}
@@ -110,6 +111,7 @@ export default function CreateSupplier() {
             error={errors.phone && errors.phone.message}
             value={phoneValue}
           />
+
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt

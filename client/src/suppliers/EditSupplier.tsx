@@ -11,10 +11,10 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { SupplierDTOBody } from "utils/supplier-util";
 import { useSupplier } from "utils/swr-hooks";
-import { newSupplierSchema } from "utils/zodSchema/newSupplier";
 import { z } from "zod";
+import { editSupplierSchema } from "utils/zodSchema/editSupplier";
 
-type FormData = z.infer<typeof newSupplierSchema>;
+type FormData = z.infer<typeof editSupplierSchema>;
 export default function EditSupplier() {
   const { supplierId } = useParams();
   const { loggedInUser } = useAuthStore();
@@ -31,7 +31,7 @@ export default function EditSupplier() {
     formState: { errors, isSubmitting, isDirty, isValid },
     reset,
   } = useForm<FormData>({
-    resolver: zodResolver(newSupplierSchema),
+    resolver: zodResolver(editSupplierSchema),
     mode: "onChange",
     defaultValues: {
       name: supplier?.name || "",
