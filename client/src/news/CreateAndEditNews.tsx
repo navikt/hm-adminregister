@@ -43,7 +43,7 @@ const CreateAndEditNews = () => {
 
   async function onSubmit(data: FormData) {
     const newNewsRelease: CreateUpdateNewsDTO = {
-      title: (data.newsType ? `${data.newsType}: ` : "") + data.newsTitle,
+      title: (data.newsType ? `${data.newsType.toUpperCase()}: ` : "") + data.newsTitle,
       text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
@@ -67,14 +67,17 @@ const CreateAndEditNews = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7">
           <TextField
-            {...register("newsType", { required: false })}
-            label={"Type nyhetsmelding"}
+            {...register("newsType", { required: true })}
+            label={labelRequired("Type")}
+            description={"F.eks: NY AVTALE, KOMMER"}
             id="newsType"
             name="newsType"
             type="text"
             autoComplete="on"
-            error={errors.newsType && "Ugyldig nyhetsmeldingstype"}
-            defaultValue={editNewsData && editNewsData.title.includes(":") ? editNewsData.title.split(":")[0] : ""}
+            error={errors.newsType && "Type er påkrevd"}
+            defaultValue={
+              editNewsData && editNewsData.title.includes(":") ? editNewsData.title.split(":")[0].toUpperCase() : ""
+            }
           />
           <TextField
             {...register("newsTitle", { required: true })}
@@ -85,11 +88,9 @@ const CreateAndEditNews = () => {
             autoComplete="on"
             error={errors.newsTitle && "Tittel er påkrevd"}
             defaultValue={
-              editNewsData && editNewsData.title.includes(":")
+              editNewsData?.title?.includes(":")
                 ? editNewsData.title.split(":")[1].trimStart()
-                : editNewsData && editNewsData.title
-                ? editNewsData.title
-                : ""
+                : editNewsData?.title || ""
             }
           />
           <Box>
