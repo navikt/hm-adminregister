@@ -7,7 +7,7 @@ import { updateProductDescription } from "api/SeriesApi";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
-import "./product-description-editor.scss";
+import styles from "./Editor.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -87,7 +87,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
             <RichTextEditorQuill
               onTextChange={setUpdatedDescription}
               defaultValue={updatedDescription}
-              className="editor"
+              className={styles.editor}
               toolbar={[
                 ["bold", "italic"],
                 [{ list: "ordered" }, { list: "bullet" }],
