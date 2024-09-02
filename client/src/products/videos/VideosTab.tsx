@@ -9,6 +9,7 @@ import ReactPlayer from "react-player";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import styles from "../ProductPage.module.scss";
 
 const VideoTab = ({
   series,
@@ -36,7 +37,7 @@ const VideoTab = ({
       },
       (error) => {
         setGlobalError(error.status, error.statusText);
-      }
+      },
     );
   }
 
@@ -70,7 +71,7 @@ const VideoTab = ({
   };
 
   return (
-    <Tabs.Panel value="videos" className="tab-panel">
+    <Tabs.Panel value="videos" className={styles.tabPanel}>
       <VStack gap="8">
         {videos.length === 0 && (
           <Alert variant="info">
@@ -89,7 +90,7 @@ const VideoTab = ({
         </Alert>
 
         {videos.length > 0 && (
-          <HStack as="ol" className="videos" gap="4">
+          <HStack as="ol" className={styles.videos} gap="4">
             {videos.map((video, i) => (
               <HStack as="li" key={video.uri}>
                 <VStack gap="4">
@@ -99,7 +100,7 @@ const VideoTab = ({
                   <ReactPlayer url={video.uri} controls={true} width="100%" height="fit-content" />
                 </VStack>
                 {isEditable && (
-                  <div className="more-menu-container">
+                  <div className={styles.moreMenuContainer}>
                     <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} />
                   </div>
                 )}

@@ -6,11 +6,11 @@ import { useForm } from "react-hook-form";
 import styles from "./CreateAndEditNews.module.scss";
 import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
 import { createNews, updateNews } from "api/NewsApi";
-import RichTextNewsEditor from "news/RichTextEditorNews";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toDateTimeString } from "utils/date-util";
 import CustomDatePicker from "news/CustomDatePicker";
 import FormBox from "felleskomponenter/FormBox";
+import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 
 type FormData = {
   newsTitle: string;
@@ -59,7 +59,7 @@ const CreateAndEditNews = () => {
     }
   }
 
-  const title = editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding"
+  const title = editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding";
 
   return (
     <FormBox title={title} icon={<NewspaperIcon />}>
@@ -105,7 +105,7 @@ const CreateAndEditNews = () => {
             <Heading level="2" size="xsmall" spacing={true}>
               Beskrivelse
             </Heading>
-            <RichTextNewsEditor
+            <RichTextEditorQuill
               onTextChange={setTextHtmlContent}
               defaultValue={editNewsData ? editNewsData.text : ""}
               className={styles.editorStyle}
@@ -122,7 +122,7 @@ const CreateAndEditNews = () => {
           </HStack>
         </VStack>
       </form>
-    </FormBox >
+    </FormBox>
   );
 };
 

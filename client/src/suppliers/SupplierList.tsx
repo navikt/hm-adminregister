@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
+import { Alert, Box, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
 import ErrorAlert from "error/ErrorAlert";
 import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
 import { SupplierDTO } from "utils/supplier-util";
@@ -51,7 +51,7 @@ const Suppliers = () => {
 
         <div className={styles.supplierPanelContainer}>
           <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
-            <form className="search-box ">
+            <Box role="search" className="search-box ">
               <Search
                 className="search-button"
                 label="Søk etter en leverandør"
@@ -61,7 +61,7 @@ const Suppliers = () => {
                 value={searchTerm}
                 onChange={(value) => handleSearch(value)}
               />
-            </form>
+            </Box>
             <Button
               variant="secondary"
               size="medium"

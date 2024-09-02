@@ -20,7 +20,7 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
           </Link>
         )}
         <Buldings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
-        <HStack gap="8" align="start" style={{ alignItems: "center" }}>
+        <HStack gap="8" align="start" style={{ alignItems: supplier.status === "INACTIVE" ? "start" : "center" }}>
           <div style={{ minWidth: "300px" }}>
             <Heading level="1" size="large">
               {supplier?.name}

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./opprett-admin-user.scss";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -64,7 +63,6 @@ export default function CreateAdminUser() {
   }
 
   return (
-
     <FormBox title="Opprett ny admin-bruker" icon={<PersonIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7" width="300px">
@@ -94,8 +92,7 @@ export default function CreateAdminUser() {
             </Checkbox>
           </VStack>
           <Alert variant="info">
-            OBS! Det vil ikke være mulig å finne tilbake til det midlertidige passordet etter at brukeren er
-            opprettet.
+            OBS! Det vil ikke være mulig å finne tilbake til det midlertidige passordet etter at brukeren er opprettet.
           </Alert>
           <HStack gap="4">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
@@ -108,6 +105,5 @@ export default function CreateAdminUser() {
         </VStack>
       </form>
     </FormBox>
-
   );
 }

@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from "reac
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
-  Alert,
   BodyShort,
   Box,
   Button,
@@ -18,7 +17,14 @@ import {
   VStack,
 } from "@navikt/ds-react";
 
-import { deleteSeries, setPublishedSeriesToDraft, updateProductTitle, useSeriesV2 } from "api/SeriesApi";
+import {
+  deleteSeries,
+  setPublishedSeriesToDraft,
+  setSeriesToActive,
+  setSeriesToInactive,
+  updateProductTitle,
+  useSeriesV2,
+} from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import AdminActions from "products/AdminActions";
@@ -33,10 +39,10 @@ import VideosTab from "products/videos/VideosTab";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
-import "./product-page.scss";
-import { SetExpiredSeriesConfirmationModal } from "./SetExpiredSeriesConfirmationModal";
 import VariantsTab from "./variants/VariantsTab";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
+import ErrorAlert from "error/ErrorAlert";
+import styles from "./ProductPage.module.scss";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -76,15 +82,7 @@ const Product = () => {
   if (!series || errorSeries) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise produkt. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan du sende
-            oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }
@@ -107,6 +105,7 @@ const Product = () => {
   const isEditable = series.status === "EDITABLE";
 
   async function onDelete() {
+    setDeleteConfirmationModalIsOpen(false);
     deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
       .then(() => {
         mutateSeries();
@@ -118,7 +117,30 @@ const Product = () => {
   }
 
   async function onEditMode() {
+    setEditProductModalIsOpen(false);
     setPublishedSeriesToDraft(false, series!.id)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onToActive() {
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
+    setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onToInactive() {
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
+    setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
       .then(() => {
         mutateSeries();
       })
@@ -140,7 +162,7 @@ const Product = () => {
       <>
         {title}
         {numberOfElements === 0 && !isValid && showAlert ? (
-          <span className="product-error-text product-tab-tabel">
+          <span className={styles.tabLabel}>
             ({numberOfElements})<ExclamationmarkTriangleIcon />
           </span>
         ) : (
@@ -166,12 +188,24 @@ const Product = () => {
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
-      <SetExpiredSeriesConfirmationModal
-        series={series}
-        mutateSeries={mutateSeries}
-        params={expiredSeriesModalIsOpen}
-        setParams={setExpiredSeriesModalIsOpen}
-      />
+      {expiredSeriesModalIsOpen.newStatus === "ACTIVE" && (
+        <ConfirmModal
+          title={"Ønsker du å markere dette produktet og alle dens varianter som aktiv?"}
+          confirmButtonText={"Marker som aktiv"}
+          onClick={onToActive}
+          onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
+          isModalOpen={expiredSeriesModalIsOpen.open}
+        />
+      )}
+      {expiredSeriesModalIsOpen.newStatus === "INACTIVE" && (
+        <ConfirmModal
+          title={"Ønsker du å markere dette produktet og alle dens varianter som utgått?"}
+          confirmButtonText={"Marker som utgått"}
+          onClick={onToInactive}
+          onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
+          isModalOpen={expiredSeriesModalIsOpen.open}
+        />
+      )}
       <ConfirmModal
         title={"Vil du sette produktet i redigeringsmodus?"}
         confirmButtonText={"OK"}
@@ -182,7 +216,7 @@ const Product = () => {
       <HGrid
         gap="12"
         columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
-        className="product-page"
+        className={styles.productPage}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
@@ -200,7 +234,7 @@ const Product = () => {
                       <a
                         href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
                         target="_blank"
-                        className="heading-link"
+                        className={styles.headingLink}
                         rel="noreferrer"
                       >
                         {series.title ?? ""}
@@ -274,7 +308,7 @@ const Product = () => {
                 label={
                   <>
                     Om produktet
-                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
+                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className={styles.errorText} />}
                   </>
                 }
               />

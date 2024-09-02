@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./create-supplier-user.scss";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,10 +29,8 @@ export default function CreateSupplierUser() {
   } = useForm<FormData>({
     resolver: zodResolver(newSupplierUserSchema),
     mode: "onSubmit",
-    reValidateMode: "onChange"
+    reValidateMode: "onChange",
   });
-
-
 
   async function onSubmit(data: FormData) {
     const newSupplierUser: SupplierUserDTO = {
@@ -68,7 +65,10 @@ export default function CreateSupplierUser() {
   }
 
   return (
-    <FormBox title="Opprett ny bruker" icon={<PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />}>
+    <FormBox
+      title="Opprett ny bruker"
+      icon={<PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />}
+    >
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7" width="300px">
           <VStack>

@@ -1,7 +1,6 @@
 import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteDraftProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
-import { DeleteVariantConfirmationModal } from "products/variants/DeleteVariantConfirmationModal";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
@@ -10,6 +9,8 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import styles from "../ProductPage.module.scss";
 
 const VariantsTab = ({
   series,
@@ -29,14 +30,8 @@ const VariantsTab = ({
   const columnsPerPage = 5;
   const totalPages = Math.ceil(series.variants.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-
-  const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<{
-    open: boolean;
-    variantId: string | undefined;
-  }>({
-    open: false,
-    variantId: undefined,
-  });
+  const [variantId, setVariantId] = useState<string>("");
+  const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false);
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id);
 
@@ -50,8 +45,8 @@ const VariantsTab = ({
     return undefined;
   };
 
-  async function onDelete(productId: string) {
-    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [productId])
+  async function onDelete() {
+    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [variantId])
       .then(() => {
         mutateVariants();
         mutateSeries();
@@ -96,12 +91,14 @@ const VariantsTab = ({
 
   return (
     <>
-      <DeleteVariantConfirmationModal
-        onDelete={onDelete}
-        params={deleteVariantConfirmationModalIsOpen}
-        setParams={setDeleteVariantConfirmationModalIsOpen}
-      ></DeleteVariantConfirmationModal>
-      <Tabs.Panel value="variants" className="tab-panel">
+      <ConfirmModal
+        title={"Er du sikker på at du vil slette varianten?"}
+        confirmButtonText={"Slett"}
+        onClick={() => onDelete().then(() => setDeleteVariantConfirmationModalIsOpen(false))}
+        onClose={() => setDeleteVariantConfirmationModalIsOpen(false)}
+        isModalOpen={deleteVariantConfirmationModalIsOpen}
+      />
+      <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
           <Alert variant={showInputError ? "error" : "info"}>
             Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
@@ -112,7 +109,7 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
             <VStack gap="4">
-              <div className="variant-table">
+              <div className={styles.variantTable}>
                 <Table>
                   <Table.Header>
                     <Table.Row>
@@ -141,12 +138,10 @@ const VariantsTab = ({
                                       </Dropdown.Menu.List.Item>
                                       {!product.isPublished ? (
                                         <Dropdown.Menu.List.Item
-                                          onClick={() =>
-                                            setDeleteVariantConfirmationModalIsOpen({
-                                              open: true,
-                                              variantId: product.id,
-                                            })
-                                          }
+                                          onClick={() => {
+                                            setVariantId(product.id);
+                                            setDeleteVariantConfirmationModalIsOpen(true);
+                                          }}
                                         >
                                           Slett
                                           <TrashIcon aria-hidden />
@@ -238,7 +233,7 @@ const VariantsTab = ({
               navigate(
                 `${pathname}/opprett-variant/${series.id}?page=${
                   Math.floor(series.variants.length / columnsPerPage) + 1
-                }`
+                }`,
               );
             }}
           >

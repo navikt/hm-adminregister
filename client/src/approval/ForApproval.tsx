@@ -1,10 +1,10 @@
-import "./til-godkjenning.scss";
-import { Alert, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
+import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, ToggleGroup } from "@navikt/ds-react";
 import React, { useEffect, useState } from "react";
 import { useAgreements, usePagedSeriesToApprove, useSeriesToApprove } from "utils/swr-hooks";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import { SeriesToApproveTable } from "approval/SeriesToApproveTable";
 import { useSearchParams } from "react-router-dom";
+import ErrorAlert from "error/ErrorAlert";
 
 export enum ForApprovalFilterOption {
   ALL = "ALL",
@@ -46,15 +46,7 @@ export const ForApproval = () => {
   if (allDataError || pagedDataError) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise produkter til godkjenning. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet
-            vedvarer, kan du sende oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }
@@ -78,10 +70,6 @@ export const ForApproval = () => {
     } else {
       setFilteredData(filteredProducts);
     }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
   };
 
   return (
@@ -112,7 +100,7 @@ export const ForApproval = () => {
                 </ToggleGroup>
               )}
 
-              <form onSubmit={handleSubmit}>
+              <Box role="search">
                 <HGrid gap="6" columns={{ xs: 1, sm: 1, md: 2 }}>
                   <Search
                     className="search-button"
@@ -125,7 +113,7 @@ export const ForApproval = () => {
                     onChange={(value) => handleSearch(value)}
                   />
                 </HGrid>
-              </form>
+              </Box>
               {filteredData && filteredData.length === 0 ? (
                 <Alert variant="info">Ingen produkter funnet.</Alert>
               ) : filteredData && filteredData.length > 0 ? (

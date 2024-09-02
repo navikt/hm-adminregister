@@ -1,8 +1,6 @@
 import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
-import "../product-page.scss";
-import UploadModal from "./UploadModal";
 import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -10,6 +8,9 @@ import { uriForMediaFile } from "utils/file-util";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { changeFilenameOnAttachedFile, deleteFileFromSeries, useSeriesV2 } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { uploadFilesToSeries } from "api/MediaApi";
+import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
+import styles from "../ProductPage.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -47,16 +48,25 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
       });
   };
 
+  const uploadFiles = async (uploads: FileUpload[]) =>
+    uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+      .then(() => {
+        mutateSeries();
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+
   return (
     <>
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        oid={series.id}
         fileType="documents"
-        mutateSeries={mutateSeries}
+        uploadFiles={uploadFiles}
       />
-      <Tabs.Panel value="documents" className="tab-panel">
+      <Tabs.Panel value="documents" className={styles.tabPanel}>
         <VStack gap="10">
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
@@ -65,9 +75,9 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
             </Alert>
           )}
 
-          <VStack gap="1" className="documents-conatainer">
+          <VStack gap="1">
             {allPdfsSorted.length > 0 && (
-              <VStack as="ol" gap="3" className="document-list-container">
+              <VStack as="ol" gap="3" className={styles.documentListContainer}>
                 {allPdfsSorted.map((pdf) => (
                   <DocumentListItem
                     key={pdf.uri}

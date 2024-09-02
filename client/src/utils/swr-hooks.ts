@@ -140,12 +140,14 @@ export function usePagedProducts({
   titleSearchTerm,
   filters,
   isRejectedPage,
+  supplierFilter,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
   filters: string[];
   isRejectedPage: boolean;
+  supplierFilter?: string;
 }) {
   const { loggedInUser } = useAuthStore();
 
@@ -154,12 +156,12 @@ export function usePagedProducts({
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
   const filterUrl = filterProductsURL(filters);
+  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}`
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
 
-  console.log(path, filterUrl);
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
   return {

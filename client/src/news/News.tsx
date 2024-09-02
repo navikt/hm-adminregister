@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Heading, HGrid, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
+import { Box, Button, Heading, HStack, Loader, ToggleGroup, VStack } from "@navikt/ds-react";
 import { useNavigate } from "react-router-dom";
 import { getPageNews } from "api/NewsApi";
 import React, { useState } from "react";
@@ -8,6 +8,7 @@ import NewsCard from "news/NewsCard";
 import { PlusIcon } from "@navikt/aksel-icons";
 import { NewsTypes } from "news/NewsTypes";
 import styles from "./News.module.scss";
+import ErrorAlert from "error/ErrorAlert";
 
 export function mapBackendStatusToFrontend(news: NewsRegistrationDTO): NewsTypes {
   const today = new Date();
@@ -80,14 +81,7 @@ const News = () => {
         {isLoadingFilteredResults && <Loader size="3xlarge" />}
 
         {errorResults ? (
-          <HGrid gap="12" columns="minmax(16rem, 55rem)" paddingBlock="4">
-            <Alert variant="error">
-              Kunne ikke vise nyheter. Prøv å laste siden på nytt. Hvis problemet vedvarer, kan du sende oss en e-post{" "}
-              <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-                digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-              </a>
-            </Alert>
-          </HGrid>
+          <ErrorAlert />
         ) : (
           pageResults && (
             <Box maxWidth="55rem">

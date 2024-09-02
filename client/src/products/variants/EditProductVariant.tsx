@@ -1,8 +1,9 @@
-import { Alert, HGrid, Loader, VStack } from "@navikt/ds-react";
+import { Loader, VStack } from "@navikt/ds-react";
 import { useParams } from "react-router-dom";
 import ProductVariantForm from "./ProductVariantForm";
 import { useProductByProductId } from "utils/swr-hooks";
 import FormBox from "felleskomponenter/FormBox";
+import ErrorAlert from "error/ErrorAlert";
 
 const EditProductVariant = () => {
   const { productId } = useParams();
@@ -12,15 +13,7 @@ const EditProductVariant = () => {
   if (error) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise produktvariant. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan
-            du sende oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }

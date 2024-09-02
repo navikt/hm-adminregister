@@ -93,7 +93,6 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   }
 
   const techLabelsMap = new Map(techLabels.map((x) => [x.label, x]));
-
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
       <TextField
@@ -112,7 +111,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         name="supplierRef"
         type="text"
         error={errors?.supplierRef && "Artikkelnummer er påkrevd"}
-        readOnly={product.published !== undefined}
+        readOnly={(!loggedInUser?.isAdmin && product.published !== undefined)}
       />
       {loggedInUser?.isAdmin && (
         <TextField

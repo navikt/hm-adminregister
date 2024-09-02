@@ -8,9 +8,10 @@ import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import "../../product-page.scss";
-import UploadModal from "../UploadModal";
 import styles from "./ImagesTab.module.scss";
+import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
+import { uploadFilesToSeries } from "api/MediaApi";
+import productStyles from "../../ProductPage.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -33,17 +34,26 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
       });
   }
 
+  const uploadFiles = async (uploads: FileUpload[]) =>
+    uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+      .then(() => {
+        mutateSeries();
+        setModalIsOpen(false);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+
   return (
     <>
       <UploadModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        oid={series.id}
         fileType="images"
-        mutateSeries={mutateSeries}
+        uploadFiles={uploadFiles}
       />
 
-      <Tabs.Panel value="images" className="tab-panel">
+      <Tabs.Panel value="images" className={productStyles.tabPanel}>
         <Alert variant="info" className={styles.alertSpacing}>
           Dra i bildene eller trykk på pilene for å endre rekkefølgen som vises på finnHjelpemiddel.no
         </Alert>

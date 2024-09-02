@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const newSupplierSchema = z.object({
+export const editSupplierSchema = z.object({
   name: z.string().min(1, { message: "Firmanavn er påkrevd" }).min(2, { message: "Navn må inneholde minst 2 tegn" }),
   email: z
     .string()
@@ -45,6 +45,9 @@ export const newSupplierSchema = z.object({
       },
       { message: "Telefonnummer må bestå av siffer" },
     ),
+  address: z.string(),
+  postNr: z.string(),
+  postLocation: z.string(),
 });
 
-export type newSupplier = z.infer<typeof newSupplierSchema>;
+export type newSupplier = z.infer<typeof editSupplierSchema>;

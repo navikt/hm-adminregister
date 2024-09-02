@@ -5,7 +5,6 @@
 @import "overwrite-aksel";
 @import "auth-pages";
 @import "menu";
-@import "not-found";
 @import "variables";
 
 html,
@@ -269,6 +268,25 @@ main:not(.show-menu) {
 
     @include mixins.for-size(phone-only) {
       width: 100%;
+    }
+  }
+}
+
+.search-button {
+  .navds-search {
+    &__button-search {
+      background-color: #3a4583;
+      color: white;
+      border-radius: 0 var(--a-border-radius-medium) var(--a-border-radius-medium) 0;
+      flex-shrink: 0;
+      min-height: 2rem;
+      min-width: 4rem;
+
+      &:active,
+      &:hover {
+        background-color: #8269a2;
+        color: white;
+      }
     }
   }
 }

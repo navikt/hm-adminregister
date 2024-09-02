@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
+  Box,
   Button,
   Dropdown,
   Heading,
@@ -20,6 +21,7 @@ import {
 
 import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
 import { AgreementGroupDto } from "utils/types/response-types";
+import ErrorAlert from "error/ErrorAlert";
 
 export enum AgreementFilterOption {
   ALL = "ALL",
@@ -53,15 +55,7 @@ const Agreements = () => {
   if (allError || pagedError) {
     return (
       <main className="show-menu">
-        <HGrid gap="12" columns="minmax(16rem, 55rem)">
-          <Alert variant="error">
-            Kunne ikke vise rammeavtaler. Prøv å laste siden på nytt, eller gå tilbake. Hvis problemet vedvarer, kan du
-            sende oss en e-post{" "}
-            <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
-              digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
-            </a>
-          </Alert>
-        </HGrid>
+        <ErrorAlert />
       </main>
     );
   }
@@ -83,10 +77,6 @@ const Agreements = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form submission and page reload
-  };
-
   return (
     <main className="show-menu">
       <div className="page__background-container">
@@ -96,7 +86,7 @@ const Agreements = () => {
           </Heading>
           <VStack gap="4">
             <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="4">
-              <form onSubmit={handleSubmit}>
+              <Box role="search">
                 <Search
                   className="search-button"
                   label="Søk etter et produkt"
@@ -107,7 +97,7 @@ const Agreements = () => {
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
                 />
-              </form>
+              </Box>
               <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
                 {!inSearchMode && (
                   <>

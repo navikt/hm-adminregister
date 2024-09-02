@@ -1,0 +1,46 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.uploadContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 1rem;
+
+  gap: 1rem;
+  width: 626px;
+  height: 121px;
+  background-color: #efecf4;
+  border-radius: 5px;
+  border: 2px dotted #8269a2;
+
+  button {
+    background-color: white;
+  }
+}
+
+.uploadIcon {
+  color: #8269a2;
+  opacity: 0.4;
+}
+
+.uploadText {
+  color: #676f7b;
+}
+
+.uploadInline {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  margin-top: 1rem;
+
+  li {
+    padding: $a-spacing-3 $a-spacing-3;
+    background-color: #ffffff;
+    box-shadow: $a-shadow-xsmall;
+    border-radius: $a-border-radius-medium;
+  }
+}
+
+.uploadBox {
+  border-color: var(--a-grayalpha-200);
+}

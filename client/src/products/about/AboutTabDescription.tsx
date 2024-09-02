@@ -1,12 +1,13 @@
-import { Alert, Button, Heading, VStack } from "@navikt/ds-react";
+import { Alert, BodyShort, Button, Heading, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
-import { RichTextEditor } from "products/about/RichTextEditor";
 import { useState } from "react";
 import { updateProductDescription } from "api/SeriesApi";
-import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
+import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
+import "./product-description-editor.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -21,17 +22,6 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
   const { setGlobalError } = useErrorStore();
-
-  const getDescription = () => (
-    <>
-      Beskrivelsen vises på produktsiden og bør:
-      <ul>
-        <li>Være mellom 100 og 750 tegn</li>
-        <li>Ikke inneholde tekniske data, for eksempel. “Totalvekt i str. 42x40”</li>
-        <li>Ha en nøytral språkstil uten markedsføringsuttrykk</li>
-      </ul>
-    </>
-  );
 
   const handleSaveDescription = (updatedDescription: string) => {
     setShowEditDescriptionMode(false);
@@ -86,12 +76,23 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
 
         {showEditDescriptionMode && (
           <>
-            <RichTextEditor
-              description={getDescription()}
-              onChange={(description: string) => {
-                setUpdatedDescription(description);
-              }}
-              textContent={updatedDescription}
+            <BodyShort as="div" textColor="subtle">
+              Beskrivelsen vises på produktsiden og bør:
+              <ul>
+                <li>Være mellom 100 og 750 tegn</li>
+                <li>Ikke inneholde tekniske data, for eksempel. “Totalvekt i str. 42x40”</li>
+                <li>Ha en nøytral språkstil uten markedsføringsuttrykk</li>
+              </ul>
+            </BodyShort>
+            <RichTextEditorQuill
+              onTextChange={setUpdatedDescription}
+              defaultValue={updatedDescription}
+              className="editor"
+              toolbar={[
+                ["bold", "italic"],
+                [{ list: "ordered" }, { list: "bullet" }],
+              ]}
+              formats={["bold", "italic", "list"]}
             />
             <Button
               className="fit-content"
