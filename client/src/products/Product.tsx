@@ -13,6 +13,7 @@ import {
   Label,
   Loader,
   Tabs,
+  Tag,
   TextField,
   VStack,
 } from "@navikt/ds-react";
@@ -277,7 +278,13 @@ const Product = () => {
                   ></Button>
                 )}
               </HStack>
-              {series.status !== "DONE" && (
+
+              {series.isExpired && (
+                <Box>
+                  <Tag variant="warning-moderate">Utgått</Tag>
+                </Box>
+              )}
+              {!series.isExpired && series.status !== "DONE" && (
                 <Box
                   paddingInline="4"
                   paddingBlock="1"
