@@ -50,7 +50,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
         )}
       </Box>
 
-      <VStack style={isExpired ? { height: "100%" } : {}}>
+      <VStack style={isExpired ? { height: "100%" } : {}} gap="1">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">
