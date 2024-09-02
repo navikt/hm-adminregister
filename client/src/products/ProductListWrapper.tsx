@@ -107,55 +107,63 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
         <Heading level="1" size="large" spacing>
           {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
         </Heading>
-        <VStack gap={{ sm: "4", md: "6" }}>
-          <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
-            <HStack gap="4">
-              <Box role="search" style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
+        <VStack gap={{ xs: "4", md: "6" }}>
+          <HGrid
+            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin && !isRejectedPage ? "1fr 230px" : "1fr " }}
+            gap="4"
+          >
+            <HGrid
+              columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
+              gap="4"
+              align="start"
+            >
+              <Box role="search" style={{ maxWidth: "475px" }}>
                 <Search
                   className="search-button"
-                  label="Søk etter et produkt"
+                  label="Søk"
                   variant="simple"
                   clearButton={true}
                   placeholder="Søk etter produktnavn"
                   size="medium"
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
+                  hideLabel={false}
                 />
               </Box>
-              <CheckboxGroup
-                legend="Filter"
-                hideLegend
-                onChange={setStatusFilters}
-                value={statusFilters}
-                style={{ minWidth: "111px", flex: 1 }}
-              >
-                {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
-              </CheckboxGroup>
+
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
-                <UNSAFE_Combobox
-                  clearButton
-                  clearButtonLabel="Tøm"
-                  label="Filtrer på leverandører"
-                  selectedOptions={searchParams
-                    .getAll("supplier")
-                    .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
-                  onToggleSelected={onToggleSelected}
-                  options={suppliers?.map((supplier) => supplier.name) || []}
-                  style={{ flex: 1, maxWidth: "475px" }}
-                />
+                <Box asChild style={{ maxWidth: "475px" }}>
+                  <UNSAFE_Combobox
+                    clearButton
+                    clearButtonLabel="Tøm"
+                    label="Leverandører"
+                    selectedOptions={searchParams
+                      .getAll("supplier")
+                      .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                    onToggleSelected={onToggleSelected}
+                    options={suppliers?.map((supplier) => supplier.name) || []}
+                  />
+                </Box>
               )}
-            </HStack>
+              <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
+                <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
+                  {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
+                </CheckboxGroup>
+              </Box>
+            </HGrid>
 
             {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
-              <Button
-                variant="secondary"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/produkter/opprett")}
-                style={{ maxHeight: "3rem" }}
-              >
-                Opprett nytt produkt
-              </Button>
+              <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
+                <Button
+                  variant="secondary"
+                  icon={<PlusIcon aria-hidden />}
+                  iconPosition="left"
+                  onClick={() => navigate("/produkter/opprett")}
+                  style={{ maxHeight: "3rem" }}
+                >
+                  Opprett nytt produkt
+                </Button>
+              </Box>
             )}
           </HGrid>
           <VStack gap="3">
