@@ -1,6 +1,6 @@
 import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, HGrid, Hide, Show, Tag, VStack } from "@navikt/ds-react";
-import { seriesStatus, seriesStatusV2FromV1 } from "products/seriesUtils";
+import { seriesStatus } from "products/seriesUtils";
 import { Link } from "react-router-dom";
 import { toDate } from "utils/date-util";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
@@ -63,7 +63,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
         </BodyShort>
       </VStack>
       <Show below="md">
-        <SeriesStatusTag iconOnly seriesStatus={seriesStatusV2FromV1(series)} />
+        <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series)} />
       </Show>
       <Hide below="md">
         <SeriesStatusTag seriesStatus={seriesStatus(series)} />
