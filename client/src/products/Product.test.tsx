@@ -90,7 +90,7 @@ describe("Produktside", () => {
     expect(await screen.findByText("defaultKeyword")).toBeInTheDocument();
     expect(await screen.findByText("https://nav.no")).toBeInTheDocument();
     // sidebar
-    expect(await screen.findByText("Ikke publisert")).toBeInTheDocument();
+    expect(await screen.findByText("Under endring")).toBeInTheDocument();
     expect(await screen.findByText("defaultSupplier")).toBeInTheDocument();
 
     expect(await axe(container)).toHaveNoViolations();

@@ -46,8 +46,8 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
   } else if (seriesStatus === SeriesStatus.DRAFT_CHANGE || seriesStatus === SeriesStatus.DRAFT) {
     return (
       <TagWithIcon
-        icon={<PencilWritingIcon aria-hidden={!iconOnly} title="Under redigering" fontSize={"1.5rem"} />}
-        text={iconOnly ? "" : "Under redigering"}
+        icon={<PencilWritingIcon aria-hidden={!iconOnly} title={iconOnly ? "Under endring" : ""} fontSize={"1.5rem"} />}
+        text={iconOnly ? "" : "Under endring"}
         color={colors.BLUE}
       />
     );
