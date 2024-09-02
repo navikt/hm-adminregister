@@ -145,7 +145,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                   />
                 </Box>
               )}
-              <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
+              <Box paddingBlock={{ xs: "2", md: "8" }}>
                 <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
                   {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
                 </CheckboxGroup>
