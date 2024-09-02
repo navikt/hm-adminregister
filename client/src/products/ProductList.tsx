@@ -1,31 +1,20 @@
 import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, Heading, HGrid, Hide, Show, VStack } from "@navikt/ds-react";
-import { seriesStatus } from "products/seriesUtils";
+import { BodyShort, Box, HGrid, Hide, Show, VStack } from "@navikt/ds-react";
+import { seriesStatus, seriesStatusV2FromV1 } from "products/seriesUtils";
 import { Link } from "react-router-dom";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
 
-export const ProductList = ({ seriesList, heading }: { seriesList: SeriesRegistrationDTO[]; heading?: string }) => {
+export const ProductList = ({ seriesList }: { seriesList: SeriesRegistrationDTO[] }) => {
   return (
-    <VStack gap={"1-alt"} className={styles.seriesList}>
-      {heading && <Heading size="medium">{heading}</Heading>}
-      <HGrid columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".7fr 3.6fr 2.1fr .9fr 0.4fr" }} padding={"2"} gap={"2"}>
-        <b>Produktnavn</b>
-        <span />
-        <b>Status</b>
-        <b>Varianter</b>
-        <span />
-      </HGrid>
-
-      <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
-        {seriesList.map((series) => (
-          <li key={series.id}>
-            <SeriesCard series={series} />
-          </li>
-        ))}
-      </VStack>
+    <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
+      {seriesList.map((series) => (
+        <li key={series.id}>
+          <SeriesCard series={series} />
+        </li>
+      ))}
     </VStack>
   );
 };
@@ -62,7 +51,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
         {series.title}
       </BodyShort>
       <Show below="md">
-        <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series)} />
+        <SeriesStatusTag iconOnly seriesStatus={seriesStatusV2FromV1(series)} />
       </Show>
       <Hide below="md">
         <SeriesStatusTag seriesStatus={seriesStatus(series)} />

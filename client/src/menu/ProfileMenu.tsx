@@ -72,11 +72,7 @@ const ProfileMenu = () => {
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
             <HGrid asChild columns={"1.7rem 1fr"} gap="2">
               <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
-                <PersonRectangleIcon
-                  title="Min profil"
-                  fontSize={loggedInUser?.isAdmin ? "2.5rem" : "1.5rem"}
-                  aria-hidden
-                />
+                <PersonRectangleIcon title="Min profil" fontSize="1.5rem" aria-hidden />
                 {loggedInUser?.isAdmin ? "Min profil og admin brukere" : "Leverandør- og brukerinformasjon"}
               </Link>
             </HGrid>

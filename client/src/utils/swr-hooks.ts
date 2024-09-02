@@ -138,27 +138,28 @@ export function usePagedProducts({
   page,
   pageSize,
   titleSearchTerm,
-  statusFilters,
+  filters,
   isRejectedPage,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
-  statusFilters: string[];
+  filters: string[];
   isRejectedPage: boolean;
 }) {
   const { loggedInUser } = useAuthStore();
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
-
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
+  const filterUrl = filterProductsURL(filters);
 
+  const path = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
+
+  console.log(path, filterUrl);
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
   return {
@@ -167,6 +168,41 @@ export function usePagedProducts({
     error,
   };
 }
+
+const filterProductsURL = (statusFilters: string[]) => {
+  // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
+  // const otherStatuses = ["includeInactive", "onlyUnpublished"];
+  const editStatus: string[] = [];
+  const otherStatuses: string[] = ["ACTIVE"];
+
+  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert", "Ikke publisert"];
+
+  const uri = new URLSearchParams();
+
+  statusFilters.forEach((status) => {
+    if (status === "Under endring") {
+      editStatus.push("EDITABLE");
+    } else if (status === "Venter på godkjenning") {
+      editStatus.push("PENDING_APPROVAL");
+    } else if (status === "Avslått") {
+      editStatus.push("REJECTED");
+    } else if (status === "Publisert") {
+      editStatus.push("DONE");
+      // } else if (status === "Ikke publisert") {
+      //   otherStatuses.push("unpublished");
+    } else if (status === "includeInactive") {
+      otherStatuses.push("INACTIVE");
+    }
+  });
+
+  if (editStatus.length > 0) {
+    uri.append("editStatus", editStatus.join(","));
+  }
+
+  uri.append("status", otherStatuses.join(","));
+
+  return uri;
+};
 
 export function getAllRejectedSeries() {
   const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?size=1000000&adminStatus=REJECTED`;

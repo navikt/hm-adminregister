@@ -9,10 +9,11 @@ import {
   Button,
   Checkbox,
   CheckboxGroup,
+  Chips,
   Heading,
   HGrid,
   HStack,
-  Loader,
+  Label,
   Pagination,
   Search,
   Select,
@@ -27,7 +28,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const { loggedInUser } = useAuthStore();
-  const [statusFilters, setStatusFilters] = useState([""]);
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     data: pagedData,
@@ -37,7 +38,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
-    statusFilters,
+    filters: [...statusFilters],
     isRejectedPage,
   });
 
@@ -77,6 +78,8 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     );
   }
 
+  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert"];
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent form submission and page reload
   };
@@ -87,7 +90,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
         <Heading level="1" size="large" spacing>
           {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
         </Heading>
-        <VStack gap="4">
+        <VStack gap={{ sm: "4", md: "6" }}>
           <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
             <HStack gap="4">
               <form onSubmit={handleSubmit} style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
@@ -125,26 +128,62 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
               </Button>
             )}
           </HGrid>
+          <VStack gap="3">
+            <Label>Filter</Label>
+            <Chips>
+              {visningStatusfilter.map((filterNavn) => (
+                <Chips.Toggle
+                  key={filterNavn}
+                  selected={statusFilters.includes(filterNavn)}
+                  onClick={() =>
+                    setStatusFilters(
+                      statusFilters.includes(filterNavn)
+                        ? statusFilters.filter((x) => x !== filterNavn)
+                        : [...statusFilters, filterNavn],
+                    )
+                  }
+                >
+                  {filterNavn}
+                </Chips.Toggle>
+              ))}
+            </Chips>
+          </VStack>
         </VStack>
 
-        {isLoadingPagedData && <Loader size="3xlarge" />}
-
         <VStack gap="4">
-          {seriesByHmsNr ? (
-            <ProductList seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
-          ) : seriesBySupplierRef ? (
-            <ProductList seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-          ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-            <ProductList seriesList={pagedData.content} />
-          ) : (
-            <Alert variant="info">
-              {searchTerm !== ""
-                ? `Ingen produkter funnet med søket: "${searchTerm}"`
-                : isRejectedPage
-                  ? "Ingen avslåtte produkter funnet."
-                  : "Ingen produkter funnet."}
-            </Alert>
-          )}
+          <VStack gap="1-alt">
+            {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
+            {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
+            <HGrid
+              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".7fr 3.6fr 2.1fr .9fr 0.4fr" }}
+              paddingBlock={"2"}
+              gap={"2"}
+            >
+              <b>Produktnavn</b>
+              <span />
+              <b>Status</b>
+              <b>Varianter</b>
+              <span />
+            </HGrid>
+            {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
+            {seriesByHmsNr ? (
+              <ProductList seriesList={[seriesByHmsNr]} />
+            ) : seriesBySupplierRef ? (
+              <ProductList seriesList={[seriesBySupplierRef]} />
+            ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
+              <ProductList seriesList={pagedData.content} />
+            ) : (
+              !isLoadingPagedData && (
+                <Alert variant="info">
+                  {searchTerm !== ""
+                    ? `Ingen produkter funnet med søket: "${searchTerm}"`
+                    : isRejectedPage
+                      ? "Ingen avslåtte produkter funnet."
+                      : "Ingen produkter funnet."}
+                </Alert>
+              )
+            )}
+          </VStack>
 
           <HStack
             justify={{ xs: "center", md: "space-between" }}
@@ -152,7 +191,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
             gap={"4"}
             style={{ flexWrap: "wrap-reverse" }}
           >
-            {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
+            {searchTerm.length == 0 && pagedData?.content.length !== 0 && !isLoadingPagedData && (
               <Select
                 label="Ant produkter per side"
                 size="small"
