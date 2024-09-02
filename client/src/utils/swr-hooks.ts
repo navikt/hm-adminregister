@@ -159,8 +159,8 @@ export function usePagedProducts({
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?${filterUrl.toString()}&page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
