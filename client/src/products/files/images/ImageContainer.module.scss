@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+
+  img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    inset: 0px;
+    object-fit: contain;
+    color: transparent;
+    padding: 6px;
+  }
+}
+
+.image {
+  width: 130px;
+  height: 130px;
+  position: relative;
+}
+
+.imageXsmall {
+  position: relative;
+  width: 75px;
+  height: 75px;
+}

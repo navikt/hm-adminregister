@@ -8,7 +8,6 @@ import { labelRequired } from "utils/string-util";
 import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 import parse from "html-react-parser";
 import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
-import "./agreement-description-editor.scss";
 
 interface Props {
   agreement: AgreementRegistrationDTO;

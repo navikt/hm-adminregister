@@ -39,10 +39,10 @@ import VideosTab from "products/videos/VideosTab";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
-import "./product-page.scss";
 import VariantsTab from "./variants/VariantsTab";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import ErrorAlert from "error/ErrorAlert";
+import styles from "./ProductPage.module.scss";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -162,7 +162,7 @@ const Product = () => {
       <>
         {title}
         {numberOfElements === 0 && !isValid && showAlert ? (
-          <span className="product-error-text product-tab-tabel">
+          <span className={styles.tabLabel}>
             ({numberOfElements})<ExclamationmarkTriangleIcon />
           </span>
         ) : (
@@ -216,7 +216,7 @@ const Product = () => {
       <HGrid
         gap="12"
         columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
-        className="product-page"
+        className={styles.productPage}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
@@ -234,7 +234,7 @@ const Product = () => {
                       <a
                         href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
                         target="_blank"
-                        className="heading-link"
+                        className={styles.headingLink}
                         rel="noreferrer"
                       >
                         {series.title ?? ""}
@@ -308,7 +308,7 @@ const Product = () => {
                 label={
                   <>
                     Om produktet
-                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className="product-error-text" />}
+                    {!series.text && !isValid && <ExclamationmarkTriangleIcon className={styles.errorText} />}
                   </>
                 }
               />
