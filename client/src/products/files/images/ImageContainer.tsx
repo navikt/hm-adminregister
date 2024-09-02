@@ -12,8 +12,8 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
   const [imageLoadingError, setImageLoadingError] = useState(false);
 
   return (
-    <div className={cx({ container: size !== "xsmall", xsmall: size == "xsmall" })}>
-      <div className={styles.image}>
+    <div className={styles.container}>
+      <div className={cx({ image: size !== "xsmall", imageXsmall: size == "xsmall" })}>
         {imageLoadingError || !uri ? (
           <HStack height="100%" justify="center" align="center">
             <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />

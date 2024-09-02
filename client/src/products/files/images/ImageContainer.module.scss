@@ -4,12 +4,6 @@
   width: 100%;
   position: relative;
 
-  .image {
-    width: 130px;
-    height: 130px;
-    position: relative;
-  }
-
   img {
     position: absolute;
     height: 100%;
@@ -21,9 +15,14 @@
   }
 }
 
-.xsmall {
-  composes: container;
-  composes: image;
+.image {
+  width: 130px;
+  height: 130px;
+  position: relative;
+}
+
+.imageXsmall {
+  position: relative;
   width: 75px;
   height: 75px;
 }
