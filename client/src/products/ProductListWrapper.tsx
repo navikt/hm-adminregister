@@ -1,27 +1,28 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
 import {
   Alert,
   Box,
   Button,
   Checkbox,
   CheckboxGroup,
+  Chips,
   Heading,
   HGrid,
   HStack,
-  Loader,
+  Label,
   Pagination,
   Search,
   Select,
   UNSAFE_Combobox,
   VStack,
 } from "@navikt/ds-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
 
 import { PlusIcon } from "@navikt/aksel-icons";
-import { ProductList } from "./ProductList";
 import ErrorAlert from "error/ErrorAlert";
+import { ProductList } from "./ProductList";
 
 type productPropsType = {
   isRejectedPage: boolean;
@@ -34,7 +35,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { loggedInUser } = useAuthStore();
-  const [statusFilters, setStatusFilters] = useState([""]);
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     data: pagedData,
@@ -44,7 +45,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
-    statusFilters,
+    filters: [...statusFilters],
     isRejectedPage,
     supplierFilter: supplierFilter,
   });
@@ -78,6 +79,8 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     );
   }
 
+  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert"];
+
   const onToggleSelected = (option: string, isSelected: boolean) => {
     const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
 
@@ -104,77 +107,121 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
         <Heading level="1" size="large" spacing>
           {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
         </Heading>
-        <VStack gap="4">
-          <HGrid columns={{ xs: "1", md: "1fr 230px" }} gap="4">
-            <HStack gap="4">
-              <Box role="search" style={{ flex: 4, maxWidth: "475px", minWidth: "250px" }}>
+        <VStack gap={{ xs: "4", md: "6" }}>
+          <HGrid
+            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin && !isRejectedPage ? "1fr 230px" : "1fr " }}
+            gap="4"
+          >
+            <HGrid
+              columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
+              gap="4"
+              align="start"
+            >
+              <Box role="search" style={{ maxWidth: "475px" }}>
                 <Search
                   className="search-button"
-                  label="Søk etter et produkt"
+                  label="Søk"
                   variant="simple"
                   clearButton={true}
                   placeholder="Søk etter produktnavn"
                   size="medium"
                   value={searchTerm}
                   onChange={(value) => handleSearch(value)}
+                  hideLabel={false}
                 />
               </Box>
-              <CheckboxGroup
-                legend="Filter"
-                hideLegend
-                onChange={setStatusFilters}
-                value={statusFilters}
-                style={{ minWidth: "111px", flex: 1 }}
-              >
-                {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
-              </CheckboxGroup>
+
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
-                <UNSAFE_Combobox
-                  clearButton
-                  clearButtonLabel="Tøm"
-                  label="Filtrer på leverandører"
-                  selectedOptions={searchParams
-                    .getAll("supplier")
-                    .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
-                  onToggleSelected={onToggleSelected}
-                  options={suppliers?.map((supplier) => supplier.name) || []}
-                  style={{ flex: 1, maxWidth: "475px" }}
-                />
+                <Box asChild style={{ maxWidth: "475px" }}>
+                  <UNSAFE_Combobox
+                    clearButton
+                    clearButtonLabel="Tøm"
+                    label="Leverandører"
+                    selectedOptions={searchParams
+                      .getAll("supplier")
+                      .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                    onToggleSelected={onToggleSelected}
+                    options={suppliers?.map((supplier) => supplier.name) || []}
+                  />
+                </Box>
               )}
-            </HStack>
+              <Box paddingBlock={{ xs: "2", md: "8" }}>
+                <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
+                  {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
+                </CheckboxGroup>
+              </Box>
+            </HGrid>
 
             {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
-              <Button
-                variant="secondary"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate("/produkter/opprett")}
-                style={{ maxHeight: "3rem" }}
-              >
-                Opprett nytt produkt
-              </Button>
+              <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
+                <Button
+                  variant="secondary"
+                  icon={<PlusIcon aria-hidden />}
+                  iconPosition="left"
+                  onClick={() => navigate("/produkter/opprett")}
+                  style={{ maxHeight: "3rem" }}
+                >
+                  Opprett nytt produkt
+                </Button>
+              </Box>
             )}
           </HGrid>
+          <VStack gap="3">
+            <Label>Filter</Label>
+            <Chips>
+              {visningStatusfilter.map((filterNavn) => (
+                <Chips.Toggle
+                  key={filterNavn}
+                  selected={statusFilters.includes(filterNavn)}
+                  onClick={() =>
+                    setStatusFilters(
+                      statusFilters.includes(filterNavn)
+                        ? statusFilters.filter((x) => x !== filterNavn)
+                        : [...statusFilters, filterNavn],
+                    )
+                  }
+                >
+                  {filterNavn}
+                </Chips.Toggle>
+              ))}
+            </Chips>
+          </VStack>
         </VStack>
 
-        {isLoadingPagedData && <Loader size="3xlarge" />}
-
         <VStack gap="4">
-          {seriesByHmsNr ? (
-            <ProductList seriesList={[seriesByHmsNr]} heading={"Treff på HMS-nummer"} />
-          ) : seriesBySupplierRef ? (
-            <ProductList seriesList={[seriesBySupplierRef]} heading={"Treff på Lev-artnr"} />
-          ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-            <ProductList seriesList={pagedData.content} />
-          ) : (
-            <Alert variant="info">
-              {searchTerm !== ""
-                ? `Ingen produkter funnet med søket: "${searchTerm}"`
-                : isRejectedPage
-                  ? "Ingen avslåtte produkter funnet."
-                  : "Ingen produkter funnet."}
-            </Alert>
-          )}
+          <VStack gap="1-alt">
+            {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
+            {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
+            <HGrid
+              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".7fr 3.6fr 2.1fr .9fr 0.4fr" }}
+              paddingBlock={"2"}
+              gap={"2"}
+            >
+              <b>Produktnavn</b>
+              <span />
+              <b>Status</b>
+              <b>Varianter</b>
+              <span />
+            </HGrid>
+            {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
+            {seriesByHmsNr ? (
+              <ProductList seriesList={[seriesByHmsNr]} />
+            ) : seriesBySupplierRef ? (
+              <ProductList seriesList={[seriesBySupplierRef]} />
+            ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
+              <ProductList seriesList={pagedData.content} />
+            ) : (
+              !isLoadingPagedData && (
+                <Alert variant="info">
+                  {searchTerm !== ""
+                    ? `Ingen produkter funnet med søket: "${searchTerm}"`
+                    : isRejectedPage
+                      ? "Ingen avslåtte produkter funnet."
+                      : "Ingen produkter funnet."}
+                </Alert>
+              )
+            )}
+          </VStack>
 
           <HStack
             justify={{ xs: "center", md: "space-between" }}
@@ -182,7 +229,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
             gap={"4"}
             style={{ flexWrap: "wrap-reverse" }}
           >
-            {searchTerm.length == 0 && pagedData?.content.length !== 0 && (
+            {searchTerm.length == 0 && pagedData?.content.length !== 0 && !isLoadingPagedData && (
               <Select
                 label="Ant produkter per side"
                 size="small"

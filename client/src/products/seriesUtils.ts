@@ -18,7 +18,7 @@ export const mapThumbnail = (series: SeriesRegistrationDTO): MediaInfoDTO | null
 };
 
 export const mapImagesAndPDFfromMedia = (
-  series: SeriesRegistrationDTOV2
+  series: SeriesRegistrationDTOV2,
 ): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
   const seen: { [uri: string]: boolean } = {};
   const pdfs: MediaInfoDTO[] = [];

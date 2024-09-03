@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
-import { MemoryRouter } from "react-router-dom";
+import { axe } from "jest-axe";
 import { server } from "mocks/server";
 import { http, HttpResponse } from "msw";
+import { MemoryRouter } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { axe } from "jest-axe";
+import { expect, test } from "vitest";
 import ProductListWrapper from "./ProductListWrapper";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
@@ -71,19 +71,19 @@ test("Flere produkter", async () => {
         pageNumber: 0,
         numberOfElements: 3,
       });
-    })
+    }),
   );
 
   const { container } = render(
     <MemoryRouter>
       <ProductListWrapper key="all-products" isRejectedPage={false} />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
   expect(await screen.findAllByRole("listitem")).toHaveLength(4);
 
   expect(await screen.findByRole("link", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
-  expect(await screen.findByRole("link", { name: /Ikke publisert/ }));
+  expect(await screen.findByRole("link", { name: /Under endring/ }));
   expect(await screen.findByRole("link", { name: /Avslått/ }));
   expect(await screen.findByRole("link", { name: /Venter på godkjenning/ }));
   expect(await screen.findByRole("link", { name: /Publisert/ }));

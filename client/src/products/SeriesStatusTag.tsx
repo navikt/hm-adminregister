@@ -27,14 +27,6 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
         color={colors.RED}
       />
     );
-  } else if (seriesStatus === SeriesStatus.DRAFT) {
-    return (
-      <TagWithIcon
-        icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status ikke publisert" fontSize={"1.5rem"} />}
-        text={iconOnly ? "" : "Ikke publisert"}
-        color={colors.GREY}
-      />
-    );
   } else if (seriesStatus === SeriesStatus.PENDING) {
     return (
       <TagWithIcon
@@ -51,11 +43,11 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
         color={colors.GREEN}
       />
     );
-  } else if (seriesStatus === SeriesStatus.DRAFT_CHANGE) {
+  } else if (seriesStatus === SeriesStatus.DRAFT_CHANGE || seriesStatus === SeriesStatus.DRAFT) {
     return (
       <TagWithIcon
-        icon={<PencilWritingIcon aria-hidden={!iconOnly} title="Under redigering" fontSize={"1.5rem"} />}
-        text={iconOnly ? "" : "Under redigering"}
+        icon={<PencilWritingIcon aria-hidden={!iconOnly} title={iconOnly ? "Under endring" : ""} fontSize={"1.5rem"} />}
+        text={iconOnly ? "" : "Under endring"}
         color={colors.BLUE}
       />
     );

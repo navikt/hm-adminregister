@@ -53,3 +53,8 @@
 .navds-toggle-group--small > .navds-toggle-group__button {
   padding: $a-spacing-05 $a-spacing-1;
 }
+
+.navds-chips__toggle[aria-pressed="true"],
+.navds-chips__toggle[aria-pressed="true"]:hover {
+  background-color: #3a4583;
+}

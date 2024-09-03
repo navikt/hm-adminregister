@@ -138,14 +138,14 @@ export function usePagedProducts({
   page,
   pageSize,
   titleSearchTerm,
-  statusFilters,
+  filters,
   isRejectedPage,
   supplierFilter,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
-  statusFilters: string[];
+  filters: string[];
   isRejectedPage: boolean;
   supplierFilter?: string;
 }) {
@@ -153,15 +153,14 @@ export function usePagedProducts({
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const status = statusFilters && statusFilters.includes("includeInactive") ? "ACTIVE,INACTIVE" : "ACTIVE";
-
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
-  const supplierParam = supplierFilter ? `&supplierId=${supplierFilter}` : "";
+  const filterUrl = filterProductsURL(filters);
+  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=updated,DESC&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&status=${status}&sort=updated,DESC&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
@@ -171,6 +170,41 @@ export function usePagedProducts({
     error,
   };
 }
+
+const filterProductsURL = (statusFilters: string[]) => {
+  // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
+  // const otherStatuses = ["includeInactive", "onlyUnpublished"];
+  const editStatus: string[] = [];
+  const otherStatuses: string[] = ["ACTIVE"];
+
+  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert", "Ikke publisert"];
+
+  const uri = new URLSearchParams();
+
+  statusFilters.forEach((status) => {
+    if (status === "Under endring") {
+      editStatus.push("EDITABLE");
+    } else if (status === "Venter på godkjenning") {
+      editStatus.push("PENDING_APPROVAL");
+    } else if (status === "Avslått") {
+      editStatus.push("REJECTED");
+    } else if (status === "Publisert") {
+      editStatus.push("DONE");
+      // } else if (status === "Ikke publisert") {
+      //   otherStatuses.push("unpublished");
+    } else if (status === "includeInactive") {
+      otherStatuses.push("INACTIVE");
+    }
+  });
+
+  if (editStatus.length > 0) {
+    uri.append("editStatus", editStatus.join(","));
+  }
+
+  uri.append("status", otherStatuses.join(","));
+
+  return uri;
+};
 
 export function getAllRejectedSeries() {
   const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?size=1000000&adminStatus=REJECTED`;
@@ -218,7 +252,7 @@ export function usePagedSeriesToApprove({
 
   const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(
     loggedInUser ? path : null,
-    fetcherGET
+    fetcherGET,
   );
 
   return {
@@ -284,7 +318,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET
+    fetcherGET,
   );
 
   if (error) {
@@ -358,7 +392,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    }
+    },
   );
 
   if (error) {
