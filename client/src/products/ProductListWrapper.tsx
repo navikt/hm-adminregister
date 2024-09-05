@@ -69,7 +69,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
 
   const isSearch = searchTerm.length > 0;
 
-  const showPageNavigator = pagedData && pagedData.totalPages && pagedData.totalPages > 1 && !isSearch;
+  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
 
   if (errorPaged) {
     return (
@@ -223,13 +223,13 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
             )}
           </VStack>
 
-          <HStack
-            justify={{ xs: "center", md: "space-between" }}
-            align="center"
-            gap={"4"}
-            style={{ flexWrap: "wrap-reverse" }}
-          >
-            {searchTerm.length == 0 && pagedData?.content.length !== 0 && !isLoadingPagedData && (
+          {showPageNavigator && (
+            <HStack
+              justify={{ xs: "center", md: "space-between" }}
+              align="center"
+              gap={"4"}
+              style={{ flexWrap: "wrap-reverse" }}
+            >
               <Select
                 label="Ant produkter per side"
                 size="small"
@@ -244,8 +244,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 <option value={25}>25</option>
                 <option value={100}>100</option>
               </Select>
-            )}
-            {showPageNavigator === true && pagedData && (
+
               <Pagination
                 page={pageState}
                 onPageChange={(x) => {
@@ -256,8 +255,8 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 count={pagedData.totalPages!}
                 size="small"
               />
-            )}
-          </HStack>
+            </HStack>
+          )}
         </VStack>
       </VStack>
     </main>
