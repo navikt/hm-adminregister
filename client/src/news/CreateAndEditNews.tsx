@@ -14,6 +14,7 @@ import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 
 type FormData = {
   newsTitle: string;
+  newsType: string;
   newsText: string;
   publishedOn: Date;
   expiredOn: Date;
@@ -42,7 +43,7 @@ const CreateAndEditNews = () => {
 
   async function onSubmit(data: FormData) {
     const newNewsRelease: CreateUpdateNewsDTO = {
-      title: data.newsTitle,
+      title: (data.newsType ? `${data.newsType.toUpperCase()}: ` : "") + data.newsTitle,
       text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
@@ -66,6 +67,19 @@ const CreateAndEditNews = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="7">
           <TextField
+            {...register("newsType", { required: true })}
+            label={labelRequired("Type")}
+            description={"F.eks: NY AVTALE, KOMMER"}
+            id="newsType"
+            name="newsType"
+            type="text"
+            autoComplete="on"
+            error={errors.newsType && "Type er påkrevd"}
+            defaultValue={
+              editNewsData && editNewsData.title.includes(":") ? editNewsData.title.split(":")[0].toUpperCase() : ""
+            }
+          />
+          <TextField
             {...register("newsTitle", { required: true })}
             label={labelRequired("Tittel på nyhetsmelding")}
             id="newsTitle"
@@ -73,7 +87,11 @@ const CreateAndEditNews = () => {
             type="text"
             autoComplete="on"
             error={errors.newsTitle && "Tittel er påkrevd"}
-            defaultValue={editNewsData ? editNewsData.title : ""}
+            defaultValue={
+              editNewsData?.title?.includes(":")
+                ? editNewsData.title.split(":")[1].trimStart()
+                : editNewsData?.title || ""
+            }
           />
           <Box>
             <Heading level="2" size="xsmall" spacing={true}>
