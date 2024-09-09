@@ -37,13 +37,13 @@ import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
 import VideosTab from "products/videos/VideosTab";
 
+import ErrorAlert from "error/ErrorAlert";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
-import VariantsTab from "./variants/VariantsTab";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import ErrorAlert from "error/ErrorAlert";
 import styles from "./ProductPage.module.scss";
+import VariantsTab from "./variants/VariantsTab";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -221,9 +221,16 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
+            <Link
+              to="#"
+              style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}
+              onClick={(event) => {
+                event.preventDefault();
+                window.history.back();
+              }}
+            >
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-              Tilbake til alle produkter
+              Tilbake
             </Link>
             <VStack gap="2">
               <Label> Produktnavn</Label>

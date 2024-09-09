@@ -35,7 +35,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { loggedInUser } = useAuthStore();
-  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [statusFilters, setStatusFilters] = useState<string[]>(searchParams.get("filters")?.split(",") || []);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     data: pagedData,
@@ -173,13 +173,17 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 <Chips.Toggle
                   key={filterNavn}
                   selected={statusFilters.includes(filterNavn)}
-                  onClick={() =>
-                    setStatusFilters(
-                      statusFilters.includes(filterNavn)
-                        ? statusFilters.filter((x) => x !== filterNavn)
-                        : [...statusFilters, filterNavn],
-                    )
-                  }
+                  onClick={() => {
+                    if (statusFilters.includes(filterNavn)) {
+                      setStatusFilters(statusFilters.filter((x) => x !== filterNavn));
+                      searchParams.set("filters", statusFilters.filter((x) => x !== filterNavn).join(","));
+                      setSearchParams(searchParams);
+                    } else {
+                      setStatusFilters([...statusFilters, filterNavn]);
+                      searchParams.set("filters", [...statusFilters, filterNavn].join(","));
+                      setSearchParams(searchParams);
+                    }
+                  }}
                 >
                   {filterNavn}
                 </Chips.Toggle>
