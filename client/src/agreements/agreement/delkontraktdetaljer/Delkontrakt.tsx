@@ -135,7 +135,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
           <VStack gap="3">
             <b>Beskrivelse:</b>
             {delkontrakt!.delkontraktData.description}
-            {productAgreements!.filter((product) => !product.accessory && !product.sparePart).length > 0 && (
+            {productAgreements!.length > 0 && (
               <VStack gap="2">
                 <RowBoxTable size="small">
                   <Table.Header>
