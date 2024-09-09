@@ -35,8 +35,9 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { loggedInUser } = useAuthStore();
-  const [statusFilters, setStatusFilters] = useState<string[]>(searchParams.get("filters")?.split(",") || []);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const statusFilters = searchParams.get("filters")?.split(",") || [];
+
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -101,6 +102,16 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     }
   };
 
+  const onFilterChange = (filterName: string) => {
+    if (statusFilters.includes(filterName)) {
+      searchParams.set("filters", statusFilters.filter((x) => x !== filterName).join(","));
+      setSearchParams(searchParams);
+    } else {
+      searchParams.set("filters", [...statusFilters, filterName].join(","));
+      setSearchParams(searchParams);
+    }
+  };
+
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
@@ -146,8 +157,13 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                 </Box>
               )}
               <Box paddingBlock={{ xs: "2", md: "8" }}>
-                <CheckboxGroup legend="Filter" hideLegend onChange={setStatusFilters} value={statusFilters}>
-                  {!isRejectedPage && <Checkbox value="includeInactive">Vis utgåtte</Checkbox>}
+                <CheckboxGroup
+                  legend="Filter"
+                  hideLegend
+                  onChange={() => onFilterChange("Vis utgåtte")}
+                  value={statusFilters}
+                >
+                  {!isRejectedPage && <Checkbox value="Vis utgåtte">Vis utgåtte</Checkbox>}
                 </CheckboxGroup>
               </Box>
             </HGrid>
@@ -169,23 +185,13 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
           <VStack gap="3">
             <Label>Filter</Label>
             <Chips>
-              {visningStatusfilter.map((filterNavn) => (
+              {visningStatusfilter.map((filterName) => (
                 <Chips.Toggle
-                  key={filterNavn}
-                  selected={statusFilters.includes(filterNavn)}
-                  onClick={() => {
-                    if (statusFilters.includes(filterNavn)) {
-                      setStatusFilters(statusFilters.filter((x) => x !== filterNavn));
-                      searchParams.set("filters", statusFilters.filter((x) => x !== filterNavn).join(","));
-                      setSearchParams(searchParams);
-                    } else {
-                      setStatusFilters([...statusFilters, filterNavn]);
-                      searchParams.set("filters", [...statusFilters, filterNavn].join(","));
-                      setSearchParams(searchParams);
-                    }
-                  }}
+                  key={filterName}
+                  selected={statusFilters.includes(filterName)}
+                  onClick={() => onFilterChange(filterName)}
                 >
-                  {filterNavn}
+                  {filterName}
                 </Chips.Toggle>
               ))}
             </Chips>

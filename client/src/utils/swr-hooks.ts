@@ -192,7 +192,7 @@ const filterProductsURL = (statusFilters: string[]) => {
       editStatus.push("DONE");
       // } else if (status === "Ikke publisert") {
       //   otherStatuses.push("unpublished");
-    } else if (status === "includeInactive") {
+    } else if (status === "Vis utgåtte") {
       otherStatuses.push("INACTIVE");
     }
   });
