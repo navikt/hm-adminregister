@@ -1,5 +1,5 @@
 import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
-import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Table, VStack } from "@navikt/ds-react";
+import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Switch, Table, VStack } from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import React, { useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
@@ -35,6 +35,8 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
   const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null);
 
   const [updatingRank, setUpdatingRank] = useState<boolean>(false);
+
+  const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
 
   const { setGlobalError } = useErrorStore();
 
@@ -145,79 +147,87 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {productAgreements!.map((produkt, i) => {
-                      return (
-                        <Table.Row key={i} shadeOnHover={false}>
-                          <Table.DataCell>
-                            {produkt.serieIdentifier ? (
-                              <a
-                                href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {produkt.productTitle}
-                              </a>
-                            ) : (
-                              produkt.productTitle
-                            )}
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <Button
-                              iconPosition="right"
-                              variant={"tertiary"}
-                              icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
-                              onClick={() => {
-                                setClickedSeriesId(produkt.productSeries ? produkt.productSeries : "");
-                                setModalIsOpen(true);
-                              }}
-                            >
-                              {produkt.productVariants.length}
-                            </Button>
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            {updatingRank ? (
-                              <Loader></Loader>
-                            ) : (
-                              <Select
-                                aria-label="Rangering"
-                                id="rangering"
-                                name="rangering"
-                                label={""}
-                                value={produkt.rank}
-                                onChange={(e) => {
-                                  onChangeRangering(
-                                    produkt.productVariants.map((variant) => variant.id),
-                                    e.target.value,
-                                  );
+                    {productAgreements!
+                      .filter((product) => {
+                        if (showOnlyMainProducts) {
+                          return !product.accessory && !product.sparePart;
+                        } else {
+                          return true;
+                        }
+                      })
+                      .map((produkt, i) => {
+                        return (
+                          <Table.Row key={i} shadeOnHover={false}>
+                            <Table.DataCell>
+                              {produkt.serieIdentifier ? (
+                                <a
+                                  href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {produkt.productTitle}
+                                </a>
+                              ) : (
+                                produkt.productTitle
+                              )}
+                            </Table.DataCell>
+                            <Table.DataCell>
+                              <Button
+                                iconPosition="right"
+                                variant={"tertiary"}
+                                icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
+                                onClick={() => {
+                                  setClickedSeriesId(produkt.productSeries ? produkt.productSeries : "");
+                                  setModalIsOpen(true);
                                 }}
-                                style={{ width: "4em" }}
                               >
-                                {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
-                                  <option key={it} value={it}>
-                                    {it}
+                                {produkt.productVariants.length}
+                              </Button>
+                            </Table.DataCell>
+                            <Table.DataCell>
+                              {updatingRank ? (
+                                <Loader></Loader>
+                              ) : (
+                                <Select
+                                  aria-label="Rangering"
+                                  id="rangering"
+                                  name="rangering"
+                                  label={""}
+                                  value={produkt.rank}
+                                  onChange={(e) => {
+                                    onChangeRangering(
+                                      produkt.productVariants.map((variant) => variant.id),
+                                      e.target.value,
+                                    );
+                                  }}
+                                  style={{ width: "4em" }}
+                                >
+                                  {range(MIN_RANGERING, MAX_RANGERING).map((it) => (
+                                    <option key={it} value={it}>
+                                      {it}
+                                    </option>
+                                  ))}
+                                  <option key={99} value={99}>
+                                    -
                                   </option>
-                                ))}
-                                <option key={99} value={99}>
-                                  -
-                                </option>
-                              </Select>
-                            )}
-                          </Table.DataCell>
-                          <Table.DataCell>
-                            <Button
-                              iconPosition="right"
-                              variant={"tertiary"}
-                              icon={<TrashIcon title="Slett" fontSize="1.5rem" />}
-                              onClick={() => {
-                                setProduktserieToDelete(produkt.productVariants);
-                                setProduktserieToDeleteTitle(produkt.productTitle);
-                                setDeleteProduktserieModalIsOpen(true);
-                              }}
-                            />
-                          </Table.DataCell>
-                        </Table.Row>
-                      );
-                    })}
+                                </Select>
+                              )}
+                            </Table.DataCell>
+                            <Table.DataCell>
+                              <Button
+                                iconPosition="right"
+                                variant={"tertiary"}
+                                icon={<TrashIcon title="Slett" fontSize="1.5rem" />}
+                                onClick={() => {
+                                  setProduktserieToDelete(produkt.productVariants);
+                                  setProduktserieToDeleteTitle(produkt.productTitle);
+                                  setDeleteProduktserieModalIsOpen(true);
+                                }}
+                              />
+                            </Table.DataCell>
+                          </Table.Row>
+                        );
+                      })}
                   </Table.Body>
                 </RowBoxTable>
               </VStack>
@@ -234,6 +244,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               >
                 <span>Legg til Produkt</span>
               </Button>
+              <Switch checked={showOnlyMainProducts} onChange={(e) => setShowOnlyMainProducts(e.target.checked)}>
+                Vis kun hovedprodukter
+              </Switch>
               <Dropdown>
                 <Button
                   style={{ marginLeft: "auto" }}
