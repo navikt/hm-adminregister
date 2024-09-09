@@ -379,6 +379,9 @@ export interface paths {
   "/admreg/vendor/api/v1/series/draftWith": {
     post: operations["draftSeriesWith"];
   };
+  "/admreg/vendor/api/v1/series/request-approval/{seriesUUID}": {
+    put: operations["requestApproval"];
+  };
   "/admreg/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
     put: operations["setSeriesToBeApproved"];
   };
@@ -451,7 +454,6 @@ export interface components {
       text?: string | null;
       identifier: string;
       attachments: components["schemas"]["AgreementAttachment"][];
-      /** @deprecated */
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
@@ -896,7 +898,6 @@ export interface components {
     ProductData: {
       attributes: components["schemas"]["Attributes"];
       techData: components["schemas"]["TechData"][];
-      /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
@@ -955,11 +956,8 @@ export interface components {
       hmsArtNr?: string | null;
       /** Format: uuid */
       seriesUUID: string;
-      /** @deprecated */
       seriesId: string;
-      /** @deprecated */
       isoCategory: string;
-      /** @deprecated */
       title: string;
       articleName: string;
       accessory: boolean;
@@ -1260,6 +1258,7 @@ export interface components {
       status: string;
       supplierName: string;
       thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
+      isExpired: boolean;
     };
     Slice_AgreementBasicInformationDto_: {
       content: components["schemas"]["AgreementBasicInformationDto"][];
@@ -3845,6 +3844,21 @@ export interface operations {
     };
     responses: {
       /** @description draftSeriesWith 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  requestApproval: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    responses: {
+      /** @description requestApproval 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];

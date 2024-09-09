@@ -1,4 +1,4 @@
-import { Button, Checkbox, Link, SortState, Table } from "@navikt/ds-react";
+import { BodyShort, Box, Button, Checkbox, Link, SortState, Table, Tag, VStack } from "@navikt/ds-react";
 import { useState } from "react";
 import { SeriesToApproveDto } from "utils/types/response-types";
 import styles from "./SeriesToApproveTable.module.scss";
@@ -31,7 +31,7 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
               orderBy: sortKey,
               direction:
                 sort && sortKey === sort.orderBy && sort.direction === "ascending" ? "descending" : "ascending",
-            },
+            }
       );
     }
   };
@@ -135,7 +135,18 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
                         onNavigateToProduct(series.seriesUUID);
                       }}
                     >
-                      {series.title}
+                      <VStack gap="1">
+                        {series.isExpired && (
+                          <Box>
+                            <Tag size="small" variant="neutral-moderate">
+                              Utgått
+                            </Tag>
+                          </Box>
+                        )}
+                        <BodyShort weight="semibold" className="text-overflow-hidden-small-2-lines">
+                          {series.title}
+                        </BodyShort>
+                      </VStack>
                     </Link>
                   </Table.DataCell>
                   <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
