@@ -221,16 +221,9 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <Link
-              to="#"
-              style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}
-              onClick={(event) => {
-                event.preventDefault();
-                window.history.back();
-              }}
-            >
+            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-              Tilbake
+              Tilbake til alle produkter
             </Link>
             <VStack gap="2">
               <Label> Produktnavn</Label>
