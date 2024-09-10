@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
-import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
@@ -29,7 +28,7 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mu
     reset,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<EditDelkontraktFormData>({
-    resolver: zodResolver(createNewDelkontraktSchema),
+    resolver: zodResolver(editDelkontraktSchema),
     mode: "onSubmit",
   });
   const { setGlobalError } = useErrorStore();
@@ -51,7 +50,6 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mu
         setGlobalError(error.message);
         setIsSaving(false);
       });
-    reset();
   }
 
   return (
