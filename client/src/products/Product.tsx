@@ -37,13 +37,13 @@ import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
 import VideosTab from "products/videos/VideosTab";
 
+import ErrorAlert from "error/ErrorAlert";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
-import VariantsTab from "./variants/VariantsTab";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import ErrorAlert from "error/ErrorAlert";
 import styles from "./ProductPage.module.scss";
+import VariantsTab from "./variants/VariantsTab";
 
 const Product = () => {
   const { seriesId } = useParams();
