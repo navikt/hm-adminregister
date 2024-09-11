@@ -1,7 +1,6 @@
 import {
   Buldings3Icon,
   FileCheckmarkFillIcon,
-  FileXMarkFillIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
@@ -110,17 +109,6 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             </HStack>
           </NavLink>
         </>
-      )}
-
-      {loggedInUser && !loggedInUser.isAdmin && (
-        <NavLink to="/avslaatt-produkt" className="page-link">
-          {pathname.startsWith("/avslaatt-produkt") && <div className="active-indicator" />}
-          <div className="line" />
-          <HStack gap="4" style={{ paddingLeft: "16px" }}>
-            <FileXMarkFillIcon fontSize={"1.5rem"} title="avslaatt-produkt" />
-            <span>Avslåtte produkter</span>
-          </HStack>
-        </NavLink>
       )}
     </VStack>
   );
