@@ -291,4 +291,4 @@ function range(start: number, stop: number): number[] {
 }
 
 const MIN_RANGERING = 1;
-const MAX_RANGERING = 9;
+const MAX_RANGERING = 20;
