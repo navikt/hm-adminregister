@@ -1,5 +1,4 @@
-.seriesToApproveTable {
-
+.productsToApproveTable {
   table {
     border-collapse: separate;
     border-spacing: 0 6px;
@@ -9,7 +8,6 @@
     border: 0;
   }
 
-
   thead td {
     border: 0;
   }
@@ -17,7 +15,6 @@
   tbody tr {
     background-color: var(--a-white);
     border: 0;
-
 
     &:hover {
       cursor: pointer;
@@ -61,8 +58,6 @@
     border-left: 0;
     border-right: 0;
   }
-
-
 }
 
 .pageSize {

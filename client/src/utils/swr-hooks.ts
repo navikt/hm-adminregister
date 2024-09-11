@@ -3,7 +3,7 @@ import useSWR, { Fetcher } from "swr";
 
 import { AgreementFilterOption } from "agreements/Agreements";
 import { getPath } from "api/fetch";
-import { ForApprovalFilterOption } from "approval/ForApproval";
+import { CreatedByFilter } from "approval/ForApproval";
 import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "./store/useAuthStore";
 import { useErrorStore } from "./store/useErrorStore";
@@ -155,7 +155,7 @@ export function usePagedProducts({
 
   const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
-  const filterUrl = filterProductsURL(filters);
+  const filterUrl = statusFilterProductsURL(filters);
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
@@ -171,7 +171,7 @@ export function usePagedProducts({
   };
 }
 
-const filterProductsURL = (statusFilters: string[]) => {
+const statusFilterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = [];
@@ -192,7 +192,7 @@ const filterProductsURL = (statusFilters: string[]) => {
       editStatus.push("DONE");
       // } else if (status === "Ikke publisert") {
       //   otherStatuses.push("unpublished");
-    } else if (status === "Vis utgåtte") {
+    } else if (status === "includeInactive") {
       otherStatuses.push("INACTIVE");
     }
   });
@@ -235,15 +235,15 @@ export function usePagedSeriesToApprove({
 }: {
   page: number;
   pageSize: number;
-  filter: ForApprovalFilterOption;
+  filter: CreatedByFilter;
 }) {
   const { loggedInUser } = useAuthStore();
 
   let queryParamFilter = "";
-  if (filter !== ForApprovalFilterOption.ALL) {
-    if (filter === ForApprovalFilterOption.ADMIN) {
+  if (filter !== CreatedByFilter.ALL) {
+    if (filter === CreatedByFilter.ADMIN) {
       queryParamFilter = `&createdByAdmin=${true}`;
-    } else if (filter === ForApprovalFilterOption.SUPPLIER) {
+    } else if (filter === CreatedByFilter.SUPPLIER) {
       queryParamFilter = `&createdByAdmin=${false}`;
     }
   }
@@ -254,6 +254,52 @@ export function usePagedSeriesToApprove({
     loggedInUser ? path : null,
     fetcherGET,
   );
+
+  return {
+    data,
+    isLoading,
+    mutate,
+    error,
+  };
+}
+
+export function usePagedProductsToApprove({
+  page,
+  pageSize,
+  createdByFilter,
+  supplierFilter,
+  titleSearchTerm,
+}: {
+  page: number;
+  pageSize: number;
+  createdByFilter: CreatedByFilter;
+  supplierFilter?: string;
+  titleSearchTerm?: string;
+}) {
+  const { loggedInUser } = useAuthStore();
+
+  const basePath = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}`;
+
+  const filterUrl = new URLSearchParams();
+
+  filterUrl.append("editStatus", "PENDING_APPROVAL");
+  supplierFilter ? filterUrl.append("supplierId", "supplierFilter") : "";
+  titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
+  // const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
+
+  if (createdByFilter === CreatedByFilter.ADMIN) {
+    filterUrl.append("createdByAdmin", "true");
+  } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
+    filterUrl.append("createdByAdmin", "false");
+  }
+
+  const path = loggedInUser?.isAdmin
+    ? `${basePath}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED`
+    : `${basePath}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED`;
+
+  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(path, fetcherGET);
 
   return {
     data,

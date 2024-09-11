@@ -1,21 +1,23 @@
+import { FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, Button, Checkbox, Link, SortState, Table, Tag, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import { SeriesToApproveDto } from "utils/types/response-types";
-import styles from "./SeriesToApproveTable.module.scss";
-import { SeriesThumbnail } from "approval/SeriesThumbnail";
-import { useNavigate } from "react-router-dom";
-import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
-import { ForApprovalFilterOption } from "approval/ForApproval";
-import { Avstand } from "felleskomponenter/Avstand";
+import { CreatedByFilter } from "approval/ForApproval";
 import { PublishMultipleSeriesModal } from "approval/PublishMultipleSeriesModal";
+import { Avstand } from "felleskomponenter/Avstand";
+import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import { ImageContainer } from "products/files/images/ImageContainer";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toDate, toReadableDateTimeString } from "utils/date-util";
+import { SeriesRegistrationDTO } from "utils/types/response-types";
+import styles from "./ProductsToApproveTable.module.scss";
 
-interface SeriesTableProps {
-  series: SeriesToApproveDto[];
-  seriesToApproveFilter: ForApprovalFilterOption;
-  mutateSeries: () => void;
+interface ProductTableProps {
+  series: SeriesRegistrationDTO[];
+  createdByFilter: CreatedByFilter;
+  mutatePagedData: () => void;
 }
 
-export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeries }: SeriesTableProps) => {
+export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedData }: ProductTableProps) => {
   const [sort, setSort] = useState<SortState | undefined>();
   const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
               orderBy: sortKey,
               direction:
                 sort && sortKey === sort.orderBy && sort.direction === "ascending" ? "descending" : "ascending",
-            }
+            },
       );
     }
   };
@@ -58,6 +60,8 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+  const forApprovalStatus = (published: string | null | undefined) =>
+    typeof published === "string" ? "CHANGE" : "NEW";
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list) => (list.includes(value) ? list.filter((id) => id !== value) : [...list, value]));
 
@@ -67,22 +71,20 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
         seriesIds={selectedRows}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        mutateSeries={mutateSeries}
+        mutateSeries={mutatePagedData}
         setSelectedRows={setSelectedRows}
       />
-      <div className={styles.seriesToApproveTable}>
+      <div className={styles.productsToApproveTable}>
         <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
           <Table.Header>
             <Table.Row>
-              {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
+              {createdByFilter === CreatedByFilter.ADMIN && (
                 <Table.DataCell>
                   <Checkbox
                     checked={selectedRows.length === series.length}
                     indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
                     onChange={() => {
-                      selectedRows.length
-                        ? setSelectedRows([])
-                        : setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
+                      selectedRows.length ? setSelectedRows([]) : setSelectedRows(series.map(({ id }) => id));
                     }}
                     hideLabel
                   >
@@ -95,48 +97,68 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
               <Table.ColumnHeader sortKey="status" sortable>
                 Status
               </Table.ColumnHeader>
-              <Table.ColumnHeader sortKey="supplierName" sortable>
+              {/* <Table.ColumnHeader sortKey="supplierName" sortable>
                 Leverandør
+              </Table.ColumnHeader> */}
+              <Table.ColumnHeader sortKey="edited" sortable>
+                Sist endret
               </Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {sortedData.map((series, i) => {
+              let isExpired = toDate(series.expired) < new Date();
+              let imgUrl = series.seriesData.media
+                .filter((media) => media.type === "IMAGE")
+                .find((media) => media.priority === 1);
               return (
                 <Table.Row key={i + series.title} tabIndex={0}>
-                  {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
+                  {createdByFilter === CreatedByFilter.ADMIN && (
                     <Table.DataCell>
                       <Checkbox
                         hideLabel
-                        checked={selectedRows.includes(series.seriesUUID)}
-                        onChange={() => toggleSelectedRow(series.seriesUUID)}
-                        aria-labelledby={`id-${series.seriesUUID}`}
+                        checked={selectedRows.includes(series.id)}
+                        onChange={() => toggleSelectedRow(series.id)}
+                        aria-labelledby={`id-${series.id}`}
                       >
                         {" "}
                       </Checkbox>
                     </Table.DataCell>
                   )}
                   <Table.DataCell className={styles.imgTd}>
-                    {series.thumbnail && <SeriesThumbnail mediaInfo={series.thumbnail} />}
+                    <Box
+                      className={styles.imageBox}
+                      borderRadius="medium"
+                      borderWidth="1"
+                      width="75px"
+                      height="75px"
+                      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                    >
+                      {imgUrl?.uri ? (
+                        <ImageContainer uri={imgUrl?.uri} size="xsmall" />
+                      ) : (
+                        <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
+                      )}
+                    </Box>
                   </Table.DataCell>
                   <Table.DataCell
                     onClick={() => {
-                      onNavigateToProduct(series.seriesUUID);
+                      onNavigateToProduct(series.id);
                     }}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
-                        onNavigateToProduct(series.seriesUUID);
+                        onNavigateToProduct(series.id);
                       }
                     }}
                   >
                     <Link
                       tabIndex={0}
                       onClick={() => {
-                        onNavigateToProduct(series.seriesUUID);
+                        onNavigateToProduct(series.id);
                       }}
                     >
                       <VStack gap="1">
-                        {series.isExpired && (
+                        {isExpired && (
                           <Box>
                             <Tag size="small" variant="neutral-moderate">
                               Utgått
@@ -149,15 +171,16 @@ export const SeriesToApproveTable = ({ series, seriesToApproveFilter, mutateSeri
                       </VStack>
                     </Link>
                   </Table.DataCell>
-                  <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
-                  <Table.DataCell>{series.supplierName}</Table.DataCell>
+                  <Table.DataCell>{<StatusTag status={forApprovalStatus(series.published)} />}</Table.DataCell>
+                  {/* <Table.DataCell>{series.supplierName}</Table.DataCell> */}
+                  <Table.DataCell>{`${toReadableDateTimeString(series.updated)}`}</Table.DataCell>
                 </Table.Row>
               );
             })}
           </Table.Body>
         </Table>
 
-        {seriesToApproveFilter === ForApprovalFilterOption.ADMIN && (
+        {createdByFilter === CreatedByFilter.ADMIN && (
           <Avstand marginTop={6}>
             <Button
               onClick={() => {
