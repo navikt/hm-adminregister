@@ -1,13 +1,12 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .tag-container {
-  display: contents;
-
   .navds-tag {
-    padding: $a-spacing-1 $a-spacing-2;
+    padding: $a-spacing-1 $a-spacing-3;
     border-radius: $a-border-radius-medium;
     width: fit-content;
     border: none;
+    line-height: 1.25rem;
 
     &:has(.navds-tag__icon--left) {
       gap: 6px;

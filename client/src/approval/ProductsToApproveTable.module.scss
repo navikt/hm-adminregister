@@ -13,10 +13,14 @@
   }
 
   tbody tr {
+    position: relative;
     background-color: var(--a-white);
     border: 0;
 
     &:hover {
+      outline: 1px solid var(--a-border-action);
+      border-radius: var(--a-border-radius-large);
+
       cursor: pointer;
 
       td:first-child {
@@ -28,29 +32,24 @@
 
   tbody th {
     padding: 15px 25px;
-    border: 1px solid var(--a-gray-300);
     border: 0;
   }
 
   td {
-    padding: 20px 25px;
-    border: 1px solid var(--a-gray-300);
-  }
-
-  .imgTd {
-    padding: 0 0 0 5px;
-    border: 1px solid var(--a-gray-300);
+    padding: var(--a-spacing-2);
+    border: 1px solid var(--a-grayalpha-100);
+    align-items: center;
   }
 
   td:first-child {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-left-radius: var(--a-border-radius-large);
+    border-bottom-left-radius: var(--a-border-radius-large);
     border-right: 0;
   }
 
   td:last-child {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: var(--a-border-radius-large);
+    border-bottom-right-radius: var(--a-border-radius-large);
     border-left: 0;
   }
 
@@ -65,4 +64,27 @@
   align-items: center;
   justify-content: start;
   margin-top: -20px;
+}
+
+.linkToProduct {
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+    color: var(--a-text-action);
+    background-color: transparent;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+}
+
+.imageBox {
+  border-color: var(--a-grayalpha-200);
 }

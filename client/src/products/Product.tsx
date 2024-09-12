@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
   BodyShort,
   Box,
@@ -221,10 +221,6 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <Link to="/produkter" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
-              <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-              Tilbake til alle produkter
-            </Link>
             <VStack gap="2">
               <Label> Produktnavn</Label>
 

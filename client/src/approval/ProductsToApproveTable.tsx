@@ -1,9 +1,9 @@
-import { FileImageIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, Button, Checkbox, Link, SortState, Table, Tag, VStack } from "@navikt/ds-react";
+import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
+import { BodyShort, Box, Button, Checkbox, HStack, Link, SortState, Stack, Table, Tag, VStack } from "@navikt/ds-react";
 import { CreatedByFilter } from "approval/ForApproval";
 import { PublishMultipleSeriesModal } from "approval/PublishMultipleSeriesModal";
 import { Avstand } from "felleskomponenter/Avstand";
-import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { ImageContainer } from "products/files/images/ImageContainer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +37,17 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
       );
     }
   };
+
+  const forApprovalStatus = (published: string | null | undefined) =>
+    typeof published === "string" ? "CHANGE" : "NEW";
+
   const comparator = (a: any, b: any, orderBy: string) => {
+    if (orderBy === "status") {
+      const aNotUndefined = forApprovalStatus(a["published"]) || "";
+      const bNotUndefined = forApprovalStatus(b["published"]) || "";
+      return aNotUndefined.localeCompare(bNotUndefined);
+    }
+
     if (b[orderBy] < a[orderBy] || b[orderBy] === undefined) {
       return -1;
     }
@@ -60,8 +70,6 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
-  const forApprovalStatus = (published: string | null | undefined) =>
-    typeof published === "string" ? "CHANGE" : "NEW";
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list) => (list.includes(value) ? list.filter((id) => id !== value) : [...list, value]));
 
@@ -80,19 +88,21 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
             <Table.Row>
               {createdByFilter === CreatedByFilter.ADMIN && (
                 <Table.DataCell>
-                  <Checkbox
-                    checked={selectedRows.length === series.length}
-                    indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
-                    onChange={() => {
-                      selectedRows.length ? setSelectedRows([]) : setSelectedRows(series.map(({ id }) => id));
-                    }}
-                    hideLabel
-                  >
-                    Velg alle rader
-                  </Checkbox>
+                  <HStack justify={"center"}>
+                    <Checkbox
+                      checked={selectedRows.length === series.length}
+                      indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
+                      onChange={() => {
+                        selectedRows.length ? setSelectedRows([]) : setSelectedRows(series.map(({ id }) => id));
+                      }}
+                      hideLabel
+                    >
+                      Velg alle rader
+                    </Checkbox>
+                  </HStack>
                 </Table.DataCell>
               )}
-              <Table.HeaderCell> </Table.HeaderCell>
+
               <Table.HeaderCell>Produkt</Table.HeaderCell>
               <Table.ColumnHeader sortKey="status" sortable>
                 Status
@@ -100,7 +110,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
               {/* <Table.ColumnHeader sortKey="supplierName" sortable>
                 Leverandør
               </Table.ColumnHeader> */}
-              <Table.ColumnHeader sortKey="edited" sortable>
+              <Table.ColumnHeader sortKey="updated" sortable>
                 Sist endret
               </Table.ColumnHeader>
             </Table.Row>
@@ -115,48 +125,20 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                 <Table.Row key={i + series.title} tabIndex={0}>
                   {createdByFilter === CreatedByFilter.ADMIN && (
                     <Table.DataCell>
-                      <Checkbox
-                        hideLabel
-                        checked={selectedRows.includes(series.id)}
-                        onChange={() => toggleSelectedRow(series.id)}
-                        aria-labelledby={`id-${series.id}`}
-                      >
-                        {" "}
-                      </Checkbox>
+                      <HStack justify={"center"}>
+                        <Checkbox
+                          hideLabel
+                          checked={selectedRows.includes(series.id)}
+                          onChange={() => toggleSelectedRow(series.id)}
+                          aria-labelledby={`id-${series.id}`}
+                        >
+                          {" "}
+                        </Checkbox>
+                      </HStack>
                     </Table.DataCell>
                   )}
-                  <Table.DataCell className={styles.imgTd}>
-                    <Box
-                      className={styles.imageBox}
-                      borderRadius="medium"
-                      borderWidth="1"
-                      width="75px"
-                      height="75px"
-                      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                    >
-                      {imgUrl?.uri ? (
-                        <ImageContainer uri={imgUrl?.uri} size="xsmall" />
-                      ) : (
-                        <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
-                      )}
-                    </Box>
-                  </Table.DataCell>
-                  <Table.DataCell
-                    onClick={() => {
-                      onNavigateToProduct(series.id);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        onNavigateToProduct(series.id);
-                      }
-                    }}
-                  >
-                    <Link
-                      tabIndex={0}
-                      onClick={() => {
-                        onNavigateToProduct(series.id);
-                      }}
-                    >
+                  <Table.DataCell className={styles.imageColumn}>
+                    <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
                       <VStack gap="1">
                         {isExpired && (
                           <Box>
@@ -169,11 +151,45 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                           {series.title}
                         </BodyShort>
                       </VStack>
-                    </Link>
+                      <Box
+                        className={styles.imageBox}
+                        borderRadius="medium"
+                        borderWidth="1"
+                        width="75px"
+                        height="75px"
+                        style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                      >
+                        {imgUrl?.uri ? (
+                          <ImageContainer uri={imgUrl?.uri} size="xsmall" />
+                        ) : (
+                          <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
+                        )}
+                      </Box>
+                    </Stack>
                   </Table.DataCell>
                   <Table.DataCell>{<StatusTag status={forApprovalStatus(series.published)} />}</Table.DataCell>
                   {/* <Table.DataCell>{series.supplierName}</Table.DataCell> */}
-                  <Table.DataCell>{`${toReadableDateTimeString(series.updated)}`}</Table.DataCell>
+                  <Table.DataCell style={{ paddingLeft: "12px" }}>{`${toReadableDateTimeString(
+                    series.updated,
+                  )}`}</Table.DataCell>
+                  <Table.DataCell>
+                    <VStack>
+                      <Link
+                        tabIndex={0}
+                        className={styles.linkToProduct}
+                        onClick={() => {
+                          onNavigateToProduct(series.id);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            onNavigateToProduct(series.id);
+                          }
+                        }}
+                      >
+                        <ChevronRightIcon aria-hidden fontSize={"1.5rem"} />
+                      </Link>
+                    </VStack>
+                  </Table.DataCell>
                 </Table.Row>
               );
             })}
@@ -199,10 +215,10 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
 
 const StatusTag = ({ status }: { status: string }) => {
   if (status === "NEW") {
-    return <TagWithIcon icon={<></>} text="Nytt produkt" color={colors.GREEN} />;
+    return <LocalTag text="Nytt" color={colors.GREEN} />;
   } else if (status === "CHANGE") {
-    return <TagWithIcon icon={<></>} text="Endret produkt" color={colors.ORANGE} />;
+    return <LocalTag text="Endret" color={colors.BLUE} />;
   } else {
-    return <> </>;
+    return <></>;
   }
 };

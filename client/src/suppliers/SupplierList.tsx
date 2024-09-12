@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
 import ErrorAlert from "error/ErrorAlert";
-import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { SupplierDTO } from "utils/supplier-util";
 import { useSuppliers } from "utils/swr-hooks";
 import styles from "./SupplierList.module.scss";
@@ -83,8 +83,8 @@ const Suppliers = () => {
                     <strong>{supplier.name}</strong> {supplier.postNr} {supplier.postLocation}
                   </p>
                   <div>
-                    {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
-                    {supplier.status === "ACTIVE" && <TagWithIcon icon={<></>} text="Aktiv" color={colors.GREEN} />}
+                    {supplier.status === "INACTIVE" && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
+                    {supplier.status === "ACTIVE" && <LocalTag icon={<></>} text="Aktiv" color={colors.GREEN} />}
                   </div>
                   <ChevronRightIcon className={styles.chevron} aria-hidden fontSize="24px" />
                 </Link>

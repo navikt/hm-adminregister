@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, Buldings3Icon, CogIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, Heading, HStack, VStack } from "@navikt/ds-react";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import TagWithIcon, { colors } from "felleskomponenter/TagWithIcon";
+import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SupplierDTO } from "utils/supplier-util";
 
@@ -25,7 +25,7 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
             <Heading level="1" size="large">
               {supplier?.name}
             </Heading>
-            {supplier.status === "INACTIVE" && <TagWithIcon icon={<></>} text="Inaktiv" color={colors.GREY} />}
+            {supplier.status === "INACTIVE" && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
           </div>
           <Dropdown>
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>

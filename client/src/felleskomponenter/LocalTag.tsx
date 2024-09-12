@@ -10,14 +10,20 @@ export enum colors {
   "BLUE" = "info",
 }
 
-const TagWithIcon = ({ icon, text, color }: { icon: ReactNode; text: string; color: colors }) => {
-  return (
+const LocalTag = ({ icon, text, color }: { icon?: ReactNode; text: string; color: colors }) => {
+  return icon ? (
     <div className="tag-container">
       <Tag variant={color} icon={icon} size="small">
+        {text}
+      </Tag>
+    </div>
+  ) : (
+    <div className="tag-container">
+      <Tag variant={color} size="small">
         {text}
       </Tag>
     </div>
   );
 };
 
-export default TagWithIcon;
+export default LocalTag;
