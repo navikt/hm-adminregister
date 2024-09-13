@@ -10,9 +10,10 @@ export interface Upload {
 
 export interface Props {
   validerImporterteProdukter: (upload: Upload) => void;
+  tekst: string;
 }
 
-export default function ImporterKatalogfil({ validerImporterteProdukter }: Props) {
+export default function FellesImport({ validerImporterteProdukter, tekst }: Props) {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
@@ -70,7 +71,7 @@ export default function ImporterKatalogfil({ validerImporterteProdukter }: Props
       <div className="import-products">
         <div className="content">
           <Heading level="1" size="large" align="center">
-            Importer katalogfil
+            {tekst}
           </Heading>
           <BodyShort>Velg importfil fra din maskin og last opp. Filen må være i .xlsx format.</BodyShort>
 

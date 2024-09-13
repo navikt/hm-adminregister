@@ -1,13 +1,13 @@
 import { useState } from "react";
 import "./import.scss";
-import ImporterKatalogfil, { Upload } from "agreements/import/ImporterKatalogfil";
 import { ValidateImportedProductAgreements } from "agreements/import/valideringsside/ValidateImportedProductAgreements";
+import FellesImport, { Upload } from "felleskomponenter/FellesImport";
 
 export const ImporterOgValiderKatalogfil = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
 
   if (!upload) {
-    return <ImporterKatalogfil validerImporterteProdukter={setUpload} />;
+    return <FellesImport validerImporterteProdukter={setUpload} tekst="Importer katalogfil" />;
   } else
     return (
       <ValidateImportedProductAgreements

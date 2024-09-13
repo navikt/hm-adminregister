@@ -1,6 +1,6 @@
 import { ProductAgreementImportDTO, ProductRegistrationDTO } from "utils/types/response-types";
-import { Upload } from "products/import/ImporterProdukter";
 import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from "api/fetch";
+import { Upload } from "felleskomponenter/FellesImport";
 
 export const exportProducts = async (isAdmin: boolean, seriesId: string): Promise<any> => {
   return await fetchAPIWithHeadersAndArrayBufferResponse(
