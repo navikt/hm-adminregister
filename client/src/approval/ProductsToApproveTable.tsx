@@ -135,7 +135,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                   )}
                   <Table.DataCell className={styles.imageColumn}>
                     <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
-                      <VStack gap="1" maxWidth={"435px"}>
+                      <VStack gap="1" maxWidth={"350px"}>
                         {isExpired && (
                           <Box>
                             <Tag size="small" variant="neutral-moderate">
