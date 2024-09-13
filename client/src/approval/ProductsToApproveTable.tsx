@@ -56,14 +56,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
       searchParams.set("sort", `${sort.orderBy},${sort.direction}`);
     }
     setSearchParams(searchParams);
-    // Debounce mutatePagedData for å unngå for mange kall
-    const timeoutId = setTimeout(() => {
-      mutatePagedData(); // Trigg SWR for å hente nye data basert på sorteringen
-    }, 300); // Juster debounce tid om nødvendig
-
-    // Rydd opp etter effekten ved å fjerne timeout hvis sortering endres igjen raskt
-    return () => clearTimeout(timeoutId);
-  }, [sort, setSearchParams, mutatePagedData]);
+  }, [sort]);
 
   const forApprovalStatus = (published: string | null | undefined) =>
     typeof published === "string" ? "CHANGE" : "NEW";
