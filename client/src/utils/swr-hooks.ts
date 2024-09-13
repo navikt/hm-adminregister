@@ -171,7 +171,7 @@ const filterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = [];
-  const otherStatuses: string[] = ["ACTIVE"];
+  let excludeExpired = true;
 
   const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert", "Ikke publisert"];
 
@@ -189,15 +189,15 @@ const filterProductsURL = (statusFilters: string[]) => {
       // } else if (status === "Ikke publisert") {
       //   otherStatuses.push("unpublished");
     } else if (status === "Vis utgåtte") {
-      otherStatuses.push("INACTIVE");
+      excludeExpired = false;
     }
   });
+
+  excludeExpired && uri.append("excludeExpired", "true");
 
   if (editStatus.length > 0) {
     uri.append("editStatus", editStatus.join(","));
   }
-
-  uri.append("status", otherStatuses.join(","));
 
   return uri;
 };
