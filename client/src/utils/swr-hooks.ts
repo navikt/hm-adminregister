@@ -285,7 +285,7 @@ export function usePagedProductsToApprove({
   const filterUrl = new URLSearchParams();
 
   filterUrl.append("editStatus", "PENDING_APPROVAL");
-  supplierFilter ? filterUrl.append("supplierId", "supplierFilter") : "";
+  supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
   // const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 

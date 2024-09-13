@@ -8,6 +8,7 @@ import { ImageContainer } from "products/files/images/ImageContainer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toDate, toReadableDateTimeString } from "utils/date-util";
+import { useSuppliers } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import styles from "./ProductsToApproveTable.module.scss";
 
@@ -20,6 +21,7 @@ interface ProductTableProps {
 export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedData }: ProductTableProps) => {
   const [sort, setSort] = useState<SortState | undefined>();
   const navigate = useNavigate();
+  const { suppliers } = useSuppliers();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -150,6 +152,9 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                         <BodyShort weight="semibold" className="text-overflow-hidden-small-2-lines">
                           {series.title}
                         </BodyShort>
+                        <BodyShort size="small" color="subtle" className="text-overflow-hidden-small-2-lines">
+                          {suppliers?.find((supplier) => supplier.id === series.supplierId)?.name || ""}
+                        </BodyShort>
                       </VStack>
                       <Box
                         className={styles.imageBox}
@@ -175,7 +180,6 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                   <Table.DataCell>
                     <VStack>
                       <Link
-                        tabIndex={0}
                         className={styles.linkToProduct}
                         onClick={() => {
                           onNavigateToProduct(series.id);

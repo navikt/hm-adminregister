@@ -1,10 +1,21 @@
-import { Alert, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  Box,
+  Heading,
+  HGrid,
+  HStack,
+  Loader,
+  Pagination,
+  Search,
+  Select,
+  UNSAFE_Combobox,
+  VStack,
+} from "@navikt/ds-react";
 import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
 import ErrorAlert from "error/ErrorAlert";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { usePagedProductsToApprove, useSeriesToApprove } from "utils/swr-hooks";
-import { SeriesToApproveDto } from "utils/types/response-types";
+import { usePagedProductsToApprove, useSeriesToApprove, useSuppliers } from "utils/swr-hooks";
 
 export enum CreatedByFilter {
   ALL = "ALL",
@@ -13,11 +24,13 @@ export enum CreatedByFilter {
 }
 
 export const ForApproval = () => {
+  const { suppliers } = useSuppliers();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<SeriesToApproveDto[] | undefined>();
+
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
   const [selectedFilterOption, setSelectedFilterOption] = useState<CreatedByFilter>(
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
@@ -34,6 +47,7 @@ export const ForApproval = () => {
     pageSize: pageSizeState,
     createdByFilter: selectedFilterOption,
     titleSearchTerm: searchTerm,
+    supplierFilter: supplierFilter,
   });
 
   useEffect(() => {
@@ -64,6 +78,26 @@ export const ForApproval = () => {
     setSearchTerm(value);
   };
 
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+
+    if (uuid) {
+      if (isSelected) {
+        if (!searchParams.getAll("supplier").includes(uuid)) {
+          searchParams.set("supplier", uuid);
+        }
+      } else {
+        if (searchParams.getAll("supplier").includes(uuid)) {
+          const updated = searchParams.getAll("supplier").filter((supplier) => supplier !== uuid);
+          searchParams.delete("supplier");
+          updated.forEach((supplier) => searchParams.set("supplier", supplier));
+        }
+      }
+      setSearchParams(searchParams);
+      setSupplierFilter(searchParams.get("supplier") || "");
+    }
+  };
+
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
@@ -83,9 +117,21 @@ export const ForApproval = () => {
             value={searchTerm}
             onChange={(value) => handleSearch(value)}
           />
-          <Select label="Leverandør">
-            <option>Asd</option>
-          </Select>
+          {suppliers && (
+            <Box asChild style={{ maxWidth: "475px" }}>
+              <UNSAFE_Combobox
+                clearButton
+                clearButtonLabel="Tøm"
+                label="Leverandør"
+                selectedOptions={searchParams
+                  .getAll("supplier")
+                  .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                onToggleSelected={onToggleSelected}
+                options={suppliers?.map((supplier) => supplier.name) || []}
+              />
+            </Box>
+          )}
+
           <Select
             value={selectedFilterOption}
             label="Opprettet av"
