@@ -139,28 +139,25 @@ export function usePagedProducts({
   pageSize,
   titleSearchTerm,
   filters,
-  isRejectedPage,
   supplierFilter,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
   filters: string[];
-  isRejectedPage: boolean;
   supplierFilter?: string;
 }) {
   const { loggedInUser } = useAuthStore();
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
-
   const filterUrl = statusFilterProductsURL(filters);
+
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${rejectedStatus}${titleSearchParam}`;
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}`;
 
   const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
 
@@ -175,7 +172,7 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = [];
-  const otherStatuses: string[] = ["ACTIVE"];
+  let excludeExpired = true;
 
   const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert", "Ikke publisert"];
 
@@ -192,16 +189,16 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
       editStatus.push("DONE");
       // } else if (status === "Ikke publisert") {
       //   otherStatuses.push("unpublished");
-    } else if (status === "includeInactive") {
-      otherStatuses.push("INACTIVE");
+    } else if (status === "Vis utgåtte") {
+      excludeExpired = false;
     }
   });
+
+  excludeExpired && uri.append("excludeExpired", "true");
 
   if (editStatus.length > 0) {
     uri.append("editStatus", editStatus.join(","));
   }
-
-  uri.append("status", otherStatuses.join(","));
 
   return uri;
 };
@@ -270,7 +267,7 @@ export function usePagedProductsToApprove({
     ? `${basePath}&${sortURL}${filterUrl.toString()}&excludedStatus=DELETED`
     : `${basePath}&${filterUrl.toString()}&excludedStatus=DELETED`;
 
-  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(path, fetcherGET);
+  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 
   return {
     data,

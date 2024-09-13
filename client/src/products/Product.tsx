@@ -229,7 +229,7 @@ const Product = () => {
                   <Heading level="1" size="xlarge">
                     {loggedInUser?.isAdmin && series.published ? (
                       <a
-                        href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
+                        href={`${HM_REGISTER_URL()}/produkt/${series.hmdbId ?? series.id}`}
                         target="_blank"
                         className={styles.headingLink}
                         rel="noreferrer"

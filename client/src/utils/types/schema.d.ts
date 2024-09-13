@@ -124,6 +124,9 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants"];
   };
+  "/admreg/admin/api/v1/product/registrations/draft/delete-v2": {
+    delete: operations["deleteVariants"];
+  };
   "/admreg/admin/api/v1/product/registrations/draft/supplier/{supplierId}": {
     post: operations["draftProduct"];
   };
@@ -1240,6 +1243,7 @@ export interface components {
       isExpired: boolean;
       isPublished: boolean;
       inAgreement: boolean;
+      hmdbId?: string | null;
     };
     SeriesRegistrationVersionDTO: {
       /** Format: uuid */
@@ -2302,6 +2306,21 @@ export interface operations {
     };
     responses: {
       /** @description deleteDraftVariants 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"][];
+        };
+      };
+    };
+  };
+  deleteVariants: {
+    requestBody: {
+      content: {
+        "application/json": string[];
+      };
+    };
+    responses: {
+      /** @description deleteVariants 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];

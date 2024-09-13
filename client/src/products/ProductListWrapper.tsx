@@ -24,11 +24,7 @@ import { PlusIcon } from "@navikt/aksel-icons";
 import ErrorAlert from "error/ErrorAlert";
 import { ProductList } from "./ProductList";
 
-type productPropsType = {
-  isRejectedPage: boolean;
-};
-
-const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
+const ProductListWrapper = () => {
   const { suppliers } = useSuppliers();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
@@ -47,7 +43,6 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
     filters: [...statusFilters],
-    isRejectedPage,
     supplierFilter: supplierFilter,
   });
 
@@ -67,8 +62,6 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
       setPageState(pagedData.totalPages);
     }
   }, [pagedData]);
-
-  const isSearch = searchTerm.length > 0;
 
   const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
 
@@ -116,13 +109,10 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
         <Heading level="1" size="large" spacing>
-          {isRejectedPage ? "Avslåtte produkter" : "Produkter"}
+          Produkter
         </Heading>
         <VStack gap={{ xs: "4", md: "6" }}>
-          <HGrid
-            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin && !isRejectedPage ? "1fr 230px" : "1fr " }}
-            gap="4"
-          >
+          <HGrid columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }} gap="4">
             <HGrid
               columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
               gap="4"
@@ -163,12 +153,12 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
                   onChange={() => onFilterChange("Vis utgåtte")}
                   value={statusFilters}
                 >
-                  {!isRejectedPage && <Checkbox value="Vis utgåtte">Vis utgåtte</Checkbox>}
+                  <Checkbox value="Vis utgåtte">Vis utgåtte</Checkbox>
                 </CheckboxGroup>
               </Box>
             </HGrid>
 
-            {loggedInUser && !loggedInUser.isAdmin && !isRejectedPage && (
+            {loggedInUser && !loggedInUser.isAdmin && (
               <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
                 <Button
                   variant="secondary"
@@ -223,11 +213,7 @@ const ProductListWrapper = ({ isRejectedPage = false }: productPropsType) => {
             ) : (
               !isLoadingPagedData && (
                 <Alert variant="info">
-                  {searchTerm !== ""
-                    ? `Ingen produkter funnet med søket: "${searchTerm}"`
-                    : isRejectedPage
-                      ? "Ingen avslåtte produkter funnet."
-                      : "Ingen produkter funnet."}
+                  {searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : "Ingen produkter funnet."}
                 </Alert>
               )
             )}

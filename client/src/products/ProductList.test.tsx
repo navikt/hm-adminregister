@@ -71,13 +71,13 @@ test("Flere produkter", async () => {
         pageNumber: 0,
         numberOfElements: 3,
       });
-    }),
+    })
   );
 
   const { container } = render(
     <MemoryRouter>
-      <ProductListWrapper key="all-products" isRejectedPage={false} />
-    </MemoryRouter>,
+      <ProductListWrapper />
+    </MemoryRouter>
   );
 
   expect(await screen.findAllByRole("listitem")).toHaveLength(4);
