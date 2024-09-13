@@ -5,8 +5,8 @@ import { PublishMultipleSeriesModal } from "approval/PublishMultipleSeriesModal"
 import { Avstand } from "felleskomponenter/Avstand";
 import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { ImageContainer } from "products/files/images/ImageContainer";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toDate, toReadableDateTimeString } from "utils/date-util";
 import { useSuppliers } from "utils/swr-hooks";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
@@ -19,15 +19,24 @@ interface ProductTableProps {
 }
 
 export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedData }: ProductTableProps) => {
-  const [sort, setSort] = useState<SortState | undefined>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sortUrl = searchParams.get("sort");
+  const [sort, setSort] = useState<SortState | undefined>(
+    sortUrl !== null
+      ? {
+          orderBy: sortUrl.split(",")[0] || "updated",
+          direction: (sortUrl.split(",")[1] as "descending" | "ascending" | "none") || "descending",
+        }
+      : undefined,
+  );
+
   const navigate = useNavigate();
   const { suppliers } = useSuppliers();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleSort = (sortKey: string | undefined) => {
-    if (!sortKey) return;
-    {
+    if (sortKey) {
       setSort(
         sort && sortKey === sort.orderBy && sort.direction === "descending"
           ? undefined
@@ -40,31 +49,24 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
     }
   };
 
+  useEffect(() => {
+    if (sort === undefined) {
+      searchParams.delete("sort");
+    } else {
+      searchParams.set("sort", `${sort.orderBy},${sort.direction}`);
+    }
+    setSearchParams(searchParams);
+    // Debounce mutatePagedData for å unngå for mange kall
+    const timeoutId = setTimeout(() => {
+      mutatePagedData(); // Trigg SWR for å hente nye data basert på sorteringen
+    }, 300); // Juster debounce tid om nødvendig
+
+    // Rydd opp etter effekten ved å fjerne timeout hvis sortering endres igjen raskt
+    return () => clearTimeout(timeoutId);
+  }, [sort, setSearchParams, mutatePagedData]);
+
   const forApprovalStatus = (published: string | null | undefined) =>
     typeof published === "string" ? "CHANGE" : "NEW";
-
-  const comparator = (a: any, b: any, orderBy: string) => {
-    if (orderBy === "status") {
-      const aNotUndefined = forApprovalStatus(a["published"]) || "";
-      const bNotUndefined = forApprovalStatus(b["published"]) || "";
-      return aNotUndefined.localeCompare(bNotUndefined);
-    }
-
-    if (b[orderBy] < a[orderBy] || b[orderBy] === undefined) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  };
-
-  const sortedData = series.slice().sort((a, b) => {
-    if (sort) {
-      return sort.direction === "ascending" ? comparator(b, a, sort.orderBy) : comparator(a, b, sort.orderBy);
-    }
-    return 1;
-  });
 
   const onNavigateToProduct = (seriesUUID: string) => {
     navigate(`/produkter/${seriesUUID}`);
@@ -92,6 +94,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                 <Table.DataCell>
                   <HStack justify={"center"}>
                     <Checkbox
+                      className={styles.checkbox}
                       checked={selectedRows.length === series.length}
                       indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
                       onChange={() => {
@@ -106,9 +109,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
               )}
 
               <Table.HeaderCell>Produkt</Table.HeaderCell>
-              <Table.ColumnHeader sortKey="status" sortable>
-                Status
-              </Table.ColumnHeader>
+              <Table.ColumnHeader sortKey="status">Status</Table.ColumnHeader>
               {/* <Table.ColumnHeader sortKey="supplierName" sortable>
                 Leverandør
               </Table.ColumnHeader> */}
@@ -118,7 +119,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {sortedData.map((series, i) => {
+            {series.map((series, i) => {
               let isExpired = toDate(series.expired) < new Date();
               let imgUrl = series.seriesData.media
                 .filter((media) => media.type === "IMAGE")
@@ -141,7 +142,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
                   )}
                   <Table.DataCell className={styles.imageColumn}>
                     <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
-                      <VStack gap="1">
+                      <VStack gap="1" maxWidth={"435px"}>
                         {isExpired && (
                           <Box>
                             <Tag size="small" variant="neutral-moderate">

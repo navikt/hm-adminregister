@@ -88,3 +88,9 @@
 .imageBox {
   border-color: var(--a-grayalpha-200);
 }
+
+.checkbox {
+  input {
+    z-index: 2;
+  }
+}

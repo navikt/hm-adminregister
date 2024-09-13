@@ -15,7 +15,7 @@ import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
 import ErrorAlert from "error/ErrorAlert";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { usePagedProductsToApprove, useSeriesToApprove, useSuppliers } from "utils/swr-hooks";
+import { usePagedProductsToApprove, useSuppliers } from "utils/swr-hooks";
 
 export enum CreatedByFilter {
   ALL = "ALL",
@@ -29,6 +29,7 @@ export const ForApproval = () => {
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const sortUrl = searchParams.get("sort");
 
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
@@ -36,7 +37,6 @@ export const ForApproval = () => {
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
   );
 
-  const { data: allData, isLoading: allDataIsLoading, error: allDataError } = useSeriesToApprove();
   const {
     data: pagedData,
     isLoading,
@@ -48,6 +48,7 @@ export const ForApproval = () => {
     createdByFilter: selectedFilterOption,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
+    sortUrl: sortUrl,
   });
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export const ForApproval = () => {
     }
   }, [pagedData]);
 
-  if (allDataError || pagedDataError) {
+  if (pagedDataError) {
     return (
       <main className="show-menu">
         <ErrorAlert />
@@ -143,59 +144,60 @@ export const ForApproval = () => {
             <option value="SUPPLIER">Leverandør</option>
           </Select>
         </HGrid>
-
-        {allDataIsLoading ? (
-          <Loader size="3xlarge" />
-        ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-          <ProductsToApproveTable
-            mutatePagedData={mutatePagedData}
-            series={pagedData.content}
-            createdByFilter={selectedFilterOption}
-          />
-        ) : (
-          !isLoading && (
-            <Alert variant="info">
-              {searchTerm !== "" && selectedFilterOption !== CreatedByFilter.ALL
-                ? `Ingen produkter funnet`
-                : "Ingen produkter som venter på godkjenning."}
-            </Alert>
-          )
-        )}
-
-        {showPageNavigator && (
-          <HStack
-            justify={{ xs: "center", md: "space-between" }}
-            align="center"
-            gap={"4"}
-            style={{ flexWrap: "wrap-reverse" }}
-          >
-            <Select
-              label="Ant produkter per side"
-              size="small"
-              defaultValue={pageSizeState}
-              onChange={(e) => {
-                searchParams.set("size", e.target.value);
-                setSearchParams(searchParams);
-                setPageSizeState(parseInt(e.target.value));
-              }}
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={100}>100</option>
-            </Select>
-
-            <Pagination
-              page={pageState}
-              onPageChange={(x) => {
-                searchParams.set("page", x.toString());
-                setSearchParams(searchParams);
-                setPageState(x);
-              }}
-              count={pagedData.totalPages!}
-              size="small"
+        <VStack gap="4">
+          {isLoading ? (
+            <Loader size="3xlarge" />
+          ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
+            <ProductsToApproveTable
+              mutatePagedData={mutatePagedData}
+              series={pagedData.content}
+              createdByFilter={selectedFilterOption}
             />
-          </HStack>
-        )}
+          ) : (
+            !isLoading && (
+              <Alert variant="info">
+                {searchTerm !== "" && selectedFilterOption !== CreatedByFilter.ALL
+                  ? `Ingen produkter funnet`
+                  : "Ingen produkter som venter på godkjenning."}
+              </Alert>
+            )
+          )}
+
+          {showPageNavigator && (
+            <HStack
+              justify={{ xs: "center", md: "space-between" }}
+              align="center"
+              gap={"4"}
+              style={{ flexWrap: "wrap-reverse" }}
+            >
+              <Select
+                label="Ant produkter per side"
+                size="small"
+                defaultValue={pageSizeState}
+                onChange={(e) => {
+                  searchParams.set("size", e.target.value);
+                  setSearchParams(searchParams);
+                  setPageSizeState(parseInt(e.target.value));
+                }}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={100}>100</option>
+              </Select>
+
+              <Pagination
+                page={pageState}
+                onPageChange={(x) => {
+                  searchParams.set("page", x.toString());
+                  setSearchParams(searchParams);
+                  setPageState(x);
+                }}
+                count={pagedData.totalPages!}
+                size="small"
+              />
+            </HStack>
+          )}
+        </VStack>
       </VStack>
     </main>
   );

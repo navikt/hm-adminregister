@@ -228,53 +228,21 @@ export function useSeriesToApprove() {
   };
 }
 
-export function usePagedSeriesToApprove({
-  page,
-  pageSize,
-  filter,
-}: {
-  page: number;
-  pageSize: number;
-  filter: CreatedByFilter;
-}) {
-  const { loggedInUser } = useAuthStore();
-
-  let queryParamFilter = "";
-  if (filter !== CreatedByFilter.ALL) {
-    if (filter === CreatedByFilter.ADMIN) {
-      queryParamFilter = `&createdByAdmin=${true}`;
-    } else if (filter === CreatedByFilter.SUPPLIER) {
-      queryParamFilter = `&createdByAdmin=${false}`;
-    }
-  }
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc${queryParamFilter}`;
-
-  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(
-    loggedInUser ? path : null,
-    fetcherGET,
-  );
-
-  return {
-    data,
-    isLoading,
-    mutate,
-    error,
-  };
-}
-
+// TODO: Slå sammen med usePagedProducts
 export function usePagedProductsToApprove({
   page,
   pageSize,
   createdByFilter,
   supplierFilter,
   titleSearchTerm,
+  sortUrl,
 }: {
   page: number;
   pageSize: number;
   createdByFilter: CreatedByFilter;
   supplierFilter?: string;
   titleSearchTerm?: string;
+  sortUrl: string | null;
 }) {
   const { loggedInUser } = useAuthStore();
 
@@ -287,8 +255,11 @@ export function usePagedProductsToApprove({
   filterUrl.append("editStatus", "PENDING_APPROVAL");
   supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
-  // const rejectedStatus = isRejectedPage ? "&adminStatus=REJECTED" : "";
 
+  const sortBy = sortUrl?.split(",")[0] || "updated";
+  const sortDirection = sortUrl?.split(",")[1] || "descending";
+  const sortURL =
+    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
   if (createdByFilter === CreatedByFilter.ADMIN) {
     filterUrl.append("createdByAdmin", "true");
   } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
@@ -296,8 +267,8 @@ export function usePagedProductsToApprove({
   }
 
   const path = loggedInUser?.isAdmin
-    ? `${basePath}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED`
-    : `${basePath}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED`;
+    ? `${basePath}&${sortURL}${filterUrl.toString()}&excludedStatus=DELETED`
+    : `${basePath}&${filterUrl.toString()}&excludedStatus=DELETED`;
 
   const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(path, fetcherGET);
 
