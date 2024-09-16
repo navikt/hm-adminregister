@@ -14,7 +14,7 @@ export interface Props {
 }
 
 export default function FellesImport({ validerImporterteProdukter, tekst }: Props) {
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
   const [fileTypeError, setFileTypeError] = useState("");
@@ -152,7 +152,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst }: Prop
               disabled={!upload}
               size="medium"
               variant="primary"
-              onClick={(event) => {
+              onClick={() => {
                 validerImporterteProdukter(upload!);
               }}
             >
