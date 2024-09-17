@@ -133,6 +133,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: "auto" }}>
           <VStack gap="3">
+            <Switch checked={showOnlyMainProducts} onChange={(e) => setShowOnlyMainProducts(e.target.checked)}>
+              Vis kun hovedprodukter
+            </Switch>
             <b>Beskrivelse:</b>
             {delkontrakt!.delkontraktData.description}
             {productAgreements!.length > 0 && (
@@ -244,9 +247,6 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               >
                 <span>Legg til Produkt</span>
               </Button>
-              <Switch checked={showOnlyMainProducts} onChange={(e) => setShowOnlyMainProducts(e.target.checked)}>
-                Vis kun hovedprodukter
-              </Switch>
               <Dropdown>
                 <Button
                   style={{ marginLeft: "auto" }}
