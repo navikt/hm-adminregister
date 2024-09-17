@@ -1,11 +1,11 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon, PencilWritingIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { SeriesStatus } from "utils/types/types";
-import TagWithIcon, { colors } from "../felleskomponenter/TagWithIcon";
+import LocalTag, { colors } from "../felleskomponenter/LocalTag";
 
 const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: SeriesStatus; iconOnly?: boolean }) => {
   if (seriesStatus === SeriesStatus.DELETED) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status slettet" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Slettet"}
         color={colors.RED}
@@ -13,7 +13,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
     );
   } else if (seriesStatus === SeriesStatus.INACTIVE) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<EyeClosedIcon aria-hidden={!iconOnly} title="Status slettet" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Utgått"}
         color={colors.RED}
@@ -21,7 +21,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
     );
   } else if (seriesStatus === SeriesStatus.REJECTED) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<XMarkOctagonIcon aria-hidden={!iconOnly} title="Status avslått" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Avslått"}
         color={colors.RED}
@@ -29,7 +29,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
     );
   } else if (seriesStatus === SeriesStatus.PENDING) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<ClockDashedIcon aria-hidden={!iconOnly} title="Venter på godkjenning" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Venter på godkjenning"}
         color={colors.ORANGE}
@@ -37,7 +37,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
     );
   } else if (seriesStatus === SeriesStatus.PUBLISHED) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<EyeIcon aria-hidden={!iconOnly} title="Status publisert" fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Publisert"}
         color={colors.GREEN}
@@ -45,7 +45,7 @@ const SeriesStatusTag = ({ seriesStatus, iconOnly = false }: { seriesStatus: Ser
     );
   } else if (seriesStatus === SeriesStatus.DRAFT_CHANGE || seriesStatus === SeriesStatus.DRAFT) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<PencilWritingIcon aria-hidden={!iconOnly} title={iconOnly ? "Under endring" : ""} fontSize={"1.5rem"} />}
         text={iconOnly ? "" : "Under endring"}
         color={colors.BLUE}

@@ -1,11 +1,11 @@
 import { ClockDashedIcon, EyeClosedIcon, EyeIcon } from "@navikt/aksel-icons";
-import TagWithIcon, { colors } from "../../felleskomponenter/TagWithIcon";
-import { toDate, toReadableDateString, toReadableDateTimeString } from "utils/date-util";
+import { toDate, toReadableDateString } from "utils/date-util";
+import LocalTag, { colors } from "../../felleskomponenter/LocalTag";
 
 const AgreementStatusTag = ({ publiseringsdato, isDraft }: { publiseringsdato: string; isDraft: boolean }) => {
   if (isDraft) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />}
         text="Ikke publisert (kladd)"
         color={colors.GREY}
@@ -13,14 +13,14 @@ const AgreementStatusTag = ({ publiseringsdato, isDraft }: { publiseringsdato: s
     );
   } else if (toDate(publiseringsdato) > new Date()) {
     return (
-      <TagWithIcon
+      <LocalTag
         icon={<ClockDashedIcon aria-hidden fontSize={"1.5rem"} />}
         text={`Aktiv fra ${toReadableDateString(publiseringsdato)}`}
         color={colors.ORANGE}
       />
     );
   } else {
-    return <TagWithIcon icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />} text="Publisert" color={colors.GREEN} />;
+    return <LocalTag icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />} text="Publisert" color={colors.GREEN} />;
   }
 };
 

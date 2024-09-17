@@ -3,7 +3,7 @@ import useSWR, { Fetcher } from "swr";
 
 import { AgreementFilterOption } from "agreements/Agreements";
 import { getPath } from "api/fetch";
-import { ForApprovalFilterOption } from "approval/ForApproval";
+import { CreatedByFilter } from "approval/ForApproval";
 import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "./store/useAuthStore";
 import { useErrorStore } from "./store/useErrorStore";
@@ -151,7 +151,8 @@ export function usePagedProducts({
 
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const filterUrl = filterProductsURL(filters);
+  const filterUrl = statusFilterProductsURL(filters);
+
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
   const path = loggedInUser?.isAdmin
@@ -167,7 +168,7 @@ export function usePagedProducts({
   };
 }
 
-const filterProductsURL = (statusFilters: string[]) => {
+const statusFilterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = [];
@@ -224,32 +225,49 @@ export function useSeriesToApprove() {
   };
 }
 
-export function usePagedSeriesToApprove({
+// TODO: Slå sammen med usePagedProducts
+export function usePagedProductsToApprove({
   page,
   pageSize,
-  filter,
+  createdByFilter,
+  supplierFilter,
+  titleSearchTerm,
+  sortUrl,
 }: {
   page: number;
   pageSize: number;
-  filter: ForApprovalFilterOption;
+  createdByFilter: CreatedByFilter;
+  supplierFilter?: string;
+  titleSearchTerm?: string;
+  sortUrl: string | null;
 }) {
   const { loggedInUser } = useAuthStore();
 
-  let queryParamFilter = "";
-  if (filter !== ForApprovalFilterOption.ALL) {
-    if (filter === ForApprovalFilterOption.ADMIN) {
-      queryParamFilter = `&createdByAdmin=${true}`;
-    } else if (filter === ForApprovalFilterOption.SUPPLIER) {
-      queryParamFilter = `&createdByAdmin=${false}`;
-    }
+  const basePath = loggedInUser?.isAdmin
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}`;
+
+  const filterUrl = new URLSearchParams();
+
+  filterUrl.append("editStatus", "PENDING_APPROVAL");
+  supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
+  titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
+
+  const sortBy = sortUrl?.split(",")[0] || "updated";
+  const sortDirection = sortUrl?.split(",")[1] || "descending";
+  const sortURL =
+    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
+  if (createdByFilter === CreatedByFilter.ADMIN) {
+    filterUrl.append("createdByAdmin", "true");
+  } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
+    filterUrl.append("createdByAdmin", "false");
   }
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}&sort=created,desc${queryParamFilter}`;
+  const path = loggedInUser?.isAdmin
+    ? `${basePath}&${sortURL}${filterUrl.toString()}&excludedStatus=DELETED`
+    : `${basePath}&${filterUrl.toString()}&excludedStatus=DELETED`;
 
-  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(
-    loggedInUser ? path : null,
-    fetcherGET
-  );
+  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
 
   return {
     data,
@@ -314,7 +332,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET
+    fetcherGET,
   );
 
   if (error) {
@@ -388,7 +406,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    }
+    },
   );
 
   if (error) {
