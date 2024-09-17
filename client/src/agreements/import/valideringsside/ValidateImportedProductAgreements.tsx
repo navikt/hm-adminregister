@@ -1,11 +1,11 @@
 import { Alert, BodyShort, Box, Button, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
-import { Upload } from "products/import/ImporterProdukter";
 import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
 import { ProductAgreementRegistrationDTO, ProductAgreementsWithInformation } from "utils/types/response-types";
 import { GroupedProductAgreements, groupProductAgreementsBySeries } from "utils/import-util";
 import { ProductAgreementVariants } from "agreements/import/valideringsside/ProductAgreementVariants";
+import { Upload } from "felleskomponenter/FellesImport";
 
 interface Props {
   upload: Upload;

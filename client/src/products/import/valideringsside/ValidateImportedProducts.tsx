@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
-import { Upload } from "products/import/ImporterProdukter";
 import { ProductSeriesInfo } from "products/import/valideringsside/ProductSeriesInfo";
 import { VariantsTable } from "products/import/valideringsside/VariantsTable";
 import { baseUrl, useSeries } from "utils/swr-hooks";
 import { importProducts } from "api/ImportExportApi";
+import { Upload } from "felleskomponenter/FellesImport";
 
 interface Props {
   upload: Upload;
