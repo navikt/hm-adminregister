@@ -56,7 +56,7 @@ export default function CreateProduct() {
 
   const handleSetFormValueIso = (value: string) => {
     const parts = value.split("-");
-    return parts[1].replace(/\s/g, ""); // Remove spaces
+    return parts[parts.length - 1].replace(/\s/g, ""); // Remove spaces
   };
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
