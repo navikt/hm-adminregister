@@ -69,7 +69,7 @@ export const addProductsToAgreement = async (
     hmsArtNr: product.hmsArtNr,
     agreementId: delkontraktToUpdate.agreementId,
     reference: product.supplierRef,
-    status: product.registrationStatus,
+    status: "INACTIVE",
     createdBy: "REGISTER",
     created: agreementToUpdate.created,
     updated: todayTimestamp(),
