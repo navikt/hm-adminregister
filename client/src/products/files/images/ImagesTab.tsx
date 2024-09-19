@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { deleteFileFromSeries, useSeriesV2 } from "api/SeriesApi";
+import { deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
 import SeriesSortingArea from "products/files/images/SeriesSortingArea";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -10,7 +10,6 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import styles from "./ImagesTab.module.scss";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
-import { uploadFilesToSeries } from "api/MediaApi";
 import productStyles from "../../ProductPage.module.scss";
 
 interface Props {
