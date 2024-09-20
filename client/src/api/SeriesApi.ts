@@ -95,7 +95,7 @@ export const updateSeriesImages = async (
 export const updateSeriesKeywords = async (
   seriesUUID: string,
   keywords: string[],
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.attributes.keywords = keywords;
