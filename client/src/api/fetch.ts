@@ -38,6 +38,22 @@ export const fetchAPIAttachment = async (url: string, method: string, body?: any
   }
 };
 
+export const fetchPostFiles = async (url: string, body?: any): Promise<any> => {
+  const response = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    body: body ? body : undefined,
+  });
+
+  if (response.ok) {
+    return Promise.resolve();
+  } else {
+    const json = await response.json();
+    const error = { message: json?.data?.errorMessage || response.statusText, status: response.status };
+    return Promise.reject(error);
+  }
+};
+
 export const httpDelete = async (url: string, method: string, body?: any): Promise<any> => {
   const response = await fetch(url, {
     method,

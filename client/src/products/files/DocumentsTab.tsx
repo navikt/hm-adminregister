@@ -6,9 +6,8 @@ import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
-import { changeFilenameOnAttachedFile, deleteFileFromSeries, useSeriesV2 } from "api/SeriesApi";
+import { changeFilenameOnAttachedFile, deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { uploadFilesToSeries } from "api/MediaApi";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import styles from "../ProductPage.module.scss";
 
@@ -48,8 +47,8 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
       });
   };
 
-  const uploadFiles = async (uploads: FileUpload[]) =>
-    uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+  const uploadFiles = async (uploads: FileUpload[]) => {
+    return uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
       .then(() => {
         mutateSeries();
         setModalIsOpen(false);
@@ -57,6 +56,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
       .catch((error) => {
         setGlobalError(error);
       });
+  };
 
   return (
     <>
