@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIAttachment, getPath } from "api/fetch";
+import { fetchAPI, fetchAPIAttachment, fetchPostFiles, getPath } from "api/fetch";
 import {
   MediaInfoDTO,
   RejectSeriesDTO,
@@ -17,7 +17,7 @@ export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistr
 
 export const setPublishedSeriesToDraft = async (
   isAdmin: boolean,
-  seriesUUID: string
+  seriesUUID: string,
 ): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
 };
@@ -40,8 +40,8 @@ export const approveMultipleSeries = async (seriesIds: string[]): Promise<Series
 
 export const rejectSeries = async (
   seriesUUID: string,
-  rejectSeriesDTO: RejectSeriesDTO
-): Promise<SeriesRegistrationDTO> => {
+  rejectSeriesDTO: RejectSeriesDTO,
+): Pomise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
@@ -52,8 +52,8 @@ export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promi
 const updateSeriesData = async (
   seriesUUID: string,
   isAdmin: boolean,
-  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO
-): Promise<SeriesRegistrationDTO> => {
+  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
+): Prmise<SeriesRegistrationDTO> => {
   const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
   const updatedSeriesData = modifySeriesData(seriesToUpdate);
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
@@ -62,7 +62,7 @@ const updateSeriesData = async (
 export const updateProductTitle = async (
   seriesUUID: string,
   productTitle: string,
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.title = productTitle;
@@ -73,7 +73,7 @@ export const updateProductTitle = async (
 export const updateProductDescription = async (
   seriesUUID: string,
   productDescription: string,
-  isAdmin: boolean
+  isAdmin: boolea,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.text = productDescription;
@@ -84,7 +84,7 @@ export const updateProductDescription = async (
 export const updateSeriesImages = async (
   seriesUUID: string,
   images: MediaInfoDTO[],
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(images);
@@ -95,7 +95,7 @@ export const updateSeriesImages = async (
 export const updateSeriesKeywords = async (
   seriesUUID: string,
   keywords: string[],
-  isAdmin: boolean
+  isAdmin: boolea,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.attributes.keywords = keywords;
@@ -106,7 +106,7 @@ export const updateSeriesKeywords = async (
 export const updateSeriesURL = async (
   seriesUUID: string,
   url: string,
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.attributes.url = url;
@@ -139,7 +139,7 @@ export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
   isAdmin: boolean,
   uri: string,
-  editedText: string
+  editedText: string,
 ) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     const mediaIndex = series.seriesData.media.findIndex((media) => media.uri === uri);
@@ -182,7 +182,7 @@ export const uploadFilesToSeries = async (seriesUUID: string, isAdmin: boolean, 
     uploads.forEach((upload) => formData.append("files", upload.file));
   }
 
-  return await fetchAPIAttachment(getPath(isAdmin, `/api/v1/series/uploadMedia/${seriesUUID}`), "POST", formData);
+  return await fetchPostFiles(getPath(isAdmin, `/api/v1/series/uploadMedia/${seriesUUID}`), formData);
 };
 
 const renameFiles = (uploads: FileUpload[]) =>
