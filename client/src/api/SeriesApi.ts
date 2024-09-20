@@ -80,13 +80,13 @@ export const updateProductDescription = async (
   });
 };
 
-export const updateSeriesMedia = async (
+export const updateSeriesImages = async (
   seriesUUID: string,
-  mediaInfoBody: MediaInfoDTO[],
+  images: MediaInfoDTO[],
   isAdmin: boolean
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.media = mediaInfoBody;
+    series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(images);
     return series;
   });
 };

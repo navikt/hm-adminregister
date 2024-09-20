@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 
 import { HStack } from "@navikt/ds-react";
-import { updateSeriesMedia } from "api/SeriesApi";
+import { updateSeriesImages } from "api/SeriesApi";
 import { ProductImageCard } from "products/files/images/ProductImageCard";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -36,9 +36,9 @@ export const handleUpdateOfSeriesMedia = (
   updatedArray: MediaInfoDTO[],
   loggedInUser: LoggedInUser | undefined,
   mutateSeries: () => void,
-  setGlobalError: any,
+  setGlobalError: any
 ) => {
-  updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false)
+  updateSeriesImages(seriesId, updatedArray, loggedInUser?.isAdmin || false)
     // .then(mutateSeries)
     .catch((error) => {
       setGlobalError(error);
@@ -72,7 +72,7 @@ export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFil
               .map(
                 (
                   item,
-                  index, //
+                  index //
                 ) => (
                   <li key={"bilde-" + index}>
                     <SortableItem>
@@ -89,7 +89,7 @@ export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFil
                       </div>
                     </SortableItem>
                   </li>
-                ),
+                )
               )
           : null}
       </HStack>
