@@ -41,7 +41,7 @@ export const approveMultipleSeries = async (seriesIds: string[]): Promise<Series
 export const rejectSeries = async (
   seriesUUID: string,
   rejectSeriesDTO: RejectSeriesDTO,
-): Pomise<SeriesRegistrationDTO> => {
+): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
@@ -53,7 +53,7 @@ const updateSeriesData = async (
   seriesUUID: string,
   isAdmin: boolean,
   modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
-): Prmise<SeriesRegistrationDTO> => {
+): Promise<SeriesRegistrationDTO> => {
   const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
   const updatedSeriesData = modifySeriesData(seriesToUpdate);
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
@@ -73,7 +73,7 @@ export const updateProductTitle = async (
 export const updateProductDescription = async (
   seriesUUID: string,
   productDescription: string,
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.text = productDescription;
