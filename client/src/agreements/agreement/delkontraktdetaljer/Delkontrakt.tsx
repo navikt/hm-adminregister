@@ -22,6 +22,7 @@ import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { deleteDelkontrakt } from "api/DelkontraktApi";
 import { useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
+import { HM_REGISTER_URL } from "environments";
 
 interface Props {
   agreementDraftStatus: string;
@@ -228,7 +229,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                             <Table.DataCell>
                               {produkt.serieIdentifier ? (
                                 <a
-                                  href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
+                                  href={`${HM_REGISTER_URL()}/produkt/${produkt.serieIdentifier}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
