@@ -1,5 +1,16 @@
 import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
-import { Button, Dropdown, ExpansionCard, HStack, Loader, Select, Switch, Table, VStack } from "@navikt/ds-react";
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  ExpansionCard,
+  HStack,
+  Loader,
+  Select,
+  Switch,
+  Table,
+  VStack,
+} from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon, PencilWritingIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import React, { useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
@@ -11,6 +22,7 @@ import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { deleteDelkontrakt } from "api/DelkontraktApi";
 import { useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
+import { HM_REGISTER_URL } from "environments";
 
 interface Props {
   agreementDraftStatus: string;
@@ -33,12 +45,21 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
   const [deleteProduktserieModalIsOpen, setDeleteProduktserieModalIsOpen] = useState<boolean>(false);
   const [produktserieToDelete, setProduktserieToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
   const [produktserieToDeleteTitle, setProduktserieToDeleteTitle] = useState<string | null>(null);
+  const [produktserierToDelete, setProduktserierToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
+  const [deleteProduktserierModalIsOpen, setDeleteProduktserierModalIsOpen] = useState<boolean>(false);
 
   const [updatingRank, setUpdatingRank] = useState<boolean>(false);
 
   const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
 
   const { setGlobalError } = useErrorStore();
+
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const toggleSelectedRow = (value: string) =>
+    setSelectedRows((list: string[]): string[] =>
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
+    );
 
   const onConfirmDeleteDelkontrakt = () => {
     deleteDelkontrakt(delkontrakt.id)
@@ -65,6 +86,23 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         setGlobalError(error.message);
       });
     setDeleteProduktserieModalIsOpen(false);
+  };
+
+  const onConfirmDeleteProduktserier = () => {
+    const productAgreementsToDelete = produktserierToDelete.map((variant) => {
+      return variant.id;
+    });
+
+    deleteProductsFromAgreement(productAgreementsToDelete)
+      .then(() => {
+        setProduktserierToDelete([]);
+        mutateProductAgreements();
+        mutateDelkontrakter();
+      })
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+    setDeleteProduktserierModalIsOpen(false);
   };
 
   const onChangeRangering = (productAgreementIds: string[], nyRangering: string) => {
@@ -113,6 +151,18 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         confirmButtonText="Slett"
         variant="danger"
       />
+
+      <ConfirmModal
+        title={`Slett  ${produktserierToDelete.length} merkede varianter`}
+        text="Er du sikker på at du vil slette produktserier?"
+        onClick={onConfirmDeleteProduktserier}
+        onClose={() => {
+          setDeleteProduktserierModalIsOpen(false);
+        }}
+        isModalOpen={deleteProduktserierModalIsOpen}
+        confirmButtonText="Slett"
+        variant="danger"
+      />
       <NewProductOnDelkontraktModal
         modalIsOpen={nyttProduktModalIsOpen}
         setModalIsOpen={setNyttProduktModalIsOpen}
@@ -147,6 +197,21 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                       <Table.HeaderCell scope="col">Artikler.</Table.HeaderCell>
                       <Table.HeaderCell scope="col">Rangering</Table.HeaderCell>
                       <Table.HeaderCell scope="col"></Table.HeaderCell>
+                      <Table.HeaderCell scope="col">
+                        <Checkbox
+                          checked={selectedRows.length === productAgreements?.length}
+                          onChange={() => {
+                            selectedRows.length
+                              ? setSelectedRows([])
+                              : setSelectedRows(
+                                  productAgreements?.map(({ serieIdentifier }) => serieIdentifier!) ?? [],
+                                );
+                          }}
+                          hideLabel
+                        >
+                          Velg alle rader
+                        </Checkbox>
+                      </Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
@@ -164,7 +229,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                             <Table.DataCell>
                               {produkt.serieIdentifier ? (
                                 <a
-                                  href={`https://finnhjelpemiddel.nav.no/produkt/${produkt.serieIdentifier}`}
+                                  href={`${HM_REGISTER_URL()}/produkt/${produkt.serieIdentifier}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
@@ -228,8 +293,21 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                                   setProduktserieToDelete(produkt.productVariants);
                                   setProduktserieToDeleteTitle(produkt.productTitle);
                                   setDeleteProduktserieModalIsOpen(true);
+                                  ("");
                                 }}
                               />
+                            </Table.DataCell>
+                            <Table.DataCell>
+                              <Checkbox
+                                hideLabel
+                                checked={selectedRows.includes(produkt.serieIdentifier!)}
+                                onChange={() => {
+                                  toggleSelectedRow(produkt.serieIdentifier!);
+                                }}
+                                aria-labelledby={`id-${produkt.serieIdentifier}`}
+                              >
+                                {" "}
+                              </Checkbox>
                             </Table.DataCell>
                           </Table.Row>
                         );
@@ -249,6 +327,23 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                 }}
               >
                 <span>Legg til Produkt</span>
+              </Button>
+
+              <Button
+                className="fit-content"
+                variant="tertiary"
+                icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
+                disabled={selectedRows.length === 0}
+                onClick={() => {
+                  setProduktserierToDelete(
+                    productAgreements
+                      ?.filter((it) => selectedRows.includes(it.serieIdentifier!))
+                      .flatMap((pa) => pa.productVariants) ?? [],
+                  );
+                  setDeleteProduktserierModalIsOpen(true);
+                }}
+              >
+                <span>Slett merkede produkter</span>
               </Button>
               <Dropdown>
                 <Button

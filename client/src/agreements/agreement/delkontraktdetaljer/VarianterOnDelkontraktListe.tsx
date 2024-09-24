@@ -10,14 +10,14 @@ interface Props {
 }
 
 export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!!]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!]);
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
       list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
     );
 
   useEffect(() => {
-    setSelectedRows([product.hmsArtNr!!]);
+    setSelectedRows([product.hmsArtNr!]);
   }, [product]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                     onChange={() => {
                       selectedRows.length
                         ? setSelectedRows([])
-                        : setSelectedRows(variants.map(({ hmsArtNr }) => hmsArtNr!!));
+                        : setSelectedRows(variants.map(({ hmsArtNr }) => hmsArtNr!));
                     }}
                     hideLabel
                   >
@@ -57,9 +57,9 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                 <Table.DataCell>
                   <Checkbox
                     hideLabel
-                    checked={selectedRows.includes(product.hmsArtNr!!)}
+                    checked={selectedRows.includes(product.hmsArtNr!)}
                     onChange={() => {
-                      toggleSelectedRow(product.hmsArtNr!!);
+                      toggleSelectedRow(product.hmsArtNr!);
                     }}
                     aria-labelledby={`id-${product.hmsArtNr}`}
                   >
@@ -78,9 +78,9 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                       <Table.DataCell>
                         <Checkbox
                           hideLabel
-                          checked={selectedRows.includes(variant.hmsArtNr!!)}
+                          checked={selectedRows.includes(variant.hmsArtNr!)}
                           onChange={() => {
-                            toggleSelectedRow(variant.hmsArtNr!!);
+                            toggleSelectedRow(variant.hmsArtNr!);
                           }}
                           aria-labelledby={`id-${variant.hmsArtNr}`}
                         >
