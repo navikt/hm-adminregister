@@ -152,7 +152,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
       />
 
       <ConfirmModal
-        title={`Slett  '${produktserierToDelete.length}' merkede varianter`}
+        title={`Slett  ${produktserierToDelete.length} merkede varianter`}
         text="Er du sikker på at du vil slette produktserier?"
         onClick={onConfirmDeleteProduktserier}
         onClose={() => {
