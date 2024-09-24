@@ -173,6 +173,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                               ) : (
                                 produkt.productTitle
                               )}
+                              {agreementDraftStatus !== "DRAFT" &&
+                                produkt.productVariants.some((variant) => variant.status === "INACTIVE") &&
+                                " (Inaktive varianter)"}
                             </Table.DataCell>
                             <Table.DataCell>
                               <Button

@@ -52,11 +52,12 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                     <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                     <Table.DataCell>
                       <Checkbox
                         checked={selectedRows.length === variants.length}
                         onChange={() => {
-                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!!));
+                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!));
                         }}
                         hideLabel
                       >
@@ -72,12 +73,13 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                         <Table.DataCell>{variant.articleName}</Table.DataCell>
                         <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
+                        <Table.DataCell>{variant.status === "ACTIVE" ? "Aktiv" : "Inaktiv"}</Table.DataCell>
                         <Table.DataCell>
                           <Checkbox
                             hideLabel
-                            checked={selectedRows.includes(variant.id!!)}
+                            checked={selectedRows.includes(variant.id!)}
                             onChange={() => {
-                              toggleSelectedRow(variant.id!!);
+                              toggleSelectedRow(variant.id!);
                             }}
                             aria-labelledby={`id-${variant.id}`}
                           >
