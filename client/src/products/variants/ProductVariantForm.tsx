@@ -1,15 +1,12 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import useSWR from "swr";
 
-import { Alert, Button, HelpText, HStack, Loader, Select, TextField, VStack } from "@navikt/ds-react";
+import { Button, HelpText, HStack, Select, TextField } from "@navikt/ds-react";
 import { updateProductVariant } from "api/ProductApi";
-import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, labelRequired } from "utils/string-util";
-import { fetcherGET } from "utils/swr-hooks";
-import { ProductRegistrationDTO, TechLabelDto } from "utils/types/response-types";
+import { ProductRegistrationDTOV2, TechDataType } from "utils/types/response-types";
 import styles from "./ProductVariantForm.module.scss";
 
 type FormData = {
@@ -20,10 +17,13 @@ type FormData = {
     key: string;
     value: string;
     unit: string;
+    type: TechDataType;
+    definition?: string | null;
+    options?: string[] | null;
   }>;
 };
 
-const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTO; mutate: () => void }) => {
+const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTOV2; mutate: () => void }) => {
   const navigate = useNavigate();
   const {
     articleName,
@@ -34,11 +34,6 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   const page = Number(searchParams.get("page")) || 1;
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
-
-  const { data: techLabels, isLoading: isLoadingTechLabels } = useSWR<TechLabelDto[]>(
-    `${HM_REGISTER_URL()}/admreg/api/v1/techlabels/${product.isoCategory}`,
-    fetcherGET,
-  );
 
   const {
     handleSubmit,
@@ -60,17 +55,16 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
 
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
-      ...product,
+      hmsArtNr: data.hmsArtNr,
       articleName: data.articleName,
       supplierRef: data.supplierRef,
-      hmsArtNr: data.hmsArtNr,
       productData: {
         ...product.productData,
         techData: data.techData,
       },
     };
 
-    updateProductVariant(loggedInUser?.isAdmin || false, productRegistrationUpdated)
+    updateProductVariant(loggedInUser?.isAdmin || false, product.id, productRegistrationUpdated)
       .then((product) => {
         navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`);
         mutate();
@@ -84,15 +78,6 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
       });
   }
 
-  if (isLoadingTechLabels || !techLabels) {
-    return (
-      <VStack gap="8">
-        <Loader />
-      </VStack>
-    );
-  }
-
-  const techLabelsMap = new Map(techLabels.map((x) => [x.label, x]));
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
       <TextField
@@ -111,7 +96,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         name="supplierRef"
         type="text"
         error={errors?.supplierRef && "Artikkelnummer er påkrevd"}
-        readOnly={(!loggedInUser?.isAdmin && product.published !== undefined)}
+        readOnly={!loggedInUser?.isAdmin && product.isPublished}
       />
       {loggedInUser?.isAdmin && (
         <TextField
@@ -123,26 +108,27 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
           error={errors?.hmsArtNr?.message}
         />
       )}
-      {techDataFields.length > 0 && (
-        <Alert variant="info">
-          {`Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`}
-        </Alert>
-      )}
-      {techDataFields.map((key, index) => {
+      {
+        //techDataFields.length > 0 && (
+        // <Alert variant="info">
+        //  {`Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`}
+        // </Alert>
+        //)
+      }
+      {techDataFields.map((techDataField, index) => {
         const errorForField = errors?.techData?.[index]?.value;
-        const techDataType = techLabelsMap.get(key.key);
 
-        const label = techDataType?.definition ? (
+        const label = techDataField?.definition ? (
           <HStack gap="1">
-            {key.key} <HelpText>{techDataType?.definition}</HelpText>{" "}
+            {techDataField.key} <HelpText>{techDataField?.definition}</HelpText>{" "}
           </HStack>
         ) : (
-          key.key
+          techDataField.key
         );
 
         return (
-          <HStack key={`techdata-${key.key}-${index}`} align="end" gap="2" wrap={false}>
-            {techDataType?.type === "N" && `${key.key}` ? (
+          <HStack key={`techdata-${techDataField.key}-${index}`} align="end" gap="2" wrap={false}>
+            {techDataField.type === "NUMBER" && (
               <TextField
                 {...register(`techData.${index}.value`, {
                   validate: (value) => value === "" || /^\d+([.,]\d+)?$/.test(value) || "Må være tall",
@@ -153,22 +139,25 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
                 type="text"
                 error={errorForField?.message}
               />
-            ) : techDataType?.type === "L" ? (
+            )}
+            {techDataField.type === "BOOLEAN" && (
               <Select {...register(`techData.${index}.value`)} label={label}>
                 <option value="">Velg</option>
                 <option value="Ja">Ja</option>
                 <option value="Nei">Nei</option>
               </Select>
-            ) : techDataType?.type === "C" && techDataType?.options?.length > 0 ? (
+            )}
+            {techDataField.type === "OPTIONS" && (
               <Select {...register(`techData.${index}.value`)} label={label}>
                 <option value="">Velg</option>
-                {techDataType.options.map((option) => (
+                {techDataField.options?.map((option) => (
                   <option value={option} key={option}>
                     {option}
                   </option>
                 ))}
               </Select>
-            ) : (
+            )}
+            {techDataField.type === "TEXT" && (
               <TextField
                 {...register(`techData.${index}.value`)}
                 label={label}
@@ -178,7 +167,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
                 error={errorForField?.message}
               />
             )}
-            <span className={styles.techDataUnit}>{techData?.[index]?.unit}</span>
+            <span className={styles.techDataUnit}>{techDataField.unit}</span>
           </HStack>
         );
       })}
