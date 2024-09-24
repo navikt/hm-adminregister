@@ -14,6 +14,7 @@ import {
   DelkontraktRegistrationDTO,
   IsoCategoryDTO,
   ProductRegistrationDTO,
+  ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
   ProdukterTilGodkjenningChunk,
   SeriesChunk,
@@ -332,7 +333,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET,
+    fetcherGET
   );
 
   if (error) {
@@ -350,9 +351,9 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
 export function useProductByProductId(productId: string) {
   const { loggedInUser } = useAuthStore();
-  const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/${productId}`);
+  const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/v2/${productId}`);
 
-  const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTO>(path, fetcherGET);
+  const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET);
 
   return {
     product,
@@ -406,7 +407,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    },
+    }
   );
 
   if (error) {

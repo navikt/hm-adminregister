@@ -1,4 +1,4 @@
-import { DraftVariantDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import { DraftVariantDTO, ProductRegistrationDTO, UpdateProductRegistrationDTO } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, getPath } from "api/fetch";
 
@@ -7,9 +7,10 @@ export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistration
 
 export const updateProductVariant = async (
   isAdmin: boolean,
-  updatedProduct: ProductRegistrationDTO
+  id: string,
+  updatedProduct: UpdateProductRegistrationDTO
 ): Promise<ProductRegistrationDTO> =>
-  fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${updatedProduct.id}`), "PUT", updatedProduct);
+  fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/v2/${id}`), "PUT", updatedProduct);
 
 export const draftProductVariantV2 = async (
   isAdmin: boolean,

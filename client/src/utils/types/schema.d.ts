@@ -368,6 +368,10 @@ export interface paths {
   "/admreg/vendor/api/v1/product/registrations/to-expired/{id}": {
     put: operations["setPublishedProductToInactive_1"];
   };
+  "/admreg/vendor/api/v1/product/registrations/v2/{id}": {
+    get: operations["getProductByIdV2"];
+    put: operations["updateProductV2"];
+  };
   "/admreg/vendor/api/v1/product/registrations/{id}": {
     get: operations["getProductById_1"];
     put: operations["updateProduct_1"];
@@ -1007,6 +1011,8 @@ export interface components {
     ProductRegistrationDTOV2: {
       /** Format: uuid */
       id: string;
+      /** Format: uuid */
+      seriesUUID?: string | null;
       hmsArtNr?: string | null;
       supplierRef: string;
       articleName: string;
@@ -1510,6 +1516,12 @@ export interface components {
     /** @enum {string} */
     Type: "INFO" | "WARNING";
     Unit: Record<string, never>;
+    UpdateProductRegistrationDTO: {
+      hmsArtNr?: string | null;
+      articleName: string;
+      supplierRef: string;
+      productData: components["schemas"]["ProductDataDTO"];
+    };
     UpdateSeriesRegistrationDTO: {
       title?: string | null;
       text?: string | null;
@@ -3809,6 +3821,41 @@ export interface operations {
     };
     responses: {
       /** @description setPublishedProductToInactive_1 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTO"];
+        };
+      };
+    };
+  };
+  getProductByIdV2: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description getProductByIdV2 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+        };
+      };
+    };
+  };
+  updateProductV2: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateProductRegistrationDTO"];
+      };
+    };
+    responses: {
+      /** @description updateProductV2 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"];
