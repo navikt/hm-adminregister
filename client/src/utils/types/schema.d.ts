@@ -124,9 +124,6 @@ export interface paths {
   "/admreg/admin/api/v1/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants"];
   };
-  "/admreg/admin/api/v1/product/registrations/draft/delete-v2": {
-    delete: operations["deleteVariants"];
-  };
   "/admreg/admin/api/v1/product/registrations/draft/supplier/{supplierId}": {
     post: operations["draftProduct"];
   };
@@ -224,6 +221,9 @@ export interface paths {
   };
   "/admreg/admin/api/v1/series/to-approve": {
     get: operations["findSeriesPendingApprove"];
+  };
+  "/admreg/admin/api/v1/series/uploadMedia/{seriesUUID}": {
+    post: operations["uploadMedia"];
   };
   "/admreg/admin/api/v1/series/v2/{id}": {
     get: operations["readSeriesV2"];
@@ -400,6 +400,9 @@ export interface paths {
   "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setSeriesToDraft_1"];
   };
+  "/admreg/vendor/api/v1/series/uploadMedia/{seriesUUID}": {
+    post: operations["uploadMedia_1"];
+  };
   "/admreg/vendor/api/v1/series/v2/{id}": {
     get: operations["readSeriesV2_1"];
     put: operations["updateSeriesV2_1"];
@@ -531,9 +534,13 @@ export interface components {
     };
     /** @enum {string} */
     AgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
+    AlternativeFor: {
+      hmsArtNrs: string[];
+    };
     Attributes: {
       manufacturer?: string | null;
       compatibleWidth?: components["schemas"]["CompatibleWith"] | null;
+      alternativeFor?: components["schemas"]["AlternativeFor"] | null;
       keywords?: string[] | null;
       series?: string | null;
       shortdescription?: string | null;
@@ -907,6 +914,10 @@ export interface components {
       identifier?: string | null;
       seriesIdentifier?: string | null;
     };
+    ProductDataDTO: {
+      attributes: components["schemas"]["Attributes"];
+      techData: components["schemas"]["TechDataDTO"][];
+    };
     ProductDraftWithDTO: {
       title: string;
       text: string;
@@ -1003,7 +1014,7 @@ export interface components {
       sparePart: boolean;
       /** Format: date-time */
       created: string;
-      productData: components["schemas"]["ProductData"];
+      productData: components["schemas"]["ProductDataDTO"];
       agreements: components["schemas"]["AgreementInfo"][];
       /** Format: int64 */
       version?: number | null;
@@ -1439,6 +1450,16 @@ export interface components {
       value: string;
       unit: string;
     };
+    TechDataDTO: {
+      key: string;
+      value: string;
+      unit: string;
+      type: components["schemas"]["TechDataType"];
+      definition?: string | null;
+      options?: string[] | null;
+    };
+    /** @enum {string} */
+    TechDataType: "NUMBER" | "BOOLEAN" | "TEXT" | "OPTIONS";
     TechLabelDTO: {
       /** Format: uuid */
       id: string;
@@ -1451,6 +1472,8 @@ export interface components {
       unit?: string | null;
       /** Format: int32 */
       sort: number;
+      isKeyLabel: boolean;
+      systemLabel?: string | null;
       options: string[];
       createdBy: string;
       updatedBy: string;
@@ -1473,6 +1496,8 @@ export interface components {
       sort: number;
       options: string[];
       isActive: boolean;
+      isKeyLabel: boolean;
+      systemLabel: string;
       createdBy: string;
       updatedBy: string;
       updatedByUser: string;
@@ -2313,21 +2338,6 @@ export interface operations {
       };
     };
   };
-  deleteVariants: {
-    requestBody: {
-      content: {
-        "application/json": string[];
-      };
-    };
-    responses: {
-      /** @description deleteVariants 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTO"][];
-        };
-      };
-    };
-  };
   draftProduct: {
     parameters: {
       query: {
@@ -2905,6 +2915,28 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Page_SeriesToApproveDTO_"];
+        };
+      };
+    };
+  };
+  uploadMedia: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          files: string[];
+        };
+      };
+    };
+    responses: {
+      /** @description uploadMedia 200 response */
+      200: {
+        content: {
+          "application/json": Record<string, never>;
         };
       };
     };
@@ -3963,6 +3995,28 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTO"];
+        };
+      };
+    };
+  };
+  uploadMedia_1: {
+    parameters: {
+      path: {
+        seriesUUID: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          files: string[];
+        };
+      };
+    };
+    responses: {
+      /** @description uploadMedia_1 200 response */
+      200: {
+        content: {
+          "application/json": Record<string, never>;
         };
       };
     };
