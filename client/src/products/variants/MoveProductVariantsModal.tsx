@@ -66,6 +66,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
               label=" Hvilken serie vil du flytte til?"
               placeholder="Serie-id (eks. 074b6837-0cd1-49c5-b048-45486c378fb4)"
               onChange={(event) => setSeriesIdToMoveTo(event.target.value)}
+              error={feilmelding !== undefined ? feilmelding : undefined}
             />
             <Button onClick={onClickGetSeries} type="button" variant="secondary" style={{ marginLeft: "auto" }}>
               Hent produkt
@@ -75,7 +76,6 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
                 <b>{seriesToPreview ? `${seriesToPreview.title}` : "Fant ikke serie"}</b>
               </BodyShort>
             )}
-            {feilmelding && <BodyShort>{feilmelding}</BodyShort>}
           </VStack>
 
           {(variants && (
