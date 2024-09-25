@@ -95,7 +95,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         id="supplierRef"
         name="supplierRef"
         type="text"
-        error={errors?.supplierRef && "Artikkelnummer er påkrevd"}
+        error={errors?.supplierRef?.message || (errors?.supplierRef && "Artikkelnummer er påkrevd")}
         readOnly={!loggedInUser?.isAdmin && product.isPublished}
       />
       {loggedInUser?.isAdmin && (
