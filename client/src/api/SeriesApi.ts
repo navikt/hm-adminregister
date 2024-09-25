@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIAttachment, fetchPostFiles, getPath } from "api/fetch";
+import { fetchAPI, fetchPostFiles, getPath } from "api/fetch";
 import {
   MediaInfoDTO,
   RejectSeriesDTO,
@@ -13,6 +13,11 @@ import { FileUpload } from "felleskomponenter/UploadModal";
 
 export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
+};
+
+export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesRegistrationDTOV2> => {
+  const seriesIdPath = getPath(true, `/api/v1/series/v2/${seriesUUID}`);
+  return await fetchAPI(seriesIdPath, "GET");
 };
 
 export const setPublishedSeriesToDraft = async (
@@ -47,6 +52,15 @@ export const rejectSeries = async (
 
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
+};
+
+export const moveProductsToSeries = async (
+  seriesUUID: string,
+  productIds: string[],
+): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/series/series/products/move-to/${seriesUUID}`), "PUT", {
+    productIds: productIds,
+  });
 };
 
 const updateSeriesData = async (

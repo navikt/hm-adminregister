@@ -1,4 +1,10 @@
-import { MenuElipsisHorizontalCircleIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
+import {
+  ArrowsSquarepathIcon,
+  MenuElipsisHorizontalCircleIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteDraftProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
 import { useState } from "react";
@@ -11,6 +17,8 @@ import { userProductVariantsBySeriesId } from "utils/swr-hooks";
 import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import styles from "../ProductPage.module.scss";
+import { moveProductsToSeries } from "api/SeriesApi";
+import MoveProductVariantsModal from "products/variants/MoveProductVariantsModal";
 
 const VariantsTab = ({
   series,
@@ -32,6 +40,7 @@ const VariantsTab = ({
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [variantId, setVariantId] = useState<string>("");
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false);
+  const [moveProductVariantModalIsOpen, setMoveProductVariantModalIsOpen] = useState<boolean>(false);
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id);
 
@@ -61,6 +70,18 @@ const VariantsTab = ({
         }
       })
       .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onMoveProductVariantToOtherSeries(seriesId: string, productVariantIds: string[]) {
+    moveProductsToSeries(seriesId, productVariantIds)
+      .then(() => {
+        mutateVariants();
+        mutateSeries();
+      })
+      .catch((error) => {
+        console.log(error);
         setGlobalError(error);
       });
   }
@@ -97,6 +118,13 @@ const VariantsTab = ({
         onClick={() => onDelete().then(() => setDeleteVariantConfirmationModalIsOpen(false))}
         onClose={() => setDeleteVariantConfirmationModalIsOpen(false)}
         isModalOpen={deleteVariantConfirmationModalIsOpen}
+      />
+      <MoveProductVariantsModal
+        seriesId={series.id}
+        variants={series.variants}
+        onClick={onMoveProductVariantToOtherSeries}
+        onClose={() => setMoveProductVariantModalIsOpen(false)}
+        isModalOpen={moveProductVariantModalIsOpen}
       />
       <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
@@ -238,6 +266,17 @@ const VariantsTab = ({
             }}
           >
             Legg til ny variant
+          </Button>
+        )}
+        {series.status === "EDITABLE" && loggedInUser?.isAdmin && (
+          <Button
+            className="fit-content"
+            variant="tertiary"
+            icon={<ArrowsSquarepathIcon fontSize="1.5rem" aria-hidden />}
+            style={{ marginTop: "16'px" }}
+            onClick={() => setMoveProductVariantModalIsOpen(true)}
+          >
+            Flytt varianter til annen serie
           </Button>
         )}
       </Tabs.Panel>
