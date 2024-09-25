@@ -122,6 +122,7 @@ const VariantsTab = ({
       <MoveProductVariantsModal
         seriesId={series.id}
         variants={series.variants}
+        seriesFromIso={series.isoCategory?.isoCode ?? ""}
         onClick={onMoveProductVariantToOtherSeries}
         onClose={() => setMoveProductVariantModalIsOpen(false)}
         isModalOpen={moveProductVariantModalIsOpen}

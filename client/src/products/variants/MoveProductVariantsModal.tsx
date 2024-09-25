@@ -10,9 +10,10 @@ interface Props {
   isModalOpen: boolean;
   seriesId: string;
   variants: ProductRegistrationDTOV2[];
+  seriesFromIso: string;
 }
 
-const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants }: Props) => {
+const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, seriesFromIso }: Props) => {
   const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>();
   const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>();
   const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined);
@@ -37,7 +38,11 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants }: P
       .then((series) => {
         setSeriesIdToMoveTo(series.id);
         setSeriesToPreview(series);
-        setFeilmelding(undefined);
+        if (seriesFromIso !== series.isoCategory?.isoCode) {
+          setFeilmelding("Seriene har ulik ISO-kode");
+        } else {
+          setFeilmelding(undefined);
+        }
       })
       .catch(() => {
         setSeriesToPreview(undefined);
@@ -59,6 +64,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants }: P
           <VStack gap="4">
             <TextField
               label=" Hvilken serie vil du flytte til?"
+              placeholder="Serie-id (eks. 074b6837-0cd1-49c5-b048-45486c378fb4)"
               onChange={(event) => setSeriesIdToMoveTo(event.target.value)}
             />
             <Button onClick={onClickGetSeries} type="button" variant="secondary" style={{ marginLeft: "auto" }}>
@@ -131,7 +137,9 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants }: P
             setSelectedRows([]);
           }}
           variant={"primary"}
-          disabled={!seriesIdToMoveTo || !variantIdsToMove || variantIdsToMove.length === 0}
+          disabled={
+            !seriesIdToMoveTo || !variantIdsToMove || variantIdsToMove.length === 0 || feilmelding !== undefined
+          }
         >
           OK
         </Button>
