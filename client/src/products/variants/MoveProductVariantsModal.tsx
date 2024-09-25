@@ -124,7 +124,12 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants }: P
 
       <Modal.Footer>
         <Button
-          onClick={() => onClick(seriesIdToMoveTo!, variantIdsToMove!)}
+          onClick={() => {
+            onClick(seriesIdToMoveTo!, variantIdsToMove!);
+            setVariantIdsToMove([]);
+            setFeilmelding(undefined);
+            setSelectedRows([]);
+          }}
           variant={"primary"}
           disabled={!seriesIdToMoveTo || !variantIdsToMove || variantIdsToMove.length === 0}
         >

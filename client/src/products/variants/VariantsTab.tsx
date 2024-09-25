@@ -79,9 +79,9 @@ const VariantsTab = ({
       .then(() => {
         mutateVariants();
         mutateSeries();
+        setMoveProductVariantModalIsOpen(false);
       })
       .catch((error) => {
-        console.log(error);
         setGlobalError(error);
       });
   }
