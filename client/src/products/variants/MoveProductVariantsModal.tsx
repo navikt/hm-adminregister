@@ -30,7 +30,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
 
   const onClickGetSeries = async () => {
     if (!seriesIdToMoveTo) {
-      setFeilmelding("Fyll inn serieId");
+      setFeilmelding("Fyll inn serie-id");
       setSeriesToPreview(undefined);
       return;
     }
