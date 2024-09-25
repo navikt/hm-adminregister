@@ -1,4 +1,4 @@
-import { BodyShort, Button, Checkbox, Modal, Table, TextField, VStack } from "@navikt/ds-react";
+import { BodyShort, Box, Button, Checkbox, Modal, Table, TextField, VStack } from "@navikt/ds-react";
 import Content from "felleskomponenter/styledcomponents/Content";
 import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import React, { useEffect, useState } from "react";
@@ -73,7 +73,9 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
             </Button>
             {seriesToPreview && (
               <BodyShort>
-                <b>{seriesToPreview ? `${seriesToPreview.title}` : "Fant ikke serie"}</b>
+                <Box background="surface-subtle" padding="4" borderRadius="large" shadow="xsmall">
+                  <b>{seriesToPreview ? `${seriesToPreview.title}` : "Fant ikke serie"}</b>
+                </Box>
               </BodyShort>
             )}
           </VStack>
