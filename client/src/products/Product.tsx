@@ -7,6 +7,8 @@ import {
   BodyShort,
   Box,
   Button,
+  CopyButton,
+  Detail,
   Heading,
   HGrid,
   HStack,
@@ -274,6 +276,12 @@ const Product = () => {
                   ></Button>
                 )}
               </HStack>
+              {loggedInUser?.isAdmin && (
+                <HStack align="center">
+                  <Detail>{series.id}</Detail>
+                  <CopyButton size="xsmall" copyText={series.id} />
+                </HStack>
+              )}
 
               {series.isExpired && (
                 <Box>
