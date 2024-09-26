@@ -43,7 +43,6 @@ export default function CreateProduct() {
       isoCodeErrorMessage: isoError ? "Du må velge en iso-kategori" : undefined,
       supplierErrorMessage: supplierError ? "Du må velge en leverandør" : undefined,
     });
-    console.log(supplierError);
 
     return !(titleError || isoError);
   };
@@ -96,8 +95,6 @@ export default function CreateProduct() {
     if (isSelected) {
       setSupplier(option);
       setSelectedSupplierOptions([option]);
-      console.log("option", option);
-      console.log("selectedSupplier", supplier);
     } else {
       setSupplier("");
       setSelectedSupplierOptions([]);
