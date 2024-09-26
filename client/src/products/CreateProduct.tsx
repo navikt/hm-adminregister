@@ -29,8 +29,6 @@ export default function CreateProduct() {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const { suppliers } = useSuppliers();
   const [supplier, setSupplier] = useState<string>("");
-  const [supplierUUID, setSupplierUUID] = useState<string>("");
-  const [selectedSupplierOptions, setSelectedSupplierOptions] = useState<string[]>([]);
 
   const { loggedInUser } = useAuthStore();
 
@@ -94,10 +92,8 @@ export default function CreateProduct() {
   const onToggleSelectedSupplier = (option: string, isSelected: boolean) => {
     if (isSelected) {
       setSupplier(option);
-      setSelectedSupplierOptions([option]);
     } else {
       setSupplier("");
-      setSelectedSupplierOptions([]);
     }
   };
 
