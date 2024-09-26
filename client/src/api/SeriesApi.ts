@@ -54,6 +54,13 @@ export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promi
   return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
 };
 
+export const draftNewSeriesForAdmin = async (
+  seriesDraftWith: SeriesDraftWithDTO,
+  supplierId: string,
+): Promise<SeriesRegistrationDTO> => {
+  return await fetchAPI(getPath(true, `/api/v1/series/supplier/${supplierId}/draftWith`), "POST", seriesDraftWith);
+};
+
 export const moveProductsToSeries = async (
   seriesUUID: string,
   productIds: string[],
