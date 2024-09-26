@@ -64,7 +64,7 @@ const Product = () => {
   });
 
   const [isValid, setIsValid] = useState(true);
-  const activeTab = searchParams.get("tab");
+  const activeTab = searchParams.get("tab") ?? "about";
 
   const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
   const [productTitle, setProductTitle] = useState("");
@@ -312,7 +312,7 @@ const Product = () => {
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
-          <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
+          <Tabs defaultValue={activeTab} value={activeTab} onChange={updateUrlOnTabChange}>
             <Tabs.List>
               <Tabs.Tab
                 value="about"
