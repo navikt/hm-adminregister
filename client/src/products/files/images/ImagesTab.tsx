@@ -53,12 +53,21 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
       />
 
       <Tabs.Panel value="images" className={productStyles.tabPanel}>
-        <Alert variant="info" className={styles.alertSpacing}>
-          Dra i bildene eller trykk på pilene for å endre rekkefølgen som vises på finnHjelpemiddel.no
-        </Alert>
+        {isEditable && (
+          <Alert variant="info" className={styles.alertSpacing}>
+            Dra i bildene eller trykk på pilene for å endre rekkefølgen som vises på finnHjelpemiddel.no
+          </Alert>
+        )}
 
         <VStack gap="8">
-          {series && <SeriesSortingArea allImages={images} seriesId={series.id} handleDeleteFile={handleDeleteFile} />}
+          {series && (
+            <SeriesSortingArea
+              allImages={images}
+              seriesId={series.id}
+              handleDeleteFile={handleDeleteFile}
+              isEditable={isEditable}
+            />
+          )}
           {!series && <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>}
 
           {isEditable && (

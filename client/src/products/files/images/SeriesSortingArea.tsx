@@ -15,6 +15,7 @@ interface Props {
   seriesId: string;
   allImages: MediaInfoDTO[];
   handleDeleteFile: (uri: string) => void;
+  isEditable: boolean;
 }
 
 export const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
@@ -45,7 +46,7 @@ export const handleUpdateOfSeriesMedia = (
     });
 };
 
-export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFile }: Props) {
+export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFile, isEditable }: Props) {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
   const [imagesArr, setImages] = React.useState(allImages);
@@ -64,7 +65,12 @@ export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFil
   };
 
   return (
-    <SortableList onSortEnd={onSortEnd} className={styles.list} draggedItemClassName={styles.dragged}>
+    <SortableList
+      onSortEnd={onSortEnd}
+      className={styles.list}
+      draggedItemClassName={styles.dragged}
+      allowDrag={isEditable}
+    >
       <HStack as="ol" gap="2">
         {imagesArr && imagesArr.length > 0
           ? imagesArr
@@ -84,6 +90,7 @@ export default function SeriesSortingArea({ seriesId, allImages, handleDeleteFil
                             setImages={setImages}
                             imagesArr={imagesArr}
                             index={index}
+                            isEditable={isEditable}
                           />
                         </SortableKnob>
                       </div>

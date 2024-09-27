@@ -22,11 +22,12 @@ interface Props {
   setImages: any;
   imagesArr: MediaInfoDTO[];
   index: number;
+  isEditable: boolean;
 }
 
 export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
-  { seriesId, handleDeleteFile, setImages, imagesArr, index }: Props,
-  ref,
+  { seriesId, handleDeleteFile, setImages, imagesArr, index, isEditable }: Props,
+  ref
 ) {
   const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
   const { loggedInUser } = useAuthStore();
@@ -73,28 +74,32 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
           <VStack gap="1" align="center">
             <i>Filnavn</i>
             <span className="text-overflow-hidden-small">{imagesArr[index].filename ?? "OBS mangler beskrivelse"}</span>
-            <HStack paddingBlock={"2 2"} gap={"1"}>
-              <Button
-                variant="tertiary"
-                icon={<ChevronLeftIcon fontSize="1.5rem" aria-hidden />}
-                className={"leftButton"}
-                onClick={handleMoveLeft}
-                title="Flytt til venstre"
-              ></Button>
-              <MenuGridIcon title="Flytt bilde" fontSize="1.5rem" className={styles.grabbable} />
-              <Button
-                variant="tertiary"
-                icon={<ChevronRightIcon fontSize="1.5rem" aria-hidden />}
-                className={"rightButton"}
-                onClick={handleMoveRight}
-                title="Flytt til høyre"
-              ></Button>
-            </HStack>
+            {isEditable && (
+              <HStack paddingBlock={"2 2"} gap={"1"}>
+                <Button
+                  variant="tertiary"
+                  icon={<ChevronLeftIcon fontSize="1.5rem" aria-hidden />}
+                  className={"leftButton"}
+                  onClick={handleMoveLeft}
+                  title="Flytt til venstre"
+                ></Button>
+                <MenuGridIcon title="Flytt bilde" fontSize="1.5rem" className={styles.grabbable} />
+                <Button
+                  variant="tertiary"
+                  icon={<ChevronRightIcon fontSize="1.5rem" aria-hidden />}
+                  className={"rightButton"}
+                  onClick={handleMoveRight}
+                  title="Flytt til høyre"
+                ></Button>
+              </HStack>
+            )}
           </VStack>
         </VStack>
-        <div className={productStyles.moreMenuContainer}>
-          <MoreMenu mediaInfo={imagesArr[index]} handleDeleteFile={handleDeleteFile} />
-        </div>
+        {isEditable && (
+          <div className={productStyles.moreMenuContainer}>
+            <MoreMenu mediaInfo={imagesArr[index]} handleDeleteFile={handleDeleteFile} />
+          </div>
+        )}
       </div>
     </>
   );
