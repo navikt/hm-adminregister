@@ -71,13 +71,15 @@ export const ShowDiffModal = ({
             (series && series.published && seriesDifference && seriesDifference.status === "NEW") ? (
             <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
           ) : noDiff ? (
-            <>Ingen endringer</>
-          ) : (
+            <>Ingen endringer funnet</>
+          ) : seriesDifference && seriesDifference.diff ? (
             <>
               <SeriesDiff seriesDiff={seriesDifference!} />
               <Avstand marginTop={4} />
               <VariantsDiff variantDiffs={variantsDifferences} />
             </>
+          ) : (
+            <>Ingen endringer funnet</>
           )}
         </ErrorBoundary>
       </Modal.Body>

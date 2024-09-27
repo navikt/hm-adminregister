@@ -158,7 +158,7 @@ const ProductListWrapper = () => {
               </Box>
             </HGrid>
 
-            {loggedInUser && !loggedInUser.isAdmin && (
+            {loggedInUser && (
               <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
                 <Button
                   variant="secondary"
