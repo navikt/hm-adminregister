@@ -109,6 +109,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
         <TextField
           {...register("name", { required: true })}
           label={labelRequired("Navn")}
+          aria-required
           name="name"
           autoComplete="on"
           description="Fornavn og etternavn"
@@ -126,6 +127,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
 
         <TextField
           {...register("oldPassword", { required: true })}
+          aria-required
           label={labelRequired("Gammelt passord")}
           type="password"
           name="oldPassword"
@@ -135,6 +137,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
         />
         <TextField
           {...register("newPassword", { required: true })}
+          aria-required
           label={labelRequired("Lag ett passord")}
           description="Minst 8 karakterer langt"
           type="password"
@@ -145,6 +148,7 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
         />
         <TextField
           {...register("confirmPassword", { required: true })}
+          aria-required
           label={labelRequired("Gjenta passord")}
           type="password"
           name="confirmPassword"
