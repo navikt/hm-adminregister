@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
   Alert,
+  BodyShort,
   Box,
   Button,
   Dropdown,
@@ -15,6 +16,7 @@ import {
   Pagination,
   Search,
   Show,
+  Tag,
   ToggleGroup,
   VStack,
 } from "@navikt/ds-react";
@@ -185,7 +187,14 @@ const Agreements = () => {
                         key={i}
                       >
                         <LinkPanel.Title className="panel-list__title panel-list__width">
-                          {rammeavtale.title || "Ukjent produktnavn"}
+                          <HStack gap="2 2" align="center">
+                            <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
+                            {rammeavtale.agreementStatus === "ACTIVE" ? (
+                              <Tag variant="success">Aktiv</Tag>
+                            ) : (
+                              <Tag variant="warning">Inaktiv</Tag>
+                            )}
+                          </HStack>
                         </LinkPanel.Title>
                       </LinkPanel>
                     </>
@@ -206,7 +215,14 @@ const Agreements = () => {
                       key={i}
                     >
                       <LinkPanel.Title className="panel-list__title panel-list__width">
-                        {rammeavtale.title || "Ukjent avtalenavn"}
+                        <HStack gap="2 2" align="center">
+                          <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
+                          {rammeavtale.agreementStatus === "ACTIVE" ? (
+                            <Tag variant="success">Aktiv</Tag>
+                          ) : (
+                            <Tag variant="warning">Inaktiv</Tag>
+                          )}
+                        </HStack>
                       </LinkPanel.Title>
                     </LinkPanel>
                   ))}
