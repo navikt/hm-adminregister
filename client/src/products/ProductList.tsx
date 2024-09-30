@@ -8,19 +8,25 @@ import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
 
-export const ProductList = ({ seriesList }: { seriesList: SeriesRegistrationDTO[] }) => {
+export const ProductList = ({
+  seriesList,
+  oversiktPath,
+}: {
+  seriesList: SeriesRegistrationDTO[];
+  oversiktPath: string;
+}) => {
   return (
     <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
       {seriesList.map((series) => (
         <li key={series.id}>
-          <SeriesCard series={series} />
+          <SeriesCard series={series} oversiktPath={oversiktPath} />
         </li>
       ))}
     </VStack>
   );
 };
 
-const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
+const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; oversiktPath: string }) => {
   const isExpired = toDate(series.expired) < new Date();
   const imgUrl = series.seriesData.media
     .filter((media) => media.type === "IMAGE")
@@ -30,6 +36,7 @@ const SeriesCard = ({ series }: { series: SeriesRegistrationDTO }) => {
     <HGrid
       as={Link}
       to={`/produkter/${series.id}`}
+      state={oversiktPath}
       columns={{ xs: ".7fr 3.5fr 2fr .8fr", md: ".7fr 3.5fr 2fr .8fr 0.4fr" }}
       gap={"2"}
       align={"center"}

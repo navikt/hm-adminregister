@@ -16,7 +16,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
 
@@ -33,6 +33,7 @@ const ProductListWrapper = () => {
   const { loggedInUser } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const statusFilters = searchParams.get("filters")?.split(",") || [];
+  const { pathname, search } = useLocation();
 
   const {
     data: pagedData,
@@ -205,11 +206,11 @@ const ProductListWrapper = () => {
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
             {seriesByHmsNr ? (
-              <ProductList seriesList={[seriesByHmsNr]} />
+              <ProductList seriesList={[seriesByHmsNr]} oversiktPath={pathname + search} />
             ) : seriesBySupplierRef ? (
-              <ProductList seriesList={[seriesBySupplierRef]} />
+              <ProductList seriesList={[seriesBySupplierRef]} oversiktPath={pathname + search} />
             ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
-              <ProductList seriesList={pagedData.content} />
+              <ProductList seriesList={pagedData.content} oversiktPath={pathname + search} />
             ) : (
               !isLoadingPagedData && (
                 <Alert variant="info">

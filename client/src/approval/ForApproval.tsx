@@ -14,7 +14,7 @@ import {
 import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
 import ErrorAlert from "error/ErrorAlert";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { usePagedProductsToApprove, useSuppliers } from "utils/swr-hooks";
 
 export enum CreatedByFilter {
@@ -30,7 +30,7 @@ export const ForApproval = () => {
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const sortUrl = searchParams.get("sort");
-
+  const { pathname, search } = useLocation();
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
   const [selectedFilterOption, setSelectedFilterOption] = useState<CreatedByFilter>(
@@ -152,6 +152,7 @@ export const ForApproval = () => {
               mutatePagedData={mutatePagedData}
               series={pagedData.content}
               createdByFilter={selectedFilterOption}
+              oversiktPath={pathname + search}
             />
           ) : (
             !isLoading && (

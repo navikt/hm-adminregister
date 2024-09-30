@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import {
   BodyShort,
   Box,
@@ -13,6 +13,7 @@ import {
   HGrid,
   HStack,
   Label,
+  Link as AkselLink,
   Loader,
   Tabs,
   Tag,
@@ -51,7 +52,8 @@ const Product = () => {
   const { seriesId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
+  const oversiktPath = typeof state === "string" ? state : "/produkter";
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
@@ -91,7 +93,7 @@ const Product = () => {
   }
 
   const updateUrlOnTabChange = (value: string) => {
-    navigate(`${pathname}?tab=${value}`);
+    navigate(`${pathname}?tab=${value}`, { state: state });
   };
 
   const productIsValid = () => {
@@ -223,6 +225,10 @@ const Product = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
+            <AkselLink as={Link} to={oversiktPath}>
+              <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
+              Tilbake til oversikt
+            </AkselLink>
             <VStack gap="2">
               <Label> Produktnavn</Label>
 
