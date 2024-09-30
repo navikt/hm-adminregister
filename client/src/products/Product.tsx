@@ -93,7 +93,7 @@ const Product = () => {
   }
 
   const updateUrlOnTabChange = (value: string) => {
-    navigate(`${pathname}?tab=${value}`);
+    navigate(`${pathname}?tab=${value}`, { state: state });
   };
 
   const productIsValid = () => {
