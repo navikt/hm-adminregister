@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
 import {
@@ -33,8 +33,12 @@ export enum AgreementFilterOption {
 }
 
 const Agreements = () => {
-  const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(AgreementFilterOption.ALL);
-  const [pageState, setPageState] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(
+    searchParams.get("filter") ? (searchParams.get("filter") as AgreementFilterOption) : AgreementFilterOption.ALL,
+  );
+
+  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const pageSize = 10;
   const { data: allData, isLoading: allDataIsLoading, error: allError } = useAgreements();
   const {
@@ -63,8 +67,11 @@ const Agreements = () => {
   }
 
   const handeFilterChange = (filter: AgreementFilterOption) => {
-    setSelectedFilterOption(filter);
+    searchParams.set("filter", filter.toString());
     setPageState(1);
+    searchParams.set("page", "1");
+    setSelectedFilterOption(filter);
+    setSearchParams(searchParams);
   };
 
   const handleSearch = (value: string) => {
@@ -231,7 +238,15 @@ const Agreements = () => {
 
             {showPageNavigator && (
               <HStack marginBlock="2" justify="end">
-                <Pagination page={pageState} onPageChange={(x) => setPageState(x)} count={pagedData.totalPages!} />
+                <Pagination
+                  page={pageState}
+                  onPageChange={(x) => {
+                    searchParams.set("page", x.toString());
+                    setSearchParams(searchParams);
+                    setPageState(x);
+                  }}
+                  count={pagedData.totalPages!}
+                />
               </HStack>
             )}
           </VStack>
