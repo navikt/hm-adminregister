@@ -16,9 +16,15 @@ interface ProductTableProps {
   series: SeriesRegistrationDTO[];
   createdByFilter: CreatedByFilter;
   mutatePagedData: () => void;
+  oversiktPath: string;
 }
 
-export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedData }: ProductTableProps) => {
+export const ProductsToApproveTable = ({
+  series,
+  createdByFilter,
+  mutatePagedData,
+  oversiktPath,
+}: ProductTableProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const sortUrl = searchParams.get("sort");
   const [sort, setSort] = useState<SortState | undefined>(
@@ -62,7 +68,7 @@ export const ProductsToApproveTable = ({ series, createdByFilter, mutatePagedDat
     typeof published === "string" ? "CHANGE" : "NEW";
 
   const onNavigateToProduct = (seriesUUID: string) => {
-    navigate(`/produkter/${seriesUUID}`);
+    navigate(`/produkter/${seriesUUID}`, { state: oversiktPath });
   };
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
