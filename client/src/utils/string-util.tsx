@@ -12,6 +12,7 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
   const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, "");
 
   // Use regular expressions to format the clean string of digits and plus signs
+
   return cleanPhoneNumber.replace(/(\d{2})(?=\d|\+)/g, "$1 ");
 };
 
