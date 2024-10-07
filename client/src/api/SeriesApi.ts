@@ -217,7 +217,7 @@ const renameFiles = (uploads: FileUpload[]) =>
 export const updateSeriesV2 = async (
   seriesUUID: string,
   isAdmin: boolean,
-  update: UpdateSeriesRegistrationDT,
+  update: UpdateSeriesRegistrationDTO,
 ): Promise<SeriesRegistrationDTO> => {
   const nullUpdate: UpdateSeriesRegistrationDTO = { title: null, text: null, keywords: null, url: null };
   const toUpdate: UpdateSeriesRegistrationDTO = { ...nullUpdate, ...update };
@@ -227,23 +227,23 @@ export const updateSeriesV2 = async (
 export const updateProductTitleV2 = async (
   seriesUUID: string,
   productTitle: string,
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { title: productTitle });
 
 export const updateProductDescriptionV2 = async (
   seriesUUID: string,
   productDescription: string,
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { text: productDescription });
 
 export const updateSeriesKeywordsV2 = async (
   seriesUUID: string,
   keywords: string[],
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { keywords: keywords });
 
 export const updateSeriesURLV2 = async (
   seriesUUID: string,
   url: string,
-  isAdmin: boolea,
+  isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { url: url });
