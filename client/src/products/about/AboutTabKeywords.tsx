@@ -3,8 +3,8 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import { useState } from "react";
 import { isValidKeyword } from "products/seriesUtils";
 import "./about-tab-keywords.scss";
-import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { updateSeriesKeywords } from "api/SeriesApi";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { updateSeriesKeywords, updateSeriesKeywordsV2 } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
 
@@ -27,7 +27,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
   const handleSaveKeywords = () => {
     if (updatedKeywords.length <= 3 && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
-      updateSeriesKeywords(series!.id, updatedKeywords, isAdmin)
+      updateSeriesKeywordsV2(series!.id, updatedKeywords, isAdmin)
         .then(() => mutateSeries())
         .catch((error) => {
           setGlobalError(error.status, error.message);

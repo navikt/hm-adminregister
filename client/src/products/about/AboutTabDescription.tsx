@@ -3,7 +3,7 @@ import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
 import { useState } from "react";
-import { updateProductDescription } from "api/SeriesApi";
+import { updateProductDescriptionV2 } from "api/SeriesApi";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
@@ -25,7 +25,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
 
   const handleSaveDescription = (updatedDescription: string) => {
     setShowEditDescriptionMode(false);
-    updateProductDescription(series!.id, updatedDescription, isAdmin)
+    updateProductDescriptionV2(series!.id, updatedDescription, isAdmin)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
