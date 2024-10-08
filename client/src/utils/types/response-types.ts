@@ -77,7 +77,6 @@ export type AgreementDraftWithDTO = components["schemas"]["AgreementDraftWithDTO
 export type MediaDTO = components["schemas"]["MediaDTO"];
 export type MediaInfo = components["schemas"]["MediaInfo"];
 export type MediaInfoDTO = components["schemas"]["MediaInfoDTO"];
-export type ProductDraftWithDTO = components["schemas"]["ProductDraftWithDTO"];
 export type SeriesDraftWithDTO = components["schemas"]["SeriesDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
@@ -137,3 +136,5 @@ export type SeriesChunk = {
 // Response obj
 //type SuccessResponse = paths['/my/endpoint']['get']['responses'][200]['content']['application/json']['schema']
 //type ErrorResponse = paths['/my/endpoint']['get']['responses'][500]['content']['application/json']['schema']
+
+export type UpdateSeriesRegistrationDTO = components["schemas"]["UpdateSeriesRegistrationDTO"];

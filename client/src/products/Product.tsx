@@ -26,7 +26,7 @@ import {
   setPublishedSeriesToDraft,
   setSeriesToActive,
   setSeriesToInactive,
-  updateProductTitle,
+  updateProductTitleV2,
   useSeriesV2,
 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
@@ -102,7 +102,7 @@ const Product = () => {
 
   const handleSaveProductTitle = () => {
     setShowEditProductTitleMode(false);
-    updateProductTitle(series!.id, productTitle, loggedInUser?.isAdmin || false)
+    updateProductTitleV2(series!.id, productTitle, loggedInUser?.isAdmin || false)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };

@@ -5,6 +5,7 @@ import {
   SeriesDraftWithDTO,
   SeriesRegistrationDTO,
   SeriesRegistrationDTOV2,
+  UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import { useAuthStore } from "utils/store/useAuthStore";
 import useSWR from "swr";
@@ -212,3 +213,37 @@ const renameFiles = (uploads: FileUpload[]) =>
       ? { ...it, file: new File([it.file], `${it.editedFileName}.pdf`, { type: it.file.type }) }
       : it,
   );
+
+export const updateSeriesV2 = async (
+  seriesUUID: string,
+  isAdmin: boolean,
+  update: UpdateSeriesRegistrationDTO,
+): Promise<SeriesRegistrationDTO> => {
+  const nullUpdate: UpdateSeriesRegistrationDTO = { title: null, text: null, keywords: null, url: null };
+  const toUpdate: UpdateSeriesRegistrationDTO = { ...nullUpdate, ...update };
+  return await fetchAPI(getPath(isAdmin, `/api/v1/series/v2/${seriesUUID}`), "PATCH", toUpdate);
+};
+
+export const updateProductTitleV2 = async (
+  seriesUUID: string,
+  productTitle: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { title: productTitle });
+
+export const updateProductDescriptionV2 = async (
+  seriesUUID: string,
+  productDescription: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { text: productDescription });
+
+export const updateSeriesKeywordsV2 = async (
+  seriesUUID: string,
+  keywords: string[],
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { keywords: keywords });
+
+export const updateSeriesURLV2 = async (
+  seriesUUID: string,
+  url: string,
+  isAdmin: boolean,
+): Promise<SeriesRegistrationDTO> => updateSeriesV2(seriesUUID, isAdmin, { url: url });
