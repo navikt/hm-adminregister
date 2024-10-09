@@ -72,7 +72,7 @@ export const RichTextEditorQuill = forwardRef(function TempComp(
     });
 
     Link.sanitize = (url) => {
-      if (url.startsWith("https://")) return url;
+      if (url.startsWith("https://") || url.startsWith("http://")) return url;
       else return `https://${url}`;
     };
 
