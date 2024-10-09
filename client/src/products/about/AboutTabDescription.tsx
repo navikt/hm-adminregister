@@ -88,11 +88,8 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
               onTextChange={setUpdatedDescription}
               defaultValue={updatedDescription}
               className={styles.editor}
-              toolbar={[
-                ["bold", "italic"],
-                [{ list: "ordered" }, { list: "bullet" }],
-              ]}
-              formats={["bold", "italic", "list"]}
+              toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
+              formats={["bold", "italic", "list", "link"]}
             />
             <Button
               className="fit-content"
