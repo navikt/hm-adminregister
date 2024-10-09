@@ -2,6 +2,7 @@ import "./RichTextEditorQuill.scss";
 import "quill/dist/quill.snow.css";
 import React, { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import Quill from "quill";
+import Link from "quill/formats/link";
 
 // noinspection JSUnusedGlobalSymbols
 const bindings = {
@@ -29,7 +30,7 @@ type Props = {
 
 export const RichTextEditorQuill = forwardRef(function TempComp(
   { onTextChange, defaultValue, className, toolbar, formats }: Props,
-  ref,
+  ref
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTextChangeRef = useRef(onTextChange);
@@ -69,6 +70,11 @@ export const RichTextEditorQuill = forwardRef(function TempComp(
     quill.on(Quill.events.TEXT_CHANGE, () => {
       onTextChange(quill.getSemanticHTML());
     });
+
+    Link.sanitize = (url) => {
+      if (url.startsWith("https://")) return url;
+      else return `https://${url}`;
+    };
 
     return () => {
       if (ref && "current" in ref) {
