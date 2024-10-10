@@ -57,7 +57,8 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
   return (
     <>
       <ImageModal
-        mediaInfo={imagesArr[index]}
+        mediaInfo={imagesArr}
+        index={index}
         onClose={() => setImageModalIsOpen(false)}
         isModalOpen={imageModalIsOpen}
       />
