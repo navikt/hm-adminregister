@@ -1,4 +1,4 @@
-import {Button, HStack, Modal} from "@navikt/ds-react";
+import {Button, Detail, HStack, Label, Modal} from "@navikt/ds-react";
 import {MediaInfoDTO} from "utils/types/response-types";
 import {mediumImageLoader} from "utils/image-util";
 import styles from "./ImageModal.module.scss";
@@ -85,8 +85,10 @@ const ImageModal = ({mediaInfo, index, onClose, isModalOpen}: Props) => {
                             title="Flytt til høyre"
                         ></Button>
                     )}
-
                 </Modal.Body>
+                <Label size="medium" textColor="default" spacing
+                       style={{alignSelf: "center"}}>Bilde {newIndex + 1} av {mediaInfo.length}</Label>
+
             </Modal>
         </HStack>
     );
