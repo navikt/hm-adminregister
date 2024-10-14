@@ -20,16 +20,27 @@ interface Props {
 export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputError, isEditable }: Props) => {
   const description = series.text;
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
+  const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
   const { setGlobalError } = useErrorStore();
 
   const handleSaveDescription = (updatedDescription: string) => {
+    if (descriptionLengthError) return;
     setShowEditDescriptionMode(false);
     updateProductDescriptionV2(series!.id, updatedDescription, isAdmin)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
       });
+  };
+
+  const onTextChange = (html: string, rawText: string) => {
+    if (rawText.length > 750) {
+      setDescriptionLengthError("Beskrivelsen kan ikke være lengre enn 750 tegn");
+    } else {
+      setDescriptionLengthError(undefined);
+      setUpdatedDescription(html);
+    }
   };
 
   return (
@@ -85,12 +96,20 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
               </ul>
             </BodyShort>
             <RichTextEditorQuill
-              onTextChange={setUpdatedDescription}
+              onTextChange={onTextChange}
               defaultValue={updatedDescription}
               className={styles.editor}
               toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
               formats={["bold", "italic", "list", "link"]}
             />
+            <div className="navds-form-field__error">
+              <p
+                className="navds-error-message navds-label"
+                style={{ display: descriptionLengthError ? "flex" : "none" }}
+              >
+                • {descriptionLengthError}
+              </p>
+            </div>
             <Button
               className="fit-content"
               variant="tertiary"

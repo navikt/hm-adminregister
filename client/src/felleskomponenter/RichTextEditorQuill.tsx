@@ -21,7 +21,7 @@ const defaultModules = {
 const defaultFormats = ["bold", "italic", "list", "link"];
 
 type Props = {
-  onTextChange: (html: string) => void;
+  onTextChange: (html: string, rawText: string) => void;
   defaultValue?: any;
   className?: string;
   toolbar?: (string[] | { list: string }[])[];
@@ -30,7 +30,7 @@ type Props = {
 
 export const RichTextEditorQuill = forwardRef(function TempComp(
   { onTextChange, defaultValue, className, toolbar, formats }: Props,
-  ref
+  ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTextChangeRef = useRef(onTextChange);
@@ -68,7 +68,7 @@ export const RichTextEditorQuill = forwardRef(function TempComp(
     }
 
     quill.on(Quill.events.TEXT_CHANGE, () => {
-      onTextChange(quill.getSemanticHTML());
+      onTextChange(quill.getSemanticHTML(), quill.getText());
     });
 
     Link.sanitize = (url) => {
