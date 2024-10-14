@@ -81,28 +81,6 @@ const updateSeriesData = async (
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
 };
 
-export const updateProductTitle = async (
-  seriesUUID: string,
-  productTitle: string,
-  isAdmin: boolean,
-): Promise<SeriesRegistrationDTO> => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.title = productTitle;
-    return series;
-  });
-};
-
-export const updateProductDescription = async (
-  seriesUUID: string,
-  productDescription: string,
-  isAdmin: boolean,
-): Promise<SeriesRegistrationDTO> => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.text = productDescription;
-    return series;
-  });
-};
-
 export const updateSeriesImages = async (
   seriesUUID: string,
   images: MediaInfoDTO[],
@@ -110,28 +88,6 @@ export const updateSeriesImages = async (
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(images);
-    return series;
-  });
-};
-
-export const updateSeriesKeywords = async (
-  seriesUUID: string,
-  keywords: string[],
-  isAdmin: boolean,
-): Promise<SeriesRegistrationDTO> => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.attributes.keywords = keywords;
-    return series;
-  });
-};
-
-export const updateSeriesURL = async (
-  seriesUUID: string,
-  url: string,
-  isAdmin: boolean,
-): Promise<SeriesRegistrationDTO> => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.attributes.url = url;
     return series;
   });
 };

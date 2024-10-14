@@ -4,7 +4,7 @@ import { useState } from "react";
 import { isValidKeyword } from "products/seriesUtils";
 import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { updateSeriesKeywords, updateSeriesKeywordsV2 } from "api/SeriesApi";
+import { updateSeriesKeywordsV2 } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
 
