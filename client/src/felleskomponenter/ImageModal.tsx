@@ -66,7 +66,7 @@ const ImageModal = ({mediaInfo, index, onClose, isModalOpen}: Props) => {
                             icon={<ChevronLeftIcon fontSize="3rem" aria-hidden/>}
                             className={"leftButton"}
                             onClick={handleMoveLeft}
-                            title="Flytt til venstre"
+                            title="forrige"
                         ></Button>
 
                     )}
@@ -82,7 +82,7 @@ const ImageModal = ({mediaInfo, index, onClose, isModalOpen}: Props) => {
                             icon={<ChevronRightIcon fontSize="3rem" aria-hidden/>}
                             className={"rightButton"}
                             onClick={handleMoveRight}
-                            title="Flytt til høyre"
+                            title="neste"
                         ></Button>
                     )}
                 </Modal.Body>
