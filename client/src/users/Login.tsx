@@ -4,7 +4,7 @@ import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { mapLoggedInUser } from "utils/user-util";
 import { loginSchema } from "utils/zodSchema/login";
@@ -25,6 +25,8 @@ export default function Login() {
     password: false,
   });
   const { setLoggedInUser } = useAuthStore();
+  const { state } = useLocation();
+  const previousLocation = typeof state === "string" ? state : "/produkter";
 
   const {
     handleSubmit,
@@ -83,9 +85,9 @@ export default function Login() {
             }
           } else {
             if (loggedInUser.isAdmin) {
-              navigate("/admin/profil");
+              navigate(previousLocation);
             } else {
-              navigate("/produkter");
+              navigate(previousLocation);
             }
           }
         } else {
