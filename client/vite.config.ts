@@ -17,6 +17,7 @@ function htmlPlugin({ development }: { development?: boolean }): Plugin {
             USE_MSW: true,
             VITE_HM_REGISTER_URL: 'http://localhost:8080',
             VITE_IMAGE_PROXY_URL: 'http://localhost:8082/imageproxy',
+            MILJO: 'local',
           }`,
         });
       } else {
