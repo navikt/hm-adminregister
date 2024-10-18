@@ -10,6 +10,7 @@ declare global {
       VITE_IMAGE_PROXY_URL?: string;
       VITE_HM_REGISTER_EXTERNAL_URL?: string;
       VITE_IMAGE_PROXY_EXTERNAL_URL?: string;
+      VITE_FARO_URL?: string;
     };
   }
 }

@@ -9,6 +9,7 @@
   "hm_register_url": "https://finnhjelpemiddel.nav.no",
   "hm_register_external_url": "not_used",
   "image_proxy_url": "https://finnhjelpemiddel.nav.no/imageproxy",
+  "faro_url": "https://telemetry.nav.no/collect",
   "image_proxy_external_url": "not_used",
   "replicas": {
     "min": 1,

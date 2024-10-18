@@ -40,7 +40,8 @@ spec:
       value: {{image_proxy_external_url}}
     - name: UNLEASH_SERVER_API_URL
       value: 'https://teamdigihot-unleash-api.nav.cloud.nais.io'
-
+    - name: VITE_FARO_URL
+      value: {{faro_url}}
   replicas:
     min: {{replicas.min}}
     max: {{replicas.max}}
