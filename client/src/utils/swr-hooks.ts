@@ -88,7 +88,7 @@ export function useSeriesByHmsNr(hmsNr: string) {
     data: seriesByHmsNr,
     error: errorSeriesByHmsNr,
     isLoading: isLoadingSeriesByHmsNr,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser?.isAdmin && hmsNr.length > 0 ? seriesIdPath : null, fetcherGET);
+  } = useSWR<SeriesRegistrationDTO>(hmsNr.length > 0 ? seriesIdPath : null, fetcherGET);
 
   return {
     seriesByHmsNr,
@@ -105,7 +105,7 @@ export function useSeriesBySupplierRef(supplierRef: string) {
     data: seriesBySupplierRef,
     error: errorSeriesBySupplierRef,
     isLoading: isLoadingSeriesBySupplierRef,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser?.isAdmin && supplierRef.length > 0 ? seriesIdPath : null, fetcherGET);
+  } = useSWR<SeriesRegistrationDTO>(supplierRef.length > 0 ? seriesIdPath : null, fetcherGET);
 
   return {
     seriesBySupplierRef,
@@ -333,7 +333,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET
+    fetcherGET,
   );
 
   if (error) {
@@ -407,7 +407,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    }
+    },
   );
 
   if (error) {
@@ -447,9 +447,9 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
   };
 }
 
-export function useSuppliers() {
+export function useSuppliers(isAdmin: boolean) {
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name`;
-  const { data, error, isLoading } = useSWR<SupplierChunk>(path, fetcherGET);
+  const { data, error, isLoading } = useSWR<SupplierChunk>(isAdmin ? path : null, fetcherGET);
   const suppliers = data && mapSuppliers(data);
 
   return {

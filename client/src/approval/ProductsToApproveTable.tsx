@@ -37,7 +37,7 @@ export const ProductsToApproveTable = ({
   );
 
   const navigate = useNavigate();
-  const { suppliers } = useSuppliers();
+  const { suppliers } = useSuppliers(true);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -119,8 +119,8 @@ export const ProductsToApproveTable = ({
           </Table.Header>
           <Table.Body>
             {series.map((series, i) => {
-              let isExpired = toDate(series.expired) < new Date();
-              let imgUrl = series.seriesData.media
+              const isExpired = toDate(series.expired) < new Date();
+              const imgUrl = series.seriesData.media
                 .filter((media) => media.type === "IMAGE")
                 .find((media) => media.priority === 1);
               return (

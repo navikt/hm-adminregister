@@ -12,7 +12,7 @@ import styles from "./SupplierList.module.scss";
 const Suppliers = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const { suppliers, isLoading, error } = useSuppliers();
+  const { suppliers, isLoading, error } = useSuppliers(true);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
