@@ -27,10 +27,12 @@ export default function CreateProduct() {
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const { suppliers } = useSuppliers();
+
   const [supplier, setSupplier] = useState<string>("");
 
   const { loggedInUser } = useAuthStore();
+
+  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
 
   const validateFields = () => {
     const titleError = !title || title === "";

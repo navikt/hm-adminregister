@@ -25,7 +25,6 @@ import ErrorAlert from "error/ErrorAlert";
 import { ProductList } from "./ProductList";
 
 const ProductListWrapper = () => {
-  const { suppliers } = useSuppliers();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -34,6 +33,7 @@ const ProductListWrapper = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const statusFilters = searchParams.get("filters")?.split(",") || [];
   const { pathname, search } = useLocation();
+  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
 
   const {
     data: pagedData,

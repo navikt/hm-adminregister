@@ -24,7 +24,6 @@ export enum CreatedByFilter {
 }
 
 export const ForApproval = () => {
-  const { suppliers } = useSuppliers();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
@@ -32,6 +31,7 @@ export const ForApproval = () => {
   const sortUrl = searchParams.get("sort");
   const { pathname, search } = useLocation();
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
+  const { suppliers } = useSuppliers(true);
 
   const [selectedFilterOption, setSelectedFilterOption] = useState<CreatedByFilter>(
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
