@@ -6,6 +6,9 @@ function getDifferentElements(list1: Array<TechData>, list2: Array<TechData>): A
     return [];
   }
 
+  list1.sort((a, b) => a.key.localeCompare(b.key));
+  list2.sort((a, b) => a.key.localeCompare(b.key));
+
   const diff: Array<TechDataDiff> = [];
 
   for (let i = 0; i < list1.length; i++) {
@@ -18,6 +21,7 @@ function getDifferentElements(list1: Array<TechData>, list2: Array<TechData>): A
 
 export function getTechDataDiff(diffDto: DifferenceDTO): Array<TechDataDiff> {
   const diffArrays = diffDto.diff.entriesDiffering["productData.techData"];
+
   return getDifferentElements(diffArrays.first as Array<TechData>, diffArrays.second as Array<TechData>);
 }
 
