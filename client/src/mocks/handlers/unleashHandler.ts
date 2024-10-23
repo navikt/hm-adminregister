@@ -1,7 +1,7 @@
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 export const unleashHandler = [
-  rest.get<any, any, Record<string, boolean>>(`/adminregister/features`, async (req, res, ctx) => {
-    return res(ctx.json({ lokalFlag: false }));
+  http.get<any, any, Record<string, boolean>>(`/adminregister/features`, async (info) => {
+    return HttpResponse.json({ lokalFlag: false });
   }),
 ];

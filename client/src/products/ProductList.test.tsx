@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { server } from "mocks/server";
-import { rest } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { expect, test } from "vitest";
 import ProductListWrapper from "./ProductListWrapper";
+import { http, HttpResponse } from "msw";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
@@ -41,38 +41,36 @@ const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus:
 
 test("Flere produkter", async () => {
   server.use(
-    rest.get(`http://localhost:8080/admreg/vendor/api/v1/series`, (req, res, ctx) => {
-      return res(
-        ctx.json({
-          content: [
-            dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
-            dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
-            dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
-            dummyProduct("p4", "DONE", "APPROVED"), //Publisert
-          ],
-          pageable: {
-            number: 0,
-            sort: {
-              orderBy: [
-                {
-                  property: "created",
-                  direction: "DESC",
-                  ignoreCase: false,
-                  ascending: false,
-                },
-              ],
-            },
-            size: 10,
+    http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, (info) => {
+      return HttpResponse.json({
+        content: [
+          dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
+          dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
+          dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
+          dummyProduct("p4", "DONE", "APPROVED"), //Publisert
+        ],
+        pageable: {
+          number: 0,
+          sort: {
+            orderBy: [
+              {
+                property: "created",
+                direction: "DESC",
+                ignoreCase: false,
+                ascending: false,
+              },
+            ],
           },
-          totalSize: 3,
-          totalPages: 1,
-          empty: false,
           size: 10,
-          offset: 0,
-          pageNumber: 0,
-          numberOfElements: 3,
-        }),
-      );
+        },
+        totalSize: 3,
+        totalPages: 1,
+        empty: false,
+        size: 10,
+        offset: 0,
+        pageNumber: 0,
+        numberOfElements: 3,
+      });
     }),
   );
 

@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import News from "news/News";
 import { MemoryRouter } from "react-router-dom";
 import { server } from "mocks/server";
-import { rest, ResponseComposition, RestContext } from "msw";
+import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import { axe } from "jest-axe";
 import { apiPath } from "mocks/apiPath";
@@ -29,37 +29,35 @@ const dummyNews = (title: string, text: string, published: string, expired: stri
 
 test("Flere nyheter", async () => {
   server.use(
-    rest.get(apiPath("admin/api/v1/news"), (req, res, ctx) => {
-      return res(
-        ctx.json({
-          content: [
-            dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
-            dummyNews("Nyhet 2", "tekst2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z", "INACTIVE"), //UNPUBLISHED
-            dummyNews("Nyhet 3", "tekst3", "2025-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
-          ],
-          pageable: {
-            number: 0,
-            sort: {
-              orderBy: [
-                {
-                  property: "created",
-                  direction: "DESC",
-                  ignoreCase: false,
-                  ascending: false,
-                },
-              ],
-            },
-            size: 10,
+    http.get(apiPath("admin/api/v1/news"), (info) => {
+      return HttpResponse.json({
+        content: [
+          dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
+          dummyNews("Nyhet 2", "tekst2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z", "INACTIVE"), //UNPUBLISHED
+          dummyNews("Nyhet 3", "tekst3", "2025-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
+        ],
+        pageable: {
+          number: 0,
+          sort: {
+            orderBy: [
+              {
+                property: "created",
+                direction: "DESC",
+                ignoreCase: false,
+                ascending: false,
+              },
+            ],
           },
-          totalSize: 1,
-          totalPages: 1,
-          empty: false,
           size: 10,
-          offset: 0,
-          pageNumber: 1,
-          numberOfElements: 4,
-        }),
-      );
+        },
+        totalSize: 1,
+        totalPages: 1,
+        empty: false,
+        size: 10,
+        offset: 0,
+        pageNumber: 1,
+        numberOfElements: 4,
+      });
     }),
   );
 

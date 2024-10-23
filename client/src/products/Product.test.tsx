@@ -6,7 +6,7 @@ import Product from "products/Product";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { describe, expect, test } from "vitest";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 const dummyProduct = (id: string, title: string, status: string) => {
   return {
@@ -122,8 +122,8 @@ describe("Produktside", () => {
     logIn(false);
 
     server.use(
-      rest.get(apiPath("vendor/api/v1/series/*"), (req, res, ctx) => {
-        return res(ctx.json(dummyProduct("test2", "title", "PENDING_APPROVAL")));
+      http.get(apiPath("vendor/api/v1/series/*"), (info) => {
+        return HttpResponse.json(dummyProduct("test2", "title", "PENDING_APPROVAL"));
       }),
     );
 
