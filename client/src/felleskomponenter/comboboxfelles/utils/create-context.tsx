@@ -32,9 +32,7 @@ export function createContext<T>(options: CreateContextOptions<T> = {}) {
    */
   const Provider = forwardRef(function Provider({ children, ...context }: ProviderProps<T>, ref) {
     // Only re-memoize when prop values change
-    // @ts-expect-error ukjent
-    const value = React.useMemo(() => context, Object.values(context)) as T;
-
+    const value = React.useMemo(() => context, Object.values(context)) as unknown as T;
     return <Context.Provider value={ref ? { ...value, ref } : value}>{children}</Context.Provider>;
   });
 
