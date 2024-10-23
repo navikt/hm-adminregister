@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { server } from "mocks/server";
-import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { expect, test } from "vitest";
 import ProductListWrapper from "./ProductListWrapper";
+import { http, HttpResponse } from "msw";
 
 const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
   return {
@@ -41,7 +41,7 @@ const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus:
 
 test("Flere produkter", async () => {
   server.use(
-    http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, () => {
+    http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, (info) => {
       return HttpResponse.json({
         content: [
           dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
@@ -71,13 +71,13 @@ test("Flere produkter", async () => {
         pageNumber: 0,
         numberOfElements: 3,
       });
-    })
+    }),
   );
 
   const { container } = render(
     <MemoryRouter>
       <ProductListWrapper />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
   expect(await screen.findAllByRole("listitem")).toHaveLength(4);

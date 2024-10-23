@@ -136,7 +136,6 @@ export const ForApproval = () => {
           <Select
             value={selectedFilterOption}
             label="Opprettet av"
-            placeholder="Ikke valgt"
             onChange={(e) => handeFilterChange(e.target.value as CreatedByFilter)}
           >
             <option value="ALLE">Velg</option>

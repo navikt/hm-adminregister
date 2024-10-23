@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import { apiPath } from "mocks/apiPath";
 
-export const noSeriesHandler = http.get(apiPath("vendor/api/v1/series"), () => {
+export const noSeriesHandler = http.get(apiPath("vendor/api/v1/series"), (info) => {
   return HttpResponse.json({
     content: [],
     pageable: {
@@ -29,7 +29,7 @@ export const noSeriesHandler = http.get(apiPath("vendor/api/v1/series"), () => {
   });
 });
 
-export const defaultSeriesHandler = http.get(apiPath("vendor/api/v1/series/v2/*"), () => {
+export const defaultSeriesHandler = http.get(apiPath("vendor/api/v1/series/v2/*"), (info) => {
   return HttpResponse.json({
     id: uuidv4(),
     supplierName: "defaultSupplier",

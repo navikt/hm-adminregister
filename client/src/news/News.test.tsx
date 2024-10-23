@@ -29,7 +29,7 @@ const dummyNews = (title: string, text: string, published: string, expired: stri
 
 test("Flere nyheter", async () => {
   server.use(
-    http.get(apiPath("admin/api/v1/news"), () => {
+    http.get(apiPath("admin/api/v1/news"), (info) => {
       return HttpResponse.json({
         content: [
           dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED

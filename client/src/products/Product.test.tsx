@@ -2,11 +2,11 @@ import { fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { apiPath } from "mocks/apiPath";
 import { server } from "mocks/server";
-import { http, HttpResponse } from "msw";
 import Product from "products/Product";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { describe, expect, test } from "vitest";
+import { http, HttpResponse } from "msw";
 
 const dummyProduct = (id: string, title: string, status: string) => {
   return {
@@ -122,7 +122,7 @@ describe("Produktside", () => {
     logIn(false);
 
     server.use(
-      http.get(apiPath("vendor/api/v1/series/*"), () => {
+      http.get(apiPath("vendor/api/v1/series/*"), (info) => {
         return HttpResponse.json(dummyProduct("test2", "title", "PENDING_APPROVAL"));
       }),
     );
