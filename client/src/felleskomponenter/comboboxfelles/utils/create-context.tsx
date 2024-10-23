@@ -30,7 +30,7 @@ export function createContext<T>(options: CreateContextOptions<T> = {}) {
    * We use forwardRef to allow `ref` to be used as a regular context value
    * @see https://reactjs.org/docs/forwarding-refs.html#forwarding-refs-to-dom-components
    */
-  const Provider = forwardRef(function Provider({ children, ...context }: ProviderProps<T>, ref) {
+  const Provider = forwardRef<unknown, ProviderProps<T>>(function Provider({ children, ...context }, ref) {
     // Only re-memoize when prop values change
     const value = React.useMemo(() => context, Object.values(context)) as unknown as T;
     return <Context.Provider value={ref ? { ...value, ref } : value}>{children}</Context.Provider>;

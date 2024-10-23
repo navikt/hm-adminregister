@@ -27,7 +27,6 @@ export const ImageContainer = ({ uri, text, size }: { uri?: string; text?: strin
             alt={text ?? "OBS mangler alt-tekst"}
             draggable="false"
             sizes="50vw"
-            placeholder="blur"
           />
         )}
       </div>
