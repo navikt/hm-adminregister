@@ -7,7 +7,15 @@ import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SupplierDTO } from "utils/supplier-util";
 
-const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpen: (newState: boolean) => void }) => {
+const SupplierInfo = ({
+  supplier,
+  setIsOpen,
+  setIsOpenActivateSupplier,
+}: {
+  supplier: SupplierDTO;
+  setIsOpen: (newState: boolean) => void;
+  setIsOpenActivateSupplier: (newState: boolean) => void;
+}) => {
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
   return (
@@ -50,6 +58,15 @@ const SupplierInfo = ({ supplier, setIsOpen }: { supplier: SupplierDTO; setIsOpe
                     }}
                   >
                     Deaktiver leverandør
+                  </Dropdown.Menu.List.Item>
+                )}
+                {loggedInUser?.isAdmin && supplier.status === "INACTIVE" && (
+                  <Dropdown.Menu.List.Item
+                    onClick={() => {
+                      setIsOpenActivateSupplier(true);
+                    }}
+                  >
+                    Aktiver leverandør
                   </Dropdown.Menu.List.Item>
                 )}
               </Dropdown.Menu.List>

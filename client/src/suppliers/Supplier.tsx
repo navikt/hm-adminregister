@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
-import { deactivateSupplier, getSupplier } from "api/SupplierApi";
+import { activateSupplier, deactivateSupplier, getSupplier } from "api/SupplierApi";
 import { HM_REGISTER_URL } from "environments";
 import { useParams } from "react-router-dom";
 import SupplierInfo from "suppliers/SupplierInfo";
@@ -21,6 +21,7 @@ const Supplier = () => {
   const { loggedInUser } = useAuthStore();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenActivateSupplier, setIsOpenActivateSupplier] = useState(false);
 
   const { id } = useParams();
 
@@ -66,6 +67,15 @@ const Supplier = () => {
       });
   }
 
+  async function onActivate() {
+    setIsOpenActivateSupplier(false);
+    activateSupplier(loggedInUser?.isAdmin ?? true, supplier!.id)
+      .then(() => fetchSupplier())
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   if (isLoading || !supplier) return <Loader size="3xlarge" title="venter..." />;
 
   return (
@@ -77,10 +87,21 @@ const Supplier = () => {
         onClose={() => setIsOpen(false)}
         isModalOpen={isOpen}
       />
+      <ConfirmModal
+        title={"Er du sikker på at du vil aktivere leverandøren?"}
+        confirmButtonText={"Aktiver"}
+        onClick={onActivate}
+        onClose={() => setIsOpenActivateSupplier(false)}
+        isModalOpen={isOpenActivateSupplier}
+      />
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
           <VStack gap="10">
-            <SupplierInfo supplier={supplier} setIsOpen={setIsOpen} />
+            <SupplierInfo
+              supplier={supplier}
+              setIsOpen={setIsOpen}
+              setIsOpenActivateSupplier={setIsOpenActivateSupplier}
+            />
             <SupplierUsers users={supplierUsers} supplier={supplier} />
             <SupplierInventoryInfo supplier={supplier} />
           </VStack>
