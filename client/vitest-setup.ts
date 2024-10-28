@@ -1,10 +1,10 @@
-//import * as matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import { server } from "mocks/server";
 import { toHaveNoViolations } from "jest-axe";
+import matchers from "@testing-library/jest-dom/matchers";
 
-//expect.extend(matchers);
+expect.extend(matchers);
 expect.extend(toHaveNoViolations);
 
 vi.mock("environments", () => ({
