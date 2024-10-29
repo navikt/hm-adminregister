@@ -1,0 +1,31 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.dragged {
+  list-style-type: none;
+  width: 10rem;
+  height: 15rem;
+  position: relative;
+  box-shadow: $a-shadow-xsmall;
+  border-radius: $a-border-radius-medium;
+  text-align: center;
+  background-color: var(--a-gray-200);
+}
+
+.list {
+  user-select: none;
+  display: flex;
+  justify-content: flex-start;
+
+  ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: $a-spacing-3;
+  }
+}
+
+.userSelect {
+  cursor: grab;
+}

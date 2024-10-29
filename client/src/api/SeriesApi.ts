@@ -87,7 +87,22 @@ export const updateSeriesImages = async (
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(images);
+    series.seriesData.media = series.seriesData.media.filter((image) => image.type !== "IMAGE").concat(images);
+    return series;
+  });
+};
+
+export const updateSeriesMedia = async (
+    seriesUUID: string,
+    media: MediaInfoDTO[],
+    isAdmin: boolean,
+    mediaType: string,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    mediaType === "IMAGE" ?
+        series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(media) : null;
+    mediaType === "VIDEO" ?
+        series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "VIDEO").concat(media) : null;
     return series;
   });
 };
@@ -112,6 +127,8 @@ export const saveVideoToSeries = async (seriesUUID: string, isAdmin: boolean, ur
     return series;
   });
 };
+
+
 
 export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
