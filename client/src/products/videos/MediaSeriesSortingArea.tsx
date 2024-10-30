@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 
 import { HStack } from "@navikt/ds-react";
-import {updateSeriesImages, updateSeriesMedia} from "api/SeriesApi";
+import { updateSeriesMedia} from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useSeries } from "utils/swr-hooks";
@@ -16,7 +16,7 @@ interface Props {
   mediaInfo: MediaInfoDTO[];
   handleDeleteFile: (uri: string) => void;
   isEditable: boolean;
-  mediaType: string;
+  mediaType: 'VIDEO' | 'IMAGE';
 }
 
 export const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: number) => {
@@ -26,7 +26,7 @@ export const moveItemInArray = (arr: MediaInfoDTO[], init: number, target: numbe
   return arr;
 };
 
-export const updateImagePriority = (updatedArray: MediaInfoDTO[]) => {
+export const updateMediaPriority = (updatedArray: MediaInfoDTO[]) => {
   return updatedArray.map((item, index) => ({
     ...item,
     priority: index + 1,
@@ -41,12 +41,13 @@ export const handleUpdateOfSeriesMedia = (
   setGlobalError: any,
   mediaType: string
 ) => {
-  mediaType === "VIDEO"  ?
-  updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false, mediaType)
-    // .then(mutateSeries)
-    .catch((error) => {
-      setGlobalError(error)
-    }): null
+  if (mediaType === "VIDEO") {
+    updateSeriesMedia(seriesId, updatedArray, loggedInUser?.isAdmin || false, mediaType)
+        // .then(mutateSeries)
+        .catch((error) => {
+          setGlobalError(error)
+        })
+  }
 };
 
 export default function MediaSeriesSortingArea({ seriesId, mediaInfo, handleDeleteFile, isEditable, mediaType }: Props) {
@@ -61,7 +62,7 @@ export default function MediaSeriesSortingArea({ seriesId, mediaInfo, handleDele
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setMediaArr((array) => {
-      const updatedArray = updateImagePriority(moveItemInArray(array, oldIndex, newIndex));
+      const updatedArray = updateMediaPriority(moveItemInArray(array, oldIndex, newIndex));
       handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, mutateSeries, setGlobalError, mediaType);
       return updatedArray;
     });

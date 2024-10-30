@@ -99,10 +99,12 @@ export const updateSeriesMedia = async (
     mediaType: string,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    mediaType === "IMAGE" ?
-        series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(media) : null;
-    mediaType === "VIDEO" ?
-        series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "VIDEO").concat(media) : null;
+    if (mediaType === "IMAGE") {
+      series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(media);
+    }
+    if (mediaType === "VIDEO") {
+      series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "VIDEO").concat(media);
+    }
     return series;
   });
 };
