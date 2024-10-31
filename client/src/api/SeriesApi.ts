@@ -93,10 +93,10 @@ export const updateSeriesImages = async (
 };
 
 export const updateSeriesMedia = async (
-    seriesUUID: string,
-    media: MediaInfoDTO[],
-    isAdmin: boolean,
-    mediaType: string,
+  seriesUUID: string,
+  media: MediaInfoDTO[],
+  isAdmin: boolean,
+  mediaType: string,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
     if (mediaType === "IMAGE") {
@@ -129,8 +129,6 @@ export const saveVideoToSeries = async (seriesUUID: string, isAdmin: boolean, ur
     return series;
   });
 };
-
-
 
 export const changeFilenameOnAttachedFile = async (
   seriesUUID: string,
