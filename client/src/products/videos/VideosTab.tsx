@@ -1,15 +1,14 @@
-import { Alert, Button, HStack, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { Alert, Button, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { PlusCircleIcon } from "@navikt/aksel-icons";
 
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { MoreMenu } from "felleskomponenter/MoreMenu";
-import ReactPlayer from "react-player";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "../ProductPage.module.scss";
+import MediaSeriesSortingArea from "products/videos/MediaSeriesSortingArea";
+import { PlusCircleIcon } from "@navikt/aksel-icons";
 
 const VideoTab = ({
   series,
@@ -90,31 +89,28 @@ const VideoTab = ({
         </Alert>
 
         {videos.length > 0 && (
-          <HStack as="ol" className={styles.videos} gap="4">
-            {videos.map((video, i) => (
-              <HStack as="li" key={video.uri}>
-                <VStack gap="4">
-                  <Link target="_blank" title={video.uri} href={video.uri}>
-                    {video.text || video.uri}
-                  </Link>
-                  <ReactPlayer url={video.uri} controls={true} width="100%" height="fit-content" />
-                </VStack>
-                {isEditable && (
-                  <div className={styles.moreMenuContainer}>
-                    <MoreMenu mediaInfo={video} handleDeleteFile={handleDeleteVideoLink} />
-                  </div>
-                )}
-              </HStack>
-            ))}
-          </HStack>
+          <VStack gap="8 2">
+            {series && (
+              <MediaSeriesSortingArea
+                mediaInfo={videos.map((video) => ({ ...video, filename: video.text }))}
+                seriesId={series.id}
+                handleDeleteFile={handleDeleteVideoLink}
+                isEditable={isEditable}
+                mediaType={"VIDEO"}
+              />
+            )}
+          </VStack>
         )}
+        {!series && <Alert variant={errorMessage ? "error" : "info"}>Produktet har ingen bilder</Alert>}
 
         {isEditable && (
           <Button
             className="fit-content"
             variant="tertiary"
             icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-            onClick={() => setModalIsOpen(true)}
+            onClick={() => {
+              setModalIsOpen(true);
+            }}
           >
             Legg til videolenke
           </Button>

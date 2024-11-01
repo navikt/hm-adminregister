@@ -87,7 +87,24 @@ export const updateSeriesImages = async (
   isAdmin: boolean,
 ): Promise<SeriesRegistrationDTO> => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(images);
+    series.seriesData.media = series.seriesData.media.filter((image) => image.type !== "IMAGE").concat(images);
+    return series;
+  });
+};
+
+export const updateSeriesMedia = async (
+  seriesUUID: string,
+  media: MediaInfoDTO[],
+  isAdmin: boolean,
+  mediaType: string,
+): Promise<SeriesRegistrationDTO> => {
+  return updateSeriesData(seriesUUID, isAdmin, (series) => {
+    if (mediaType === "IMAGE") {
+      series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "IMAGE").concat(media);
+    }
+    if (mediaType === "VIDEO") {
+      series.seriesData.media = series.seriesData.media.filter((media) => media.type !== "VIDEO").concat(media);
+    }
     return series;
   });
 };
