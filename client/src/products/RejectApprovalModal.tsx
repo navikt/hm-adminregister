@@ -1,5 +1,4 @@
-import { ProductRegistrationDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { rejectProducts } from "api/ProductApi";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { Box, Button, Modal, Textarea } from "@navikt/ds-react";
 import { rejectSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";

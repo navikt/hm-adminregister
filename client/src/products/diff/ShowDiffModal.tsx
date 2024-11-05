@@ -1,9 +1,4 @@
-import {
-  DifferenceDTO,
-  ProductRegistrationDTO,
-  SeriesRegistrationDTO,
-  SeriesRegistrationDTOV2,
-} from "utils/types/response-types";
+import { DifferenceDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { BodyLong, BodyShort, Button, Modal } from "@navikt/ds-react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useEffect, useState } from "react";
