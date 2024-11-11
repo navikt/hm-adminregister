@@ -24,9 +24,14 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
   const { setGlobalError } = useErrorStore();
 
-  const handleSaveDescription = (updatedDescription: string) => {
+  //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
+  const closeDescriptionEditor = () => {
     if (descriptionLengthError) return;
     setShowEditDescriptionMode(false);
+  };
+
+  const handleSaveDescription = (updatedDescription: string) => {
+    if (descriptionLengthError) return;
     updateProductDescriptionV2(series!.id, updatedDescription, isAdmin)
       .then(() => mutateSeries())
       .catch((error) => {
@@ -101,6 +106,9 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
               className={styles.editor}
               toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
               formats={["bold", "italic", "list", "link"]}
+              onBlur={() => {
+                handleSaveDescription(updatedDescription);
+              }}
             />
             <div className="navds-form-field__error">
               <p
@@ -115,7 +123,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
               variant="tertiary"
               icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                handleSaveDescription(updatedDescription);
+                closeDescriptionEditor();
               }}
             >
               Lagre
