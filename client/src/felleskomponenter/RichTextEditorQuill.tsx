@@ -26,12 +26,12 @@ type Props = {
   className?: string;
   toolbar?: (string[] | { list: string }[])[];
   formats?: string[];
-  onBlur: () => void;
+  onBlur?: () => void;
 };
 
 export const RichTextEditorQuill = forwardRef(function TempComp(
   { onTextChange, defaultValue, className, toolbar, formats, onBlur }: Props,
-  ref
+  ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTextChangeRef = useRef(onTextChange);
@@ -85,7 +85,11 @@ export const RichTextEditorQuill = forwardRef(function TempComp(
     };
   }, [ref]);
 
-  return <div ref={containerRef} className={className} onBlur={() => onBlur()}></div>;
+  return onBlur ? (
+    <div ref={containerRef} className={className} onBlur={() => onBlur()} />
+  ) : (
+    <div ref={containerRef} className={className} />
+  );
 });
 
 export default RichTextEditorQuill;
