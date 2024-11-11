@@ -20,13 +20,14 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
   const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : []);
+  const maxKeywords = 10;
 
   const { setGlobalError } = useErrorStore();
 
   const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
 
   const handleSaveKeywords = () => {
-    if (updatedKeywords.length <= 3 && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
+    if (updatedKeywords.length <= maxKeywords && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
       updateSeriesKeywordsV2(series!.id, updatedKeywords, isAdmin)
         .then(() => mutateSeries())
         .catch((error) => {
@@ -40,8 +41,8 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
   const validKeyword = (keyword: string) => {
     setKeywordFormatError(undefined);
-    if (updatedKeywords.length >= 3) {
-      setKeywordFormatError("Du kan maksimalt velge 3 nøkkelord");
+    if (updatedKeywords.length >= maxKeywords) {
+      setKeywordFormatError(`Du kan maksimalt velge ${maxKeywords} nøkkelord`);
       return false;
     }
     if (!allowedCharacters(keyword)) {
@@ -101,7 +102,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
               hideLabel
               options={[]}
               selectedOptions={updatedKeywords}
-              maxSelected={{ limit: 3 }}
+              maxSelected={{ limit: maxKeywords }}
               onToggleSelected={(option: string, isSelected: boolean) =>
                 isSelected && validKeyword(option)
                   ? setUpdatedKeywords([...updatedKeywords, option])
