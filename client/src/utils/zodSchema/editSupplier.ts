@@ -15,7 +15,7 @@ export const editSupplierSchema = z.object({
       },
       {
         message: "Ugyldig e-postformat",
-      },
+      }
     ),
   homepage: z
     .string()
@@ -26,12 +26,12 @@ export const editSupplierSchema = z.object({
           return true;
         }
         // Use a regular expression to check if the input resembles a URL with or without 'http://' or 'https://'.
-        const urlPattern = /^(https?:\/\/)?(www\.\S+\.\S{2,})$/;
+        const urlPattern = /^(https?:\/\/)(www\.)?(\S+\.\S{2,})$/;
         return urlPattern.test(value);
       },
       {
         message: "Ugyldig format",
-      },
+      }
     ),
   phone: z
     .string()
@@ -43,7 +43,7 @@ export const editSupplierSchema = z.object({
         }
         return /^[+\d]+$/.test(value);
       },
-      { message: "Telefonnummer må bestå av siffer" },
+      { message: "Telefonnummer må bestå av siffer" }
     ),
   address: z.string(),
   postNr: z.string(),
