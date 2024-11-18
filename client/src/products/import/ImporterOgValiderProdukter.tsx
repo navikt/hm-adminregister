@@ -25,7 +25,13 @@ export const ImporterOgValiderProdukter = () => {
   }
 
   if (!upload) {
-    return <FellesImport validerImporterteProdukter={setUpload} tekst={`Importer varianter for ${series?.title}`} />;
+    return (
+      <FellesImport
+        validerImporterteProdukter={setUpload}
+        tekst={`Importer varianter for ${series?.title}`}
+        setSupplier_={() => {}}
+      />
+    );
   } else
     return (
       <ValidateImportedProducts

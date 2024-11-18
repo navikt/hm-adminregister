@@ -64,6 +64,7 @@ export type SeriesGroupDTO = components["schemas"]["SeriesGroupDTO"][];
 export type ProductRegistrationDTO = components["schemas"]["ProductRegistrationDTO"];
 export type ProductRegistrationDTOV2 = components["schemas"]["ProductRegistrationDTOV2"];
 export type UpdateProductRegistrationDTO = components["schemas"]["UpdateProductRegistrationDTO"];
+export type ProductRegistration = components["schemas"]["ProductRegistration"];
 export type ProductAgreementRegistrationDTO = components["schemas"]["ProductAgreementRegistrationDTO"];
 export type ProductAgreementRegistrationDTOList = components["schemas"]["ProductAgreementRegistrationDTO"][];
 export type ProduktvarianterForDelkontrakterDTO = components["schemas"]["ProduktvarianterForDelkontrakterDTO"];
