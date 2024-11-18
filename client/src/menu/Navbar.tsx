@@ -20,7 +20,7 @@ const Navbar = () => {
     <>
       <nav className={classNames("menu", { open: menuOpen })} aria-label="hovednavigering">
         <span className="menu__logo">
-          <span style={{ fontSize: "1.5rem" }}>Finn Hjelpemiddel</span>
+          <span style={{ fontSize: "1.5rem" }}>FinnHjelpemiddel</span>
           <span style={{ fontSize: "1.125rem" }}> Admin og registrering</span>
         </span>
         <Button

@@ -180,7 +180,7 @@ export const ProductsToApproveTable = ({
                   <Table.DataCell>
                     <VStack>
                       <Link
-                        className={styles.linkToProduct}
+                        className={createdByFilter !== CreatedByFilter.ADMIN ? styles.linkToProduct : ""}
                         onClick={() => {
                           onNavigateToProduct(series.id);
                         }}

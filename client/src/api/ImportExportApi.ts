@@ -37,7 +37,11 @@ export const importProducts = async (
   );
 };
 
-export const importKatalogfil = async (upload: Upload, dryRun: boolean): Promise<ProductAgreementImportDTO> => {
+export const importKatalogfil = async (
+  upload: Upload,
+  dryRun: boolean,
+  supplier: string,
+): Promise<ProductAgreementImportDTO> => {
   const formData = new FormData();
   formData.append("file", upload.file);
 
@@ -45,8 +49,8 @@ export const importKatalogfil = async (upload: Upload, dryRun: boolean): Promise
     getPath(
       true,
       dryRun
-        ? "/api/v1/product-agreement/excel-import?dryRun=true"
-        : "/api/v1/product-agreement/excel-import?dryRun=false",
+        ? `/api/v1/product-agreement/excel-import?dryRun=true&supplierId=${supplier}`
+        : `/api/v1/product-agreement/excel-import?dryRun=false&supplierId=${supplier}`,
     ),
     "POST",
     formData,

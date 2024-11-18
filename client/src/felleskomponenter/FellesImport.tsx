@@ -1,7 +1,19 @@
-import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader, VStack } from "@navikt/ds-react";
+import {
+  BodyLong,
+  BodyShort,
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Label,
+  Loader,
+  UNSAFE_Combobox,
+  VStack,
+} from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import { fileToUri } from "utils/file-util";
+import { useSuppliers } from "utils/swr-hooks";
 
 export interface Upload {
   file: File;
@@ -10,15 +22,18 @@ export interface Upload {
 
 export interface Props {
   validerImporterteProdukter: (upload: Upload) => void;
+  setSupplier_: (supplier: string) => void;
   tekst: string;
 }
 
-export default function FellesImport({ validerImporterteProdukter, tekst }: Props) {
+export default function FellesImport({ validerImporterteProdukter, tekst, setSupplier_ }: Props) {
   const [isUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
+  const [supplier, setSupplier] = useState<string | undefined>(undefined);
   const [fileTypeError, setFileTypeError] = useState("");
   const [moreThanOnefileError, setMoreThanOnefileError] = useState("");
+  const { suppliers } = useSuppliers(true);
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setFileTypeError("");
@@ -64,6 +79,18 @@ export default function FellesImport({ validerImporterteProdukter, tekst }: Prop
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, file: File) => {
     event.preventDefault();
     setUpload(undefined);
+  };
+
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+
+    if (uuid) {
+      if (isSelected) {
+        setSupplier(uuid);
+      } else {
+        setSupplier(undefined);
+      }
+    }
   };
 
   return (
@@ -118,6 +145,19 @@ export default function FellesImport({ validerImporterteProdukter, tekst }: Prop
           {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
           {moreThanOnefileError && <BodyLong>{moreThanOnefileError}</BodyLong>}
 
+          {upload && suppliers && (
+            <Box asChild style={{ maxWidth: "475px" }}>
+              <UNSAFE_Combobox
+                clearButton
+                clearButtonLabel="Tøm"
+                label="Leverandør"
+                selectedOptions={supplier ? [suppliers.find((s) => s.id === supplier)?.name || ""] : undefined}
+                onToggleSelected={onToggleSelected}
+                options={suppliers?.map((supplier) => supplier.name) || []}
+              />
+            </Box>
+          )}
+
           {upload && (
             <VStack as="ol" gap="3" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
@@ -149,11 +189,12 @@ export default function FellesImport({ validerImporterteProdukter, tekst }: Prop
               Avbryt
             </Button>
             <Button
-              disabled={!upload}
+              disabled={!upload || !supplier}
               size="medium"
               variant="primary"
               onClick={() => {
                 validerImporterteProdukter(upload!);
+                setSupplier_(supplier!);
               }}
             >
               Gå videre

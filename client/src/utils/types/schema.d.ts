@@ -5,467 +5,462 @@
 
 
 export interface paths {
-  "/admin/api/v1/agreement/delkontrakt/registrations": {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations": {
     post: operations["createDelkontrakt"];
   };
-  "/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}": {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}": {
     get: operations["findByAgreementId"];
   };
-  "/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/fix-no-delkontrakt": {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/fix-no-delkontrakt": {
     put: operations["fixNoDelkontraktForAgreement"];
   };
-  "/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/no-delkontrakt": {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/no-delkontrakt": {
     post: operations["createNoDelkontraktPostForAgreement"];
   };
-  "/admin/api/v1/agreement/delkontrakt/registrations/{id}": {
+  "/admreg/admin/api/v1/agreement/delkontrakt/registrations/{id}": {
     get: operations["findByDelkontraktId"];
     put: operations["updateDelkontrakt"];
     delete: operations["deleteDelkontraktById"];
   };
-  "/admin/api/v1/agreement/registrations": {
+  "/admreg/admin/api/v1/agreement/registrations": {
     get: operations["findAgreements"];
     post: operations["createAgreement"];
   };
-  "/admin/api/v1/agreement/registrations/draft/from/{id}/reference/{reference}": {
+  "/admreg/admin/api/v1/agreement/registrations/draft/from/{id}/reference/{reference}": {
     post: operations["createAgreementFromAnother"];
   };
-  "/admin/api/v1/agreement/registrations/draft/reference": {
+  "/admreg/admin/api/v1/agreement/registrations/draft/reference": {
     post: operations["draftAgreementWith"];
   };
-  "/admin/api/v1/agreement/registrations/draft/reference/{reference}": {
+  "/admreg/admin/api/v1/agreement/registrations/draft/reference/{reference}": {
     post: operations["draftAgreement"];
   };
-  "/admin/api/v1/agreement/registrations/{id}": {
+  "/admreg/admin/api/v1/agreement/registrations/{id}": {
     get: operations["getAgreementById"];
     put: operations["updateAgreement"];
     delete: operations["deleteAgreement"];
   };
-  "/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
+  "/admreg/admin/api/v1/agreement/registrations/{id}/delkontrakt/{delkontraktId}": {
     get: operations["getDelkontraktById"];
     delete: operations["deleteDelkontraktById_1"];
   };
-  "/admin/api/v1/bestillingsordning/registrations": {
+  "/admreg/admin/api/v1/bestillingsordning/registrations": {
     post: operations["createBestillingsordning"];
   };
-  "/admin/api/v1/bestillingsordning/registrations/{hmsArtNr}": {
+  "/admreg/admin/api/v1/bestillingsordning/registrations/{hmsArtNr}": {
     get: operations["findByHmsNr"];
     put: operations["updateBestillingsordningStatus"];
   };
-  "/admin/api/v1/import/token/{supplierId}": {
+  "/admreg/admin/api/v1/import/token/{supplierId}": {
     post: operations["createSupplierToken"];
   };
-  "/admin/api/v1/isocategory/registrations": {
+  "/admreg/admin/api/v1/isocategory/registrations": {
     get: operations["getAllCategories"];
     post: operations["createIsoCategory"];
   };
-  "/admin/api/v1/isocategory/registrations/{isocode}": {
+  "/admreg/admin/api/v1/isocategory/registrations/{isocode}": {
     get: operations["getCategoryByIsocode"];
     put: operations["updateCategoryByIsocode"];
   };
-  "/admin/api/v1/media/{oid}": {
+  "/admreg/admin/api/v1/media/{oid}": {
     get: operations["getMediaList"];
   };
-  "/admin/api/v1/media/{oid}/{uri}": {
+  "/admreg/admin/api/v1/media/{oid}/{uri}": {
     delete: operations["deleteFile"];
   };
-  "/admin/api/v1/media/{type}/files/{oid}": {
+  "/admreg/admin/api/v1/media/{type}/files/{oid}": {
     post: operations["uploadProductFiles"];
   };
-  "/admin/api/v1/news": {
+  "/admreg/admin/api/v1/news": {
     get: operations["getNews"];
     post: operations["createNews"];
   };
-  "/admin/api/v1/news/draft": {
+  "/admreg/admin/api/v1/news/draft": {
     post: operations["createNewsDraft"];
   };
-  "/admin/api/v1/news/publish/{id}": {
+  "/admreg/admin/api/v1/news/publish/{id}": {
     put: operations["publishNews"];
   };
-  "/admin/api/v1/news/unpublish/{id}": {
+  "/admreg/admin/api/v1/news/unpublish/{id}": {
     put: operations["unpublishNews"];
   };
-  "/admin/api/v1/news/{id}": {
+  "/admreg/admin/api/v1/news/{id}": {
     put: operations["updateNews"];
     delete: operations["deleteNews"];
   };
-  "/admin/api/v1/product-agreement": {
+  "/admreg/admin/api/v1/product-agreement": {
     post: operations["createProductAgreement"];
   };
-  "/admin/api/v1/product-agreement/batch": {
+  "/admreg/admin/api/v1/product-agreement/batch": {
     put: operations["updateProductAgreements"];
     post: operations["createProductAgreements"];
   };
-  "/admin/api/v1/product-agreement/excel-import": {
+  "/admreg/admin/api/v1/product-agreement/excel-import": {
     post: operations["excelImport"];
   };
-  "/admin/api/v1/product-agreement/get-by-ids": {
+  "/admreg/admin/api/v1/product-agreement/get-by-ids": {
     post: operations["getProductsAgreementsByIds"];
   };
-  "/admin/api/v1/product-agreement/ids": {
+  "/admreg/admin/api/v1/product-agreement/ids": {
     delete: operations["deleteProductAgreementByIds"];
   };
-  "/admin/api/v1/product-agreement/variants/delkontrakt/{id}": {
+  "/admreg/admin/api/v1/product-agreement/variants/delkontrakt/{id}": {
     get: operations["getProductVariantsByDelkontraktId"];
   };
-  "/admin/api/v1/product-agreement/variants/{id}": {
+  "/admreg/admin/api/v1/product-agreement/variants/{id}": {
     get: operations["getProductVariantsByAgreementId"];
   };
-  "/admin/api/v1/product-agreement/{id}": {
+  "/admreg/admin/api/v1/product-agreement/{id}": {
     get: operations["getProductsByAgreementId"];
     delete: operations["deleteProductAgreementById"];
   };
-  "/admin/api/v1/product/registrations": {
+  "/admreg/admin/api/v1/product/registrations": {
     get: operations["findProducts"];
   };
-  "/admin/api/v1/product/registrations/delete": {
+  "/admreg/admin/api/v1/product/registrations/delete": {
     delete: operations["deleteProducts"];
   };
-  "/admin/api/v1/product/registrations/draft/delete": {
+  "/admreg/admin/api/v1/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants"];
   };
-  "/admin/api/v1/product/registrations/draft/variant/{id}": {
+  "/admreg/admin/api/v1/product/registrations/draft/variant/{id}": {
     post: operations["createProductVariant"];
   };
-  "/admin/api/v1/product/registrations/draftWithV3/{seriesUUID}": {
+  "/admreg/admin/api/v1/product/registrations/draftWithV3/{seriesUUID}": {
     post: operations["createDraft"];
   };
-  "/admin/api/v1/product/registrations/excel/export": {
+  "/admreg/admin/api/v1/product/registrations/excel/export": {
     post: operations["createExport"];
   };
-  "/admin/api/v1/product/registrations/excel/import": {
+  "/admreg/admin/api/v1/product/registrations/excel/import": {
     post: operations["importExcel"];
   };
-  "/admin/api/v1/product/registrations/excel/import-dryrun": {
+  "/admreg/admin/api/v1/product/registrations/excel/import-dryrun": {
     post: operations["importExcelDryrun"];
   };
-  "/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
+  "/admreg/admin/api/v1/product/registrations/hmsArtNr/{hmsArtNr}": {
     get: operations["getProductByHmsArtNr"];
   };
-  "/admin/api/v1/product/registrations/series/group": {
+  "/admreg/admin/api/v1/product/registrations/series/group": {
     get: operations["findSeriesGroup"];
   };
-  "/admin/api/v1/product/registrations/series/{seriesUUID}": {
+  "/admreg/admin/api/v1/product/registrations/series/{seriesUUID}": {
     get: operations["findBySeriesUUIDAndSupplierId"];
   };
-  "/admin/api/v1/product/registrations/til-godkjenning": {
+  "/admreg/admin/api/v1/product/registrations/til-godkjenning": {
     get: operations["findProductsPendingApprove"];
   };
-  "/admin/api/v1/product/registrations/to-active/{id}": {
+  "/admreg/admin/api/v1/product/registrations/to-active/{id}": {
     put: operations["setPublishedProductToActive"];
   };
-  "/admin/api/v1/product/registrations/to-expired/{id}": {
+  "/admreg/admin/api/v1/product/registrations/to-expired/{id}": {
     put: operations["setPublishedProductToInactive"];
   };
-  "/admin/api/v1/product/registrations/v2/{id}": {
+  "/admreg/admin/api/v1/product/registrations/v2/{id}": {
     get: operations["getProductByIdV2"];
     put: operations["updateProductV2"];
   };
-  "/admin/api/v1/product/versions": {
+  "/admreg/admin/api/v1/product/versions": {
     get: operations["getSeriesVersions"];
   };
-  "/admin/api/v1/product/versions/{productId}/compare/{version}/approved": {
+  "/admreg/admin/api/v1/product/versions/{productId}/compare/{version}/approved": {
     get: operations["compareVersionWithApproved"];
   };
-  "/admin/api/v1/series": {
+  "/admreg/admin/api/v1/series": {
     get: operations["getSeries"];
   };
-  "/admin/api/v1/series/approve-multiple": {
+  "/admreg/admin/api/v1/series/approve-multiple": {
     put: operations["approveSeriesAndVariants"];
   };
-  "/admin/api/v1/series/approve-v2/{id}": {
+  "/admreg/admin/api/v1/series/approve-v2/{id}": {
     put: operations["approveSeriesAndVariants_1"];
   };
-  "/admin/api/v1/series/hmsNr/{hmsNr}": {
+  "/admreg/admin/api/v1/series/hmsNr/{hmsNr}": {
     get: operations["findSeriesForHmsNr"];
   };
-  "/admin/api/v1/series/reject-v2/{id}": {
+  "/admreg/admin/api/v1/series/reject-v2/{id}": {
     put: operations["rejectSeriesAndVariants"];
   };
-  "/admin/api/v1/series/reject/{id}": {
+  "/admreg/admin/api/v1/series/reject/{id}": {
     put: operations["rejectSeries"];
   };
-  "/admin/api/v1/series/series-to-active/{seriesUUID}": {
+  "/admreg/admin/api/v1/series/series-to-active/{seriesUUID}": {
     put: operations["setPublishedSeriesToActive"];
   };
-  "/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
+  "/admreg/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
     put: operations["setPublishedSeriesToInactive"];
   };
-  "/admin/api/v1/series/series/create-from/products": {
+  "/admreg/admin/api/v1/series/series/create-from/products": {
     post: operations["createSeriesFromProductList"];
   };
-  "/admin/api/v1/series/series/products/move-to/{seriesId}": {
+  "/admreg/admin/api/v1/series/series/products/move-to/{seriesId}": {
     put: operations["moveProductVariantsToSeries"];
   };
-  "/admin/api/v1/series/series_to-draft/{seriesUUID}": {
+  "/admreg/admin/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setSeriesToDraft"];
   };
-  "/admin/api/v1/series/supplier-inventory/{id}": {
+  "/admreg/admin/api/v1/series/supplier-inventory/{id}": {
     get: operations["getSupplierProductInfo"];
   };
-  "/admin/api/v1/series/supplier/{supplierId}/draftWith": {
+  "/admreg/admin/api/v1/series/supplier/{supplierId}/draftWith": {
     post: operations["draftSeriesWith"];
   };
-  "/admin/api/v1/series/supplierRef/{supplierRef}": {
+  "/admreg/admin/api/v1/series/supplierRef/{supplierRef}": {
     get: operations["findSeriesForSupplierRef"];
   };
-  "/admin/api/v1/series/to-approve": {
+  "/admreg/admin/api/v1/series/to-approve": {
     get: operations["findSeriesPendingApprove"];
   };
-  "/admin/api/v1/series/uploadMedia/{seriesUUID}": {
+  "/admreg/admin/api/v1/series/uploadMedia/{seriesUUID}": {
     post: operations["uploadMedia"];
   };
-  "/admin/api/v1/series/v2/{id}": {
+  "/admreg/admin/api/v1/series/v2/{id}": {
     get: operations["readSeriesV2"];
-    put: operations["updateSeriesV2"];
     patch: operations["patchSeriesV2"];
   };
-  "/admin/api/v1/series/versions": {
+  "/admreg/admin/api/v1/series/versions": {
     get: operations["getSeriesVersions_1"];
   };
-  "/admin/api/v1/series/versions/{seriesId}/compare/{version}/approved": {
+  "/admreg/admin/api/v1/series/versions/{seriesId}/compare/{version}/approved": {
     get: operations["compareVersionWithApproved_1"];
   };
-  "/admin/api/v1/series/{id}": {
+  "/admreg/admin/api/v1/series/{id}": {
     get: operations["readSeries"];
     put: operations["updateSeries"];
     delete: operations["deleteSeries"];
   };
-  "/admin/api/v1/supplier/registrations": {
+  "/admreg/admin/api/v1/supplier/registrations": {
     get: operations["findSuppliers"];
     post: operations["createSupplier"];
   };
-  "/admin/api/v1/supplier/registrations/activate/{id}": {
+  "/admreg/admin/api/v1/supplier/registrations/activate/{id}": {
     put: operations["activateSupplier"];
   };
-  "/admin/api/v1/supplier/registrations/{id}": {
+  "/admreg/admin/api/v1/supplier/registrations/{id}": {
     get: operations["getById"];
     put: operations["updateSupplier"];
     delete: operations["deactivateSupplier"];
   };
-  "/admin/api/v1/techlabel/registrations": {
+  "/admreg/admin/api/v1/techlabel/registrations": {
     get: operations["getAllTechLabels"];
     post: operations["createTechLabel"];
   };
-  "/admin/api/v1/techlabel/registrations/{id}": {
+  "/admreg/admin/api/v1/techlabel/registrations/{id}": {
     get: operations["getTechLabelById"];
     put: operations["updateTechLabel"];
   };
-  "/admin/api/v1/users": {
+  "/admreg/admin/api/v1/users": {
     get: operations["getUsers"];
     post: operations["createUser"];
   };
-  "/admin/api/v1/users/email/{email}": {
+  "/admreg/admin/api/v1/users/email/{email}": {
     get: operations["getUserByEmail"];
   };
-  "/admin/api/v1/users/password": {
+  "/admreg/admin/api/v1/users/password": {
     put: operations["changePassword"];
   };
-  "/admin/api/v1/users/supplierId/{supplierId}": {
+  "/admreg/admin/api/v1/users/supplierId/{supplierId}": {
     get: operations["getUsersBySupplierId"];
   };
-  "/admin/api/v1/users/{id}": {
+  "/admreg/admin/api/v1/users/{id}": {
     get: operations["getUser"];
     put: operations["updateUser"];
     delete: operations["deleteUser"];
   };
-  "/admin/api/v2/product/registrations/draft/delete": {
+  "/admreg/admin/api/v2/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants_1"];
   };
-  "/admin/api/v2/product/registrations/draftWithV3/{seriesUUID}": {
+  "/admreg/admin/api/v2/product/registrations/draftWithV3/{seriesUUID}": {
     post: operations["createDraft_1"];
   };
-  "/admin/api/v2/product/registrations/excel/import": {
-    post: operations["importExcel_1"];
+  "/admreg/admin/api/v2/product/registrations/series/{seriesUUID}": {
+    get: operations["findBySeriesUUIDAndSupplierId_1"];
   };
-  "/admin/api/v2/product/registrations/to-active/{id}": {
+  "/admreg/admin/api/v2/product/registrations/to-active/{id}": {
     put: operations["setPublishedProductToActive_1"];
   };
-  "/admin/api/v2/product/registrations/to-expired/{id}": {
+  "/admreg/admin/api/v2/product/registrations/to-expired/{id}": {
     put: operations["setPublishedProductToInactive_1"];
   };
-  "/admin/api/v2/product/registrations/{id}": {
+  "/admreg/admin/api/v2/product/registrations/{id}": {
     get: operations["getProductById"];
     put: operations["updateProduct"];
   };
-  "/api/v1/isocategories": {
+  "/admreg/api/v1/isocategories": {
     get: operations["getAllCategories_1"];
   };
-  "/api/v1/isocategories/{isocode}": {
+  "/admreg/api/v1/isocategories/{isocode}": {
     get: operations["getCategoryByIsocode_1"];
   };
-  "/api/v1/techlabels": {
+  "/admreg/api/v1/techlabels": {
     get: operations["fetchTechLabels"];
   };
-  "/api/v1/techlabels/name/{name}": {
+  "/admreg/api/v1/techlabels/name/{name}": {
     get: operations["fetchTechLabelsByName"];
   };
-  "/api/v1/techlabels/{isocode}": {
+  "/admreg/api/v1/techlabels/{isocode}": {
     get: operations["fetchTechLabelsByIsocode"];
   };
-  "/keys": {
+  "/admreg/keys": {
     get: operations["keys"];
   };
-  "/loggedInUser": {
+  "/admreg/loggedInUser": {
     get: operations["getLoggedInUser"];
   };
-  "/login": {
+  "/admreg/login": {
     post: operations["login"];
   };
-  "/logout": {
+  "/admreg/logout": {
     get: operations["indexGet"];
     post: operations["index"];
   };
-  "/vendor/api/v1/agreement/registrations": {
+  "/admreg/vendor/api/v1/agreement/registrations": {
     get: operations["findAgreements_1"];
   };
-  "/vendor/api/v1/media/{oid}": {
+  "/admreg/vendor/api/v1/media/{oid}": {
     /** @deprecated */
     get: operations["getMediaList_1"];
   };
-  "/vendor/api/v1/media/{oid}/{uri}": {
+  "/admreg/vendor/api/v1/media/{oid}/{uri}": {
     /** @deprecated */
     delete: operations["deleteFile_1"];
   };
-  "/vendor/api/v1/media/{type}/files/{oid}": {
+  "/admreg/vendor/api/v1/media/{type}/files/{oid}": {
     post: operations["uploadFiles"];
   };
-  "/vendor/api/v1/media/{type}/{oid}": {
+  "/admreg/vendor/api/v1/media/{type}/{oid}": {
     get: operations["getMediaList_2"];
   };
-  "/vendor/api/v1/media/{type}/{oid}/{uri}": {
+  "/admreg/vendor/api/v1/media/{type}/{oid}/{uri}": {
     delete: operations["deleteFiles"];
   };
-  "/vendor/api/v1/product-agreement/in-agreement/{seriesId}": {
+  "/admreg/vendor/api/v1/product-agreement/in-agreement/{seriesId}": {
     get: operations["isSeriesInAgreement"];
   };
-  "/vendor/api/v1/product/registrations": {
+  "/admreg/vendor/api/v1/product/registrations": {
     get: operations["findProducts_1"];
   };
-  "/vendor/api/v1/product/registrations/delete": {
+  "/admreg/vendor/api/v1/product/registrations/delete": {
     delete: operations["deleteProducts_1"];
   };
-  "/vendor/api/v1/product/registrations/draft/delete": {
+  "/admreg/vendor/api/v1/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants_2"];
   };
-  "/vendor/api/v1/product/registrations/draftWithV3/{seriesUUID}": {
+  "/admreg/vendor/api/v1/product/registrations/draftWithV3/{seriesUUID}": {
     post: operations["createDraft_2"];
   };
-  "/vendor/api/v1/product/registrations/excel/export": {
+  "/admreg/vendor/api/v1/product/registrations/excel/export": {
     post: operations["createExport_1"];
   };
-  "/vendor/api/v1/product/registrations/excel/export/supplier": {
+  "/admreg/vendor/api/v1/product/registrations/excel/export/supplier": {
     post: operations["createExportForAllSupplierProducts"];
   };
-  "/vendor/api/v1/product/registrations/excel/export/supplier/{seriesId}": {
+  "/admreg/vendor/api/v1/product/registrations/excel/export/supplier/{seriesId}": {
     post: operations["createExportForSeries"];
   };
-  "/vendor/api/v1/product/registrations/excel/import-dryrun/{seriesId}": {
+  "/admreg/vendor/api/v1/product/registrations/excel/import-dryrun/{seriesId}": {
     post: operations["importExcelForSeriesDryrun"];
   };
-  "/vendor/api/v1/product/registrations/excel/import/{seriesId}": {
+  "/admreg/vendor/api/v1/product/registrations/excel/import/{seriesId}": {
     post: operations["importExcelForSeries"];
   };
-  "/vendor/api/v1/product/registrations/series/{seriesUUID}": {
-    get: operations["findBySeriesUUIDAndSupplierId_1"];
+  "/admreg/vendor/api/v1/product/registrations/series/{seriesUUID}": {
+    get: operations["findBySeriesUUIDAndSupplierId_2"];
   };
-  "/vendor/api/v1/product/registrations/to-active/{id}": {
+  "/admreg/vendor/api/v1/product/registrations/to-active/{id}": {
     put: operations["setPublishedProductToActive_2"];
   };
-  "/vendor/api/v1/product/registrations/to-expired/{id}": {
+  "/admreg/vendor/api/v1/product/registrations/to-expired/{id}": {
     put: operations["setPublishedProductToInactive_2"];
   };
-  "/vendor/api/v1/product/registrations/v2/{id}": {
+  "/admreg/vendor/api/v1/product/registrations/v2/{id}": {
     get: operations["getProductByIdV2_1"];
     put: operations["updateProductV2_1"];
   };
-  "/vendor/api/v1/series": {
+  "/admreg/vendor/api/v1/series": {
     get: operations["getSeries_1"];
     post: operations["createSeries"];
   };
-  "/vendor/api/v1/series/draft": {
+  "/admreg/vendor/api/v1/series/draft": {
     post: operations["createDraftSeries"];
   };
-  "/vendor/api/v1/series/draftWith": {
+  "/admreg/vendor/api/v1/series/draftWith": {
     post: operations["draftSeriesWith_1"];
   };
-  "/vendor/api/v1/series/hmsNr/{hmsNr}": {
+  "/admreg/vendor/api/v1/series/hmsNr/{hmsNr}": {
     get: operations["findSeriesForHmsNr_1"];
   };
-  "/vendor/api/v1/series/request-approval/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/request-approval/{seriesUUID}": {
     put: operations["requestApproval"];
   };
-  "/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
     put: operations["setSeriesToBeApproved"];
   };
-  "/vendor/api/v1/series/series-to-active/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/series-to-active/{seriesUUID}": {
     put: operations["setPublishedSeriesToActive_1"];
   };
-  "/vendor/api/v1/series/series-to-inactive/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/series-to-inactive/{seriesUUID}": {
     put: operations["setPublishedSeriesToInactive_1"];
   };
-  "/vendor/api/v1/series/series_ready-for-approval/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/series_ready-for-approval/{seriesUUID}": {
     put: operations["setSeriesReadyForApproval"];
   };
-  "/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
     put: operations["setSeriesToDraft_1"];
   };
-  "/vendor/api/v1/series/supplierRef/{supplierRef}": {
+  "/admreg/vendor/api/v1/series/supplierRef/{supplierRef}": {
     get: operations["findSeriesForSupplierRef_1"];
   };
-  "/vendor/api/v1/series/uploadMedia/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/uploadMedia/{seriesUUID}": {
     post: operations["uploadMedia_1"];
   };
-  "/vendor/api/v1/series/v2/{id}": {
+  "/admreg/vendor/api/v1/series/v2/{id}": {
     get: operations["readSeriesV2_1"];
-    put: operations["updateSeriesV2_1"];
     patch: operations["patchSeriesV2_1"];
   };
-  "/vendor/api/v1/series/{id}": {
+  "/admreg/vendor/api/v1/series/{id}": {
     get: operations["readSeries_1"];
     put: operations["updateSeries_1"];
   };
-  "/vendor/api/v1/series/{seriesUUID}": {
+  "/admreg/vendor/api/v1/series/{seriesUUID}": {
     delete: operations["deleteSeries_1"];
   };
-  "/vendor/api/v1/supplier/registrations": {
+  "/admreg/vendor/api/v1/supplier/registrations": {
     get: operations["getById_1"];
     put: operations["updateSupplier_1"];
   };
-  "/vendor/api/v1/users": {
+  "/admreg/vendor/api/v1/users": {
     get: operations["getUsers_1"];
     put: operations["updateUser_1"];
   };
-  "/vendor/api/v1/users/password": {
+  "/admreg/vendor/api/v1/users/password": {
     put: operations["changePassword_1"];
   };
-  "/vendor/api/v1/users/{userId}": {
+  "/admreg/vendor/api/v1/users/{userId}": {
     get: operations["getUserId"];
   };
-  "/vendor/api/v2/product/registrations": {
+  "/admreg/vendor/api/v2/product/registrations": {
     get: operations["findProducts_2"];
   };
-  "/vendor/api/v2/product/registrations/delete": {
+  "/admreg/vendor/api/v2/product/registrations/delete": {
     delete: operations["deleteProducts_2"];
   };
-  "/vendor/api/v2/product/registrations/draft/delete": {
+  "/admreg/vendor/api/v2/product/registrations/draft/delete": {
     delete: operations["deleteDraftVariants_3"];
   };
-  "/vendor/api/v2/product/registrations/draftWithV3/{seriesUUID}": {
+  "/admreg/vendor/api/v2/product/registrations/draftWithV3/{seriesUUID}": {
     post: operations["createDraft_3"];
   };
-  "/vendor/api/v2/product/registrations/excel/import/{seriesId}": {
-    post: operations["importExcelForSeries_1"];
+  "/admreg/vendor/api/v2/product/registrations/series/{seriesUUID}": {
+    get: operations["findBySeriesUUIDAndSupplierId_3"];
   };
-  "/vendor/api/v2/product/registrations/series/{seriesUUID}": {
-    get: operations["findBySeriesUUIDAndSupplierId_2"];
-  };
-  "/vendor/api/v2/product/registrations/to-active/{id}": {
+  "/admreg/vendor/api/v2/product/registrations/to-active/{id}": {
     put: operations["setPublishedProductToActive_3"];
   };
-  "/vendor/api/v2/product/registrations/to-expired/{id}": {
+  "/admreg/vendor/api/v2/product/registrations/to-expired/{id}": {
     put: operations["setPublishedProductToInactive_3"];
   };
-  "/vendor/api/v2/product/registrations/{id}": {
+  "/admreg/vendor/api/v2/product/registrations/{id}": {
     get: operations["getProductById_1"];
     put: operations["updateProduct_1"];
   };
@@ -502,6 +497,7 @@ export interface components {
       text?: string | null;
       identifier: string;
       attachments: components["schemas"]["AgreementAttachment"][];
+      /** @deprecated */
       posts: components["schemas"]["AgreementPost"][];
       isoCategory: string[];
     };
@@ -908,14 +904,25 @@ export interface components {
     };
     ProductAgreementImportDTO: {
       dryRun: boolean;
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @deprecated
+       */
       count: number;
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @deprecated
+       */
       newCount: number;
       file: string;
+      supplier: string;
       createdSeries: components["schemas"]["SeriesRegistration"][];
       createdAccessoryParts: components["schemas"]["ProductRegistration"][];
       createdMainProducts: components["schemas"]["ProductRegistration"][];
+      newProductAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      updatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      deactivatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+      /** @deprecated */
       productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
     };
     ProductAgreementRegistrationDTO: {
@@ -964,6 +971,7 @@ export interface components {
     ProductData: {
       attributes: components["schemas"]["Attributes"];
       techData: components["schemas"]["TechData"][];
+      /** @deprecated */
       media: components["schemas"]["MediaInfoDTO"][];
       identifier?: string | null;
       seriesIdentifier?: string | null;
@@ -1021,8 +1029,11 @@ export interface components {
       hmsArtNr?: string | null;
       /** Format: uuid */
       seriesUUID: string;
+      /** @deprecated */
       seriesId: string;
+      /** @deprecated */
       isoCategory: string;
+      /** @deprecated */
       title: string;
       articleName: string;
       accessory: boolean;
@@ -2240,6 +2251,7 @@ export interface operations {
     parameters: {
       query: {
         dryRun: boolean;
+        supplierId: string;
       };
     };
     requestBody: {
@@ -2658,9 +2670,19 @@ export interface operations {
   getSeries: {
     parameters: {
       query: {
-        params?: {
-          [key: string]: string;
-        } | null;
+        mainProduct?: boolean | null;
+        adminStatus?: components["schemas"]["AdminStatus"] | null;
+        excludedStatus?: components["schemas"]["SeriesStatus"] | null;
+        excludeExpired?: boolean | null;
+        status?: components["schemas"]["SeriesStatus"][] | null;
+        supplierId?: string | null;
+        draft?: components["schemas"]["DraftStatus"] | null;
+        createdByUser?: string | null;
+        updatedByUser?: string | null;
+        createdByAdmin?: boolean | null;
+        supplierFilter?: string[] | null;
+        editStatus?: components["schemas"]["EditStatus"][] | null;
+        title?: string | null;
         pageable: components["schemas"]["OpenApiPageable"];
       };
     };
@@ -2943,26 +2965,6 @@ export interface operations {
       };
     };
   };
-  updateSeriesV2: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateSeriesRegistrationDTO"];
-      };
-    };
-    responses: {
-      /** @description updateSeriesV2 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SeriesRegistrationDTO"];
-        };
-      };
-    };
-  };
   patchSeriesV2: {
     parameters: {
       path: {
@@ -2986,9 +2988,11 @@ export interface operations {
   getSeriesVersions_1: {
     parameters: {
       query: {
-        params?: {
-          [key: string]: string;
-        } | null;
+        seriesId?: string | null;
+        version?: number | null;
+        status?: components["schemas"]["SeriesStatus"] | null;
+        adminStatus?: components["schemas"]["AdminStatus"] | null;
+        draftStatus?: components["schemas"]["DraftStatus"] | null;
         pageable: components["schemas"]["OpenApiPageable"];
       };
     };
@@ -3390,17 +3394,14 @@ export interface operations {
       };
     };
   };
-  importExcel_1: {
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          /** Format: binary */
-          file: string;
-        };
+  findBySeriesUUIDAndSupplierId_1: {
+    parameters: {
+      path: {
+        seriesUUID: string;
       };
     };
     responses: {
-      /** @description importExcel_1 200 response */
+      /** @description findBySeriesUUIDAndSupplierId_1 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
@@ -3876,14 +3877,14 @@ export interface operations {
       };
     };
   };
-  findBySeriesUUIDAndSupplierId_1: {
+  findBySeriesUUIDAndSupplierId_2: {
     parameters: {
       path: {
         seriesUUID: string;
       };
     };
     responses: {
-      /** @description findBySeriesUUIDAndSupplierId_1 200 response */
+      /** @description findBySeriesUUIDAndSupplierId_2 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTO"][];
@@ -3959,9 +3960,17 @@ export interface operations {
   getSeries_1: {
     parameters: {
       query: {
-        params?: {
-          [key: string]: string;
-        } | null;
+        mainProduct?: boolean | null;
+        adminStatus?: components["schemas"]["AdminStatus"][] | null;
+        excludeExpired?: boolean | null;
+        excludedStatus?: string | null;
+        status?: components["schemas"]["SeriesStatus"][] | null;
+        supplierId?: string | null;
+        draft?: components["schemas"]["DraftStatus"] | null;
+        createdByUser?: string | null;
+        updatedByUser?: string | null;
+        editStatus?: components["schemas"]["EditStatus"][] | null;
+        title?: string | null;
         pageable: components["schemas"]["OpenApiPageable"];
       };
     };
@@ -4167,26 +4176,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["SeriesRegistrationDTOV2"];
-        };
-      };
-    };
-  };
-  updateSeriesV2_1: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateSeriesRegistrationDTO"];
-      };
-    };
-    responses: {
-      /** @description updateSeriesV2_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SeriesRegistrationDTO"];
         };
       };
     };
@@ -4413,37 +4402,14 @@ export interface operations {
       };
     };
   };
-  importExcelForSeries_1: {
-    parameters: {
-      path: {
-        seriesId: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          /** Format: binary */
-          file: string;
-        };
-      };
-    };
-    responses: {
-      /** @description importExcelForSeries_1 200 response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
-        };
-      };
-    };
-  };
-  findBySeriesUUIDAndSupplierId_2: {
+  findBySeriesUUIDAndSupplierId_3: {
     parameters: {
       path: {
         seriesUUID: string;
       };
     };
     responses: {
-      /** @description findBySeriesUUIDAndSupplierId_2 200 response */
+      /** @description findBySeriesUUIDAndSupplierId_3 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
