@@ -117,15 +117,15 @@ export function useSeriesBySupplierRef(supplierRef: string) {
 export function userProductVariantsBySeriesId(seriesId: string) {
   const { loggedInUser } = useAuthStore();
   const seriesIdPath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product/registrations/series/${seriesId}`;
+    ? `${HM_REGISTER_URL()}/admreg/admin/api/v2/product/registrations/series/${seriesId}`
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v2/product/registrations/series/${seriesId}`;
 
   const {
     data: variants,
     error: errorVariants,
     isLoading: isLoadingVariants,
     mutate: mutateVariants,
-  } = useSWR<ProductRegistrationDTO[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
+  } = useSWR<ProductRegistrationDTOV2[]>(loggedInUser ? seriesIdPath : null, fetcherGET);
 
   return {
     variants,
@@ -353,7 +353,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
 export function useProductByProductId(productId: string) {
   const { loggedInUser } = useAuthStore();
-  const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/v2/${productId}`);
+  const path = getPath(loggedInUser?.isAdmin || false, `/api/v2/product/registrations/${productId}`);
 
   const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET);
 
