@@ -78,17 +78,33 @@ export const ValidateImportedProductAgreements = ({ upload, reseetUpload, suppli
             <Heading level="1" size="large" align="center">
               Importer produkter
             </Heading>
-            <p>
-              {(newProductAgreements.length > 0 ||
-                updatedProductAgreements.length > 0 ||
-                deactivatedProductAgreements.length > 0) && (
-                <BodyShort>
-                  Importeringen var vellykket. Du kan nå gå til{" "}
-                  <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0].agreementId}`)}>rammeavtalen</a> for å se de
-                  importerte produktene.
-                </BodyShort>
+            <HStack gap="4">
+              {(createdMainProducts.length > 0 || createdAccessoryParts.length > 0) && (
+                <p>
+                  Det ble opprettet nye produkter/deler/tilbehør i import, disse ligger{" "}
+                  <a href={baseUrl(`/til-godkjenning?filter=ADMIN`)}> til godkjenning</a>.
+                </p>
               )}
-            </p>
+
+              <p>
+                {(newProductAgreements.length > 0 ||
+                  updatedProductAgreements.length > 0 ||
+                  deactivatedProductAgreements.length > 0) && (
+                  <BodyShort>
+                    Importeringen var vellykket. Du kan se de nye tilknytningene på{" "}
+                    {newProductAgreements.length > 0 ? (
+                      <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                    ) : updatedProductAgreements.length > 0 ? (
+                      <a href={baseUrl(`/rammeavtaler/${updatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                    ) : (
+                      <a href={baseUrl(`/rammeavtaler/${deactivatedProductAgreements[0]?.agreementId}`)}>
+                        rammeavtalen
+                      </a>
+                    )}
+                  </BodyShort>
+                )}
+              </p>
+            </HStack>
           </div>
         </div>
       </main>
