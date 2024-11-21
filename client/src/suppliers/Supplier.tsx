@@ -3,19 +3,17 @@ import { useEffect, useState } from "react";
 import { HGrid, Loader, VStack } from "@navikt/ds-react";
 
 import { activateSupplier, deactivateSupplier, getSupplier } from "api/SupplierApi";
-import { HM_REGISTER_URL } from "environments";
 import { useParams } from "react-router-dom";
 import SupplierInfo from "suppliers/SupplierInfo";
 import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
 import SupplierUsers from "suppliers/SupplierUsers";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
+import { mapSupplier, SupplierDTO } from "utils/supplier-util";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 
 const Supplier = () => {
   const [supplier, setSupplier] = useState<SupplierDTO>();
-  const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { setGlobalError } = useErrorStore();
   const { loggedInUser } = useAuthStore();
@@ -31,21 +29,6 @@ const Supplier = () => {
       .then((data) => {
         if (!data) return;
         setSupplier(mapSupplier(data));
-        if (data) {
-          fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users/supplierId/` + id, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          })
-            .then((res) => {
-              return res.json();
-            })
-            .then((data) => {
-              setSupplierUsers(data);
-              setLoading(false);
-            });
-        }
       })
       .catch((error) => {
         setGlobalError(error);
@@ -102,8 +85,8 @@ const Supplier = () => {
               setIsOpen={setIsOpen}
               setIsOpenActivateSupplier={setIsOpenActivateSupplier}
             />
-            <SupplierUsers users={supplierUsers} supplier={supplier} />
-            <SupplierInventoryInfo supplier={supplier} />
+            <SupplierUsers supplier={supplier} />
+            {loggedInUser?.isAdmin && <SupplierInventoryInfo supplier={supplier} />}
           </VStack>
         )}
       </HGrid>
