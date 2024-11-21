@@ -12,7 +12,6 @@ export default function SupplierProfile() {
   const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
   const [supplier, setSupplier] = useState<SupplierDTO>();
-  const [supplierUsers, setSupplierUsers] = useState<SupplierUser[]>([]);
   const [isLoading, setLoading] = useState(false);
   const { loggedInUser } = useAuthStore();
 
@@ -38,20 +37,7 @@ export default function SupplierProfile() {
       .then((data) => {
         if (!data) return;
         setSupplier(mapSupplier(data));
-
-        fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .then((data) => {
-            setSupplierUsers(data);
-            setLoading(false);
-          });
+        setLoading(false);
       })
       .catch((e) => {
         setError(e);
@@ -73,7 +59,7 @@ export default function SupplierProfile() {
         {supplier && (
           <VStack gap="10">
             <SupplierInfo supplier={supplier} setIsOpen={() => {}} setIsOpenActivateSupplier={() => {}} />
-            <SupplierUsers users={supplierUsers} supplier={supplier} />
+            <SupplierUsers supplier={supplier} />
           </VStack>
         )}
       </HGrid>
