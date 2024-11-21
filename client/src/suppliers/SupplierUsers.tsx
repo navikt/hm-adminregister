@@ -1,19 +1,45 @@
-import { Button, Heading, Table, VStack } from "@navikt/ds-react";
+import { Button, Heading, Loader, Table, VStack } from "@navikt/ds-react";
 import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
 import React from "react";
-import { SupplierDTO, SupplierUser } from "utils/supplier-util";
+import { SupplierDTO } from "utils/supplier-util";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { deleteUser, useSupplierUsers } from "api/UserApi";
 
-const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: SupplierDTO }) => {
+const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
   const navigate = useNavigate();
   const { loggedInUser } = useAuthStore();
+  const [confirmDeleteUserModalIsOpen, setConfirmDeleteUserModalIsOpen] = React.useState(false);
+  const [userIdToDelete, setUserIdToDelete] = React.useState<string>("");
+
+  const { users, isLoading, mutate } = useSupplierUsers(supplier.id);
+
   const handleCreateNewSupplierUser = () => {
     navigate(`/leverandor/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
   };
+  const handleDeleteUser = () => {
+    deleteUser(userIdToDelete).then(() => {
+      mutate();
+    });
+
+    setConfirmDeleteUserModalIsOpen(false);
+  };
+
+  if (isLoading) return <Loader />;
+
+  if (!users) return null;
+
   return (
     <VStack gap="3">
+      <ConfirmModal
+        title={"Bekreft sletting av bruker"}
+        confirmButtonText={"Slett bruker"}
+        onClick={handleDeleteUser}
+        onClose={() => setConfirmDeleteUserModalIsOpen(false)}
+        isModalOpen={confirmDeleteUserModalIsOpen}
+      />
       <Heading level="2" size="medium" spacing>
         Brukere
       </Heading>
@@ -39,10 +65,12 @@ const SupplierUsers = ({ users, supplier }: { users: SupplierUser[]; supplier: S
                       title="Slette bruker"
                       variant="tertiary-neutral"
                       size="small"
-                      disabled={true}
                       icon={<TrashIcon aria-hidden />}
                       iconPosition="right"
-                      onClick={() => { }}
+                      onClick={() => {
+                        setUserIdToDelete(user.id);
+                        setConfirmDeleteUserModalIsOpen(true);
+                      }}
                     >
                       Slette
                     </Button>
