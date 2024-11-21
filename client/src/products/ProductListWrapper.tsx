@@ -119,7 +119,10 @@ const ProductListWrapper = () => {
             align={"center"}
           >
             <HGrid
-              columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
+              columns={{
+                xs: "1",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+              }}
               gap="4"
               align="start"
             >
@@ -206,6 +209,8 @@ const ProductListWrapper = () => {
               <span />
               <b>Status</b>
               <b>Varianter</b>
+              <b>Endret</b>
+              <b>Endret av</b>
               <span />
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}

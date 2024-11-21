@@ -2,7 +2,7 @@ import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, HGrid, Hide, Show, Tag, VStack } from "@navikt/ds-react";
 import { seriesStatus } from "products/seriesUtils";
 import { Link } from "react-router-dom";
-import { toDate } from "utils/date-util";
+import { toDate, toReadableDateTimeString } from "utils/date-util";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
@@ -82,6 +82,21 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       <Hide below="md">
         <BodyShort>{series.count}</BodyShort>
       </Hide>
+
+      <Show below="md">
+        <BodyShort align="center">{toReadableDateTimeString(series.updated)}</BodyShort>
+      </Show>
+      <Hide below="md">
+        <BodyShort>{toReadableDateTimeString(series.updated)}</BodyShort>
+      </Hide>
+
+      <Show below="md">
+        <BodyShort align="center">{series.updatedByUser}</BodyShort>
+      </Show>
+      <Hide below="md">
+        <BodyShort>{series.updatedByUser}</BodyShort>
+      </Hide>
+
       <Hide below="md">
         <ChevronRightIcon aria-hidden fontSize="2rem" />
       </Hide>
