@@ -47,10 +47,10 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
   return (
     <VStack className={styles.mediaCard} ref={ref}>
       <SortItem handleDeleteFile={handleDeleteFile} imagesArr={mediaArr} index={index} isEditable={isEditable} />
-      <VStack align="center">
+      <VStack align="center" paddingBlock={"2 2"}>
         <b>{index + 1}</b>
         {isEditable && (
-          <HStack paddingBlock={"2 2"} gap={"1"}>
+          <HStack gap={"1"}>
             <Button
               variant="tertiary"
               icon={<ChevronLeftIcon fontSize="1.5rem" aria-hidden />}
