@@ -108,7 +108,7 @@ const ProductListWrapper = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
+      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"80rem"}>
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
@@ -201,17 +201,16 @@ const ProductListWrapper = () => {
             {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
             {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
             <HGrid
-              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".7fr 3.6fr 2.1fr .9fr 0.4fr" }}
+              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".9fr 3.6fr 2.1fr .9fr 1.8fr 2.3fr" }}
               paddingBlock={"2"}
               gap={"2"}
             >
+              <b> </b>
               <b>Produktnavn</b>
-              <span />
               <b>Status</b>
               <b>Varianter</b>
               <b>Endret</b>
               <b>Endret av</b>
-              <span />
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
             {seriesByHmsNr ? (
