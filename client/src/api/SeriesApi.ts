@@ -1,6 +1,7 @@
-import { fetchAPI, fetchPostFiles, getPath } from "api/fetch";
+import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
   MediaInfoDTO,
+  MediaSort,
   RejectSeriesDTO,
   SeriesDraftWithDTO,
   SeriesRegistrationDTO,
@@ -108,6 +109,13 @@ export const updateSeriesMedia = async (
     return series;
   });
 };
+
+export const updateSeriesMediaPriority = async (
+  seriesUUID: string,
+  media: MediaSort[],
+  isAdmin: boolean,
+): Promise<any> =>
+  await fetchAPIModify(getPath(isAdmin, `/api/v1/series/update-media-priority/${seriesUUID}`), "PUT", media);
 
 export const deleteFileFromSeries = async (seriesUUID: string, isAdmin: boolean, fileURI: string) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {

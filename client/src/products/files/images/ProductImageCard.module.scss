@@ -1,26 +1,9 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .imageCard {
-  margin: 0;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: var(--a-spacing-3);
-  padding: var(--a-spacing-8) var(--a-spacing-2) var(--a-spacing-1) var(--a-spacing-2);
-  width: 10rem;
+  padding: var(--a-spacing-5) var(--a-spacing-2) var(--a-spacing-1);
   position: relative;
-  background-color: #ffffff;
-  box-shadow: var(--a-shadow-xsmall);
-  border-radius: var(--a-border-radius-medium);
-  text-align: center;
-}
-
-.imageCard:hover {
-  background-color: var(--a-surface-hover);
-}
-
-.grabbable {
-  margin-top: var(--a-spacing-3);
-  opacity: 0.7;
+  width: 10rem;
 }
 
 .buttonImage {
@@ -28,4 +11,10 @@
   background: none;
   height: fit-content;
   width: fit-content;
+}
+
+.moreMenuContainer {
+  position: absolute;
+  top: $a-spacing-2;
+  right: $a-spacing-1;
 }

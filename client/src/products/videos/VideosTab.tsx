@@ -7,8 +7,8 @@ import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "../ProductPage.module.scss";
-import MediaSeriesSortingArea from "products/videos/MediaSeriesSortingArea";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
+import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
 
 const VideoTab = ({
   series,
@@ -91,12 +91,11 @@ const VideoTab = ({
         {videos.length > 0 && (
           <VStack gap="8 2">
             {series && (
-              <MediaSeriesSortingArea
-                mediaInfo={videos.map((video) => ({ ...video, filename: video.text }))}
+              <FellesSortingArea
                 seriesId={series.id}
+                allMedia={videos}
                 handleDeleteFile={handleDeleteVideoLink}
                 isEditable={isEditable}
-                mediaType={"VIDEO"}
               />
             )}
           </VStack>

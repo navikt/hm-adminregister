@@ -3,7 +3,6 @@ import { useState } from "react";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
 import { deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
-import SeriesSortingArea from "products/files/images/SeriesSortingArea";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -11,6 +10,7 @@ import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import styles from "./ImagesTab.module.scss";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import productStyles from "../../ProductPage.module.scss";
+import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
@@ -61,9 +61,9 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
 
         <VStack gap="8">
           {series && (
-            <SeriesSortingArea
-              allImages={images}
+            <FellesSortingArea
               seriesId={series.id}
+              allMedia={images}
               handleDeleteFile={handleDeleteFile}
               isEditable={isEditable}
             />
