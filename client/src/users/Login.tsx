@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ComponentIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
+import { Button, Heading, Loader, TextField, VStack } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { mapLoggedInUser } from "utils/user-util";
 import { loginSchema } from "utils/zodSchema/login";
 import { z } from "zod";
+import { baseUrl } from "utils/swr-hooks";
 
 type FormData = z.infer<typeof loginSchema>;
 
@@ -135,7 +136,14 @@ export default function Login() {
             onBlur={() => handleFieldBlur("password")}
             onFocus={() => handleFieldFocus("password")}
           />
-          {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
+          {error !== null && (
+            <VStack align="center">
+              {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
+              {error?.message === "Feil brukernavn eller passord" && (
+                <a href={baseUrl(`/logg-inn/glemt-passord`)}>Tilbakestill passord</a>
+              )}
+            </VStack>
+          )}
           <Button type="submit">
             {isSubmitting ? (
               <div role="status">
