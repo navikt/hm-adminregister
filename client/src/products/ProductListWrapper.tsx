@@ -12,6 +12,7 @@ import {
   Pagination,
   Search,
   Select,
+  Show,
   UNSAFE_Combobox,
   VStack,
 } from "@navikt/ds-react";
@@ -201,16 +202,24 @@ const ProductListWrapper = () => {
             {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
             {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
             <HGrid
-              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".9fr 3.6fr 2.1fr .9fr 1.8fr 2.3fr" }}
+              columns={{
+                xs: ".7fr 3.6fr 2.1fr .8fr",
+                md: ".7fr 3.6fr 2.1fr .9fr 0.4fr",
+                lg: ".7fr 2.8fr 1.3fr 1fr 1fr 1.8fr .4fr",
+              }}
               paddingBlock={"2"}
               gap={"2"}
             >
-              <b> </b>
+              <span></span>
               <b>Produktnavn</b>
               <b>Status</b>
               <b>Varianter</b>
-              <b>Endret</b>
-              <b>Endret av</b>
+              <Show above="lg">
+                <b>Endret</b>
+              </Show>
+              <Show above="lg">
+                <b>Endret av</b>
+              </Show>
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
             {seriesByHmsNr ? (

@@ -37,7 +37,11 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       as={Link}
       to={`/produkter/${series.id}`}
       state={oversiktPath}
-      columns={{ xs: ".7fr 3.5fr 2fr .8fr", md: ".7fr 3.5fr 2.5fr .8fr 1fr 2.8fr 0.4fr" }}
+      columns={{
+        xs: ".7fr 3.5fr 2fr .8fr",
+        md: ".7fr 3.5fr 2fr .8fr 0.4fr",
+        lg: ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr",
+      }}
       gap={"2"}
       align={"center"}
       className={styles.seriesPanel}
@@ -69,6 +73,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
           {series.title}
         </BodyShort>
       </VStack>
+
       <Show below="md">
         <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series)} />
       </Show>
@@ -83,18 +88,12 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
         <BodyShort>{series.count}</BodyShort>
       </Hide>
 
-      <Show below="md">
+      <Hide below="lg">
         <BodyShort align="center">{toReadableDateTimeString(series.updated).replace(",", "")}</BodyShort>
-      </Show>
-      <Hide below="md">
-        <BodyShort>{toReadableDateTimeString(series.updated).replace(",", "")}</BodyShort>
       </Hide>
 
-      <Show below="md">
+      <Hide below="lg">
         <BodyShort align="center">{series.updatedByUser}</BodyShort>
-      </Show>
-      <Hide below="md">
-        <BodyShort>{series.updatedByUser}</BodyShort>
       </Hide>
 
       <Hide below="md">
