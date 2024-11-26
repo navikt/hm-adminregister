@@ -23,7 +23,7 @@ export const ResetPassword = () => {
       const email = location.state.email;
       const otp = location.state.otp;
 
-      resetPassword(otp, newPassword, email)
+      resetPassword(otp, email, newPassword)
         .then(() => {
           setIsLoading(false);
           navigate("/logg-inn/kvittering");
