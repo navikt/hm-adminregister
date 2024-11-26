@@ -139,3 +139,18 @@ export type SeriesChunk = {
 //type ErrorResponse = paths['/my/endpoint']['get']['responses'][500]['content']['application/json']['schema']
 
 export type UpdateSeriesRegistrationDTO = components["schemas"]["UpdateSeriesRegistrationDTO"];
+
+export type OTPRequest = {
+  email: string;
+};
+
+export type VerifyOTPRequest = {
+  otp: string;
+  email: string;
+};
+
+export type ResetPasswordRequest = {
+  otp: string;
+  email: string;
+  newPassword: string;
+};

@@ -37,6 +37,10 @@ import AdminProfile from "./users/admin/AdminProfile";
 import CreateAdminUser from "./users/admin/CreateAdminUser";
 import DeleteAdminUser from "./users/admin/DeleteAdminUser";
 import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
+import { ForgotPassword } from "users/reset-password/ForgotPassword";
+import { ResetPassword } from "users/reset-password/ResetPassword";
+import { VerifyOtp } from "users/reset-password/VerifyOtp";
+import { PasswordResetReceit } from "users/reset-password/PasswordResetReceit";
 
 export function App() {
   const toggles = getFeatureFlags();
@@ -48,6 +52,10 @@ export function App() {
         <Routes>
           <Route path="/" element={<Startside />} />
           <Route path="/logg-inn" element={<Login />} />
+          <Route path="/logg-inn/glemt-passord" element={<ForgotPassword />} />
+          <Route path="/logg-inn/send-kode" element={<VerifyOtp />} />
+          <Route path="/logg-inn/nytt-passord" element={<ResetPassword />} />
+          <Route path="/logg-inn/kvittering" element={<PasswordResetReceit />} />
 
           <Route element={<LoginWrapper />}>
             <Route element={<Navbar />}>
