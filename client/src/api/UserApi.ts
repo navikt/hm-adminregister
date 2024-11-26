@@ -1,4 +1,4 @@
-import { fetchAPI, getPath, httpDelete } from "api/fetch";
+import { fetchAPI, fetchAPIModify, getPath, httpDelete } from "api/fetch";
 import { HM_REGISTER_URL } from "environments";
 import { baseUrl, fetcherGET } from "utils/swr-hooks";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -28,15 +28,15 @@ export const deleteUser = (userId: string): Promise<void> =>
 
 export const requestOtpForPasswordReset = async (email: string): Promise<void> => {
   const otpRequest: OTPRequest = { email };
-  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password/otp`, "POST", otpRequest);
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password/otp`, "POST", otpRequest);
 };
 
 export const verifyOtp = async (otp: string, email: string): Promise<void> => {
   const otpRequest: VerifyOTPRequest = { otp: otp, email: email };
-  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password/otp/verify`, "POST", otpRequest);
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password/otp/verify`, "POST", otpRequest);
 };
 
 export const resetPassword = async (otp: string, email: string, password: string): Promise<void> => {
   const resetPasswordRequest: ResetPasswordRequest = { otp: otp, email: email, newPassword: password };
-  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password`, "POST", resetPasswordRequest);
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/reset-password`, "POST", resetPasswordRequest);
 };

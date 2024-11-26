@@ -16,8 +16,9 @@ export const ForgotPassword = () => {
     if (validateFields()) {
       setIsLoading(true);
       requestOtpForPasswordReset(email)
-        .then((response) => {
+        .then(() => {
           setIsLoading(false);
+          setFieldError(undefined);
           navigate("/logg-inn/send-kode", { state: { email: email } });
         })
         .catch((error) => {
