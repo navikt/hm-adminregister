@@ -1,4 +1,4 @@
-FROM node:20-alpine as client-builder
+FROM node:20-alpine AS client-builder
 WORKDIR /app
 COPY client/package.json client/package-lock.json ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
@@ -11,7 +11,7 @@ ENV CLUSTER ${CLUSTER}
 
 RUN npm run && npm run build
 
-FROM node:20-alpine as server-builder
+FROM node:20-alpine AS server-builder
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
@@ -20,12 +20,12 @@ RUN --mount=type=secret,id=NODE_AUTH_TOKEN \
 COPY server .
 RUN npm run && npm run build
 
-FROM node:20-alpine as server-dependencies
+FROM node:20-alpine AS server-dependencies
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./
 RUN npm install --omit=dev
 
-FROM gcr.io/distroless/nodejs20-debian12 as runtime
+FROM gcr.io/distroless/nodejs20-debian12 AS runtime
 
 WORKDIR /app
 
