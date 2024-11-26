@@ -28,7 +28,7 @@ import SupplierList from "suppliers/SupplierList";
 import { FlagProvider } from "toggles/context";
 import Login from "users/Login";
 import EditAdminUser from "users/admin/EditAdminUser";
-import CreateSupplierUser from "users/supplier/CreateSupplierUser";
+import CreateSupplierUser from "users/admin/CreateSupplierUser";
 import EditSupplierUser from "users/supplier/EditSupplierUser";
 import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
 import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
@@ -37,6 +37,7 @@ import AdminProfile from "./users/admin/AdminProfile";
 import CreateAdminUser from "./users/admin/CreateAdminUser";
 import DeleteAdminUser from "./users/admin/DeleteAdminUser";
 import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
+import CreateSupplierUserForSupplier from "users/supplier/CreateSupplierUserForSupplier";
 
 export function App() {
   const toggles = getFeatureFlags();
@@ -78,13 +79,14 @@ export function App() {
             <Route path="/admin/opprett-admin" element={<CreateAdminUser />} />
             <Route path="/admin/slett-admin" element={<DeleteAdminUser />} />
             <Route path="/admin/adminopplysninger" element={<FirstTimeAdminInfo />} />
+            <Route path="/admin/opprett-bruker" element={<CreateSupplierUser />} />
 
             <Route path="/profil/rediger-brukerprofil" element={<EditSupplierUser />} />
             <Route path="/profil/rediger-leverandor" element={<EditSupplier />} />
 
             <Route path="/leverandor/opprett-leverandor" element={<CreateSupplier />} />
             <Route path="/leverandor/rediger-leverandor/:supplierId" element={<EditSupplier />} />
-            <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUser />} />
+            <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUserForSupplier />} />
 
             <Route path="/rammeavtaler/importer-katalogfil" element={<ImporterOgValiderKatalogfil />} />
             <Route path="/rammeavtaler/opprett" element={<CreateAgreement />} />
