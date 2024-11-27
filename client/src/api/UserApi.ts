@@ -24,7 +24,7 @@ export function useSupplierUsers(supplierId: string) {
 }
 
 export const deleteUser = (userId: string): Promise<void> =>
-  httpDelete(`${HM_REGISTER_URL()}/admreg/admin/api/v1/reset-password/${userId}`, "DELETE");
+  httpDelete(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users/${userId}`, "DELETE");
 
 export const requestOtpForPasswordReset = async (email: string): Promise<void> => {
   const otpRequest: OTPRequest = { email };

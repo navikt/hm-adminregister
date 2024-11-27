@@ -1,4 +1,4 @@
-import { HGrid, Loader, VStack } from "@navikt/ds-react";
+import {Button, HGrid, Loader, VStack} from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import SupplierInfo from "suppliers/SupplierInfo";
 import SupplierUsers from "suppliers/SupplierUsers";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { mapSupplier, SupplierDTO, SupplierUser } from "utils/supplier-util";
+import {PlusIcon} from "@navikt/aksel-icons";
 
 export default function SupplierProfile() {
   const [error, setError] = useState<Error | null>(null);
@@ -16,6 +17,10 @@ export default function SupplierProfile() {
   const { loggedInUser } = useAuthStore();
 
   const { setGlobalError } = useErrorStore();
+
+  const handleCreateNewSupplierUser = () => {
+    navigate(`/leverandor/opprett-bruker?suppid=${supplier?.id}`, { state: supplier?.name });
+  };
 
   useEffect(() => {
     if (loggedInUser?.isAdmin) {
@@ -60,6 +65,16 @@ export default function SupplierProfile() {
           <VStack gap="10">
             <SupplierInfo supplier={supplier} setIsOpen={() => {}} setIsOpenActivateSupplier={() => {}} />
             <SupplierUsers supplier={supplier} />
+            <Button
+                variant="secondary"
+                size="small"
+                icon={<PlusIcon aria-hidden />}
+                iconPosition="left"
+                onClick={handleCreateNewSupplierUser}
+                className="fit-content"
+            >
+              Opprett bruker
+            </Button>
           </VStack>
         )}
       </HGrid>

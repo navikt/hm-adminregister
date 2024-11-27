@@ -17,7 +17,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
   const { users, isLoading, mutate } = useSupplierUsers(supplier.id);
 
   const handleCreateNewSupplierUser = () => {
-    navigate(`/leverandor/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
+    navigate(`/admin/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
   };
   const handleDeleteUser = () => {
     deleteUser(userIdToDelete).then(() => {
