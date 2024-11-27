@@ -140,7 +140,7 @@ export default function Login() {
             <VStack align="center">
               {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
               {error?.message === "Feil brukernavn eller passord" && (
-                <a href={baseUrl(`/logg-inn/glemt-passord`)}>Tilbakestill passord</a>
+                <a href={baseUrl(`/logg-inn/glemt-passord`)}>Glemt passord</a>
               )}
             </VStack>
           )}
