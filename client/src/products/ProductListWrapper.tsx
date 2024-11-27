@@ -113,7 +113,11 @@ const ProductListWrapper = () => {
           Produkter
         </Heading>
         <VStack gap={{ xs: "4", md: "6" }}>
-          <HGrid columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }} gap="4">
+          <HGrid
+            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            gap="4"
+            align={"center"}
+          >
             <HGrid
               columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
               gap="4"
@@ -160,7 +164,7 @@ const ProductListWrapper = () => {
             </HGrid>
 
             {loggedInUser && (
-              <Box style={{ height: "100%", display: "flex", alignItems: "flex-end" }}>
+              <Box>
                 <Button
                   variant="secondary"
                   icon={<PlusIcon aria-hidden />}
