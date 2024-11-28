@@ -7,6 +7,7 @@ import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const ProductList = ({
   seriesList,
@@ -31,6 +32,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
   const imgUrl = series.seriesData.media
     .filter((media) => media.type === "IMAGE")
     .find((media) => media.priority === 1);
+  const { loggedInUser } = useAuthStore();
 
   return (
     <HGrid
@@ -87,15 +89,19 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       <Hide below="md">
         <BodyShort>{series.count}</BodyShort>
       </Hide>
+      {loggedInUser && loggedInUser.isAdmin && (
+        <>
+          <Hide below="lg">
+            <BodyShort align="center">{toReadableDateTimeString(series.updated).replace(",", "")}</BodyShort>
+          </Hide>
 
-      <Hide below="lg">
-        <BodyShort align="center">{toReadableDateTimeString(series.updated).replace(",", "")}</BodyShort>
-      </Hide>
-
-      <Hide below="lg">
-        <BodyShort align="center">{series.updatedByUser}</BodyShort>
-      </Hide>
-
+          <Hide below="lg">
+            <BodyShort align="center">
+              {series.updatedByUser.split("@")[0] + "\n" + "@" + series.updatedByUser.split("@")[1]}
+            </BodyShort>
+          </Hide>
+        </>
+      )}
       <Hide below="md">
         <ChevronRightIcon aria-hidden fontSize="2rem" />
       </Hide>

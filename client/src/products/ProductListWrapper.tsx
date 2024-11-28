@@ -109,7 +109,7 @@ const ProductListWrapper = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"80rem"}>
+      <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
@@ -214,12 +214,16 @@ const ProductListWrapper = () => {
               <b>Produktnavn</b>
               <b>Status</b>
               <b>Varianter</b>
-              <Show above="lg">
-                <b>Endret</b>
-              </Show>
-              <Show above="lg">
-                <b>Endret av</b>
-              </Show>
+              {loggedInUser && loggedInUser.isAdmin && (
+                <>
+                  <Show above="lg">
+                    <b>Endret</b>
+                  </Show>
+                  <Show above="lg">
+                    <b>Endret av</b>
+                  </Show>
+                </>
+              )}
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
             {seriesByHmsNr ? (
