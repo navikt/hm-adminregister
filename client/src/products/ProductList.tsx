@@ -42,7 +42,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       columns={{
         xs: ".7fr 3.5fr 2fr .8fr",
         md: ".7fr 3.5fr 2fr .8fr 0.4fr",
-        lg: ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr",
+        lg: loggedInUser && loggedInUser.isAdmin ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr" : ".7fr 3.5fr 2fr .8fr 0.4fr",
       }}
       gap={"2"}
       align={"center"}
