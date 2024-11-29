@@ -12,6 +12,7 @@ import {
   Pagination,
   Search,
   Select,
+  Show,
   UNSAFE_Combobox,
   VStack,
 } from "@navikt/ds-react";
@@ -108,7 +109,7 @@ const ProductListWrapper = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
+      <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
@@ -119,7 +120,10 @@ const ProductListWrapper = () => {
             align={"center"}
           >
             <HGrid
-              columns={{ xs: "1", md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr" }}
+              columns={{
+                xs: "1",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+              }}
               gap="4"
               align="start"
             >
@@ -198,15 +202,28 @@ const ProductListWrapper = () => {
             {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
             {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
             <HGrid
-              columns={{ xs: ".7fr 3.6fr 2.1fr .8fr", md: ".7fr 3.6fr 2.1fr .9fr 0.4fr" }}
+              columns={{
+                xs: ".7fr 3.6fr 2.1fr .8fr",
+                md: ".7fr 3.6fr 2.1fr .9fr 0.4fr",
+                lg: ".7fr 2.8fr 1.3fr 1fr 1fr 1.8fr .4fr",
+              }}
               paddingBlock={"2"}
               gap={"2"}
             >
+              <span></span>
               <b>Produktnavn</b>
-              <span />
               <b>Status</b>
               <b>Varianter</b>
-              <span />
+              {loggedInUser && loggedInUser.isAdmin && (
+                <>
+                  <Show above="lg">
+                    <b>Endret</b>
+                  </Show>
+                  <Show above="lg">
+                    <b>Endret av</b>
+                  </Show>
+                </>
+              )}
             </HGrid>
             {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
             {seriesByHmsNr ? (

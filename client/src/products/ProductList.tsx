@@ -2,11 +2,12 @@ import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, HGrid, Hide, Show, Tag, VStack } from "@navikt/ds-react";
 import { seriesStatus } from "products/seriesUtils";
 import { Link } from "react-router-dom";
-import { toDate } from "utils/date-util";
+import { toDate, toReadableDateTimeString } from "utils/date-util";
 import { SeriesRegistrationDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const ProductList = ({
   seriesList,
@@ -31,13 +32,18 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
   const imgUrl = series.seriesData.media
     .filter((media) => media.type === "IMAGE")
     .find((media) => media.priority === 1);
+  const { loggedInUser } = useAuthStore();
 
   return (
     <HGrid
       as={Link}
       to={`/produkter/${series.id}`}
       state={oversiktPath}
-      columns={{ xs: ".7fr 3.5fr 2fr .8fr", md: ".7fr 3.5fr 2fr .8fr 0.4fr" }}
+      columns={{
+        xs: ".7fr 3.5fr 2fr .8fr",
+        md: ".7fr 3.5fr 2fr .8fr 0.4fr",
+        lg: loggedInUser && loggedInUser.isAdmin ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr" : ".7fr 3.5fr 2fr .8fr 0.4fr",
+      }}
       gap={"2"}
       align={"center"}
       className={styles.seriesPanel}
@@ -69,6 +75,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
           {series.title}
         </BodyShort>
       </VStack>
+
       <Show below="md">
         <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series)} />
       </Show>
@@ -82,6 +89,19 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       <Hide below="md">
         <BodyShort>{series.count}</BodyShort>
       </Hide>
+      {loggedInUser && loggedInUser.isAdmin && (
+        <>
+          <Hide below="lg">
+            <BodyShort align="center">{toReadableDateTimeString(series.updated).replace(",", "")}</BodyShort>
+          </Hide>
+
+          <Hide below="lg">
+            <BodyShort align="center">
+              {series.updatedByUser.split("@")[0] + "\n" + "@" + series.updatedByUser.split("@")[1]}
+            </BodyShort>
+          </Hide>
+        </>
+      )}
       <Hide below="md">
         <ChevronRightIcon aria-hidden fontSize="2rem" />
       </Hide>
