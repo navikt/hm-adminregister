@@ -23,7 +23,7 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
-  const { mutateSeries } = useSeriesV2(series.id);
+  const { mutate: mutateSeries } = useSeriesV2(series.id);
 
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)

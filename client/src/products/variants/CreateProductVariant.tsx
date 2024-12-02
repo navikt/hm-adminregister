@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
+import { Button, HStack, TextField, VStack } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -9,7 +9,6 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { DraftVariantDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { draftProductVariantV2 } from "api/ProductApi";
-import { useSeries } from "utils/swr-hooks";
 import FormBox from "felleskomponenter/FormBox";
 import { LayersIcon } from "@navikt/aksel-icons";
 import { useSeriesV2 } from "api/SeriesApi";
@@ -34,7 +33,7 @@ const CreateProductVariant = () => {
     mode: "onSubmit",
   });
 
-  const { series } = useSeriesV2(seriesId!);
+  const { data: series } = useSeriesV2(seriesId!);
 
   const hasTechData = series?.isoCategory || false;
 

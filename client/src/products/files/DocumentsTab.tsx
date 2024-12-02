@@ -22,7 +22,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
-  const { mutateSeries } = useSeriesV2(series.id);
+  const { mutate: mutateSeries } = useSeriesV2(series.id);
 
   const allPdfsSorted = pdfs.sort((a, b) => {
     const dateA = a.updated ? new Date(a.updated).getTime() : 0;

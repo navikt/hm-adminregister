@@ -122,7 +122,7 @@ describe("Produktside", () => {
     logIn(false);
 
     server.use(
-      http.get(apiPath("vendor/api/v1/series/*"), (info) => {
+      http.get(apiPath("api/v1/series/*"), (info) => {
         return HttpResponse.json(dummyProduct("test2", "title", "PENDING_APPROVAL"));
       }),
     );

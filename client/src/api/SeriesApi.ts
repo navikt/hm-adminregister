@@ -1,6 +1,5 @@
 import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
-  MediaInfoDTO,
   MediaSort,
   RejectSeriesDTO,
   SeriesDraftWithDTO,
@@ -8,10 +7,10 @@ import {
   SeriesRegistrationDTOV2,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
-import { useAuthStore } from "utils/store/useAuthStore";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 import { FileUpload } from "felleskomponenter/UploadModal";
+import { HM_REGISTER_URL } from "environments";
 
 export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
   return await fetchAPI(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
@@ -130,23 +129,7 @@ export const deleteSeries = async (isAdmin: boolean, seriesUUID: string): Promis
 };
 
 export function useSeriesV2(seriesUUID: string) {
-  const { loggedInUser } = useAuthStore();
-
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/v2/${seriesUUID}`);
-
-  const {
-    data: series,
-    error: errorSeries,
-    isLoading: isLoadingSeries,
-    mutate: mutateSeries,
-  } = useSWR<SeriesRegistrationDTOV2>(loggedInUser ? seriesIdPath : null, fetcherGET);
-
-  return {
-    series,
-    isLoadingSeries,
-    errorSeries,
-    mutateSeries,
-  };
+  return useSWR<SeriesRegistrationDTOV2>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET);
 }
 
 export const uploadFilesToSeries = async (seriesUUID: string, isAdmin: boolean, uploads: FileUpload[]) => {

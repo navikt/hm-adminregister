@@ -74,7 +74,7 @@ const Product = () => {
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
 
-  const { series, isLoadingSeries, errorSeries, mutateSeries } = useSeriesV2(seriesId!);
+  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!);
 
   if (isLoadingSeries) {
     return (
