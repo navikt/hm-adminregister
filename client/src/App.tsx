@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import { LoginWrapper } from "LoginWrapper";
 import { Startside } from "Startside";
@@ -42,8 +42,19 @@ import { ForgotPassword } from "users/reset-password/ForgotPassword";
 import { ResetPassword } from "users/reset-password/ResetPassword";
 import { VerifyOtp } from "users/reset-password/VerifyOtp";
 import { PasswordResetReceit } from "users/reset-password/PasswordResetReceit";
+import { useEffect } from "react";
+import { logAmplitudeEvent } from "utils/amplitude";
+
+const usePageTracking = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    logAmplitudeEvent("Page Viewed", { page: location.pathname });
+  }, [location]);
+};
 
 export function App() {
+  usePageTracking();
   const toggles = getFeatureFlags();
 
   return (
