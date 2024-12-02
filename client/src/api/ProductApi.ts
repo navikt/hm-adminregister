@@ -29,8 +29,20 @@ export const draftProductVariantV2 = async (
   );
 };
 
-export const deleteDraftProducts = async (isAdmin: boolean, productIds: string[]): Promise<any> => {
+const deleteDraftProducts = async (isAdmin: boolean, productIds: string[]): Promise<any> => {
   return await httpDelete(getPath(isAdmin, `/api/v1/product/registrations/draft/delete`), "DELETE", productIds);
+};
+
+const deletePublishedProducts = async (isAdmin: boolean, productIds: string[]): Promise<any> => {
+  return await httpDelete(getPath(isAdmin, `/api/v1/product/registrations/delete`), "DELETE", productIds);
+};
+
+export const deleteProducts = async (isAdmin: boolean, productIds: string[], isPublished: boolean): Promise<any> => {
+  if (isPublished) {
+    return deletePublishedProducts(isAdmin, productIds);
+  } else {
+    return deleteDraftProducts(isAdmin, productIds);
+  }
 };
 
 export const setVariantToExpired = async (id: string, isAdmin: boolean): Promise<any> => {

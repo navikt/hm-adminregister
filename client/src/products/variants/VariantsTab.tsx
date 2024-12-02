@@ -6,7 +6,7 @@ import {
   TrashIcon,
 } from "@navikt/aksel-icons";
 import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
-import { deleteDraftProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
+import { deleteProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
@@ -38,8 +38,9 @@ const VariantsTab = ({
   const columnsPerPage = 5;
   const totalPages = Math.ceil(series.variants.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [variantId, setVariantId] = useState<string>("");
+  const [variant, setVariant] = useState<undefined | ProductRegistrationDTOV2>(undefined);
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false);
+  useState<boolean>(false);
   const [moveProductVariantModalIsOpen, setMoveProductVariantModalIsOpen] = useState<boolean>(false);
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id);
@@ -55,7 +56,9 @@ const VariantsTab = ({
   };
 
   async function onDelete() {
-    deleteDraftProducts(loggedInUser?.isAdmin ?? true, [variantId])
+    if (!variant) return;
+
+    deleteProducts(loggedInUser?.isAdmin ?? true, [variant.id], variant.isPublished)
       .then(() => {
         mutateVariants();
         mutateSeries();
@@ -168,7 +171,7 @@ const VariantsTab = ({
                                       {!product.isPublished ? (
                                         <Dropdown.Menu.List.Item
                                           onClick={() => {
-                                            setVariantId(product.id);
+                                            setVariant(product);
                                             setDeleteVariantConfirmationModalIsOpen(true);
                                           }}
                                         >
@@ -182,6 +185,17 @@ const VariantsTab = ({
                                       ) : (
                                         <Dropdown.Menu.List.Item onClick={() => setAsExpired(product)}>
                                           Marker variant som utgått
+                                        </Dropdown.Menu.List.Item>
+                                      )}
+                                      {product.isPublished && loggedInUser?.isAdmin && (
+                                        <Dropdown.Menu.List.Item
+                                          onClick={() => {
+                                            setVariant(product);
+                                            setDeleteVariantConfirmationModalIsOpen(true);
+                                          }}
+                                        >
+                                          Slett
+                                          <TrashIcon aria-hidden />
                                         </Dropdown.Menu.List.Item>
                                       )}
                                     </>
