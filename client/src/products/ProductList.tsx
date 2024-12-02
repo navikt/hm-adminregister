@@ -97,7 +97,8 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
 
           <Hide below="lg">
             <BodyShort align="center">
-              {series.updatedByUser.split("@")[0] + "\n" + "@" + series.updatedByUser.split("@")[1]}
+              {series.updatedByUser.split("@")[0] + "\n"}
+              {series.updatedByUser.split("@")[1] && "@" + series.updatedByUser.split("@")[1]}
             </BodyShort>
           </Hide>
         </>
