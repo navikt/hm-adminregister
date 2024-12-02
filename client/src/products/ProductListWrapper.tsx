@@ -205,7 +205,10 @@ const ProductListWrapper = () => {
               columns={{
                 xs: ".7fr 3.6fr 2.1fr .8fr",
                 md: ".7fr 3.6fr 2.1fr .9fr 0.4fr",
-                lg: ".7fr 2.8fr 1.3fr 1fr 1fr 1.8fr .4fr",
+                lg:
+                  loggedInUser && loggedInUser.isAdmin
+                    ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr"
+                    : ".7fr 3.5fr 2fr .8fr 0.4fr",
               }}
               paddingBlock={"2"}
               gap={"2"}
