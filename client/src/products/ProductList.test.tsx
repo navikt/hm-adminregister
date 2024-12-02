@@ -7,47 +7,28 @@ import { expect, test } from "vitest";
 import ProductListWrapper from "./ProductListWrapper";
 import { http, HttpResponse } from "msw";
 
-const dummyProduct = (title: string, draftStatus: string = "DRAFT", adminStatus: string = "PENDING") => {
+const dummyProduct = (title: string, editStatus: string = "EDITABLE") => {
   return {
     id: uuidv4(),
-    supplierId: uuidv4(),
-    identifier: uuidv4(),
     title: title,
-    text: "",
-    isoCategory: "18100601",
-    draftStatus: draftStatus,
-    adminStatus: adminStatus,
-    status: "ACTIVE",
-    seriesData: {
-      media: [],
-    },
-    created: "2024-05-24T09:54:25.595126",
+    status: editStatus,
+    isExpired: false,
+    isPublished: false,
+    variantCount: 23,
     updated: "2024-05-24T09:54:25.595163",
-    expired: "2039-05-24T13:00:52.664454747",
-    createdBy: "REGISTER",
-    updatedBy: "REGISTER",
     updatedByUser: "system",
-    createdByUser: "system",
-    createdByAdmin: false,
-    count: 23,
-    countDrafts: 1,
-    countPublished: 0,
-    countPending: 0,
-    countDeclined: 0,
-    version: 0,
-    titleLowercase: title.toLowerCase(),
   };
 };
 
 test("Flere produkter", async () => {
   server.use(
-    http.get(`http://localhost:8080/admreg/vendor/api/v1/series`, (info) => {
+    http.get(`http://localhost:8080/admreg/api/v1/series`, (info) => {
       return HttpResponse.json({
         content: [
-          dummyProduct("p1", "DRAFT", "PENDING"), //Utkast
-          dummyProduct("p2", "DONE", "PENDING"), //Venter på godkjenning
-          dummyProduct("p3", "DRAFT", "REJECTED"), //Avslått
-          dummyProduct("p4", "DONE", "APPROVED"), //Publisert
+          dummyProduct("p1", "EDITABLE"),
+          dummyProduct("p2", "PENDING_APPROVAL"),
+          dummyProduct("p3", "REJECTED"),
+          dummyProduct("p4", "DONE"),
         ],
         pageable: {
           number: 0,
@@ -71,13 +52,13 @@ test("Flere produkter", async () => {
         pageNumber: 0,
         numberOfElements: 3,
       });
-    }),
+    })
   );
 
   const { container } = render(
     <MemoryRouter>
       <ProductListWrapper />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
   expect(await screen.findAllByRole("listitem")).toHaveLength(4);
