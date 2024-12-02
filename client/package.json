@@ -61,6 +61,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.1",
     "eslint-plugin-react": "^7.37.2",
     "jest-axe": "^9.0.0",
+    "jsdom": "^25.0.1",
     "msw": "^2.5.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
