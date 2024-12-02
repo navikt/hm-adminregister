@@ -2,20 +2,14 @@ import { ChevronRightIcon, FileImageIcon } from "@navikt/aksel-icons";
 import { BodyShort, Box, HGrid, Hide, Show, Tag, VStack } from "@navikt/ds-react";
 import { seriesStatus } from "products/seriesUtils";
 import { Link } from "react-router-dom";
-import { toDate, toReadableDateTimeString } from "utils/date-util";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { toReadableDateTimeString } from "utils/date-util";
+import { SeriesSearchDTO } from "utils/types/response-types";
 import { ImageContainer } from "./files/images/ImageContainer";
 import styles from "./ProductList.module.scss";
 import SeriesStatusTag from "./SeriesStatusTag";
 import { useAuthStore } from "utils/store/useAuthStore";
 
-export const ProductList = ({
-  seriesList,
-  oversiktPath,
-}: {
-  seriesList: SeriesRegistrationDTO[];
-  oversiktPath: string;
-}) => {
+export const ProductList = ({ seriesList, oversiktPath }: { seriesList: SeriesSearchDTO[]; oversiktPath: string }) => {
   return (
     <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
       {seriesList.map((series) => (
@@ -27,11 +21,9 @@ export const ProductList = ({
   );
 };
 
-const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; oversiktPath: string }) => {
-  const isExpired = toDate(series.expired) < new Date();
-  const imgUrl = series.seriesData.media
-    .filter((media) => media.type === "IMAGE")
-    .find((media) => media.priority === 1);
+const SeriesCard = ({ series, oversiktPath }: { series: SeriesSearchDTO; oversiktPath: string }) => {
+  const isExpired = series.isExpired;
+  const imgUrl = series.thumbnail;
   const { loggedInUser } = useAuthStore();
 
   return (
@@ -77,17 +69,17 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesRegistrationDTO; o
       </VStack>
 
       <Show below="md">
-        <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series)} />
+        <SeriesStatusTag iconOnly seriesStatus={seriesStatus(series.status, series.isPublished)} />
       </Show>
       <Hide below="md">
-        <SeriesStatusTag seriesStatus={seriesStatus(series)} />
+        <SeriesStatusTag seriesStatus={seriesStatus(series.status, series.isPublished)} />
       </Hide>
 
       <Show below="md">
-        <BodyShort align="center">{series.count}</BodyShort>
+        <BodyShort align="center">{series.variantCount}</BodyShort>
       </Show>
       <Hide below="md">
-        <BodyShort>{series.count}</BodyShort>
+        <BodyShort>{series.variantCount}</BodyShort>
       </Hide>
       {loggedInUser && loggedInUser.isAdmin && (
         <>

@@ -19,6 +19,8 @@ import {
   ProdukterTilGodkjenningChunk,
   SeriesChunk,
   SeriesRegistrationDTO,
+  SeriesSearchChunk,
+  SeriesSearchDTO,
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
@@ -79,39 +81,10 @@ export function useSeries(seriesUUID: string) {
   };
 }
 
-export function useSeriesByHmsNr(hmsNr: string) {
-  const { loggedInUser } = useAuthStore();
+export function useSeriesByVariantIdentifier(variantIdentifier: string) {
+  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantIdentifier}`;
 
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/hmsNr/${hmsNr}`);
-
-  const {
-    data: seriesByHmsNr,
-    error: errorSeriesByHmsNr,
-    isLoading: isLoadingSeriesByHmsNr,
-  } = useSWR<SeriesRegistrationDTO>(hmsNr.length > 0 ? seriesIdPath : null, fetcherGET);
-
-  return {
-    seriesByHmsNr,
-    errorSeriesByHmsNr,
-    isLoadingSeriesByHmsNr,
-  };
-}
-
-export function useSeriesBySupplierRef(supplierRef: string) {
-  const { loggedInUser } = useAuthStore();
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/supplierRef/${supplierRef}`);
-
-  const {
-    data: seriesBySupplierRef,
-    error: errorSeriesBySupplierRef,
-    isLoading: isLoadingSeriesBySupplierRef,
-  } = useSWR<SeriesRegistrationDTO>(supplierRef.length > 0 ? seriesIdPath : null, fetcherGET);
-
-  return {
-    seriesBySupplierRef,
-    errorSeriesBySupplierRef,
-    isLoadingSeriesBySupplierRef,
-  };
+  return useSWR<SeriesSearchDTO>(variantIdentifier.length > 0 ? seriesIdPath : null, fetcherGET);
 }
 
 export function userProductVariantsBySeriesId(seriesId: string) {
@@ -148,8 +121,6 @@ export function usePagedProducts({
   filters: string[];
   supplierFilter?: string;
 }) {
-  const { loggedInUser } = useAuthStore();
-
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
   const filterUrl = statusFilterProductsURL(filters);
@@ -158,17 +129,9 @@ export function usePagedProducts({
 
   const mainProductParam: string = `&mainProduct=true`;
 
-  const path = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${mainProductParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}`;
 
-  const { data, error, isLoading } = useSWR<SeriesChunk>(path, fetcherGET);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
+  return useSWR<SeriesSearchChunk>(path, fetcherGET);
 }
 
 const statusFilterProductsURL = (statusFilters: string[]) => {
@@ -335,7 +298,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET,
+    fetcherGET
   );
 
   if (error) {
@@ -409,7 +372,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    },
+    }
   );
 
   if (error) {

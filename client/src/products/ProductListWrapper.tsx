@@ -19,7 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { usePagedProducts, useSeriesByHmsNr, useSeriesBySupplierRef, useSuppliers } from "utils/swr-hooks";
+import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
 
 import { PlusIcon } from "@navikt/aksel-icons";
 import ErrorAlert from "error/ErrorAlert";
@@ -50,8 +50,7 @@ const ProductListWrapper = () => {
 
   const navigate = useNavigate();
 
-  const { seriesByHmsNr } = useSeriesByHmsNr(searchTerm);
-  const { seriesBySupplierRef } = useSeriesBySupplierRef(searchTerm);
+  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -199,8 +198,7 @@ const ProductListWrapper = () => {
 
         <VStack gap="4">
           <VStack gap="1-alt">
-            {seriesByHmsNr && <Heading size="medium">Treff på HMS-nummer</Heading>}
-            {seriesBySupplierRef && <Heading size="medium">Treff på Lev-artnr</Heading>}
+            {seriesByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
             <HGrid
               columns={{
                 xs: ".7fr 3.6fr 2.1fr .8fr",
@@ -228,11 +226,8 @@ const ProductListWrapper = () => {
                 </>
               )}
             </HGrid>
-            {/* {isLoadingPagedData && <Loader size="3xlarge" />} */}
-            {seriesByHmsNr ? (
-              <ProductList seriesList={[seriesByHmsNr]} oversiktPath={pathname + search} />
-            ) : seriesBySupplierRef ? (
-              <ProductList seriesList={[seriesBySupplierRef]} oversiktPath={pathname + search} />
+            {seriesByVariantIdentifier ? (
+              <ProductList seriesList={[seriesByVariantIdentifier]} oversiktPath={pathname + search} />
             ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
               <ProductList seriesList={pagedData.content} oversiktPath={pathname + search} />
             ) : (

@@ -1,7 +1,7 @@
 import { Heading, VStack } from "@navikt/ds-react";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import SeriesStatusTag from "products/SeriesStatusTag";
-import { seriesStatusV2 } from "products/seriesUtils";
+import { seriesStatus } from "products/seriesUtils";
 import { toReadableDateTimeString } from "utils/date-util";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 
@@ -12,7 +12,7 @@ const StatusPanel = ({ series }: { series: SeriesRegistrationDTOV2 }) => {
         <Heading level="1" size="medium">
           Status
         </Heading>
-        <SeriesStatusTag seriesStatus={seriesStatusV2(series)} />
+        <SeriesStatusTag seriesStatus={seriesStatus(series.status, series.isPublished)} />
       </VStack>
 
       <DefinitionList>

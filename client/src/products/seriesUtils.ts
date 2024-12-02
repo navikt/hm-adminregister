@@ -1,4 +1,4 @@
-import { MediaInfoDTO, SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { SeriesStatus } from "utils/types/types";
 
 export const numberOfImages = (series: SeriesRegistrationDTOV2) => {
@@ -13,12 +13,8 @@ export const numberOfVideos = (series: SeriesRegistrationDTOV2) => {
   return series.seriesData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
 };
 
-export const mapThumbnail = (series: SeriesRegistrationDTO): MediaInfoDTO | null => {
-  return series.seriesData.media.find((media) => media.type == "IMAGE") ?? null;
-};
-
 export const mapImagesAndPDFfromMedia = (
-  series: SeriesRegistrationDTOV2,
+  series: SeriesRegistrationDTOV2
 ): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
   const seen: { [uri: string]: boolean } = {};
   const pdfs: MediaInfoDTO[] = [];
@@ -44,33 +40,11 @@ export const mapImagesAndPDFfromMedia = (
   };
 };
 
-export const seriesStatus = (series: SeriesRegistrationDTO): SeriesStatus => {
-  const isDraft = series.draftStatus === "DRAFT" && !series.published;
-  const isPending = series.adminStatus === "PENDING";
-  const isRejected = series.adminStatus === "REJECTED";
-  const isDeleted = series.status === "DELETED";
-  const isDraftChange = series.draftStatus === "DRAFT" && series.published;
-
-  if (isDeleted) {
-    return SeriesStatus.DELETED;
-  } else if (isRejected) {
-    return SeriesStatus.REJECTED;
-  } else if (isDraft && !isRejected) {
-    return SeriesStatus.DRAFT;
-  } else if (isDraftChange && !isRejected) {
-    return SeriesStatus.DRAFT_CHANGE;
-  } else if (isPending) {
-    return SeriesStatus.PENDING;
-  } else {
-    return SeriesStatus.PUBLISHED;
-  }
-};
-
-export const seriesStatusV2 = (series: SeriesRegistrationDTOV2) => {
-  const isDraft = series.status === "EDITABLE" && !series.published;
-  const isPending = series.status === "PENDING_APPROVAL";
-  const isRejected = series.status === "REJECTED";
-  const isDraftChange = series.status === "EDITABLE" && series.published;
+export const seriesStatus = (status: string, isPublished: boolean) => {
+  const isDraft = status === "EDITABLE" && !isPublished;
+  const isPending = status === "PENDING_APPROVAL";
+  const isRejected = status === "REJECTED";
+  const isDraftChange = status === "EDITABLE" && isPublished;
 
   if (isRejected) {
     return SeriesStatus.REJECTED;
