@@ -3,7 +3,7 @@ import { track } from "@amplitude/analytics-browser";
 
 const APP_NAME = "hm-adminregister";
 const TEAM_NAME = "teamdigihot";
-const AMP_COLLECTION_URL = "https://amplitude.nav.no/collect-auto";
+const AMP_COLLECTION_URL = "https://amplitude.nav.no/collect";
 const AMP_PUBLIC_KEY_PROD = "e712770cd66f32a51e663fd31ac5e379";
 const AMP_PUBLIC_KEY_DEV = "bcfab83a980e1598dab1ef32a07e9653";
 
