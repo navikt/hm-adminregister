@@ -11,8 +11,9 @@ import { initInstrumentation } from "faro/faro";
 import { initAmplitude } from "utils/amplitude";
 
 initMsw().then(() => {
-  initInstrumentation();
   initAmplitude();
+  initInstrumentation();
+
   const container = document.getElementById("root")!;
   createRoot(container).render(
     <>

@@ -21,12 +21,13 @@ export enum digihot_customevents {
 }
 
 export const initAmplitude = () => {
-  const apiKey =
-    process.env.BUILD_ENV === "prod"
+  const apiKey = window.appSettings.MILJO
+    ? window.appSettings.MILJO === "prod-gcp"
       ? AMP_PUBLIC_KEY_PROD
-      : process.env.BUILD_ENV === "dev"
+      : window.appSettings.MILJO === "dev-gcp"
         ? AMP_PUBLIC_KEY_DEV
-        : "mock";
+        : "mock"
+    : "mock";
   console.log("Amplitude API key = ", apiKey);
   if (apiKey === "mock") {
     amplitudeLogger = (params: { name: string; data?: any }) => {
