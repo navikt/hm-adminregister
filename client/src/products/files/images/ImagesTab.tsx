@@ -26,7 +26,7 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
   const { mutate: mutateSeries } = useSeriesV2(series.id);
 
   async function handleDeleteFile(fileURI: string) {
-    deleteFileFromSeries(series.id, loggedInUser?.isAdmin || false, fileURI)
+    deleteFileFromSeries(series.id, fileURI)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);

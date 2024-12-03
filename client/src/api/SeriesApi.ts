@@ -88,12 +88,8 @@ export const updateSeriesMediaPriority = async (
 ): Promise<any> =>
   await fetchAPIModify(getPath(isAdmin, `/api/v1/series/update-media-priority/${seriesUUID}`), "PUT", media);
 
-export const deleteFileFromSeries = async (seriesUUID: string, isAdmin: boolean, fileURI: string) => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.media = series.seriesData.media.filter((file) => file.uri !== fileURI);
-    return series;
-  });
-};
+export const deleteFileFromSeries = async (seriesUUID: string, fileURI: string): Promise<any> =>
+  await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/delete-media/${seriesUUID}`, "DELETE", [fileURI]);
 
 export const saveVideoToSeries = async (seriesUUID: string, isAdmin: boolean, url: string, title: string) => {
   return updateSeriesData(seriesUUID, isAdmin, (series) => {
