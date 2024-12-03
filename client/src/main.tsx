@@ -8,9 +8,11 @@ import "./styles/globals.scss";
 import { baseUrl } from "utils/swr-hooks";
 import { initMsw } from "mocks/initMsw";
 import { initInstrumentation } from "faro/faro";
+import { initAmplitude } from "utils/amplitude";
 
 initMsw().then(() => {
   initInstrumentation();
+  initAmplitude();
   const container = document.getElementById("root")!;
   createRoot(container).render(
     <>

@@ -27,6 +27,7 @@ export const initAmplitude = () => {
       : process.env.BUILD_ENV === "dev"
         ? AMP_PUBLIC_KEY_DEV
         : "mock";
+  console.log("Amplitude API key = ", apiKey);
   if (apiKey === "mock") {
     amplitudeLogger = (params: { name: string; data?: any }) => {
       console.log("[Mock Amplitude Event]", {
