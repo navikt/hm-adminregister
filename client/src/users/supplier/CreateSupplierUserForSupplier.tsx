@@ -17,7 +17,7 @@ type FormData = z.infer<typeof newSupplierUserSchema>;
 export default function CreateSupplierUserForSupplier() {
   const { setGlobalError } = useErrorStore();
   const location = useLocation();
-  const supplierName = location.state as String;
+  const supplierName = location.state as string;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -82,7 +82,7 @@ export default function CreateSupplierUserForSupplier() {
             type="email"
             name="email"
             description="Eksempel: firma@domene.no"
-            autoComplete="on"
+            autoComplete="off"
             error={errors?.email?.message}
           />
           <VStack>
