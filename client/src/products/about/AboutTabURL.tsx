@@ -8,12 +8,11 @@ import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
-  isAdmin: boolean;
   mutateSeries: () => void;
   isEditable: boolean;
 }
 
-export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props) => {
+export const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
   const [showEditUrlMode, setShowEditUrlMode] = useState(false);
   const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
   const [updatedUrl, setUpdatedUrl] = useState<string>(series.seriesData.attributes.url ?? "");
@@ -24,7 +23,7 @@ export const AboutTabURL = ({ series, isAdmin, mutateSeries, isEditable }: Props
   const handleSaveUrl = (updatedUrl: string) => {
     setShowEditUrlMode(false);
 
-    updateSeriesURLV2(series!.id, updatedUrl, isAdmin)
+    updateSeriesURLV2(series!.id, updatedUrl)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);

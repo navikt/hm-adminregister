@@ -11,13 +11,12 @@ import styles from "./Editor.module.scss";
 
 interface Props {
   series: SeriesRegistrationDTOV2;
-  isAdmin: boolean;
   mutateSeries: () => void;
   showInputError: boolean;
   isEditable: boolean;
 }
 
-export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputError, isEditable }: Props) => {
+export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable }: Props) => {
   const description = series.text;
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);
@@ -32,7 +31,7 @@ export const AboutTabDescription = ({ series, isAdmin, mutateSeries, showInputEr
 
   const handleSaveDescription = (updatedDescription: string) => {
     if (descriptionLengthError) return;
-    updateProductDescriptionV2(series!.id, updatedDescription, isAdmin)
+    updateProductDescriptionV2(series!.id, updatedDescription)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);

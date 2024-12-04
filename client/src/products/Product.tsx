@@ -102,7 +102,7 @@ const Product = () => {
 
   const handleSaveProductTitle = () => {
     setShowEditProductTitleMode(false);
-    updateProductTitleV2(series!.id, productTitle, loggedInUser?.isAdmin || false)
+    updateProductTitleV2(series!.id, productTitle)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };
@@ -346,13 +346,7 @@ const Product = () => {
                 label={<TabLabel title="Videolenker" numberOfElements={numberOfVideos(series)} showAlert={false} />}
               />
             </Tabs.List>
-            <AboutTab
-              series={series}
-              isAdmin={loggedInUser?.isAdmin || false}
-              mutateSeries={mutateSeries}
-              isEditable={isEditable}
-              showInputError={!isValid}
-            />
+            <AboutTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} showInputError={!isValid} />
             <ImageTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <DocumentTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />

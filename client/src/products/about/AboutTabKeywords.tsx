@@ -10,12 +10,11 @@ import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvi
 
 interface Props {
   series: SeriesRegistrationDTOV2;
-  isAdmin: boolean;
   mutateSeries: () => void;
   isEditable: boolean;
 }
 
-export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: Props) => {
+export const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
   const keywords = series.seriesData.attributes.keywords;
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
@@ -28,7 +27,7 @@ export const AboutTabKeywords = ({ series, isAdmin, mutateSeries, isEditable }: 
 
   const handleSaveKeywords = () => {
     if (updatedKeywords.length <= maxKeywords && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
-      updateSeriesKeywordsV2(series!.id, updatedKeywords, isAdmin)
+      updateSeriesKeywordsV2(series!.id, updatedKeywords)
         .then(() => mutateSeries())
         .catch((error) => {
           setGlobalError(error.status, error.message);
