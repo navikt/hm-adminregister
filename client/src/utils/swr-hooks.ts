@@ -223,7 +223,7 @@ export function usePagedProductsToApprove({
   supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
 
-  if (!(filters.includes("Under endring") && filters.includes("Nytt produkt"))) {
+  if (!(filters.includes("Endring") && filters.includes("Nytt produkt"))) {
     if (filters.includes("Endring")) {
       filterUrl.append("isPublished", "true");
     } else if (filters.includes("Nytt produkt")) {
