@@ -1,6 +1,7 @@
 import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
   MediaSort,
+  NewVideo,
   RejectSeriesDTO,
   SeriesDraftWithDTO,
   SeriesRegistrationDTO,
@@ -91,18 +92,8 @@ export const updateSeriesMediaPriority = async (
 export const deleteFileFromSeries = async (seriesUUID: string, fileURI: string): Promise<any> =>
   await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/delete-media/${seriesUUID}`, "DELETE", [fileURI]);
 
-export const saveVideoToSeries = async (seriesUUID: string, isAdmin: boolean, url: string, title: string) => {
-  return updateSeriesData(seriesUUID, isAdmin, (series) => {
-    series.seriesData.media.push({
-      sourceUri: "",
-      uri: url,
-      priority: 0,
-      type: "VIDEO",
-      text: title,
-      source: "EXTERNALURL",
-    });
-    return series;
-  });
+export const saveVideoToSeries = async (seriesUUID: string, newVideo: NewVideo) => {
+  await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/add-videos/${seriesUUID}`, "PUT", [newVideo]);
 };
 
 export const changeFilenameOnAttachedFile = async (

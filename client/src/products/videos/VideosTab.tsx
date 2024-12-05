@@ -29,7 +29,7 @@ const VideoTab = ({
   const [url, setUrl] = useState("");
 
   async function handleSaveVideoLink() {
-    saveVideoToSeries(series.id, loggedInUser?.isAdmin || false, url, title).then(
+    saveVideoToSeries(series.id, { uri: url, title: title }).then(
       () => {
         mutateSeries();
         setModalIsOpen(false);

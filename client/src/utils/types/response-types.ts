@@ -95,6 +95,7 @@ export type NewsRegistrationDTO = components["schemas"]["NewsRegistrationDTO"];
 export type CreateUpdateNewsDTO = components["schemas"]["CreateUpdateNewsDTO"];
 export type SupplierInventoryDTO = components["schemas"]["SupplierInventoryDTO"];
 export type TechDataType = components["schemas"]["TechDataType"];
+export type NewVideo = components["schemas"]["NewVideo"];
 
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
