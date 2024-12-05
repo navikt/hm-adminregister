@@ -199,6 +199,7 @@ export function usePagedProductsToApprove({
   supplierFilter,
   titleSearchTerm,
   sortUrl,
+  filters,
 }: {
   page: number;
   pageSize: number;
@@ -206,8 +207,11 @@ export function usePagedProductsToApprove({
   supplierFilter?: string;
   titleSearchTerm?: string;
   sortUrl: string | null;
+  filters: string[];
 }) {
   const { loggedInUser } = useAuthStore();
+
+  console.log("filters", filters);
 
   const basePath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
@@ -218,6 +222,14 @@ export function usePagedProductsToApprove({
   filterUrl.append("editStatus", "PENDING_APPROVAL");
   supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
+
+  if (!(filters.includes("Under endring") && filters.includes("Nytt produkt"))) {
+    if (filters.includes("Endring")) {
+      filterUrl.append("isPublished", "true");
+    } else if (filters.includes("Nytt produkt")) {
+      filterUrl.append("isPublished", "false");
+    }
+  }
 
   const sortBy = sortUrl?.split(",")[0] || "updated";
   const sortDirection = sortUrl?.split(",")[1] || "descending";
@@ -298,7 +310,7 @@ export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
-    fetcherGET
+    fetcherGET,
   );
 
   if (error) {
@@ -372,7 +384,7 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
     fetcherGET,
     {
       shouldRetryOnError: false,
-    }
+    },
   );
 
   if (error) {

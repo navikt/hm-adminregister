@@ -1,9 +1,11 @@
 import {
   Alert,
   Box,
+  Chips,
   Heading,
   HGrid,
   HStack,
+  Label,
   Loader,
   Pagination,
   Search,
@@ -31,6 +33,7 @@ export const ForApproval = () => {
   const { pathname, search } = useLocation();
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { suppliers } = useSuppliers(true);
+  const statusFilters = searchParams.get("filters")?.split(",") || [];
 
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
@@ -42,6 +45,8 @@ export const ForApproval = () => {
   const [selectedFilterOption, setSelectedFilterOption] = useState<CreatedByFilter>(
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
   );
+
+  const visningStatusfilter = ["Endring", "Nytt produkt"];
 
   const {
     data: pagedData,
@@ -55,6 +60,7 @@ export const ForApproval = () => {
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
     sortUrl: sortUrl,
+    filters: [...statusFilters],
   });
 
   useEffect(() => {
@@ -72,6 +78,17 @@ export const ForApproval = () => {
       </main>
     );
   }
+
+  const onFilterChange = (filterName: string) => {
+    if (statusFilters.includes(filterName)) {
+      searchParams.set("filters", statusFilters.filter((x) => x !== filterName).join(","));
+      setSearchParams(searchParams);
+    } else {
+      searchParams.set("filters", [...statusFilters, filterName].join(","));
+      setSearchParams(searchParams);
+    }
+  };
+
   const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
 
   const handeFilterChange = (filter: CreatedByFilter) => {
@@ -149,6 +166,20 @@ export const ForApproval = () => {
             <option value="SUPPLIER">Leverandør</option>
           </Select>
         </HGrid>
+        <VStack gap="3">
+          <Label>Filter</Label>
+          <Chips>
+            {visningStatusfilter.map((filterName) => (
+              <Chips.Toggle
+                key={filterName}
+                selected={statusFilters.includes(filterName)}
+                onClick={() => onFilterChange(filterName)}
+              >
+                {filterName}
+              </Chips.Toggle>
+            ))}
+          </Chips>
+        </VStack>
         <VStack gap="4">
           {isLoading ? (
             <Loader size="3xlarge" />
