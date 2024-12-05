@@ -28,13 +28,19 @@ import { ProductList } from "./ProductList";
 const ProductListWrapper = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [pageSizeState, setPageSizeState] = useState(Number(searchParams.get("size")) || 10);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
   const { loggedInUser } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const statusFilters = searchParams.get("filters")?.split(",") || [];
   const { pathname, search } = useLocation();
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
+
+  const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
+  const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+
+  useEffect(() => {
+    localStorage.setItem("pageSizeState", pageSizeState.toString());
+  }, [pageSizeState]);
 
   const {
     data: pagedData,
@@ -239,28 +245,25 @@ const ProductListWrapper = () => {
             )}
           </VStack>
 
-          {showPageNavigator && (
-            <HStack
-              justify={{ xs: "center", md: "space-between" }}
-              align="center"
-              gap={"4"}
-              style={{ flexWrap: "wrap-reverse" }}
+          <HStack
+            justify={{ xs: "center", md: "space-between" }}
+            align="center"
+            gap={"4"}
+            style={{ flexWrap: "wrap-reverse" }}
+          >
+            <Select
+              label="Ant produkter per side"
+              size="small"
+              defaultValue={pageSizeState}
+              onChange={(e) => {
+                setPageSizeState(parseInt(e.target.value));
+              }}
             >
-              <Select
-                label="Ant produkter per side"
-                size="small"
-                defaultValue={pageSizeState}
-                onChange={(e) => {
-                  searchParams.set("size", e.target.value);
-                  setSearchParams(searchParams);
-                  setPageSizeState(parseInt(e.target.value));
-                }}
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={100}>100</option>
-              </Select>
-
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={100}>100</option>
+            </Select>
+            {showPageNavigator && (
               <Pagination
                 page={pageState}
                 onPageChange={(x) => {
@@ -271,8 +274,8 @@ const ProductListWrapper = () => {
                 count={pagedData.totalPages!}
                 size="small"
               />
-            </HStack>
-          )}
+            )}
+          </HStack>
         </VStack>
       </VStack>
     </main>
