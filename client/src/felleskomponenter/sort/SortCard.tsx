@@ -30,7 +30,7 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
     if (index > 0) {
       const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index - 1));
       setMediaArr(updatedArray);
-      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, setGlobalError);
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError);
       leftButtonArray[index - 1].focus();
     }
   };
@@ -39,7 +39,7 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
     if (index < mediaArr.length - 1) {
       const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index + 1));
       setMediaArr(updatedArray);
-      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, setGlobalError);
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError);
       rightButtonArray[index + 1].focus();
     }
   };

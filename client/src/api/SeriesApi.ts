@@ -82,12 +82,8 @@ const updateSeriesData = async (
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
 };
 
-export const updateSeriesMediaPriority = async (
-  seriesUUID: string,
-  media: MediaSort[],
-  isAdmin: boolean,
-): Promise<any> =>
-  await fetchAPIModify(getPath(isAdmin, `/api/v1/series/update-media-priority/${seriesUUID}`), "PUT", media);
+export const updateSeriesMediaPriority = async (seriesUUID: string, media: MediaSort[]): Promise<any> =>
+  await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/update-media-priority/${seriesUUID}`, "PUT", media);
 
 export const deleteFileFromSeries = async (seriesUUID: string, fileURI: string): Promise<any> =>
   await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/delete-media/${seriesUUID}`, "DELETE", [fileURI]);
@@ -119,7 +115,7 @@ export function useSeriesV2(seriesUUID: string) {
   return useSWR<SeriesRegistrationDTOV2>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET);
 }
 
-export const uploadFilesToSeries = async (seriesUUID: string, isAdmin: boolean, uploads: FileUpload[]) => {
+export const uploadFilesToSeries = async (seriesUUID: string, uploads: FileUpload[]) => {
   const formData = new FormData();
   if (uploads[0].file.type === "application/pdf") {
     renameFiles(uploads).forEach((upload) => formData.append("files", upload.file));
@@ -127,7 +123,7 @@ export const uploadFilesToSeries = async (seriesUUID: string, isAdmin: boolean, 
     uploads.forEach((upload) => formData.append("files", upload.file));
   }
 
-  return await fetchPostFiles(getPath(isAdmin, `/api/v1/series/uploadMedia/${seriesUUID}`), formData);
+  return await fetchPostFiles(`${HM_REGISTER_URL()}/admreg/api/v1/series/upload-media/${seriesUUID}`, formData);
 };
 
 const renameFiles = (uploads: FileUpload[]) =>

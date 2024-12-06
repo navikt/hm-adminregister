@@ -48,7 +48,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   };
 
   const uploadFiles = async (uploads: FileUpload[]) => {
-    return uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+    return uploadFilesToSeries(series.id, uploads)
       .then(() => {
         mutateSeries();
         setModalIsOpen(false);

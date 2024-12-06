@@ -3,10 +3,8 @@ import SortableList, { SortableItem, SortableKnob } from "react-easy-sort";
 
 import { HStack } from "@navikt/ds-react";
 import { updateSeriesMediaPriority } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { MediaInfoDTO } from "utils/types/response-types";
-import { LoggedInUser } from "utils/user-util";
 import styles from "./FellesSortingArea.module.scss";
 import { SortCard } from "felleskomponenter/sort/SortCard";
 
@@ -34,20 +32,18 @@ export const updateMediaPriority = (updatedArray: MediaInfoDTO[]) => {
 export const handleUpdateOfSeriesMedia = (
   seriesId: string,
   updatedArray: MediaInfoDTO[],
-  loggedInUser: LoggedInUser | undefined,
   setGlobalError: (errorCode: number, errorMessage?: string) => void,
 ) => {
   const mediaSort = updatedArray.map((media) => ({
     uri: media.uri,
     priority: media.priority,
   }));
-  updateSeriesMediaPriority(seriesId, mediaSort, loggedInUser?.isAdmin || false).catch((error) => {
+  updateSeriesMediaPriority(seriesId, mediaSort).catch((error) => {
     setGlobalError(error);
   });
 };
 
 export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile, isEditable }: Props) {
-  const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
   const [mediaArr, setMediaArr] = useState(allMedia);
 
@@ -58,7 +54,7 @@ export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile
   const onSortEnd = (oldIndex: number, newIndex: number) => {
     setMediaArr((array) => {
       const updatedArray = updateMediaPriority(moveItemInArray(array, oldIndex, newIndex));
-      handleUpdateOfSeriesMedia(seriesId, updatedArray, loggedInUser, setGlobalError);
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError);
       return updatedArray;
     });
   };

@@ -19,7 +19,6 @@ interface Props {
 }
 
 const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
-  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { images } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
@@ -34,7 +33,7 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
   }
 
   const uploadFiles = async (uploads: FileUpload[]) =>
-    uploadFilesToSeries(series.id, loggedInUser?.isAdmin || false, uploads)
+    uploadFilesToSeries(series.id, uploads)
       .then(() => {
         mutateSeries();
         setModalIsOpen(false);
