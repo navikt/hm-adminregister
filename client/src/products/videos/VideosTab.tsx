@@ -185,6 +185,6 @@ const parseUrl = (s: string) => {
 
 //Ingen sikkerhet at dette kun ligger i frontend. For brukerinfo er det ok men sikkerheten må ligge i backend
 const validateDomain = (url: URL) => {
-  const validDomains = ["www.youtube.com", "youtube.com", "www.vimeo.com", "vimeo.com"];
+  const validDomains = ["www.youtube.com", "youtube.com", "www.vimeo.com", "vimeo.com", "youtu.be"];
   return validDomains.some((d) => d === url.hostname);
 };
