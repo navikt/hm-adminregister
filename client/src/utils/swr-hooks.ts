@@ -211,8 +211,6 @@ export function usePagedProductsToApprove({
 }) {
   const { loggedInUser } = useAuthStore();
 
-  console.log("filters", filters);
-
   const basePath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
     : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}`;
@@ -228,6 +226,14 @@ export function usePagedProductsToApprove({
       filterUrl.append("isPublished", "true");
     } else if (filters.includes("Nytt produkt")) {
       filterUrl.append("isPublished", "false");
+    }
+  }
+
+  if (!(filters.includes("Hovedprodukt") && filters.includes("Tilbehør/Del"))) {
+    if (filters.includes("Hovedprodukt")) {
+      filterUrl.append("mainProduct", "true");
+    } else if (filters.includes("Tilbehør/Del")) {
+      filterUrl.append("mainProduct", "false");
     }
   }
 
