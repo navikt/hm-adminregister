@@ -111,7 +111,7 @@ const Product = () => {
 
   async function onDelete() {
     setDeleteConfirmationModalIsOpen(false);
-    deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
+    deleteSeries(series!.id)
       .then(() => {
         mutateSeries();
         navigate("/produkter");

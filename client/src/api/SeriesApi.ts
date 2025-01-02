@@ -104,8 +104,8 @@ export const changeFilenameOnAttachedFile = async (
   });
 };
 
-export const deleteSeries = async (isAdmin: boolean, seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "DELETE");
+export const deleteSeries = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, "DELETE");
 };
 
 export function useSeriesV2(seriesUUID: string) {
