@@ -123,7 +123,7 @@ const Product = () => {
 
   async function onEditMode() {
     setEditProductModalIsOpen(false);
-    setPublishedSeriesToDraft(false, series!.id)
+    setPublishedSeriesToDraft(series!.id)
       .then(() => {
         mutateSeries();
       })

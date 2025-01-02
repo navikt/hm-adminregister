@@ -22,11 +22,8 @@ export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesReg
   return await fetchAPI(seriesIdPath, "GET");
 };
 
-export const setPublishedSeriesToDraft = async (
-  isAdmin: boolean,
-  seriesUUID: string,
-): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
+export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series_to-draft/${seriesUUID}`, "PUT");
 };
 
 export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
