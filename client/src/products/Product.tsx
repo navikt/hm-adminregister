@@ -134,7 +134,7 @@ const Product = () => {
 
   async function onToActive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToActive(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -145,7 +145,7 @@ const Product = () => {
 
   async function onToInactive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToInactive(series!.id)
       .then(() => {
         mutateSeries();
       })

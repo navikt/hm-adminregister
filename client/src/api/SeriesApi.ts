@@ -26,12 +26,12 @@ export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<voi
   return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series_to-draft/${seriesUUID}`, "PUT");
 };
 
-export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-inactive/${seriesUUID}`), "PUT");
+export const setSeriesToInactive = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-inactive/${seriesUUID}`, "PUT");
 };
 
-export const setSeriesToActive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-active/${seriesUUID}`), "PUT");
+export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
