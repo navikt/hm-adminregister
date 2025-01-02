@@ -852,22 +852,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/admin/api/v1/series/hmsNr/{hmsNr}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findSeriesForHmsNr"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/admin/api/v1/series/reject-v2/{id}": {
         parameters: {
             query?: never;
@@ -893,38 +877,6 @@ export interface paths {
         };
         get?: never;
         put: operations["rejectSeries"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/admin/api/v1/series/series-to-active/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setPublishedSeriesToActive"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/admin/api/v1/series/series-to-inactive/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setPublishedSeriesToInactive"];
         post?: never;
         delete?: never;
         options?: never;
@@ -964,22 +916,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/admin/api/v1/series/series_to-draft/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setSeriesToDraft"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/admin/api/v1/series/supplier-inventory/{id}": {
         parameters: {
             query?: never;
@@ -1012,22 +948,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/admin/api/v1/series/supplierRef/{supplierRef}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findSeriesForSupplierRef"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/admin/api/v1/series/to-approve": {
         parameters: {
             query?: never;
@@ -1038,38 +958,6 @@ export interface paths {
         get: operations["findSeriesPendingApprove"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/admin/api/v1/series/update-media-priority/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["updateMedia"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/admin/api/v1/series/uploadMedia/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["uploadMedia"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1089,7 +977,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch: operations["patchSeriesV2"];
+        patch?: never;
         trace?: never;
     };
     "/admreg/admin/api/v1/series/versions": {
@@ -1134,7 +1022,7 @@ export interface paths {
         get: operations["readSeries"];
         put: operations["updateSeries"];
         post?: never;
-        delete: operations["deleteSeries"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1412,6 +1300,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/series/change-file-title/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["changeFileTitle"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/series/delete-media/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -1436,7 +1340,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["setPublishedSeriesToActive_1"];
+        put: operations["setPublishedSeriesToActive"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1452,7 +1356,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["setPublishedSeriesToInactive_1"];
+        put: operations["setPublishedSeriesToInactive"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1468,8 +1372,40 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["setSeriesToDraft_1"];
+        put: operations["setSeriesToDraft"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/series/update-media-priority/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateMedia"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/series/upload-media/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["uploadMedia"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1502,7 +1438,7 @@ export interface paths {
         get: operations["readSeries_1"];
         put?: never;
         post?: never;
-        delete: operations["deleteSeries_1"];
+        delete: operations["deleteSeries"];
         options?: never;
         head?: never;
         patch: operations["patchSeries"];
@@ -2006,22 +1942,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/vendor/api/v1/series/hmsNr/{hmsNr}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findSeriesForHmsNr_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/vendor/api/v1/series/request-approval/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -2054,38 +1974,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/vendor/api/v1/series/series-to-active/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setPublishedSeriesToActive_2"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/series-to-inactive/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setPublishedSeriesToInactive_2"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/vendor/api/v1/series/series_ready-for-approval/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -2096,70 +1984,6 @@ export interface paths {
         get?: never;
         put: operations["setSeriesReadyForApproval"];
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/series_to-draft/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setSeriesToDraft_2"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/supplierRef/{supplierRef}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findSeriesForSupplierRef_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/update-media-priority/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["updateMedia_1"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/uploadMedia/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["uploadMedia_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2179,7 +2003,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch: operations["patchSeriesV2_1"];
+        patch?: never;
         trace?: never;
     };
     "/admreg/vendor/api/v1/series/{id}": {
@@ -2193,22 +2017,6 @@ export interface paths {
         put: operations["updateSeries_1"];
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["deleteSeries_2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2309,7 +2117,6 @@ export interface components {
             text?: string | null;
             identifier: string;
             attachments: components["schemas"]["AgreementAttachment"][];
-            /** @deprecated */
             posts: components["schemas"]["AgreementPost"][];
             isoCategory: string[];
         };
@@ -2479,6 +2286,10 @@ export interface components {
             type: components["schemas"]["TechDataType"];
             definition?: string | null;
             options?: string[] | null;
+        };
+        FileTitleDto: {
+            uri: string;
+            newFileTitle: string;
         };
         Information: {
             message: string;
@@ -2728,15 +2539,9 @@ export interface components {
         };
         ProductAgreementImportDTO: {
             dryRun: boolean;
-            /**
-             * Format: int32
-             * @deprecated
-             */
+            /** Format: int32 */
             count: number;
-            /**
-             * Format: int32
-             * @deprecated
-             */
+            /** Format: int32 */
             newCount: number;
             file: string;
             supplier: string;
@@ -2746,7 +2551,6 @@ export interface components {
             newProductAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
             updatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
             deactivatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
-            /** @deprecated */
             productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
         };
         ProductAgreementRegistrationDTO: {
@@ -2795,7 +2599,6 @@ export interface components {
         ProductData: {
             attributes: components["schemas"]["Attributes"];
             techData: components["schemas"]["TechData"][];
-            /** @deprecated */
             media: components["schemas"]["MediaInfoDTO"][];
             identifier?: string | null;
             seriesIdentifier?: string | null;
@@ -2853,11 +2656,8 @@ export interface components {
             hmsArtNr?: string | null;
             /** Format: uuid */
             seriesUUID: string;
-            /** @deprecated */
             seriesId: string;
-            /** @deprecated */
             isoCategory: string;
-            /** @deprecated */
             title: string;
             articleName: string;
             accessory: boolean;
@@ -5083,28 +4883,6 @@ export interface operations {
             };
         };
     };
-    findSeriesForHmsNr: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hmsNr: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findSeriesForHmsNr 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
     rejectSeriesAndVariants: {
         parameters: {
             query?: never;
@@ -5147,50 +4925,6 @@ export interface operations {
         };
         responses: {
             /** @description rejectSeries 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    setPublishedSeriesToActive: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setPublishedSeriesToActive 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    setPublishedSeriesToInactive: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setPublishedSeriesToInactive 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -5251,28 +4985,6 @@ export interface operations {
             };
         };
     };
-    setSeriesToDraft: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setSeriesToDraft 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
     getSupplierProductInfo: {
         parameters: {
             query?: never;
@@ -5321,28 +5033,6 @@ export interface operations {
             };
         };
     };
-    findSeriesForSupplierRef: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                supplierRef: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findSeriesForSupplierRef 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
     findSeriesPendingApprove: {
         parameters: {
             query: {
@@ -5368,60 +5058,6 @@ export interface operations {
             };
         };
     };
-    updateMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MediaSort"][];
-            };
-        };
-        responses: {
-            /** @description updateMedia 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
-    uploadMedia: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    files: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description uploadMedia 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
     readSeriesV2: {
         parameters: {
             query?: never;
@@ -5434,32 +5070,6 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description readSeriesV2 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    patchSeriesV2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateSeriesRegistrationDTO"];
-            };
-        };
-        responses: {
-            /** @description patchSeriesV2 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -5558,28 +5168,6 @@ export interface operations {
         };
         responses: {
             /** @description updateSeries 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    deleteSeries: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description deleteSeries 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6187,6 +5775,32 @@ export interface operations {
             };
         };
     };
+    changeFileTitle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FileTitleDto"];
+            };
+        };
+        responses: {
+            /** @description changeFileTitle 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     deleteMedia: {
         parameters: {
             query?: never;
@@ -6213,7 +5827,7 @@ export interface operations {
             };
         };
     };
-    setPublishedSeriesToActive_1: {
+    setPublishedSeriesToActive: {
         parameters: {
             query?: never;
             header?: never;
@@ -6224,7 +5838,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description setPublishedSeriesToActive_1 200 response */
+            /** @description setPublishedSeriesToActive 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6235,7 +5849,7 @@ export interface operations {
             };
         };
     };
-    setPublishedSeriesToInactive_1: {
+    setPublishedSeriesToInactive: {
         parameters: {
             query?: never;
             header?: never;
@@ -6246,7 +5860,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description setPublishedSeriesToInactive_1 200 response */
+            /** @description setPublishedSeriesToInactive 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6257,7 +5871,7 @@ export interface operations {
             };
         };
     };
-    setSeriesToDraft_1: {
+    setSeriesToDraft: {
         parameters: {
             query?: never;
             header?: never;
@@ -6268,7 +5882,61 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description setSeriesToDraft_1 200 response */
+            /** @description setSeriesToDraft 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    updateMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaSort"][];
+            };
+        };
+        responses: {
+            /** @description updateMedia 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    uploadMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description uploadMedia 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6323,7 +5991,7 @@ export interface operations {
             };
         };
     };
-    deleteSeries_1: {
+    deleteSeries: {
         parameters: {
             query?: never;
             header?: never;
@@ -6334,7 +6002,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description deleteSeries_1 200 response */
+            /** @description deleteSeries 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7172,28 +6840,6 @@ export interface operations {
             };
         };
     };
-    findSeriesForHmsNr_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hmsNr: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findSeriesForHmsNr_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
     requestApproval: {
         parameters: {
             query?: never;
@@ -7238,50 +6884,6 @@ export interface operations {
             };
         };
     };
-    setPublishedSeriesToActive_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setPublishedSeriesToActive_2 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    setPublishedSeriesToInactive_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setPublishedSeriesToInactive_2 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
     setSeriesReadyForApproval: {
         parameters: {
             query?: never;
@@ -7304,104 +6906,6 @@ export interface operations {
             };
         };
     };
-    setSeriesToDraft_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setSeriesToDraft_2 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    findSeriesForSupplierRef_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                supplierRef: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findSeriesForSupplierRef_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    updateMedia_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MediaSort"][];
-            };
-        };
-        responses: {
-            /** @description updateMedia_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
-    uploadMedia_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    files: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description uploadMedia_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
     readSeriesV2_1: {
         parameters: {
             query?: never;
@@ -7414,32 +6918,6 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description readSeriesV2_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    patchSeriesV2_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateSeriesRegistrationDTO"];
-            };
-        };
-        responses: {
-            /** @description patchSeriesV2_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7488,28 +6966,6 @@ export interface operations {
         };
         responses: {
             /** @description updateSeries_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    deleteSeries_2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description deleteSeries_2 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;

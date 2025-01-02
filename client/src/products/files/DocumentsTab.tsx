@@ -7,7 +7,6 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { changeFilenameOnAttachedFile, deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import styles from "../ProductPage.module.scss";
 
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
-  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
@@ -40,7 +38,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   }
 
   const handleEditFileName = async (uri: string, editedText: string) => {
-    changeFilenameOnAttachedFile(series.id, loggedInUser?.isAdmin || false, uri, editedText)
+    changeFilenameOnAttachedFile(series.id, { uri: uri, newFileTitle: editedText })
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
