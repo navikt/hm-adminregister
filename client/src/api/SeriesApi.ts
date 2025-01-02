@@ -70,16 +70,6 @@ export const moveProductsToSeries = async (
   });
 };
 
-const updateSeriesData = async (
-  seriesUUID: string,
-  isAdmin: boolean,
-  modifySeriesData: (series: SeriesRegistrationDTO) => SeriesRegistrationDTO,
-): Promise<SeriesRegistrationDTO> => {
-  const seriesToUpdate = await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "GET");
-  const updatedSeriesData = modifySeriesData(seriesToUpdate);
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
-};
-
 export const updateSeriesMediaPriority = async (seriesUUID: string, media: MediaSort[]): Promise<void> =>
   await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/update-media-priority/${seriesUUID}`, "PUT", media);
 
