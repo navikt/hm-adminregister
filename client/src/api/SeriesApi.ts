@@ -23,19 +23,16 @@ export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesReg
   return await fetchAPI(seriesIdPath, "GET");
 };
 
-export const setPublishedSeriesToDraft = async (
-  isAdmin: boolean,
-  seriesUUID: string,
-): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series_to-draft/${seriesUUID}`), "PUT");
+export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series_to-draft/${seriesUUID}`, "PUT");
 };
 
-export const setSeriesToInactive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-inactive/${seriesUUID}`), "PUT");
+export const setSeriesToInactive = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-inactive/${seriesUUID}`, "PUT");
 };
 
-export const setSeriesToActive = async (seriesUUID: string, isAdmin: boolean): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/series-to-active/${seriesUUID}`), "PUT");
+export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
@@ -83,10 +80,10 @@ const updateSeriesData = async (
   return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesToUpdate.id}`), "PUT", updatedSeriesData);
 };
 
-export const updateSeriesMediaPriority = async (seriesUUID: string, media: MediaSort[]): Promise<any> =>
+export const updateSeriesMediaPriority = async (seriesUUID: string, media: MediaSort[]): Promise<void> =>
   await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/update-media-priority/${seriesUUID}`, "PUT", media);
 
-export const deleteFileFromSeries = async (seriesUUID: string, fileURI: string): Promise<any> =>
+export const deleteFileFromSeries = async (seriesUUID: string, fileURI: string): Promise<void> =>
   await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/delete-media/${seriesUUID}`, "DELETE", [fileURI]);
 
 export const saveVideoToSeries = async (seriesUUID: string, newVideo: NewVideo) => {
@@ -101,8 +98,8 @@ export const changeFilenameOnAttachedFile = async (seriesUUID: string, fileTitle
   );
 };
 
-export const deleteSeries = async (isAdmin: boolean, seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/series/${seriesUUID}`), "DELETE");
+export const deleteSeries = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, "DELETE");
 };
 
 export function useSeriesV2(seriesUUID: string) {
@@ -127,20 +124,20 @@ const renameFiles = (uploads: FileUpload[]) =>
       : it,
   );
 
-export const updateSeriesV2 = async (seriesUUID: string, update: UpdateSeriesRegistrationDTO): Promise<void> => {
+export const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegistrationDTO): Promise<void> => {
   const nullUpdate: UpdateSeriesRegistrationDTO = { title: null, text: null, keywords: null, url: null };
   const toUpdate: UpdateSeriesRegistrationDTO = { ...nullUpdate, ...update };
   return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, "PATCH", toUpdate);
 };
 
-export const updateProductTitleV2 = async (seriesUUID: string, productTitle: string): Promise<void> =>
-  updateSeriesV2(seriesUUID, { title: productTitle });
+export const updateProductTitle = async (seriesUUID: string, productTitle: string): Promise<void> =>
+  updateSeries(seriesUUID, { title: productTitle });
 
-export const updateProductDescriptionV2 = async (seriesUUID: string, productDescription: string): Promise<void> =>
-  updateSeriesV2(seriesUUID, { text: productDescription });
+export const updateProductDescription = async (seriesUUID: string, productDescription: string): Promise<void> =>
+  updateSeries(seriesUUID, { text: productDescription });
 
-export const updateSeriesKeywordsV2 = async (seriesUUID: string, keywords: string[]): Promise<void> =>
-  updateSeriesV2(seriesUUID, { keywords: keywords });
+export const updateSeriesKeywords = async (seriesUUID: string, keywords: string[]): Promise<void> =>
+  updateSeries(seriesUUID, { keywords: keywords });
 
-export const updateSeriesURLV2 = async (seriesUUID: string, url: string): Promise<void> =>
-  updateSeriesV2(seriesUUID, { url: url });
+export const updateSeriesURL = async (seriesUUID: string, url: string): Promise<void> =>
+  updateSeries(seriesUUID, { url: url });

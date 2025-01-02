@@ -56,7 +56,7 @@ const AdminActions = ({
   }
 
   async function onSetToDraft() {
-    setPublishedSeriesToDraft(true, series.id)
+    setPublishedSeriesToDraft(series.id)
       .then(() => {
         mutateSeries();
       })

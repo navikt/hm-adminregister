@@ -26,7 +26,7 @@ import {
   setPublishedSeriesToDraft,
   setSeriesToActive,
   setSeriesToInactive,
-  updateProductTitleV2,
+  updateProductTitle,
   useSeriesV2,
 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
@@ -102,7 +102,7 @@ const Product = () => {
 
   const handleSaveProductTitle = () => {
     setShowEditProductTitleMode(false);
-    updateProductTitleV2(series!.id, productTitle)
+    updateProductTitle(series!.id, productTitle)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };
@@ -111,7 +111,7 @@ const Product = () => {
 
   async function onDelete() {
     setDeleteConfirmationModalIsOpen(false);
-    deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
+    deleteSeries(series!.id)
       .then(() => {
         mutateSeries();
         navigate("/produkter");
@@ -123,7 +123,7 @@ const Product = () => {
 
   async function onEditMode() {
     setEditProductModalIsOpen(false);
-    setPublishedSeriesToDraft(false, series!.id)
+    setPublishedSeriesToDraft(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -134,7 +134,7 @@ const Product = () => {
 
   async function onToActive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToActive(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -145,7 +145,7 @@ const Product = () => {
 
   async function onToInactive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToInactive(series!.id)
       .then(() => {
         mutateSeries();
       })

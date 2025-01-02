@@ -46,7 +46,7 @@ export const ForApproval = () => {
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
   );
 
-  const visningStatusfilter = ["Endring", "Nytt produkt"];
+  const visningStatusfilter = ["Endring", "Nytt produkt", "Hovedprodukt", "Tilbehør/Del"];
 
   const {
     data: pagedData,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { isValidKeyword } from "products/seriesUtils";
 import "./about-tab-keywords.scss";
 import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
-import { updateSeriesKeywordsV2 } from "api/SeriesApi";
+import { updateSeriesKeywords } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
 
@@ -27,7 +27,7 @@ export const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) =>
 
   const handleSaveKeywords = () => {
     if (updatedKeywords.length <= maxKeywords && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
-      updateSeriesKeywordsV2(series!.id, updatedKeywords)
+      updateSeriesKeywords(series!.id, updatedKeywords)
         .then(() => mutateSeries())
         .catch((error) => {
           setGlobalError(error.status, error.message);
