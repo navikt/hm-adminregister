@@ -2,8 +2,8 @@ import { Button, Heading, TextField, VStack } from "@navikt/ds-react";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
 import { isValidUrl } from "products/seriesUtils";
-import { updateSeriesURLV2 } from "api/SeriesApi";
-import { SeriesRegistrationDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { updateSeriesURL } from "api/SeriesApi";
+import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 
 interface Props {
@@ -23,7 +23,7 @@ export const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
   const handleSaveUrl = (updatedUrl: string) => {
     setShowEditUrlMode(false);
 
-    updateSeriesURLV2(series!.id, updatedUrl)
+    updateSeriesURL(series!.id, updatedUrl)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
