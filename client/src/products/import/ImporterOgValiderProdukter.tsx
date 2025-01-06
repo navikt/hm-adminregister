@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import "./import.scss";
 import { ValidateImportedProducts } from "products/import/valideringsside/ValidateImportedProducts";
 import { useParams } from "react-router-dom";
-import { useSeries } from "utils/swr-hooks";
 import { Loader } from "@navikt/ds-react";
 import FellesImport, { Upload } from "felleskomponenter/FellesImport";
+import { useSeriesV2 } from "api/SeriesApi";
+import ErrorAlert from "error/ErrorAlert";
 
 export const ImporterOgValiderProdukter = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
   const { seriesId } = useParams();
 
-  const { series, isLoadingSeries } = useSeries(seriesId!);
+  const { data: series, isLoading, error } = useSeriesV2(seriesId!);
 
-  if (isLoadingSeries) {
+  if (isLoading) {
     return (
       <main>
         <div className="import-products">
@@ -20,6 +21,14 @@ export const ImporterOgValiderProdukter = () => {
             <Loader size="2xlarge" title="venter..." />
           </div>
         </div>
+      </main>
+    );
+  }
+
+  if (!series || error) {
+    return (
+      <main className="show-menu">
+        <ErrorAlert />
       </main>
     );
   }
@@ -36,6 +45,7 @@ export const ImporterOgValiderProdukter = () => {
     return (
       <ValidateImportedProducts
         seriesId={seriesId!}
+        seriesTitle={series.title}
         upload={upload}
         reseetUpload={() => {
           setUpload(undefined);

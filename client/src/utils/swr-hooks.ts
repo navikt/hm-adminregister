@@ -18,7 +18,6 @@ import {
   ProductVariantsForDelkontraktDto,
   ProdukterTilGodkjenningChunk,
   SeriesChunk,
-  SeriesRegistrationDTO,
   SeriesSearchChunk,
   SeriesSearchDTO,
   SupplierChunk,
@@ -60,26 +59,6 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     }
     return res.json();
   });
-
-export function useSeries(seriesUUID: string) {
-  const { loggedInUser } = useAuthStore();
-
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/${seriesUUID}`);
-
-  const {
-    data: series,
-    error: errorSeries,
-    isLoading: isLoadingSeries,
-    mutate: mutateSeries,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
-
-  return {
-    series,
-    isLoadingSeries,
-    errorSeries,
-    mutateSeries,
-  };
-}
 
 export function useSeriesByVariantIdentifier(variantIdentifier: string) {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantIdentifier}`;

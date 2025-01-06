@@ -5,7 +5,7 @@ import { Product } from "utils/types/types";
 import { mapProductRegistrationDTOToProduct } from "utils/product-util";
 import { ProductSeriesInfo } from "products/import/valideringsside/ProductSeriesInfo";
 import { VariantsTable } from "products/import/valideringsside/VariantsTable";
-import { baseUrl, useSeries } from "utils/swr-hooks";
+import { baseUrl } from "utils/swr-hooks";
 import { importProducts } from "api/ImportExportApi";
 import { Upload } from "felleskomponenter/FellesImport";
 
@@ -13,15 +13,15 @@ interface Props {
   upload: Upload;
   reseetUpload: () => void;
   seriesId: string;
+  seriesTitle: string;
 }
 
-export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId }: Props) => {
+export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, seriesTitle }: Props) => {
   const { loggedInUser } = useAuthStore();
   const [productsToValidate, setProductsToValidate] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [importSuccessful, setImportSuccessful] = useState(false);
-  const { series, isLoadingSeries, errorSeries } = useSeries(seriesId);
 
   useEffect(() => {
     importerDryrun();
@@ -146,7 +146,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId }: Pro
                       open={true}
                     >
                       <ExpansionCard.Header>
-                        <ExpansionCard.Title>{series?.title}</ExpansionCard.Title>
+                        <ExpansionCard.Title>{seriesTitle}</ExpansionCard.Title>
                         <ExpansionCard.Description>
                           <ProductSeriesInfo product={product} />
                         </ExpansionCard.Description>

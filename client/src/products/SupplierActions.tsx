@@ -103,20 +103,17 @@ const SupplierActions = ({
                       Marker som utgått
                     </Dropdown.Menu.List.Item>
                   ))}
-                {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
-                {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
-                {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
-                {/*  </Dropdown.Menu.GroupedList.Heading>*/}
-                {/*)}*/}
                 <Dropdown.Menu.Divider />
                 <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
                   Eksporter varianter
                 </Dropdown.Menu.List.Item>
+                {/* //import virker ikke, fjerner knappen for nå
                 {!isPendingApproval && (
                   <Dropdown.Menu.List.Item onClick={() => navigate(`/produkt/${series.id}/importer-produkter`)}>
                     Importer varianter
                   </Dropdown.Menu.List.Item>
                 )}
+                */}
               </Dropdown.Menu.List>
             </Dropdown.Menu>
           </Dropdown>
