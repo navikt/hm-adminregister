@@ -14,8 +14,8 @@ import { fetcherGET } from "utils/swr-hooks";
 import { FileUpload } from "felleskomponenter/UploadModal";
 import { HM_REGISTER_URL } from "environments";
 
-export const requestApproval = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
+export const requestApproval = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
 };
 
 export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesRegistrationDTOV2> => {
@@ -35,19 +35,16 @@ export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
-export const approveSeries = async (seriesUUID: string): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/approve-v2/${seriesUUID}`), "PUT");
+export const approveSeries = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/approve-v2/${seriesUUID}`), "PUT");
 };
 
 export const approveMultipleSeries = async (seriesIds: string[]): Promise<SeriesRegistrationDTO[]> => {
   return await fetchAPI(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
 };
 
-export const rejectSeries = async (
-  seriesUUID: string,
-  rejectSeriesDTO: RejectSeriesDTO,
-): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
+export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
 export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
