@@ -58,11 +58,8 @@ export const draftNewSeriesForAdmin = async (
   return await fetchAPI(getPath(true, `/api/v1/series/supplier/${supplierId}/draftWith`), "POST", seriesDraftWith);
 };
 
-export const moveProductsToSeries = async (
-  seriesUUID: string,
-  productIds: string[],
-): Promise<SeriesRegistrationDTO> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/series/products/move-to/${seriesUUID}`), "PUT", {
+export const moveProductsToSeries = async (seriesUUID: string, productIds: string[]): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/series/products/move-to/${seriesUUID}`), "PUT", {
     productIds: productIds,
   });
 };
