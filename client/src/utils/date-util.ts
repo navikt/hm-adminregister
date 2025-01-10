@@ -23,10 +23,3 @@ export const toDate = (date: string): Date => {
 export const todayTimestamp = (): string => {
   return toDateTimeString(new Date());
 };
-
-export const tenYearsFromTodayTimestamp = (): string => {
-  let date = new Date();
-  date.setFullYear(date.getFullYear() + 10);
-
-  return toDateTimeString(date);
-};

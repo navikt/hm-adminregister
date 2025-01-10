@@ -17,7 +17,6 @@ import {
   ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
   ProdukterTilGodkjenningChunk,
-  SeriesChunk,
   SeriesSearchChunk,
   SeriesSearchDTO,
   SupplierChunk,
@@ -147,14 +146,6 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
 
   return uri;
 };
-
-export function getAllRejectedSeries() {
-  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?size=1000000&adminStatus=REJECTED`;
-
-  const { data } = useSWR<SeriesChunk>(path, fetcherGET);
-
-  return data;
-}
 
 export function usePagedSeriesToApprove({
   page,

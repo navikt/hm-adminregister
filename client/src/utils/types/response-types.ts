@@ -4,34 +4,14 @@ import { components } from "./schema";
 export type UserDTO = components["schemas"]["UserDTO"];
 export type AdminUserChunk = components["schemas"]["Page_UserDTO_"];
 export type SupplierRegistrationDTO = components["schemas"]["SupplierRegistrationDTO"];
-export type UserRegistrationDTO = components["schemas"]["UserRegistrationDTO"];
 export type LoggedInUserResponse = components["schemas"]["RegistrationAuthentication"];
 
 export type SupplierStatus = components["schemas"]["SupplierStatus"];
-export type DraftStatus = components["schemas"]["DraftStatus"];
-export type SeriesStatus = components["schemas"]["SeriesStatus"];
-export type AdminStatus = components["schemas"]["AdminStatus"];
 
 export type SupplierChunk = components["schemas"]["Page_SupplierRegistrationDTO_"];
-export type SupplierUserChunk = components["schemas"]["Page_UserDTO_"];
 
 export type AgreementsChunk = {
   content: components["schemas"]["AgreementBasicInformationDto"][];
-  pageable: components["schemas"]["OpenApiPageable"];
-  /** Format: int32 */
-  pageNumber?: number;
-  /** Format: int64 */
-  offset?: number;
-  /** Format: int32 */
-  size?: number;
-  totalPages?: number;
-  empty?: boolean;
-  /** Format: int32 */
-  numberOfElements?: number;
-};
-
-export type ProductsChunk = {
-  content: components["schemas"]["ProductRegistrationDTO"][];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;
@@ -60,17 +40,13 @@ export type NewsChunk = {
   numberOfElements?: number;
 };
 
-export type SeriesGroupDTO = components["schemas"]["SeriesGroupDTO"][];
 export type ProductRegistrationDTO = components["schemas"]["ProductRegistrationDTO"];
 export type ProductRegistrationDTOV2 = components["schemas"]["ProductRegistrationDTOV2"];
 export type UpdateProductRegistrationDTO = components["schemas"]["UpdateProductRegistrationDTO"];
 export type ProductRegistration = components["schemas"]["ProductRegistration"];
 export type ProductAgreementRegistrationDTO = components["schemas"]["ProductAgreementRegistrationDTO"];
 export type ProductAgreementRegistrationDTOList = components["schemas"]["ProductAgreementRegistrationDTO"][];
-export type ProduktvarianterForDelkontrakterDTO = components["schemas"]["ProduktvarianterForDelkontrakterDTO"];
-export type ProduktvarianterForDelkontrakterDTOList = components["schemas"]["ProduktvarianterForDelkontrakterDTO"][];
 export type AgreementRegistrationDTO = components["schemas"]["AgreementRegistrationDTO"];
-export type AgreementPostDTO = components["schemas"]["AgreementPost"];
 export type IsoCategoryDTO = components["schemas"]["IsoCategoryDTO"];
 export type AgreementGroupDto = components["schemas"]["AgreementBasicInformationDto"][];
 export type AgreementAttachment = components["schemas"]["AgreementAttachment"];
@@ -82,7 +58,6 @@ export type MediaSort = components["schemas"]["MediaSort"];
 export type SeriesDraftWithDTO = components["schemas"]["SeriesDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
 export type TechData = components["schemas"]["TechData"];
-export type TechLabelDto = components["schemas"]["TechLabelDTO"];
 export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
@@ -100,28 +75,10 @@ export type FileTitleDto = components["schemas"]["FileTitleDto"];
 
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
-export type ProductAgreementsWithInformation =
-  components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
-
 export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];
-  pageable: components["schemas"]["OpenApiPageable"];
-  /** Format: int32 */
-  pageNumber?: number;
-  /** Format: int64 */
-  offset?: number;
-  /** Format: int32 */
-  size?: number;
-  totalPages?: number;
-  empty?: boolean;
-  /** Format: int32 */
-  numberOfElements?: number;
-};
-
-export type SeriesChunk = {
-  content: SeriesRegistrationDTO[];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;
