@@ -156,22 +156,7 @@ export function getAllRejectedSeries() {
   return data;
 }
 
-export function useSeriesToApprove() {
-  const { loggedInUser } = useAuthStore();
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve`;
-
-  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
-}
-
-// TODO: Slå sammen med usePagedProducts
-export function usePagedProductsToApprove({
+export function usePagedSeriesToApprove({
   page,
   pageSize,
   createdByFilter,
@@ -188,15 +173,10 @@ export function usePagedProductsToApprove({
   sortUrl: string | null;
   filters: string[];
 }) {
-  const { loggedInUser } = useAuthStore();
-
-  const basePath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}`;
+  const basePath = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}`;
 
   const filterUrl = new URLSearchParams();
 
-  filterUrl.append("editStatus", "PENDING_APPROVAL");
   supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
 
@@ -215,22 +195,20 @@ export function usePagedProductsToApprove({
       filterUrl.append("mainProduct", "false");
     }
   }
-
-  const sortBy = sortUrl?.split(",")[0] || "updated";
-  const sortDirection = sortUrl?.split(",")[1] || "descending";
-  const sortURL =
-    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
   if (createdByFilter === CreatedByFilter.ADMIN) {
     filterUrl.append("createdByAdmin", "true");
   } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
     filterUrl.append("createdByAdmin", "false");
   }
 
-  const path = loggedInUser?.isAdmin
-    ? `${basePath}&${sortURL}${filterUrl.toString()}&excludedStatus=DELETED`
-    : `${basePath}&${filterUrl.toString()}&excludedStatus=DELETED`;
+  const sortBy = sortUrl?.split(",")[0] || "updated";
+  const sortDirection = sortUrl?.split(",")[1] || "descending";
+  const sortURL =
+    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}` : "";
 
-  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+  const path = `${basePath}&${sortURL}${filterUrl.toString()}`;
+
+  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(path, fetcherGET);
 
   return {
     data,

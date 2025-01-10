@@ -2984,8 +2984,11 @@ export interface components {
             seriesUUID: string;
             status: string;
             supplierName: string;
-            thumbnail?: components["schemas"]["MediaInfoDTO"] | null;
+            firstImgUri?: string | null;
             isExpired: boolean;
+            /** Format: date-time */
+            updated: string;
+            mainProduct: boolean;
         };
         Slice_AgreementBasicInformationDto_: {
             content: components["schemas"]["AgreementBasicInformationDto"][];
