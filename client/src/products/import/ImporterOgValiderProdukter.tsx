@@ -3,9 +3,10 @@ import "./import.scss";
 import { ValidateImportedProducts } from "products/import/valideringsside/ValidateImportedProducts";
 import { useParams } from "react-router-dom";
 import { Loader } from "@navikt/ds-react";
-import FellesImport, { Upload } from "felleskomponenter/FellesImport";
+import { Upload } from "felleskomponenter/FellesImport";
 import { useSeriesV2 } from "api/SeriesApi";
 import ErrorAlert from "error/ErrorAlert";
+import ImporterProdukter from "products/import/ImporterProdukter";
 
 export const ImporterOgValiderProdukter = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
@@ -34,13 +35,7 @@ export const ImporterOgValiderProdukter = () => {
   }
 
   if (!upload) {
-    return (
-      <FellesImport
-        validerImporterteProdukter={setUpload}
-        tekst={`Importer varianter for ${series?.title}`}
-        setSupplier_={() => {}}
-      />
-    );
+    return <ImporterProdukter seriesTitle={series.title} validerImporterteProdukter={setUpload} />;
   } else
     return (
       <ValidateImportedProducts
