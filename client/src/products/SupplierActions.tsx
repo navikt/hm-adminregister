@@ -107,13 +107,11 @@ const SupplierActions = ({
                 <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
                   Eksporter varianter
                 </Dropdown.Menu.List.Item>
-                {/* //import virker ikke, fjerner knappen for nå
                 {!isPendingApproval && (
                   <Dropdown.Menu.List.Item onClick={() => navigate(`/produkt/${series.id}/importer-produkter`)}>
                     Importer varianter
                   </Dropdown.Menu.List.Item>
                 )}
-                */}
               </Dropdown.Menu.List>
             </Dropdown.Menu>
           </Dropdown>
