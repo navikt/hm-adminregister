@@ -1958,38 +1958,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/vendor/api/v1/series/serie-til-godkjenning/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setSeriesToBeApproved"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/vendor/api/v1/series/series_ready-for-approval/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["setSeriesReadyForApproval"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/vendor/api/v1/series/v2/{id}": {
         parameters: {
             query?: never;
@@ -2117,6 +2085,7 @@ export interface components {
             text?: string | null;
             identifier: string;
             attachments: components["schemas"]["AgreementAttachment"][];
+            /** @deprecated */
             posts: components["schemas"]["AgreementPost"][];
             isoCategory: string[];
         };
@@ -2539,9 +2508,15 @@ export interface components {
         };
         ProductAgreementImportDTO: {
             dryRun: boolean;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @deprecated
+             */
             count: number;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @deprecated
+             */
             newCount: number;
             file: string;
             supplier: string;
@@ -2551,6 +2526,7 @@ export interface components {
             newProductAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
             updatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
             deactivatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
+            /** @deprecated */
             productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
         };
         ProductAgreementRegistrationDTO: {
@@ -2599,6 +2575,7 @@ export interface components {
         ProductData: {
             attributes: components["schemas"]["Attributes"];
             techData: components["schemas"]["TechData"][];
+            /** @deprecated */
             media: components["schemas"]["MediaInfoDTO"][];
             identifier?: string | null;
             seriesIdentifier?: string | null;
@@ -2656,8 +2633,11 @@ export interface components {
             hmsArtNr?: string | null;
             /** Format: uuid */
             seriesUUID: string;
+            /** @deprecated */
             seriesId: string;
+            /** @deprecated */
             isoCategory: string;
+            /** @deprecated */
             title: string;
             articleName: string;
             accessory: boolean;
@@ -2820,6 +2800,10 @@ export interface components {
         SeriesDataDTO: {
             media: components["schemas"]["MediaInfoDTO"][];
             attributes: components["schemas"]["SeriesAttributesDTO"];
+        };
+        SeriesDraftResponse: {
+            /** Format: uuid */
+            id: string;
         };
         SeriesDraftWithDTO: {
             title: string;
@@ -4881,7 +4865,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
+                    "application/json": Record<string, never>;
                 };
             };
         };
@@ -4907,7 +4891,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
+                    "application/json": Record<string, never>;
                 };
             };
         };
@@ -5031,7 +5015,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
+                    "application/json": components["schemas"]["SeriesDraftResponse"];
                 };
             };
         };
@@ -6838,7 +6822,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
+                    "application/json": components["schemas"]["SeriesDraftResponse"];
                 };
             };
         };
@@ -6860,51 +6844,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    setSeriesToBeApproved: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setSeriesToBeApproved 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
-                };
-            };
-        };
-    };
-    setSeriesReadyForApproval: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description setSeriesReadyForApproval 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesRegistrationDTO"];
+                    "application/json": Record<string, never>;
                 };
             };
         };

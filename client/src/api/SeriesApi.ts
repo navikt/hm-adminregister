@@ -4,6 +4,7 @@ import {
   MediaSort,
   NewVideo,
   RejectSeriesDTO,
+  SeriesDraftResponse,
   SeriesDraftWithDTO,
   SeriesRegistrationDTO,
   SeriesRegistrationDTOV2,
@@ -47,14 +48,14 @@ export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSe
   return await fetchAPIModify(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
-export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesRegistrationDTO> => {
+export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesDraftResponse> => {
   return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
 };
 
 export const draftNewSeriesForAdmin = async (
   seriesDraftWith: SeriesDraftWithDTO,
   supplierId: string,
-): Promise<SeriesRegistrationDTO> => {
+): Promise<SeriesDraftResponse> => {
   return await fetchAPI(getPath(true, `/api/v1/series/supplier/${supplierId}/draftWith`), "POST", seriesDraftWith);
 };
 

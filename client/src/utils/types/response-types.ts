@@ -63,6 +63,7 @@ export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVar
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesRegistrationDTO = components["schemas"]["SeriesRegistrationDTO"];
+export type SeriesDraftResponse = components["schemas"]["SeriesDraftResponse"];
 export type SeriesRegistrationDTOV2 = components["schemas"]["SeriesRegistrationDTOV2"];
 export type SeriesSearchDTO = components["schemas"]["SeriesSearchDTO"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
