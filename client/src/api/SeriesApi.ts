@@ -48,15 +48,15 @@ export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSe
   return await fetchAPIModify(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), "PUT", rejectSeriesDTO);
 };
 
-export const draftNewSeries = async (seriesDraftWith: SeriesDraftWithDTO): Promise<SeriesDraftResponse> => {
-  return await fetchAPI(getPath(false, `/api/v1/series/draftWith`), "POST", seriesDraftWith);
-};
-
-export const draftNewSeriesForAdmin = async (
+export const draftNewSeries = async (
   seriesDraftWith: SeriesDraftWithDTO,
   supplierId: string,
 ): Promise<SeriesDraftResponse> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/supplier/${supplierId}/draftWith`), "POST", seriesDraftWith);
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/api/v1/series/supplier/${supplierId}/draftWith`,
+    "POST",
+    seriesDraftWith,
+  );
 };
 
 export const moveProductsToSeries = async (seriesUUID: string, productIds: string[]): Promise<void> => {
