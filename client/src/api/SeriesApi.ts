@@ -6,7 +6,6 @@ import {
   RejectSeriesDTO,
   SeriesDraftResponse,
   SeriesDraftWithDTO,
-  SeriesRegistrationDTO,
   SeriesRegistrationDTOV2,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
@@ -40,8 +39,8 @@ export const approveSeries = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(true, `/api/v1/series/approve-v2/${seriesUUID}`), "PUT");
 };
 
-export const approveMultipleSeries = async (seriesIds: string[]): Promise<SeriesRegistrationDTO[]> => {
-  return await fetchAPI(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
+export const approveMultipleSeries = async (seriesIds: string[]): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
 };
 
 export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<void> => {
