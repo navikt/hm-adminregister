@@ -1,4 +1,4 @@
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "products/seriesUtils";
@@ -13,7 +13,7 @@ export const RequestApprovalModal = ({
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   isValid: boolean;
   isOpen: boolean;

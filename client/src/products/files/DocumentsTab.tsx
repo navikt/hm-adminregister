@@ -1,7 +1,7 @@
 import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
-import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesDTO } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
@@ -11,7 +11,7 @@ import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import styles from "../ProductPage.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   isEditable: boolean;
   showInputError: boolean;
 }

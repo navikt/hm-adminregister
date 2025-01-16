@@ -6,7 +6,7 @@ import {
   RejectSeriesDTO,
   SeriesDraftResponse,
   SeriesDraftWithDTO,
-  SeriesRegistrationDTOV2,
+  SeriesDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
@@ -18,7 +18,7 @@ export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
 };
 
-export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesRegistrationDTOV2> => {
+export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO> => {
   const seriesIdPath = getPath(true, `/api/v1/series/v2/${seriesUUID}`);
   return await fetchAPI(seriesIdPath, "GET");
 };
@@ -87,7 +87,7 @@ export const deleteSeries = async (seriesUUID: string): Promise<void> => {
 };
 
 export function useSeriesV2(seriesUUID: string) {
-  return useSWR<SeriesRegistrationDTOV2>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET);
+  return useSWR<SeriesDTO>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET);
 }
 
 export const uploadFilesToSeries = async (seriesUUID: string, uploads: FileUpload[]) => {

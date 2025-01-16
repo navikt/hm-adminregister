@@ -1,5 +1,5 @@
 import { Alert, Button, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -15,7 +15,7 @@ const VideoTab = ({
   mutateSeries,
   isEditable,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   isEditable: boolean;
 }) => {

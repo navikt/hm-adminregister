@@ -14,7 +14,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
-import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { ProductRegistrationDTOV2, SeriesDTO } from "utils/types/response-types";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import styles from "../ProductPage.module.scss";
 import { moveProductsToSeries } from "api/SeriesApi";
@@ -25,7 +25,7 @@ const VariantsTab = ({
   showInputError,
   mutateSeries,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   showInputError: boolean;
   mutateSeries: () => void;
 }) => {

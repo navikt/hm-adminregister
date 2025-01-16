@@ -4,7 +4,7 @@ import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 
 const SupplierActions = ({
   series,
@@ -15,7 +15,7 @@ const SupplierActions = ({
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;

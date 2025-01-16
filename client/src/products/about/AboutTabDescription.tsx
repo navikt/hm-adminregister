@@ -4,13 +4,13 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel
 import parse from "html-react-parser";
 import { useState } from "react";
 import { updateProductDescription } from "api/SeriesApi";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 import styles from "./Editor.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   showInputError: boolean;
   isEditable: boolean;

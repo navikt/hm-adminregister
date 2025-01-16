@@ -1,6 +1,6 @@
 import { BodyShort, Box, Button, Checkbox, Modal, Table, TextField, VStack } from "@navikt/ds-react";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { ProductRegistrationDTOV2, SeriesDTO } from "utils/types/response-types";
 import React, { useEffect, useState } from "react";
 import { getSeriesBySeriesId } from "api/SeriesApi";
 
@@ -17,7 +17,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
   const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>();
   const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>();
   const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined);
-  const [seriesToPreview, setSeriesToPreview] = useState<SeriesRegistrationDTOV2 | undefined>();
+  const [seriesToPreview, setSeriesToPreview] = useState<SeriesDTO | undefined>();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
