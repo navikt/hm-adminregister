@@ -14,6 +14,7 @@ export const ProductAgreementsTable = ({
             <Table.ColumnHeader>Tittel</Table.ColumnHeader>
             <Table.ColumnHeader>Anbudsnummer</Table.ColumnHeader>
             <Table.ColumnHeader key={1}>HMS-nr</Table.ColumnHeader>
+            <Table.ColumnHeader>Delkontrakt</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -24,6 +25,7 @@ export const ProductAgreementsTable = ({
                 <Table.DataCell>{productAgreement.title}</Table.DataCell>
                 <Table.DataCell>{productAgreement.reference}</Table.DataCell>
                 <Table.DataCell>{productAgreement.hmsArtNr}</Table.DataCell>
+                <Table.DataCell>{productAgreement.post}</Table.DataCell>
               </Table.Row>
             ))}
         </Table.Body>

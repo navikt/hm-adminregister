@@ -3,7 +3,8 @@
 @import '@navikt/ds-tokens/dist/tokens';
 
 
-.variants-table {
+.agreement-variants-table {
+
 
   thead tr {
     background-color: $a-surface-selected;
@@ -17,7 +18,6 @@
 
 .import-products {
   margin-top: $a-spacing-16;
-  width: 100%;
   display: flex;
   justify-content: center;
 
