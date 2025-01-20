@@ -201,7 +201,7 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                         </Heading>
                       </ExpansionCard.Header>
                       <ExpansionCard.Content>
-                        <ProductRegistrationTable productRegistrations={createdMainProducts} />
+                        <ProductRegistrationTable productRegistrations={createdAccessoryParts} />
                       </ExpansionCard.Content>
                     </ExpansionCard>
                   ) : (
