@@ -78,34 +78,33 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
         <div className={"import-products"}>
           <div className="content">
             <Heading level="1" size="large" align="center">
-              Importer produkter
+              Import av produkter var vellykket
             </Heading>
 
             <VStack gap="4">
+              <BodyShort size="large">
+                <a href={baseUrl("/rammeavtaler/importer-katalogfil")}>Gå til ny import</a>
+              </BodyShort>
               {(createdMainProducts.length > 0 || createdAccessoryParts.length > 0) && (
-                <p>
+                <BodyShort size="medium">
                   Det ble opprettet nye produkter/deler/tilbehør i import, disse ligger{" "}
                   <a href={baseUrl(`/til-godkjenning?filter=ADMIN`)}> til godkjenning</a>.
-                </p>
+                </BodyShort>
               )}
-              <p>
-                {(newProductAgreements.length > 0 ||
-                  updatedProductAgreements.length > 0 ||
-                  deactivatedProductAgreements.length > 0) && (
-                  <BodyShort>
-                    Importeringen var vellykket. Du kan se de nye tilknytningene på{" "}
-                    {newProductAgreements.length > 0 ? (
-                      <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
-                    ) : updatedProductAgreements.length > 0 ? (
-                      <a href={baseUrl(`/rammeavtaler/${updatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
-                    ) : (
-                      <a href={baseUrl(`/rammeavtaler/${deactivatedProductAgreements[0]?.agreementId}`)}>
-                        rammeavtalen
-                      </a>
-                    )}
-                  </BodyShort>
-                )}
-              </p>
+              {(newProductAgreements.length > 0 ||
+                updatedProductAgreements.length > 0 ||
+                deactivatedProductAgreements.length > 0) && (
+                <BodyShort size="medium">
+                  Importeringen var vellykket. Du kan se de nye tilknytningene på{" "}
+                  {newProductAgreements.length > 0 ? (
+                    <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                  ) : updatedProductAgreements.length > 0 ? (
+                    <a href={baseUrl(`/rammeavtaler/${updatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                  ) : (
+                    <a href={baseUrl(`/rammeavtaler/${deactivatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                  )}
+                </BodyShort>
+              )}
             </VStack>
           </div>
         </div>
