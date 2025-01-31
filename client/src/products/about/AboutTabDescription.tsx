@@ -1,4 +1,4 @@
-import { Alert, BodyShort, Button, Heading, VStack } from "@navikt/ds-react";
+import { Alert, BodyShort, Button, Heading, HStack, Spacer, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
@@ -22,6 +22,7 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
   const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
   const { setGlobalError } = useErrorStore();
+  const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0);
 
   //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
   const closeDescriptionEditor = () => {
@@ -39,6 +40,7 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
   };
 
   const onTextChange = (html: string, rawText: string) => {
+    setDescriptionLength(rawText.length);
     if (rawText.length > 750) {
       setDescriptionLengthError("Beskrivelsen kan ikke være lengre enn 750 tegn");
     } else {
@@ -117,16 +119,24 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
                 • {descriptionLengthError}
               </p>
             </div>
-            <Button
-              className="fit-content"
-              variant="tertiary"
-              icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
-              onClick={() => {
-                closeDescriptionEditor();
-              }}
-            >
-              Lagre
-            </Button>
+            <HStack align="center">
+              <Button
+                className="fit-content"
+                variant="tertiary"
+                icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
+                onClick={() => {
+                  closeDescriptionEditor();
+                }}
+              >
+                Lagre
+              </Button>
+              <Spacer />
+              {descriptionLengthError ? (
+                <p className="navds-error-message navds-label">{descriptionLength}/750 tegn</p>
+              ) : (
+                <p className="navds-body-short">{descriptionLength}/750 tegn</p>
+              )}
+            </HStack>
           </>
         )}
       </VStack>
