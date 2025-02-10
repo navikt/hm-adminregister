@@ -84,6 +84,9 @@ export default function Login() {
             if (loggedInUser.isAdmin) {
               logAmplitudeEvent("login, ny bruker", "admin");
               navigate("/admin/adminopplysninger");
+            } else if (loggedInUser.isHmsUser) {
+              logAmplitudeEvent("login, ny bruker", "hms-bruker");
+              navigate("/logg-inn/hms-brukeropplysninger");
             } else {
               logAmplitudeEvent("login, ny bruker", "supplier");
               navigate("/logg-inn/brukeropplysninger");

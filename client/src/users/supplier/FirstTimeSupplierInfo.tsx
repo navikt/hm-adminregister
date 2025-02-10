@@ -27,6 +27,8 @@ const FirstTimeSupplierInfo = () => {
   const [loading, setLoading] = useState(true);
   const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin);
 
+  console.log("i supplier");
+
   //TODO: Gjør dette fordi supplierIsLoading er false første render så skjema vises ikke (heller ikke loader)
   // så her må vi se på en bedre løsning
   useEffect(() => {

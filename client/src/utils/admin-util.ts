@@ -5,3 +5,11 @@ export interface NewAdminUserDTO {
   roles: string[];
   attributes: {};
 }
+
+export interface NewHmsUserDTO {
+  name?: string | null;
+  email: string;
+  password: string;
+  roles: string[];
+  attributes: {};
+}

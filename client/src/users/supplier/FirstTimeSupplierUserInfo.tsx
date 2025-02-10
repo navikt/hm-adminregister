@@ -25,7 +25,7 @@ const FirstTimeSupplierUserInfo = () => {
           </Heading>
         </span>
 
-        {user && <FirstTimeUserInfoForm user={user} isAdmin={false} />}
+        {user && <FirstTimeUserInfoForm user={user} isAdmin={false} isHmsUser={false} />}
       </div>
     </main>
   );

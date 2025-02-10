@@ -54,12 +54,14 @@ const ProfileMenu = () => {
           <span className="icon-name-container">
             {loggedInUser?.isAdmin ? (
               <PersonIcon fontSize="2.25rem" aria-hidden />
+            ) : loggedInUser?.isHmsUser ? (
+              <PersonIcon fontSize="2.25rem" aria-hidden />
             ) : (
               <Buldings3Icon fontSize="2.25rem" aria-hidden />
             )}
             <VStack align={"start"}>
               <BodyShort className="text-overflow-hidden-small">
-                {loggedInUser?.isAdmin ? "Administrator" : loggedInUser?.supplierName}
+                {loggedInUser?.isAdmin ? "Administrator" : loggedInUser?.isHmsUser ? "HMS" : loggedInUser?.supplierName}
               </BodyShort>
               <BodyShort size="small" style={{ textAlign: "start" }}>
                 {loggedInUser?.userName}
@@ -71,9 +73,16 @@ const ProfileMenu = () => {
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
             <HGrid asChild columns={"1.7rem 1fr"} gap="2">
-              <Link to={loggedInUser?.isAdmin ? "/admin/profil" : "/profil"} className="user-menu__profile-link">
+              <Link
+                to={loggedInUser?.isAdmin ? "/admin/profil" : loggedInUser?.isHmsUser ? "/hms-bruker" : "/profil"}
+                className="user-menu__profile-link"
+              >
                 <PersonRectangleIcon title="Min profil" fontSize="1.5rem" aria-hidden />
-                {loggedInUser?.isAdmin ? "Min profil og admin brukere" : "Leverandør- og brukerinformasjon"}
+                {loggedInUser?.isAdmin
+                  ? "Min profil og admin brukere"
+                  : loggedInUser?.isHmsUser
+                    ? "Min profil"
+                    : "Leverandør- og brukerinformasjon"}
               </Link>
             </HGrid>
             <span className="line" />
@@ -88,7 +97,13 @@ const ProfileMenu = () => {
       </div>
       <div className="user-menu user-menu__tablet">
         <Button
-          onClick={() => (loggedInUser?.isAdmin ? navigate("/admin/profil") : navigate("/profil"))}
+          onClick={() =>
+            loggedInUser?.isAdmin
+              ? navigate("/admin/profil")
+              : loggedInUser?.isHmsUser
+                ? navigate("/hms-bruker")
+                : navigate("/profil")
+          }
           aria-selected={pathname === "/profil" || pathname === "/admin/profil"}
           className="user-menu__profile-link"
           icon={<PersonCircleIcon title="profile" fontSize="2.25rem" />}

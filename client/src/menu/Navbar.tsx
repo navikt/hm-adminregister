@@ -80,14 +80,16 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </>
       )}
 
-      <NavLink to="/produkter" className="page-link">
-        {pathname.startsWith("/produkter") && <div className="active-indicator" />}
-        <div className="line" />
-        <HStack gap="4" style={{ paddingLeft: "16px" }}>
-          <PackageFillIcon fontSize={"1.5rem"} aria-hidden />
-          <span>Produkter</span>
-        </HStack>
-      </NavLink>
+      {loggedInUser && (loggedInUser.isAdmin || loggedInUser.isSupplier) && (
+        <NavLink to="/produkter" className="page-link">
+          {pathname.startsWith("/produkter") && <div className="active-indicator" />}
+          <div className="line" />
+          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <PackageFillIcon fontSize={"1.5rem"} aria-hidden />
+            <span>Produkter</span>
+          </HStack>
+        </NavLink>
+      )}
 
       {loggedInUser && loggedInUser.isAdmin && (
         <>

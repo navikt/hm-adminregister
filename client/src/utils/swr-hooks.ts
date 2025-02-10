@@ -331,7 +331,9 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
   const { setGlobalError } = useErrorStore();
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`;
+    : loggedInUser?.isHmsUser
+      ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/`
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`;
 
   const { data, error, isLoading, mutate } = useSWR<UserDTO>(
     loggedInUser ? path + loggedInUser?.userId : null,
@@ -407,7 +409,8 @@ export function useAdminUsers() {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
   const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET);
-  const adminUsers: UserDTO[] | undefined = data && data.content;
+  const users: UserDTO[] | undefined = data && data.content;
+  const adminUsers = users && users.filter((user) => user.roles.includes("ROLE_ADMIN"));
 
   if (error) {
     setGlobalError(error.status, error.message);
@@ -416,6 +419,26 @@ export function useAdminUsers() {
 
   return {
     adminUsers,
+    isLoading,
+    error,
+  };
+}
+
+export function useHmsUsers() {
+  const { setGlobalError } = useErrorStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
+  const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET);
+  const users: UserDTO[] | undefined = data && data.content;
+  const hmsUsers = users && users.filter((user) => user.roles.includes("ROLE_HMS"));
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    hmsUsers,
     isLoading,
     error,
   };

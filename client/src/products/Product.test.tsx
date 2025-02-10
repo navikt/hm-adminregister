@@ -55,6 +55,8 @@ const logIn = (isAdmin: boolean) => {
   const { result } = renderHook(() => useAuthStore());
   result.current.setLoggedInUser({
     isAdmin: isAdmin,
+    isHmsUser: false,
+    isSupplier: !isAdmin,
     userId: "",
     userName: "",
     exp: "",

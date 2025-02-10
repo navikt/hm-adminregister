@@ -44,4 +44,16 @@ export const newAdminUserSchema = z.object({
     .min(8, { message: "Passord må inneholde minst 8 tegn." }),
 });
 
+export const newHmsUserSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "E-postadresse er påkrevd" })
+    .min(6, { message: "Epostadressen må inneholde minst 6 tegn." })
+    .email("Ikke riktig Email format enda"),
+  password: z
+    .string()
+    .min(1, { message: "Midlertidig passord er påkrevd" })
+    .min(8, { message: "Passord må inneholde minst 8 tegn." }),
+});
+
 export type newAdminUser = z.infer<typeof newSupplierUserSchema>;
