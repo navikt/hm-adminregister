@@ -195,7 +195,7 @@ export function usePagedSeriesToApprove({
   const sortBy = sortUrl?.split(",")[0] || "updated";
   const sortDirection = sortUrl?.split(",")[1] || "descending";
   const sortURL =
-    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}` : "";
+    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
 
   const path = `${basePath}&${sortURL}${filterUrl.toString()}`;
 
