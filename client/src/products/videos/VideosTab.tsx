@@ -1,4 +1,17 @@
-import { Alert, Button, Link, Modal, Tabs, TextField, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  BodyLong,
+  Button,
+  ConfirmationPanel,
+  Heading,
+  HelpText,
+  HStack,
+  Link,
+  Modal,
+  Tabs,
+  TextField,
+  VStack,
+} from "@navikt/ds-react";
 import { SeriesDTO } from "utils/types/response-types";
 
 import { useState } from "react";
@@ -24,20 +37,26 @@ const VideoTab = ({
   const { videos } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageConfirmVideoRequirements, setErrorMessageConfirmVideoRequirements] = useState("");
+  const [confirmVideoRequirements, setConfirmVideoRequirements] = useState(false);
 
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
   async function handleSaveVideoLink() {
-    saveVideoToSeries(series.id, { uri: url, title: title }).then(
-      () => {
-        mutateSeries();
-        setModalIsOpen(false);
-      },
-      (error) => {
-        setGlobalError(error.status, error.statusText);
-      },
-    );
+    const isUrlValid = validateUrl();
+    const isVideoRequirementsConfirmed = validateVideoRequirementsConfirmed();
+    if (isUrlValid && isVideoRequirementsConfirmed) {
+      saveVideoToSeries(series.id, { uri: url, title: title }).then(
+        () => {
+          mutateSeries();
+          setModalIsOpen(false);
+        },
+        (error) => {
+          setGlobalError(error.status, error.statusText);
+        },
+      );
+    }
   }
 
   async function handleDeleteVideoLink(uri: string) {
@@ -53,39 +72,61 @@ const VideoTab = ({
     const parsedUrl = parseUrl(url);
     if (parsedUrl) {
       const isValidDomain = validateDomain(new URL(parsedUrl));
-      if (isValidDomain) {
-        handleSaveVideoLink();
-      } else {
+      if (!isValidDomain) {
         setErrorMessage("Kun lenker fra YouTube og Vimeo er tillatt");
       }
     } else {
-      setErrorMessage("Ugyldig lenke. Eksempel på gyldig url er https://www.example.com/");
+      setErrorMessage("Ugyldig lenke. Eksempel på gyldig url er https://www.youtube.com/en-produkt-video");
     }
+
+    return !errorMessage;
+  };
+
+  const validateVideoRequirementsConfirmed = () => {
+    setErrorMessageConfirmVideoRequirements("");
+    if (!confirmVideoRequirements) {
+      setErrorMessageConfirmVideoRequirements("Du må bekrefte at kravene til videoer er oppfylt");
+      return false;
+    }
+    return true;
   };
 
   const resetInputFields = () => {
     setTitle("");
     setUrl("");
     setErrorMessage("");
+    setConfirmVideoRequirements(false);
+    setErrorMessageConfirmVideoRequirements("");
   };
 
   return (
     <Tabs.Panel value="videos" className={styles.tabPanel}>
       <VStack gap="8">
         {videos.length === 0 && (
-          <Alert variant="info">
-            Produktet har ingen videolenker. Det er kun mulig å legge til lenker fra YouTube og Vimeo.
-          </Alert>
+          <Alert variant="info">Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.</Alert>
         )}
 
         <Alert variant="warning">
-          Sørg for at videoen som lenkes til er tekstet, har synstolking og at kravene til universell utforming følges.
-          De som ikke kan høre lyd skal for eksempel få presentert lydinnholdet på en alternativ måte. Dette er
-          lovpålagt.
-          <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743">
-            Ytterligere informasjon om teksting av videoer finnes på nettsidene til Tilsynet for universell utforming av
-            ikt
-          </Link>
+          <Heading spacing size="small" level="1">
+            Krav til video
+          </Heading>
+          <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
+          <BodyLong>- er informativ og relevant til produktet</BodyLong>
+          <BodyLong>- er nøytral og har et objektivt preg</BodyLong>
+          <BodyLong spacing>
+            <HStack>
+              - er synstolket (gjelder videoer publisert etter 01.02.2024)
+              <HelpText title="Informasjon om synstolking">
+                Synstolking betyr at viktig visuell informasjon i video bli beskrevet via lyd.
+              </HelpText>
+            </HStack>
+          </BodyLong>
+          <BodyLong>
+            Les mer på{" "}
+            <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743" target="_blank">
+              Tilsynet for universell utforming sine nettsider
+            </Link>
+          </BodyLong>
         </Alert>
 
         {videos.length > 0 && (
@@ -138,16 +179,22 @@ const VideoTab = ({
               value={url}
               style={{ width: "400px" }}
               label="Lenke"
-              description="Må være til en video og ikke en spilleliste, høyreklikk og kopier"
+              description="Må være til en video og ikke en spilleliste, høyreklikk og kopier i videospilleren"
               onChange={(event) => setUrl(event.currentTarget.value)}
               error={errorMessage}
             />
+            <ConfirmationPanel
+              checked={confirmVideoRequirements}
+              label="Jeg bekrefter at kravene til videoer er oppfylt, herunder krav til universell utforming."
+              onChange={() => setConfirmVideoRequirements((x) => !x)}
+              error={errorMessageConfirmVideoRequirements}
+            ></ConfirmationPanel>
           </VStack>
         </Modal.Body>
         <Modal.Footer>
           <Button
             onClick={() => {
-              validateUrl();
+              handleSaveVideoLink();
             }}
             variant="primary"
           >
