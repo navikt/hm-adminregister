@@ -113,6 +113,7 @@ const VideoTab = ({
           <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
           <BodyLong>- er informativ og relevant til produktet</BodyLong>
           <BodyLong>- er nøytral og har et objektivt preg</BodyLong>
+          <BodyLong>- er tekstet</BodyLong>
           <BodyLong spacing>
             <HStack>
               - er synstolket (gjelder videoer publisert etter 01.02.2024)
