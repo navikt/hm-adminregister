@@ -107,7 +107,7 @@ const VideoTab = ({
         )}
 
         <Alert variant="warning">
-          <Heading spacing size="small" level="3">
+          <Heading spacing size="small" level="1">
             Krav til video
           </Heading>
           <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
