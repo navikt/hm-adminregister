@@ -13,6 +13,7 @@ import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 import { FileUpload } from "felleskomponenter/UploadModal";
 import { HM_REGISTER_URL } from "environments";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
@@ -88,6 +89,18 @@ export const deleteSeries = async (seriesUUID: string): Promise<void> => {
 
 export function useSeriesV2(seriesUUID: string) {
   return useSWR<SeriesDTO>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET);
+}
+
+export function useSeriesV2Conditional(seriesUUID?: string) {
+  const loggedInUser = useAuthStore().loggedInUser;
+  if (loggedInUser?.isHmsUser) {
+    return useSWR<SeriesDTO>(
+      seriesUUID ? `${HM_REGISTER_URL()}/admreg/hms/api/v1/series/${seriesUUID}` : null,
+      fetcherGET,
+    );
+  } else {
+    return useSWR<SeriesDTO>(seriesUUID ? `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}` : null, fetcherGET);
+  }
 }
 
 export const uploadFilesToSeries = async (seriesUUID: string, uploads: FileUpload[]) => {

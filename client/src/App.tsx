@@ -47,6 +47,8 @@ import { logNavigationEvent } from "utils/amplitude";
 import CreateHmsUser from "users/hms-user/CreateHmsUser";
 import FirstTimeHmsUserInfo from "users/hms-user/FirstTimeHmsUserInfo";
 import HmsUserProfile from "users/hms-user/HmsUserProfile";
+import PartListWrapper from "parts/PartListWrapper";
+import Part from "parts/Part";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -91,6 +93,9 @@ export function App() {
               <Route path="/rammeavtaler/:agreementId" element={<Agreement />} />
 
               <Route path="/nyheter" element={<News />} />
+
+              <Route path="/deler" element={<PartListWrapper />} />
+              <Route path="/del/:productId" element={<Part />} />
             </Route>
 
             <Route path="/produkter/opprett" element={<CreateProduct />} />

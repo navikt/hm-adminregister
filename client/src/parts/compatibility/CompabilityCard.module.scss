@@ -1,0 +1,9 @@
+@use "../../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+.card {
+  border: #272a3a solid 1px;
+  border-radius: 10px;
+  padding: 0.5rem;
+}

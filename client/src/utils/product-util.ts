@@ -36,8 +36,8 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
           bestillingsordning: firstProduct.productData.attributes.bestillingsordning
             ? firstProduct.productData.attributes.bestillingsordning
             : undefined,
-          compatibleWith: firstProduct.productData.attributes.compatibleWidth?.seriesIds
-            ? firstProduct.productData.attributes.compatibleWidth.seriesIds
+          compatibleWith: firstProduct.productData.attributes.compatibleWith?.seriesIds
+            ? firstProduct.productData.attributes.compatibleWith.seriesIds
             : [],
           shortdescription: firstProduct.productData.attributes.shortdescription
             ? firstProduct.productData.attributes.shortdescription

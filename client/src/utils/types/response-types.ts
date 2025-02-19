@@ -73,12 +73,29 @@ export type TechDataType = components["schemas"]["TechDataType"];
 export type NewVideo = components["schemas"]["NewVideo"];
 export type FileTitleDto = components["schemas"]["FileTitleDto"];
 
+export type CompatibleWith = components["schemas"]["CompatibleWith"];
+
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
 export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];
+  pageable: components["schemas"]["OpenApiPageable"];
+  /** Format: int32 */
+  pageNumber?: number;
+  /** Format: int64 */
+  offset?: number;
+  /** Format: int32 */
+  size?: number;
+  totalPages?: number;
+  empty?: boolean;
+  /** Format: int32 */
+  numberOfElements?: number;
+};
+
+export type ProductChunk = {
+  content: ProductRegistrationDTOV2[];
   pageable: components["schemas"]["OpenApiPageable"];
   /** Format: int32 */
   pageNumber?: number;

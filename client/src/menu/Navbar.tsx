@@ -5,6 +5,7 @@ import {
   NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
+  WrenchIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import { Button, HStack, VStack } from "@navikt/ds-react";
@@ -87,6 +88,17 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <HStack gap="4" style={{ paddingLeft: "16px" }}>
             <PackageFillIcon fontSize={"1.5rem"} aria-hidden />
             <span>Produkter</span>
+          </HStack>
+        </NavLink>
+      )}
+
+      {loggedInUser && (loggedInUser.isAdmin || loggedInUser.isHmsUser) && (
+        <NavLink to="/deler" className="page-link">
+          {pathname.startsWith("/deler") && <div className="active-indicator" />}
+          <div className="line" />
+          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <WrenchIcon fontSize={"1.5rem"} aria-hidden />
+            <span>Deler</span>
           </HStack>
         </NavLink>
       )}

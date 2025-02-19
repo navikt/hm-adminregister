@@ -36,22 +36,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/fix-no-delkontrakt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["fixNoDelkontraktForAgreement"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/admin/api/v1/agreement/delkontrakt/registrations/agreement/{agreementId}/no-delkontrakt": {
         parameters: {
             query?: never;
@@ -1092,6 +1076,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/accessory/hmsNr/{hmsNr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findByHmsNr_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/variants/{hmsNr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findCompatibleWithProductsVariants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/{id}/compatibleWith": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["connectProductAndVariants"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/isocategories": {
         parameters: {
             query?: never;
@@ -1116,6 +1164,70 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getCategoryByIsocode_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findParts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part/old/series/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findBySeriesUUIDAndSupplierIdOld_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartByVariantIdentifier"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartById"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1404,6 +1516,70 @@ export interface paths {
             cookie?: never;
         };
         get: operations["fetchTechLabelsByIsocode"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/hms-user/api/v1/users/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["changePassword_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/hms-user/api/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateUser_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/hms-user/api/v1/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getUserId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/hms/api/v1/series/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["readSeries_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1854,7 +2030,7 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getUsers_1"];
-        put: operations["updateUser_1"];
+        put: operations["updateUser_2"];
         post: operations["createUser_1"];
         delete?: never;
         options?: never;
@@ -1870,7 +2046,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["changePassword_1"];
+        put: operations["changePassword_2"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1885,7 +2061,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getUserId"];
+        get: operations["getUserId_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2004,7 +2180,7 @@ export interface components {
         };
         Attributes: {
             manufacturer?: string | null;
-            compatibleWidth?: components["schemas"]["CompatibleWith"] | null;
+            compatibleWith?: components["schemas"]["CompatibleWith"] | null;
             alternativeFor?: components["schemas"]["AlternativeFor"] | null;
             keywords?: string[] | null;
             series?: string | null;
@@ -2040,7 +2216,20 @@ export interface components {
             oldPassword: string;
             newPassword: string;
         };
+        CompatibleProductResult: {
+            /** Format: double */
+            score: number;
+            title: string;
+            seriesTitle: string;
+            seriesId: string;
+            productId: string;
+            hmsArtNr: string;
+        };
         CompatibleWith: {
+            seriesIds: string[];
+            productIds: string[];
+        };
+        CompatibleWithDTO: {
             seriesIds: string[];
             productIds: string[];
         };
@@ -2387,7 +2576,7 @@ export interface components {
             /** Format: int32 */
             rank: number;
             /** Format: uuid */
-            postId?: string | null;
+            postId: string;
             status: components["schemas"]["ProductAgreementStatus"];
             createdBy: string;
             updatedBy: string;
@@ -3083,26 +3272,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DelkontraktRegistrationDTO"][];
                 };
-            };
-        };
-    };
-    fixNoDelkontraktForAgreement: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                agreementId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description fixNoDelkontraktForAgreement 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -5182,6 +5351,98 @@ export interface operations {
             };
         };
     };
+    findByHmsNr_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hmsNr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findByHmsNr_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    findCompatibleWithProductsVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hmsNr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findCompatibleWithProductsVariants 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompatibleProductResult"][];
+                };
+            };
+        };
+    };
+    findById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findById 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    connectProductAndVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompatibleWithDTO"];
+            };
+        };
+        responses: {
+            /** @description connectProductAndVariants 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
     getAllCategories_1: {
         parameters: {
             query?: never;
@@ -5220,6 +5481,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IsoCategoryDTO"];
+                };
+            };
+        };
+    };
+    findParts: {
+        parameters: {
+            query: {
+                supplierRef?: string | null;
+                hmsArtNr?: string | null;
+                adminStatus?: components["schemas"]["AdminStatus"] | null;
+                registrationStatus?: components["schemas"]["RegistrationStatus"] | null;
+                supplierId?: string | null;
+                draft?: components["schemas"]["DraftStatus"] | null;
+                createdByUser?: string | null;
+                updatedByUser?: string | null;
+                title?: string | null;
+                pageable: components["schemas"]["OpenApiPageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findParts 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ProductRegistrationDTOV2_"];
+                };
+            };
+        };
+    };
+    findBySeriesUUIDAndSupplierIdOld_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findBySeriesUUIDAndSupplierIdOld_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"][];
+                };
+            };
+        };
+    };
+    findPartByVariantIdentifier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByVariantIdentifier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    findPartById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartById 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
                 };
             };
         };
@@ -5709,6 +6067,100 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TechLabelDTO"][];
+                };
+            };
+        };
+    };
+    changePassword_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDTO"];
+            };
+        };
+        responses: {
+            /** @description changePassword_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    updateUser_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserDTO"];
+            };
+        };
+        responses: {
+            /** @description updateUser_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDTO"];
+                };
+            };
+        };
+    };
+    getUserId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description getUserId 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDTO"];
+                };
+            };
+        };
+    };
+    readSeries_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description readSeries_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDTO"];
                 };
             };
         };
@@ -6433,7 +6885,7 @@ export interface operations {
             };
         };
     };
-    updateUser_1: {
+    updateUser_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6446,7 +6898,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description updateUser_1 200 response */
+            /** @description updateUser_2 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6481,7 +6933,7 @@ export interface operations {
             };
         };
     };
-    changePassword_1: {
+    changePassword_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6494,7 +6946,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description changePassword_1 200 response */
+            /** @description changePassword_2 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6505,7 +6957,7 @@ export interface operations {
             };
         };
     };
-    getUserId: {
+    getUserId_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6516,7 +6968,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description getUserId 200 response */
+            /** @description getUserId_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
