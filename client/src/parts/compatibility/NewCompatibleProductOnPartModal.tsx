@@ -4,7 +4,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { ProductRegistrationDTOV2 } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithVariant, getProductByHmsArtNr, getProductByHmsArtNrOrSupplierRef } from "api/PartApi";
+import { addCompatibleWithVariant, getProductByHmsArtNr } from "api/PartApi";
 
 interface Props {
   modalIsOpen: boolean;
