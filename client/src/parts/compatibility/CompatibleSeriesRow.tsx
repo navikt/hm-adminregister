@@ -1,14 +1,26 @@
 import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Button, Checkbox, Link, Loader, Table } from "@navikt/ds-react";
+import { Checkbox, Link, Loader, Table } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
-import { ExternalLinkIcon, TrashIcon } from "@navikt/aksel-icons";
+import { ExternalLinkIcon } from "@navikt/aksel-icons";
 import React from "react";
 
-export const CompatibleSeriesRow = ({ seriesUUID }: { seriesUUID: string }) => {
+interface CompatibleSeriesRowProps {
+  productIds: string[];
+  seriesUUID: string;
+}
+
+export const CompatibleSeriesRow = ({ productIds, seriesUUID }: CompatibleSeriesRowProps) => {
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
+  const noConnectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)).length ?? 0;
 
   if (isLoadingSeries) {
-    return <Loader />;
+    return (
+      <Table.Row key={`${seriesUUID}`} shadeOnHover={true}>
+        <Table.DataCell colSpan={4}>
+          <Loader />
+        </Table.DataCell>
+      </Table.Row>
+    );
   }
   if (!series) {
     return <></>;
@@ -26,18 +38,13 @@ export const CompatibleSeriesRow = ({ seriesUUID }: { seriesUUID: string }) => {
       </Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
-        <Button
-          iconPosition="right"
-          variant={"tertiary"}
-          icon={<TrashIcon title="Slett" fontSize="1.5rem" />}
-          onClick={() => {}}
-        />
+        {noConnectedVariants} / {series.variants.length}
       </Table.DataCell>
-      <Table.DataCell>
-        <Checkbox hideLabel checked={false} onChange={() => {}}>
-          {" "}
-        </Checkbox>
-      </Table.DataCell>
+      {/*<Table.DataCell>*/}
+      {/*  <Checkbox hideLabel checked={false} onChange={() => {}}>*/}
+      {/*    {" "}*/}
+      {/*  </Checkbox>*/}
+      {/*</Table.DataCell>*/}
     </Table.Row>
   );
 };

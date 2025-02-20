@@ -7,9 +7,10 @@ import { CompatibleSeriesRow } from "parts/compatibility/CompatibleSeriesRow";
 
 interface SeriesCompabilityTabProps {
   seriesIds: string[];
+  productIds: string[];
 }
 
-export const SeriesCompabilityTab = ({ seriesIds }: SeriesCompabilityTabProps) => {
+export const SeriesCompabilityTab = ({ seriesIds, productIds }: SeriesCompabilityTabProps) => {
   if (seriesIds.length < 1) {
     return <BodyLong>Ingen koblinger til serier</BodyLong>;
   }
@@ -20,14 +21,14 @@ export const SeriesCompabilityTab = ({ seriesIds }: SeriesCompabilityTabProps) =
         {seriesIds.length > 0 && (
           <Box className={styles.compabilityBox}>
             <VStack gap={"2"}>
-              <Button
-                className="fit-content"
-                variant="primary"
-                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-                onClick={() => {}}
-              >
-                Legg til kobling
-              </Button>
+              {/*<Button*/}
+              {/*  className="fit-content"*/}
+              {/*  variant="primary"*/}
+              {/*  icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}*/}
+              {/*  onClick={() => {}}*/}
+              {/*>*/}
+              {/*  Legg til kobling*/}
+              {/*</Button>*/}
               <HStack gap={"2"}>
                 {seriesIds.length > 0 && (
                   <RowBoxTable>
@@ -35,32 +36,28 @@ export const SeriesCompabilityTab = ({ seriesIds }: SeriesCompabilityTabProps) =
                       <Table.Row>
                         <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
-                        <Table.HeaderCell scope="col"></Table.HeaderCell>
-                        <Table.HeaderCell scope="col">
-                          <Checkbox checked={false} onChange={() => {}} hideLabel>
-                            Velg alle rader
-                          </Checkbox>
-                        </Table.HeaderCell>
+                        <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
+                        {/*<Table.HeaderCell scope="col"></Table.HeaderCell>*/}
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
                       {seriesIds.map((seriesId) => (
-                        <CompatibleSeriesRow seriesUUID={seriesId} key={seriesId} />
+                        <CompatibleSeriesRow productIds={productIds} seriesUUID={seriesId} key={seriesId} />
                       ))}
                     </Table.Body>
                   </RowBoxTable>
                 )}
               </HStack>
               <HStack justify={"end"}>
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
-                  disabled={true}
-                  onClick={() => {}}
-                >
-                  <span>Slett merkede koblinger</span>
-                </Button>
+                {/*<Button*/}
+                {/*  className="fit-content"*/}
+                {/*  variant="tertiary"*/}
+                {/*  icon={<TrashIcon fontSize="1.5rem" aria-hidden />}*/}
+                {/*  disabled={true}*/}
+                {/*  onClick={() => {}}*/}
+                {/*>*/}
+                {/*  <span>Slett merkede koblinger</span>*/}
+                {/*</Button>*/}
               </HStack>
             </VStack>
           </Box>

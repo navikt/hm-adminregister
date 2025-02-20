@@ -115,10 +115,10 @@ const Part = () => {
                 value={"variantkoblinger"}
                 label={`Variantkoblinger  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
               />
-              {/*<Tabs.Tab*/}
-              {/*  value={"seriekoblinger"}*/}
-              {/*  label={`Seriekoblinger  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}*/}
-              {/*/>*/}
+              <Tabs.Tab
+                value={"seriekoblinger"}
+                label={`Seriekoblinger  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
+              />
             </Tabs.List>
             <Tabs.Panel value="variantkoblinger">
               <VariantCompabilityTab
@@ -127,9 +127,12 @@ const Part = () => {
                 mutatePart={mutate}
               />
             </Tabs.Panel>
-            {/*<Tabs.Panel value={"seriekoblinger"}>*/}
-            {/*  <SeriesCompabilityTab seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []} />*/}
-            {/*</Tabs.Panel>*/}
+            <Tabs.Panel value={"seriekoblinger"}>
+              <SeriesCompabilityTab
+                productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
+                seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []}
+              />
+            </Tabs.Panel>
           </Tabs>
         </VStack>
       </HGrid>
