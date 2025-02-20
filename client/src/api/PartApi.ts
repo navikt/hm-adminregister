@@ -26,8 +26,16 @@ export function usePartByVariantIdentifier(variantIdentifier: string) {
   return useSWR<ProductRegistrationDTOV2>(variantIdentifier.length > 0 ? partByVariantIdPath : null, fetcherGET);
 }
 
-export const getPart = (productId: string): Promise<ProductRegistrationDTOV2> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${productId}`, "GET");
+export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/${hmsArtNr}`, "GET");
+}
+
+export function getProductByHmsArtNrOrSupplierRef(identifier: string): Promise<ProductRegistrationDTOV2> {
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/variant-id/${identifier}`, "GET");
+}
+
+export const getPart = async (productId: string): Promise<ProductRegistrationDTOV2> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`, "GET");
 
 export function usePartByProductId(productId: string) {
   const path = `${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`;
@@ -55,7 +63,7 @@ export function useCompatibleProductById(productId: string) {
   };
 }
 
-const updatePartCompatability = (productId: string, updatedCompatibleWith: CompatibleWith): Promise<void> =>
+const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWith): Promise<void> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
 export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string): Promise<void> => {
@@ -82,12 +90,12 @@ export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string): Promise<void> => {
+export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string[]): Promise<void> => {
   const partToUpdate = await getPart(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
-    productIds: compatibleWith?.productIds.filter((id) => id !== productIdToRemove) || [],
+    productIds: compatibleWith?.productIds.filter((id) => !productIdToRemove.includes(id)) || [],
     seriesIds: compatibleWith?.seriesIds || [],
   };
 

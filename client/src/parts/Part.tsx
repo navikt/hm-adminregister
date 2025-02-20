@@ -11,6 +11,7 @@ import {
   Label,
   Link as AkselLink,
   Loader,
+  Tabs,
   Tag,
   VStack,
 } from "@navikt/ds-react";
@@ -22,7 +23,8 @@ import styles from "./PartPage.module.scss";
 import { usePartByProductId } from "api/PartApi";
 import { useSeriesV2Conditional } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
-import { CompabilityList } from "parts/compatibility/CompabilityList";
+import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
+import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
 
 const Part = () => {
   const { productId } = useParams();
@@ -43,7 +45,7 @@ const Part = () => {
     );
   }
 
-  if (!part || !series || error || errorSeries) {
+  if (!part || !series || error || errorSeries || !productId) {
     return (
       <main className="show-menu">
         <ErrorAlert />
@@ -107,7 +109,28 @@ const Part = () => {
             </DefinitionList>
           </VStack>
 
-          <CompabilityList compatibleWith={part.productData.attributes.compatibleWith} />
+          <Tabs defaultValue={"variantkoblinger"}>
+            <Tabs.List>
+              <Tabs.Tab
+                value={"variantkoblinger"}
+                label={`Variantkoblinger  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
+              />
+              {/*<Tabs.Tab*/}
+              {/*  value={"seriekoblinger"}*/}
+              {/*  label={`Seriekoblinger  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}*/}
+              {/*/>*/}
+            </Tabs.List>
+            <Tabs.Panel value="variantkoblinger">
+              <VariantCompabilityTab
+                partId={productId}
+                productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
+                mutatePart={mutate}
+              />
+            </Tabs.Panel>
+            {/*<Tabs.Panel value={"seriekoblinger"}>*/}
+            {/*  <SeriesCompabilityTab seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []} />*/}
+            {/*</Tabs.Panel>*/}
+          </Tabs>
         </VStack>
       </HGrid>
     </main>
