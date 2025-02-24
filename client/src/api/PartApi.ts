@@ -69,12 +69,12 @@ export function useCompatibleProductById(productId: string) {
 const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWith): Promise<void> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
-export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string): Promise<void> => {
+export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[]): Promise<void> => {
   const partToUpdate = await getPart(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
-    seriesIds: compatibleWith?.seriesIds.filter((id) => id !== seriesUUIDToRemove) || [],
+    seriesIds: compatibleWith?.seriesIds.filter((id) => !seriesUUIDToRemove.includes(id)) || [],
     productIds: compatibleWith?.productIds || [],
   };
 

@@ -10,6 +10,8 @@ interface CompatibleSeriesRowProps {
   setAddModalIsOpen: (isOpen: boolean) => void;
   setRemoveModalIsOpen: (isOpen: boolean) => void;
   setSelectedSeriesId: (seriesId: string) => void;
+  selectedRows: string[];
+  toggleSelectedRow: (id: string) => void;
 }
 
 export const CompatibleSeriesRow = ({
@@ -18,6 +20,8 @@ export const CompatibleSeriesRow = ({
   setAddModalIsOpen,
   setRemoveModalIsOpen,
   setSelectedSeriesId,
+  selectedRows,
+  toggleSelectedRow,
 }: CompatibleSeriesRowProps) => {
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
 
@@ -75,11 +79,17 @@ export const CompatibleSeriesRow = ({
           {series.variants.length - noConnectedVariants} / {series.variants.length}
         </Button>
       </Table.DataCell>
-      {/*<Table.DataCell>*/}
-      {/*  <Checkbox hideLabel checked={false} onChange={() => {}}>*/}
-      {/*    {" "}*/}
-      {/*  </Checkbox>*/}
-      {/*</Table.DataCell>*/}
+      <Table.DataCell>
+        <Checkbox
+          hideLabel
+          checked={selectedRows.includes(series.id)}
+          onChange={() => {
+            toggleSelectedRow(series.id!);
+          }}
+        >
+          {" "}
+        </Checkbox>
+      </Table.DataCell>
     </Table.Row>
   );
 };

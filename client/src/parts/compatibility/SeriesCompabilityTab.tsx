@@ -1,12 +1,13 @@
-import { BodyLong, Box, Button, HStack, Table, VStack } from "@navikt/ds-react";
-import React from "react";
+import { BodyLong, Box, Button, Checkbox, HStack, Table, VStack } from "@navikt/ds-react";
+import React, { useState } from "react";
 import styles from "parts/PartPage.module.scss";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import { CompatibleSeriesRow } from "parts/compatibility/CompatibleSeriesRow";
 import RemoveCompatibleSeriesVariantsModal from "parts/compatibility/RemoveCompatibleSeriesVariantsModal";
 import AddCompatibleSeriesVariantsModal from "parts/compatibility/AddCompatibleSeriesVariantsModal";
 import NewCompatibleSeriesOnPartModal from "parts/compatibility/NewCompatibleSeriesOnPartModal";
-import { PlusCircleIcon } from "@navikt/aksel-icons";
+import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
+import { removeCompatibleWithSeries, removeCompatibleWithVariant } from "api/PartApi";
 
 interface SeriesCompabilityTabProps {
   seriesIds: string[];
@@ -21,6 +22,18 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
     React.useState(false);
   const [addCompatibleSeriesVariantsModalIsOpen, setAddCompatibleSeriesVariantsModalIsOpen] = React.useState(false);
   const [newCompatibleSeriesModalIsOpen, setNewCompatibleSeriesModalIsOpen] = React.useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const toggleSelectedRow = (value: string) =>
+    setSelectedRows((list: string[]): string[] =>
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
+    );
+
+  const deleteMarkedCompatibleSeries = () => {
+    removeCompatibleWithSeries(partId, selectedRows).then(() => {
+      mutatePart();
+      setSelectedRows([]);
+    });
+  };
 
   return (
     <>
@@ -61,14 +74,6 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
         {seriesIds.length > 0 && (
           <Box className={styles.compabilityBox}>
             <VStack gap={"2"}>
-              {/*<Button*/}
-              {/*  className="fit-content"*/}
-              {/*  variant="primary"*/}
-              {/*  icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}*/}
-              {/*  onClick={() => {}}*/}
-              {/*>*/}
-              {/*  Legg til kobling*/}
-              {/*</Button>*/}
               <HStack gap={"2"}>
                 {seriesIds.length > 0 && (
                   <RowBoxTable>
@@ -78,7 +83,21 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
-                        {/*<Table.HeaderCell scope="col"></Table.HeaderCell>*/}
+                        <Table.HeaderCell scope="col">
+                          <Checkbox
+                            checked={selectedRows.length === seriesIds.length}
+                            onChange={() => {
+                              if (selectedRows.length) {
+                                setSelectedRows([]);
+                              } else {
+                                setSelectedRows(seriesIds);
+                              }
+                            }}
+                            hideLabel
+                          >
+                            Velg alle rader
+                          </Checkbox>
+                        </Table.HeaderCell>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -90,6 +109,8 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                           setRemoveModalIsOpen={setRemoveCompatibleSeriesVariantsModalIsOpen}
                           setAddModalIsOpen={setAddCompatibleSeriesVariantsModalIsOpen}
                           setSelectedSeriesId={setSelectedSeriesId}
+                          selectedRows={selectedRows}
+                          toggleSelectedRow={toggleSelectedRow}
                         />
                       ))}
                     </Table.Body>
@@ -97,15 +118,15 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                 )}
               </HStack>
               <HStack justify={"end"}>
-                {/*<Button*/}
-                {/*  className="fit-content"*/}
-                {/*  variant="tertiary"*/}
-                {/*  icon={<TrashIcon fontSize="1.5rem" aria-hidden />}*/}
-                {/*  disabled={true}*/}
-                {/*  onClick={() => {}}*/}
-                {/*>*/}
-                {/*  <span>Slett merkede koblinger</span>*/}
-                {/*</Button>*/}
+                <Button
+                  className="fit-content"
+                  variant="tertiary"
+                  icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
+                  disabled={selectedRows.length === 0}
+                  onClick={deleteMarkedCompatibleSeries}
+                >
+                  <span>Slett merkede koblinger</span>
+                </Button>
               </HStack>
             </VStack>
           </Box>
