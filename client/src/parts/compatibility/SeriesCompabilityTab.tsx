@@ -22,10 +22,6 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
   const [addCompatibleSeriesVariantsModalIsOpen, setAddCompatibleSeriesVariantsModalIsOpen] = React.useState(false);
   const [newCompatibleSeriesModalIsOpen, setNewCompatibleSeriesModalIsOpen] = React.useState(false);
 
-  if (seriesIds.length < 1) {
-    return <BodyLong>Ingen koblinger til serier</BodyLong>;
-  }
-
   return (
     <>
       <NewCompatibleSeriesOnPartModal
@@ -51,6 +47,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
         productIds={productIds}
       />
       <VStack padding={"8"} gap={"2"}>
+        {seriesIds.length === 0 && <BodyLong>Ingen koblinger til serier</BodyLong>}
         <Button
           className="fit-content"
           variant="primary"
