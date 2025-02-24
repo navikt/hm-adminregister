@@ -58,6 +58,7 @@ export const CompatibleSeriesRow = ({
           iconPosition="right"
           variant={"tertiary"}
           icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
+          disabled={noConnectedVariants === 0}
           onClick={() => {
             setSelectedSeriesId(seriesUUID);
             setRemoveModalIsOpen(true);
@@ -71,6 +72,7 @@ export const CompatibleSeriesRow = ({
           iconPosition="right"
           variant={"tertiary"}
           icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
+          disabled={series.variants.length - noConnectedVariants === 0}
           onClick={() => {
             setSelectedSeriesId(seriesUUID);
             setAddModalIsOpen(true);

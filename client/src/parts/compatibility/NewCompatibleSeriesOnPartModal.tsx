@@ -89,7 +89,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
               }}
             />
             <Button onClick={onClickGetProduct} type="button" variant="secondary" style={{ marginLeft: "auto" }}>
-              Hent produkt
+              Hent serie
             </Button>
             {isSaving && (
               <HStack justify="center">
