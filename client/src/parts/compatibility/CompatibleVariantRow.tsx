@@ -46,6 +46,7 @@ export const CompatibleVariantRow = ({
           )}
         </>
       </Table.DataCell>
+      <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
         <Checkbox

@@ -30,8 +30,11 @@ export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrat
   return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/${hmsArtNr}`, "GET");
 }
 
-export function getProductByHmsArtNrOrSupplierRef(identifier: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/variant-id/${identifier}`, "GET");
+export function getVariantsBySeriesUUID(seriesUUID: string) {
+  return useSWR<ProductRegistrationDTOV2[]>(
+    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series-variants/${seriesUUID}`,
+    fetcherGET,
+  );
 }
 
 export const getPart = async (productId: string): Promise<ProductRegistrationDTOV2> =>
@@ -111,5 +114,16 @@ export const addCompatibleWithVariant = async (productId: string, productIdToAdd
     seriesIds: compatibleWith?.seriesIds || [],
   };
 
+  return await updatePartCompatability(productId, updatedCompatibleWith);
+};
+
+export const addCompatibleWithVariantList = async (productId: string, productIdToAdd: string[]): Promise<void> => {
+  const partToUpdate = await getPart(productId);
+
+  const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
+  const updatedCompatibleWith = {
+    productIds: [...(compatibleWith?.productIds || []), ...productIdToAdd],
+    seriesIds: compatibleWith?.seriesIds || [],
+  };
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };

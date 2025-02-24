@@ -1,17 +1,29 @@
 import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Checkbox, Link, Loader, Table } from "@navikt/ds-react";
+import { Button, Checkbox, Link, Loader, Table } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
-import { ExternalLinkIcon } from "@navikt/aksel-icons";
+import { ExternalLinkIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import React from "react";
 
 interface CompatibleSeriesRowProps {
   productIds: string[];
   seriesUUID: string;
+  setAddModalIsOpen: (isOpen: boolean) => void;
+  setRemoveModalIsOpen: (isOpen: boolean) => void;
+  setSelectedSeriesId: (seriesId: string) => void;
 }
 
-export const CompatibleSeriesRow = ({ productIds, seriesUUID }: CompatibleSeriesRowProps) => {
+export const CompatibleSeriesRow = ({
+  productIds,
+  seriesUUID,
+  setAddModalIsOpen,
+  setRemoveModalIsOpen,
+  setSelectedSeriesId,
+}: CompatibleSeriesRowProps) => {
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
-  const noConnectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)).length ?? 0;
+
+  const connectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)) ?? [];
+
+  const noConnectedVariants = connectedVariants.length;
 
   if (isLoadingSeries) {
     return (
@@ -38,7 +50,30 @@ export const CompatibleSeriesRow = ({ productIds, seriesUUID }: CompatibleSeries
       </Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
-        {noConnectedVariants} / {series.variants.length}
+        <Button
+          iconPosition="right"
+          variant={"tertiary"}
+          icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
+          onClick={() => {
+            setSelectedSeriesId(seriesUUID);
+            setRemoveModalIsOpen(true);
+          }}
+        >
+          {noConnectedVariants} / {series.variants.length}
+        </Button>
+      </Table.DataCell>
+      <Table.DataCell>
+        <Button
+          iconPosition="right"
+          variant={"tertiary"}
+          icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
+          onClick={() => {
+            setSelectedSeriesId(seriesUUID);
+            setAddModalIsOpen(true);
+          }}
+        >
+          {series.variants.length - noConnectedVariants} / {series.variants.length}
+        </Button>
       </Table.DataCell>
       {/*<Table.DataCell>*/}
       {/*  <Checkbox hideLabel checked={false} onChange={() => {}}>*/}

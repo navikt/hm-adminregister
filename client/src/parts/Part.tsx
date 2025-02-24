@@ -113,11 +113,11 @@ const Part = () => {
             <Tabs.List>
               <Tabs.Tab
                 value={"variantkoblinger"}
-                label={`Variantkoblinger  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
+                label={`Koblinger til enkeltprodukter  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
               />
               <Tabs.Tab
                 value={"seriekoblinger"}
-                label={`Seriekoblinger  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
+                label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
               />
             </Tabs.List>
             <Tabs.Panel value="variantkoblinger">
@@ -129,8 +129,10 @@ const Part = () => {
             </Tabs.Panel>
             <Tabs.Panel value={"seriekoblinger"}>
               <SeriesCompabilityTab
+                partId={productId}
                 productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
                 seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []}
+                mutatePart={mutate}
               />
             </Tabs.Panel>
           </Tabs>

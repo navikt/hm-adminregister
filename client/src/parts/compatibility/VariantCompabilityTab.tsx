@@ -55,6 +55,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart }: Varian
                   <Table.Header>
                     <Table.Row key={"header"}>
                       <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                      <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                       <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
                       <Table.HeaderCell scope="col">
                         <Checkbox
