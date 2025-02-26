@@ -120,8 +120,8 @@ const ProductListWrapper = () => {
         <AlertWithCloseButton variant={"warning"} alertId={"tilbAlert"}>
           <Heading size={"small"}>Informasjon om deler</Heading>
           <BodyLong>
-            Vi jobber nå med automatisk opp/innlasting av tilbehør og reservedeler som er på avtale med Nav. Vi
-            oppfordrer dere til å legge inn bilder og beskrivelse av disse delene.
+            Vi jobber nå med automatisk innlasting av tilbehør og reservedeler som er på avtale med Nav. Vi oppfordrer
+            dere til å legge inn bilder og beskrivelse av disse delene.
           </BodyLong>
           <BodyLong>
             Tilbehør og reservedeler som ikke er på avtale med Nav skal kunne legges inn etter hvert, men vi er ikke
