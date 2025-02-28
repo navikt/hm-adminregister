@@ -95,6 +95,8 @@ export default function Login() {
             if (loggedInUser.isAdmin) {
               logAmplitudeEvent("login, ny bruker", "admin");
               navigate(previousLocation);
+            } else if (loggedInUser.isHmsUser) {
+              navigate("/");
             } else {
               logAmplitudeEvent("login, ny bruker", "supplier");
               navigate(previousLocation);
