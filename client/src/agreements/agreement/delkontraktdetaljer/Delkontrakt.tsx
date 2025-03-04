@@ -1,5 +1,6 @@
 import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
 import {
+  BodyShort,
   Button,
   Checkbox,
   Dropdown,
@@ -121,6 +122,11 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
 
   if (productAgreementsIsLoading) return <div>Loading...</div>;
 
+  const publishedDate = productAgreements?.[0]?.productVariants?.[0]?.published;
+  const expiredDate = productAgreements?.[0]?.productVariants?.[0]?.expired;
+  const publishedDate_ = publishedDate ? new Date(publishedDate) : undefined;
+  const expiredDate_ = expiredDate ? new Date(expiredDate) : undefined;
+
   return (
     <>
       <EditDelkontraktInfoModal
@@ -180,6 +186,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
       <ExpansionCard size="medium" key={delkontrakt!.delkontraktData.sortNr} aria-label="delkontrakt">
         <ExpansionCard.Header>
           <ExpansionCard.Title size="small">{delkontrakt!.delkontraktData.title}</ExpansionCard.Title>
+          {`${publishedDate_?.toLocaleDateString()} - ${expiredDate_?.toLocaleDateString()}`}
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: "auto" }}>
           <VStack gap="3">
