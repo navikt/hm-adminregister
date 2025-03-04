@@ -1,4 +1,4 @@
-import { CompatibleWith, ProductChunk, ProductRegistrationDTOV2 } from "utils/types/response-types";
+import { CompatibleWith, PartDTO, ProductChunk, ProductRegistrationDTOV2 } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
@@ -41,9 +41,9 @@ export const getPart = async (productId: string): Promise<ProductRegistrationDTO
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`, "GET");
 
 export function usePartByProductId(productId: string) {
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`;
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/part/v2/${productId}`;
 
-  const { data: part, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET);
+  const { data: part, error, isLoading, mutate } = useSWR<PartDTO>(path, fetcherGET);
 
   return {
     part,

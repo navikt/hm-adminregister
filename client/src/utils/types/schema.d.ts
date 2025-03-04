@@ -1092,6 +1092,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/accessory/series-variants/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findVariantsBySeriesUUID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findProdyctByVariantIdentifier"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/accessory/variants/{hmsNr}": {
         parameters: {
             query?: never;
@@ -1196,6 +1228,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["findBySeriesUUIDAndSupplierIdOld_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part/v2/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartByIdV2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2309,6 +2357,7 @@ export interface components {
             created: string;
             /** Format: date-time */
             updated: string;
+            searchWords: string[];
         };
         IsoCategoryRegistrationDTO: {
             isoCode: string;
@@ -2321,6 +2370,7 @@ export interface components {
             isActive: boolean;
             showTech: boolean;
             allowMulti: boolean;
+            searchWords: string[];
             createdByUser: string;
             updatedByUser: string;
             createdBy: string;
@@ -2524,6 +2574,21 @@ export interface components {
             isokode: string;
             /** Format: int32 */
             kursId: number;
+        };
+        PartDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            seriesUUID?: string | null;
+            hmsArtNr?: string | null;
+            supplierRef: string;
+            supplierName: string;
+            articleName: string;
+            accessory: boolean;
+            sparePart: boolean;
+            productData: components["schemas"]["ProductDataDTO"];
+            isPublished: boolean;
+            isExpired: boolean;
         };
         ProductAgreementDeletedResponse: {
             /** Format: uuid */
@@ -2938,6 +3003,7 @@ export interface components {
             /** Format: date-time */
             updated: string;
             updatedByUser: string;
+            mainProduct: boolean;
         };
         /** @enum {string} */
         SeriesStatus: "ACTIVE" | "INACTIVE" | "DELETED";
@@ -5373,6 +5439,50 @@ export interface operations {
             };
         };
     };
+    findVariantsBySeriesUUID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findVariantsBySeriesUUID 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
+    findProdyctByVariantIdentifier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findProdyctByVariantIdentifier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
     findCompatibleWithProductsVariants: {
         parameters: {
             query?: never;
@@ -5534,6 +5644,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRegistration"][];
+                };
+            };
+        };
+    };
+    findPartByIdV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByIdV2 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDTO"];
                 };
             };
         };

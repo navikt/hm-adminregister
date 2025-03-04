@@ -21,7 +21,6 @@ import ErrorAlert from "error/ErrorAlert";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "./PartPage.module.scss";
 import { usePartByProductId } from "api/PartApi";
-import { useSeriesV2Conditional } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
 import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
@@ -31,13 +30,8 @@ const Part = () => {
 
   const { loggedInUser } = useAuthStore();
   const { part, isLoading, error, mutate } = usePartByProductId(productId!);
-  const {
-    data: series,
-    isLoading: isLoadingSeries,
-    error: errorSeries,
-  } = useSeriesV2Conditional(part?.seriesUUID ?? undefined);
 
-  if (isLoading || isLoadingSeries) {
+  if (isLoading) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -45,7 +39,7 @@ const Part = () => {
     );
   }
 
-  if (!part || !series || error || errorSeries || !productId) {
+  if (!part || error || !productId) {
     return (
       <main className="show-menu">
         <ErrorAlert />
@@ -82,10 +76,10 @@ const Part = () => {
                   )}
                 </Heading>
               </HStack>
-              {loggedInUser?.isAdmin && (
+              {loggedInUser?.isAdmin && part.seriesUUID && (
                 <HStack align="center">
                   <Detail>{part.id}</Detail>
-                  <CopyButton size="xsmall" copyText={series.id} />
+                  <CopyButton size="xsmall" copyText={part.seriesUUID} />
                 </HStack>
               )}
 
@@ -103,7 +97,7 @@ const Part = () => {
               <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
               <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
               <DefinitionList.Term>Leverandør</DefinitionList.Term>
-              <DefinitionList.Definition>{series.supplierName ? series.supplierName : "-"}</DefinitionList.Definition>
+              <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
               <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
               <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
             </DefinitionList>
