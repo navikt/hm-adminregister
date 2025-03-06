@@ -7,7 +7,7 @@ import RemoveCompatibleSeriesVariantsModal from "parts/compatibility/RemoveCompa
 import AddCompatibleSeriesVariantsModal from "parts/compatibility/AddCompatibleSeriesVariantsModal";
 import NewCompatibleSeriesOnPartModal from "parts/compatibility/NewCompatibleSeriesOnPartModal";
 import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { removeCompatibleWithSeries, removeCompatibleWithVariant } from "api/PartApi";
+import { removeCompatibleWithSeries } from "api/PartApi";
 
 interface SeriesCompabilityTabProps {
   seriesIds: string[];
@@ -82,6 +82,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                         <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
+                        <Table.HeaderCell scope="col" />
                         <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
                         <Table.HeaderCell scope="col">
                           <Checkbox
@@ -111,6 +112,8 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                           setSelectedSeriesId={setSelectedSeriesId}
                           selectedRows={selectedRows}
                           toggleSelectedRow={toggleSelectedRow}
+                          partId={partId}
+                          mutatePart={mutatePart}
                         />
                       ))}
                     </Table.Body>

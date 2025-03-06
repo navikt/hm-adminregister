@@ -1,8 +1,9 @@
 import { useSeriesV2Conditional } from "api/SeriesApi";
 import { Button, Checkbox, Link, Loader, Table } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
-import { ExternalLinkIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { ArrowLeftIcon, ExternalLinkIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import React from "react";
+import { addCompatibleWithVariantList } from "api/PartApi";
 
 interface CompatibleSeriesRowProps {
   productIds: string[];
@@ -12,6 +13,8 @@ interface CompatibleSeriesRowProps {
   setSelectedSeriesId: (seriesId: string) => void;
   selectedRows: string[];
   toggleSelectedRow: (id: string) => void;
+  partId: string;
+  mutatePart: () => void;
 }
 
 export const CompatibleSeriesRow = ({
@@ -22,12 +25,27 @@ export const CompatibleSeriesRow = ({
   setSelectedSeriesId,
   selectedRows,
   toggleSelectedRow,
+  partId,
+  mutatePart,
 }: CompatibleSeriesRowProps) => {
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
 
   const connectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)) ?? [];
 
   const noConnectedVariants = connectedVariants.length;
+
+  const addAllVariantsFromSeries = () => {
+    if (series) {
+      addCompatibleWithVariantList(
+        partId,
+        series.variants.map((variant) => variant.id),
+      )
+        .then(() => {
+          mutatePart();
+        })
+        .catch((error) => {});
+    }
+  };
 
   if (isLoadingSeries) {
     return (
@@ -66,6 +84,14 @@ export const CompatibleSeriesRow = ({
         >
           {noConnectedVariants} / {series.variants.length}
         </Button>
+      </Table.DataCell>
+      <Table.DataCell>
+        <Button
+          variant="tertiary"
+          icon={<ArrowLeftIcon />}
+          disabled={noConnectedVariants === series.variants.length}
+          onClick={addAllVariantsFromSeries}
+        />
       </Table.DataCell>
       <Table.DataCell>
         <Button
