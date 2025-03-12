@@ -76,6 +76,9 @@ export type PartDTO = components["schemas"]["PartDTO"];
 
 export type CompatibleWith = components["schemas"]["CompatibleWith"];
 
+export type SuitableForBrukerpassbrukerDTO = components["schemas"]["SuitableForBrukerpassbrukerDTO"];
+export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForKommunalTeknikerDTO"];
+
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
 export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];

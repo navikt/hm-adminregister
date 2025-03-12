@@ -1,4 +1,11 @@
-import { CompatibleWith, PartDTO, ProductChunk, ProductRegistrationDTOV2 } from "utils/types/response-types";
+import {
+  CompatibleWith,
+  PartDTO,
+  ProductChunk,
+  ProductRegistrationDTOV2,
+  SuitableForBrukerpassbrukerDTO,
+  SuitableForKommunalTeknikerDTO,
+} from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
@@ -126,4 +133,44 @@ export const addCompatibleWithVariantList = async (productId: string, productIdT
     seriesIds: compatibleWith?.seriesIds || [],
   };
   return await updatePartCompatability(productId, updatedCompatibleWith);
+};
+
+const updateSuitableForKommunalTekniker = async (
+  productId: string,
+  suitableForKommunalTeknikerDTO: SuitableForKommunalTeknikerDTO,
+): Promise<void> =>
+  fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForKommunalTekniker`,
+    "PUT",
+    suitableForKommunalTeknikerDTO,
+  );
+
+const updateSuitableForBrukerpassbruker = async (
+  productId: string,
+  suitableForBrukerpassbrukerDTO: SuitableForBrukerpassbrukerDTO,
+): Promise<void> =>
+  fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForBrukerpassbruker`,
+    "PUT",
+    suitableForBrukerpassbrukerDTO,
+  );
+
+export const updateEgnetForKommunalTekniker = async (
+  productId: string,
+  egnetForKommunalTekniker: boolean,
+): Promise<void> => {
+  const updatedSuitableForKommunalTekniker: SuitableForKommunalTeknikerDTO = {
+    suitableForKommunalTekniker: egnetForKommunalTekniker,
+  };
+  return await updateSuitableForKommunalTekniker(productId, updatedSuitableForKommunalTekniker);
+};
+
+export const updateEgnetForBrukerpassbruker = async (
+  productId: string,
+  egnetForBrukerpassbruker: boolean,
+): Promise<void> => {
+  const updatedSuitableForBrukerpassbruker: SuitableForBrukerpassbrukerDTO = {
+    suitableForBrukerpassbruker: egnetForBrukerpassbruker,
+  };
+  return await updateSuitableForBrukerpassbruker(productId, updatedSuitableForBrukerpassbruker);
 };
