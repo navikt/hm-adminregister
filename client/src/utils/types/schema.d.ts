@@ -1172,6 +1172,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/accessory/{id}/suitableForBrukerpassbruker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateSuitableForBrukerpassbruker"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/{id}/suitableForKommunalTekniker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateSuitableForKommunalTekniker"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/isocategories": {
         parameters: {
             query?: never;
@@ -2242,6 +2274,8 @@ export interface components {
             produkttype?: components["schemas"]["Produkttype"] | null;
             tenderId?: string | null;
             hasTender?: boolean | null;
+            egnetForKommunalTekniker?: boolean | null;
+            egnetForBrukerpass?: boolean | null;
         };
         BestillingsordningRegistrationDTO: {
             /** Format: uuid */
@@ -2362,6 +2396,7 @@ export interface components {
         IsoCategoryRegistrationDTO: {
             isoCode: string;
             isoTitle: string;
+            isoTitleShort?: string | null;
             isoText: string;
             isoTextShort: string;
             isoTranslations: components["schemas"]["IsoTranslations"];
@@ -3148,6 +3183,12 @@ export interface components {
             empty?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
+        };
+        SuitableForBrukerpassbrukerDTO: {
+            suitableForBrukerpassbruker: boolean;
+        };
+        SuitableForKommunalTeknikerDTO: {
+            suitableForKommunalTekniker: boolean;
         };
         SupplierData: {
             address?: string | null;
@@ -5543,6 +5584,58 @@ export interface operations {
         };
         responses: {
             /** @description connectProductAndVariants 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    updateSuitableForBrukerpassbruker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuitableForBrukerpassbrukerDTO"];
+            };
+        };
+        responses: {
+            /** @description updateSuitableForBrukerpassbruker 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    updateSuitableForKommunalTekniker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuitableForKommunalTeknikerDTO"];
+            };
+        };
+        responses: {
+            /** @description updateSuitableForKommunalTekniker 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;

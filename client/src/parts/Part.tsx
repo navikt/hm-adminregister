@@ -11,6 +11,7 @@ import {
   Label,
   Link as AkselLink,
   Loader,
+  Switch,
   Tabs,
   Tag,
   VStack,
@@ -20,16 +21,31 @@ import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import ErrorAlert from "error/ErrorAlert";
 import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "./PartPage.module.scss";
-import { usePartByProductId } from "api/PartApi";
+import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, usePartByProductId } from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
 import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
+import { useState } from "react";
 
 const Part = () => {
   const { productId } = useParams();
 
   const { loggedInUser } = useAuthStore();
   const { part, isLoading, error, mutate } = usePartByProductId(productId!);
+  const [isTogglingKT, setIsTogglingKT] = useState(false);
+
+  const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
+    setIsTogglingKT(true);
+    updateEgnetForKommunalTekniker(id, checked).then(() => {
+      mutate();
+    });
+    setIsTogglingKT(false);
+  };
+  const toggleEgnetForBrukerpassbruker = (checked: boolean, id: string) => {
+    updateEgnetForBrukerpassbruker(id, checked).then(() => {
+      mutate();
+    });
+  };
 
   if (isLoading) {
     return (
@@ -101,6 +117,21 @@ const Part = () => {
               <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
               <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
             </DefinitionList>
+            <Box>
+              <Switch
+                disabled={isTogglingKT}
+                checked={part.productData.attributes.egnetForKommunalTekniker || false}
+                onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
+              >
+                Egnet for kommunal tekniker
+              </Switch>
+              <Switch
+                checked={part.productData.attributes.egnetForBrukerpass || false}
+                onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
+              >
+                Egnet for brukerpassbruker
+              </Switch>
+            </Box>
           </VStack>
 
           <Tabs defaultValue={"variantkoblinger"}>
