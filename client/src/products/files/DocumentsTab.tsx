@@ -68,8 +68,8 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         <VStack gap="10">
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
-              Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre eller bruksanvisning til
-              produktet.
+              Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre, bruksanvisning eller
+              sprengskisse til produktet.
             </Alert>
           )}
 
