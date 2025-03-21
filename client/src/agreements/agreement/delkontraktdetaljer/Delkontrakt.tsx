@@ -372,7 +372,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
-                      disabled={agreementDraftStatus !== "DRAFT"}
+                      disabled={agreementDraftStatus !== "DRAFT" && productAgreements && productAgreements?.length > 0}
                       onClick={() => {
                         setDeleteDelkontraktIsOpen(true);
                       }}
