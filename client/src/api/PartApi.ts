@@ -37,6 +37,10 @@ export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrat
   return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/${hmsArtNr}`, "GET");
 }
 
+export function getPartByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/part/${hmsArtNr}`, "GET");
+}
+
 export function getVariantsBySeriesUUID(seriesUUID: string) {
   return useSWR<ProductRegistrationDTOV2[]>(
     `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series-variants/${seriesUUID}`,

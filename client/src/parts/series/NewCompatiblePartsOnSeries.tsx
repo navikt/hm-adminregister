@@ -4,7 +4,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { ProductRegistrationDTOV2 } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithSeriesForParts, getProductByHmsArtNr } from "api/PartApi";
+import { addCompatibleWithSeriesForParts, getPartByHmsArtNr, getProductByHmsArtNr } from "api/PartApi";
 import { PlusCircleFillIcon, TrashIcon } from "@navikt/aksel-icons";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
@@ -35,7 +35,7 @@ const NewCompatiblePartsOnSeries = ({ modalIsOpen, setModalIsOpen, mutateParts, 
 
   async function onClickGetProduct() {
     if (productIdToAdd !== undefined && !productIdsToAdd.includes(productIdToAdd)) {
-      getProductByHmsArtNr(productIdToAdd)
+      getPartByHmsArtNr(productIdToAdd)
         .then((product) => {
           if (!productIdsToAdd.includes(product.hmsArtNr!)) {
             setProductIdsToAdd([...productIdsToAdd, product.hmsArtNr!]);
@@ -82,7 +82,7 @@ const NewCompatiblePartsOnSeries = ({ modalIsOpen, setModalIsOpen, mutateParts, 
       open={modalIsOpen}
       onCancel={(e) => {}}
       header={{
-        heading: "Legg til produkt",
+        heading: "Legg til del",
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -118,7 +118,7 @@ const NewCompatiblePartsOnSeries = ({ modalIsOpen, setModalIsOpen, mutateParts, 
                 variant="secondary"
                 icon={<PlusCircleFillIcon title="Søk etter produkt" fontSize="1.2rem" />}
               >
-                Søk etter produkt
+                Søk etter del
               </Button>
             </HStack>
             {productToAddError && <BodyShort style={{ color: "red" }}>{productToAddError}</BodyShort>}
