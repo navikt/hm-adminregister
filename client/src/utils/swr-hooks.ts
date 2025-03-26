@@ -443,3 +443,21 @@ export function useHmsUsers() {
     error,
   };
 }
+
+export function usePagedProductsForTechnician({
+  page,
+  pageSize,
+  titleSearchTerm,
+}: {
+  page: number;
+  pageSize: number;
+  titleSearchTerm: string;
+}) {
+  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
+
+  const mainProductParam: string = `&mainProduct=true`;
+
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${mainProductParam}`;
+
+  return useSWR<SeriesSearchChunk>(path, fetcherGET);
+}

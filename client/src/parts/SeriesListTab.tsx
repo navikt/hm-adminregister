@@ -1,40 +1,39 @@
 import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { useSuppliers } from "utils/swr-hooks";
+import { usePagedProductsForTechnician, useSeriesByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
 import ErrorAlert from "error/ErrorAlert";
-import { PartList } from "./PartList";
-import { usePagedParts, usePartByVariantIdentifier } from "api/PartApi";
+import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
+import { SeriesList } from "parts/series/SeriesList";
 
-const PartListWrapper = () => {
+const SeriesListTab = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const { loggedInUser } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const { pathname, search } = useLocation();
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
 
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
 
-  useEffect(() => {
-    localStorage.setItem("pageSizeState", pageSizeState.toString());
-  }, [pageSizeState]);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>();
 
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
     error: errorPaged,
-  } = usePagedParts({
+  } = usePagedProductsForTechnician({
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    localStorage.setItem("pageSizeState", pageSizeState.toString());
+  }, [pageSizeState]);
 
-  const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
+  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -58,12 +57,18 @@ const PartListWrapper = () => {
     );
   }
 
+  const onClickSeries = (id: string) => {
+    if (selectedSeriesId === id) {
+      setSelectedSeriesId(undefined);
+      return;
+    } else {
+      setSelectedSeriesId(id);
+    }
+  };
+
   return (
-    <main className="show-menu">
+    <TabPanel value="serier">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <Heading level="1" size="large" spacing>
-          Deler
-        </Heading>
         <VStack gap={{ xs: "4", md: "6" }}>
           <HGrid
             columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
@@ -98,13 +103,25 @@ const PartListWrapper = () => {
         <VStack gap="4">
           <VStack gap="1-alt">
             {isLoadingPagedData && <Loader />}
-            {partByVariantIdentifier && <Heading size="medium">Søketreff</Heading>}
-            {partByVariantIdentifier ? (
-              <PartList partsList={[partByVariantIdentifier]} oversiktPath={pathname + search} />
+            {seriesByVariantIdentifier && <Heading size="medium">Søketreff</Heading>}
+            {seriesByVariantIdentifier ? (
+              <HGrid columns={1}>
+                <SeriesList
+                  seriesList={[seriesByVariantIdentifier]}
+                  onSeriesClick={onClickSeries}
+                  selectedSeriesId={selectedSeriesId}
+                />
+              </HGrid>
             ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
               <>
                 <Heading size="medium">Søketreff</Heading>
-                <PartList partsList={pagedData.content} oversiktPath={pathname + search} />
+                <HGrid columns={1}>
+                  <SeriesList
+                    seriesList={pagedData.content}
+                    onSeriesClick={onClickSeries}
+                    selectedSeriesId={selectedSeriesId}
+                  />
+                </HGrid>
               </>
             ) : (
               !isLoadingPagedData && (
@@ -148,8 +165,8 @@ const PartListWrapper = () => {
           </HStack>
         </VStack>
       </VStack>
-    </main>
+    </TabPanel>
   );
 };
 
-export default PartListWrapper;
+export default SeriesListTab;

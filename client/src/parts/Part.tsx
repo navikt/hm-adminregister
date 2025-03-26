@@ -72,7 +72,13 @@ const Part = () => {
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <AkselLink as={Link} to="/deler">
+            <AkselLink
+              as={Link}
+              to="/deler"
+              onClick={() => {
+                history.back();
+              }}
+            >
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
               Tilbake til oversikt
             </AkselLink>

@@ -44,6 +44,13 @@ export function getVariantsBySeriesUUID(seriesUUID: string) {
   );
 }
 
+export const getPartsForSeriesId = (seriesId: string) => {
+  return useSWR<ProductRegistrationDTOV2[]>(
+    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series/${seriesId}`,
+    fetcherGET,
+  );
+};
+
 export const getPart = async (productId: string): Promise<ProductRegistrationDTOV2> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`, "GET");
 
@@ -86,6 +93,33 @@ export const removeCompatibleWithSeries = async (productId: string, seriesUUIDTo
   };
 
   return await updatePartCompatability(productId, updatedCompatibleWith);
+};
+
+export const removeCompatibleWithSeriesForParts = async (
+  seriesUUIDToRemove: string,
+  partUUIDs: string[],
+): Promise<void> => {
+  for (const productId of partUUIDs) {
+    const partToUpdate = await getPart(productId);
+    const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
+    const updatedCompatibleWith = {
+      seriesIds: compatibleWith?.seriesIds.filter((id) => seriesUUIDToRemove !== id) || [],
+      productIds: compatibleWith?.productIds || [],
+    };
+    await updatePartCompatability(productId, updatedCompatibleWith);
+  }
+};
+
+export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[]): Promise<void> => {
+  for (const productId of partUUIDs) {
+    const partToUpdate = await getPart(productId);
+    const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
+    const updatedCompatibleWith = {
+      seriesIds: [...(compatibleWith?.seriesIds || []), seriesUUIDToAdd],
+      productIds: compatibleWith?.productIds || [],
+    };
+    await updatePartCompatability(productId, updatedCompatibleWith);
+  }
 };
 
 export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd: string): Promise<void> => {
