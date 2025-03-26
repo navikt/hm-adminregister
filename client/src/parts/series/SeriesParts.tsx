@@ -50,30 +50,28 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
         seriesId={seriesId}
         mutateParts={mutateParts}
       />
-      <Box className={styles.seriesParts}>
-        {seriesParts.length === 0 ? (
-          <Box padding="8">
-            <Heading level="1" size="xsmall">
-              Ingen deler i serien
-            </Heading>
-          </Box>
-        ) : (
-          <></>
-        )}
+      <Box className={styles.seriesParts} padding="8">
+        <VStack gap="8">
+          <Button
+            className="fit-content"
+            variant="primary"
+            icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
+            onClick={() => {
+              setNewCompatibleProductModalIsOpen(true);
+            }}
+          >
+            Legg til kobling
+          </Button>
+          {seriesParts.length === 0 && (
+            <Box padding="8">
+              <Heading level="1" size="xsmall">
+                Ingen deler i serien
+              </Heading>
+            </Box>
+          )}
 
-        {seriesParts.length > 0 && (
-          <Box background="bg-default" padding="8">
-            <VStack gap="8">
-              <Button
-                className="fit-content"
-                variant="primary"
-                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-                onClick={() => {
-                  setNewCompatibleProductModalIsOpen(true);
-                }}
-              >
-                Legg til kobling
-              </Button>
+          {seriesParts.length > 0 && (
+            <VStack>
               <Table size="small">
                 <Table.Header>
                   <Table.Row key={"header"}>
@@ -120,8 +118,8 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                 </Button>
               </HStack>
             </VStack>
-          </Box>
-        )}
+          )}
+        </VStack>
       </Box>
     </>
   );
