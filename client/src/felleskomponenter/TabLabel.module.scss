@@ -1,0 +1,9 @@
+@use "../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+
+.tabLabel {
+  display: flex;
+  color: $a-text-danger;
+}

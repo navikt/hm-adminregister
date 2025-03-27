@@ -24,12 +24,22 @@ import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
 import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
 import { useState } from "react";
+import { useSeriesV2Conditional } from "api/SeriesApi";
+import { numberOfImages } from "products/seriesUtils";
+import { TabLabel } from "felleskomponenter/TabLabel";
+import ImageTab from "products/files/images/ImagesTab";
 
 const Part = () => {
   const { productId } = useParams();
 
   const { loggedInUser } = useAuthStore();
   const { part, isLoading, error, mutate } = usePartByProductId(productId!);
+  const {
+    data: series,
+    isLoading: isLoadingSeries,
+    error: errorSeries,
+  } = useSeriesV2Conditional(part?.seriesUUID || undefined);
+
   const [isTogglingKT, setIsTogglingKT] = useState(false);
 
   const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
@@ -45,7 +55,7 @@ const Part = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingSeries) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -53,7 +63,7 @@ const Part = () => {
     );
   }
 
-  if (!part || error || !productId) {
+  if (!part || error || !productId || !series) {
     return (
       <main className="show-menu">
         <ErrorAlert />
@@ -150,6 +160,12 @@ const Part = () => {
                 value={"seriekoblinger"}
                 label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
               />
+              <Tabs.Tab
+                value={"images"}
+                label={
+                  <TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={false} isValid={true} />
+                }
+              />
             </Tabs.List>
             <Tabs.Panel value="variantkoblinger">
               <VariantCompabilityTab
@@ -166,6 +182,7 @@ const Part = () => {
                 mutatePart={mutate}
               />
             </Tabs.Panel>
+            <ImageTab series={series} isEditable={true} showInputError={false} />
           </Tabs>
         </VStack>
       </HGrid>
