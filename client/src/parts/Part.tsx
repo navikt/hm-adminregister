@@ -3,8 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeftIcon, ExternalLinkIcon } from "@navikt/aksel-icons";
 import {
   Box,
-  CopyButton,
-  Detail,
   Heading,
   HGrid,
   HStack,
@@ -98,12 +96,6 @@ const Part = () => {
                   )}
                 </Heading>
               </HStack>
-              {loggedInUser?.isAdmin && part.seriesUUID && (
-                <HStack align="center">
-                  <Detail>{part.id}</Detail>
-                  <CopyButton size="xsmall" copyText={part.seriesUUID} />
-                </HStack>
-              )}
 
               {part.isExpired && (
                 <Box>
@@ -111,33 +103,36 @@ const Part = () => {
                 </Box>
               )}
             </VStack>
-            <DefinitionList fullWidth horizontal>
-              <DefinitionList.Term>Type</DefinitionList.Term>
-              <DefinitionList.Definition>
-                {part.accessory === true ? "Tilbehør" : "Reservedel"}
-              </DefinitionList.Definition>
-              <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
-              <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
-              <DefinitionList.Term>Leverandør</DefinitionList.Term>
-              <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
-              <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
-              <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
-            </DefinitionList>
-            <Box>
-              <Switch
-                disabled={isTogglingKT}
-                checked={part.productData.attributes.egnetForKommunalTekniker || false}
-                onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
-              >
-                Egnet for kommunal tekniker
-              </Switch>
-              <Switch
-                checked={part.productData.attributes.egnetForBrukerpass || false}
-                onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
-              >
-                Egnet for brukerpassbruker
-              </Switch>
-            </Box>
+
+            <HGrid gap={{ xs: "8", md: "10" }} columns={{ xs: 1, lg: 2 }}>
+              <DefinitionList fullWidth horizontal>
+                <DefinitionList.Term>Type</DefinitionList.Term>
+                <DefinitionList.Definition>
+                  {part.accessory === true ? "Tilbehør" : "Reservedel"}
+                </DefinitionList.Definition>
+                <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
+                <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
+                <DefinitionList.Term>Leverandør</DefinitionList.Term>
+                <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
+                <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
+                <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
+              </DefinitionList>
+              <Box>
+                <Switch
+                  disabled={isTogglingKT}
+                  checked={part.productData.attributes.egnetForKommunalTekniker || false}
+                  onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
+                >
+                  Egnet for kommunal tekniker
+                </Switch>
+                <Switch
+                  checked={part.productData.attributes.egnetForBrukerpass || false}
+                  onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
+                >
+                  Egnet for brukerpassbruker
+                </Switch>
+              </Box>
+            </HGrid>
           </VStack>
 
           <Tabs defaultValue={"variantkoblinger"}>
