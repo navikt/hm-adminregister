@@ -65,7 +65,12 @@ const Part = () => {
     <main className="show-menu">
       <HGrid
         gap="12"
-        columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
+        columns={{
+          xs: 1,
+          sm: "minmax(16rem, 48rem)",
+          xl: "minmax(16rem, 48rem)",
+          "2xl": "minmax(16rem, 80rem)",
+        }}
         className={styles.productPage}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
