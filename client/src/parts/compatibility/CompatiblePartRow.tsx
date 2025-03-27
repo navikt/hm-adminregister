@@ -1,11 +1,12 @@
 import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Checkbox, Link, Loader, Table } from "@navikt/ds-react";
+import { Checkbox, Loader, Table } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { ExternalLinkIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { useCompatibleProductById } from "api/PartApi";
+import { Link } from "react-router-dom";
 
-export const CompatibleVariantRow = ({
+export const CompatiblePartRow = ({
   productId,
   selectedRows,
   toggleSelectedRow,
@@ -37,14 +38,16 @@ export const CompatibleVariantRow = ({
   return (
     <Table.Row key={`${productId}`} shadeOnHover={true}>
       <Table.DataCell>
-        <>{product.articleName} </>
+        <>
+          <Link to={`/del/${product.id}`}>{product.articleName}</Link>{" "}
+        </>
       </Table.DataCell>
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
         {" "}
         {series.isPublished && product.hmsArtNr && (
-          <Link href={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
+          <Link to={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
             <ExternalLinkIcon fontSize="1.5rem" title="Se variant på Finn Hjelpemiddel" />
           </Link>
         )}

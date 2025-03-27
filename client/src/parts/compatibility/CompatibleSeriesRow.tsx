@@ -62,14 +62,7 @@ export const CompatibleSeriesRow = ({
 
   return (
     <Table.Row key={seriesUUID} shadeOnHover={false}>
-      <Table.DataCell>
-        {series.title}{" "}
-        {series.isPublished && (
-          <Link href={`${HM_REGISTER_URL()}/produkt/${series.id}`} target={"_blank"}>
-            <ExternalLinkIcon title="Se serie på Finn Hjelpemiddel" />
-          </Link>
-        )}
-      </Table.DataCell>
+      <Table.DataCell>{series.title} </Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
         <Button
@@ -106,6 +99,13 @@ export const CompatibleSeriesRow = ({
         >
           {series.variants.length - noConnectedVariants} / {series.variants.length}
         </Button>
+      </Table.DataCell>
+      <Table.DataCell>
+        {series.isPublished && (
+          <Link href={`${HM_REGISTER_URL()}/produkt/${series.id}`} target={"_blank"}>
+            <ExternalLinkIcon fontSize="1.5rem" title="Se serie på Finn Hjelpemiddel" />
+          </Link>
+        )}
       </Table.DataCell>
       <Table.DataCell>
         <Checkbox
