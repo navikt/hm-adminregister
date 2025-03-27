@@ -27,7 +27,7 @@ import { useState } from "react";
 import { useSeriesV2Conditional } from "api/SeriesApi";
 import { numberOfImages } from "products/seriesUtils";
 import { TabLabel } from "felleskomponenter/TabLabel";
-import ImageTab from "products/files/images/ImagesTab";
+import ImagesTab from "parts/ImagesTab";
 
 const Part = () => {
   const { productId } = useParams();
@@ -38,6 +38,7 @@ const Part = () => {
     data: series,
     isLoading: isLoadingSeries,
     error: errorSeries,
+    mutate: mutateSeries,
   } = useSeriesV2Conditional(part?.seriesUUID || undefined);
 
   const [isTogglingKT, setIsTogglingKT] = useState(false);
@@ -182,7 +183,7 @@ const Part = () => {
                 mutatePart={mutate}
               />
             </Tabs.Panel>
-            <ImageTab series={series} isEditable={true} showInputError={false} />
+            <ImagesTab series={series} isEditable={true} showInputError={false} mutateSeries={mutateSeries} />
           </Tabs>
         </VStack>
       </HGrid>
