@@ -84,6 +84,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                         <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
                         <Table.HeaderCell scope="col" />
                         <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
+                        <Table.HeaderCell scope="col"></Table.HeaderCell>
                         <Table.HeaderCell scope="col">
                           <Checkbox
                             checked={selectedRows.length === seriesIds.length}

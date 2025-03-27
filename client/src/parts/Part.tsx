@@ -93,7 +93,7 @@ const Part = () => {
               }}
             >
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-              Tilbake til oversikt
+              Tilbake
             </AkselLink>
             <VStack gap="2">
               <Label> Navn på del</Label>

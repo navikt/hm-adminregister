@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { useCompatibleProductById } from "api/PartApi";
 
-export const CompatibleVariantRow = ({
+export const CompatiblePartRow = ({
   productId,
   selectedRows,
   toggleSelectedRow,
@@ -37,7 +37,9 @@ export const CompatibleVariantRow = ({
   return (
     <Table.Row key={`${productId}`} shadeOnHover={true}>
       <Table.DataCell>
-        <>{product.articleName} </>
+        <>
+          <Link href={`/del/${product.id}`}>{product.articleName}</Link>{" "}
+        </>
       </Table.DataCell>
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>

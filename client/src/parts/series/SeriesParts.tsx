@@ -2,10 +2,10 @@ import { Box, Button, Checkbox, Heading, HStack, Loader, Table, VStack } from "@
 import { useSeriesV2 } from "api/SeriesApi";
 import styles from "./SeriesParts.module.scss";
 import { getPartsForSeriesId, removeCompatibleWithSeriesForParts } from "api/PartApi";
-import { CompatibleVariantRow } from "parts/compatibility/CompatibleVariantRow";
 import React, { useState } from "react";
 import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import NewCompatiblePartsOnSeries from "parts/series/NewCompatiblePartsOnSeries";
+import { CompatiblePartRow } from "parts/compatibility/CompatiblePartRow";
 
 interface SeriesPartsProps {
   seriesId: string;
@@ -78,6 +78,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                     <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
+                    <Table.HeaderCell scope="col"></Table.HeaderCell>
                     <Table.HeaderCell scope="col">
                       <Checkbox
                         checked={selectedRows.length === seriesParts.length}
@@ -97,7 +98,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                 </Table.Header>
                 <Table.Body>
                   {seriesParts.map((part) => (
-                    <CompatibleVariantRow
+                    <CompatiblePartRow
                       productId={part.id}
                       key={part.id}
                       selectedRows={selectedRows}
