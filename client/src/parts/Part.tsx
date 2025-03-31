@@ -18,7 +18,6 @@ import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
 import ErrorAlert from "error/ErrorAlert";
 import { useAuthStore } from "utils/store/useAuthStore";
-import styles from "./PartPage.module.scss";
 import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, usePartByProductId } from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
@@ -82,7 +81,6 @@ const Part = () => {
           xl: "minmax(16rem, 48rem)",
           "2xl": "minmax(16rem, 80rem)",
         }}
-        className={styles.productPage}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
