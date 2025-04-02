@@ -64,9 +64,6 @@ export const RequestApprovalModal = ({
             <li>tekniske data er korrekte.</li>
             <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
           </ul>
-          <BodyLong>
-            <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.
-          </BodyLong>
         </Modal.Body>
         <Modal.Footer>
           <Button
