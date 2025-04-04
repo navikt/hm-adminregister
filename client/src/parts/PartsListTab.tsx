@@ -1,6 +1,6 @@
 import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useSuppliers } from "utils/swr-hooks";
 import ErrorAlert from "error/ErrorAlert";
@@ -32,8 +32,6 @@ const PartsListTab = () => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
   });
-
-  const navigate = useNavigate();
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
 

@@ -4,7 +4,7 @@ import styles from "./SeriesParts.module.scss";
 import { getPartsForSeriesId, removeCompatibleWithSeriesForParts } from "api/PartApi";
 import React, { useState } from "react";
 import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import NewCompatiblePartsOnSeries from "parts/series/NewCompatiblePartsOnSeries";
+import NewCompatiblePartsOnSeriesModal from "parts/series/NewCompatiblePartsOnSeriesModal";
 import { CompatiblePartRow } from "parts/compatibility/CompatiblePartRow";
 
 interface SeriesPartsProps {
@@ -18,6 +18,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
     isLoading: isLoadingSeriesParts,
     error: errorSeriesParts,
     mutate: mutateParts,
+    isValidating,
   } = getPartsForSeriesId(seriesId);
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -38,17 +39,18 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
     setIsDeleting(false);
   };
 
-  if (isLoadingSeries || !series || isLoadingSeriesParts || !seriesParts) {
+  if (isLoadingSeries || !series || isLoadingSeriesParts || !seriesParts || isValidating) {
     return <Loader />;
   }
 
   return (
     <>
-      <NewCompatiblePartsOnSeries
+      <NewCompatiblePartsOnSeriesModal
         modalIsOpen={newCompatibleProductModalIsOpen}
         setModalIsOpen={setNewCompatibleProductModalIsOpen}
         seriesId={seriesId}
         mutateParts={mutateParts}
+        seriesParts={seriesParts.map((part) => part.id)}
       />
       <Box className={styles.seriesParts} padding="8">
         <VStack gap="8">
@@ -60,7 +62,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
               setNewCompatibleProductModalIsOpen(true);
             }}
           >
-            Legg til kobling
+            Legg til deler i serien
           </Button>
           {seriesParts.length === 0 && (
             <Box padding="8">
