@@ -1076,6 +1076,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/accessory/hmsNr/part/{hmsNr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartByHmsNr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/accessory/hmsNr/{hmsNr}": {
         parameters: {
             query?: never;
@@ -1100,6 +1116,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["findVariantsBySeriesUUID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/accessory/series/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPartsForSeriesId"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1252,6 +1284,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/part/approve/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["approvePart"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/part/old/series/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -1262,6 +1310,22 @@ export interface paths {
         get: operations["findBySeriesUUIDAndSupplierIdOld_1"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/part/supplier/{supplierId}/draftWith": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftSeriesWith"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1485,7 +1549,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["draftSeriesWith"];
+        post: operations["draftSeriesWith_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2625,6 +2689,20 @@ export interface components {
             isPublished: boolean;
             isExpired: boolean;
         };
+        PartDraftResponse: {
+            /** Format: uuid */
+            id: string;
+        };
+        PartDraftWithDTO: {
+            title: string;
+            isoCategory: string;
+            hmsArtNr: string;
+            levArtNr: string;
+            sparePart?: boolean | null;
+            accessory?: boolean | null;
+            /** Format: uuid */
+            supplierId: string;
+        };
         ProductAgreementDeletedResponse: {
             /** Format: uuid */
             id: string;
@@ -2663,6 +2741,7 @@ export interface components {
             articleName?: string | null;
             accessory: boolean;
             sparePart: boolean;
+            mainProduct: boolean;
             isoCategory?: string | null;
             /** Format: uuid */
             supplierId: string;
@@ -2725,6 +2804,7 @@ export interface components {
             articleName: string;
             accessory: boolean;
             sparePart: boolean;
+            mainProduct: boolean;
             draftStatus: components["schemas"]["DraftStatus"];
             adminStatus: components["schemas"]["AdminStatus"];
             registrationStatus: components["schemas"]["RegistrationStatus"];
@@ -2765,6 +2845,7 @@ export interface components {
             articleName: string;
             accessory: boolean;
             sparePart: boolean;
+            mainProduct: boolean;
             draftStatus: components["schemas"]["DraftStatus"];
             adminStatus: components["schemas"]["AdminStatus"];
             registrationStatus: components["schemas"]["RegistrationStatus"];
@@ -5458,6 +5539,28 @@ export interface operations {
             };
         };
     };
+    findPartByHmsNr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hmsNr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByHmsNr 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
     findByHmsNr_1: {
         parameters: {
             query?: never;
@@ -5492,6 +5595,28 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description findVariantsBySeriesUUID 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
+    getPartsForSeriesId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description getPartsForSeriesId 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -5719,6 +5844,35 @@ export interface operations {
             };
         };
     };
+    approvePart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    seriesUUID: string;
+                };
+            };
+        };
+        responses: {
+            /** @description approvePart 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     findBySeriesUUIDAndSupplierIdOld_1: {
         parameters: {
             query?: never;
@@ -5737,6 +5891,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRegistration"][];
+                };
+            };
+        };
+    };
+    draftSeriesWith: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftSeriesWith 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
                 };
             };
         };
@@ -6058,7 +6238,7 @@ export interface operations {
             };
         };
     };
-    draftSeriesWith: {
+    draftSeriesWith_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6073,7 +6253,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description draftSeriesWith 200 response */
+            /** @description draftSeriesWith_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
