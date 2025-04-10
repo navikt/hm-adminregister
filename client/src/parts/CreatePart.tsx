@@ -37,7 +37,7 @@ export default function CreatePart() {
 
   const { loggedInUser } = useAuthStore();
 
-  const { suppliers } = useSuppliers(loggedInUser?.isHmsUser || false);
+  const { suppliers } = useSuppliers(loggedInUser?.isAdminOrHmsUser || false);
 
   const validateFields = () => {
     const titleError = !title || title === "";
