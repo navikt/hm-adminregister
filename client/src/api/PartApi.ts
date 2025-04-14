@@ -1,8 +1,12 @@
 import {
   CompatibleWith,
+  PartDraftResponse,
+  PartDraftWithDTO,
   PartDTO,
   ProductChunk,
   ProductRegistrationDTOV2,
+  SeriesDraftResponse,
+  SeriesDraftWithDTO,
   SuitableForBrukerpassbrukerDTO,
   SuitableForKommunalTeknikerDTO,
 } from "utils/types/response-types";
@@ -26,6 +30,25 @@ export function usePagedParts({
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }
+
+export const draftNewPart = async (partDraftWith: PartDraftWithDTO, supplierId: string): Promise<PartDraftResponse> => {
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/api/v1/part/supplier/${supplierId}/draftWith`,
+    "POST",
+    partDraftWith,
+  );
+};
+
+export const draftAndPublishNewPart = async (
+  partDraftWith: PartDraftWithDTO,
+  supplierId: string,
+): Promise<PartDraftResponse> => {
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/api/v1/part/supplier/${supplierId}/draftWithAndPublish`,
+    "POST",
+    partDraftWith,
+  );
+};
 
 export function usePartByVariantIdentifier(variantIdentifier: string) {
   const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/part/variant-id/${variantIdentifier}`;
