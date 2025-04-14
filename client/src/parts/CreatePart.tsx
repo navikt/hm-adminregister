@@ -29,7 +29,9 @@ export default function CreatePart() {
   const [isoCategory, setIsoCategory] = useState<string>("");
   const [partType, setPartType] = useState<string>("sparePart");
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined);
-  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
+  const uniqueIsoCodes = isoCategories?.filter(
+    (cat) => cat.isoCode && cat.isoCode.length === 6 && /9[0-6]$/.test(cat.isoCode),
+  );
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
