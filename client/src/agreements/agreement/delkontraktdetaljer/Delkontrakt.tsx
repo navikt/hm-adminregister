@@ -236,7 +236,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                             <Table.DataCell>
                               {produkt.serieIdentifier ? (
                                 <a
-                                  href={`${HM_REGISTER_URL()}/produkt/${produkt.serieIdentifier}`}
+                                  href={`${HM_REGISTER_URL()}/produkt/${produkt.productSeries}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
