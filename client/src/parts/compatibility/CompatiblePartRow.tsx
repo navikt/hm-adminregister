@@ -41,7 +41,7 @@ export const CompatiblePartRow = ({
     setIsTogglingBP(false);
   };
 
-  if (isLoading || isLoadingSeries || !product || !series) {
+  if (!product || !series) {
     return (
       <Table.Row key={`${productId}`} shadeOnHover={true}>
         <Table.DataCell colSpan={4}>
