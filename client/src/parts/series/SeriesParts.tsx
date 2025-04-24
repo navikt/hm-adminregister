@@ -80,6 +80,8 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                     <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Egnet for kommunal tekniker</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Egnet for brukerpassbruker</Table.HeaderCell>
                     <Table.HeaderCell scope="col"></Table.HeaderCell>
                     <Table.HeaderCell scope="col">
                       <Checkbox
