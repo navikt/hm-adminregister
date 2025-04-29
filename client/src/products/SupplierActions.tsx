@@ -5,6 +5,7 @@ import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SeriesDTO } from "utils/types/response-types";
+import { MIME_TYPE_XLSX } from "utils/file-util";
 
 const SupplierActions = ({
   series,
@@ -39,7 +40,7 @@ const SupplierActions = ({
   const exportProductsForSupplier = () => {
     exportProducts(loggedInUser?.isAdmin || false, series.id).then((response) => {
       const bytes = new Uint8Array(response); // pass your byte response to this constructor
-      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const blob = new Blob([bytes], { type: MIME_TYPE_XLSX });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

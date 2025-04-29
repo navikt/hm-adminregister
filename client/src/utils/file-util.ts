@@ -16,3 +16,10 @@ export const fileToUri = async (file: File) =>
 export const uriForMediaFile = (file: MediaInfoDTO) => {
   return `${IMAGE_PROXY_URL()}/file/${file.uri}`;
 };
+
+
+export const MIME_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+export const MIME_TYPE_XLS = "application/vnd.ms-excel";
+
+export const MIME_EXCEL_TYPES_ARRAY = [MIME_TYPE_XLSX, MIME_TYPE_XLS];
+export const MIME_EXCEL_TYPES_STRING = `${MIME_TYPE_XLSX},${MIME_TYPE_XLS}`;
