@@ -1,5 +1,5 @@
 import {
-  CompatibleWith,
+  CompatibleWithDTO,
   PartDraftResponse,
   PartDraftWithDTO,
   PartDTO,
@@ -107,14 +107,14 @@ export function useCompatibleProductById(productId: string) {
   };
 }
 
-const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWith): Promise<void> =>
+const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWithDTO): Promise<void> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
 export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[]): Promise<void> => {
   const partToUpdate = await getPart(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
-  const updatedCompatibleWith = {
+  const updatedCompatibleWith: CompatibleWithDTO = {
     seriesIds: compatibleWith?.seriesIds.filter((id) => !seriesUUIDToRemove.includes(id)) || [],
     productIds: compatibleWith?.productIds || [],
   };

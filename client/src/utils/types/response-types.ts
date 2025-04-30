@@ -77,6 +77,7 @@ export type FileTitleDto = components["schemas"]["FileTitleDto"];
 export type PartDTO = components["schemas"]["PartDTO"];
 
 export type CompatibleWith = components["schemas"]["CompatibleWith"];
+export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 
 export type SuitableForBrukerpassbrukerDTO = components["schemas"]["SuitableForBrukerpassbrukerDTO"];
 export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForKommunalTeknikerDTO"];
