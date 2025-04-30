@@ -1332,6 +1332,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/part/supplier/{supplierId}/draftWithAndPublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftSeriesWithAndPublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/part/v2/{id}": {
         parameters: {
             query?: never;
@@ -2374,6 +2390,7 @@ export interface components {
         CompatibleWith: {
             seriesIds: string[];
             productIds: string[];
+            connectedBy: string;
         };
         CompatibleWithDTO: {
             seriesIds: string[];
@@ -2966,6 +2983,10 @@ export interface components {
             productVariants: components["schemas"]["ProductAgreementRegistrationDTO"][];
             accessory: boolean;
             sparePart: boolean;
+            /** Format: date-time */
+            published: string;
+            /** Format: date-time */
+            expired: string;
         };
         /** @enum {string} */
         Produkttype: "Hovedprodukt" | "Tilbehoer" | "Del";
@@ -5911,6 +5932,32 @@ export interface operations {
         };
         responses: {
             /** @description draftSeriesWith 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
+                };
+            };
+        };
+    };
+    draftSeriesWithAndPublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftSeriesWithAndPublish 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;

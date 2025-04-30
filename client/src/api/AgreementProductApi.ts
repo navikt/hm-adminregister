@@ -10,9 +10,7 @@ import { todayTimestamp } from "utils/date-util";
 import { getAgreement } from "api/AgreementApi";
 import { getDelkontrakt } from "api/DelkontraktApi";
 import { fetchAPI } from "api/fetch";
-import { useAuthStore } from "utils/store/useAuthStore";
-import useSWR from "swr";
-import { fetcherGET } from "utils/swr-hooks";
+import { EditProductAgreementDatesFormDataDto } from "utils/zodSchema/editProductAgreementDates";
 
 export const deleteProductsFromAgreement = (agreementProductIds: string[]) =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, "DELETE", agreementProductIds);
@@ -36,19 +34,27 @@ export const changeRankOnProductAgreements = async (productAgreementIds: string[
   );
 };
 
-export function useIsSeriesInAgreement(seriesId: string) {
-  const { loggedInUser } = useAuthStore();
+export const changePublishedExpiredOnProductAgreements = async (
+  productAgreementIds: string[],
+  editProductAgreementDatesFormDataDto: EditProductAgreementDatesFormDataDto,
+) => {
+  const productAgreementsToUpdate: ProductAgreementRegistrationDTO[] = await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/get-by-ids`,
+    "POST",
+    productAgreementIds,
+  );
 
-  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/product-agreement/in-agreement/${seriesId}`;
+  const updatedProductAgreements: ProductAgreementRegistrationDTO[] = getProductAgreementsWithUpdatedDates(
+    productAgreementsToUpdate,
+    editProductAgreementDatesFormDataDto,
+  );
 
-  const { data, error, isLoading } = useSWR<boolean>(!loggedInUser?.isAdmin ? path : null, fetcherGET);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
-}
+  return await fetchAPI(
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/batch`,
+    "PUT",
+    updatedProductAgreements,
+  );
+};
 
 export const addProductsToAgreement = async (
   delkontraktId: string,
@@ -100,6 +106,20 @@ const getEditedProductAgreements = (
     return {
       ...productAgreement,
       rank: newRanking,
+      updated: todayTimestamp(),
+    };
+  });
+};
+
+const getProductAgreementsWithUpdatedDates = (
+  productAgreementsToEdit: ProductAgreementRegistrationDTO[],
+  editProductAgreementDatesFormDataDto: EditProductAgreementDatesFormDataDto,
+): ProductAgreementRegistrationDTO[] => {
+  return productAgreementsToEdit.map((productAgreement) => {
+    return {
+      ...productAgreement,
+      published: editProductAgreementDatesFormDataDto.published,
+      expired: editProductAgreementDatesFormDataDto.expired,
       updated: todayTimestamp(),
     };
   });

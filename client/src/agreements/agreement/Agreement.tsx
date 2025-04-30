@@ -82,7 +82,7 @@ const Agreement = () => {
   const formMethods = useForm<EditCommonInfoAgreement>();
 
   async function onSubmit(data: EditCommonInfoAgreement) {
-    updateAgreementDescription(agreement!!.id, data)
+    updateAgreementDescription(agreement!.id, data)
       .then((agreement) => mutateAgreement(agreement))
       .catch((error) => {
         setGlobalError(error.status, error.message);

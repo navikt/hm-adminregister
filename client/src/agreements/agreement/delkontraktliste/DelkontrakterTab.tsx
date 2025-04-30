@@ -2,11 +2,11 @@ import { Alert, Button, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
 import { Fragment, useEffect, useState } from "react";
 import { Avstand } from "felleskomponenter/Avstand";
 import NewDelkontraktModal from "./NewDelkontraktModal";
-import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
 import { Delkontrakt } from "../delkontraktdetaljer/Delkontrakt";
 import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
 import styled from "styled-components";
 import { reorderDelkontrakter } from "api/DelkontraktApi";
+import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
 
 const DelkontrakterTab = ({
   agreementId,
