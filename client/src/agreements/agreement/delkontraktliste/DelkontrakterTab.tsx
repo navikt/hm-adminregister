@@ -73,9 +73,9 @@ const DelkontrakterTab = ({
             <HGrid columns="auto 60px" gap="4">
               {delkontrakter!.length > 0 &&
                 delkontrakter!.map((delkontrakt, i) => (
-                  <Fragment key={i}>
+                  <Fragment key={delkontrakt.id}>
                     <Delkontrakt
-                      key={i}
+                      key={delkontrakt.id}
                       delkontrakt={delkontrakt}
                       agreementDraftStatus={agreementDraftStatus}
                       mutateDelkontrakter={mutateDelkontrakter}
