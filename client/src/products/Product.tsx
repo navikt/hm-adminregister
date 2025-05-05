@@ -98,7 +98,11 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(!series.text || (!loggedInUser?.isAdmin && numberOfImages(series) === 0) || series.variants.length === 0);
+    if (loggedInUser?.isAdmin) {
+      return series.variants.length > 0;
+    } else {
+      return series.text.length > 0 && numberOfImages(series) > 0 && series.variants.length > 0;
+    }
   };
 
   const handleSaveProductTitle = () => {
