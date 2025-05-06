@@ -101,7 +101,11 @@ const Product = () => {
     if (loggedInUser?.isAdmin) {
       return series.variants.length > 0;
     } else {
-      return series.text.length > 0 && numberOfImages(series) > 0 && series.variants.length > 0;
+      const hasDescription = series.text.length > 0;
+      const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1;
+      const hasVariants = series.variants.length > 0;
+
+      return hasDescription && hasImages && hasVariants;
     }
   };
 
