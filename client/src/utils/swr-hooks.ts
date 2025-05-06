@@ -257,10 +257,10 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
   };
 }
 
-export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
+export function useProductAgreementsByDelkontraktId(delkontraktId: string, mainProductsOnly: boolean) {
   const { setGlobalError } = useErrorStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}?mainProductsOnly=${mainProductsOnly}`;
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
