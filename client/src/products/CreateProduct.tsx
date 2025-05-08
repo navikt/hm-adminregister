@@ -4,7 +4,7 @@ import { useIsoCategories, useSuppliers } from "utils/swr-hooks";
 import { useNavigate } from "react-router-dom";
 import { SeriesDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
-import { draftNewSeries, draftNewSeriesForAdmin } from "api/SeriesApi";
+import { draftNewSeries } from "api/SeriesApi";
 import FormBox from "felleskomponenter/FormBox";
 import { PackageIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
@@ -57,15 +57,15 @@ export default function CreateProduct() {
       if (loggedInUser && loggedInUser.isAdmin) {
         const supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id;
 
-        draftNewSeriesForAdmin(newSeries, supplierUUID!)
+        draftNewSeries(newSeries, supplierUUID!)
           .then((newSeries) => {
             navigate(`/produkter/${newSeries.id}`);
           })
           .catch((error) => {
             setGlobalError(error);
           });
-      } else {
-        draftNewSeries(newSeries)
+      } else if (loggedInUser) {
+        draftNewSeries(newSeries, loggedInUser.supplierId!)
           .then((newSeries) => {
             navigate(`/produkter/${newSeries.id}`);
           })

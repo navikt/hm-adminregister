@@ -3,9 +3,9 @@ import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import SeriesStatusTag from "products/SeriesStatusTag";
 import { seriesStatus } from "products/seriesUtils";
 import { toReadableDateTimeString } from "utils/date-util";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 
-const StatusPanel = ({ series }: { series: SeriesRegistrationDTOV2 }) => {
+const StatusPanel = ({ series }: { series: SeriesDTO }) => {
   return (
     <VStack gap={{ xs: "6", md: "10" }}>
       <VStack gap="3">

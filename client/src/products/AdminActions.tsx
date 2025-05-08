@@ -7,7 +7,7 @@ import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { ShowDiffModal } from "products/diff/ShowDiffModal";
 import { RejectApprovalModal } from "products/RejectApprovalModal";
 import { useErrorStore } from "utils/store/useErrorStore";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 
 const AdminActions = ({
   series,
@@ -18,7 +18,7 @@ const AdminActions = ({
   setDeleteConfirmationModalIsOpen,
   setExpiredSeriesModalIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
@@ -56,7 +56,7 @@ const AdminActions = ({
   }
 
   async function onSetToDraft() {
-    setPublishedSeriesToDraft(true, series.id)
+    setPublishedSeriesToDraft(series.id)
       .then(() => {
         mutateSeries();
       })

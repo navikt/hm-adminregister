@@ -1,4 +1,4 @@
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 import { Box, Button, Modal, Textarea } from "@navikt/ds-react";
 import { rejectSeries } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -10,7 +10,7 @@ export const RejectApprovalModal = ({
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;

@@ -3,11 +3,11 @@ import { Tabs, VStack } from "@navikt/ds-react";
 import AboutTabDescription from "products/about/AboutTabDescription";
 import AboutTabKeywords from "products/about/AboutTabKeywords";
 import AboutTabURL from "products/about/AboutTabURL";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 import styles from "../ProductPage.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   isEditable: boolean;
   showInputError: boolean;

@@ -26,7 +26,7 @@ import {
   setPublishedSeriesToDraft,
   setSeriesToActive,
   setSeriesToInactive,
-  updateProductTitleV2,
+  updateProductTitle,
   useSeriesV2,
 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
@@ -47,6 +47,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import AboutTab from "./about/AboutTab";
 import styles from "./ProductPage.module.scss";
 import VariantsTab from "./variants/VariantsTab";
+import { TabLabel } from "felleskomponenter/TabLabel";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -97,12 +98,20 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    return !(!series.text || (!loggedInUser?.isAdmin && numberOfImages(series) === 0) || series.variants.length === 0);
+    if (loggedInUser?.isAdmin) {
+      return series.variants.length > 0;
+    } else {
+      const hasDescription = series.text.length > 0;
+      const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1;
+      const hasVariants = series.variants.length > 0;
+
+      return hasDescription && hasImages && hasVariants;
+    }
   };
 
   const handleSaveProductTitle = () => {
     setShowEditProductTitleMode(false);
-    updateProductTitleV2(series!.id, productTitle)
+    updateProductTitle(series!.id, productTitle)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };
@@ -111,7 +120,7 @@ const Product = () => {
 
   async function onDelete() {
     setDeleteConfirmationModalIsOpen(false);
-    deleteSeries(loggedInUser?.isAdmin ?? true, series!.id)
+    deleteSeries(series!.id)
       .then(() => {
         mutateSeries();
         navigate("/produkter");
@@ -123,7 +132,7 @@ const Product = () => {
 
   async function onEditMode() {
     setEditProductModalIsOpen(false);
-    setPublishedSeriesToDraft(false, series!.id)
+    setPublishedSeriesToDraft(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -134,7 +143,7 @@ const Product = () => {
 
   async function onToActive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToActive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToActive(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -145,7 +154,7 @@ const Product = () => {
 
   async function onToInactive() {
     setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
-    setSeriesToInactive(series!.id, loggedInUser?.isAdmin || false)
+    setSeriesToInactive(series!.id)
       .then(() => {
         mutateSeries();
       })
@@ -153,29 +162,6 @@ const Product = () => {
         setGlobalError(error);
       });
   }
-
-  const TabLabel = ({
-    title,
-    numberOfElements,
-    showAlert,
-  }: {
-    title: string;
-    numberOfElements: number;
-    showAlert: boolean;
-  }) => {
-    return (
-      <>
-        {title}
-        {numberOfElements === 0 && !isValid && showAlert ? (
-          <span className={styles.tabLabel}>
-            ({numberOfElements})<ExclamationmarkTriangleIcon />
-          </span>
-        ) : (
-          <span>({numberOfElements})</span>
-        )}
-      </>
-    );
-  };
 
   return (
     <main className="show-menu">
@@ -331,19 +317,47 @@ const Product = () => {
               />
               <Tabs.Tab
                 value="variants"
-                label={<TabLabel title="Egenskaper" numberOfElements={series.variants.length} showAlert={true} />}
+                label={
+                  <TabLabel
+                    title="Egenskaper"
+                    numberOfElements={series.variants.length}
+                    showAlert={true}
+                    isValid={isValid}
+                  />
+                }
               />
               <Tabs.Tab
                 value="images"
-                label={<TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={true} />}
+                label={
+                  <TabLabel
+                    title="Bilder"
+                    numberOfElements={numberOfImages(series)}
+                    showAlert={true}
+                    isValid={isValid}
+                  />
+                }
               />
               <Tabs.Tab
                 value="documents"
-                label={<TabLabel title="Dokumenter" numberOfElements={numberOfDocuments(series)} showAlert={false} />}
+                label={
+                  <TabLabel
+                    title="Dokumenter"
+                    numberOfElements={numberOfDocuments(series)}
+                    showAlert={false}
+                    isValid={isValid}
+                  />
+                }
               />
               <Tabs.Tab
                 value="videos"
-                label={<TabLabel title="Videolenker" numberOfElements={numberOfVideos(series)} showAlert={false} />}
+                label={
+                  <TabLabel
+                    title="Videolenker"
+                    numberOfElements={numberOfVideos(series)}
+                    showAlert={false}
+                    isValid={isValid}
+                  />
+                }
               />
             </Tabs.List>
             <AboutTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} showInputError={!isValid} />

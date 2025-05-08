@@ -17,7 +17,7 @@ import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
 import ErrorAlert from "error/ErrorAlert";
 import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { usePagedProductsToApprove, useSuppliers } from "utils/swr-hooks";
+import { usePagedSeriesToApprove, useSuppliers } from "utils/swr-hooks";
 
 export enum CreatedByFilter {
   ALL = "ALL",
@@ -46,14 +46,14 @@ export const ForApproval = () => {
     (searchParams.get("filter") as CreatedByFilter) || "ALL",
   );
 
-  const visningStatusfilter = ["Endring", "Nytt produkt"];
+  const visningStatusfilter = ["Endring", "Nytt produkt", "Hovedprodukt", "Tilbehør/Del"];
 
   const {
     data: pagedData,
     isLoading,
     mutate: mutatePagedData,
     error: pagedDataError,
-  } = usePagedProductsToApprove({
+  } = usePagedSeriesToApprove({
     page: pageState - 1,
     pageSize: pageSizeState,
     createdByFilter: selectedFilterOption,

@@ -17,8 +17,6 @@ import {
   ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
   ProdukterTilGodkjenningChunk,
-  SeriesChunk,
-  SeriesRegistrationDTO,
   SeriesSearchChunk,
   SeriesSearchDTO,
   SupplierChunk,
@@ -60,26 +58,6 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     }
     return res.json();
   });
-
-export function useSeries(seriesUUID: string) {
-  const { loggedInUser } = useAuthStore();
-
-  const seriesIdPath = getPath(loggedInUser?.isAdmin || false, `/api/v1/series/${seriesUUID}`);
-
-  const {
-    data: series,
-    error: errorSeries,
-    isLoading: isLoadingSeries,
-    mutate: mutateSeries,
-  } = useSWR<SeriesRegistrationDTO>(loggedInUser ? seriesIdPath : null, fetcherGET);
-
-  return {
-    series,
-    isLoadingSeries,
-    errorSeries,
-    mutateSeries,
-  };
-}
 
 export function useSeriesByVariantIdentifier(variantIdentifier: string) {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantIdentifier}`;
@@ -169,30 +147,7 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
   return uri;
 };
 
-export function getAllRejectedSeries() {
-  const path = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?size=1000000&adminStatus=REJECTED`;
-
-  const { data } = useSWR<SeriesChunk>(path, fetcherGET);
-
-  return data;
-}
-
-export function useSeriesToApprove() {
-  const { loggedInUser } = useAuthStore();
-
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve`;
-
-  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(loggedInUser ? path : null, fetcherGET);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
-}
-
-// TODO: Slå sammen med usePagedProducts
-export function usePagedProductsToApprove({
+export function usePagedSeriesToApprove({
   page,
   pageSize,
   createdByFilter,
@@ -209,17 +164,10 @@ export function usePagedProductsToApprove({
   sortUrl: string | null;
   filters: string[];
 }) {
-  const { loggedInUser } = useAuthStore();
-
-  console.log("filters", filters);
-
-  const basePath = loggedInUser?.isAdmin
-    ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/series?page=${page}&size=${pageSize}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series?page=${page}&size=${pageSize}`;
+  const basePath = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=${page}&size=${pageSize}`;
 
   const filterUrl = new URLSearchParams();
 
-  filterUrl.append("editStatus", "PENDING_APPROVAL");
   supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
   titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
 
@@ -231,21 +179,27 @@ export function usePagedProductsToApprove({
     }
   }
 
-  const sortBy = sortUrl?.split(",")[0] || "updated";
-  const sortDirection = sortUrl?.split(",")[1] || "descending";
-  const sortURL =
-    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
+  if (!(filters.includes("Hovedprodukt") && filters.includes("Tilbehør/Del"))) {
+    if (filters.includes("Hovedprodukt")) {
+      filterUrl.append("mainProduct", "true");
+    } else if (filters.includes("Tilbehør/Del")) {
+      filterUrl.append("mainProduct", "false");
+    }
+  }
   if (createdByFilter === CreatedByFilter.ADMIN) {
     filterUrl.append("createdByAdmin", "true");
   } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
     filterUrl.append("createdByAdmin", "false");
   }
 
-  const path = loggedInUser?.isAdmin
-    ? `${basePath}&${sortURL}${filterUrl.toString()}&excludedStatus=DELETED`
-    : `${basePath}&${filterUrl.toString()}&excludedStatus=DELETED`;
+  const sortBy = sortUrl?.split(",")[0] || "updated";
+  const sortDirection = sortUrl?.split(",")[1] || "descending";
+  const sortURL =
+    sortUrl && sortDirection !== "none" ? `sort=${sortBy},${sortDirection === "descending" ? "DESC" : "ASC"}&` : "";
 
-  const { data, error, isLoading, mutate } = useSWR<SeriesChunk>(loggedInUser ? path : null, fetcherGET);
+  const path = `${basePath}&${sortURL}${filterUrl.toString()}`;
+
+  const { data, error, isLoading, mutate } = useSWR<ProdukterTilGodkjenningChunk>(path, fetcherGET);
 
   return {
     data,
@@ -303,10 +257,10 @@ export function useDelkontrakterByAgreementId(agreementId: string) {
   };
 }
 
-export function useProductAgreementsByDelkontraktId(delkontraktId?: string) {
+export function useProductAgreementsByDelkontraktId(delkontraktId: string, mainProductsOnly: boolean) {
   const { setGlobalError } = useErrorStore();
 
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}`;
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/variants/delkontrakt/${delkontraktId}?mainProductsOnly=${mainProductsOnly}`;
 
   const { data, error, isLoading, mutate } = useSWR<ProductVariantsForDelkontraktDto[]>(
     delkontraktId ? path : null,
@@ -377,7 +331,9 @@ export function useUser(loggedInUser: LoggedInUser | undefined) {
   const { setGlobalError } = useErrorStore();
   const path = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`;
+    : loggedInUser?.isHmsUser
+      ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/`
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/`;
 
   const { data, error, isLoading, mutate } = useSWR<UserDTO>(
     loggedInUser ? path + loggedInUser?.userId : null,
@@ -453,7 +409,8 @@ export function useAdminUsers() {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
   const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET);
-  const adminUsers: UserDTO[] | undefined = data && data.content;
+  const users: UserDTO[] | undefined = data && data.content;
+  const adminUsers = users && users.filter((user) => user.roles.includes("ROLE_ADMIN"));
 
   if (error) {
     setGlobalError(error.status, error.message);
@@ -465,4 +422,42 @@ export function useAdminUsers() {
     isLoading,
     error,
   };
+}
+
+export function useHmsUsers() {
+  const { setGlobalError } = useErrorStore();
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
+  const { data, error, isLoading } = useSWR<AdminUserChunk>(path, fetcherGET);
+  const users: UserDTO[] | undefined = data && data.content;
+  const hmsUsers = users && users.filter((user) => user.roles.includes("ROLE_HMS"));
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    hmsUsers,
+    isLoading,
+    error,
+  };
+}
+
+export function usePagedProductsForTechnician({
+  page,
+  pageSize,
+  titleSearchTerm,
+}: {
+  page: number;
+  pageSize: number;
+  titleSearchTerm: string;
+}) {
+  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
+
+  const mainProductParam: string = `&mainProduct=true`;
+
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${mainProductParam}`;
+
+  return useSWR<SeriesSearchChunk>(path, fetcherGET);
 }

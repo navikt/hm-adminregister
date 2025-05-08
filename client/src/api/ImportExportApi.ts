@@ -1,6 +1,7 @@
 import { ProductAgreementImportDTO, ProductRegistrationDTO } from "utils/types/response-types";
 import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from "api/fetch";
 import { Upload } from "felleskomponenter/FellesImport";
+import { MIME_TYPE_XLSX } from "utils/file-util";
 
 export const exportProducts = async (isAdmin: boolean, seriesId: string): Promise<any> => {
   return await fetchAPIWithHeadersAndArrayBufferResponse(
@@ -8,7 +9,7 @@ export const exportProducts = async (isAdmin: boolean, seriesId: string): Promis
     "POST",
     undefined,
     {
-      accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      accept: MIME_TYPE_XLSX,
     },
   );
 };

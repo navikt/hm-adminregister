@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import "./import.scss";
 import { ValidateImportedProducts } from "products/import/valideringsside/ValidateImportedProducts";
 import { useParams } from "react-router-dom";
-import { useSeries } from "utils/swr-hooks";
 import { Loader } from "@navikt/ds-react";
-import FellesImport, { Upload } from "felleskomponenter/FellesImport";
+import { Upload } from "felleskomponenter/FellesImport";
+import { useSeriesV2 } from "api/SeriesApi";
+import ErrorAlert from "error/ErrorAlert";
+import ImporterProdukter from "products/import/ImporterProdukter";
 
 export const ImporterOgValiderProdukter = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
   const { seriesId } = useParams();
 
-  const { series, isLoadingSeries } = useSeries(seriesId!);
+  const { data: series, isLoading, error } = useSeriesV2(seriesId!);
 
-  if (isLoadingSeries) {
+  if (isLoading) {
     return (
       <main>
         <div className="import-products">
@@ -24,18 +26,21 @@ export const ImporterOgValiderProdukter = () => {
     );
   }
 
-  if (!upload) {
+  if (!series || error) {
     return (
-      <FellesImport
-        validerImporterteProdukter={setUpload}
-        tekst={`Importer varianter for ${series?.title}`}
-        setSupplier_={() => {}}
-      />
+      <main className="show-menu">
+        <ErrorAlert />
+      </main>
     );
+  }
+
+  if (!upload) {
+    return <ImporterProdukter seriesTitle={series.title} validerImporterteProdukter={setUpload} />;
   } else
     return (
       <ValidateImportedProducts
         seriesId={seriesId!}
+        seriesTitle={series.title}
         upload={upload}
         reseetUpload={() => {
           setUpload(undefined);

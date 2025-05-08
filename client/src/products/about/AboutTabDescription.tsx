@@ -1,16 +1,16 @@
-import { Alert, BodyShort, Button, Heading, VStack } from "@navikt/ds-react";
+import { Alert, BodyShort, Button, Heading, HStack, Spacer, VStack } from "@navikt/ds-react";
 import { labelRequired } from "utils/string-util";
 import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import parse from "html-react-parser";
 import { useState } from "react";
-import { updateProductDescriptionV2 } from "api/SeriesApi";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { updateProductDescription } from "api/SeriesApi";
+import { SeriesDTO } from "utils/types/response-types";
 import { useErrorStore } from "utils/store/useErrorStore";
 import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 import styles from "./Editor.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   showInputError: boolean;
   isEditable: boolean;
@@ -22,6 +22,7 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
   const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);
   const [updatedDescription, setUpdatedDescription] = useState<string>(description);
   const { setGlobalError } = useErrorStore();
+  const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0);
 
   //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
   const closeDescriptionEditor = () => {
@@ -31,7 +32,7 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
 
   const handleSaveDescription = (updatedDescription: string) => {
     if (descriptionLengthError) return;
-    updateProductDescriptionV2(series!.id, updatedDescription)
+    updateProductDescription(series!.id, updatedDescription)
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
@@ -39,6 +40,7 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
   };
 
   const onTextChange = (html: string, rawText: string) => {
+    setDescriptionLength(rawText.length);
     if (rawText.length > 750) {
       setDescriptionLengthError("Beskrivelsen kan ikke være lengre enn 750 tegn");
     } else {
@@ -117,16 +119,24 @@ export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEd
                 • {descriptionLengthError}
               </p>
             </div>
-            <Button
-              className="fit-content"
-              variant="tertiary"
-              icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
-              onClick={() => {
-                closeDescriptionEditor();
-              }}
-            >
-              Lagre
-            </Button>
+            <HStack align="center">
+              <Button
+                className="fit-content"
+                variant="tertiary"
+                icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
+                onClick={() => {
+                  closeDescriptionEditor();
+                }}
+              >
+                Lagre
+              </Button>
+              <Spacer />
+              {descriptionLengthError ? (
+                <p className="navds-error-message navds-label">{descriptionLength}/750 tegn</p>
+              ) : (
+                <p className="navds-body-short">{descriptionLength}/750 tegn</p>
+              )}
+            </HStack>
           </>
         )}
       </VStack>

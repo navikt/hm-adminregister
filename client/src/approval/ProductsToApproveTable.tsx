@@ -7,13 +7,12 @@ import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { ImageContainer } from "products/files/images/ImageContainer";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { toDate, toReadableDateTimeString } from "utils/date-util";
-import { useSuppliers } from "utils/swr-hooks";
-import { SeriesRegistrationDTO } from "utils/types/response-types";
+import { toReadableDateTimeString } from "utils/date-util";
+import { SeriesToApproveDto } from "utils/types/response-types";
 import styles from "./ProductsToApproveTable.module.scss";
 
 interface ProductTableProps {
-  series: SeriesRegistrationDTO[];
+  series: SeriesToApproveDto[];
   createdByFilter: CreatedByFilter;
   mutatePagedData: () => void;
   oversiktPath: string;
@@ -37,7 +36,6 @@ export const ProductsToApproveTable = ({
   );
 
   const navigate = useNavigate();
-  const { suppliers } = useSuppliers(true);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -63,9 +61,6 @@ export const ProductsToApproveTable = ({
     }
     setSearchParams(searchParams);
   }, [sort]);
-
-  const forApprovalStatus = (published: string | null | undefined) =>
-    typeof published === "string" ? "CHANGE" : "NEW";
 
   const onNavigateToProduct = (seriesUUID: string) => {
     navigate(`/produkter/${seriesUUID}`, { state: oversiktPath });
@@ -97,7 +92,9 @@ export const ProductsToApproveTable = ({
                       checked={selectedRows.length === series.length}
                       indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
                       onChange={() => {
-                        selectedRows.length ? setSelectedRows([]) : setSelectedRows(series.map(({ id }) => id));
+                        selectedRows.length
+                          ? setSelectedRows([])
+                          : setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
                       }}
                       hideLabel
                     >
@@ -115,14 +112,11 @@ export const ProductsToApproveTable = ({
               <Table.ColumnHeader sortKey="updated" sortable>
                 Sist endret
               </Table.ColumnHeader>
+              <Table.ColumnHeader>Type</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {series.map((series, i) => {
-              const isExpired = toDate(series.expired) < new Date();
-              const imgUrl = series.seriesData.media
-                .filter((media) => media.type === "IMAGE")
-                .find((media) => media.priority === 1);
               return (
                 <Table.Row key={i + series.title} tabIndex={0}>
                   {createdByFilter === CreatedByFilter.ADMIN && (
@@ -130,9 +124,9 @@ export const ProductsToApproveTable = ({
                       <HStack justify={"center"}>
                         <Checkbox
                           hideLabel
-                          checked={selectedRows.includes(series.id)}
-                          onChange={() => toggleSelectedRow(series.id)}
-                          aria-labelledby={`id-${series.id}`}
+                          checked={selectedRows.includes(series.seriesUUID)}
+                          onChange={() => toggleSelectedRow(series.seriesUUID)}
+                          aria-labelledby={`id-${series.seriesUUID}`}
                         >
                           {" "}
                         </Checkbox>
@@ -142,7 +136,7 @@ export const ProductsToApproveTable = ({
                   <Table.DataCell className={styles.imageColumn}>
                     <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
                       <VStack gap="1" maxWidth={"350px"}>
-                        {isExpired && (
+                        {series.isExpired && (
                           <Box>
                             <Tag size="small" variant="neutral-moderate">
                               Utgått
@@ -153,7 +147,7 @@ export const ProductsToApproveTable = ({
                           {series.title}
                         </BodyShort>
                         <BodyShort size="small" color="subtle" className="text-overflow-hidden-small-2-lines">
-                          {suppliers?.find((supplier) => supplier.id === series.supplierId)?.name || ""}
+                          {series.supplierName}
                         </BodyShort>
                       </VStack>
                       <Box
@@ -164,29 +158,30 @@ export const ProductsToApproveTable = ({
                         height="75px"
                         style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
                       >
-                        {imgUrl?.uri ? (
-                          <ImageContainer uri={imgUrl?.uri} size="xsmall" />
+                        {series.firstImgUri ? (
+                          <ImageContainer uri={series.firstImgUri} size="xsmall" />
                         ) : (
                           <FileImageIcon title="Produkt mangler bilde" fontSize="2rem" />
                         )}
                       </Box>
                     </Stack>
                   </Table.DataCell>
-                  <Table.DataCell>{<StatusTag status={forApprovalStatus(series.published)} />}</Table.DataCell>
+                  <Table.DataCell>{<StatusTag status={series.status} />}</Table.DataCell>
                   {/* <Table.DataCell>{series.supplierName}</Table.DataCell> */}
                   <Table.DataCell style={{ paddingLeft: "12px" }}>{`${toReadableDateTimeString(
                     series.updated,
                   )}`}</Table.DataCell>
+                  <Table.DataCell>{series.mainProduct ? "Hovedprodukt" : "Tilbehør/Del"}</Table.DataCell>
                   <Table.DataCell>
                     <VStack>
                       <Link
                         className={createdByFilter !== CreatedByFilter.ADMIN ? styles.linkToProduct : ""}
                         onClick={() => {
-                          onNavigateToProduct(series.id);
+                          onNavigateToProduct(series.seriesUUID);
                         }}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
-                            onNavigateToProduct(series.id);
+                            onNavigateToProduct(series.seriesUUID);
                           }
                         }}
                       >

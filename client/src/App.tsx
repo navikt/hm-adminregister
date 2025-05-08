@@ -44,6 +44,12 @@ import { VerifyOtp } from "users/reset-password/VerifyOtp";
 import { PasswordResetReceit } from "users/reset-password/PasswordResetReceit";
 import { useEffect } from "react";
 import { logNavigationEvent } from "utils/amplitude";
+import CreateHmsUser from "users/hms-user/CreateHmsUser";
+import FirstTimeHmsUserInfo from "users/hms-user/FirstTimeHmsUserInfo";
+import HmsUserProfile from "users/hms-user/HmsUserProfile";
+import Part from "parts/Part";
+import Parts from "parts/Parts";
+import CreatePart from "parts/CreatePart";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -79,6 +85,7 @@ export function App() {
 
               <Route path="/admin/profil" element={<AdminProfile />} />
               <Route path="/profil" element={<SupplierProfile />} />
+              <Route path="/hms-bruker" element={<HmsUserProfile />} />
 
               <Route path="/leverandor" element={<SupplierList />} />
               <Route path="/leverandor/:id" element={<Supplier />} />
@@ -87,7 +94,12 @@ export function App() {
               <Route path="/rammeavtaler/:agreementId" element={<Agreement />} />
 
               <Route path="/nyheter" element={<News />} />
+
+              <Route path="/deler" element={<Parts />} />
+              <Route path="/del/:productId" element={<Part />} />
             </Route>
+
+            <Route path="/del/opprett" element={<CreatePart />} />
 
             <Route path="/produkter/opprett" element={<CreateProduct />} />
             <Route path="/produkter/:seriesId/rediger-variant/:productId" element={<EditProductVariant />} />
@@ -99,6 +111,8 @@ export function App() {
             <Route path="/admin/slett-admin" element={<DeleteAdminUser />} />
             <Route path="/admin/adminopplysninger" element={<FirstTimeAdminInfo />} />
             <Route path="/admin/opprett-bruker" element={<CreateSupplierUser />} />
+
+            <Route path="/admin/opprett-hms-bruker" element={<CreateHmsUser />} />
 
             <Route path="/profil/rediger-brukerprofil" element={<EditSupplierUser />} />
             <Route path="/profil/rediger-leverandor" element={<EditSupplier />} />
@@ -112,6 +126,8 @@ export function App() {
 
             <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
             <Route path="/logg-inn/brukeropplysninger" element={<FirstTimeSupplierUserInfo />} />
+
+            <Route path="/logg-inn/hms-brukeropplysninger" element={<FirstTimeHmsUserInfo />} />
 
             <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
             <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />

@@ -1,4 +1,4 @@
-import { DifferenceDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { DifferenceDTO, SeriesDTO } from "utils/types/response-types";
 import { BodyLong, BodyShort, Button, Modal } from "@navikt/ds-react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ export const ShowDiffModal = ({
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {

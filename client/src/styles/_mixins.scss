@@ -25,5 +25,9 @@
     @media (min-width: 1280px) {
       @content;
     }
+  } @else if $range == desktop-xxl-down {
+    @media (max-width: 1600px) {
+      @content;
+    }
   }
 }

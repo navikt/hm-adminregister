@@ -19,10 +19,9 @@ const FirstTimeAdminInfo = () => {
           <ComponentIcon aria-hidden fontSize="3rem" />
           <Heading level="1" size="small" className="name">
             <span>FinnHjelpemiddel</span>
-            <span>Admin</span>
           </Heading>
         </span>
-        {user && <FirstTimeUserInfoForm user={user} isAdmin={true} />}
+        {user && <FirstTimeUserInfoForm user={user} isAdmin={true} isHmsUser={false} />}
       </div>
     </main>
   );

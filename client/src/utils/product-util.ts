@@ -17,21 +17,6 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTOV2[]): 
   return Array.from(uniqueKeys);
 }
 
-export const mapToMediaInfo = (mediaDTO: MediaDTO[]): MediaInfo[] => {
-  return mediaDTO.map((media, i) => ({
-    sourceUri: media.sourceUri,
-    uri: media.uri,
-    //Text-feltet brukes foreløpig til tittelen vi ønsker å vise i GUI. Bør lage et eget felt for alt-text på bilder
-    text: media.filename,
-    filename: media.filename,
-    //La brukeren sette prioritet selv senere
-    priority: i + 1,
-    type: media.type,
-    source: media.source,
-    updated: media.updated,
-  }));
-};
-
 export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: ProductRegistrationDTO[]): Product[] => {
   const groupedBySeries = _.groupBy(productRegistrationDtos, "seriesUUID");
 
@@ -51,8 +36,8 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
           bestillingsordning: firstProduct.productData.attributes.bestillingsordning
             ? firstProduct.productData.attributes.bestillingsordning
             : undefined,
-          compatibleWith: firstProduct.productData.attributes.compatibleWidth?.seriesIds
-            ? firstProduct.productData.attributes.compatibleWidth.seriesIds
+          compatibleWith: firstProduct.productData.attributes.compatibleWith?.seriesIds
+            ? firstProduct.productData.attributes.compatibleWith.seriesIds
             : [],
           shortdescription: firstProduct.productData.attributes.shortdescription
             ? firstProduct.productData.attributes.shortdescription
@@ -75,7 +60,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
               {},
               ...dto.productData.techData
                 .filter((data: TechData) => data.key && data.value)
-                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } }))
+                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } })),
             ),
             hasAgreement: false,
             filters: {},

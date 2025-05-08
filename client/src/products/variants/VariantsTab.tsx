@@ -5,7 +5,7 @@ import {
   PlusCircleIcon,
   TrashIcon,
 } from "@navikt/aksel-icons";
-import { Alert, Box, Button, Dropdown, Pagination, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, Dropdown, Pagination, Search, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
 import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -14,18 +14,19 @@ import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { isUUID, toValueAndUnit } from "utils/string-util";
 import { userProductVariantsBySeriesId } from "utils/swr-hooks";
-import { ProductRegistrationDTOV2, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { ProductRegistrationDTOV2, SeriesDTO } from "utils/types/response-types";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import styles from "../ProductPage.module.scss";
 import { moveProductsToSeries } from "api/SeriesApi";
 import MoveProductVariantsModal from "products/variants/MoveProductVariantsModal";
+import product from "products/Product";
 
 const VariantsTab = ({
   series,
   showInputError,
   mutateSeries,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   showInputError: boolean;
   mutateSeries: () => void;
 }) => {
@@ -36,16 +37,28 @@ const VariantsTab = ({
   const { setGlobalError } = useErrorStore();
   const techKeys = getAllUniqueTechDataKeys(series.variants);
   const columnsPerPage = 5;
-  const totalPages = Math.ceil(series.variants.length / columnsPerPage);
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const [variant, setVariant] = useState<undefined | ProductRegistrationDTOV2>(undefined);
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false);
   useState<boolean>(false);
   const [moveProductVariantModalIsOpen, setMoveProductVariantModalIsOpen] = useState<boolean>(false);
+  const [variantFilterString, setVariantFilterString] = useState<string>("");
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id);
 
   const hasNoVariants = series.variants.length === 0;
+
+  const variantsToShow =
+    variantFilterString === ""
+      ? series.variants
+      : series.variants.filter(
+          (variant) =>
+            variant.articleName?.toLowerCase().includes(variantFilterString.toLowerCase()) ||
+            variant.hmsArtNr?.toLowerCase().includes(variantFilterString.toLowerCase()) ||
+            variant.supplierRef?.toLowerCase().includes(variantFilterString.toLowerCase()),
+        );
+
+  const totalPages = Math.ceil(variantsToShow.length / columnsPerPage);
 
   const techValue = (product: ProductRegistrationDTOV2, key: string): string | undefined => {
     const data = product.productData.techData.find((data) => data.key === key);
@@ -89,7 +102,7 @@ const VariantsTab = ({
       });
   }
 
-  const paginatedVariants = series.variants.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
+  const paginatedVariants = variantsToShow.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage);
 
   const anyExpired = series.variants.some((variant) => variant.isExpired);
 
@@ -111,6 +124,12 @@ const VariantsTab = ({
       .catch((error) => {
         setGlobalError(error);
       });
+  };
+
+  const resetPageState = () => {
+    searchParams.set("page", "1");
+    setSearchParams(searchParams);
+    setPageState(1);
   };
 
   return (
@@ -141,6 +160,28 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
             <VStack gap="4">
+              {series.variants.length > columnsPerPage && (
+                <Box role="search" style={{ maxWidth: "475px" }}>
+                  <Search
+                    className="search-button"
+                    label="Søk"
+                    variant="simple"
+                    clearButton={true}
+                    onClear={() => {
+                      setVariantFilterString("");
+                      resetPageState();
+                    }}
+                    placeholder="Filtrer på hms-nr, lev-artnr, variantnavn"
+                    size="medium"
+                    value={variantFilterString}
+                    onChange={(value) => {
+                      setVariantFilterString(value);
+                      resetPageState();
+                    }}
+                    hideLabel={true}
+                  />
+                </Box>
+              )}
               <div className={styles.variantTable}>
                 <Table>
                   <Table.Header>

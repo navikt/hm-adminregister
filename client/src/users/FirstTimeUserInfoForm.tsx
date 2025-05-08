@@ -12,7 +12,15 @@ import { z } from "zod";
 
 type FormData = z.infer<typeof userInfoUpdate>;
 
-const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: boolean }) => {
+const FirstTimeUserInfoForm = ({
+  user,
+  isAdmin,
+  isHmsUser,
+}: {
+  user: UserDTO;
+  isAdmin: boolean;
+  isHmsUser: boolean;
+}) => {
   const navigate = useNavigate();
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -37,10 +45,15 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
 
   const userPasswordUrl = isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/password`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/password`;
+    : isHmsUser
+      ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/password`
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/password`;
+
   const userInfoUrl = isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/${user.id}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`;
+    : isHmsUser
+      ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/${user.id}`
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`;
 
   async function onSubmit(data: FormData) {
     const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, "");
@@ -81,7 +94,13 @@ const FirstTimeUserInfoForm = ({ user, isAdmin }: { user: UserDTO; isAdmin: bool
       });
 
       if (passwordResponse.ok && userInfoResponse.ok) {
-        isAdmin ? navigate("/admin/profil") : navigate("/logg-inn/leverandoropplysninger");
+        if (isAdmin) {
+          navigate("/admin/profil");
+        } else if (isHmsUser) {
+          navigate("/");
+        } else {
+          navigate("/logg-inn/leverandoropplysninger");
+        }
       }
 
       if (!passwordResponse.ok || !userInfoResponse.ok) {

@@ -1,20 +1,20 @@
-import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesDTO } from "utils/types/response-types";
 import { SeriesStatus } from "utils/types/types";
 
-export const numberOfImages = (series: SeriesRegistrationDTOV2) => {
+export const numberOfImages = (series: SeriesDTO) => {
   return series.seriesData.media.filter((media) => media.type == "IMAGE").length;
 };
 
-export const numberOfDocuments = (series: SeriesRegistrationDTOV2) => {
+export const numberOfDocuments = (series: SeriesDTO) => {
   return series.seriesData.media.filter((media) => media.type == "PDF").length;
 };
 
-export const numberOfVideos = (series: SeriesRegistrationDTOV2) => {
+export const numberOfVideos = (series: SeriesDTO) => {
   return series.seriesData.media.filter((media) => media.type == "VIDEO" && media.source === "EXTERNALURL").length;
 };
 
 export const mapImagesAndPDFfromMedia = (
-  series: SeriesRegistrationDTOV2
+  series: SeriesDTO,
 ): { images: MediaInfoDTO[]; pdfs: MediaInfoDTO[]; videos: MediaInfoDTO[] } => {
   const seen: { [uri: string]: boolean } = {};
   const pdfs: MediaInfoDTO[] = [];

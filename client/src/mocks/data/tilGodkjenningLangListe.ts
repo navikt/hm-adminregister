@@ -8,6 +8,8 @@ export const tilGodkjenningLangListe: ProdukterTilGodkjenningChunk = {
       status: "NEW",
       supplierName: "Ullvotten AS",
       isExpired: false,
+      updated: Date.now().toString(),
+      mainProduct: true,
     },
     {
       title: "Varmevotten",
@@ -15,6 +17,8 @@ export const tilGodkjenningLangListe: ProdukterTilGodkjenningChunk = {
       status: "NEW",
       supplierName: "Ullvotten AS",
       isExpired: false,
+      updated: Date.now().toString(),
+      mainProduct: true,
     },
     {
       title: "Vikinghjelm",
@@ -22,6 +26,8 @@ export const tilGodkjenningLangListe: ProdukterTilGodkjenningChunk = {
       status: "EXISTING",
       supplierName: "Hjelmfabrikken AS",
       isExpired: false,
+      updated: Date.now().toString(),
+      mainProduct: true,
     },
   ],
   pageable: {

@@ -24,9 +24,10 @@ export const todayTimestamp = (): string => {
   return toDateTimeString(new Date());
 };
 
-export const tenYearsFromTodayTimestamp = (): string => {
-  let date = new Date();
-  date.setFullYear(date.getFullYear() + 10);
+export const toPeriodString = (published: string, expired: string): string => {
+  const publishedDate_ = published ? new Date(published) : undefined;
+  const expiredDate_ = expired ? new Date(expired) : undefined;
 
-  return toDateTimeString(date);
+  const dateString = `${publishedDate_?.toLocaleDateString()}-${expiredDate_?.toLocaleDateString()}`;
+  return dateString;
 };

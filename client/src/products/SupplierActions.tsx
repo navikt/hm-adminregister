@@ -4,7 +4,8 @@ import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { exportProducts } from "api/ImportExportApi";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
+import { MIME_TYPE_XLSX } from "utils/file-util";
 
 const SupplierActions = ({
   series,
@@ -15,7 +16,7 @@ const SupplierActions = ({
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
@@ -39,7 +40,7 @@ const SupplierActions = ({
   const exportProductsForSupplier = () => {
     exportProducts(loggedInUser?.isAdmin || false, series.id).then((response) => {
       const bytes = new Uint8Array(response); // pass your byte response to this constructor
-      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const blob = new Blob([bytes], { type: MIME_TYPE_XLSX });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -103,11 +104,6 @@ const SupplierActions = ({
                       Marker som utgått
                     </Dropdown.Menu.List.Item>
                   ))}
-                {/*{isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser) && (*/}
-                {/*  <Dropdown.Menu.GroupedList.Heading style={{ fontSize: 14, color: "red", lineHeight: "1rem" }}>*/}
-                {/*    Produkt er på avtale og må endres i Hjelpemiddeldatabasen per nå*/}
-                {/*  </Dropdown.Menu.GroupedList.Heading>*/}
-                {/*)}*/}
                 <Dropdown.Menu.Divider />
                 <Dropdown.Menu.List.Item onClick={() => exportProductsForSupplier()}>
                   Eksporter varianter

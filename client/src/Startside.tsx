@@ -8,6 +8,8 @@ export const Startside = () => {
     return <Navigate to={"/logg-inn"} />;
   } else if (loggedInUser?.isAdmin) {
     return <Navigate to={"/admin/profil"} />;
+  } else if (loggedInUser?.isHmsUser) {
+    return <Navigate to={"/hms-bruker"} />;
   } else if (!loggedInUser?.isAdmin) {
     return <Navigate to={"/profil"} />;
   } else {

@@ -1,6 +1,6 @@
-import { fetchAPI, fetchAPIModify, getPath, httpDelete } from "api/fetch";
+import { fetchAPIModify, getPath, httpDelete } from "api/fetch";
 import { HM_REGISTER_URL } from "environments";
-import { baseUrl, fetcherGET } from "utils/swr-hooks";
+import { fetcherGET } from "utils/swr-hooks";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SupplierUser } from "utils/supplier-util";
 import useSWR from "swr";

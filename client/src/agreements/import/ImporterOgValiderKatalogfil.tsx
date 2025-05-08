@@ -16,7 +16,7 @@ export const ImporterOgValiderKatalogfil = () => {
       <ValidateImportedProductAgreements
         supplier={supplier}
         upload={upload}
-        reseetUpload={() => {
+        resetUpload={() => {
           setUpload(undefined);
         }}
       />

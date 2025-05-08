@@ -1,10 +1,11 @@
-import { SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesDTO } from "utils/types/response-types";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
 import { numberOfImages } from "products/seriesUtils";
 import { requestApproval } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import styles from "./ProductPage.module.scss";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const RequestApprovalModal = ({
   series,
@@ -13,13 +14,14 @@ export const RequestApprovalModal = ({
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   mutateSeries: () => void;
   isValid: boolean;
   isOpen: boolean;
   setIsOpen: (newState: boolean) => void;
 }) => {
   const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore();
 
   async function onSendTilGodkjenning() {
     requestApproval(series.id)
@@ -30,15 +32,27 @@ export const RequestApprovalModal = ({
   }
 
   const InvalidProductModal = () => {
+    const AdminErrorMessages = () => {
+      return <>{series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}</>;
+    };
+
+    const SupplierErrorMessages = () => {
+      return (
+        <>
+          {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
+          {numberOfImages(series) < 2 && <li>Produktet må ha minst to bilder</li>}
+          {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}
+        </>
+      );
+    };
+
     return (
       <Modal open={isOpen} header={{ heading: "Produktet mangler data" }} onClose={() => setIsOpen(false)}>
         <Modal.Body>
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
           <ul className={styles.errorText}>
-            {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
-            {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
-            {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}
+            {loggedInUser?.isAdmin ? <AdminErrorMessages /> : <SupplierErrorMessages />}
           </ul>
         </Modal.Body>
         <Modal.Footer>
@@ -64,9 +78,6 @@ export const RequestApprovalModal = ({
             <li>tekniske data er korrekte.</li>
             <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
           </ul>
-          <BodyLong>
-            <b>Obs:</b> produktet kan ikke endres i perioden det er lagt til godkjenning.
-          </BodyLong>
         </Modal.Body>
         <Modal.Footer>
           <Button

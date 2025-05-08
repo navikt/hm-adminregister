@@ -1,24 +1,22 @@
 import { FilePdfIcon, FloppydiskIcon, PlusCircleIcon } from "@navikt/aksel-icons";
 import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
-import { MediaInfoDTO, SeriesRegistrationDTOV2 } from "utils/types/response-types";
+import { MediaInfoDTO, SeriesDTO } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { uriForMediaFile } from "utils/file-util";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { changeFilenameOnAttachedFile, deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import styles from "../ProductPage.module.scss";
 
 interface Props {
-  series: SeriesRegistrationDTOV2;
+  series: SeriesDTO;
   isEditable: boolean;
   showInputError: boolean;
 }
 
 const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
-  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
@@ -40,7 +38,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   }
 
   const handleEditFileName = async (uri: string, editedText: string) => {
-    changeFilenameOnAttachedFile(series.id, loggedInUser?.isAdmin || false, uri, editedText)
+    changeFilenameOnAttachedFile(series.id, { uri: uri, newFileTitle: editedText })
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error);
@@ -70,8 +68,8 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         <VStack gap="10">
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
-              Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre eller bruksanvisning til
-              produktet.
+              Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre, bruksanvisning eller
+              sprengskisse til produktet.
             </Alert>
           )}
 

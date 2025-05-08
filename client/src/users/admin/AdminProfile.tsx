@@ -1,17 +1,18 @@
-import { Alert, Button, Heading, HGrid, Loader, Table, VStack } from "@navikt/ds-react";
+import { Alert, Button, Heading, HGrid, HStack, Loader, Table, VStack } from "@navikt/ds-react";
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { formatPhoneNumber } from "utils/string-util";
-import { useAdminUsers, useUser } from "utils/swr-hooks";
+import { useAdminUsers, useHmsUsers, useUser } from "utils/swr-hooks";
 
 export default function AdminProfile() {
   const navigate = useNavigate();
   const { loggedInUser } = useAuthStore();
   const { user, userError, userIsLoading } = useUser(loggedInUser);
   const { adminUsers, isLoading, error } = useAdminUsers();
+  const { hmsUsers } = useHmsUsers();
 
   if (userIsLoading) {
     return <Loader size="3xlarge" title="Henter brukerinformasjon..."></Loader>;
@@ -19,6 +20,10 @@ export default function AdminProfile() {
 
   const handleCreateNewAdminUser = () => {
     navigate("/admin/opprett-admin");
+  };
+
+  const handleCreateNewHmsUser = () => {
+    navigate("/admin/opprett-hms-bruker");
   };
 
   const handleDeleteAdminUser = (userId: string) => {
@@ -51,77 +56,151 @@ export default function AdminProfile() {
                 {user.attributes.phone ? formatPhoneNumber(user?.attributes?.phone) : "Ikke oppgitt"}
               </DefinitionList.Definition>
             </DefinitionList>
-            {/* Todo: legg inn redigeringsmulighet */}
+          </VStack>
+          <VStack gap="5">
             <Heading level="2" size="medium">
               Admin brukere
             </Heading>
+            {adminUsers && adminUsers.length > 0 && (
+              <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
+                    <Table.HeaderCell scope="col" colSpan={2}>
+                      Handling
+                    </Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {adminUsers.map(
+                    (user, i) =>
+                      user.roles.includes("ROLE_ADMIN") && (
+                        <Table.Row key={i}>
+                          <Table.DataCell>{user.name}</Table.DataCell>
+                          <Table.DataCell>{user.email}</Table.DataCell>
+                          <Table.DataCell>
+                            {user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            {loggedInUser?.isAdmin && loggedInUser?.userId != user.id && (
+                              <Button
+                                title="Slette bruker"
+                                variant="tertiary-neutral"
+                                size="small"
+                                disabled={false}
+                                icon={<TrashIcon aria-hidden />}
+                                iconPosition="right"
+                                onClick={() => handleDeleteAdminUser(user.id)}
+                              />
+                            )}
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            {loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
+                              <Button
+                                title="Redigere profil"
+                                variant="tertiary-neutral"
+                                size="small"
+                                disabled={false}
+                                icon={<PencilWritingIcon aria-hidden />}
+                                iconPosition="right"
+                                onClick={() => {
+                                  navigate("/admin/rediger-admin");
+                                }}
+                              />
+                            )}
+                          </Table.DataCell>
+                        </Table.Row>
+                      ),
+                  )}
+                </Table.Body>
+              </Table>
+            )}
           </VStack>
-          {adminUsers && adminUsers.length > 0 && (
-            <Table>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
-                  <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
-                  <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
-                  <Table.HeaderCell scope="col" colSpan={2}>
-                    Handling
-                  </Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {adminUsers.map(
-                  (user, i) =>
-                    user.roles.includes("ROLE_ADMIN") && (
-                      <Table.Row key={i}>
-                        <Table.DataCell>{user.name}</Table.DataCell>
-                        <Table.DataCell>{user.email}</Table.DataCell>
-                        <Table.DataCell>
-                          {user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}
-                        </Table.DataCell>
-                        <Table.DataCell>
-                          {loggedInUser?.isAdmin && loggedInUser?.userId != user.id && (
-                            <Button
-                              title="Slette bruker"
-                              variant="tertiary-neutral"
-                              size="small"
-                              disabled={false}
-                              icon={<TrashIcon aria-hidden />}
-                              iconPosition="right"
-                              onClick={() => handleDeleteAdminUser(user.id)}
-                            />
-                          )}
-                        </Table.DataCell>
-                        <Table.DataCell>
-                          {loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
-                            <Button
-                              title="Redigere profil"
-                              variant="tertiary-neutral"
-                              size="small"
-                              disabled={false}
-                              icon={<PencilWritingIcon aria-hidden />}
-                              iconPosition="right"
-                              onClick={() => {
-                                navigate("/admin/rediger-admin");
-                              }}
-                            />
-                          )}
-                        </Table.DataCell>
-                      </Table.Row>
-                    ),
-                )}
-              </Table.Body>
-            </Table>
-          )}
-          <Button
-            variant="secondary"
-            size="small"
-            icon={<PlusIcon aria-hidden />}
-            iconPosition="left"
-            onClick={handleCreateNewAdminUser}
-            className="fit-content"
-          >
-            Opprett bruker
-          </Button>
+          <VStack gap="5">
+            <Heading level="2" size="medium">
+              HMS-brukere
+            </Heading>
+            {hmsUsers && hmsUsers.length > 0 && (
+              <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
+                    <Table.HeaderCell scope="col" colSpan={2}>
+                      Handling
+                    </Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {hmsUsers.map(
+                    (user, i) =>
+                      user.roles.includes("ROLE_HMS") && (
+                        <Table.Row key={i}>
+                          <Table.DataCell>{user.name}</Table.DataCell>
+                          <Table.DataCell>{user.email}</Table.DataCell>
+                          <Table.DataCell>
+                            {user.attributes.phone && formatPhoneNumber(user?.attributes?.phone)}
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            {loggedInUser?.isAdmin && loggedInUser?.userId != user.id && (
+                              <Button
+                                title="Slette bruker"
+                                variant="tertiary-neutral"
+                                size="small"
+                                disabled={false}
+                                icon={<TrashIcon aria-hidden />}
+                                iconPosition="right"
+                                onClick={() => handleDeleteAdminUser(user.id)}
+                              />
+                            )}
+                          </Table.DataCell>
+                          <Table.DataCell>
+                            {loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
+                              <Button
+                                title="Redigere profil"
+                                variant="tertiary-neutral"
+                                size="small"
+                                disabled={false}
+                                icon={<PencilWritingIcon aria-hidden />}
+                                iconPosition="right"
+                                onClick={() => {
+                                  navigate("/admin/rediger-admin");
+                                }}
+                              />
+                            )}
+                          </Table.DataCell>
+                        </Table.Row>
+                      ),
+                  )}
+                </Table.Body>
+              </Table>
+            )}
+          </VStack>
+          <HStack gap="4">
+            <Button
+              variant="secondary"
+              size="small"
+              icon={<PlusIcon aria-hidden />}
+              iconPosition="left"
+              onClick={handleCreateNewAdminUser}
+              className="fit-content"
+            >
+              Opprett admin-bruker
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
+              icon={<PlusIcon aria-hidden />}
+              iconPosition="left"
+              onClick={handleCreateNewHmsUser}
+              className="fit-content"
+            >
+              Opprett hms-bruker
+            </Button>
+          </HStack>
         </VStack>
       </HGrid>
     </main>
