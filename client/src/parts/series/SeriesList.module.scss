@@ -1,0 +1,37 @@
+.seriesList {
+  list-style: none;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+
+}
+
+.seriesPanel {
+  padding: var(--a-spacing-2);
+  border: 1px solid var(--a-grayalpha-100);
+  border-radius: var(--a-border-radius-large);
+  background-color: var(--a-bg-default);
+  color: var(--a-text-default);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--a-surface-hover);
+  }
+}
+
+.seriesPanelSelected {
+  padding: var(--a-spacing-2);
+  border: 1px solid var(--a-grayalpha-100);
+  border-radius: var(--a-border-radius-large);
+  background-color: var(--a-blue-100);
+  color: var(--a-text-default);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--a-surface-hover);
+  }
+}
+
+.imageBox {
+  border-color: var(--a-grayalpha-200);
+}

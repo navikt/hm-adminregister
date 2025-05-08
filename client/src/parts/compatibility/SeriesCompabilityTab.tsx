@@ -1,6 +1,5 @@
 import { BodyLong, Box, Button, Checkbox, HStack, Table, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
-import styles from "parts/PartPage.module.scss";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import { CompatibleSeriesRow } from "parts/compatibility/CompatibleSeriesRow";
 import RemoveCompatibleSeriesVariantsModal from "parts/compatibility/RemoveCompatibleSeriesVariantsModal";
@@ -72,7 +71,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
           Legg til kobling
         </Button>
         {seriesIds.length > 0 && (
-          <Box className={styles.compabilityBox}>
+          <Box>
             <VStack gap={"2"}>
               <HStack gap={"2"}>
                 {seriesIds.length > 0 && (
@@ -84,6 +83,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                         <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
                         <Table.HeaderCell scope="col" />
                         <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
+                        <Table.HeaderCell scope="col"></Table.HeaderCell>
                         <Table.HeaderCell scope="col">
                           <Checkbox
                             checked={selectedRows.length === seriesIds.length}

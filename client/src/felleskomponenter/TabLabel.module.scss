@@ -3,5 +3,7 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 
-.compabilityBox {
+.tabLabel {
+  display: flex;
+  color: $a-text-danger;
 }

@@ -1,0 +1,9 @@
+@use "../../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+
+.seriesParts {
+  background-color: white;
+  margin: 0 4px 0 4px;
+}

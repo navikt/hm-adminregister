@@ -3,8 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeftIcon, ExternalLinkIcon } from "@navikt/aksel-icons";
 import {
   Box,
-  CopyButton,
-  Detail,
   Heading,
   HGrid,
   HStack,
@@ -20,18 +18,28 @@ import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
 import ErrorAlert from "error/ErrorAlert";
 import { useAuthStore } from "utils/store/useAuthStore";
-import styles from "./PartPage.module.scss";
 import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, usePartByProductId } from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
 import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
 import { useState } from "react";
+import { useSeriesV2Conditional } from "api/SeriesApi";
+import { numberOfImages } from "products/seriesUtils";
+import { TabLabel } from "felleskomponenter/TabLabel";
+import ImagesTab from "parts/ImagesTab";
 
 const Part = () => {
   const { productId } = useParams();
 
   const { loggedInUser } = useAuthStore();
   const { part, isLoading, error, mutate } = usePartByProductId(productId!);
+  const {
+    data: series,
+    isLoading: isLoadingSeries,
+    error: errorSeries,
+    mutate: mutateSeries,
+  } = useSeriesV2Conditional(part?.seriesUUID || undefined);
+
   const [isTogglingKT, setIsTogglingKT] = useState(false);
 
   const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
@@ -47,7 +55,7 @@ const Part = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingSeries) {
     return (
       <HGrid gap="12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
@@ -55,7 +63,7 @@ const Part = () => {
     );
   }
 
-  if (!part || error || !productId) {
+  if (!part || error || !productId || !series) {
     return (
       <main className="show-menu">
         <ErrorAlert />
@@ -67,14 +75,24 @@ const Part = () => {
     <main className="show-menu">
       <HGrid
         gap="12"
-        columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
-        className={styles.productPage}
+        columns={{
+          xs: 1,
+          sm: "minmax(16rem, 48rem)",
+          xl: "minmax(16rem, 48rem)",
+          "2xl": "minmax(16rem, 80rem)",
+        }}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
-            <AkselLink as={Link} to="/deler">
+            <AkselLink
+              as={Link}
+              to="/deler"
+              onClick={() => {
+                history.back();
+              }}
+            >
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
-              Tilbake til oversikt
+              Tilbake
             </AkselLink>
             <VStack gap="2">
               <Label> Navn på del</Label>
@@ -92,12 +110,6 @@ const Part = () => {
                   )}
                 </Heading>
               </HStack>
-              {loggedInUser?.isAdmin && part.seriesUUID && (
-                <HStack align="center">
-                  <Detail>{part.id}</Detail>
-                  <CopyButton size="xsmall" copyText={part.seriesUUID} />
-                </HStack>
-              )}
 
               {part.isExpired && (
                 <Box>
@@ -105,33 +117,36 @@ const Part = () => {
                 </Box>
               )}
             </VStack>
-            <DefinitionList fullWidth horizontal>
-              <DefinitionList.Term>Type</DefinitionList.Term>
-              <DefinitionList.Definition>
-                {part.accessory === true ? "Tilbehør" : "Reservedel"}
-              </DefinitionList.Definition>
-              <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
-              <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
-              <DefinitionList.Term>Leverandør</DefinitionList.Term>
-              <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
-              <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
-              <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
-            </DefinitionList>
-            <Box>
-              <Switch
-                disabled={isTogglingKT}
-                checked={part.productData.attributes.egnetForKommunalTekniker || false}
-                onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
-              >
-                Egnet for kommunal tekniker
-              </Switch>
-              <Switch
-                checked={part.productData.attributes.egnetForBrukerpass || false}
-                onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
-              >
-                Egnet for brukerpassbruker
-              </Switch>
-            </Box>
+
+            <HGrid gap={{ xs: "8", md: "10" }} columns={{ xs: 1, lg: 2 }}>
+              <DefinitionList fullWidth horizontal>
+                <DefinitionList.Term>Type</DefinitionList.Term>
+                <DefinitionList.Definition>
+                  {part.accessory === true ? "Tilbehør" : "Reservedel"}
+                </DefinitionList.Definition>
+                <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
+                <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
+                <DefinitionList.Term>Leverandør</DefinitionList.Term>
+                <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
+                <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
+                <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
+              </DefinitionList>
+              <Box>
+                <Switch
+                  disabled={isTogglingKT}
+                  checked={part.productData.attributes.egnetForKommunalTekniker || false}
+                  onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
+                >
+                  Egnet for kommunal tekniker
+                </Switch>
+                <Switch
+                  checked={part.productData.attributes.egnetForBrukerpass || false}
+                  onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
+                >
+                  Egnet for brukerpassbruker
+                </Switch>
+              </Box>
+            </HGrid>
           </VStack>
 
           <Tabs defaultValue={"variantkoblinger"}>
@@ -143,6 +158,12 @@ const Part = () => {
               <Tabs.Tab
                 value={"seriekoblinger"}
                 label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
+              />
+              <Tabs.Tab
+                value={"images"}
+                label={
+                  <TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={false} isValid={true} />
+                }
               />
             </Tabs.List>
             <Tabs.Panel value="variantkoblinger">
@@ -160,6 +181,7 @@ const Part = () => {
                 mutatePart={mutate}
               />
             </Tabs.Panel>
+            <ImagesTab series={series} isEditable={true} showInputError={false} mutateSeries={mutateSeries} />
           </Tabs>
         </VStack>
       </HGrid>

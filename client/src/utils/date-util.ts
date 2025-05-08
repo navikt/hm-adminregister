@@ -23,3 +23,11 @@ export const toDate = (date: string): Date => {
 export const todayTimestamp = (): string => {
   return toDateTimeString(new Date());
 };
+
+export const toPeriodString = (published: string, expired: string): string => {
+  const publishedDate_ = published ? new Date(published) : undefined;
+  const expiredDate_ = expired ? new Date(expired) : undefined;
+
+  const dateString = `${publishedDate_?.toLocaleDateString()}-${expiredDate_?.toLocaleDateString()}`;
+  return dateString;
+};

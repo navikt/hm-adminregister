@@ -1,7 +1,7 @@
 import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader, VStack } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { fileToUri } from "utils/file-util";
+import { fileToUri, MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING } from "utils/file-util";
 
 export interface Upload {
   file: File;
@@ -40,7 +40,7 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
     setFileTypeError("");
     setMoreThanOnefileError("");
     event.preventDefault();
-    const acceptedFileTypesDocuments = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
+    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY;
 
     const files = Array.from(event.dataTransfer.files);
     const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type));
@@ -104,7 +104,7 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
                 ref={fileInputRef}
                 type="file"
                 hidden
-                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                accept={MIME_EXCEL_TYPES_STRING}
               />
             </div>
           )}
