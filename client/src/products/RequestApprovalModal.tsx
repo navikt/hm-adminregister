@@ -40,7 +40,7 @@ export const RequestApprovalModal = ({
       return (
         <>
           {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
-          {numberOfImages(series) === 0 && <li>Produktet mangler bilder</li>}
+          {numberOfImages(series) < 2 && <li>Produktet må ha minst to bilder</li>}
           {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}
         </>
       );

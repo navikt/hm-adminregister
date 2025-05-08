@@ -19,19 +19,19 @@ interface Props {
 }
 
 export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftStatus }: Props) => {
+  const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
+
   const {
     data: productAgreements,
     isLoading: productAgreementsIsLoading,
     mutateProductAgreements,
-  } = useProductAgreementsByDelkontraktId(delkontrakt.id);
+  } = useProductAgreementsByDelkontraktId(delkontrakt.id, showOnlyMainProducts);
 
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
   const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
   const [produktserierToDelete, setProduktserierToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
   const [deleteProduktserierModalIsOpen, setDeleteProduktserierModalIsOpen] = useState<boolean>(false);
-
-  const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
 
   const { setGlobalError } = useErrorStore();
 
