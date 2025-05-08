@@ -37,17 +37,18 @@ export const CompatibleVariantRow = ({
   return (
     <Table.Row key={`${productId}`} shadeOnHover={true}>
       <Table.DataCell>
-        <>
-          {product.articleName}{" "}
-          {series.isPublished && product.hmsArtNr && (
-            <Link href={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
-              <ExternalLinkIcon title="Se variant på Finn Hjelpemiddel" />
-            </Link>
-          )}
-        </>
+        <>{product.articleName} </>
       </Table.DataCell>
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
+      <Table.DataCell>
+        {" "}
+        {series.isPublished && product.hmsArtNr && (
+          <Link href={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
+            <ExternalLinkIcon fontSize="1.5rem" title="Se variant på Finn Hjelpemiddel" />
+          </Link>
+        )}
+      </Table.DataCell>
       <Table.DataCell>
         <Checkbox
           hideLabel

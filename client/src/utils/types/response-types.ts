@@ -57,12 +57,14 @@ export type MediaInfoDTO = components["schemas"]["MediaInfoDTO"];
 export type MediaSort = components["schemas"]["MediaSort"];
 export type SeriesDraftWithDTO = components["schemas"]["SeriesDraftWithDTO"];
 export type DraftVariantDTO = components["schemas"]["DraftVariantDTO"];
+export type PartDraftWithDTO = components["schemas"]["PartDraftWithDTO"];
 export type TechData = components["schemas"]["TechData"];
 export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
 export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesDraftResponse = components["schemas"]["SeriesDraftResponse"];
+export type PartDraftResponse = components["schemas"]["PartDraftResponse"];
 export type SeriesDTO = components["schemas"]["SeriesDTO"];
 export type SeriesSearchDTO = components["schemas"]["SeriesSearchDTO"];
 export type RejectSeriesDTO = components["schemas"]["RejectSeriesDTO"];
@@ -75,6 +77,7 @@ export type FileTitleDto = components["schemas"]["FileTitleDto"];
 export type PartDTO = components["schemas"]["PartDTO"];
 
 export type CompatibleWith = components["schemas"]["CompatibleWith"];
+export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 
 export type SuitableForBrukerpassbrukerDTO = components["schemas"]["SuitableForBrukerpassbrukerDTO"];
 export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForKommunalTeknikerDTO"];

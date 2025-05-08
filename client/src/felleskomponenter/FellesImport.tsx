@@ -12,7 +12,7 @@ import {
 } from "@navikt/ds-react";
 import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { fileToUri } from "utils/file-util";
+import { fileToUri, MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING } from "utils/file-util";
 import { useSuppliers } from "utils/swr-hooks";
 
 export interface Upload {
@@ -55,7 +55,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
     setFileTypeError("");
     setMoreThanOnefileError("");
     event.preventDefault();
-    const acceptedFileTypesDocuments = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
+    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY;
 
     const files = Array.from(event.dataTransfer.files);
     const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type));
@@ -131,7 +131,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
                 ref={fileInputRef}
                 type="file"
                 hidden
-                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                accept={MIME_EXCEL_TYPES_STRING}
               />
             </div>
           )}

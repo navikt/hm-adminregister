@@ -76,9 +76,9 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
 
     updateAgreementInfo(agreement.id, editAgreementFormDataDto)
       .then((agreement) => {
-        setIsSaving(false);
         mutateAgreement();
         setModalIsOpen(false);
+        setIsSaving(false);
       })
       .catch((error) => {
         setGlobalError(error.message);
@@ -143,14 +143,14 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
                 error={errors?.anbudsnummer?.message}
               />
               <TextField
-                  disabled={false}
-                  {...register("previousAgreement", { required: false })}
-                  label={"Tidligere avtale"}
-                  id="previousAgreement"
-                  name="previousAgreement"
-                  defaultValue={ agreement?.previousAgreement ?? undefined}
-                  type="text"
-                  error = {errors?.previousAgreement?.message}
+                disabled={false}
+                {...register("previousAgreement", { required: false })}
+                label={"Tidligere avtale"}
+                id="previousAgreement"
+                name="previousAgreement"
+                defaultValue={agreement?.previousAgreement ?? undefined}
+                type="text"
+                error={errors?.previousAgreement?.message}
               />
             </VStack>
           </Content>

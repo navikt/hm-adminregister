@@ -1,0 +1,17 @@
+@use "../../styles/_mixins";
+
+@import "@navikt/ds-tokens/dist/tokens";
+
+.modal {
+
+  min-width: 1000px;
+  min-height: 95vh;
+
+  @media (max-width: 767px) {
+    min-width: 95vw;
+    min-height: 95vh;
+
+  }
+
+
+}

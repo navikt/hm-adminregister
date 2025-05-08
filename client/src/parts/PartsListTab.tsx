@@ -1,13 +1,14 @@
 import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useSuppliers } from "utils/swr-hooks";
 import ErrorAlert from "error/ErrorAlert";
 import { PartList } from "./PartList";
 import { usePagedParts, usePartByVariantIdentifier } from "api/PartApi";
+import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
 
-const PartListWrapper = () => {
+const PartsListTab = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
   const { loggedInUser } = useAuthStore();
@@ -31,8 +32,6 @@ const PartListWrapper = () => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
   });
-
-  const navigate = useNavigate();
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
 
@@ -59,11 +58,8 @@ const PartListWrapper = () => {
   }
 
   return (
-    <main className="show-menu">
+    <TabPanel value="deler">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <Heading level="1" size="large" spacing>
-          Deler
-        </Heading>
         <VStack gap={{ xs: "4", md: "6" }}>
           <HGrid
             columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
@@ -148,8 +144,8 @@ const PartListWrapper = () => {
           </HStack>
         </VStack>
       </VStack>
-    </main>
+    </TabPanel>
   );
 };
 
-export default PartListWrapper;
+export default PartsListTab;

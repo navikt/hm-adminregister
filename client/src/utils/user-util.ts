@@ -3,6 +3,7 @@ import { LoggedInUserResponse } from "./types/response-types";
 export interface LoggedInUser {
   isAdmin: boolean;
   isHmsUser: boolean;
+  isAdminOrHmsUser: boolean;
   isSupplier: boolean;
   userId: string | undefined;
   supplierId: string | undefined;
@@ -14,6 +15,7 @@ export interface LoggedInUser {
 export const mapLoggedInUser = (_source: LoggedInUserResponse): LoggedInUser => {
   const roles: string[] = _source.attributes["roles"] as string[];
   return {
+    isAdminOrHmsUser: roles.includes("ROLE_ADMIN") || roles.includes("ROLE_HMS"),
     isAdmin: roles.includes("ROLE_ADMIN"),
     isHmsUser: roles.includes("ROLE_HMS"),
     isSupplier: roles.includes("ROLE_SUPPLIER"),
