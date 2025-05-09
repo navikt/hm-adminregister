@@ -20,7 +20,7 @@ export const requestApproval = async (seriesUUID: string): Promise<void> => {
 };
 
 export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO> => {
-  const seriesIdPath = getPath(true, `/api/v1/series/v2/${seriesUUID}`);
+  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`;
   return await fetchAPI(seriesIdPath, "GET");
 };
 
