@@ -104,8 +104,9 @@ const Product = () => {
       const hasDescription = series.text.length > 0;
       const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1;
       const hasVariants = series.variants.length > 0;
+      const hasDocuments = numberOfDocuments(series) > 0;
 
-      return hasDescription && hasImages && hasVariants;
+      return hasDescription && hasImages && hasDocuments && hasVariants;
     }
   };
 
@@ -343,7 +344,7 @@ const Product = () => {
                   <TabLabel
                     title="Dokumenter"
                     numberOfElements={numberOfDocuments(series)}
-                    showAlert={false}
+                    showAlert={true}
                     isValid={isValid}
                   />
                 }

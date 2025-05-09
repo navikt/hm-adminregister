@@ -1,7 +1,7 @@
 import { SeriesDTO } from "utils/types/response-types";
 import { BodyLong, Button, Modal } from "@navikt/ds-react";
 import { RocketIcon } from "@navikt/aksel-icons";
-import { numberOfImages } from "products/seriesUtils";
+import { numberOfDocuments, numberOfImages } from "products/seriesUtils";
 import { requestApproval } from "api/SeriesApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import styles from "./ProductPage.module.scss";
@@ -39,8 +39,9 @@ export const RequestApprovalModal = ({
     const SupplierErrorMessages = () => {
       return (
         <>
-          {!series.text && <li>Produktet mangler en produktbeskrivelse</li>}
+          {!series.text && <li>Produktet må ha en produktbeskrivelse</li>}
           {numberOfImages(series) < 2 && <li>Produktet må ha minst to bilder</li>}
+          {numberOfDocuments(series) < 1 && <li>Produktet må ha minst ett dokument</li>}
           {series.variants.length === 0 && <li>Produktet mangler teknisk data</li>}
         </>
       );
