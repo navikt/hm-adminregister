@@ -20,7 +20,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
     navigate(`/admin/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
   };
   const handleDeleteUser = () => {
-    deleteUser(userIdToDelete).then(() => {
+    deleteUser(loggedInUser?.isAdmin ?? false, userIdToDelete).then(() => {
       mutate();
     });
 
@@ -59,7 +59,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
                 <Table.DataCell>{user.name}</Table.DataCell>
                 <Table.DataCell>{user.email}</Table.DataCell>
                 <Table.DataCell>{user.attributes?.phone && formatPhoneNumber(user.attributes.phone)}</Table.DataCell>
-                {loggedInUser?.isAdmin && (
+                {loggedInUser?.userId !== user.id && (
                   <Table.DataCell>
                     <Button
                       title="Slette bruker"
