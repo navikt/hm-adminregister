@@ -108,6 +108,7 @@ export default function EditSupplier() {
             type="text"
             autoComplete="off"
             error={errors.name && errors.name.message}
+            disabled={loggedInUser?.isAdmin ? false : true}
           />
           <TextField
             {...register("email", { required: false })}
