@@ -47,18 +47,9 @@ const Agreement = () => {
 
   const handleSlettRammeavtale = () => {
     setDeleteModalOpen(false);
-    navigate("/rammeavtaler");
-
     deleteAgreement(agreementId!)
-      .then(() => {
-        setDeleteModalOpen(false);
-        mutateAgreement().then(() => {
-          navigate("/rammeavtaler");
-        });
-      })
-      .catch((error) => {
-        setGlobalError(error.message);
-      });
+      .then(() => mutateAgreement().then(() => navigate("/rammeavtaler")))
+      .catch((error) => setGlobalError(error.message));
   };
 
   const handlePublishRammeavtale = () => {
