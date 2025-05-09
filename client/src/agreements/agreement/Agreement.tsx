@@ -41,18 +41,17 @@ const Agreement = () => {
     mutate: mutateAgreement,
   } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET);
 
-  const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false);
-
-  const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false);
-  const [publiserRammeavtaleModalIsOpen, setPubliserRammeavtaleModalIsOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isPublishModalOpen, setPublishModalOpen] = useState(false);
 
   const handleSlettRammeavtale = () => {
-    setSlettRammeavtaleModalIsOpen(false);
+    setDeleteModalOpen(false);
     navigate("/rammeavtaler");
 
     deleteAgreement(agreementId!)
       .then(() => {
-        setSlettRammeavtaleModalIsOpen(false);
+        setDeleteModalOpen(false);
         mutateAgreement().then(() => {
           navigate("/rammeavtaler");
         });
@@ -63,7 +62,7 @@ const Agreement = () => {
   };
 
   const handlePublishRammeavtale = () => {
-    setPubliserRammeavtaleModalIsOpen(false);
+    setPublishModalOpen(false);
     publishAgreement(agreementId!)
       .then(() => {
         mutateAgreement();
@@ -118,17 +117,17 @@ const Agreement = () => {
   return (
     <>
       <EditAgreementInfoModal
-        modalIsOpen={isEditAgreementModalOpen}
+        modalIsOpen={isEditModalOpen}
         agreement={agreement}
-        setModalIsOpen={setIsEditAgreementModalOpen}
+        setModalIsOpen={setEditModalOpen}
         mutateAgreement={mutateAgreement}
       />
       <ConfirmModal
         title={"Slett rammeavtale"}
         text={`Er du sikker på at du vil slette rammeavtale "${agreement?.title}"`}
         onClick={() => handleSlettRammeavtale()}
-        onClose={() => setSlettRammeavtaleModalIsOpen(false)}
-        isModalOpen={slettRammeavtaleModalIsOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        isModalOpen={isDeleteModalOpen}
         confirmButtonText={"Slett"}
         variant={"danger"}
       />
@@ -136,8 +135,8 @@ const Agreement = () => {
         title={"Publiser rammeavtale"}
         text={`Er du sikker på at du vil publisere rammeavtale "${agreement?.title}"`}
         onClick={() => handlePublishRammeavtale()}
-        onClose={() => setPubliserRammeavtaleModalIsOpen(false)}
-        isModalOpen={publiserRammeavtaleModalIsOpen}
+        onClose={() => setPublishModalOpen(false)}
+        isModalOpen={isPublishModalOpen}
         confirmButtonText={"Publiser"}
       />
 
@@ -181,7 +180,7 @@ const Agreement = () => {
                   <Dropdown.Menu.GroupedList>
                     <Dropdown.Menu.GroupedList.Item
                       onClick={() => {
-                        setIsEditAgreementModalOpen(true);
+                        setEditModalOpen(true);
                       }}
                     >
                       Endre rammeavtale
@@ -192,7 +191,7 @@ const Agreement = () => {
                     <Dropdown.Menu.List.Item
                       disabled={agreement.draftStatus !== "DRAFT"}
                       onClick={() => {
-                        setSlettRammeavtaleModalIsOpen(true);
+                        setDeleteModalOpen(true);
                       }}
                     >
                       Slett rammeavtale
@@ -204,7 +203,7 @@ const Agreement = () => {
                 Status
               </Heading>
 
-              {isDraft && <PublishButton onClick={() => setPubliserRammeavtaleModalIsOpen(true)} />}
+              {isDraft && <PublishButton onClick={() => setPublishModalOpen(true)} />}
               <AgreementStatusTag publiseringsdato={agreement.published} isDraft={isDraft} />
 
               <div>
