@@ -18,7 +18,6 @@ import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
 import styles from "../ProductPage.module.scss";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
@@ -32,7 +31,6 @@ const VideoTab = ({
   mutateSeries: () => void;
   isEditable: boolean;
 }) => {
-  const { loggedInUser } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { videos } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
@@ -170,12 +168,7 @@ const VideoTab = ({
           </VStack>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={() => {
-              handleSaveVideoLink();
-            }}
-            variant="primary"
-          >
+          <Button onClick={() => handleSaveVideoLink()} variant="primary">
             Lagre
           </Button>
           <Button
@@ -201,8 +194,7 @@ const parseUrl = (s: string) => {
     urlString = "https://" + urlString;
   }
   try {
-    const url = new URL(urlString);
-    return url;
+    return new URL(urlString);
   } catch {
     return false;
   }
