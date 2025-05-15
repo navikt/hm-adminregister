@@ -120,7 +120,6 @@ const VideoTab = ({
             )}
           </VStack>
         )}
-        {!series && <Alert variant={errorMessage ? "error" : "info"}>Produktet har ingen bilder</Alert>}
 
         {isEditable && (
           <Button
