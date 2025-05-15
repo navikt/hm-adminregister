@@ -106,29 +106,7 @@ const VideoTab = ({
           <Alert variant="info">Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.</Alert>
         )}
 
-        <Alert variant="warning">
-          <Heading spacing size="small" level="1">
-            Krav til video
-          </Heading>
-          <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
-          <BodyLong>- er informativ og relevant til produktet</BodyLong>
-          <BodyLong>- er nøytral og har et objektivt preg</BodyLong>
-          <BodyLong>- er tekstet</BodyLong>
-          <BodyLong spacing>
-            <HStack>
-              - er synstolket (gjelder videoer publisert etter 01.02.2024)
-              <HelpText title="Informasjon om synstolking">
-                Synstolking betyr at viktig visuell informasjon i video bli beskrevet via lyd.
-              </HelpText>
-            </HStack>
-          </BodyLong>
-          <BodyLong>
-            Les mer på{" "}
-            <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743" target="_blank">
-              Tilsynet for universell utforming sine nettsider
-            </Link>
-          </BodyLong>
-        </Alert>
+        <VideoRequirementBox />
 
         {videos.length > 0 && (
           <VStack gap="8 2">
@@ -236,3 +214,27 @@ const validateDomain = (url: URL) => {
   const validDomains = ["www.youtube.com", "youtube.com", "www.vimeo.com", "vimeo.com", "youtu.be"];
   return validDomains.some((d) => d === url.hostname);
 };
+
+const VideoRequirementBox = () => (
+  <Alert variant="warning">
+    <Heading spacing size="small" level="1">
+      Krav til video
+    </Heading>
+    <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
+    <BodyLong>- er informativ og relevant til produktet</BodyLong>
+    <BodyLong>- er nøytral og har et objektivt preg</BodyLong>
+    <BodyLong>- er tekstet</BodyLong>
+    <HStack>
+      <BodyLong spacing>- er synstolket (gjelder videoer publisert etter 01.02.2024)</BodyLong>
+      <HelpText title="Informasjon om synstolking">
+        Synstolking betyr at viktig visuell informasjon i video bli beskrevet via lyd.
+      </HelpText>
+    </HStack>
+    <BodyLong>
+      Les mer på{" "}
+      <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743" target="_blank">
+        Tilsynet for universell utforming sine nettsider
+      </Link>
+    </BodyLong>
+  </Alert>
+);
