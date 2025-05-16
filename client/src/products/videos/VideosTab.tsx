@@ -1,27 +1,14 @@
-import {
-  Alert,
-  BodyLong,
-  Button,
-  ConfirmationPanel,
-  Heading,
-  HelpText,
-  HStack,
-  Link,
-  Modal,
-  Tabs,
-  TextField,
-  VStack,
-} from "@navikt/ds-react";
+import { Alert, BodyLong, Button, Heading, HelpText, HStack, Link, Tabs, VStack } from "@navikt/ds-react";
 import { SeriesDTO } from "utils/types/response-types";
 
 import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
-import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
+import { deleteFileFromSeries } from "api/SeriesApi";
 import styles from "../ProductPage.module.scss";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
-import { validateUrl } from "products/videos/videoUrlUtils";
+import { VideoModal } from "products/videos/VideoModal";
 
 const VideoTab = ({
   series,
@@ -35,28 +22,6 @@ const VideoTab = ({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { videos } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorMessageConfirmVideoRequirements, setErrorMessageConfirmVideoRequirements] = useState("");
-  const [confirmVideoRequirements, setConfirmVideoRequirements] = useState(false);
-
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-
-  async function handleSaveVideoLink() {
-    const isUrlValid = validateVideoUrlRequirements();
-    const isVideoRequirementsConfirmed = validateVideoRequirementsConfirmed();
-    if (isUrlValid && isVideoRequirementsConfirmed) {
-      saveVideoToSeries(series.id, { uri: url, title: title }).then(
-        () => {
-          mutateSeries();
-          setModalIsOpen(false);
-        },
-        (error) => {
-          setGlobalError(error.status, error.statusText);
-        },
-      );
-    }
-  }
 
   async function handleDeleteVideoLink(uri: string) {
     deleteFileFromSeries(series.id, uri)
@@ -65,32 +30,6 @@ const VideoTab = ({
         setGlobalError(error);
       });
   }
-
-  const validateVideoUrlRequirements = () => {
-    const urlError = validateUrl(url);
-    if (urlError) {
-      setErrorMessage(urlError);
-      return false;
-    }
-    return true;
-  };
-
-  const validateVideoRequirementsConfirmed = () => {
-    setErrorMessageConfirmVideoRequirements("");
-    if (!confirmVideoRequirements) {
-      setErrorMessageConfirmVideoRequirements("Du må bekrefte at kravene til videoer er oppfylt");
-      return false;
-    }
-    return true;
-  };
-
-  const resetInputFields = () => {
-    setTitle("");
-    setUrl("");
-    setErrorMessage("");
-    setConfirmVideoRequirements(false);
-    setErrorMessageConfirmVideoRequirements("");
-  };
 
   return (
     <Tabs.Panel value="videos" className={styles.tabPanel}>
@@ -127,56 +66,7 @@ const VideoTab = ({
           </Button>
         )}
       </VStack>
-      <Modal
-        open={modalIsOpen}
-        header={{
-          heading: "Legg til videolenke",
-          closeButton: true,
-        }}
-        onClose={() => {
-          resetInputFields();
-          setModalIsOpen(false);
-        }}
-      >
-        <Modal.Body>
-          <VStack gap="4">
-            <TextField
-              value={title}
-              style={{ width: "400px" }}
-              label="Tittel"
-              onChange={(event) => setTitle(event.currentTarget.value)}
-            />
-            <TextField
-              value={url}
-              style={{ width: "400px" }}
-              label="Lenke"
-              description="Må være til en video og ikke en spilleliste, høyreklikk og kopier i videospilleren"
-              onChange={(event) => setUrl(event.currentTarget.value)}
-              error={errorMessage}
-            />
-            <ConfirmationPanel
-              checked={confirmVideoRequirements}
-              label="Jeg bekrefter at kravene til videoer er oppfylt, herunder krav til universell utforming."
-              onChange={() => setConfirmVideoRequirements((x) => !x)}
-              error={errorMessageConfirmVideoRequirements}
-            ></ConfirmationPanel>
-          </VStack>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => handleSaveVideoLink()} variant="primary">
-            Lagre
-          </Button>
-          <Button
-            onClick={() => {
-              resetInputFields();
-              setModalIsOpen(false);
-            }}
-            variant="secondary"
-          >
-            Avbryt
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <VideoModal seriesId={series.id} mutateSeries={mutateSeries} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
     </Tabs.Panel>
   );
 };
