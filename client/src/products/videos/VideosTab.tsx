@@ -1,4 +1,4 @@
-import { Alert, BodyLong, Button, Heading, HelpText, HStack, Link, Tabs, VStack } from "@navikt/ds-react";
+import { Alert, BodyLong, BodyShort, Button, Heading, HelpText, HStack, Link, Tabs, VStack } from "@navikt/ds-react";
 import { SeriesDTO } from "utils/types/response-types";
 
 import { useState } from "react";
@@ -22,6 +22,7 @@ const VideoTab = ({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { videos } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
+  const videoAmountLimit = 4;
 
   async function handleDeleteVideoLink(uri: string) {
     deleteFileFromSeries(series.id, uri)
@@ -54,16 +55,22 @@ const VideoTab = ({
         )}
 
         {isEditable && (
-          <Button
-            className="fit-content"
-            variant="tertiary"
-            icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-            onClick={() => {
-              setModalIsOpen(true);
-            }}
-          >
-            Legg til videolenke
-          </Button>
+          <HStack align={"center"}>
+            <Button
+              className="fit-content"
+              variant="tertiary"
+              icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
+              onClick={() => {
+                setModalIsOpen(true);
+              }}
+              disabled={videos.length >= videoAmountLimit}
+            >
+              Legg til videolenke
+            </Button>
+            {videos.length >= videoAmountLimit && (
+              <BodyShort weight={"semibold"}>Du kan ikke legge til mer enn {videoAmountLimit} videoer.</BodyShort>
+            )}
+          </HStack>
         )}
       </VStack>
       <VideoModal seriesId={series.id} mutateSeries={mutateSeries} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
