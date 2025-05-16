@@ -21,6 +21,7 @@ import { deleteFileFromSeries, saveVideoToSeries } from "api/SeriesApi";
 import styles from "../ProductPage.module.scss";
 import { PlusCircleIcon } from "@navikt/aksel-icons";
 import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
+import { validateUrl } from "products/videos/videoUrlUtils";
 
 const VideoTab = ({
   series,
@@ -42,7 +43,7 @@ const VideoTab = ({
   const [url, setUrl] = useState("");
 
   async function handleSaveVideoLink() {
-    const isUrlValid = validateUrl();
+    const isUrlValid = validateVideoUrlRequirements();
     const isVideoRequirementsConfirmed = validateVideoRequirementsConfirmed();
     if (isUrlValid && isVideoRequirementsConfirmed) {
       saveVideoToSeries(series.id, { uri: url, title: title }).then(
@@ -65,19 +66,13 @@ const VideoTab = ({
       });
   }
 
-  const validateUrl = () => {
-    setErrorMessage("");
-    const parsedUrl = parseUrl(url);
-    if (parsedUrl) {
-      const isValidDomain = validateDomain(new URL(parsedUrl));
-      if (!isValidDomain) {
-        setErrorMessage("Kun lenker fra YouTube og Vimeo er tillatt");
-      }
-    } else {
-      setErrorMessage("Ugyldig lenke. Eksempel på gyldig url er https://www.youtube.com/en-produkt-video");
+  const validateVideoUrlRequirements = () => {
+    const urlError = validateUrl(url);
+    if (urlError) {
+      setErrorMessage(urlError);
+      return false;
     }
-
-    return !errorMessage;
+    return true;
   };
 
   const validateVideoRequirementsConfirmed = () => {
@@ -187,24 +182,6 @@ const VideoTab = ({
 };
 
 export default VideoTab;
-
-const parseUrl = (s: string) => {
-  let urlString = s;
-  if (!urlString.startsWith("http")) {
-    urlString = "https://" + urlString;
-  }
-  try {
-    return new URL(urlString);
-  } catch {
-    return false;
-  }
-};
-
-//Ingen sikkerhet at dette kun ligger i frontend. For brukerinfo er det ok men sikkerheten må ligge i backend
-const validateDomain = (url: URL) => {
-  const validDomains = ["www.youtube.com", "youtube.com", "www.vimeo.com", "vimeo.com", "youtu.be"];
-  return validDomains.some((d) => d === url.hostname);
-};
 
 const VideoRequirementBox = () => (
   <Alert variant="warning">
