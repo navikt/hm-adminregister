@@ -52,8 +52,8 @@ const NewProductOnDelkontraktModal = ({
       getProductByHmsNr(data.hmsNummer)
         .then((product) => {
           setProductToAdd(product);
-          if (product.seriesId) {
-            setProductToAddSeriesId(product.seriesId);
+          if (product.seriesUUID) {
+            setProductToAddSeriesId(product.seriesUUID);
           }
         })
         .catch((error) => {
