@@ -66,7 +66,7 @@ export const DelkontraktSerieRow = ({
 
   return (
     <>
-      <Table.Row key={productVariantsOnSeries.serieIdentifier} shadeOnHover={false}>
+      <Table.Row key={productVariantsOnSeries.productSeries} shadeOnHover={false}>
         <Table.DataCell>
           <>
             <EditProductAgreementDateModal
@@ -94,9 +94,9 @@ export const DelkontraktSerieRow = ({
               mutateProductAgreements={mutateProductAgreements}
             />
           </>
-          {productVariantsOnSeries.serieIdentifier ? (
+          {productVariantsOnSeries.productSeries ? (
             <a
-              href={`${HM_REGISTER_URL()}/produkt/${productVariantsOnSeries.serieIdentifier}`}
+              href={`${HM_REGISTER_URL()}/produkt/${productVariantsOnSeries.productSeries}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -180,11 +180,11 @@ export const DelkontraktSerieRow = ({
         <Table.DataCell>
           <Checkbox
             hideLabel
-            checked={selectedRows.includes(productVariantsOnSeries.serieIdentifier!)}
+            checked={selectedRows.includes(productVariantsOnSeries.productSeries!)}
             onChange={() => {
-              toggleSelectedRow(productVariantsOnSeries.serieIdentifier!);
+              toggleSelectedRow(productVariantsOnSeries.productSeries!);
             }}
-            aria-labelledby={`id-${productVariantsOnSeries.serieIdentifier}`}
+            aria-labelledby={`id-${productVariantsOnSeries.productSeries}`}
           >
             {" "}
           </Checkbox>
