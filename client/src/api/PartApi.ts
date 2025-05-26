@@ -24,7 +24,7 @@ export function usePagedParts({
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/part?page=${page}&size=${pageSize}&sort=created,DESC&${titleSearchParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&sort=created,DESC&${titleSearchParam}`;
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }
@@ -55,7 +55,7 @@ export function usePartByVariantIdentifier(variantIdentifier: string) {
 }
 
 export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/hmsNr/${hmsArtNr}`, "GET");
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/hmsNr/${hmsArtNr}`, "GET");
 }
 
 export function getVariantsBySeriesUUID(seriesUUID: string) {
@@ -67,7 +67,7 @@ export function getVariantsBySeriesUUID(seriesUUID: string) {
 
 export const getPartsForSeriesId = (seriesId: string) => {
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series/${seriesId}`,
+    `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`,
     fetcherGET,
   );
 };
