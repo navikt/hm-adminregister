@@ -49,7 +49,7 @@ export const draftAndPublishNewPart = async (
 };
 
 export function usePartByVariantIdentifier(variantIdentifier: string) {
-  const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/part/variant-id/${variantIdentifier}`;
+  const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/variant-id/${variantIdentifier}`;
 
   return useSWR<ProductRegistrationDTOV2>(variantIdentifier.length > 0 ? partByVariantIdPath : null, fetcherGET);
 }
