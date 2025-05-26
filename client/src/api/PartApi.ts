@@ -5,8 +5,6 @@ import {
   PartDTO,
   ProductChunk,
   ProductRegistrationDTOV2,
-  SeriesDraftResponse,
-  SeriesDraftWithDTO,
   SuitableForBrukerpassbrukerDTO,
   SuitableForKommunalTeknikerDTO,
 } from "utils/types/response-types";
@@ -57,11 +55,7 @@ export function usePartByVariantIdentifier(variantIdentifier: string) {
 }
 
 export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/${hmsArtNr}`, "GET");
-}
-
-export function getPartByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/part/${hmsArtNr}`, "GET");
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/hmsNr/${hmsArtNr}`, "GET");
 }
 
 export function getVariantsBySeriesUUID(seriesUUID: string) {
@@ -201,7 +195,7 @@ const updateSuitableForKommunalTekniker = async (
   suitableForKommunalTeknikerDTO: SuitableForKommunalTeknikerDTO,
 ): Promise<void> =>
   fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForKommunalTekniker`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${productId}/suitableForKommunalTekniker`,
     "PUT",
     suitableForKommunalTeknikerDTO,
   );
@@ -211,7 +205,7 @@ const updateSuitableForBrukerpassbruker = async (
   suitableForBrukerpassbrukerDTO: SuitableForBrukerpassbrukerDTO,
 ): Promise<void> =>
   fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForBrukerpassbruker`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${productId}/suitableForBrukerpassbruker`,
     "PUT",
     suitableForBrukerpassbrukerDTO,
   );
