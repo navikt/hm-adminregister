@@ -42,7 +42,7 @@ export const draftAndPublishNewPart = async (
   supplierId: string,
 ): Promise<PartDraftResponse> => {
   return await fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/part/supplier/${supplierId}/draftWithAndPublish`,
+    `${HM_REGISTER_URL()}/admreg/common/api/v1/part/supplier/${supplierId}/draftWithAndPublish`,
     "POST",
     partDraftWith,
   );
