@@ -5,6 +5,8 @@ import {
   PartDTO,
   ProductChunk,
   ProductRegistrationDTOV2,
+  SeriesDraftResponse,
+  SeriesDraftWithDTO,
   SuitableForBrukerpassbrukerDTO,
   SuitableForKommunalTeknikerDTO,
 } from "utils/types/response-types";
@@ -28,10 +30,6 @@ export function usePagedParts({
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }
-
-export const getPartsForSeriesId = (seriesId: string) => {
-  return useSWR<ProductRegistrationDTOV2[]>(`${HM_REGISTER_URL()}/admreg/api/v1/part/series/${seriesId}`, fetcherGET);
-};
 
 export const draftNewPart = async (partDraftWith: PartDraftWithDTO, supplierId: string): Promise<PartDraftResponse> => {
   return await fetchAPI(
@@ -72,6 +70,13 @@ export function getVariantsBySeriesUUID(seriesUUID: string) {
     fetcherGET,
   );
 }
+
+export const getPartsForSeriesId = (seriesId: string) => {
+  return useSWR<ProductRegistrationDTOV2[]>(
+    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series/${seriesId}`,
+    fetcherGET,
+  );
+};
 
 export const getPart = async (productId: string): Promise<ProductRegistrationDTOV2> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`, "GET");

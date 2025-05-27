@@ -92,7 +92,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         </NavLink>
       )}
 
-      {loggedInUser && (loggedInUser.isAdmin || loggedInUser.isHmsUser || loggedInUser.isSupplier) && (
+      {loggedInUser && (loggedInUser.isAdmin || loggedInUser.isHmsUser) && (
         <NavLink to="/deler" className="page-link">
           {pathname.startsWith("/deler") && <div className="active-indicator" />}
           <div className="line" />
