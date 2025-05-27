@@ -66,7 +66,7 @@ export function getVariantsBySeriesUUID(seriesUUID: string) {
   );
 }
 
-export const getProductByIdsForSeriesId = (seriesId: string) => {
+export const getPartsForSeriesId = (seriesId: string) => {
   return useSWR<ProductRegistrationDTOV2[]>(
     `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`,
     fetcherGET,
