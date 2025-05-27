@@ -6,9 +6,16 @@ import {
 } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, fetchAPIModify, getPath, httpDelete } from "api/fetch";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`, "GET");
+
+export const getProductById = async (productId: string): Promise<ProductRegistrationDTOV2> =>  {
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  return fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${productId}`), "GET");
+}
 
 export const updateProductVariant = async (
   isAdmin: boolean,
