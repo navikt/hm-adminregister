@@ -59,9 +59,9 @@ export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrat
   return fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/hmsNr/${hmsArtNr}`, "GET");
 }
 
-export function getVariantsBySeriesUUID(seriesUUID: string) {
+export function getVariantsBySeriesUUID(seriesUUID?: string) {
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/common/api/v1/series-variants/series-variants/${seriesUUID}`,
+    seriesUUID ? `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series-variants/${seriesUUID}` : null,
     fetcherGET,
   );
 }
