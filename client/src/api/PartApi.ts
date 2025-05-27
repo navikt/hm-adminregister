@@ -61,7 +61,7 @@ export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrat
 
 export function getVariantsBySeriesUUID(seriesUUID: string) {
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series-variants/${seriesUUID}`,
+    `${HM_REGISTER_URL()}/admreg/common/api/v1/series-variants/series-variants/${seriesUUID}`,
     fetcherGET,
   );
 }
