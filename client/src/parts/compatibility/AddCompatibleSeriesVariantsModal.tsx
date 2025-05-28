@@ -5,6 +5,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 import { useSeriesV2Conditional } from "api/SeriesApi";
 import { addCompatibleWithVariantList, getVariantsBySeriesUUID, removeCompatibleWithVariant } from "api/PartApi";
 import { ProductRegistrationDTOV2 } from "utils/types/response-types";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -28,6 +29,9 @@ const AddCompatibleSeriesVariantsModal = ({
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
   const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID);
   const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([]);
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+
 
   useEffect(() => {
     if (variants) {
@@ -41,7 +45,7 @@ const AddCompatibleSeriesVariantsModal = ({
     );
 
   const handleLeggTilValgteProdukter = (selectedRows: string[]) => {
-    addCompatibleWithVariantList(partId, selectedRows)
+    addCompatibleWithVariantList(partId, selectedRows, isAdmin)
       .then(() => {
         mutatePart();
         setSelectedRows([]);

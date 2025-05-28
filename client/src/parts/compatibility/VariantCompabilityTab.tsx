@@ -5,6 +5,7 @@ import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import { CompatibleVariantRow } from "parts/compatibility/CompatibleVariantRow";
 import NewCompatibleProductOnPartModal from "parts/compatibility/NewCompatibleProductOnPartModal";
 import { removeCompatibleWithVariant } from "api/PartApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface VariantCompabilityTabProps {
   partId: string;
@@ -20,8 +21,11 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart }: Varian
       list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
     );
 
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+
   const deleteMarkedCompatibleProducts = () => {
-    removeCompatibleWithVariant(partId, selectedRows).then(() => {
+    removeCompatibleWithVariant(partId, selectedRows, isAdmin).then(() => {
       mutatePart();
       setSelectedRows([]);
     });

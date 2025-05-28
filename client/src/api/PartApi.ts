@@ -102,8 +102,8 @@ export function useCompatibleProductById(productId: string) {
 const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWithDTO): Promise<void> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
-export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[]): Promise<void> => {
-  const partToUpdate = await getProductById(productId);
+export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[], isAdmin: boolean): Promise<void> => {
+  const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith: CompatibleWithDTO = {
@@ -117,9 +117,11 @@ export const removeCompatibleWithSeries = async (productId: string, seriesUUIDTo
 export const removeCompatibleWithSeriesForParts = async (
   seriesUUIDToRemove: string,
   partUUIDs: string[],
+  isAdmin: boolean
 ): Promise<void> => {
+
   for (const productId of partUUIDs) {
-    const partToUpdate = await getProductById(productId);
+    const partToUpdate = await getProductById(productId, isAdmin);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
     const updatedCompatibleWith = {
       seriesIds: compatibleWith?.seriesIds.filter((id) => seriesUUIDToRemove !== id) || [],
@@ -129,9 +131,10 @@ export const removeCompatibleWithSeriesForParts = async (
   }
 };
 
-export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[]): Promise<void> => {
+export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[], isAdmin: boolean): Promise<void> => {
   for (const productId of partUUIDs) {
-    const partToUpdate = await getProductById(productId);
+    const partToUpdate = await getProductById(productId, isAdmin);
+    console.log(`Adding compatible series ${seriesUUIDToAdd} to part ${productId}`);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
     const updatedCompatibleWith = {
       seriesIds: [...(compatibleWith?.seriesIds || []), seriesUUIDToAdd],
@@ -139,10 +142,11 @@ export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, p
     };
     await updatePartCompatability(productId, updatedCompatibleWith);
   }
+
 };
 
-export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd: string): Promise<void> => {
-  const partToUpdate = await getProductById(productId);
+export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd: string, isAdmin: boolean): Promise<void> => {
+  const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -153,8 +157,8 @@ export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string[]): Promise<void> => {
-  const partToUpdate = await getProductById(productId);
+export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string[], isAdmin: boolean): Promise<void> => {
+  const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -165,8 +169,8 @@ export const removeCompatibleWithVariant = async (productId: string, productIdTo
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const addCompatibleWithVariant = async (productId: string, productIdToAdd: string): Promise<void> => {
-  const partToUpdate = await getProductById(productId);
+export const addCompatibleWithVariant = async (productId: string, productIdToAdd: string, isAdmin: boolean): Promise<void> => {
+  const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -177,8 +181,9 @@ export const addCompatibleWithVariant = async (productId: string, productIdToAdd
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const addCompatibleWithVariantList = async (productId: string, productIdToAdd: string[]): Promise<void> => {
-  const partToUpdate = await getProductById(productId);
+export const addCompatibleWithVariantList = async (productId: string, productIdToAdd: string[], isAdmin: boolean): Promise<void> => {
+
+  const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {

@@ -4,6 +4,7 @@ import { HM_REGISTER_URL } from "environments";
 import { ArrowLeftIcon, ExternalLinkIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { addCompatibleWithVariantList } from "api/PartApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface CompatibleSeriesRowProps {
   productIds: string[];
@@ -33,12 +34,15 @@ export const CompatibleSeriesRow = ({
   const connectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)) ?? [];
 
   const noConnectedVariants = connectedVariants.length;
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
   const addAllVariantsFromSeries = () => {
     if (series) {
       addCompatibleWithVariantList(
         partId,
         series.variants.map((variant) => variant.id),
+        isAdmin
       )
         .then(() => {
           mutatePart();

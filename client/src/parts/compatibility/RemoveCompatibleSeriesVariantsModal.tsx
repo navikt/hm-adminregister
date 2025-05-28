@@ -5,6 +5,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 import { useSeriesV2Conditional } from "api/SeriesApi";
 import { getVariantsBySeriesUUID, removeCompatibleWithVariant } from "api/PartApi";
 import { ProductRegistrationDTOV2 } from "utils/types/response-types";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -28,6 +29,8 @@ const RemoveCompatibleSeriesVariantsModal = ({
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
   const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID);
   const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([]);
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
   useEffect(() => {
     if (variants) {
@@ -41,7 +44,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
     );
 
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
-    removeCompatibleWithVariant(partId, selectedRows)
+    removeCompatibleWithVariant(partId, selectedRows, isAdmin)
       .then(() => {
         mutatePart();
         setSelectedRows([]);

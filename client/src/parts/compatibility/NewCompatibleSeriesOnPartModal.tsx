@@ -4,8 +4,9 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { ProductRegistrationDTOV2 } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithSeries, addCompatibleWithVariant, getProductByHmsArtNr } from "api/PartApi";
+import { addCompatibleWithSeries, getProductByHmsArtNr } from "api/PartApi";
 import { useSeriesV2Conditional } from "api/SeriesApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -21,6 +22,8 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTOV2 | undefined>(undefined);
   const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined);
   const { setGlobalError } = useErrorStore();
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
   const { data: series, isLoading, error } = useSeriesV2Conditional(productToAdd?.seriesUUID ?? "");
 
@@ -41,7 +44,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
   async function onClickLeggTilKobling() {
     setIsSaving(true);
     if (series !== undefined) {
-      addCompatibleWithSeries(partId, series.id)
+      addCompatibleWithSeries(partId, series.id, isAdmin)
         .then(() => {
           mutatePart();
           setIsSaving(false);

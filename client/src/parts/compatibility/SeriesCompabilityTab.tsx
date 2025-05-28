@@ -7,6 +7,7 @@ import AddCompatibleSeriesVariantsModal from "parts/compatibility/AddCompatibleS
 import NewCompatibleSeriesOnPartModal from "parts/compatibility/NewCompatibleSeriesOnPartModal";
 import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import { removeCompatibleWithSeries } from "api/PartApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface SeriesCompabilityTabProps {
   seriesIds: string[];
@@ -27,8 +28,11 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
       list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
     );
 
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+
   const deleteMarkedCompatibleSeries = () => {
-    removeCompatibleWithSeries(partId, selectedRows).then(() => {
+    removeCompatibleWithSeries(partId, selectedRows, isAdmin).then(() => {
       mutatePart();
       setSelectedRows([]);
     });

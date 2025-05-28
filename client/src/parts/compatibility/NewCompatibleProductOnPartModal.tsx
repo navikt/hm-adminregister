@@ -1,4 +1,4 @@
-import { BodyLong, BodyShort, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+import { BodyShort, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
@@ -7,6 +7,7 @@ import Content from "felleskomponenter/styledcomponents/Content";
 import { addCompatibleWithVariantList, getProductByHmsArtNr } from "api/PartApi";
 import { PlusCircleFillIcon, TrashIcon } from "@navikt/aksel-icons";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -24,6 +25,8 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
   const [productIdToAdd, setProductIdToAdd] = useState<string | undefined>(undefined);
   const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined);
   const { setGlobalError } = useErrorStore();
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
   const resetModal = () => {
     setProductIdToAdd(undefined);
@@ -60,6 +63,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
       addCompatibleWithVariantList(
         partId,
         productsToAdd.map((product) => product.id),
+        isAdmin,
       ).then(
         () => {
           mutatePart();
@@ -80,7 +84,8 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {}}
+      onCancel={(e) => {
+      }}
       header={{
         heading: "Legg til produkt",
         closeButton: false,

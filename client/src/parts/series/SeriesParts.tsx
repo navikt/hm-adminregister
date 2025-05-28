@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
 import NewCompatiblePartsOnSeriesModal from "parts/series/NewCompatiblePartsOnSeriesModal";
 import { CompatiblePartRow } from "parts/compatibility/CompatiblePartRow";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface SeriesPartsProps {
   seriesId: string;
@@ -30,9 +31,12 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
 
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+
   const deleteMarkedCompatibleProducts = () => {
     setIsDeleting(true);
-    removeCompatibleWithSeriesForParts(seriesId, selectedRows).then(() => {
+    removeCompatibleWithSeriesForParts(seriesId, selectedRows, isAdmin).then(() => {
       mutateParts();
       setSelectedRows([]);
     });

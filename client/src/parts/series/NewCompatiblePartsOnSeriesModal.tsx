@@ -4,6 +4,7 @@ import { useErrorStore } from "utils/store/useErrorStore";
 import { addCompatibleWithSeriesForParts, usePagedParts, usePartByVariantIdentifier } from "api/PartApi";
 import { PartsToAddTable } from "parts/series/PartsToAddTable";
 import styles from "./NewCompatiblePartsOnSeriesModal.module.scss";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 interface Props {
   modalIsOpen: boolean;
@@ -24,6 +25,9 @@ const NewCompatiblePartsOnSeriesModal = ({
 
   const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
   const toggleSelectedRow = (value: string) =>
     setProductIdsToAdd((list: string[]): string[] =>
@@ -53,7 +57,7 @@ const NewCompatiblePartsOnSeriesModal = ({
   async function onClickLeggTilKobling() {
     setIsSaving(true);
     if (productIdsToAdd.length > 0) {
-      addCompatibleWithSeriesForParts(seriesId, productIdsToAdd).then(
+      addCompatibleWithSeriesForParts(seriesId, productIdsToAdd, isAdmin).then(
         () => {
           mutateParts();
           setProductIdsToAdd([]);
@@ -72,7 +76,8 @@ const NewCompatiblePartsOnSeriesModal = ({
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {}}
+      onCancel={(e) => {
+      }}
       header={{
         heading: "Legg til del",
         closeButton: true,
