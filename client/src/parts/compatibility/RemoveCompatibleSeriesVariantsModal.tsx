@@ -26,7 +26,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { setGlobalError } = useErrorStore();
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
-  const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID!);
+  const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID);
   const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([]);
 
   useEffect(() => {

@@ -5,8 +5,6 @@ import {
   PartDTO,
   ProductChunk,
   ProductRegistrationDTOV2,
-  SeriesDraftResponse,
-  SeriesDraftWithDTO,
   SuitableForBrukerpassbrukerDTO,
   SuitableForKommunalTeknikerDTO,
 } from "utils/types/response-types";
@@ -14,6 +12,7 @@ import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
 import { fetchAPI } from "api/fetch";
+import { getProductById } from "api/ProductApi";
 
 export function usePagedParts({
   page,
@@ -26,7 +25,7 @@ export function usePagedParts({
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/part?page=${page}&size=${pageSize}&sort=created,DESC&${titleSearchParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&sort=created,DESC&${titleSearchParam}`;
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }
@@ -44,45 +43,38 @@ export const draftAndPublishNewPart = async (
   supplierId: string,
 ): Promise<PartDraftResponse> => {
   return await fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/part/supplier/${supplierId}/draftWithAndPublish`,
+    `${HM_REGISTER_URL()}/admreg/common/api/v1/part/supplier/${supplierId}/draftWithAndPublish`,
     "POST",
     partDraftWith,
   );
 };
 
 export function usePartByVariantIdentifier(variantIdentifier: string) {
-  const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/part/variant-id/${variantIdentifier}`;
+  const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/variant-id/${variantIdentifier}`;
 
   return useSWR<ProductRegistrationDTOV2>(variantIdentifier.length > 0 ? partByVariantIdPath : null, fetcherGET);
 }
 
 export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/${hmsArtNr}`, "GET");
+  return fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/hmsNr/${hmsArtNr}`, "GET");
 }
 
-export function getPartByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/hmsNr/part/${hmsArtNr}`, "GET");
-}
-
-export function getVariantsBySeriesUUID(seriesUUID: string) {
+export function getVariantsBySeriesUUID(seriesUUID?: string) {
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series-variants/${seriesUUID}`,
+    seriesUUID ? `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series-variants/${seriesUUID}` : null,
     fetcherGET,
   );
 }
 
 export const getPartsForSeriesId = (seriesId: string) => {
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/series/${seriesId}`,
+    `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`,
     fetcherGET,
   );
 };
 
-export const getPart = async (productId: string): Promise<ProductRegistrationDTOV2> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/part/${productId}`, "GET");
-
 export function usePartByProductId(productId: string) {
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/part/v2/${productId}`;
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/${productId}`;
 
   const { data: part, error, isLoading, mutate } = useSWR<PartDTO>(path, fetcherGET);
 
@@ -111,7 +103,7 @@ const updatePartCompatability = async (productId: string, updatedCompatibleWith:
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
 export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[]): Promise<void> => {
-  const partToUpdate = await getPart(productId);
+  const partToUpdate = await getProductById(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith: CompatibleWithDTO = {
@@ -127,7 +119,7 @@ export const removeCompatibleWithSeriesForParts = async (
   partUUIDs: string[],
 ): Promise<void> => {
   for (const productId of partUUIDs) {
-    const partToUpdate = await getPart(productId);
+    const partToUpdate = await getProductById(productId);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
     const updatedCompatibleWith = {
       seriesIds: compatibleWith?.seriesIds.filter((id) => seriesUUIDToRemove !== id) || [],
@@ -139,7 +131,7 @@ export const removeCompatibleWithSeriesForParts = async (
 
 export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[]): Promise<void> => {
   for (const productId of partUUIDs) {
-    const partToUpdate = await getPart(productId);
+    const partToUpdate = await getProductById(productId);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
     const updatedCompatibleWith = {
       seriesIds: [...(compatibleWith?.seriesIds || []), seriesUUIDToAdd],
@@ -150,7 +142,7 @@ export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, p
 };
 
 export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd: string): Promise<void> => {
-  const partToUpdate = await getPart(productId);
+  const partToUpdate = await getProductById(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -162,7 +154,7 @@ export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd
 };
 
 export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string[]): Promise<void> => {
-  const partToUpdate = await getPart(productId);
+  const partToUpdate = await getProductById(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -174,7 +166,7 @@ export const removeCompatibleWithVariant = async (productId: string, productIdTo
 };
 
 export const addCompatibleWithVariant = async (productId: string, productIdToAdd: string): Promise<void> => {
-  const partToUpdate = await getPart(productId);
+  const partToUpdate = await getProductById(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -186,7 +178,7 @@ export const addCompatibleWithVariant = async (productId: string, productIdToAdd
 };
 
 export const addCompatibleWithVariantList = async (productId: string, productIdToAdd: string[]): Promise<void> => {
-  const partToUpdate = await getPart(productId);
+  const partToUpdate = await getProductById(productId);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
   const updatedCompatibleWith = {
@@ -201,7 +193,7 @@ const updateSuitableForKommunalTekniker = async (
   suitableForKommunalTeknikerDTO: SuitableForKommunalTeknikerDTO,
 ): Promise<void> =>
   fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForKommunalTekniker`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${productId}/suitableForKommunalTekniker`,
     "PUT",
     suitableForKommunalTeknikerDTO,
   );
@@ -211,7 +203,7 @@ const updateSuitableForBrukerpassbruker = async (
   suitableForBrukerpassbrukerDTO: SuitableForBrukerpassbrukerDTO,
 ): Promise<void> =>
   fetchAPI(
-    `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/suitableForBrukerpassbruker`,
+    `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${productId}/suitableForBrukerpassbruker`,
     "PUT",
     suitableForBrukerpassbrukerDTO,
   );

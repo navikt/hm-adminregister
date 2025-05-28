@@ -59,26 +59,39 @@ export default function CreatePart() {
 
   async function onSubmit() {
     if (validateFields()) {
-      if (loggedInUser && (loggedInUser.isAdmin || loggedInUser.isHmsUser)) {
-        const supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id;
+      if (loggedInUser) {
+        let supplierUUID: string | undefined;
 
-        const newPart: PartDraftWithDTO = {
-          title: title,
-          isoCategory: handleSetFormValueIso(isoCategory),
-          accessory: partType === "accessory",
-          sparePart: partType === "sparePart",
-          supplierId: supplierUUID!,
-          levArtNr: levArtNr,
-          hmsArtNr: hmsArtNr,
-        };
+        if (loggedInUser.isAdmin || loggedInUser.isHmsUser) {
+          supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id;
+        } else if (loggedInUser.isSupplier) {
+          supplierUUID = loggedInUser.supplierId;
+        }
 
-        draftAndPublishNewPart(newPart, supplierUUID!)
-          .then((newPart) => {
-            navigate(`/del/${newPart.id}`);
-          })
-          .catch((error) => {
-            setGlobalError(error);
+        if (supplierUUID) {
+          const newPart: PartDraftWithDTO = {
+            title: title,
+            isoCategory: handleSetFormValueIso(isoCategory),
+            accessory: partType === "accessory",
+            sparePart: partType === "sparePart",
+            supplierId: supplierUUID,
+            levArtNr: levArtNr,
+            hmsArtNr: hmsArtNr,
+          };
+
+          draftAndPublishNewPart(newPart, supplierUUID)
+            .then((newPart) => {
+              navigate(`/del/${newPart.id}`);
+            })
+            .catch((error) => {
+              setGlobalError(error);
+            });
+        } else {
+          setFieldError({
+            ...fieldError,
+            supplierErrorMessage: "Leverandør-ID kunne ikke bestemmes",
           });
+        }
       }
     }
   }
