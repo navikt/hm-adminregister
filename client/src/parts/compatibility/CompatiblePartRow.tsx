@@ -5,6 +5,7 @@ import { ExternalLinkIcon } from "@navikt/aksel-icons";
 import React, { useState } from "react";
 import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, useCompatibleProductById } from "api/PartApi";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const CompatiblePartRow = ({
   productId,
@@ -15,7 +16,9 @@ export const CompatiblePartRow = ({
   selectedRows: string[];
   toggleSelectedRow: (id: string) => void;
 }) => {
-  const { product, isLoading, error, mutate } = useCompatibleProductById(productId);
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const { product, isLoading, error, mutate } = useCompatibleProductById(productId, isAdmin);
   const {
     data: series,
     isLoading: isLoadingSeries,

@@ -11,7 +11,7 @@ import {
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
-import { fetchAPI } from "api/fetch";
+import { fetchAPI, getPath } from "api/fetch";
 import { getProductById } from "api/ProductApi";
 
 export function usePagedParts({
@@ -86,8 +86,10 @@ export function usePartByProductId(productId: string) {
   };
 }
 
-export function useCompatibleProductById(productId: string) {
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}`;
+export function useCompatibleProductById(productId: string, isAdmin: boolean) {
+
+
+  const path = getPath(isAdmin, `/api/v1/product/registrations/${productId}`)
 
   const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET);
 
@@ -100,7 +102,7 @@ export function useCompatibleProductById(productId: string) {
 }
 
 const updatePartCompatability = async (productId: string, updatedCompatibleWith: CompatibleWithDTO): Promise<void> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v1/accessory/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/${productId}/compatibleWith`, "PUT", updatedCompatibleWith);
 
 export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[], isAdmin: boolean): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
@@ -134,7 +136,6 @@ export const removeCompatibleWithSeriesForParts = async (
 export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[], isAdmin: boolean): Promise<void> => {
   for (const productId of partUUIDs) {
     const partToUpdate = await getProductById(productId, isAdmin);
-    console.log(`Adding compatible series ${seriesUUIDToAdd} to part ${productId}`);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
     const updatedCompatibleWith = {
       seriesIds: [...(compatibleWith?.seriesIds || []), seriesUUIDToAdd],

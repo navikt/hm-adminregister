@@ -4,6 +4,7 @@ import { HM_REGISTER_URL } from "environments";
 import { ExternalLinkIcon } from "@navikt/aksel-icons";
 import React from "react";
 import { useCompatibleProductById } from "api/PartApi";
+import { useAuthStore } from "utils/store/useAuthStore";
 
 export const CompatibleVariantRow = ({
   productId,
@@ -14,7 +15,9 @@ export const CompatibleVariantRow = ({
   selectedRows: string[];
   toggleSelectedRow: (id: string) => void;
 }) => {
-  const { product, isLoading, error } = useCompatibleProductById(productId);
+  const loggedInUser = useAuthStore().loggedInUser;
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const { product, isLoading, error } = useCompatibleProductById(productId, isAdmin);
   const {
     data: series,
     isLoading: isLoadingSeries,

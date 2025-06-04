@@ -17,7 +17,6 @@ import {
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
 import ErrorAlert from "error/ErrorAlert";
-import { useAuthStore } from "utils/store/useAuthStore";
 import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, usePartByProductId } from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
@@ -31,7 +30,6 @@ import ImagesTab from "parts/ImagesTab";
 const Part = () => {
   const { productId } = useParams();
 
-  const { loggedInUser } = useAuthStore();
   const { part, isLoading, error, mutate } = usePartByProductId(productId!);
   const {
     data: series,
