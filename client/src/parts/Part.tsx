@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 
-import { ArrowLeftIcon, ExternalLinkIcon } from "@navikt/aksel-icons";
+import { ArrowLeftIcon } from "@navikt/aksel-icons";
 import {
+  BodyShort,
   Box,
   Heading,
   HGrid,
@@ -12,25 +13,37 @@ import {
   Switch,
   Tabs,
   Tag,
+  TextField,
   VStack,
 } from "@navikt/ds-react";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
 import ErrorAlert from "error/ErrorAlert";
-import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, usePartByProductId } from "api/PartApi";
+import {
+  approvePart,
+  updateEgnetForBrukerpassbruker,
+  updateEgnetForKommunalTekniker,
+  updatePart,
+  usePartByProductId
+} from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
-import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
 import { useState } from "react";
-import { useSeriesV2Conditional } from "api/SeriesApi";
+import { setPublishedSeriesToDraft, useSeriesV2Conditional } from "api/SeriesApi";
 import { numberOfImages } from "products/seriesUtils";
 import { TabLabel } from "felleskomponenter/TabLabel";
 import ImagesTab from "parts/ImagesTab";
+import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import styles from "products/ProductPage.module.scss";
+import StatusPanel from "products/StatusPanel";
+import ActionsMenu from "parts/ActionsMenu";
+import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { UpdatePartDTO } from "utils/types/response-types";
 
 const Part = () => {
   const { productId } = useParams();
 
-  const { part, isLoading, error, mutate } = usePartByProductId(productId!);
+  const { part, isLoading, error, mutatePart } = usePartByProductId(productId!);
   const {
     data: series,
     isLoading: isLoadingSeries,
@@ -40,16 +53,63 @@ const Part = () => {
 
   const [isTogglingKT, setIsTogglingKT] = useState(false);
 
+  const { loggedInUser } = useAuthStore();
+  const isAdminOrHmsUser = loggedInUser?.isAdminOrHmsUser || false;
+
+  const { setGlobalError } = useErrorStore();
+
+  const [productTitle, setProductTitle] = useState(part?.articleName ?? "");
+
+  const [hmsNr, setHmsNr] = useState(part?.hmsArtNr ?? "");
+
+  const [levartNr, setLevartNr] = useState(part?.supplierRef ?? "");
+
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
+  const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
+
+  const handleSaveName = () => {
+    const updatePartDto = {
+      title: productTitle,
+    }
+    handleSavePartInfo(updatePartDto);
+  };
+
+  const handleSaveSupplierRef = () => {
+    const updatePartDto = {
+      supplierRef: levartNr,
+    }
+    handleSavePartInfo(updatePartDto);
+  };
+
+  const handleSaveHmsNr = () => {
+    const updatePartDto = {
+      hmsArtNr: hmsNr,
+    }
+    handleSavePartInfo(updatePartDto);
+  };
+
+  const handleSavePartInfo = (updatePartDto: UpdatePartDTO) => {
+    updatePart(series!.id, updatePartDto)
+      .then(() => {
+        mutatePart()
+      })
+      .then(() => mutateSeries())
+      .catch((error) => {
+        setGlobalError(error.status, error.message)
+      });
+  }
+
+
   const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
     setIsTogglingKT(true);
     updateEgnetForKommunalTekniker(id, checked).then(() => {
-      mutate();
+      mutatePart();
     });
     setIsTogglingKT(false);
   };
   const toggleEgnetForBrukerpassbruker = (checked: boolean, id: string) => {
     updateEgnetForBrukerpassbruker(id, checked).then(() => {
-      mutate();
+      mutatePart();
     });
   };
 
@@ -69,16 +129,56 @@ const Part = () => {
     );
   }
 
+  async function onEditMode() {
+    setEditProductModalIsOpen(false);
+    setPublishedSeriesToDraft(series!.id)
+      .then(() => {
+        mutateSeries();
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
+  async function onPublish() {
+    if (series) {
+      setConfirmApproveModalIsOpen(false);
+      approvePart(series.id).then(
+        () => {
+          mutatePart()
+          mutateSeries()
+        }
+      ).catch((error) => {
+        setGlobalError(error.status, error.message);
+      });
+    }
+  }
+
+  const isEditable = series.status === "EDITABLE";
+
+
   return (
     <main className="show-menu">
+      <ConfirmModal
+        title={"Vil du sette delen i redigeringsmodus?"}
+        confirmButtonText={"OK"}
+        onClick={onEditMode}
+        onClose={() => setEditProductModalIsOpen(false)}
+        isModalOpen={editProductModalIsOpen}
+      />
+      <ConfirmModal
+        title={"Vil du publisere delen?"}
+        confirmButtonText={"Publiser"}
+        onClick={onPublish}
+        onClose={() => {
+          setConfirmApproveModalIsOpen(false);
+        }}
+        isModalOpen={confirmApproveModalIsOpen}
+      />
       <HGrid
         gap="12"
-        columns={{
-          xs: 1,
-          sm: "minmax(16rem, 48rem)",
-          xl: "minmax(16rem, 48rem)",
-          "2xl": "minmax(16rem, 80rem)",
-        }}
+        columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
+        className={styles.productPage}
       >
         <VStack gap={{ xs: "6", md: "10" }}>
           <VStack gap="6">
@@ -95,18 +195,35 @@ const Part = () => {
             <VStack gap="2">
               <Label> Navn på del</Label>
               <HStack gap="1">
-                <Heading level="1" size="large">
-                  {part.articleName ?? ""}{" "}
-                  {part.isPublished && part.hmsArtNr && (
-                    <AkselLink
-                      as={Link}
-                      to={`${HM_REGISTER_URL()}/produkt/hmsartnr/${part.hmsArtNr}`}
-                      target={"_blank"}
-                    >
-                      <ExternalLinkIcon title="Se på Finn Hjelpemiddel" fontSize="1.5rem" />
-                    </AkselLink>
-                  )}
-                </Heading>
+                {isEditable && (
+                  <TextField
+                    defaultValue={part.articleName ?? ""}
+                    label={""}
+                    aria-label="Rediger tittel"
+                    id="title"
+                    name="title"
+                    onChange={(event) => setProductTitle(event.currentTarget.value)}
+                    style={{ width: "20rem" }}
+                    onBlur={handleSaveName}
+                  />
+                )}
+
+                {!isEditable && (
+                  <Heading level="1" size="xlarge">
+                    {loggedInUser?.isAdmin && series.published ? (
+                      <a
+                        href={`${HM_REGISTER_URL()}/produkt/${series.id}`}
+                        target="_blank"
+                        className={styles.headingLink}
+                        rel="noreferrer"
+                      >
+                        {part.articleName ?? ""}
+                      </a>
+                    ) : (
+                      <>{part.articleName ?? ""}</>
+                    )}
+                  </Heading>
+                )}
               </HStack>
 
               {part.isExpired && (
@@ -117,70 +234,114 @@ const Part = () => {
             </VStack>
 
             <HGrid gap={{ xs: "8", md: "10" }} columns={{ xs: 1, lg: 2 }}>
-              <DefinitionList fullWidth horizontal>
-                <DefinitionList.Term>Type</DefinitionList.Term>
-                <DefinitionList.Definition>
-                  {part.accessory === true ? "Tilbehør" : "Reservedel"}
-                </DefinitionList.Definition>
-                <DefinitionList.Term>HMS-nummer</DefinitionList.Term>
-                <DefinitionList.Definition>{part.hmsArtNr ? part.hmsArtNr : "-"}</DefinitionList.Definition>
-                <DefinitionList.Term>Leverandør</DefinitionList.Term>
-                <DefinitionList.Definition>{part.supplierName ? part.supplierName : "-"}</DefinitionList.Definition>
-                <DefinitionList.Term>Lev-artnr</DefinitionList.Term>
-                <DefinitionList.Definition>{part.supplierRef ? part.supplierRef : "-"}</DefinitionList.Definition>
-              </DefinitionList>
-              <Box>
-                <Switch
-                  disabled={isTogglingKT}
-                  checked={part.productData.attributes.egnetForKommunalTekniker || false}
-                  onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
-                >
-                  Egnet for kommunal tekniker
-                </Switch>
-                <Switch
-                  checked={part.productData.attributes.egnetForBrukerpass || false}
-                  onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
-                >
-                  Egnet for brukerpassbruker
-                </Switch>
-              </Box>
+              <VStack gap="4">
+
+                <VStack>
+                  <Label>Type</Label>
+                  <BodyShort>{part.accessory === true ? "Tilbehør" : "Reservedel"}</BodyShort>
+                </VStack>
+
+                <VStack>
+                  <Label> Lev-artnr</Label>
+                  {isEditable && (
+                    <TextField
+                      defaultValue={part.supplierRef ?? ""}
+                      label={""}
+                      aria-label="Rediger tittel"
+                      id="title"
+                      name="title"
+                      onChange={(event) => setLevartNr(event.currentTarget.value)}
+                      style={{ width: "20rem" }}
+                      onBlur={handleSaveSupplierRef}
+                    />
+                  )}
+                  {!isEditable && (
+                    <BodyShort>{part.supplierRef ? part.supplierRef : "-"}</BodyShort>
+                  )}
+
+                </VStack>
+
+                <VStack>
+                  <Label> HMS-nummer</Label>
+
+                  {isAdminOrHmsUser  && isEditable ? (
+                    <TextField
+                      defaultValue={part.hmsArtNr ?? ""}
+                      label={""}
+                      aria-label="Rediger tittel"
+                      id="title"
+                      name="title"
+                      onChange={(event) => setHmsNr(event.currentTarget.value)}
+                      style={{ width: "20rem" }}
+                      onBlur={handleSaveHmsNr}
+                    />
+                  ) : (
+                    <BodyShort>{part.hmsArtNr ? part.hmsArtNr : "-"}</BodyShort>
+                  )}
+                </VStack>
+
+                {isAdminOrHmsUser && (
+                  <>
+                      <Switch
+                        disabled={isTogglingKT || !isEditable}
+                        checked={part.productData.attributes.egnetForKommunalTekniker || false}
+                        onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
+                      >
+                        Egnet for kommunal tekniker
+                      </Switch>
+
+                      <Switch
+                        disabled={!isEditable}
+                        checked={part.productData.attributes.egnetForBrukerpass || false}
+                        onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
+                      >
+                        Egnet for brukerpassbruker
+                      </Switch>
+                  </>
+                )}
+              </VStack>
+
             </HGrid>
           </VStack>
 
-          <Tabs defaultValue={"variantkoblinger"}>
+          <Tabs defaultValue={"images"}>
             <Tabs.List>
-              <Tabs.Tab
-                value={"variantkoblinger"}
-                label={`Koblinger til enkeltprodukter  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
-              />
-              <Tabs.Tab
-                value={"seriekoblinger"}
-                label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
-              />
               <Tabs.Tab
                 value={"images"}
                 label={
                   <TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={false} isValid={true} />
                 }
               />
-            </Tabs.List>
-            <Tabs.Panel value="variantkoblinger">
-              <VariantCompabilityTab
-                partId={productId}
-                productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
-                mutatePart={mutate}
+              <Tabs.Tab
+                value={"seriekoblinger"}
+                label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
               />
-            </Tabs.Panel>
+
+            </Tabs.List>
+            <ImagesTab series={series} isEditable={isEditable} showInputError={false} mutateSeries={mutateSeries} />
             <Tabs.Panel value={"seriekoblinger"}>
               <SeriesCompabilityTab
                 partId={productId}
                 productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
                 seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []}
-                mutatePart={mutate}
+                mutatePart={mutatePart}
+                isEditable={ isEditable }
               />
             </Tabs.Panel>
-            <ImagesTab series={series} isEditable={true} showInputError={false} mutateSeries={mutateSeries} />
+
           </Tabs>
+        </VStack>
+        <VStack gap={{ xs: "6", md: "10" }}>
+          <ActionsMenu
+            series={series}
+            setDeleteConfirmationModalIsOpen={() => {
+            }}
+            setExpiredSeriesModalIsOpen={() => {
+            }}
+            setEditProductModalIsOpen={setEditProductModalIsOpen}
+            setConfirmApproveModalIsOpen={setConfirmApproveModalIsOpen}
+          />
+          <StatusPanel series={series} />
         </VStack>
       </HGrid>
     </main>

@@ -33,7 +33,7 @@ export const setSeriesToInactive = async (seriesUUID: string): Promise<void> => 
 };
 
 export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
-  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
+  return await fetchAPIModify(`${ HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<void> => {

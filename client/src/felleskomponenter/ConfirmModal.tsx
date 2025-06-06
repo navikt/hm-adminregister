@@ -20,6 +20,7 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         closeButton: false,
       }}
       onClose={onClose}
+      width={"30rem"}
     >
       {text && (
         <Modal.Body>

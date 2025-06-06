@@ -9,7 +9,7 @@ import { PackageIcon } from "@navikt/aksel-icons";
 import { useState } from "react";
 import IsoComboboxProvider from "products/iso-combobox/IsoComboboxProvider";
 import { useAuthStore } from "utils/store/useAuthStore";
-import { draftAndPublishNewPart } from "api/PartApi";
+import { draftAndPublishNewPart, draftNewPart } from "api/PartApi";
 
 type Error = {
   titleErrorMessage?: string | undefined;
@@ -79,7 +79,7 @@ export default function CreatePart() {
             hmsArtNr: hmsArtNr,
           };
 
-          draftAndPublishNewPart(newPart, supplierUUID)
+          draftNewPart(newPart, supplierUUID)
             .then((newPart) => {
               navigate(`/del/${newPart.id}`);
             })
@@ -136,16 +136,18 @@ export default function CreatePart() {
           onFocus={() => setFieldError({ ...fieldError, titleErrorMessage: undefined })}
           error={fieldError?.titleErrorMessage ?? ""}
         />
-        <TextField
-          label={labelRequired("Hms-nr")}
-          id="hmsNr"
-          name="hmsNr"
-          type="text"
-          onChange={(event) => setHmsArtNr(event.target.value)}
-          onBlur={() => setFieldError({ ...fieldError, hmsNrErrorMessage: undefined })}
-          onFocus={() => setFieldError({ ...fieldError, hmsNrErrorMessage: undefined })}
-          error={fieldError?.hmsNrErrorMessage ?? ""}
-        />
+        {(loggedInUser && loggedInUser.isAdminOrHmsUser) && (
+          <TextField
+            label={labelRequired("Hms-nr")}
+            id="hmsNr"
+            name="hmsNr"
+            type="text"
+            onChange={(event) => setHmsArtNr(event.target.value)}
+            onBlur={() => setFieldError({ ...fieldError, hmsNrErrorMessage: undefined })}
+            onFocus={() => setFieldError({ ...fieldError, hmsNrErrorMessage: undefined })}
+            error={fieldError?.hmsNrErrorMessage ?? ""}
+          />
+        )}
         <TextField
           label={labelRequired("Lev-artnr")}
           id="levArtNr"

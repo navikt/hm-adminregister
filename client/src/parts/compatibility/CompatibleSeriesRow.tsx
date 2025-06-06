@@ -1,9 +1,6 @@
 import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Button, Checkbox, Link, Loader, Table } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { ArrowLeftIcon, ExternalLinkIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { Checkbox, Loader, Table } from "@navikt/ds-react";
 import React from "react";
-import { addCompatibleWithVariantList } from "api/PartApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 
 interface CompatibleSeriesRowProps {
@@ -16,6 +13,7 @@ interface CompatibleSeriesRowProps {
   toggleSelectedRow: (id: string) => void;
   partId: string;
   mutatePart: () => void;
+  isEditable: boolean;
 }
 
 export const CompatibleSeriesRow = ({
@@ -28,28 +26,13 @@ export const CompatibleSeriesRow = ({
   toggleSelectedRow,
   partId,
   mutatePart,
+  isEditable,
 }: CompatibleSeriesRowProps) => {
   const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
 
-  const connectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)) ?? [];
-
-  const noConnectedVariants = connectedVariants.length;
   const loggedInUser = useAuthStore().loggedInUser;
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
-  const addAllVariantsFromSeries = () => {
-    if (series) {
-      addCompatibleWithVariantList(
-        partId,
-        series.variants.map((variant) => variant.id),
-        isAdmin
-      )
-        .then(() => {
-          mutatePart();
-        })
-        .catch((error) => {});
-    }
-  };
 
   if (isLoadingSeries) {
     return (
@@ -68,60 +51,20 @@ export const CompatibleSeriesRow = ({
     <Table.Row key={seriesUUID} shadeOnHover={false}>
       <Table.DataCell>{series.title} </Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
-      <Table.DataCell>
-        <Button
-          iconPosition="right"
-          variant={"tertiary"}
-          icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
-          disabled={noConnectedVariants === 0}
-          onClick={() => {
-            setSelectedSeriesId(seriesUUID);
-            setRemoveModalIsOpen(true);
-          }}
-        >
-          {noConnectedVariants} / {series.variants.length}
-        </Button>
-      </Table.DataCell>
-      <Table.DataCell>
-        <Button
-          variant="tertiary"
-          icon={<ArrowLeftIcon />}
-          disabled={noConnectedVariants === series.variants.length}
-          onClick={addAllVariantsFromSeries}
-        />
-      </Table.DataCell>
-      <Table.DataCell>
-        <Button
-          iconPosition="right"
-          variant={"tertiary"}
-          icon={<PencilWritingIcon title="Rediger" fontSize="1.2rem" />}
-          disabled={series.variants.length - noConnectedVariants === 0}
-          onClick={() => {
-            setSelectedSeriesId(seriesUUID);
-            setAddModalIsOpen(true);
-          }}
-        >
-          {series.variants.length - noConnectedVariants} / {series.variants.length}
-        </Button>
-      </Table.DataCell>
-      <Table.DataCell>
-        {series.isPublished && (
-          <Link href={`${HM_REGISTER_URL()}/produkt/${series.id}`} target={"_blank"}>
-            <ExternalLinkIcon fontSize="1.5rem" title="Se serie på Finn Hjelpemiddel" />
-          </Link>
-        )}
-      </Table.DataCell>
-      <Table.DataCell>
-        <Checkbox
-          hideLabel
-          checked={selectedRows.includes(series.id)}
-          onChange={() => {
-            toggleSelectedRow(series.id!);
-          }}
-        >
-          {" "}
-        </Checkbox>
-      </Table.DataCell>
+      {isEditable && (
+        <Table.DataCell>
+          <Checkbox
+            hideLabel
+            checked={selectedRows.includes(series.id)}
+            onChange={() => {
+              toggleSelectedRow(series.id!);
+            }}
+          >
+            {" "}
+          </Checkbox>
+        </Table.DataCell>
+      )}
+
     </Table.Row>
   );
 };

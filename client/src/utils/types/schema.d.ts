@@ -372,6 +372,154 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/part/approve/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["approvePart"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/old/series/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @deprecated */
+        get: operations["findBySeriesUUIDAndSupplierIdOld"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/supplier/{supplierId}/draftWith": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftSeriesWith"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/supplier/{supplierId}/draftWithAndPublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftSeriesWithAndPublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/v2/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @deprecated */
+        get: operations["findPartByIdV2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @deprecated */
+        get: operations["findPartByVariantIdentifier"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @deprecated */
+        get: operations["findPartById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/{id}/suitableForBrukerpassbruker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateSuitableForBrukerpassbruker"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/{id}/suitableForKommunalTekniker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateSuitableForKommunalTekniker"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/product-agreement": {
         parameters: {
             query?: never;
@@ -651,7 +799,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["findBySeriesUUIDAndSupplierIdOld"];
+        get: operations["findBySeriesUUIDAndSupplierIdOld_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -813,6 +961,22 @@ export interface paths {
         };
         get?: never;
         put: operations["approveSeriesAndVariants_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/series/move-owner/supplier/{fromSupplierId}/{toSupplierId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["moveOwnerSupplier"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1076,166 +1240,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/api/v1/accessory/hmsNr/part/{hmsNr}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findPartByHmsNr"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/hmsNr/{hmsNr}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findByHmsNr_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/series-variants/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findVariantsBySeriesUUID"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/series/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getPartsForSeriesId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/variant-id/{variantIdentifier}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findProdyctByVariantIdentifier"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/variants/{hmsNr}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findCompatibleWithProductsVariants"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/{id}/compatibleWith": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["connectProductAndVariants"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/{id}/suitableForBrukerpassbruker": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["updateSuitableForBrukerpassbruker"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/accessory/{id}/suitableForKommunalTekniker": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["updateSuitableForKommunalTekniker"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/api/v1/isocategories": {
         parameters: {
             query?: never;
@@ -1260,134 +1264,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getCategoryByIsocode_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findParts"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/approve/{seriesId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: operations["approvePart"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/old/series/{seriesUUID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findBySeriesUUIDAndSupplierIdOld_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/supplier/{supplierId}/draftWith": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["draftSeriesWith"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/supplier/{supplierId}/draftWithAndPublish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["draftSeriesWithAndPublish"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/v2/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findPartByIdV2"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/variant-id/{variantIdentifier}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findPartByVariantIdentifier"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admreg/api/v1/part/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["findPartById"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1677,6 +1553,166 @@ export interface paths {
         };
         get: operations["fetchTechLabelsByIsocode"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findParts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/hmsNr/{hmsNr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findByHmsNr_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/series-variants/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findVariantsBySeriesUUID"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/series/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getPartsForSeriesId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/supplier/{supplierId}/draftWithAndPublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftSeriesWithAndPublish_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartByVariantIdentifier_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/variants/{hmsNr}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findCompatibleWithProductsVariants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartById_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/{id}/compatibleWith": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["connectProductAndVariants"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/common/api/v1/part/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updatePart"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2214,6 +2250,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/vendor/api/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteUser_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/vendor/api/v1/users/{userId}": {
         parameters: {
             query?: never;
@@ -2713,7 +2765,7 @@ export interface components {
         PartDraftWithDTO: {
             title: string;
             isoCategory: string;
-            hmsArtNr: string;
+            hmsArtNr?: string | null;
             levArtNr: string;
             sparePart?: boolean | null;
             accessory?: boolean | null;
@@ -3382,6 +3434,11 @@ export interface components {
         /** @enum {string} */
         Type: "INFO" | "WARNING";
         Unit: Record<string, never>;
+        UpdatePartDto: {
+            hmsArtNr?: string | null;
+            supplierRef?: string | null;
+            title?: string | null;
+        };
         UpdateProductRegistrationDTO: {
             hmsArtNr?: string | null;
             articleName: string;
@@ -4244,6 +4301,227 @@ export interface operations {
             };
         };
     };
+    approvePart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    seriesUUID: string;
+                };
+            };
+        };
+        responses: {
+            /** @description approvePart 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    findBySeriesUUIDAndSupplierIdOld: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findBySeriesUUIDAndSupplierIdOld 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"][];
+                };
+            };
+        };
+    };
+    draftSeriesWith: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftSeriesWith 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
+                };
+            };
+        };
+    };
+    draftSeriesWithAndPublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftSeriesWithAndPublish 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
+                };
+            };
+        };
+    };
+    findPartByIdV2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByIdV2 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDTO"];
+                };
+            };
+        };
+    };
+    findPartByVariantIdentifier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByVariantIdentifier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    findPartById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartById 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    updateSuitableForBrukerpassbruker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuitableForBrukerpassbrukerDTO"];
+            };
+        };
+        responses: {
+            /** @description updateSuitableForBrukerpassbruker 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    updateSuitableForKommunalTekniker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuitableForKommunalTeknikerDTO"];
+            };
+        };
+        responses: {
+            /** @description updateSuitableForKommunalTekniker 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
     createProductAgreement: {
         parameters: {
             query?: never;
@@ -4396,7 +4674,9 @@ export interface operations {
     };
     getProductVariantsByDelkontraktId: {
         parameters: {
-            query?: never;
+            query?: {
+                mainProductsOnly?: boolean | null;
+            };
             header?: never;
             path: {
                 id: string;
@@ -4713,7 +4993,7 @@ export interface operations {
             };
         };
     };
-    findBySeriesUUIDAndSupplierIdOld: {
+    findBySeriesUUIDAndSupplierIdOld_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -4724,7 +5004,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description findBySeriesUUIDAndSupplierIdOld 200 response */
+            /** @description findBySeriesUUIDAndSupplierIdOld_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -4986,6 +5266,27 @@ export interface operations {
                 content: {
                     "application/json": Record<string, never>;
                 };
+            };
+        };
+    };
+    moveOwnerSupplier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fromSupplierId: string;
+                toSupplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description moveOwnerSupplier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -5560,238 +5861,6 @@ export interface operations {
             };
         };
     };
-    findPartByHmsNr: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hmsNr: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findPartByHmsNr 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    findByHmsNr_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hmsNr: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findByHmsNr_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    findVariantsBySeriesUUID: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findVariantsBySeriesUUID 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
-                };
-            };
-        };
-    };
-    getPartsForSeriesId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description getPartsForSeriesId 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
-                };
-            };
-        };
-    };
-    findProdyctByVariantIdentifier: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                variantIdentifier: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findProdyctByVariantIdentifier 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    findCompatibleWithProductsVariants: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hmsNr: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findCompatibleWithProductsVariants 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CompatibleProductResult"][];
-                };
-            };
-        };
-    };
-    findById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findById 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    connectProductAndVariants: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CompatibleWithDTO"];
-            };
-        };
-        responses: {
-            /** @description connectProductAndVariants 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    updateSuitableForBrukerpassbruker: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SuitableForBrukerpassbrukerDTO"];
-            };
-        };
-        responses: {
-            /** @description updateSuitableForBrukerpassbruker 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    updateSuitableForKommunalTekniker: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SuitableForKommunalTeknikerDTO"];
-            };
-        };
-        responses: {
-            /** @description updateSuitableForKommunalTekniker 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
     getAllCategories_1: {
         parameters: {
             query?: never;
@@ -5830,206 +5899,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IsoCategoryDTO"];
-                };
-            };
-        };
-    };
-    findParts: {
-        parameters: {
-            query: {
-                supplierRef?: string | null;
-                hmsArtNr?: string | null;
-                adminStatus?: components["schemas"]["AdminStatus"] | null;
-                registrationStatus?: components["schemas"]["RegistrationStatus"] | null;
-                supplierId?: string | null;
-                draft?: components["schemas"]["DraftStatus"] | null;
-                createdByUser?: string | null;
-                updatedByUser?: string | null;
-                title?: string | null;
-                pageable: components["schemas"]["OpenApiPageable"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findParts 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Page_ProductRegistrationDTOV2_"];
-                };
-            };
-        };
-    };
-    approvePart: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    seriesUUID: string;
-                };
-            };
-        };
-        responses: {
-            /** @description approvePart 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-        };
-    };
-    findBySeriesUUIDAndSupplierIdOld_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                seriesUUID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findBySeriesUUIDAndSupplierIdOld_1 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistration"][];
-                };
-            };
-        };
-    };
-    draftSeriesWith: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                supplierId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PartDraftWithDTO"];
-            };
-        };
-        responses: {
-            /** @description draftSeriesWith 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PartDraftResponse"];
-                };
-            };
-        };
-    };
-    draftSeriesWithAndPublish: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                supplierId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PartDraftWithDTO"];
-            };
-        };
-        responses: {
-            /** @description draftSeriesWithAndPublish 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PartDraftResponse"];
-                };
-            };
-        };
-    };
-    findPartByIdV2: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findPartByIdV2 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PartDTO"];
-                };
-            };
-        };
-    };
-    findPartByVariantIdentifier: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                variantIdentifier: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findPartByVariantIdentifier 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    findPartById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description findPartById 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
                 };
             };
         };
@@ -6520,6 +6389,245 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TechLabelDTO"][];
                 };
+            };
+        };
+    };
+    findParts: {
+        parameters: {
+            query: {
+                supplierRef?: string | null;
+                hmsArtNr?: string | null;
+                adminStatus?: components["schemas"]["AdminStatus"] | null;
+                registrationStatus?: components["schemas"]["RegistrationStatus"] | null;
+                supplierId?: string | null;
+                draft?: components["schemas"]["DraftStatus"] | null;
+                createdByUser?: string | null;
+                updatedByUser?: string | null;
+                title?: string | null;
+                pageable: components["schemas"]["OpenApiPageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findParts 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ProductRegistrationDTOV2_"];
+                };
+            };
+        };
+    };
+    findByHmsNr_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hmsNr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findByHmsNr_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    findVariantsBySeriesUUID: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findVariantsBySeriesUUID 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
+    getPartsForSeriesId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description getPartsForSeriesId 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
+    draftSeriesWithAndPublish_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftSeriesWithAndPublish_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
+                };
+            };
+        };
+    };
+    findPartByVariantIdentifier_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartByVariantIdentifier_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    findCompatibleWithProductsVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                hmsNr: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findCompatibleWithProductsVariants 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompatibleProductResult"][];
+                };
+            };
+        };
+    };
+    findPartById_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartById_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDTO"];
+                };
+            };
+        };
+    };
+    connectProductAndVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompatibleWithDTO"];
+            };
+        };
+        responses: {
+            /** @description connectProductAndVariants 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    updatePart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePartDto"];
+            };
+        };
+        responses: {
+            /** @description updatePart 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7405,6 +7513,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    deleteUser_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description deleteUser_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
         };
