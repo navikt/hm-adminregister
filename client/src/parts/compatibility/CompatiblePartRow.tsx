@@ -72,6 +72,7 @@ export const CompatiblePartRow = ({
               checked={product.productData.attributes.egnetForKommunalTekniker || false}
               onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, product.id)}
             >
+              <></>
             </Switch>
           </Table.DataCell>
           <Table.DataCell>
@@ -81,6 +82,7 @@ export const CompatiblePartRow = ({
               checked={product.productData.attributes.egnetForBrukerpass || false}
               onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, product.id)}
             >
+              <></>
             </Switch>
           </Table.DataCell></>
       )}
