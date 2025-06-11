@@ -37,7 +37,7 @@ const ActionsMenu = ({
   return (
     <VStack gap="2">
       <HStack gap="2">
-        {isEditable &&(
+        {isEditable && (
           <Button
             style={{ flexGrow: 1, paddingInline: "0.75rem" }}
             onClick={() => {
@@ -48,19 +48,12 @@ const ActionsMenu = ({
           </Button>
         )}
 
-        {((isEditable && !series.isPublished) || canSetToEditMode ) && (
+        {((isEditable && !series.isPublished) || canSetToEditMode) && (
           <Dropdown>
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
-                {(isEditable && !series.isPublished || isAdmin) && (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setDeleteConfirmationModalIsOpen(true)}
-                  >
-                    <TrashIcon aria-hidden />
-                    Slett
-                  </Dropdown.Menu.List.Item>
-                )}
+
                 {canSetToEditMode && (
                   <Dropdown.Menu.List.Item
                     onClick={() => setEditProductModalIsOpen(true)}
@@ -68,6 +61,17 @@ const ActionsMenu = ({
                     Endre del
                     <PencilIcon aria-hidden />
                   </Dropdown.Menu.List.Item>
+                )}
+                {(isEditable && !series.isPublished || isAdmin) && (
+                  <>
+                    <Dropdown.Menu.Divider />
+                    <Dropdown.Menu.List.Item
+                      onClick={() => setDeleteConfirmationModalIsOpen(true)}
+                    >
+                      <TrashIcon aria-hidden />
+                      Slett
+                    </Dropdown.Menu.List.Item>
+                  </>
                 )}
               </Dropdown.Menu.List>
             </Dropdown.Menu>

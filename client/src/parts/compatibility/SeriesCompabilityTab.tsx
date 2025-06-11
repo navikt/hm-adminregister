@@ -17,7 +17,13 @@ interface SeriesCompabilityTabProps {
   isEditable: boolean;
 }
 
-export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart, isEditable }: SeriesCompabilityTabProps) => {
+export const SeriesCompabilityTab = ({
+  seriesIds,
+  productIds,
+  partId,
+  mutatePart,
+  isEditable
+}: SeriesCompabilityTabProps) => {
   const [selectedSeriesId, setSelectedSeriesId] = React.useState<string | undefined>(undefined);
   const [removeCompatibleSeriesVariantsModalIsOpen, setRemoveCompatibleSeriesVariantsModalIsOpen] =
     React.useState(false);
@@ -65,7 +71,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
       />
       <VStack padding={"8"} gap={"2"}>
         {seriesIds.length === 0 && <BodyLong>Ingen koblinger til serier</BodyLong>}
-        {isEditable &&(
+        {isEditable && (
           <Button
             className="fit-content"
             variant="primary"
@@ -88,6 +94,14 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                       <Table.Row>
                         <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
+                        {loggedInUser?.isAdminOrHmsUser &&  isEditable &&(
+                          <>
+                            <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
+                            <Table.HeaderCell scope="col" />
+                            <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
+                            <Table.HeaderCell scope="col"></Table.HeaderCell>
+                          </>
+                        )}
 
                         {isEditable && (
                           <Table.HeaderCell scope="col">
@@ -130,7 +144,7 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                 )}
               </HStack>
 
-              { isEditable && (
+              {isEditable && (
                 <HStack justify={"end"}>
                   <Button
                     className="fit-content"

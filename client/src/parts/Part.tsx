@@ -40,6 +40,7 @@ import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { UpdatePartDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { RequestApprovalModal } from "parts/RequestApprovalModal";
+import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
 
 const Part = () => {
   const { productId } = useParams();
@@ -95,7 +96,7 @@ const Part = () => {
       })
       .then(() => mutateSeries())
       .catch((error) => {
-          setGlobalError(error.status, error.message);
+        setGlobalError(error.status, error.message);
       });
   }
 
@@ -174,7 +175,7 @@ const Part = () => {
         title={"Er du sikker på at du vil slette delen?"}
         confirmButtonText={"Slett"}
         onClick={onDelete}
-        onClose={() => setDeleteConfirmationModalIsOpen(false) }
+        onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
       <RequestApprovalModal
@@ -339,6 +340,13 @@ const Part = () => {
                   <TabLabel title="Bilder" numberOfElements={numberOfImages(series)} showAlert={false} isValid={true} />
                 }
               />
+              {loggedInUser?.isAdminOrHmsUser && (
+                <Tabs.Tab
+                  value={"variantkoblinger"}
+                  label={`Koblinger til enkeltprodukter  (${part.productData.attributes.compatibleWith?.productIds.length ?? 0})`}
+                />
+              )}
+
               <Tabs.Tab
                 value={"seriekoblinger"}
                 label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
@@ -346,6 +354,16 @@ const Part = () => {
 
             </Tabs.List>
             <ImagesTab series={series} isEditable={isEditable} showInputError={false} mutateSeries={mutateSeries} />
+            {loggedInUser?.isAdminOrHmsUser && (
+              <Tabs.Panel value="variantkoblinger">
+                <VariantCompabilityTab
+                  partId={productId}
+                  productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
+                  mutatePart={mutatePart}
+                  isEditable={isEditable}
+                />
+              </Tabs.Panel>
+            )}
             <Tabs.Panel value={"seriekoblinger"}>
               <SeriesCompabilityTab
                 partId={productId}
