@@ -32,6 +32,8 @@ const ActionsMenu = ({
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
 
+  const isAdmin = loggedInUser?.isAdmin || false;
+
   return (
     <VStack gap="2">
       <HStack gap="2">
@@ -51,7 +53,7 @@ const ActionsMenu = ({
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
-                {isEditable && !series.isPublished && (
+                {(isEditable && !series.isPublished || isAdmin) && (
                   <Dropdown.Menu.List.Item
                     onClick={() => setDeleteConfirmationModalIsOpen(true)}
                   >
@@ -67,7 +69,6 @@ const ActionsMenu = ({
                     <PencilIcon aria-hidden />
                   </Dropdown.Menu.List.Item>
                 )}
-                <Dropdown.Menu.Divider />
               </Dropdown.Menu.List>
             </Dropdown.Menu>
           </Dropdown>

@@ -25,7 +25,7 @@ export function usePagedParts({
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
-  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&sort=created,DESC&${titleSearchParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC&${titleSearchParam}`;
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }

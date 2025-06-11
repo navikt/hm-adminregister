@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { ArrowLeftIcon } from "@navikt/aksel-icons";
 import {
@@ -27,7 +27,7 @@ import {
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
 import { useState } from "react";
-import { setPublishedSeriesToDraft, useSeriesV2Conditional } from "api/SeriesApi";
+import { deleteSeries, setPublishedSeriesToDraft, useSeriesV2Conditional } from "api/SeriesApi";
 import { numberOfImages } from "products/seriesUtils";
 import { TabLabel } from "felleskomponenter/TabLabel";
 import ImagesTab from "parts/ImagesTab";
@@ -43,6 +43,7 @@ import { RequestApprovalModal } from "parts/RequestApprovalModal";
 
 const Part = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
 
   const { part, isLoading, error, mutatePart } = usePartByProductId(productId!);
   const {
@@ -63,6 +64,7 @@ const Part = () => {
 
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
+  const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
 
   const handleSaveName = (name: string) => {
     const updatePartDto = {
@@ -144,6 +146,18 @@ const Part = () => {
       });
   }
 
+  async function onDelete() {
+    setDeleteConfirmationModalIsOpen(false);
+    deleteSeries(series!.id)
+      .then(() => {
+        mutateSeries();
+        navigate("/deler");
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
+
   const isEditable = series.status === "EDITABLE";
 
 
@@ -155,6 +169,13 @@ const Part = () => {
         onClick={onEditMode}
         onClose={() => setEditProductModalIsOpen(false)}
         isModalOpen={editProductModalIsOpen}
+      />
+      <ConfirmModal
+        title={"Er du sikker på at du vil slette delen?"}
+        confirmButtonText={"Slett"}
+        onClick={onDelete}
+        onClose={() => setDeleteConfirmationModalIsOpen(false) }
+        isModalOpen={deleteConfirmationModalIsOpen}
       />
       <RequestApprovalModal
         series={series}
@@ -346,8 +367,7 @@ const Part = () => {
         <VStack gap={{ xs: "6", md: "10" }}>
           <ActionsMenu
             series={series}
-            setDeleteConfirmationModalIsOpen={() => {
-            }}
+            setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
             setExpiredSeriesModalIsOpen={() => {
             }}
             setEditProductModalIsOpen={setEditProductModalIsOpen}
