@@ -220,7 +220,6 @@ const Part = () => {
                     aria-label="Rediger tittel"
                     id="title"
                     name="title"
-                    //onChange={(event) => setProductTitle(event.currentTarget.value)}
                     style={{ width: "20rem" }}
                     onBlur={(event) => handleSaveName(event.currentTarget.value)}
                   />
@@ -257,7 +256,6 @@ const Part = () => {
                     aria-label="Rediger tittel"
                     id="title"
                     name="title"
-                    //onChange={(event) => setLevartNr(event.currentTarget.value)}
                     style={{ width: "20rem" }}
                     onBlur={(event) => handleSaveSupplierRef(event.currentTarget.value)}
                   />
@@ -308,10 +306,6 @@ const Part = () => {
                     {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
                   </BodyShort>
                 </VStack>
-
-
-
-
 
                 {isAdminOrHmsUser && (
                   <>

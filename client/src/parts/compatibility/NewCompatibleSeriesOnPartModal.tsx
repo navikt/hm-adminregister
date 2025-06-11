@@ -1,12 +1,13 @@
-import { BodyLong, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import { useState } from "react";
+import { BodyLong, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
-import { ProductRegistrationDTOV2 } from "utils/types/response-types";
+import { SeriesSearchDTO } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithSeries, getProductByHmsArtNr } from "api/PartApi";
-import { useSeriesV2Conditional } from "api/SeriesApi";
+import { addCompatibleWithSeries, } from "api/PartApi";
+import { getSeriesByVariantId } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
+import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 
 interface Props {
   modalIsOpen: boolean;
@@ -18,24 +19,24 @@ interface Props {
 const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePart, partId }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const [productIdToAdd, setProductIdToAdd] = useState<string | undefined>(undefined);
-  const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTOV2 | undefined>(undefined);
+
+  const [seriesToAdd, setSeriesToAdd] = useState<SeriesSearchDTO | undefined>(undefined);
+  const [identifierToAdd, setIdentifierToAdd] = useState<string | undefined>(undefined);
+
   const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined);
   const { setGlobalError } = useErrorStore();
   const loggedInUser = useAuthStore().loggedInUser;
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
 
-  const { data: series, isLoading, error } = useSeriesV2Conditional(productToAdd?.seriesUUID ?? "");
-
   async function onClickGetProduct() {
-    if (productIdToAdd !== undefined) {
-      getProductByHmsArtNr(productIdToAdd)
-        .then((product) => {
-          setProductToAdd(product);
+    if (identifierToAdd !== undefined) {
+      getSeriesByVariantId(identifierToAdd)
+        .then((series) => {
+          setSeriesToAdd(series);
           setProductToAddError(undefined);
         })
         .catch((error) => {
-          setProductToAdd(undefined);
+          setSeriesToAdd(undefined);
           setProductToAddError("Fant ikke produkt");
         });
     }
@@ -43,8 +44,8 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
 
   async function onClickLeggTilKobling() {
     setIsSaving(true);
-    if (series !== undefined) {
-      addCompatibleWithSeries(partId, series.id, isAdmin)
+    if (seriesToAdd !== undefined) {
+      addCompatibleWithSeries(partId, seriesToAdd.id, isAdmin)
         .then(() => {
           mutatePart();
           setIsSaving(false);
@@ -54,8 +55,8 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
           setIsSaving(false);
         });
       setIsSaving(false);
-      setProductIdToAdd(undefined);
-      setProductToAdd(undefined);
+      setSeriesToAdd(undefined);
+      setIdentifierToAdd(undefined);
       setModalIsOpen(false);
     }
   }
@@ -74,12 +75,12 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
         <Content>
           <VStack gap={"2"} style={{ width: "100%" }}>
             <TextField
-              label={labelRequired("HMS-nummer")}
+              label={labelRequired("HMS-nummer eller levartnr.")}
               id="identifier"
               type="text"
               error={productToAddError}
-              value={productIdToAdd || ""}
-              onChange={(e) => setProductIdToAdd(e.target.value)}
+              value={identifierToAdd || ""}
+              onChange={(e) => setIdentifierToAdd(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -99,9 +100,21 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
                 <Loader size="2xlarge" title="venter..." />
               </HStack>
             )}
-            {productToAdd && (
+            {seriesToAdd && (
               <VStack gap="5">
-                <BodyLong>{series?.title}</BodyLong>
+
+                <Box
+                  key={seriesToAdd.id}
+                  background="surface-success-subtle"
+                  padding="2"
+                  flexGrow="1"
+                  style={{ borderRadius: "10px" }}
+                >
+                  <DefinitionList horizontal fullWidth key={seriesToAdd.id}>
+                    <DefinitionList.Term>Navn</DefinitionList.Term>
+                    <DefinitionList.Definition>{seriesToAdd.title}</DefinitionList.Definition>
+                  </DefinitionList>
+                </Box>
               </VStack>
             )}
           </VStack>
@@ -111,7 +124,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
         <Button
           onClick={() => {
             setModalIsOpen(false);
-            setProductToAdd(undefined);
+            setSeriesToAdd(undefined);
           }}
           variant="tertiary"
           type="reset"
@@ -122,7 +135,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
           onClick={() => {
             onClickLeggTilKobling();
           }}
-          disabled={productToAdd === undefined}
+          disabled={seriesToAdd === undefined}
           variant="primary"
           type="button"
         >

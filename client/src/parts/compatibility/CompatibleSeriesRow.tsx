@@ -2,6 +2,7 @@ import { useSeriesV2Conditional } from "api/SeriesApi";
 import { Checkbox, Loader, Table } from "@navikt/ds-react";
 import React from "react";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { Link } from "react-router-dom";
 
 interface CompatibleSeriesRowProps {
   productIds: string[];
@@ -49,7 +50,8 @@ export const CompatibleSeriesRow = ({
 
   return (
     <Table.Row key={seriesUUID} shadeOnHover={false}>
-      <Table.DataCell>{series.title} </Table.DataCell>
+      <Table.DataCell>
+        <Link to={`/produkter/${series.id}`}>{series.title}</Link>{" "}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       {isEditable && (
         <Table.DataCell>

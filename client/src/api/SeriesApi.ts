@@ -6,7 +6,7 @@ import {
   RejectSeriesDTO,
   SeriesDraftResponse,
   SeriesDraftWithDTO,
-  SeriesDTO,
+  SeriesDTO, SeriesSearchDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
@@ -21,6 +21,11 @@ export const requestApproval = async (seriesUUID: string): Promise<void> => {
 
 export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO> => {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`;
+  return await fetchAPI(seriesIdPath, "GET");
+};
+
+export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {
+  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantId}`;
   return await fetchAPI(seriesIdPath, "GET");
 };
 
