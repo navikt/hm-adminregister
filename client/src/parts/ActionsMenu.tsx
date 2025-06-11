@@ -11,6 +11,7 @@ const ActionsMenu = ({
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
   setConfirmApproveModalIsOpen,
+  partIsValid,
 }: {
   series: SeriesDTO;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
@@ -23,6 +24,7 @@ const ActionsMenu = ({
   }) => void;
   setEditProductModalIsOpen: (newState: boolean) => void;
   setConfirmApproveModalIsOpen: (newState: boolean) => void;
+  partIsValid: () => boolean;
 }) => {
   const isEditable = series.status === "EDITABLE";
   const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
@@ -33,7 +35,7 @@ const ActionsMenu = ({
   return (
     <VStack gap="2">
       <HStack gap="2">
-        {isEditable && (
+        {isEditable &&(
           <Button
             style={{ flexGrow: 1, paddingInline: "0.75rem" }}
             onClick={() => {

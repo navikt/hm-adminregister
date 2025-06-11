@@ -19,7 +19,6 @@ import {
 
 import ErrorAlert from "error/ErrorAlert";
 import {
-  approvePart,
   updateEgnetForBrukerpassbruker,
   updateEgnetForKommunalTekniker,
   updatePart,
@@ -39,6 +38,8 @@ import StatusPanel from "products/StatusPanel";
 import ActionsMenu from "parts/ActionsMenu";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { UpdatePartDTO } from "utils/types/response-types";
+import { labelRequired } from "utils/string-util";
+import { RequestApprovalModal } from "parts/RequestApprovalModal";
 
 const Part = () => {
   const { productId } = useParams();
@@ -58,23 +59,20 @@ const Part = () => {
 
   const { setGlobalError } = useErrorStore();
 
-  const [productTitle, setProductTitle] = useState(part?.articleName ?? "");
-
   const [hmsNr, setHmsNr] = useState(part?.hmsArtNr ?? "");
-
-  const [levartNr, setLevartNr] = useState(part?.supplierRef ?? "");
 
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
 
-  const handleSaveName = () => {
+  const handleSaveName = (name: string) => {
     const updatePartDto = {
-      title: productTitle,
+      title: name,
     }
     handleSavePartInfo(updatePartDto);
   };
 
-  const handleSaveSupplierRef = () => {
+  const handleSaveSupplierRef = (levartNr: string) => {
+
     const updatePartDto = {
       supplierRef: levartNr,
     }
@@ -95,7 +93,7 @@ const Part = () => {
       })
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error.status, error.message)
+          setGlobalError(error.status, error.message);
       });
   }
 
@@ -111,6 +109,12 @@ const Part = () => {
     updateEgnetForBrukerpassbruker(id, checked).then(() => {
       mutatePart();
     });
+  };
+
+  const partIsValid = () => {
+    const articleNameIsValid = part?.articleName && part.articleName.trim().length > 0;
+    const levartNrIsValid = part?.supplierRef && part.supplierRef.trim().length > 0;
+    return articleNameIsValid && levartNrIsValid || false
   };
 
   if (isLoading || isLoadingSeries) {
@@ -140,20 +144,6 @@ const Part = () => {
       });
   }
 
-  async function onPublish() {
-    if (series) {
-      setConfirmApproveModalIsOpen(false);
-      approvePart(series.id).then(
-        () => {
-          mutatePart()
-          mutateSeries()
-        }
-      ).catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-    }
-  }
-
   const isEditable = series.status === "EDITABLE";
 
 
@@ -166,14 +156,16 @@ const Part = () => {
         onClose={() => setEditProductModalIsOpen(false)}
         isModalOpen={editProductModalIsOpen}
       />
-      <ConfirmModal
-        title={"Vil du publisere delen?"}
-        confirmButtonText={"Publiser"}
-        onClick={onPublish}
-        onClose={() => {
-          setConfirmApproveModalIsOpen(false);
-        }}
-        isModalOpen={confirmApproveModalIsOpen}
+      <RequestApprovalModal
+        series={series}
+        part={part}
+        mutateSeries={mutateSeries}
+        mutatePart={mutatePart}
+        partName={part.articleName}
+        supplierRef={part.supplierRef}
+        isValid={partIsValid()}
+        isOpen={confirmApproveModalIsOpen}
+        setIsOpen={setConfirmApproveModalIsOpen}
       />
       <HGrid
         gap="12"
@@ -193,7 +185,12 @@ const Part = () => {
               Tilbake
             </AkselLink>
             <VStack gap="2">
-              <Label> Navn på del</Label>
+              {isEditable ? (
+                <Label> {labelRequired(("Navn på del"))}</Label>
+              ) : (
+                <Label> Navn på del</Label>
+              )}
+
               <HStack gap="1">
                 {isEditable && (
                   <TextField
@@ -202,9 +199,9 @@ const Part = () => {
                     aria-label="Rediger tittel"
                     id="title"
                     name="title"
-                    onChange={(event) => setProductTitle(event.currentTarget.value)}
+                    //onChange={(event) => setProductTitle(event.currentTarget.value)}
                     style={{ width: "20rem" }}
-                    onBlur={handleSaveName}
+                    onBlur={(event) => handleSaveName(event.currentTarget.value)}
                   />
                 )}
 
@@ -226,6 +223,49 @@ const Part = () => {
                 )}
               </HStack>
 
+              <VStack>
+                {isEditable ? (
+                  <Label> {labelRequired(("Lev-artnr"))}</Label>
+                ) : (
+                  <Label>Lev-artnr</Label>
+                )}
+                {isEditable && (
+                  <TextField
+                    defaultValue={part.supplierRef ?? ""}
+                    label={""}
+                    aria-label="Rediger tittel"
+                    id="title"
+                    name="title"
+                    //onChange={(event) => setLevartNr(event.currentTarget.value)}
+                    style={{ width: "20rem" }}
+                    onBlur={(event) => handleSaveSupplierRef(event.currentTarget.value)}
+                  />
+                )}
+                {!isEditable && (
+                  <BodyShort>{part.supplierRef ? part.supplierRef : "-"}</BodyShort>
+                )}
+
+              </VStack>
+
+              <VStack>
+                <Label> HMS-nummer</Label>
+
+                {isAdminOrHmsUser && isEditable ? (
+                  <TextField
+                    defaultValue={part.hmsArtNr ?? ""}
+                    label={""}
+                    aria-label="Rediger tittel"
+                    id="title"
+                    name="title"
+                    onChange={(event) => setHmsNr(event.currentTarget.value)}
+                    style={{ width: "20rem" }}
+                    onBlur={handleSaveHmsNr}
+                  />
+                ) : (
+                  <BodyShort>{part.hmsArtNr ? part.hmsArtNr : "-"}</BodyShort>
+                )}
+              </VStack>
+
               {part.isExpired && (
                 <Box>
                   <Tag variant="warning-moderate">Utgått</Tag>
@@ -242,61 +282,33 @@ const Part = () => {
                 </VStack>
 
                 <VStack>
-                  <Label> Lev-artnr</Label>
-                  {isEditable && (
-                    <TextField
-                      defaultValue={part.supplierRef ?? ""}
-                      label={""}
-                      aria-label="Rediger tittel"
-                      id="title"
-                      name="title"
-                      onChange={(event) => setLevartNr(event.currentTarget.value)}
-                      style={{ width: "20rem" }}
-                      onBlur={handleSaveSupplierRef}
-                    />
-                  )}
-                  {!isEditable && (
-                    <BodyShort>{part.supplierRef ? part.supplierRef : "-"}</BodyShort>
-                  )}
-
+                  <Label>ISO-kategori</Label>
+                  <BodyShort>
+                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
+                  </BodyShort>
                 </VStack>
 
-                <VStack>
-                  <Label> HMS-nummer</Label>
 
-                  {isAdminOrHmsUser  && isEditable ? (
-                    <TextField
-                      defaultValue={part.hmsArtNr ?? ""}
-                      label={""}
-                      aria-label="Rediger tittel"
-                      id="title"
-                      name="title"
-                      onChange={(event) => setHmsNr(event.currentTarget.value)}
-                      style={{ width: "20rem" }}
-                      onBlur={handleSaveHmsNr}
-                    />
-                  ) : (
-                    <BodyShort>{part.hmsArtNr ? part.hmsArtNr : "-"}</BodyShort>
-                  )}
-                </VStack>
+
+
 
                 {isAdminOrHmsUser && (
                   <>
-                      <Switch
-                        disabled={isTogglingKT || !isEditable}
-                        checked={part.productData.attributes.egnetForKommunalTekniker || false}
-                        onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
-                      >
-                        Egnet for kommunal tekniker
-                      </Switch>
+                    <Switch
+                      disabled={isTogglingKT || !isEditable}
+                      checked={part.productData.attributes.egnetForKommunalTekniker || false}
+                      onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, part.id)}
+                    >
+                      Egnet for kommunal tekniker
+                    </Switch>
 
-                      <Switch
-                        disabled={!isEditable}
-                        checked={part.productData.attributes.egnetForBrukerpass || false}
-                        onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
-                      >
-                        Egnet for brukerpassbruker
-                      </Switch>
+                    <Switch
+                      disabled={!isEditable}
+                      checked={part.productData.attributes.egnetForBrukerpass || false}
+                      onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, part.id)}
+                    >
+                      Egnet for brukerpassbruker
+                    </Switch>
                   </>
                 )}
               </VStack>
@@ -325,7 +337,7 @@ const Part = () => {
                 productIds={part.productData.attributes.compatibleWith?.productIds ?? []}
                 seriesIds={part.productData.attributes.compatibleWith?.seriesIds ?? []}
                 mutatePart={mutatePart}
-                isEditable={ isEditable }
+                isEditable={isEditable}
               />
             </Tabs.Panel>
 
@@ -340,6 +352,7 @@ const Part = () => {
             }}
             setEditProductModalIsOpen={setEditProductModalIsOpen}
             setConfirmApproveModalIsOpen={setConfirmApproveModalIsOpen}
+            partIsValid={partIsValid}
           />
           <StatusPanel series={series} />
         </VStack>

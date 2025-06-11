@@ -17,10 +17,14 @@ const ErrorModal = () => {
   };
 
   const getUserErrorMessage = () => {
+    if(errorMessage === 'Det finnes allerede en del med det samme levart-nummeret') {
+      return errorMessage;
+    }
     if (errorCode === 403) {
       return "Du har ikke tilgang til å utføre denne operasjonen";
     }
     if (errorCode === 400) {
+      console.log(`Feil ved innsending av data: ${errorMessage}`);
       //Dette bør ikke skje. Om det skjer så bør vi få vite om det. Vi bør lage noe som gir en alert i slack eller sentry
       return `En feil skjedde i forbindelse med innsendt data. ${errorMessage}`;
     }
