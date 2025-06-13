@@ -84,8 +84,6 @@ export const RequestApprovalModal = ({
         header={{ icon: <RocketIcon aria-hidden />, heading: "Publiser del" }}
         onClose={() => setIsOpen(false)}
       >
-        <Modal.Body>
-        </Modal.Body>
         <Modal.Footer>
           <Button
             onClick={() => {
