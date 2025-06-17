@@ -17,6 +17,9 @@ const ErrorModal = () => {
   };
 
   const getUserErrorMessage = () => {
+    if(errorMessage === 'Det finnes allerede en del med det samme levart-nummeret') {
+      return errorMessage;
+    }
     if (errorCode === 403) {
       return "Du har ikke tilgang til å utføre denne operasjonen";
     }

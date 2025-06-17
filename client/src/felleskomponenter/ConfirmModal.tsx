@@ -20,6 +20,7 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         closeButton: false,
       }}
       onClose={onClose}
+      width={"30rem"}
     >
       {text && (
         <Modal.Body>
@@ -27,12 +28,13 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         </Modal.Body>
       )}
       <Modal.Footer>
-        <Button onClick={onClick} variant={variant ?? "primary"}>
-          {confirmButtonText}
-        </Button>
         <Button variant="secondary" onClick={onClose}>
           Avbryt
         </Button>
+        <Button onClick={onClick} variant={variant ?? "primary"}>
+          {confirmButtonText}
+        </Button>
+
       </Modal.Footer>
     </Modal>
   );

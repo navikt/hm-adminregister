@@ -63,26 +63,30 @@ export const CompatiblePartRow = ({
       </Table.DataCell>
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
-      <Table.DataCell>
-        <Switch
-          loading={isTogglingKT}
-          disabled={isTogglingKT}
-          checked={product.productData.attributes.egnetForKommunalTekniker || false}
-          onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, product.id)}
-        >
-          <></>
-        </Switch>
-      </Table.DataCell>
-      <Table.DataCell>
-        <Switch
-          loading={isTogglingBP}
-          disabled={isTogglingBP}
-          checked={product.productData.attributes.egnetForBrukerpass || false}
-          onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, product.id)}
-        >
-          <></>
-        </Switch>
-      </Table.DataCell>
+      {isAdmin && (
+        <>
+          <Table.DataCell>
+            <Switch
+              loading={isTogglingKT}
+              disabled={isTogglingKT}
+              checked={product.productData.attributes.egnetForKommunalTekniker || false}
+              onChange={(e) => toggleEgnetForKommunalTekniker(e.target.checked, product.id)}
+            >
+              <></>
+            </Switch>
+          </Table.DataCell>
+          <Table.DataCell>
+            <Switch
+              loading={isTogglingBP}
+              disabled={isTogglingBP}
+              checked={product.productData.attributes.egnetForBrukerpass || false}
+              onChange={(e) => toggleEgnetForBrukerpassbruker(e.target.checked, product.id)}
+            >
+              <></>
+            </Switch>
+          </Table.DataCell></>
+      )}
+
       <Table.DataCell>
         {" "}
         {series.isPublished && product.hmsArtNr && (

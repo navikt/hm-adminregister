@@ -10,10 +10,12 @@ export const CompatibleVariantRow = ({
   productId,
   selectedRows,
   toggleSelectedRow,
+  isEditable
 }: {
   productId: string;
   selectedRows: string[];
   toggleSelectedRow: (id: string) => void;
+  isEditable: boolean;
 }) => {
   const loggedInUser = useAuthStore().loggedInUser;
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
@@ -52,17 +54,20 @@ export const CompatibleVariantRow = ({
           </Link>
         )}
       </Table.DataCell>
-      <Table.DataCell>
-        <Checkbox
-          hideLabel
-          checked={selectedRows.includes(product.id)}
-          onChange={() => {
-            toggleSelectedRow(product.id!);
-          }}
-        >
-          {" "}
-        </Checkbox>
-      </Table.DataCell>
+      {isEditable && (
+        <Table.DataCell>
+          <Checkbox
+            hideLabel
+            checked={selectedRows.includes(product.id)}
+            onChange={() => {
+              toggleSelectedRow(product.id!);
+            }}
+          >
+            {" "}
+          </Checkbox>
+        </Table.DataCell>
+      )}
+
     </Table.Row>
   );
 };

@@ -14,9 +14,16 @@ interface SeriesCompabilityTabProps {
   productIds: string[];
   partId: string;
   mutatePart: () => void;
+  isEditable: boolean;
 }
 
-export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart }: SeriesCompabilityTabProps) => {
+export const SeriesCompabilityTab = ({
+  seriesIds,
+  productIds,
+  partId,
+  mutatePart,
+  isEditable
+}: SeriesCompabilityTabProps) => {
   const [selectedSeriesId, setSelectedSeriesId] = React.useState<string | undefined>(undefined);
   const [removeCompatibleSeriesVariantsModalIsOpen, setRemoveCompatibleSeriesVariantsModalIsOpen] =
     React.useState(false);
@@ -64,16 +71,19 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
       />
       <VStack padding={"8"} gap={"2"}>
         {seriesIds.length === 0 && <BodyLong>Ingen koblinger til serier</BodyLong>}
-        <Button
-          className="fit-content"
-          variant="primary"
-          icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-          onClick={() => {
-            setNewCompatibleSeriesModalIsOpen(true);
-          }}
-        >
-          Legg til kobling
-        </Button>
+        {isEditable && (
+          <Button
+            className="fit-content"
+            variant="primary"
+            icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
+            onClick={() => {
+              setNewCompatibleSeriesModalIsOpen(true);
+            }}
+          >
+            Legg til kobling
+          </Button>
+        )}
+
         {seriesIds.length > 0 && (
           <Box>
             <VStack gap={"2"}>
@@ -84,25 +94,33 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                       <Table.Row>
                         <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
-                        <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
-                        <Table.HeaderCell scope="col" />
-                        <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
-                        <Table.HeaderCell scope="col"></Table.HeaderCell>
-                        <Table.HeaderCell scope="col">
-                          <Checkbox
-                            checked={selectedRows.length === seriesIds.length}
-                            onChange={() => {
-                              if (selectedRows.length) {
-                                setSelectedRows([]);
-                              } else {
-                                setSelectedRows(seriesIds);
-                              }
-                            }}
-                            hideLabel
-                          >
-                            Velg alle rader
-                          </Checkbox>
-                        </Table.HeaderCell>
+                        {loggedInUser?.isAdminOrHmsUser &&  isEditable &&(
+                          <>
+                            <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
+                            <Table.HeaderCell scope="col" />
+                            <Table.HeaderCell scope="col">Ikke tilknyttede varianter</Table.HeaderCell>
+                            <Table.HeaderCell scope="col"></Table.HeaderCell>
+                          </>
+                        )}
+
+                        {isEditable && (
+                          <Table.HeaderCell scope="col">
+                            <Checkbox
+                              checked={selectedRows.length === seriesIds.length}
+                              onChange={() => {
+                                if (selectedRows.length) {
+                                  setSelectedRows([]);
+                                } else {
+                                  setSelectedRows(seriesIds);
+                                }
+                              }}
+                              hideLabel
+                            >
+                              Velg alle rader
+                            </Checkbox>
+                          </Table.HeaderCell>
+                        )}
+
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -118,23 +136,28 @@ export const SeriesCompabilityTab = ({ seriesIds, productIds, partId, mutatePart
                           toggleSelectedRow={toggleSelectedRow}
                           partId={partId}
                           mutatePart={mutatePart}
+                          isEditable={isEditable}
                         />
                       ))}
                     </Table.Body>
                   </RowBoxTable>
                 )}
               </HStack>
-              <HStack justify={"end"}>
-                <Button
-                  className="fit-content"
-                  variant="tertiary"
-                  icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
-                  disabled={selectedRows.length === 0}
-                  onClick={deleteMarkedCompatibleSeries}
-                >
-                  <span>Slett merkede koblinger</span>
-                </Button>
-              </HStack>
+
+              {isEditable && (
+                <HStack justify={"end"}>
+                  <Button
+                    className="fit-content"
+                    variant="tertiary"
+                    icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
+                    disabled={selectedRows.length === 0}
+                    onClick={deleteMarkedCompatibleSeries}
+                  >
+                    <span>Slett merkede koblinger</span>
+                  </Button>
+                </HStack>
+              )}
+
             </VStack>
           </Box>
         )}

@@ -6,7 +6,7 @@ import {
   RejectSeriesDTO,
   SeriesDraftResponse,
   SeriesDraftWithDTO,
-  SeriesDTO,
+  SeriesDTO, SeriesSearchDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
@@ -24,6 +24,11 @@ export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO
   return await fetchAPI(seriesIdPath, "GET");
 };
 
+export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {
+  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantId}`;
+  return await fetchAPI(seriesIdPath, "GET");
+};
+
 export const setPublishedSeriesToDraft = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series_to-draft/${seriesUUID}`, "PUT");
 };
@@ -33,7 +38,7 @@ export const setSeriesToInactive = async (seriesUUID: string): Promise<void> => 
 };
 
 export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
-  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
+  return await fetchAPIModify(`${ HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<void> => {
