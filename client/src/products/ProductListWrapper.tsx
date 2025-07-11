@@ -1,6 +1,5 @@
 import {
   Alert,
-  BodyLong,
   Box,
   Button,
   Checkbox,
@@ -25,7 +24,6 @@ import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from "ut
 import { PlusIcon } from "@navikt/aksel-icons";
 import ErrorAlert from "error/ErrorAlert";
 import { ProductList } from "./ProductList";
-import { AlertWithCloseButton } from "felleskomponenter/AlertWithCloseButton";
 
 const ProductListWrapper = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -117,19 +115,6 @@ const ProductListWrapper = () => {
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <AlertWithCloseButton variant={"warning"} alertId={"tilbAlert"}>
-          <Heading size={"small"}>Informasjon om deler</Heading>
-          <BodyLong>
-            Vi jobber nå med automatisk innlasting av tilbehør og reservedeler som er på avtale med Nav. Vi oppfordrer
-            dere til å legge inn bilder og beskrivelse av disse delene.
-          </BodyLong>
-          <BodyLong>
-            Tilbehør og reservedeler som ikke er på avtale med Nav skal kunne legges inn etter hvert, men vi er ikke
-            helt klare for det enda. Vi ønsker ikke at dere legger inn en del som et hovedprodukt i påvente av en slik
-            løsning.
-          </BodyLong>
-        </AlertWithCloseButton>
-
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>

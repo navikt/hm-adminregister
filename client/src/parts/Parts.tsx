@@ -1,10 +1,11 @@
-import { Box, Button, Heading, Tabs, VStack } from "@navikt/ds-react";
+import { BodyLong, Box, Button, Heading, Tabs, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import React from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import PartsListTab from "parts/PartsListTab";
 import SeriesListTab from "parts/SeriesListTab";
 import { PlusIcon } from "@navikt/aksel-icons";
+import { AlertWithCloseButton } from "felleskomponenter/AlertWithCloseButton";
 
 const Parts = () => {
   const { loggedInUser } = useAuthStore();
@@ -21,6 +22,14 @@ const Parts = () => {
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdminOrHmsUser ? "80rem" : "64rem"}>
+        <AlertWithCloseButton variant={"warning"} alertId={"tilbReadyAlert"}>
+          <Heading size={"small"}>Informasjon om deler</Heading>
+          <BodyLong>
+            Det er nå mulig å legge inn og redigere tilbehør og reservedeler. Vi oppfordrer dere til å legge inn bilder
+            og beskrivelser av disse delene.
+          </BodyLong>
+        </AlertWithCloseButton>
+
         <Heading level="1" size="large" spacing>
           Deler
         </Heading>
