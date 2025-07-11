@@ -32,9 +32,9 @@ test("Flere nyheter", async () => {
     http.get(apiPath("admin/api/v1/news"), (info) => {
       return HttpResponse.json({
         content: [
-          dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
+          dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2225-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
           dummyNews("Nyhet 2", "tekst2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z", "INACTIVE"), //UNPUBLISHED
-          dummyNews("Nyhet 3", "tekst3", "2025-07-10T07:03:24.717Z", "2025-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
+          dummyNews("Nyhet 3", "tekst3", "2225-07-10T07:03:24.717Z", "2325-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
         ],
         pageable: {
           number: 0,
