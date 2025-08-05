@@ -10,6 +10,8 @@ import { editDelkontraktSchema } from "utils/zodSchema/editDelkontrakt";
 import Content from "felleskomponenter/styledcomponents/Content";
 import { DelkontraktRegistrationDTO } from "utils/types/response-types";
 import { updateDelkontraktinfo } from "api/DelkontraktApi";
+import styles from "products/about/Editor.module.scss";
+import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 
 interface Props {
   modalIsOpen: boolean;
@@ -22,10 +24,13 @@ export type EditDelkontraktFormData = z.infer<typeof editDelkontraktSchema>;
 
 const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mutateDelkontrakt }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [editorValue, setEditorValue] = useState(delkontrakt.delkontraktData.description || "");
+
   const {
     handleSubmit,
     register,
     reset,
+    setValue,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<EditDelkontraktFormData>({
     resolver: zodResolver(editDelkontraktSchema),
@@ -37,6 +42,11 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mu
     await onSubmit(data);
     setModalIsOpen(false);
   }
+
+  const onChangeBeskrivelse = (value: string) => {
+    setEditorValue(value);
+    setValue("beskrivelse", value);
+  };
 
   async function onSubmit(data: EditDelkontraktFormData) {
     setIsSaving(true);
@@ -75,13 +85,12 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mu
                 error={errors?.tittel?.message}
               />
               <Avstand marginBottom={5} />
-              <Textarea
-                {...register("beskrivelse", { required: true })}
-                defaultValue={delkontrakt.delkontraktData.description || ""}
-                label={labelRequired("Beskrivelse")}
-                id="beskrivelse"
-                name="beskrivelse"
-                error={errors?.beskrivelse?.message}
+              <RichTextEditorQuill
+                defaultValue={editorValue}
+                onTextChange={onChangeBeskrivelse}
+                className={styles.editor}
+                toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
+                formats={["bold", "italic", "list", "link"]}
               />
             </VStack>
           </Content>
