@@ -15,6 +15,9 @@ import { EditProductAgreementDatesFormDataDto } from "utils/zodSchema/editProduc
 export const deleteProductsFromAgreement = (agreementProductIds: string[]) =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, "DELETE", agreementProductIds);
 
+export const activateProductsFromAgreement = (agreementProductIds: string[]) =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/ids`, "PUT", agreementProductIds);
+
 export const changeRankOnProductAgreements = async (productAgreementIds: string[], newRank: number) => {
   const productAgreementsToUpdate: ProductAgreementRegistrationDTO[] = await fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/product-agreement/get-by-ids`,

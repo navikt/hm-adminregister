@@ -1,7 +1,7 @@
 import { Button, Checkbox, Modal, Table, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
-import { deleteProductsFromAgreement } from "api/AgreementProductApi";
+import { activateProductsFromAgreement, deleteProductsFromAgreement } from "api/AgreementProductApi";
 import { useErrorStore } from "utils/store/useErrorStore";
 import Content from "felleskomponenter/styledcomponents/Content";
 
@@ -16,6 +16,15 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { setGlobalError } = useErrorStore();
 
+  const hasActiveVariant = variants.some((variant) => variant.status === "ACTIVE");
+  const hasActiveSelected = variants
+    .filter((variant) => selectedRows.includes(variant.id!))
+    .some((variant) => variant.status === "ACTIVE");
+  const hasInactiveVariant = variants.some((variant) => variant.status === "INACTIVE");
+  const hasInactiveSelected = variants
+    .filter((variant) => selectedRows.includes(variant.id!))
+    .some((variant) => variant.status === "INACTIVE");
+
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
       list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
@@ -23,6 +32,17 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
 
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
     deleteProductsFromAgreement(selectedRows)
+      .then(() => {
+        mutateProductAgreements();
+        setSelectedRows([]);
+      })
+      .catch((error) => {
+        setGlobalError(error.message);
+      });
+  };
+
+  const handleGjenaktiverValgteProdukter = (selectedRows: string[]) => {
+    activateProductsFromAgreement(selectedRows)
       .then(() => {
         mutateProductAgreements();
         setSelectedRows([]);
@@ -105,11 +125,23 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
         >
           Lukk
         </Button>
+
+        {hasInactiveVariant && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              handleGjenaktiverValgteProdukter(selectedRows);
+            }}
+            disabled={!hasInactiveSelected}
+          >
+            Gjenaktiver valgte produkter
+          </Button>
+        )}
         <Button
           onClick={() => handleFjernValgteProdukter(selectedRows)}
           type="submit"
           variant="secondary"
-          disabled={selectedRows.length === 0}
+          disabled={!hasActiveSelected}
         >
           Fjern valgte produkter
         </Button>
