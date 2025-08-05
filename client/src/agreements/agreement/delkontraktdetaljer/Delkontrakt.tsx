@@ -194,9 +194,10 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                 icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
                 disabled={selectedRows.length === 0}
                 onClick={() => {
+                  console.log(selectedRows);
                   setProduktserierToDelete(
                     productAgreements
-                      ?.filter((it) => selectedRows.includes(it.serieIdentifier!))
+                      ?.filter((it) => selectedRows.includes(it.productSeries!))
                       .flatMap((pa) => pa.productVariants) ?? [],
                   );
                   setDeleteProduktserierModalIsOpen(true);
