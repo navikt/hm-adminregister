@@ -122,7 +122,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               Vis kun hovedprodukter
             </Switch>
             <b>Beskrivelse:</b>
-            <div className="preview">{parse(delkontrakt!.delkontraktData.description)}</div>
+            {delkontrakt.delkontraktData.description && (
+              <div className="preview">{parse(delkontrakt.delkontraktData.description)}</div>
+            )}
             {productAgreements!.length > 0 && (
               <VStack gap="2">
                 <RowBoxTable size="small">
