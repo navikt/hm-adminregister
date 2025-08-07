@@ -9,6 +9,8 @@ import { labelRequired } from "utils/string-util";
 import { Avstand } from "felleskomponenter/Avstand";
 import Content from "felleskomponenter/styledcomponents/Content";
 import { createDelkontrakt } from "api/DelkontraktApi";
+import styles from "products/about/Editor.module.scss";
+import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
 
 interface Props {
   modalIsOpen: boolean;
@@ -26,12 +28,19 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
     handleSubmit,
     register,
     reset,
+    setValue,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NyDelkontraktFormData>({
     resolver: zodResolver(createNewDelkontraktSchema),
     mode: "onSubmit",
   });
   const { setGlobalError } = useErrorStore();
+  const [editorValue, setEditorValue] = useState("");
+
+  const onChangeBeskrivelse = (value: string) => {
+    setEditorValue(value);
+    setValue("beskrivelse", value);
+  };
 
   async function onSubmitContinue(data: NyDelkontraktFormData) {
     await onSubmit(data);
@@ -79,12 +88,12 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
                 error={errors?.tittel?.message}
               />
               <Avstand marginBottom={5} />
-              <Textarea
-                {...register("beskrivelse", { required: true })}
-                label={labelRequired("Beskrivelse")}
-                id="beskrivelse"
-                name="beskrivelse"
-                error={errors?.beskrivelse?.message}
+              <RichTextEditorQuill
+                defaultValue={editorValue}
+                onTextChange={onChangeBeskrivelse}
+                className={styles.editor}
+                toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
+                formats={["bold", "italic", "list", "link"]}
               />
             </VStack>
           </Content>

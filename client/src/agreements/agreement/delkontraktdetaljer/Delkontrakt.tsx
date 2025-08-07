@@ -11,6 +11,7 @@ import { deleteDelkontrakt } from "api/DelkontraktApi";
 import { useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
 import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import { DelkontraktSerieRow } from "agreements/agreement/delkontraktdetaljer/DelkontraktSerieRow";
+import parse from "html-react-parser";
 
 interface Props {
   agreementDraftStatus: string;
@@ -121,7 +122,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               Vis kun hovedprodukter
             </Switch>
             <b>Beskrivelse:</b>
-            {delkontrakt!.delkontraktData.description}
+            <div className="preview">{parse(delkontrakt!.delkontraktData.description)}</div>
             {productAgreements!.length > 0 && (
               <VStack gap="2">
                 <RowBoxTable size="small">
