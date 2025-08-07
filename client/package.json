@@ -56,11 +56,12 @@
     "@typescript-eslint/eslint-plugin": "^8.11.0",
     "@typescript-eslint/parser": "^8.11.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "cypress": "^13.15.0",
+    "cypress": "^14.5.3",
     "eslint": "^8.57",
     "eslint-plugin-jsx-a11y": "^6.10.1",
     "eslint-plugin-react": "^7.37.2",
     "jest-axe": "^9.0.0",
+    "jsdom": "^26.1.0",
     "msw": "^2.5.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
@@ -68,7 +69,7 @@
     "typescript": "^5.6.3",
     "vite": "^6.2.3",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^3.0.9"
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "nwsapi": "2.2.12"
