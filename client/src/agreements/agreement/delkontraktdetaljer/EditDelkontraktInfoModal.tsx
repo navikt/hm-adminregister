@@ -1,5 +1,5 @@
-import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
+import { Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { z } from "zod";
@@ -37,6 +37,11 @@ const EditDelkontraktInfoModal = ({ modalIsOpen, delkontrakt, setModalIsOpen, mu
     mode: "onSubmit",
   });
   const { setGlobalError } = useErrorStore();
+
+  useEffect(() => (
+    setValue("tittel", delkontrakt.delkontraktData.title || ""),
+    setValue("beskrivelse", delkontrakt.delkontraktData.description || "")
+  ), []);
 
   async function onSubmitClose(data: EditDelkontraktFormData) {
     await onSubmit(data);
