@@ -60,7 +60,8 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
   });
 
 export function useSeriesByVariantIdentifier(variantIdentifier: string) {
-  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${variantIdentifier}`;
+  const encodedVariantId = encodeURIComponent(variantIdentifier);
+  const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${encodedVariantId}`;
 
   return useSWR<SeriesSearchDTO>(variantIdentifier.length > 0 ? seriesIdPath : null, fetcherGET);
 }
