@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
+import { CogIcon, CogRotationIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { SeriesDTO } from "utils/types/response-types";
@@ -8,20 +8,14 @@ import { SeriesDTO } from "utils/types/response-types";
 const ActionsMenu = ({
   series,
   setDeleteConfirmationModalIsOpen,
-  setExpiredSeriesModalIsOpen,
+  setSwitchToProductModalIsOpen,
   setEditProductModalIsOpen,
   setConfirmApproveModalIsOpen,
   partIsValid,
 }: {
   series: SeriesDTO;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
-  setExpiredSeriesModalIsOpen: ({
-    open,
-    newStatus,
-  }: {
-    open: boolean;
-    newStatus: "ACTIVE" | "INACTIVE" | undefined;
-  }) => void;
+  setSwitchToProductModalIsOpen:  (newState: boolean) => void;
   setEditProductModalIsOpen: (newState: boolean) => void;
   setConfirmApproveModalIsOpen: (newState: boolean) => void;
   partIsValid: () => boolean;
@@ -53,25 +47,26 @@ const ActionsMenu = ({
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
-
                 {canSetToEditMode && (
-                  <Dropdown.Menu.List.Item
-                    onClick={() => setEditProductModalIsOpen(true)}
-                  >
+                  <Dropdown.Menu.List.Item onClick={() => setEditProductModalIsOpen(true)}>
                     Endre del
                     <PencilIcon aria-hidden />
                   </Dropdown.Menu.List.Item>
                 )}
-                {(isEditable && !series.isPublished || isAdmin) && (
+                {((isEditable && !series.isPublished) || isAdmin) && (
                   <>
                     <Dropdown.Menu.Divider />
-                    <Dropdown.Menu.List.Item
-                      onClick={() => setDeleteConfirmationModalIsOpen(true)}
-                    >
+                    <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                       <TrashIcon aria-hidden />
                       Slett
                     </Dropdown.Menu.List.Item>
                   </>
+                )}
+                {isAdmin && (
+                  <Dropdown.Menu.List.Item onClick={() => setSwitchToProductModalIsOpen(true)}>
+                    <CogRotationIcon aria-hidden />
+                    Endre til produkt
+                  </Dropdown.Menu.List.Item>
                 )}
               </Dropdown.Menu.List>
             </Dropdown.Menu>

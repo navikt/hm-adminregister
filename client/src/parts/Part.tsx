@@ -19,10 +19,11 @@ import {
 
 import ErrorAlert from "error/ErrorAlert";
 import {
+  changePartToMainProduct,
   updateEgnetForBrukerpassbruker,
   updateEgnetForKommunalTekniker,
   updatePart,
-  usePartByProductId
+  usePartByProductId,
 } from "api/PartApi";
 import { HM_REGISTER_URL } from "environments";
 import { SeriesCompabilityTab } from "parts/compatibility/SeriesCompabilityTab";
@@ -66,40 +67,39 @@ const Part = () => {
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
+  const [switchToProductModalIsOpen, setSwitchToProductModalIsOpen] = useState(false);
 
   const handleSaveName = (name: string) => {
     const updatePartDto = {
       title: name,
-    }
+    };
     handleSavePartInfo(updatePartDto);
   };
 
   const handleSaveSupplierRef = (levartNr: string) => {
-
     const updatePartDto = {
       supplierRef: levartNr,
-    }
+    };
     handleSavePartInfo(updatePartDto);
   };
 
   const handleSaveHmsNr = () => {
     const updatePartDto = {
       hmsArtNr: hmsNr,
-    }
+    };
     handleSavePartInfo(updatePartDto);
   };
 
   const handleSavePartInfo = (updatePartDto: UpdatePartDTO) => {
     updatePart(series!.id, updatePartDto)
       .then(() => {
-        mutatePart()
+        mutatePart();
       })
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error.status, error.message);
       });
-  }
-
+  };
 
   const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
     setIsTogglingKT(true);
@@ -117,8 +117,10 @@ const Part = () => {
   const partIsValid = () => {
     const articleNameIsValid = part?.articleName && part.articleName.trim().length > 0;
     const levartNrIsValid = part?.supplierRef && part.supplierRef.trim().length > 0;
-    const connectedToSeries = part?.productData.attributes.compatibleWith?.seriesIds && part?.productData.attributes.compatibleWith?.seriesIds.length > 0;
-    return articleNameIsValid && levartNrIsValid  && connectedToSeries || false
+    const connectedToSeries =
+      part?.productData.attributes.compatibleWith?.seriesIds &&
+      part?.productData.attributes.compatibleWith?.seriesIds.length > 0;
+    return (articleNameIsValid && levartNrIsValid && connectedToSeries) || false;
   };
 
   if (isLoading || isLoadingSeries) {
@@ -160,8 +162,19 @@ const Part = () => {
       });
   }
 
-  const isEditable = series.status === "EDITABLE";
+  async function onSwitchToProduct() {
+    setSwitchToProductModalIsOpen(false);
+    changePartToMainProduct(series!.id)
+      .then(() => {
+        mutateSeries();
+        navigate(`/produkter/${series?.id}`);
+      })
+      .catch((error) => {
+        setGlobalError(error);
+      });
+  }
 
+  const isEditable = series.status === "EDITABLE";
 
   return (
     <main className="show-menu">
@@ -178,6 +191,13 @@ const Part = () => {
         onClick={onDelete}
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
+      />
+      <ConfirmModal
+        title={"Er du sikker på at du vil konverte del til hovedprodukt?"}
+        confirmButtonText={"Endre til produkt"}
+        onClick={onSwitchToProduct}
+        onClose={() => setSwitchToProductModalIsOpen(false)}
+        isModalOpen={switchToProductModalIsOpen}
       />
       <RequestApprovalModal
         series={series}
@@ -208,11 +228,7 @@ const Part = () => {
               Tilbake
             </AkselLink>
             <VStack gap="2">
-              {isEditable ? (
-                <Label> {labelRequired(("Navn på del"))}</Label>
-              ) : (
-                <Label> Navn på del</Label>
-              )}
+              {isEditable ? <Label> {labelRequired("Navn på del")}</Label> : <Label> Navn på del</Label>}
 
               <HStack gap="1">
                 {isEditable && (
@@ -246,11 +262,7 @@ const Part = () => {
               </HStack>
 
               <VStack>
-                {isEditable ? (
-                  <Label> {labelRequired(("Lev-artnr"))}</Label>
-                ) : (
-                  <Label>Lev-artnr</Label>
-                )}
+                {isEditable ? <Label> {labelRequired("Lev-artnr")}</Label> : <Label>Lev-artnr</Label>}
                 {isEditable && (
                   <TextField
                     defaultValue={part.supplierRef ?? ""}
@@ -262,10 +274,7 @@ const Part = () => {
                     onBlur={(event) => handleSaveSupplierRef(event.currentTarget.value)}
                   />
                 )}
-                {!isEditable && (
-                  <BodyShort>{part.supplierRef ? part.supplierRef : "-"}</BodyShort>
-                )}
-
+                {!isEditable && <BodyShort>{part.supplierRef ? part.supplierRef : "-"}</BodyShort>}
               </VStack>
 
               <VStack>
@@ -296,7 +305,6 @@ const Part = () => {
 
             <HGrid gap={{ xs: "8", md: "10" }} columns={{ xs: 1, lg: 2 }}>
               <VStack gap="4">
-
                 <VStack>
                   <Label>Type</Label>
                   <BodyShort>{part.accessory === true ? "Tilbehør" : "Reservedel"}</BodyShort>
@@ -329,7 +337,6 @@ const Part = () => {
                   </>
                 )}
               </VStack>
-
             </HGrid>
           </VStack>
 
@@ -352,7 +359,6 @@ const Part = () => {
                 value={"seriekoblinger"}
                 label={`Koblinger til produktserier  (${part.productData.attributes.compatibleWith?.seriesIds.length ?? 0})`}
               />
-
             </Tabs.List>
             <ImagesTab series={series} isEditable={isEditable} showInputError={false} mutateSeries={mutateSeries} />
             {loggedInUser?.isAdminOrHmsUser && (
@@ -374,15 +380,13 @@ const Part = () => {
                 isEditable={isEditable}
               />
             </Tabs.Panel>
-
           </Tabs>
         </VStack>
         <VStack gap={{ xs: "6", md: "10" }}>
           <ActionsMenu
             series={series}
             setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
-            setExpiredSeriesModalIsOpen={() => {
-            }}
+            setSwitchToProductModalIsOpen={setSwitchToProductModalIsOpen}
             setEditProductModalIsOpen={setEditProductModalIsOpen}
             setConfirmApproveModalIsOpen={setConfirmApproveModalIsOpen}
             partIsValid={partIsValid}

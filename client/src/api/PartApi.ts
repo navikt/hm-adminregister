@@ -53,6 +53,10 @@ export const approvePart = async (seriesUUID: string): Promise<void> => {
   return await fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/approve/${seriesUUID}`, "PUT");
 };
 
+export const changePartToMainProduct = async (seriesUUID: string): Promise<void> => {
+  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/mainProduct/${seriesUUID}`, "PUT");
+};
+
 export function usePartByVariantIdentifier(variantIdentifier: string) {
   const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/variant-id/${variantIdentifier}`;
 

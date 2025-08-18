@@ -13,11 +13,12 @@ export const fetchAPI = async (url: string, method: string, body?: any): Promise
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (response.ok) {
-    return await response.json();
-  } else {
-    const json = await response.json();
+  const text = await response.text();
 
+  if (response.ok) {
+    return text ? JSON.parse(text) : undefined;
+  } else {
+    const json = text ? JSON.parse(text) : {};
     const error = { message: json?.message || response.statusText, status: response.status };
     return Promise.reject(error);
   }
