@@ -6,7 +6,8 @@ import {
   RejectSeriesDTO,
   SeriesDraftResponse,
   SeriesDraftWithDTO,
-  SeriesDTO, SeriesSearchDTO,
+  SeriesDTO,
+  SeriesSearchDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
@@ -38,7 +39,7 @@ export const setSeriesToInactive = async (seriesUUID: string): Promise<void> => 
 };
 
 export const setSeriesToActive = async (seriesUUID: string): Promise<void> => {
-  return await fetchAPIModify(`${ HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
+  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/series-to-active/${seriesUUID}`, "PUT");
 };
 
 export const approveSeries = async (seriesUUID: string): Promise<void> => {
@@ -47,6 +48,10 @@ export const approveSeries = async (seriesUUID: string): Promise<void> => {
 
 export const approveMultipleSeries = async (seriesIds: string[]): Promise<void> => {
   return await fetchAPIModify(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
+};
+
+export const changeMainProductToPart = async (seriesUUID: string, accessory: boolean): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), "PUT", { accessory: accessory });
 };
 
 export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<void> => {

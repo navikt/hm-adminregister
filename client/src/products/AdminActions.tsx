@@ -1,6 +1,13 @@
 import { useState } from "react";
 
-import { CogIcon, ExclamationmarkTriangleIcon, FileSearchIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
+import {
+  CogIcon,
+  CogRotationIcon,
+  ExclamationmarkTriangleIcon,
+  FileSearchIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@navikt/aksel-icons";
 import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
 import { approveSeries, setPublishedSeriesToDraft } from "api/SeriesApi";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
@@ -16,6 +23,8 @@ const AdminActions = ({
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
+  setSwitchToSparePartModalIsOpen,
+  setSwitchToAccessoryModalIsOpen,
   setExpiredSeriesModalIsOpen,
 }: {
   series: SeriesDTO;
@@ -23,6 +32,8 @@ const AdminActions = ({
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
+  setSwitchToSparePartModalIsOpen: (newState: boolean) => void;
+  setSwitchToAccessoryModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
   setExpiredSeriesModalIsOpen: ({
     open,
@@ -142,6 +153,14 @@ const AdminActions = ({
                 <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
                   Slett
                   <TrashIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
+                <Dropdown.Menu.List.Item onClick={() => setSwitchToSparePartModalIsOpen(true)}>
+                  Endre til reservedel
+                  <CogRotationIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
+                <Dropdown.Menu.List.Item onClick={() => setSwitchToAccessoryModalIsOpen(true)}>
+                  Endre til tilbehør
+                  <CogRotationIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
 
                 {canSetExpiredStatus &&
