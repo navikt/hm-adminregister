@@ -57,15 +57,15 @@ const ActionsMenu = ({
                   <>
                     <Dropdown.Menu.Divider />
                     <Dropdown.Menu.List.Item onClick={() => setDeleteConfirmationModalIsOpen(true)}>
-                      <TrashIcon aria-hidden />
                       Slett
+                      <TrashIcon aria-hidden />
                     </Dropdown.Menu.List.Item>
                   </>
                 )}
                 {isAdmin && (
                   <Dropdown.Menu.List.Item onClick={() => setSwitchToProductModalIsOpen(true)}>
-                    <CogRotationIcon aria-hidden />
                     Endre til produkt
+                    <CogRotationIcon aria-hidden />
                   </Dropdown.Menu.List.Item>
                 )}
               </Dropdown.Menu.List>
