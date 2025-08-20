@@ -27,6 +27,7 @@ export default function CreateProduct() {
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [isCreatingProduct, setIsCreatingProduct] = useState<boolean>(false);
 
   const [supplier, setSupplier] = useState<string>("");
 
@@ -48,31 +49,30 @@ export default function CreateProduct() {
   };
 
   async function onSubmit() {
+    setIsCreatingProduct(true); // Set loading state immediately
+
     if (validateFields()) {
       const newSeries: SeriesDraftWithDTO = {
         title: title,
         isoCategory: handleSetFormValueIso(isoCategory),
       };
 
-      if (loggedInUser && loggedInUser.isAdmin) {
-        const supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id;
-
-        draftNewSeries(newSeries, supplierUUID!)
-          .then((newSeries) => {
-            navigate(`/produkter/${newSeries.id}`);
-          })
-          .catch((error) => {
-            setGlobalError(error);
-          });
-      } else if (loggedInUser) {
-        draftNewSeries(newSeries, loggedInUser.supplierId!)
-          .then((newSeries) => {
-            navigate(`/produkter/${newSeries.id}`);
-          })
-          .catch((error) => {
-            setGlobalError(error);
-          });
+      try {
+        if (loggedInUser && loggedInUser.isAdmin) {
+          const supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id;
+          const createdSeries = await draftNewSeries(newSeries, supplierUUID!);
+          navigate(`/produkter/${createdSeries.id}`);
+        } else if (loggedInUser) {
+          const createdSeries = await draftNewSeries(newSeries, loggedInUser.supplierId!);
+          navigate(`/produkter/${createdSeries.id}`);
+        }
+      } catch (error) {
+        setGlobalError(error);
+      } finally {
+        setIsCreatingProduct(false); // Reset loading state after completion
       }
+    } else {
+      setIsCreatingProduct(false); // Reset loading state if validation fails
     }
   }
 
@@ -145,7 +145,7 @@ export default function CreateProduct() {
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>
-          <Button type="submit" size="medium" onClick={onSubmit}>
+          <Button type="submit" size="medium" onClick={onSubmit} disabled={isCreatingProduct}>
             Opprett
           </Button>
         </HStack>
