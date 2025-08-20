@@ -42,6 +42,7 @@ import { UpdatePartDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { RequestApprovalModal } from "parts/RequestApprovalModal";
 import { VariantCompabilityTab } from "parts/compatibility/VariantCompabilityTab";
+import ChangePartToProductModal from "parts/ChangePartToProductModal";
 
 const Part = () => {
   const { productId } = useParams();
@@ -162,9 +163,9 @@ const Part = () => {
       });
   }
 
-  async function onSwitchToProduct() {
+  async function onSwitchToProduct(newIsoCode: string) {
     setSwitchToProductModalIsOpen(false);
-    changePartToMainProduct(series!.id)
+    changePartToMainProduct(series!.id, newIsoCode)
       .then(() => {
         mutateSeries();
         navigate(`/produkter/${series?.id}`);
@@ -192,12 +193,10 @@ const Part = () => {
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
-      <ConfirmModal
-        title={"Er du sikker på at du vil konverte del til hovedprodukt?"}
-        confirmButtonText={"Endre til produkt"}
+      <ChangePartToProductModal
+        isOpen={switchToProductModalIsOpen}
+        setIsOpen={setSwitchToProductModalIsOpen}
         onClick={onSwitchToProduct}
-        onClose={() => setSwitchToProductModalIsOpen(false)}
-        isModalOpen={switchToProductModalIsOpen}
       />
       <RequestApprovalModal
         series={series}

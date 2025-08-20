@@ -6,7 +6,8 @@ import {
   ProductChunk,
   ProductRegistrationDTOV2,
   SuitableForBrukerpassbrukerDTO,
-  SuitableForKommunalTeknikerDTO, UpdatePartDTO,
+  SuitableForKommunalTeknikerDTO,
+  UpdatePartDTO,
 } from "utils/types/response-types";
 import { HM_REGISTER_URL } from "environments";
 import useSWR from "swr";
@@ -53,8 +54,10 @@ export const approvePart = async (seriesUUID: string): Promise<void> => {
   return await fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/approve/${seriesUUID}`, "PUT");
 };
 
-export const changePartToMainProduct = async (seriesUUID: string): Promise<void> => {
-  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/mainProduct/${seriesUUID}`, "PUT");
+export const changePartToMainProduct = async (seriesUUID: string, newIsoCode: string): Promise<void> => {
+  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/mainProduct/${seriesUUID}`, "PUT", {
+    newIsoCode: newIsoCode,
+  });
 };
 
 export function usePartByVariantIdentifier(variantIdentifier: string) {
@@ -84,7 +87,7 @@ export const getPartsForSeriesId = (seriesId: string) => {
 export function usePartByProductId(productId: string) {
   const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/${productId}`;
 
-  const { data: part, error, isLoading, mutate: mutatePart} = useSWR<PartDTO>(path, fetcherGET);
+  const { data: part, error, isLoading, mutate: mutatePart } = useSWR<PartDTO>(path, fetcherGET);
 
   return {
     part,
@@ -95,9 +98,7 @@ export function usePartByProductId(productId: string) {
 }
 
 export function useCompatibleProductById(productId: string, isAdmin: boolean) {
-
-
-  const path = getPath(isAdmin, `/api/v1/product/registrations/${productId}`)
+  const path = getPath(isAdmin, `/api/v1/product/registrations/${productId}`);
 
   const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET);
 
@@ -115,7 +116,11 @@ const updatePartCompatability = async (productId: string, updatedCompatibleWith:
 export const updatePart = async (seriesId: string, updatePartDto: UpdatePartDTO): Promise<void> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/${seriesId}`, "PUT", updatePartDto);
 
-export const removeCompatibleWithSeries = async (productId: string, seriesUUIDToRemove: string[], isAdmin: boolean): Promise<void> => {
+export const removeCompatibleWithSeries = async (
+  productId: string,
+  seriesUUIDToRemove: string[],
+  isAdmin: boolean,
+): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -130,9 +135,8 @@ export const removeCompatibleWithSeries = async (productId: string, seriesUUIDTo
 export const removeCompatibleWithSeriesForParts = async (
   seriesUUIDToRemove: string,
   partUUIDs: string[],
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<void> => {
-
   for (const productId of partUUIDs) {
     const partToUpdate = await getProductById(productId, isAdmin);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -144,7 +148,11 @@ export const removeCompatibleWithSeriesForParts = async (
   }
 };
 
-export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, partUUIDs: string[], isAdmin: boolean): Promise<void> => {
+export const addCompatibleWithSeriesForParts = async (
+  seriesUUIDToAdd: string,
+  partUUIDs: string[],
+  isAdmin: boolean,
+): Promise<void> => {
   for (const productId of partUUIDs) {
     const partToUpdate = await getProductById(productId, isAdmin);
     const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -154,10 +162,13 @@ export const addCompatibleWithSeriesForParts = async (seriesUUIDToAdd: string, p
     };
     await updatePartCompatability(productId, updatedCompatibleWith);
   }
-
 };
 
-export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd: string, isAdmin: boolean): Promise<void> => {
+export const addCompatibleWithSeries = async (
+  productId: string,
+  seriesUUIDToAdd: string,
+  isAdmin: boolean,
+): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -169,7 +180,11 @@ export const addCompatibleWithSeries = async (productId: string, seriesUUIDToAdd
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const removeCompatibleWithVariant = async (productId: string, productIdToRemove: string[], isAdmin: boolean): Promise<void> => {
+export const removeCompatibleWithVariant = async (
+  productId: string,
+  productIdToRemove: string[],
+  isAdmin: boolean,
+): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -181,7 +196,11 @@ export const removeCompatibleWithVariant = async (productId: string, productIdTo
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const addCompatibleWithVariant = async (productId: string, productIdToAdd: string, isAdmin: boolean): Promise<void> => {
+export const addCompatibleWithVariant = async (
+  productId: string,
+  productIdToAdd: string,
+  isAdmin: boolean,
+): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
@@ -193,8 +212,11 @@ export const addCompatibleWithVariant = async (productId: string, productIdToAdd
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const addCompatibleWithVariantList = async (productId: string, productIdToAdd: string[], isAdmin: boolean): Promise<void> => {
-
+export const addCompatibleWithVariantList = async (
+  productId: string,
+  productIdToAdd: string[],
+  isAdmin: boolean,
+): Promise<void> => {
   const partToUpdate = await getProductById(productId, isAdmin);
 
   const compatibleWith = partToUpdate.productData.attributes.compatibleWith;

@@ -66,8 +66,8 @@ export default function CreateProduct() {
           const createdSeries = await draftNewSeries(newSeries, loggedInUser.supplierId!);
           navigate(`/produkter/${createdSeries.id}`);
         }
-      } catch (error) {
-        setGlobalError(error);
+      } catch (error: any) {
+        setGlobalError(error.status, error.message);
       } finally {
         setIsCreatingProduct(false); // Reset loading state after completion
       }

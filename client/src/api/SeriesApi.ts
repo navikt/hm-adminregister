@@ -27,7 +27,7 @@ export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO
 
 export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {
   const encodedVariantId = encodeURIComponent(variantId);
-  console.log('adawdawdadawda', encodedVariantId);
+  console.log("adawdawdadawda", encodedVariantId);
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${encodedVariantId}`;
   return await fetchAPI(seriesIdPath, "GET");
 };
@@ -52,8 +52,15 @@ export const approveMultipleSeries = async (seriesIds: string[]): Promise<void> 
   return await fetchAPIModify(getPath(true, `/api/v1/series/approve-multiple`), "PUT", seriesIds);
 };
 
-export const changeMainProductToPart = async (seriesUUID: string, accessory: boolean): Promise<void> => {
-  return await fetchAPIModify(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), "PUT", { accessory: accessory });
+export const changeMainProductToPart = async (
+  seriesUUID: string,
+  accessory: boolean,
+  newIsoCode: string,
+): Promise<void> => {
+  return await fetchAPIModify(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), "PUT", {
+    accessory: accessory,
+    newIsoCode: newIsoCode,
+  });
 };
 
 export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<void> => {

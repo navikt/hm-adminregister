@@ -49,6 +49,7 @@ import AboutTab from "./about/AboutTab";
 import styles from "./ProductPage.module.scss";
 import VariantsTab from "./variants/VariantsTab";
 import { TabLabel } from "felleskomponenter/TabLabel";
+import ChangeProductToPartModal from "products/ChangeProductToPartModal";
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -58,8 +59,7 @@ const Product = () => {
   const oversiktPath = typeof state === "string" ? state : "/produkter";
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
-  const [switchToSparePartModalIsOpen, setSwitchToSparePartModalIsOpen] = useState(false);
-  const [switchToAccessoryModalIsOpen, setSwitchToAccessoryModalIsOpen] = useState(false);
+  const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
     open: boolean;
@@ -167,16 +167,14 @@ const Product = () => {
       });
   }
 
-  async function onSwitchToPart(accessory: boolean) {
-    if (accessory) {
-      setSwitchToAccessoryModalIsOpen(false);
-    } else {
-      setSwitchToSparePartModalIsOpen(false);
-    }
-    changeMainProductToPart(series!.id, accessory)
+  async function onSwitchToPart(accessory: boolean, newIsoCode: string) {
+    setChangeToPartModalIsOpen(false);
+
+    changeMainProductToPart(series!.id, accessory, newIsoCode)
       .then(() => {
         mutateSeries();
-        navigate(`/del/${series?.variants[0].id}`)})
+        navigate(`/del/${series?.variants[0].id}`);
+      })
       .catch((error) => {
         setGlobalError(error);
       });
@@ -198,19 +196,10 @@ const Product = () => {
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
       />
-      <ConfirmModal
-        title={"Er du sikker på at du endre fra hovedprodukt til reservedel?"}
-        confirmButtonText={"Endre til reservedel"}
-        onClick={() => onSwitchToPart(false)}
-        onClose={() => setSwitchToSparePartModalIsOpen(false)}
-        isModalOpen={switchToSparePartModalIsOpen}
-      />
-      <ConfirmModal
-        title={"Er du sikker på at du endre fra hovedprodukt til tilbehør?"}
-        confirmButtonText={"Endre til tilbehør"}
-        onClick={() => onSwitchToPart(true)}
-        onClose={() => setSwitchToAccessoryModalIsOpen(false)}
-        isModalOpen={switchToAccessoryModalIsOpen}
+      <ChangeProductToPartModal
+        isOpen={changeToPartModalIsOpen}
+        setIsOpen={setChangeToPartModalIsOpen}
+        onClick={onSwitchToPart}
       />
       {expiredSeriesModalIsOpen.newStatus === "ACTIVE" && (
         <ConfirmModal
@@ -410,8 +399,7 @@ const Product = () => {
               setApprovalModalIsOpen={setApprovalModalIsOpen}
               setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
-              setSwitchToAccessoryModalIsOpen={setSwitchToAccessoryModalIsOpen}
-              setSwitchToSparePartModalIsOpen={setSwitchToSparePartModalIsOpen}
+              setSwitchToPartModalIsOpen={setChangeToPartModalIsOpen}
             />
           )}
           {!loggedInUser?.isAdmin && (

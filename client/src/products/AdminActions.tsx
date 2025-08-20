@@ -23,8 +23,7 @@ const AdminActions = ({
   productIsValid,
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
-  setSwitchToSparePartModalIsOpen,
-  setSwitchToAccessoryModalIsOpen,
+  setSwitchToPartModalIsOpen,
   setExpiredSeriesModalIsOpen,
 }: {
   series: SeriesDTO;
@@ -32,8 +31,7 @@ const AdminActions = ({
   setIsValid: (newState: boolean) => void;
   productIsValid: () => boolean;
   setApprovalModalIsOpen: (newState: boolean) => void;
-  setSwitchToSparePartModalIsOpen: (newState: boolean) => void;
-  setSwitchToAccessoryModalIsOpen: (newState: boolean) => void;
+  setSwitchToPartModalIsOpen: (newState: boolean) => void;
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
   setExpiredSeriesModalIsOpen: ({
     open,
@@ -154,12 +152,8 @@ const AdminActions = ({
                   Slett
                   <TrashIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
-                <Dropdown.Menu.List.Item onClick={() => setSwitchToSparePartModalIsOpen(true)}>
-                  Endre til reservedel
-                  <CogRotationIcon aria-hidden />
-                </Dropdown.Menu.List.Item>
-                <Dropdown.Menu.List.Item onClick={() => setSwitchToAccessoryModalIsOpen(true)}>
-                  Endre til tilbehør
+                <Dropdown.Menu.List.Item onClick={() => setSwitchToPartModalIsOpen(true)}>
+                  Endre til del
                   <CogRotationIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
 
