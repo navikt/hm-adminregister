@@ -74,7 +74,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                   <Box>
                     <VStack gap="1">
                       <Box padding="2" background="surface-danger-subtle" className={styles.current}>
-                        <Strikethrough>{value as string}</Strikethrough>
+                        <Strikethrough>{arrayCheck(value)}</Strikethrough>
                       </Box>
                     </VStack>
                   </Box>

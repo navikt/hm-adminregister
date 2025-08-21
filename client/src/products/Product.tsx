@@ -26,9 +26,9 @@ import {
   deleteSeries,
   setPublishedSeriesToDraft,
   setSeriesToActive,
-  setSeriesToInactive,
+  setSeriesToInactive, updateProductIsoCategory,
   updateProductTitle,
-  useSeriesV2,
+  useSeriesV2
 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
@@ -50,6 +50,14 @@ import styles from "./ProductPage.module.scss";
 import VariantsTab from "./variants/VariantsTab";
 import { TabLabel } from "felleskomponenter/TabLabel";
 import ChangeProductToPartModal from "products/ChangeProductToPartModal";
+import { useIsoCategories } from "utils/swr-hooks";
+import IsoComboboxProvider from "products/iso-combobox/IsoComboboxProvider";
+import { labelRequired } from "utils/string-util";
+
+
+type Error = {
+  isoCodeErrorMessage?: string | undefined;
+};
 
 const Product = () => {
   const { seriesId } = useParams();
@@ -74,6 +82,29 @@ const Product = () => {
 
   const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
   const [productTitle, setProductTitle] = useState("");
+
+  const [showEditIsoCategoryMode, setShowEditIsoCategoryMode] = useState(false);
+
+  const { isoCategories } = useIsoCategories();
+  const [isoCategory, setIsoCategory] = useState<string>("");
+  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
+  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+
+  const handleSetFormValueIso = (value: string) => {
+    const parts = value.split("-");
+    return parts[parts.length - 1].replace(/\s/g, ""); // Remove spaces
+  };
+
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    if (isSelected) {
+      setIsoCategory(option);
+      setSelectedOptions([option]);
+    } else {
+      setIsoCategory("");
+      setSelectedOptions([]);
+    }
+  };
 
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
@@ -119,6 +150,14 @@ const Product = () => {
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };
+
+  const handleSaveIsoCategory = () => {
+    setShowEditIsoCategoryMode(false);
+    updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory))
+      .then(() => mutateSeries())
+      .catch((error) => setGlobalError(error.status, error.message));
+  };
+
 
   const isEditable = series.status === "EDITABLE";
 
@@ -319,12 +358,49 @@ const Product = () => {
                 </Box>
               )}
             </VStack>
-            <DefinitionList fullWidth horizontal>
-              <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
-              <DefinitionList.Definition>
-                {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
-              </DefinitionList.Definition>
-            </DefinitionList>
+            <HStack gap="2" align="center">
+              {isEditable && loggedInUser?.isAdmin && showEditIsoCategoryMode && (
+                <HStack align="end" gap="2">
+                <IsoComboboxProvider
+                  label={labelRequired("Iso-kategori (kode)")}
+                  description={"Søk etter isokategori produktet passer best inn i"}
+                  selectedOptions={selectedOptions}
+                  options={isoCodesAndTitles || []}
+                  onToggleSelected={onToggleSelected}
+                  // onBlur={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+                  // onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+                  // error={fieldError?.isoCodeErrorMessage ?? ""}
+                  maxSelected={{ limit: 1 }}
+                />
+                  <Button
+                    className="fit-content"
+                    variant="tertiary"
+                    icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
+                    onClick={handleSaveIsoCategory}
+                  >
+                    Lagre
+                  </Button>
+                </HStack>
+              )}
+              {!showEditIsoCategoryMode && (
+                <DefinitionList fullWidth horizontal>
+                  <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
+                  <DefinitionList.Definition>
+                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
+                  </DefinitionList.Definition>
+                </DefinitionList>
+              )}
+              {isEditable && loggedInUser?.isAdmin && !showEditIsoCategoryMode && (
+                <Button
+                  className="fit-content"
+                  variant="tertiary"
+                  icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
+                  onClick={() => {
+                    setShowEditIsoCategoryMode(true);
+                  }}
+                ></Button>
+              )}
+            </HStack>
           </VStack>
           <Tabs defaultValue={activeTab} value={activeTab} onChange={updateUrlOnTabChange}>
             <Tabs.List>

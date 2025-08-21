@@ -32,10 +32,10 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
                           <BodyShort weight="semibold">{t(key)}</BodyShort>
                           <VStack gap="1">
                             <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
-                              <Strikethrough>{value.second as string}</Strikethrough>
+                              <Strikethrough>{arrayCheck(value.second)}</Strikethrough>
                             </Box>
                             <Box padding="2" background="surface-success-subtle" className={styles.current}>
-                              <>{value.first as string}</>
+                              <>{arrayCheck(value.first)}</>
                             </Box>
                           </VStack>
                         </VStack>
@@ -61,5 +61,13 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
         )}
       </VStack>
     );
+  }
+};
+
+const arrayCheck = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return value.map((val, i) => <span key={i}> {val as string} </span>);
+  } else {
+    return <span>{value as string}</span>;
   }
 };

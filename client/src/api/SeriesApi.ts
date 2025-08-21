@@ -149,6 +149,9 @@ export const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegis
 export const updateProductTitle = async (seriesUUID: string, productTitle: string): Promise<void> =>
   updateSeries(seriesUUID, { title: productTitle });
 
+export const updateProductIsoCategory = async (seriesUUID: string, isoCategory: string): Promise<void> =>
+  updateSeries(seriesUUID, { isoCategory: isoCategory });
+
 export const updateProductDescription = async (seriesUUID: string, productDescription: string): Promise<void> =>
   updateSeries(seriesUUID, { text: productDescription });
 

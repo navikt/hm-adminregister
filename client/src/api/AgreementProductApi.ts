@@ -75,7 +75,7 @@ export const addProductsToAgreement = async (
     articleName: product.articleName,
     supplierRef: product.supplierRef,
     supplierId: product.supplierId,
-    hmsArtNr: product.hmsArtNr,
+    hmsArtNr: product.hmsArtNr ?? "",
     agreementId: delkontraktToUpdate.agreementId,
     reference: product.supplierRef,
     status: "INACTIVE",

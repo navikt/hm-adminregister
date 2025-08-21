@@ -388,6 +388,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/part/mainProduct/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["changeToMainProduct"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/part/old/series/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -592,7 +608,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
+        put: operations["reactivateProductAgreementByIds"];
         post?: never;
         delete: operations["deleteProductAgreementByIds"];
         options?: never;
@@ -1041,6 +1057,22 @@ export interface paths {
         };
         get: operations["findSeriesPendingApprove"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/series/toPart/{seriesId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["changeMainProductToPart"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1576,6 +1608,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/common/api/v1/part/approve/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["approvePart_1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/common/api/v1/part/hmsNr/{hmsNr}": {
         parameters: {
             query?: never;
@@ -1624,6 +1672,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/common/api/v1/part/supplier/{supplierId}/draftWith": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["draftPartWith"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/common/api/v1/part/supplier/{supplierId}/draftWithAndPublish": {
         parameters: {
             query?: never;
@@ -1633,7 +1697,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["draftSeriesWithAndPublish_1"];
+        post: operations["draftPartWithAndPublish"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2286,6 +2350,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AccessoryDTO: {
+            accessory: boolean;
+            newIsoCode: string;
+        };
         AdminInfo: {
             approvedBy?: string | null;
             note?: string | null;
@@ -2345,6 +2413,10 @@ export interface components {
             /** Format: date-time */
             published?: string | null;
             status: components["schemas"]["ProductAgreementStatus"];
+            mainProduct: boolean;
+            accessory: boolean;
+            sparePart: boolean;
+            articleName: string;
         };
         AgreementPost: {
             identifier: string;
@@ -2366,6 +2438,7 @@ export interface components {
             agreementStatus: components["schemas"]["AgreementStatus"];
             title: string;
             reference: string;
+            agreementKey: string;
             /** Format: date-time */
             created: string;
             /** Format: date-time */
@@ -2561,10 +2634,10 @@ export interface components {
                 [key: string]: components["schemas"]["Pair_Object.Object_"];
             };
             entriesOnlyOnLeft: {
-                [key: string]: unknown;
+                [key: string]: Record<string, never>;
             };
             entriesOnlyOnRight: {
-                [key: string]: unknown;
+                [key: string]: Record<string, never>;
             };
         };
         MediaDTO: {
@@ -2730,8 +2803,8 @@ export interface components {
             totalPages?: number;
         };
         "Pair_Object.Object_": {
-            first: unknown;
-            second: unknown;
+            first: Record<string, never>;
+            second: Record<string, never>;
         };
         "Pair_ProductAgreementRegistrationDTO.List_Information__": {
             first: components["schemas"]["ProductAgreementRegistrationDTO"];
@@ -2771,6 +2844,9 @@ export interface components {
             accessory?: boolean | null;
             /** Format: uuid */
             supplierId: string;
+        };
+        PartToMainProductDto: {
+            newIsoCode: string;
         };
         ProductAgreementDeletedResponse: {
             /** Format: uuid */
@@ -2815,7 +2891,7 @@ export interface components {
             /** Format: uuid */
             supplierId: string;
             supplierRef: string;
-            hmsArtNr?: string | null;
+            hmsArtNr: string;
             /** Format: uuid */
             agreementId: string;
             reference: string;
@@ -2841,6 +2917,9 @@ export interface components {
         /** @enum {string} */
         ProductAgreementStatus: "ACTIVE" | "INACTIVE" | "DELETED";
         ProductAgreementsDeletedResponse: {
+            ids: string[];
+        };
+        ProductAgreementsReactivatedResponse: {
             ids: string[];
         };
         ProductData: {
@@ -3056,7 +3135,7 @@ export interface components {
         RegistrationAuthentication: {
             name: string;
             attributes: {
-                [key: string]: unknown;
+                [key: string]: Record<string, never>;
             };
         };
         /** @enum {string} */
@@ -3450,6 +3529,7 @@ export interface components {
             text?: string | null;
             keywords?: string[] | null;
             url?: string | null;
+            isoCategory?: string | null;
         };
         UserDTO: {
             /** Format: uuid */
@@ -4330,6 +4410,32 @@ export interface operations {
             };
         };
     };
+    changeToMainProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartToMainProductDto"];
+            };
+        };
+        responses: {
+            /** @description changeToMainProduct 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     findBySeriesUUIDAndSupplierIdOld: {
         parameters: {
             query?: never;
@@ -4644,6 +4750,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductAgreementRegistrationDTO"][];
+                };
+            };
+        };
+    };
+    reactivateProductAgreementByIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description reactivateProductAgreementByIds 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductAgreementsReactivatedResponse"];
                 };
             };
         };
@@ -5367,9 +5497,6 @@ export interface operations {
     findSeriesPendingApprove: {
         parameters: {
             query: {
-                params?: {
-                    [key: string]: string;
-                } | null;
                 pageable: components["schemas"]["OpenApiPageable"];
             };
             header?: never;
@@ -5385,6 +5512,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_SeriesToApproveDTO_"];
+                };
+            };
+        };
+    };
+    changeMainProductToPart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccessoryDTO"];
+            };
+        };
+        responses: {
+            /** @description changeMainProductToPart 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
                 };
             };
         };
@@ -6395,6 +6548,7 @@ export interface operations {
     findParts: {
         parameters: {
             query: {
+                excludedStatus?: components["schemas"]["RegistrationStatus"] | null;
                 supplierRef?: string | null;
                 hmsArtNr?: string | null;
                 adminStatus?: components["schemas"]["AdminStatus"] | null;
@@ -6419,6 +6573,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_ProductRegistrationDTOV2_"];
+                };
+            };
+        };
+    };
+    approvePart_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description approvePart_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
                 };
             };
         };
@@ -6489,7 +6665,7 @@ export interface operations {
             };
         };
     };
-    draftSeriesWithAndPublish_1: {
+    draftPartWith: {
         parameters: {
             query?: never;
             header?: never;
@@ -6504,7 +6680,33 @@ export interface operations {
             };
         };
         responses: {
-            /** @description draftSeriesWithAndPublish_1 200 response */
+            /** @description draftPartWith 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartDraftResponse"];
+                };
+            };
+        };
+    };
+    draftPartWithAndPublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplierId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartDraftWithDTO"];
+            };
+        };
+        responses: {
+            /** @description draftPartWithAndPublish 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6627,7 +6829,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
             };
         };
     };

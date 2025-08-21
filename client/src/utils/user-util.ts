@@ -13,7 +13,7 @@ export interface LoggedInUser {
 }
 
 export const mapLoggedInUser = (_source: LoggedInUserResponse): LoggedInUser => {
-  const roles: string[] = _source.attributes["roles"] as string[];
+  const roles: string[] = _source.attributes["roles"] as unknown as string[];
   return {
     isAdminOrHmsUser: roles.includes("ROLE_ADMIN") || roles.includes("ROLE_HMS"),
     isAdmin: roles.includes("ROLE_ADMIN"),

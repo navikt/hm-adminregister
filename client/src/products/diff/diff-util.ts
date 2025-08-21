@@ -22,7 +22,10 @@ function getDifferentElements(list1: Array<TechData>, list2: Array<TechData>): A
 export function getTechDataDiff(diffDto: DifferenceDTO): Array<TechDataDiff> {
   const diffArrays = diffDto.diff.entriesDiffering["productData.techData"];
 
-  return getDifferentElements(diffArrays.first as Array<TechData>, diffArrays.second as Array<TechData>);
+  return getDifferentElements(
+    diffArrays.first as unknown as Array<TechData>,
+    diffArrays.second as unknown as Array<TechData>
+  );
 }
 
 function areArraysSimilar(arr1: MediaInfo[], arr2: MediaInfo[]): boolean {
@@ -32,7 +35,7 @@ function areArraysSimilar(arr1: MediaInfo[], arr2: MediaInfo[]): boolean {
 
   return (
     arr1.every((item1) => arr2.some((item2) => JSON.stringify(item1) === JSON.stringify(item2))) &&
-    arr2.every((item1) => arr1.some((item2) => JSON.stringify(item1) === JSON.stringify(item2)))
+    arr2.every((item1) => arr1.some((item2) => JSON.stringify(item2) === JSON.stringify(item1)))
   );
 }
 
@@ -47,18 +50,18 @@ export function getMediaDiff(diffDto: DifferenceDTO): MediaDiff {
     };
   }
   const videoChanges = areArraysSimilar(
-    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "VIDEO"),
-    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "VIDEO"),
+    (diffArrays.first as unknown as MediaInfo[]).filter((media) => media.type === "VIDEO"),
+    (diffArrays.second as unknown as MediaInfo[]).filter((media) => media.type === "VIDEO"),
   );
 
   const documentChanges = areArraysSimilar(
-    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "PDF"),
-    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "PDF"),
+    (diffArrays.first as unknown as MediaInfo[]).filter((media) => media.type === "PDF"),
+    (diffArrays.second as unknown as MediaInfo[]).filter((media) => media.type === "PDF"),
   );
 
   const imageChanges = areArraysSimilar(
-    (diffArrays.first as MediaInfo[]).filter((media) => media.type === "IMAGE"),
-    (diffArrays.second as MediaInfo[]).filter((media) => media.type === "IMAGE"),
+    (diffArrays.first as unknown as MediaInfo[]).filter((media) => media.type === "IMAGE"),
+    (diffArrays.second as unknown as MediaInfo[]).filter((media) => media.type === "IMAGE"),
   );
 
   return {
