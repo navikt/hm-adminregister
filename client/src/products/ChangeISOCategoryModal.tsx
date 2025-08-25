@@ -22,7 +22,7 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick }: Props) => {
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
-  const [resetTechnicalData, setResetTechnicalData] = useState<"Ja" | "Nei">("Ja");
+  const [resetTechnicalData, setResetTechnicalData] = useState<"Ja" | "Nei">("Nei");
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined);
 
   const handleSetFormValueIso = (value: string) => {
@@ -83,8 +83,8 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick }: Props) => {
               value={resetTechnicalData}
               onChange={(v) => setResetTechnicalData(v as "Ja" | "Nei")}
             >
-              <Radio value="Ja">Nullstill alle felter</Radio>
               <Radio value="Nei">Behold teknisk data som passer ny ISO</Radio>
+              <Radio value="Ja">Nullstill alle felter</Radio>
             </RadioGroup>
           </VStack>
         </Content>
