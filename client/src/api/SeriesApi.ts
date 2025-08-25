@@ -56,10 +56,12 @@ export const changeMainProductToPart = async (
   seriesUUID: string,
   accessory: boolean,
   newIsoCode: string,
+  resetTechnicalData: boolean,
 ): Promise<void> => {
   return await fetchAPIModify(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), "PUT", {
     accessory: accessory,
     newIsoCode: newIsoCode,
+    resetTechnicalData: resetTechnicalData,
   });
 };
 
@@ -149,8 +151,11 @@ export const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegis
 export const updateProductTitle = async (seriesUUID: string, productTitle: string): Promise<void> =>
   updateSeries(seriesUUID, { title: productTitle });
 
-export const updateProductIsoCategory = async (seriesUUID: string, isoCategory: string): Promise<void> =>
-  updateSeries(seriesUUID, { isoCategory: isoCategory });
+export const updateProductIsoCategory = async (
+  seriesUUID: string,
+  isoCategory: string,
+  resetTechnicalData: boolean,
+): Promise<void> => updateSeries(seriesUUID, { isoCategory: isoCategory, resetTechnicalData: resetTechnicalData });
 
 export const updateProductDescription = async (seriesUUID: string, productDescription: string): Promise<void> =>
   updateSeries(seriesUUID, { text: productDescription });

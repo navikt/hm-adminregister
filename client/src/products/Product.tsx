@@ -26,9 +26,10 @@ import {
   deleteSeries,
   setPublishedSeriesToDraft,
   setSeriesToActive,
-  setSeriesToInactive, updateProductIsoCategory,
+  setSeriesToInactive,
+  updateProductIsoCategory,
   updateProductTitle,
-  useSeriesV2
+  useSeriesV2,
 } from "api/SeriesApi";
 import { HM_REGISTER_URL } from "environments";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
@@ -53,7 +54,7 @@ import ChangeProductToPartModal from "products/ChangeProductToPartModal";
 import { useIsoCategories } from "utils/swr-hooks";
 import IsoComboboxProvider from "products/iso-combobox/IsoComboboxProvider";
 import { labelRequired } from "utils/string-util";
-
+import ChangeISOCategoryModal from "products/ChangeISOCategoryModal";
 
 type Error = {
   isoCodeErrorMessage?: string | undefined;
@@ -68,6 +69,7 @@ const Product = () => {
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
   const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false);
+  const [changeToIsoCategoryModalIsOpen, setChangeToIsoCategoryModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
     open: boolean;
@@ -151,13 +153,12 @@ const Product = () => {
       .catch((error) => setGlobalError(error.status, error.message));
   };
 
-  const handleSaveIsoCategory = () => {
-    setShowEditIsoCategoryMode(false);
-    updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory))
+  const handleSaveIsoCategory = (isoCategory: string, resetTechnicalData: boolean) => {
+    setChangeToIsoCategoryModalIsOpen(false);
+    updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory), resetTechnicalData)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message));
   };
-
 
   const isEditable = series.status === "EDITABLE";
 
@@ -209,7 +210,7 @@ const Product = () => {
   async function onSwitchToPart(accessory: boolean, newIsoCode: string) {
     setChangeToPartModalIsOpen(false);
 
-    changeMainProductToPart(series!.id, accessory, newIsoCode)
+    changeMainProductToPart(series!.id, accessory, newIsoCode, false) //todo: resetTechnicalData
       .then(() => {
         mutateSeries();
         navigate(`/del/${series?.variants[0].id}`);
@@ -239,6 +240,11 @@ const Product = () => {
         isOpen={changeToPartModalIsOpen}
         setIsOpen={setChangeToPartModalIsOpen}
         onClick={onSwitchToPart}
+      />
+      <ChangeISOCategoryModal
+        isOpen={changeToIsoCategoryModalIsOpen}
+        setIsOpen={setChangeToIsoCategoryModalIsOpen}
+        onClick={handleSaveIsoCategory}
       />
       {expiredSeriesModalIsOpen.newStatus === "ACTIVE" && (
         <ConfirmModal
@@ -361,22 +367,22 @@ const Product = () => {
             <HStack gap="2" align="center">
               {isEditable && loggedInUser?.isAdmin && showEditIsoCategoryMode && (
                 <HStack align="end" gap="2">
-                <IsoComboboxProvider
-                  label={labelRequired("Iso-kategori (kode)")}
-                  description={"Søk etter isokategori produktet passer best inn i"}
-                  selectedOptions={selectedOptions}
-                  options={isoCodesAndTitles || []}
-                  onToggleSelected={onToggleSelected}
-                  // onBlur={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
-                  // onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
-                  // error={fieldError?.isoCodeErrorMessage ?? ""}
-                  maxSelected={{ limit: 1 }}
-                />
+                  <IsoComboboxProvider
+                    label={labelRequired("Iso-kategori (kode)")}
+                    description={"Søk etter isokategori produktet passer best inn i"}
+                    selectedOptions={selectedOptions}
+                    options={isoCodesAndTitles || []}
+                    onToggleSelected={onToggleSelected}
+                    // onBlur={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+                    // onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
+                    // error={fieldError?.isoCodeErrorMessage ?? ""}
+                    maxSelected={{ limit: 1 }}
+                  />
                   <Button
                     className="fit-content"
                     variant="tertiary"
                     icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
-                    onClick={handleSaveIsoCategory}
+                   // onClick={handleSaveIsoCategory}
                   >
                     Lagre
                   </Button>
@@ -396,7 +402,8 @@ const Product = () => {
                   variant="tertiary"
                   icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
                   onClick={() => {
-                    setShowEditIsoCategoryMode(true);
+                    //setShowEditIsoCategoryMode(true);
+                    setChangeToIsoCategoryModalIsOpen(true)
                   }}
                 ></Button>
               )}

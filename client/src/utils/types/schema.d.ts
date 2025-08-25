@@ -2353,6 +2353,7 @@ export interface components {
         AccessoryDTO: {
             accessory: boolean;
             newIsoCode: string;
+            resetTechnicalData: boolean;
         };
         AdminInfo: {
             approvedBy?: string | null;
@@ -3530,6 +3531,7 @@ export interface components {
             keywords?: string[] | null;
             url?: string | null;
             isoCategory?: string | null;
+            resetTechnicalData?: boolean | null;
         };
         UserDTO: {
             /** Format: uuid */
