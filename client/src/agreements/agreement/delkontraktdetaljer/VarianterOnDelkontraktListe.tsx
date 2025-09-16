@@ -10,14 +10,14 @@ interface Props {
 }
 
 export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([product.hmsArtNr!]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([product.supplierRef!]);
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
       list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
     );
 
   useEffect(() => {
-    setSelectedRows([product.hmsArtNr!]);
+    setSelectedRows([product.supplierRef!]);
   }, [product]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                     onChange={() => {
                       selectedRows.length
                         ? setSelectedRows([])
-                        : setSelectedRows(variants.map(({ hmsArtNr }) => hmsArtNr!));
+                        : setSelectedRows(variants.map(({ supplierRef }) => supplierRef!));
                     }}
                     hideLabel
                   >
@@ -57,18 +57,18 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                 <Table.DataCell>
                   <Checkbox
                     hideLabel
-                    checked={selectedRows.includes(product.hmsArtNr!)}
+                    checked={selectedRows.includes(product.supplierRef!)}
                     onChange={() => {
-                      toggleSelectedRow(product.hmsArtNr!);
+                      toggleSelectedRow(product.supplierRef!);
                     }}
-                    aria-labelledby={`id-${product.hmsArtNr}`}
+                    aria-labelledby={`id-${product.supplierRef}`}
                   >
                     {" "}
                   </Checkbox>
                 </Table.DataCell>
               </Table.Row>
               {variants
-                .filter((variant) => variant.hmsArtNr !== product.hmsArtNr)
+                .filter((variant) => variant.supplierRef !== product.supplierRef)
                 .map((variant, i) => {
                   return (
                     <Table.Row key={variant.id}>
@@ -78,11 +78,11 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                       <Table.DataCell>
                         <Checkbox
                           hideLabel
-                          checked={selectedRows.includes(variant.hmsArtNr!)}
+                          checked={selectedRows.includes(variant.supplierRef!)}
                           onChange={() => {
-                            toggleSelectedRow(variant.hmsArtNr!);
+                            toggleSelectedRow(variant.supplierRef!);
                           }}
-                          aria-labelledby={`id-${variant.hmsArtNr}`}
+                          aria-labelledby={`id-${variant.supplierRef}`}
                         >
                           {" "}
                         </Checkbox>

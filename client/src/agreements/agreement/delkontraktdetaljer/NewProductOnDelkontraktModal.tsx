@@ -6,7 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { labelRequired } from "utils/string-util";
 import { createNewProductOnDelkontraktSchema } from "utils/zodSchema/newProductOnDelkontrakt";
-import { getProductByHmsNr } from "api/ProductApi";
+import { getProductByHmsNr, getProductByVariantId } from "api/ProductApi";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import { VarianterOnDelkontraktListe } from "./VarianterOnDelkontraktListe";
 import { addProductsToAgreement } from "api/AgreementProductApi";
@@ -48,8 +48,8 @@ const NewProductOnDelkontraktModal = ({
   const { setGlobalError } = useErrorStore();
 
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
-    if (!productToAdd || productToAdd.hmsArtNr !== data.hmsNummer) {
-      getProductByHmsNr(data.hmsNummer)
+    if (!productToAdd || productToAdd.hmsArtNr !== data.identifikator && productToAdd.supplierRef !== data.identifikator) {
+      getProductByVariantId(data.identifikator)
         .then((product) => {
           setProductToAdd(product);
           if (product.seriesUUID) {
@@ -68,7 +68,7 @@ const NewProductOnDelkontraktModal = ({
     addProductsToAgreement(
       delkontraktId,
       post,
-      variants?.filter((variant) => variantsToAdd.includes(variant.hmsArtNr!)) || [],
+      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || [],
     )
       .then((agreement) => {
         mutateProductAgreements();
@@ -100,12 +100,12 @@ const NewProductOnDelkontraktModal = ({
           <Content>
             <VStack gap={"2"} style={{ width: "100%" }}>
               <TextField
-                {...register("hmsNummer", { required: true })}
-                label={labelRequired("HMS-nummer")}
-                id="hmsNummer"
-                name="hmsNummer"
+                {...register("identifikator", { required: true })}
+                label={labelRequired("HMS-nummer/Levart nr.")}
+                id="identifikator"
+                name="identifikator"
                 type="text"
-                error={errors?.hmsNummer?.message}
+                error={errors?.identifikator?.message}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -113,7 +113,7 @@ const NewProductOnDelkontraktModal = ({
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    onClickGetProduct({ hmsNummer: e.currentTarget.value });
+                    onClickGetProduct({ identifikator: e.currentTarget.value });
                   }
                 }}
               />
