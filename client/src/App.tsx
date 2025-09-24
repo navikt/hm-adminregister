@@ -50,6 +50,8 @@ import HmsUserProfile from "users/hms-user/HmsUserProfile";
 import Part from "parts/Part";
 import Parts from "parts/Parts";
 import CreatePart from "parts/CreatePart";
+import TechLabels from "techlabels/TechLabels";
+import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -97,6 +99,7 @@ export function App() {
 
               <Route path="/deler" element={<Parts />} />
               <Route path="/del/:productId" element={<Part />} />
+              <Route path="/tekniskdata" element={<TechLabels/>} />
             </Route>
 
             <Route path="/del/opprett" element={<CreatePart />} />
@@ -131,6 +134,8 @@ export function App() {
 
             <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
             <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />
+            <Route path={"/tekniskdata/opprett"} element={<CreateAndEditTechLabel />}/>
+            <Route path={"/tekniskdata/rediger"} element={<CreateAndEditTechLabel />}/>
           </Route>
 
           <Route path="*" element={<NotFound />} />
