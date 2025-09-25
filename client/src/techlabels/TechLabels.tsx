@@ -35,7 +35,7 @@ const TechLabels = () => {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        getTechLabels({}, 0, 1000)
+        getTechLabels({}, 0, 5000)
             .then((res) => {
                 setTechLabels(res.content);
                 setFilteredLabels(res.content);
@@ -136,7 +136,7 @@ const TechLabels = () => {
             size="xsmall"
             variant="tertiary"
             icon={<PencilWritingIcon aria-hidden />}
-            onClick={() => navigate(`/tekniskdata/rediger/${label.id}`)}
+            onClick={() => navigate(`/tekniskdata/rediger/${label.id}`, {state: label})}
             aria-label="Rediger"
         />
       </span>

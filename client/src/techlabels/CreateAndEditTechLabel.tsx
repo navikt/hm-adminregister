@@ -12,12 +12,14 @@ type FormData = {
   type: TechLabelType;
   unit: string;
   isoCode: string;
+  options: string;
 };
 
 const TECH_LABEL_TYPES = [
   { value: "", label: "Velg type" },
-  { value: "N", label: "L" },
-  { value: "C"},
+  { value: "N", label: "N" },
+  { value: "L", label: "L" },
+  { value: "C", label: "C"},
   // Add more types as needed
 ];
 
@@ -37,6 +39,7 @@ const CreateAndEditTechLabel = () => {
       type: editData?.type || "N",
       unit: editData?.unit || "",
       isoCode: editData?.isoCode || "",
+      options: editData?.options.join(", ") || "",
     },
   });
 
@@ -46,7 +49,6 @@ const CreateAndEditTechLabel = () => {
       createdBy: "",
       createdByUser: "",
       isActive: true,
-      options: [],
       sort: 1,
       systemLabel: "",
       updated: "",
@@ -54,6 +56,7 @@ const CreateAndEditTechLabel = () => {
       updatedByUser: "",
       ...editData,
       ...data,
+      options : data.options ? data.options.split(",").map(opt => opt.trim()) : [],
       id: editData?.id || crypto.randomUUID()
     };
 
@@ -92,9 +95,8 @@ const CreateAndEditTechLabel = () => {
             ))}
           </Select>
           <TextField
-            {...register("unit", { required: true })}
-            label="Unit *"
-            error={errors.unit && "Unit is required"}
+            {...register("unit", { required:false })}
+            label="Unit"
             id="unit"
             autoComplete="on"
           />
@@ -104,6 +106,12 @@ const CreateAndEditTechLabel = () => {
             error={errors.isoCode && "ISO Code is required"}
             id="isoCode"
             autoComplete="on"
+          />
+          <TextField
+              {...register("options", { required: false })}
+              label="Options"
+              id="options"
+              autoComplete="on"
           />
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

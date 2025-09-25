@@ -135,7 +135,7 @@ export function App() {
             <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
             <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />
             <Route path={"/tekniskdata/opprett"} element={<CreateAndEditTechLabel />}/>
-            <Route path={"/tekniskdata/rediger"} element={<CreateAndEditTechLabel />}/>
+            <Route path={"/tekniskdata/rediger/:id"} element={<CreateAndEditTechLabel />}/>
           </Route>
 
           <Route path="*" element={<NotFound />} />
