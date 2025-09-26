@@ -1,5 +1,5 @@
 import {
-  Buldings3Icon,
+  Buldings3Icon, DatabaseIcon,
   FileCheckmarkFillIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
@@ -123,6 +123,18 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             </HStack>
           </NavLink>
         </>
+      )}
+      {loggedInUser && loggedInUser.isAdmin && (
+          <>
+            <NavLink to="/tekniskdata" className="page-link">
+              {pathname.startsWith("/tekniskdata") && <div className="active-indicator" />}
+              <div className="line" />
+              <HStack gap="4" style={{ paddingLeft: "16px" }}>
+                <DatabaseIcon fontSize={"1.5rem"} aria-hidden />
+                <span>Tekniskdata</span>
+              </HStack>
+            </NavLink>
+          </>
       )}
     </VStack>
   );
