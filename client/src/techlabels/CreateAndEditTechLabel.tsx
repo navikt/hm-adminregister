@@ -36,7 +36,7 @@ const CreateAndEditTechLabel = () => {
       type: editData?.type || "N",
       unit: editData?.unit || "",
       isoCode: editData?.isoCode || "",
-      options: editData?.options.join(", ") || "",
+      options: editData?.options?.join(", ") || "",
     },
   });
 
