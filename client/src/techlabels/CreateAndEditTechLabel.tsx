@@ -104,7 +104,7 @@ const CreateAndEditTechLabel = () => {
               Cancel
             </Button>
             <Button type="submit" size="medium">
-              {editData ? "Save" : "Create"}
+              {editData ? "Opprett" : "Endre"}
             </Button>
           </HStack>
         </VStack>

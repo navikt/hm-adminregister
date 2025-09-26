@@ -96,24 +96,30 @@ const TechLabels = () => {
                         {!loading && filteredLabels.length === 0 && (
                             <Alert variant="info">Ingen tekniskdata funnet.</Alert>
                         )}
-                        {/* Header row outside the cardRow */}
                         {!loading && filteredLabels.length > 0 && (
                             <div className={styles.cardRow + " " + styles.cardHeader}>
-                                <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}><strong>Label</strong></BodyShort>
-                                <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}><strong>IsoCode</strong></BodyShort>
+                                <BodyShort
+                                    className={`${styles.cardValue} ${styles.mediumColumn}`}><strong>Label</strong></BodyShort>
+                                <BodyShort
+                                    className={`${styles.cardValue} ${styles.mediumColumn}`}><strong>IsoCode</strong></BodyShort>
                                 <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}><strong>Type</strong></BodyShort>
                                 <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}><strong>Unit</strong></BodyShort>
-                                <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}><strong>Options</strong></BodyShort>
+                                <BodyShort
+                                    className={`${styles.cardValue} ${styles.optionsColumn}`}><strong>Options</strong></BodyShort>
                                 <span className={styles.editButtonHeader}></span>
                             </div>
                         )}
                         {paginatedLabels.map((label) => (
                             <Box key={label.id} className={styles.cardBox}>
                                 <div className={styles.cardRow}>
-                                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.label}</BodyShort>
-                                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.isoCode}</BodyShort>
-                                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.type}</BodyShort>
-                                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.unit}</BodyShort>
+                                    <BodyShort
+                                        className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.label}</BodyShort>
+                                    <BodyShort
+                                        className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.isoCode}</BodyShort>
+                                    <BodyShort
+                                        className={`${styles.cardValue} ${styles.shortColumn}`}>{label.type}</BodyShort>
+                                    <BodyShort
+                                        className={`${styles.cardValue} ${styles.shortColumn}`}>{label.unit}</BodyShort>
                                     <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
                                         {label.options && label.options.length > 0 ? (
                                             label.options.length > MAX_VISIBLE_OPTIONS ? (
@@ -133,7 +139,7 @@ const TechLabels = () => {
         <Button
             size="xsmall"
             variant="tertiary"
-            icon={<PencilWritingIcon aria-hidden />}
+            icon={<PencilWritingIcon aria-hidden/>}
             onClick={() => navigate(`/tekniskdata/rediger/${label.id}`, {state: label})}
             aria-label="Rediger"
         />

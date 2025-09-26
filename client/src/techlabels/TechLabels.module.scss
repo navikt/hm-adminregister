@@ -21,20 +21,24 @@ $column-widths: 260px 120px 120px 120px 40px;
 
 .cardBox {
   padding: 0;
-  border-width: 1px;
-  border-radius: var(--a-border-radius-medium);
-  background: var(--a-surface-default);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border-width: 1;
+  border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
+  border-radius: var(--a-border-radius-large);
+  background-color: var(--a-bg-default);
+  color: var(--a-text-default);
+  text-decoration: none;
 }
 
 .cardRow {
   display: flex;
   align-items: center;
+  padding-inline: var(--a-spacing-4);
 }
 
 .cardData {
   display: flex;
-  gap: 0;
+  gap: 4;
+  paddingBlock: 4;
 }
 
 .cardValue {
