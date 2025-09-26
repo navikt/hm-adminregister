@@ -1,5 +1,5 @@
 import {
-  Buldings3Icon,
+  Buldings3Icon, DatabaseIcon,
   FileCheckmarkFillIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
@@ -130,7 +130,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
               {pathname.startsWith("/tekniskdata") && <div className="active-indicator" />}
               <div className="line" />
               <HStack gap="4" style={{ paddingLeft: "16px" }}>
-                <Buldings3Icon fontSize={"1.5rem"} aria-hidden />
+                <DatabaseIcon fontSize={"1.5rem"} aria-hidden />
                 <span>Tekniskdata</span>
               </HStack>
             </NavLink>

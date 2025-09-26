@@ -1,6 +1,6 @@
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, getPath } from "api/fetch";
-import { TechLabelRegistrationDTO, TechLabelCriteria } from "utils/types/response-types";
+import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelCriteria } from "utils/types/response-types";
 
 const BASE_URL = () => `${HM_REGISTER_URL()}/admreg/admin/api/v1/techlabel/registrations`;
 
@@ -23,8 +23,8 @@ export const getTechLabels = (
 export const getTechLabelById = (id: string): Promise<TechLabelRegistrationDTO> =>
   fetchAPI(`${BASE_URL()}/${id}`, "GET");
 
-export const createTechLabel = (dto: TechLabelRegistrationDTO): Promise<TechLabelRegistrationDTO> =>
+export const createTechLabel = (dto: TechLabelCreateUpdateDTO): Promise<TechLabelRegistrationDTO> =>
   fetchAPI(`${BASE_URL()}/`, "POST", dto);
 
-export const updateTechLabel = (id: string, dto: TechLabelRegistrationDTO): Promise<TechLabelRegistrationDTO> =>
+export const updateTechLabel = (id: string, dto: TechLabelCreateUpdateDTO): Promise<TechLabelRegistrationDTO> =>
   fetchAPI(`${BASE_URL()}/${id}`, "PUT", dto);

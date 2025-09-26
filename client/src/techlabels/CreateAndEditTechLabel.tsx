@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { Box, Button, Heading, HStack, TextField, VStack, Select } from "@navikt/ds-react";
+import { Button, HStack, TextField, VStack, Select } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import {TechLabelType, TechLabelRegistrationDTO} from "utils/types/response-types";
+import {TechLabelType, TechLabelRegistrationDTO, TechLabelCreateUpdateDTO} from "utils/types/response-types";
 import { createTechLabel, updateTechLabel } from "api/TechLabelApi";
 import FormBox from "felleskomponenter/FormBox";
-import * as crypto from "node:crypto";
 
 type FormData = {
   label: string;
@@ -20,7 +18,6 @@ const TECH_LABEL_TYPES = [
   { value: "N", label: "N" },
   { value: "L", label: "L" },
   { value: "C", label: "C"},
-  // Add more types as needed
 ];
 
 const CreateAndEditTechLabel = () => {
@@ -44,28 +41,17 @@ const CreateAndEditTechLabel = () => {
   });
 
   async function onSubmit(data: FormData) {
-    const dto: TechLabelRegistrationDTO = {
-      created: "",
-      createdBy: "",
-      createdByUser: "",
-      isActive: true,
-      sort: 1,
-      systemLabel: "",
-      updated: "",
-      updatedBy: "",
-      updatedByUser: "",
-      ...editData,
+    const dto: TechLabelCreateUpdateDTO = {
       ...data,
       options : data.options ? data.options.split(",").map(opt => opt.trim()) : [],
-      id: editData?.id || crypto.randomUUID()
     };
 
     if (editData) {
-      await updateTechLabel(dto.id, dto);
+      await updateTechLabel(editData.id, dto)
     } else {
       await createTechLabel(dto);
     }
-    navigate("/techlabels");
+    navigate("/tekniskdata");
   }
 
   const title = editData ? "Endre tekniskdata beskrivelse" : "Opprett ny tekniskdata beskrivelse";

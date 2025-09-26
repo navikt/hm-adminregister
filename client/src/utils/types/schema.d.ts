@@ -808,6 +808,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/product/registrations/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getProductsByIds"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/product/registrations/old/series/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -3516,6 +3532,13 @@ export interface components {
         };
         /** @enum {string} */
         TechDataType: "NUMBER" | "BOOLEAN" | "TEXT" | "OPTIONS";
+        TechLabelCreateUpdateDTO: {
+            label: string;
+            isoCode: string;
+            type: components["schemas"]["TechLabelType"];
+            unit?: string | null;
+            options: string[];
+        };
         TechLabelDTO: {
             /** Format: uuid */
             id: string;
@@ -5189,6 +5212,30 @@ export interface operations {
             };
         };
     };
+    getProductsByIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description getProductsByIds 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
     findBySeriesUUIDAndSupplierIdOld_1: {
         parameters: {
             query?: never;
@@ -5855,9 +5902,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    dto: components["schemas"]["TechLabelRegistrationDTO"];
-                };
+                "application/json": components["schemas"]["TechLabelCreateUpdateDTO"];
             };
         };
         responses: {
@@ -5905,9 +5950,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    dto: components["schemas"]["TechLabelRegistrationDTO"];
-                };
+                "application/json": components["schemas"]["TechLabelCreateUpdateDTO"];
             };
         };
         responses: {

@@ -8,8 +8,6 @@ import {
     Loader,
     Pagination,
     Search,
-    VStack,
-    Label,
     BodyShort,
     Tooltip,
     Alert

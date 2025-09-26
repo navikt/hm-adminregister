@@ -88,6 +88,7 @@ export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrationDTO"];
 export type TechLabelType = components["schemas"]["TechLabelType"];
+export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
 
 
 export type ProdukterTilGodkjenningChunk = {
