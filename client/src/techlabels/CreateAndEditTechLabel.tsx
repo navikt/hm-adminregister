@@ -101,10 +101,10 @@ const CreateAndEditTechLabel = () => {
           />
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
-              Cancel
+              Avbryt
             </Button>
             <Button type="submit" size="medium">
-              {editData ? "Opprett" : "Endre"}
+              {editData ? "Endre" : "Opprett"}
             </Button>
           </HStack>
         </VStack>
