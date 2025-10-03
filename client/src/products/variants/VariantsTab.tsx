@@ -291,7 +291,7 @@ const VariantsTab = ({
                               {noWorksWith(product)} produkter <PencilIcon />
                             </Link>
                           ) : (
-                            <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
+                            <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter
                             </Link>
                           )}

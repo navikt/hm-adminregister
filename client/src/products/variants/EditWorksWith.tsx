@@ -24,6 +24,7 @@ import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { removeWorksWithVariant } from "api/WorksWithApi";
 import { WorksWithMapping } from "utils/types/response-types";
+import WorksWithVariantsTable from "products/variants/WorksWithVariantsTable";
 
 const EditWorksWith = () => {
   const { productId } = useParams();
@@ -112,34 +113,14 @@ const EditWorksWith = () => {
             {!products || products.length === 0 ? (
               <Alert variant="info">Ingen produkter er koblet til dette produktet.</Alert>
             ) : (
-              <RowBoxTable size="small">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell scope="col">Variantnavn</Table.HeaderCell>
-                    <Table.HeaderCell scope="col">HMS-artnr.</Table.HeaderCell>
-                    <Table.HeaderCell scope="col">Artlevnr.</Table.HeaderCell>
-                    <Table.HeaderCell scope="col">Fjern</Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {products?.map((product) => (
-                    <Table.Row key={product.id}>
-                      <Table.DataCell>{product.articleName}</Table.DataCell>
-                      <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
-                      <Table.DataCell>{product.supplierRef}</Table.DataCell>
-                      <Table.DataCell>
-                        <Button
-                          icon={<TrashIcon />}
-                          onClick={() => {
-                            setProductIdToDelete(product.id);
-                            setIsDeleteModalOpen(true);
-                          }}
-                        />
-                      </Table.DataCell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </RowBoxTable>
+              <WorksWithVariantsTable
+                products={products}
+                showRemove
+                onRemove={(id) => {
+                  setProductIdToDelete(id);
+                  setIsDeleteModalOpen(true);
+                }}
+              />
             )}
 
             <HStack gap="4">

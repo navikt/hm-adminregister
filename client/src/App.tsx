@@ -51,6 +51,7 @@ import Part from "parts/Part";
 import Parts from "parts/Parts";
 import CreatePart from "parts/CreatePart";
 import EditWorksWith from "products/variants/EditWorksWith";
+import ViewWorksWith from "products/variants/ViewWorksWith";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -106,7 +107,9 @@ export function App() {
             <Route path="/produkter/:seriesId/rediger-variant/:productId" element={<EditProductVariant />} />
             <Route path="/produkter/:seriesId/opprett-variant/:productId" element={<CreateProductVariant />} />
             <Route path="/produkt/:seriesId/importer-produkter" element={<ImporterOgValiderProdukter />} />
+
             <Route path="/produkter/:seriesId/rediger-passer-med/:productId" element={<EditWorksWith />} />
+            <Route path="/produkter/:seriesId/se-passer-med/:productId" element={<ViewWorksWith />} />
 
             <Route path="/admin/rediger-admin" element={<EditAdminUser />} />
             <Route path="/admin/opprett-admin" element={<CreateAdminUser />} />
