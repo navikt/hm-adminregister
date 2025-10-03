@@ -90,6 +90,10 @@ export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForK
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
 export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
+export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrationDTO"];
+export type TechLabelType = components["schemas"]["TechLabelType"];
+export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
+
 
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[];
@@ -159,3 +163,10 @@ export type ResetPasswordRequest = {
   email: string;
   newPassword: string;
 };
+
+export type TechLabelCriteria = {
+    label?: string;
+    type?: string;
+    unit?: string;
+    isoCode?: string;
+}
