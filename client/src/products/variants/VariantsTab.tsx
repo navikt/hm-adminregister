@@ -8,7 +8,7 @@ import {
 import { Alert, Box, Button, Dropdown, Pagination, Search, Table, Tabs, Tag, VStack } from "@navikt/ds-react";
 import { deleteProducts, setVariantToActive, setVariantToExpired } from "api/ProductApi";
 import { useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAllUniqueTechDataKeys } from "utils/product-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { useErrorStore } from "utils/store/useErrorStore";
@@ -281,6 +281,23 @@ const VariantsTab = ({
                         <Table.DataCell key={`hms-${i}`}>{product.hmsArtNr || "-"}</Table.DataCell>
                       ))}
                     </Table.Row>
+                    <Table.Row>
+                      <Table.HeaderCell scope="row">Passer med</Table.HeaderCell>
+
+                      {paginatedVariants.map((product, i) => (
+                        <Table.DataCell key={`hms-${i}`}>
+                          {series.status === "EDITABLE" && loggedInUser?.isAdmin ? (
+                            <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
+                              {noWorksWith(product)} produkter <PencilIcon />
+                            </Link>
+                          ) : (
+                            <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
+                              {noWorksWith(product)} produkter
+                            </Link>
+                          )}
+                        </Table.DataCell>
+                      ))}
+                    </Table.Row>
                     {techKeys.map((key) => (
                       <Table.Row key={key}>
                         <Table.HeaderCell scope="row">{key}</Table.HeaderCell>
@@ -338,6 +355,10 @@ const VariantsTab = ({
       </Tabs.Panel>
     </>
   );
+};
+
+const noWorksWith = (product: ProductRegistrationDTOV2) => {
+  return product.productData.attributes.worksWith?.productIds.length ?? 0;
 };
 
 export default VariantsTab;

@@ -1,10 +1,10 @@
-import { BodyLong, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
+import { Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
 import React, { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { SeriesSearchDTO } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithSeries, } from "api/PartApi";
+import { addCompatibleWithSeries } from "api/PartApi";
 import { getSeriesByVariantId } from "api/SeriesApi";
 import { useAuthStore } from "utils/store/useAuthStore";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
@@ -18,7 +18,6 @@ interface Props {
 
 const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePart, partId }: Props) => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
-
 
   const [seriesToAdd, setSeriesToAdd] = useState<SeriesSearchDTO | undefined>(undefined);
   const [identifierToAdd, setIdentifierToAdd] = useState<string | undefined>(undefined);
@@ -102,7 +101,6 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
             )}
             {seriesToAdd && (
               <VStack gap="5">
-
                 <Box
                   key={seriesToAdd.id}
                   background="surface-success-subtle"

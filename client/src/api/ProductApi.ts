@@ -7,6 +7,9 @@ import {
 import { HM_REGISTER_URL } from "environments";
 import { fetchAPI, fetchAPIModify, getPath, httpDelete } from "api/fetch";
 import { useAuthStore } from "utils/store/useAuthStore";
+import { useErrorStore } from "utils/store/useErrorStore";
+import useSWR from "swr";
+import { fetcherGET } from "utils/swr-hooks";
 
 export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/hmsArtNr/${hmsArtNr}`, "GET");
@@ -61,3 +64,27 @@ export const setVariantToExpired = async (id: string, isAdmin: boolean): Promise
 export const setVariantToActive = async (id: string, isAdmin: boolean): Promise<any> => {
   return await fetchAPIModify(getPath(isAdmin, `/api/v1/product/registrations/to-active/${id}`), "PUT");
 };
+
+
+export function useProductVariantsByProductIds(productIds?: string[]) {
+  const { setGlobalError } = useErrorStore();
+
+  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`;
+  const shouldFetch = Array.isArray(productIds) && productIds.length > 0;
+
+  const { data: products, error, isLoading } = useSWR<ProductRegistrationDTO[]>(
+    shouldFetch ? [url, productIds] : null,
+    ([postUrl, ids]) => fetchAPI(postUrl, "POST", ids),
+  );
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return {
+    products,
+    isLoading,
+    error,
+  };
+}

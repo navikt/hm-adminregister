@@ -28,7 +28,6 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   const {
     articleName,
     supplierRef,
-    productData: { techData },
   } = product;
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
@@ -52,6 +51,8 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   });
 
   const { fields: techDataFields } = useFieldArray({ name: "techData", control });
+
+
 
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
@@ -108,13 +109,6 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
           error={errors?.hmsArtNr?.message}
         />
       )}
-      {
-        //techDataFields.length > 0 && (
-        // <Alert variant="info">
-        //  {`Teknisk data opprettet basert på isokategori ${product.isoCategory} satt på produktet`}
-        // </Alert>
-        //)
-      }
       {techDataFields.map((techDataField, index) => {
         const errorForField = errors?.techData?.[index]?.value;
 

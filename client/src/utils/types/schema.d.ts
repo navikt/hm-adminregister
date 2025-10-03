@@ -808,6 +808,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/product/registrations/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getProductsByIds"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/product/registrations/old/series/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -897,6 +913,22 @@ export interface paths {
         };
         get?: never;
         put: operations["setPublishedProductToInactive"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/product/registrations/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProductByVariantIdentifier"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1167,7 +1199,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getAllTechLabels"];
+        get: operations["findTechLabels"];
         put?: never;
         post: operations["createTechLabel"];
         delete?: never;
@@ -2346,6 +2378,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/vendor/api/v1/works-with": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createWorksWithRelations"];
+        delete: operations["deleteWorksWithRelations"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/vendor/api/v1/works-with/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createWorksWithRelationsBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2468,6 +2532,7 @@ export interface components {
             manufacturer?: string | null;
             compatibleWith?: components["schemas"]["CompatibleWith"] | null;
             alternativeFor?: components["schemas"]["AlternativeFor"] | null;
+            worksWith?: components["schemas"]["WorksWith"] | null;
             keywords?: string[] | null;
             series?: string | null;
             shortdescription?: string | null;
@@ -2797,6 +2862,12 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
         };
+        Page_TechLabelRegistrationDTO_: components["schemas"]["Slice_TechLabelRegistrationDTO_"] & {
+            /** Format: int64 */
+            totalSize?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
         Page_UserDTO_: components["schemas"]["Slice_UserDTO_"] & {
             /** Format: int64 */
             totalSize?: number;
@@ -2892,7 +2963,7 @@ export interface components {
             /** Format: uuid */
             supplierId: string;
             supplierRef: string;
-            hmsArtNr: string;
+            hmsArtNr?: string | null;
             /** Format: uuid */
             agreementId: string;
             reference: string;
@@ -3405,6 +3476,19 @@ export interface components {
             /** Format: int32 */
             numberOfElements?: number;
         };
+        Slice_TechLabelRegistrationDTO_: {
+            content: components["schemas"]["TechLabelRegistrationDTO"][];
+            pageable: components["schemas"]["OpenApiPageable"];
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int64 */
+            offset?: number;
+            /** Format: int32 */
+            size?: number;
+            empty?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
+        };
         Slice_UserDTO_: {
             content: components["schemas"]["UserDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
@@ -3464,19 +3548,26 @@ export interface components {
         };
         /** @enum {string} */
         TechDataType: "NUMBER" | "BOOLEAN" | "TEXT" | "OPTIONS";
+        TechLabelCreateUpdateDTO: {
+            label: string;
+            isoCode: string;
+            type: components["schemas"]["TechLabelType"];
+            unit?: string | null;
+            options: string[];
+        };
         TechLabelDTO: {
             /** Format: uuid */
             id: string;
-            identifier: string;
+            identifier?: string | null;
             label: string;
-            guide: string;
+            guide?: string | null;
             definition?: string | null;
             isocode: string;
-            type: string;
+            type: components["schemas"]["TechLabelType"];
             unit?: string | null;
             /** Format: int32 */
             sort: number;
-            isKeyLabel: boolean;
+            isKeyLabel?: boolean | null;
             systemLabel?: string | null;
             options: string[];
             createdBy: string;
@@ -3489,18 +3580,18 @@ export interface components {
         TechLabelRegistrationDTO: {
             /** Format: uuid */
             id: string;
-            identifier: string;
+            identifier?: string | null;
             label: string;
-            guide: string;
+            guide?: string | null;
             definition?: string | null;
             isoCode: string;
-            type: string;
+            type: components["schemas"]["TechLabelType"];
             unit?: string | null;
             /** Format: int32 */
             sort: number;
             options: string[];
             isActive: boolean;
-            isKeyLabel: boolean;
+            isKeyLabel?: boolean | null;
             systemLabel: string;
             createdBy: string;
             updatedBy: string;
@@ -3511,6 +3602,8 @@ export interface components {
             /** Format: date-time */
             updated: string;
         };
+        /** @enum {string} */
+        TechLabelType: "N" | "L" | "C";
         /** @enum {string} */
         Type: "INFO" | "WARNING";
         Unit: Record<string, never>;
@@ -3567,6 +3660,16 @@ export interface components {
         VerifyOTPRequest: {
             otp: string;
             email: string;
+        };
+        WorksWith: {
+            seriesIds: string[];
+            productIds: string[];
+        };
+        WorksWithMapping: {
+            /** Format: uuid */
+            sourceProductId: string;
+            /** Format: uuid */
+            targetProductId: string;
         };
     };
     responses: never;
@@ -5125,6 +5228,30 @@ export interface operations {
             };
         };
     };
+    getProductsByIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description getProductsByIds 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
+                };
+            };
+        };
+    };
     findBySeriesUUIDAndSupplierIdOld_1: {
         parameters: {
             query?: never;
@@ -5253,6 +5380,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    getProductByVariantIdentifier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description getProductByVariantIdentifier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTO"];
                 };
             };
         };
@@ -5734,22 +5883,28 @@ export interface operations {
             };
         };
     };
-    getAllTechLabels: {
+    findTechLabels: {
         parameters: {
-            query?: never;
+            query: {
+                label?: string | null;
+                type?: components["schemas"]["TechLabelType"] | null;
+                unit?: string | null;
+                isoCode?: string | null;
+                pageable: components["schemas"]["OpenApiPageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description getAllTechLabels 200 response */
+            /** @description findTechLabels 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TechLabelRegistrationDTO"][];
+                    "application/json": components["schemas"]["Page_TechLabelRegistrationDTO_"];
                 };
             };
         };
@@ -5763,9 +5918,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    dto: components["schemas"]["TechLabelRegistrationDTO"];
-                };
+                "application/json": components["schemas"]["TechLabelCreateUpdateDTO"];
             };
         };
         responses: {
@@ -5813,9 +5966,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": {
-                    dto: components["schemas"]["TechLabelRegistrationDTO"];
-                };
+                "application/json": components["schemas"]["TechLabelCreateUpdateDTO"];
             };
         };
         responses: {
@@ -7765,6 +7916,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserDTO"];
+                };
+            };
+        };
+    };
+    createWorksWithRelations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"];
+            };
+        };
+        responses: {
+            /** @description createWorksWithRelations 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"];
+                };
+            };
+        };
+    };
+    deleteWorksWithRelations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"];
+            };
+        };
+        responses: {
+            /** @description deleteWorksWithRelations 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"];
+                };
+            };
+        };
+    };
+    createWorksWithRelationsBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"][];
+            };
+        };
+        responses: {
+            /** @description createWorksWithRelationsBatch 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"][];
                 };
             };
         };

@@ -80,6 +80,10 @@ export type UpdatePartDTO = components["schemas"]["UpdatePartDto"];
 export type CompatibleWith = components["schemas"]["CompatibleWith"];
 export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 
+
+export type WorksWithMapping = components["schemas"]["WorksWithMapping"];
+export type WorksWithMappingList = components["schemas"]["WorksWithMapping"][];
+
 export type SuitableForBrukerpassbrukerDTO = components["schemas"]["SuitableForBrukerpassbrukerDTO"];
 export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForKommunalTeknikerDTO"];
 
