@@ -27,7 +27,6 @@ export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO
 
 export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {
   const encodedVariantId = encodeURIComponent(variantId);
-  console.log("adawdawdadawda", encodedVariantId);
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${encodedVariantId}`;
   return await fetchAPI(seriesIdPath, "GET");
 };
