@@ -18,7 +18,7 @@ import { getTechLabels } from "api/TechLabelApi";
 import { TechLabelRegistrationDTO } from "utils/types/response-types";
 import styles from "./TechLabels.module.scss";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 const MAX_VISIBLE_OPTIONS = 10;
 
 const TechLabels = () => {
