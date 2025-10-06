@@ -62,7 +62,7 @@ const CreateAndEditTechLabel = () => {
         <VStack gap="7">
           <TextField
             {...register("label", { required: true })}
-            label="Label *"
+            label="Navn *"
             error={errors.label && "Label is required"}
             id="label"
             autoComplete="on"
@@ -82,20 +82,20 @@ const CreateAndEditTechLabel = () => {
           </Select>
           <TextField
             {...register("unit", { required:false })}
-            label="Unit"
+            label="Enhet"
             id="unit"
             autoComplete="on"
           />
           <TextField
             {...register("isoCode", { required: true })}
-            label="ISO Code *"
+            label="ISO-kode *"
             error={errors.isoCode && "ISO Code is required"}
             id="isoCode"
             autoComplete="on"
           />
           <TextField
               {...register("options", { required: false })}
-              label="Options"
+              label="Alternativer"
               id="options"
               autoComplete="on"
           />

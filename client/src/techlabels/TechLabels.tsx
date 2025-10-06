@@ -66,9 +66,9 @@ const TechLabels = () => {
             <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
               <Box role="search" className="search-box">
                 <Search
-                  label="Søk etter Label"
+                  label="Søk etter navn på teknisk-data"
                   variant="simple"
-                  placeholder="Søk etter Label"
+                  placeholder="Søk etter navn på teknisk-data"
                   size="medium"
                   value={searchTerm}
                   onChange={setSearchTerm}
@@ -76,9 +76,9 @@ const TechLabels = () => {
               </Box>
               <Box role="search" className="search-box">
                 <Search
-                  label="Søk etter IsoCode"
+                  label="Søk etter ISO-kode"
                   variant="simple"
-                  placeholder="Søk etter IsoCode"
+                  placeholder="Søk etter ISO-kode"
                   size="medium"
                   value={searchIsoCode}
                   onChange={setSearchIsoCode}
@@ -100,19 +100,19 @@ const TechLabels = () => {
               {!loading && filteredLabels.length > 0 && (
                 <div className={styles.cardRow + " " + styles.cardHeader}>
                   <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <strong>Label</strong>
+                    <strong>Navn</strong>
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <strong>IsoCode</strong>
+                    <strong>ISO-kode</strong>
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                     <strong>Type</strong>
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                    <strong>Unit</strong>
+                    <strong>Enhet</strong>
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
-                    <strong>Options</strong>
+                    <strong>Alternativer</strong>
                   </BodyShort>
                   <span className={styles.editButtonHeader}></span>
                 </div>
