@@ -54,7 +54,7 @@ const CreateAndEditTechLabel = () => {
     navigate("/tekniskdata");
   }
 
-  const title = editData ? "Endre tekniskdata beskrivelse" : "Opprett ny tekniskdata beskrivelse";
+  const title = editData ? "Endre teknisk-data beskrivelse" : "Opprett ny teknisk-data beskrivelse";
 
   return (
     <FormBox title={title}>

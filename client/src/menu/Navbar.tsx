@@ -131,7 +131,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
               <div className="line" />
               <HStack gap="4" style={{ paddingLeft: "16px" }}>
                 <DatabaseIcon fontSize={"1.5rem"} aria-hidden />
-                <span>Teknisk data</span>
+                <span>Teknisk-data</span>
               </HStack>
             </NavLink>
           </>

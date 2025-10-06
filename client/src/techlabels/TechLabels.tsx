@@ -57,7 +57,7 @@ const TechLabels = () => {
         <main className="show-menu">
             <div className="page__background-container">
                 <Heading level="1" size="large" spacing>
-                    Tekniskdata beskrivelser
+                    Teknisk-data beskrivelser
                 </Heading>
                 <div className={styles.techLabelsContainer}>
                     <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
@@ -88,7 +88,7 @@ const TechLabels = () => {
                             iconPosition="left"
                             onClick={() => navigate("/tekniskdata/opprett")}
                         >
-                            Opprett ny tekniskdata beskrivelse
+                            Opprett ny teknisk-data beskrivelse
                         </Button>
                     </HStack>
                     <div className="panel-list__container">
