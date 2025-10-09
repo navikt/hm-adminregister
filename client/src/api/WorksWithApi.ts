@@ -14,7 +14,12 @@ export const addWorksWithVariantList = async (
   productIdToAdd: string[],
   isAdmin: boolean,
 ): Promise<void> => {
-  const worksWithMappingList: WorksWithMappingList = productIdToAdd.map((targetProductId) => ({
+  // Filter out self-referential ids defensively
+  const filteredIds = productIdToAdd.filter((id) => id !== productId);
+  if (filteredIds.length === 0) {
+    return; // Nothing valid to add
+  }
+  const worksWithMappingList: WorksWithMappingList = filteredIds.map((targetProductId) => ({
     sourceProductId: productId,
     targetProductId,
   }));
