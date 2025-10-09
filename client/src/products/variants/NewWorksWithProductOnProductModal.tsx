@@ -66,7 +66,7 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
   async function onClickLeggTilKobling() {
     setIsSaving(true);
     if (productsToAdd.length > 0) {
-      addWorksWithVariantList(productId, productsToAdd.map((product) => product.id)).then(
+      addWorksWithVariantList(productId, productsToAdd.map((product) => product.id), isAdmin).then(
         () => {
           mutateProduct();
           setIsSaving(false);
