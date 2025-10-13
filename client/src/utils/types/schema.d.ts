@@ -196,6 +196,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/catalog-file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findCatalogFiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/catalog-file/excel-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["excelImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/catalog-file/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteCatalogFile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/catalog-file/{id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["retryCatalogFile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/import/token/{supplierId}": {
         parameters: {
             query?: never;
@@ -388,6 +452,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/part/hidden": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listHidden"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/part/mainProduct/{seriesId}": {
         parameters: {
             query?: never;
@@ -397,6 +477,22 @@ export interface paths {
         };
         get?: never;
         put: operations["changeToMainProduct"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/missing-hmsartnr/supplier-created": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartsMissingHmsArtNrCreatedBySupplier"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -504,6 +600,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/part/{id}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hide"];
+        delete: operations["unhide"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/part/{id}/suitableForBrukerpassbruker": {
         parameters: {
             query?: never;
@@ -577,7 +689,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["excelImport"];
+        post: operations["excelImportBackwardCompatibility"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1624,6 +1736,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/works-with": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createWorksWithRelations"];
+        delete: operations["deleteWorksWithRelations"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/works-with/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createWorksWithRelationsBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/common/api/v1/part": {
         parameters: {
             query?: never;
@@ -2387,8 +2531,24 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["createWorksWithRelations"];
-        delete: operations["deleteWorksWithRelations"];
+        post: operations["createWorksWithRelations_1"];
+        delete: operations["deleteWorksWithRelations_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/vendor/api/v1/works-with/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createWorksWithRelationsBatch_1"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2549,6 +2709,48 @@ export interface components {
         };
         /** @enum {string} */
         BestillingsordningStatus: "ACTIVE" | "INACTIVE";
+        CatalogFile: {
+            /** Format: uuid */
+            id: string;
+            fileName: string;
+            /** Format: int64 */
+            fileSize: number;
+            orderRef: string;
+            catalogList: components["schemas"]["CatalogImportExcelDTO"][];
+            /** Format: uuid */
+            supplierId: string;
+            updatedByUser: string;
+            /** Format: date-time */
+            created: string;
+            /** Format: date-time */
+            updated: string;
+            status: components["schemas"]["CatalogFileStatus"];
+            errorMessage?: string | null;
+            connected: boolean;
+        };
+        /** @enum {string} */
+        CatalogFileStatus: "PENDING" | "ERROR" | "DONE";
+        CatalogImportExcelDTO: {
+            rammeavtaleHandling: string;
+            bestillingsNr: string;
+            hmsArtNr: string;
+            iso: string;
+            title: string;
+            supplierRef: string;
+            reference: string;
+            delkontraktNr?: string | null;
+            dateFrom: string;
+            dateTo: string;
+            artikkelHandling: string;
+            articleType: string;
+            funksjonsendring: string;
+            forChildren: string;
+            supplierName: string;
+            supplierCity: string;
+            mainProduct: boolean;
+            sparePart: boolean;
+            accessory: boolean;
+        };
         ChangePasswordDTO: {
             oldPassword: string;
             newPassword: string;
@@ -2626,6 +2828,17 @@ export interface components {
         FileTitleDto: {
             uri: string;
             newFileTitle: string;
+        };
+        "HiddenPartAdminController.HiddenPartDTO": {
+            /** Format: uuid */
+            productId: string;
+            reason?: string | null;
+            created: string;
+            createdBy: string;
+            product?: components["schemas"]["ProductRegistrationDTOV2"] | null;
+        };
+        "HiddenPartAdminController.HideRequest": {
+            reason?: string | null;
         };
         Information: {
             message: string;
@@ -2793,6 +3006,12 @@ export interface components {
             sort: string;
         };
         Page_AgreementBasicInformationDto_: components["schemas"]["Slice_AgreementBasicInformationDto_"] & {
+            /** Format: int64 */
+            totalSize?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
+        Page_CatalogFile_: components["schemas"]["Slice_CatalogFile_"] & {
             /** Format: int64 */
             totalSize?: number;
             /** Format: int32 */
@@ -2998,8 +3217,6 @@ export interface components {
             supplierRef: string;
             /** Format: uuid */
             seriesUUID: string;
-            /** @deprecated */
-            seriesId: string;
             hmsArtNr?: string | null;
             /** @deprecated */
             isoCategory: string;
@@ -3345,6 +3562,19 @@ export interface components {
         };
         Slice_AgreementBasicInformationDto_: {
             content: components["schemas"]["AgreementBasicInformationDto"][];
+            pageable: components["schemas"]["OpenApiPageable"];
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int64 */
+            offset?: number;
+            /** Format: int32 */
+            size?: number;
+            empty?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
+        };
+        Slice_CatalogFile_: {
+            content: components["schemas"]["CatalogFile"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
             pageNumber?: number;
@@ -4117,6 +4347,106 @@ export interface operations {
             };
         };
     };
+    findCatalogFiles: {
+        parameters: {
+            query: {
+                fileName?: string | null;
+                orderRef?: string | null;
+                supplierId?: string | null;
+                status?: components["schemas"]["CatalogFileStatus"] | null;
+                pageable: components["schemas"]["OpenApiPageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findCatalogFiles 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_CatalogFile_"];
+                };
+            };
+        };
+    };
+    excelImport: {
+        parameters: {
+            query: {
+                dryRun: boolean;
+                supplierId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description excelImport 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductAgreementImportDTO"];
+                };
+            };
+        };
+    };
+    deleteCatalogFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description deleteCatalogFile 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                };
+            };
+        };
+    };
+    retryCatalogFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description retryCatalogFile 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogFile"];
+                };
+            };
+        };
+    };
     createSupplierToken: {
         parameters: {
             query?: never;
@@ -4499,6 +4829,26 @@ export interface operations {
             };
         };
     };
+    listHidden: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description listHidden 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HiddenPartAdminController.HiddenPartDTO"][];
+                };
+            };
+        };
+    };
     changeToMainProduct: {
         parameters: {
             query?: never;
@@ -4521,6 +4871,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    findPartsMissingHmsArtNrCreatedBySupplier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartsMissingHmsArtNrCreatedBySupplier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
                 };
             };
         };
@@ -4665,6 +5035,54 @@ export interface operations {
             };
         };
     };
+    hide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HiddenPartAdminController.HideRequest"];
+            };
+        };
+        responses: {
+            /** @description hide 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HiddenPartAdminController.HiddenPartDTO"];
+                };
+            };
+        };
+    };
+    unhide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description unhide 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+        };
+    };
     updateSuitableForBrukerpassbruker: {
         parameters: {
             query?: never;
@@ -4789,7 +5207,7 @@ export interface operations {
             };
         };
     };
-    excelImport: {
+    excelImportBackwardCompatibility: {
         parameters: {
             query: {
                 dryRun: boolean;
@@ -4808,7 +5226,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description excelImport 200 response */
+            /** @description excelImportBackwardCompatibility 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6682,6 +7100,78 @@ export interface operations {
             };
         };
     };
+    createWorksWithRelations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"];
+            };
+        };
+        responses: {
+            /** @description createWorksWithRelations 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"];
+                };
+            };
+        };
+    };
+    deleteWorksWithRelations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"];
+            };
+        };
+        responses: {
+            /** @description deleteWorksWithRelations 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"];
+                };
+            };
+        };
+    };
+    createWorksWithRelationsBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"][];
+            };
+        };
+        responses: {
+            /** @description createWorksWithRelationsBatch 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"][];
+                };
+            };
+        };
+    };
     findParts: {
         parameters: {
             query: {
@@ -7904,7 +8394,7 @@ export interface operations {
             };
         };
     };
-    createWorksWithRelations: {
+    createWorksWithRelations_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7917,7 +8407,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description createWorksWithRelations 200 response */
+            /** @description createWorksWithRelations_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7928,7 +8418,7 @@ export interface operations {
             };
         };
     };
-    deleteWorksWithRelations: {
+    deleteWorksWithRelations_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7941,13 +8431,37 @@ export interface operations {
             };
         };
         responses: {
-            /** @description deleteWorksWithRelations 200 response */
+            /** @description deleteWorksWithRelations_1 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRegistration"];
+                };
+            };
+        };
+    };
+    createWorksWithRelationsBatch_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorksWithMapping"][];
+            };
+        };
+        responses: {
+            /** @description createWorksWithRelationsBatch_1 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistration"][];
                 };
             };
         };

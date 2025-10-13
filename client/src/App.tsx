@@ -54,6 +54,7 @@ import EditWorksWith from "products/variants/EditWorksWith";
 import ViewWorksWith from "products/variants/ViewWorksWith";
 import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
+import AdminDashboard from "admin/AdminDashboard";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -102,6 +103,7 @@ export function App() {
               <Route path="/deler" element={<Parts />} />
               <Route path="/del/:productId" element={<Part />} />
               <Route path="/tekniskdata" element={<TechLabels/>} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
 
             <Route path="/del/opprett" element={<CreatePart />} />

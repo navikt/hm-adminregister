@@ -270,3 +270,11 @@ export const updateEgnetForBrukerpassbruker = async (
   };
   return await updateSuitableForBrukerpassbruker(productId, updatedSuitableForBrukerpassbruker);
 };
+
+export const hidePartById = async (id: string): Promise<void> => {
+  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${id}/hide`;
+  const res = await fetch(url, { method: "POST", credentials: "include" });
+  if (!res.ok) {
+    throw new Error("Kunne ikke skjule del");
+  }
+};

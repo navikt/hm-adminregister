@@ -62,6 +62,14 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
     <VStack className="menu__nav-links">
       {loggedInUser && loggedInUser.isAdmin && (
         <>
+          <NavLink to="/admin/dashboard" className="page-link">
+            {pathname.startsWith("/admin/dashboard") && <div className="active-indicator" />}
+            <div className="line" />
+            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <FileCheckmarkFillIcon fontSize="1.5rem" aria-hidden />
+              <span>Dashboard</span>
+            </HStack>
+          </NavLink>
           <NavLink to="/rammeavtaler" className="page-link">
             {pathname.startsWith("/rammeavtaler") && <div className="active-indicator" />}
             <div className="line" />

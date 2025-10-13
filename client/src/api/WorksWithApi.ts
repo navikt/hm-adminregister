@@ -9,6 +9,9 @@ export const removeWorksWithVariant = async (worksWithMapping: WorksWithMapping)
   return await fetchAPI(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/works-with`, "DELETE", worksWithMapping);
 };
 
+export const createWorksWithMappingList = (sourceProductId: string, targetProductIds: string[]): WorksWithMappingList =>
+  targetProductIds.map((targetProductId) => ({ sourceProductId, targetProductId }));
+
 export const addWorksWithVariantList = async (
   productId: string,
   productIdToAdd: string[],
@@ -19,10 +22,7 @@ export const addWorksWithVariantList = async (
   if (filteredIds.length === 0) {
     return; // Nothing valid to add
   }
-  const worksWithMappingList: WorksWithMappingList = filteredIds.map((targetProductId) => ({
-    sourceProductId: productId,
-    targetProductId,
-  }));
+  const worksWithMappingList: WorksWithMappingList = createWorksWithMappingList(productId, filteredIds);
 
   return await updatePartCompatability(productId, worksWithMappingList);
 };
