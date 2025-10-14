@@ -54,7 +54,7 @@ import EditWorksWith from "products/variants/EditWorksWith";
 import ViewWorksWith from "products/variants/ViewWorksWith";
 import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
-import AdminDashboard from "admin/AdminDashboard";
+import AdminDashboard from "dashboard/AdminDashboard";
 
 const usePageTracking = () => {
   const location = useLocation();

@@ -80,6 +80,8 @@ export type UpdatePartDTO = components["schemas"]["UpdatePartDto"];
 export type CompatibleWith = components["schemas"]["CompatibleWith"];
 export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 
+export type HiddenPart = components["schemas"]["HiddenPartAdminController.HiddenPartDTO"];
+
 
 export type WorksWithMapping = components["schemas"]["WorksWithMapping"];
 export type WorksWithMappingList = components["schemas"]["WorksWithMapping"][];
