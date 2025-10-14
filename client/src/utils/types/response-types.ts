@@ -94,7 +94,7 @@ export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrat
 export type TechLabelType = components["schemas"]["TechLabelType"];
 export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
 export type CatalogImportExcelDTO = components["schemas"]["CatalogImportExcelDTO"];
-export type CatalogFile = components["schemas"]["CatalogFile"]
+export type CatalogFile = components["schemas"]["CatalogFile"];
 
 
 export type ProdukterTilGodkjenningChunk = {
