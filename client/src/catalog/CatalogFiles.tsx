@@ -47,8 +47,7 @@ const CatalogFiles = () => {
         ERROR: "Feil",
         DONE: "Ferdig",
         PROCESSING: "Behandler",
-        PENDING: "Avventer",
-        // Add other statuses as needed
+        PENDING: "I kø",
     };
 
     return (
@@ -77,7 +76,7 @@ const CatalogFiles = () => {
                                 iconPosition="left"
                                 onClick={() => navigate("/katalog/importer-fil")}
                             >
-                                Last opp ny katalogfil
+                                Last opp ny katalog
                             </Button>
                         </HStack>
                         <div className="panel-list__container">
