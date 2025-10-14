@@ -1,6 +1,6 @@
 import {
   Buldings3Icon, DatabaseIcon,
-  FileCheckmarkFillIcon,
+  FileCheckmarkFillIcon, FileExcelIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
@@ -132,6 +132,18 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
               <HStack gap="4" style={{ paddingLeft: "16px" }}>
                 <DatabaseIcon fontSize={"1.5rem"} aria-hidden />
                 <span>Teknisk-data</span>
+              </HStack>
+            </NavLink>
+          </>
+      )}
+      {loggedInUser && loggedInUser.isAdmin && (
+          <>
+            <NavLink to="/katalog" className="page-link">
+              {pathname.startsWith("/katalog") && <div className="active-indicator" />}
+              <div className="line" />
+              <HStack gap="4" style={{ paddingLeft: "16px" }}>
+                <FileExcelIcon fontSize={"1.5rem"} aria-hidden />
+                <span>Katalog</span>
               </HStack>
             </NavLink>
           </>

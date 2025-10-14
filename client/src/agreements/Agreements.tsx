@@ -163,7 +163,7 @@ const Agreements = () => {
                       </Dropdown.Menu.List.Item>
                       <Dropdown.Menu.List.Item
                         onClick={() => {
-                          navigate("/rammeavtaler/importer-katalogfil");
+                          navigate("/katalog/importer-fil");
                         }}
                       >
                         <FileExcelIcon aria-hidden />

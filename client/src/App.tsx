@@ -5,7 +5,6 @@ import { Startside } from "Startside";
 import Agreements from "agreements/Agreements";
 import Agreement from "agreements/agreement/Agreement";
 import CreateAgreement from "agreements/agreement/CreateAgreement";
-import { ImporterOgValiderKatalogfil } from "agreements/import/ImporterOgValiderKatalogfil";
 import { getFeatureFlags } from "api/FeatureApi";
 import { ForApproval } from "approval/ForApproval";
 import { ErrorFallback } from "error/ErrorFallback";
@@ -54,6 +53,8 @@ import EditWorksWith from "products/variants/EditWorksWith";
 import ViewWorksWith from "products/variants/ViewWorksWith";
 import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
+import CatalogFiles from "catalog/CatalogFiles";
+import {ImportAndValidate} from "catalog/import/ImportAndValidate";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -102,6 +103,7 @@ export function App() {
               <Route path="/deler" element={<Parts />} />
               <Route path="/del/:productId" element={<Part />} />
               <Route path="/tekniskdata" element={<TechLabels/>} />
+              <Route path="/katalog" element={<CatalogFiles/>} />
             </Route>
 
             <Route path="/del/opprett" element={<CreatePart />} />
@@ -129,7 +131,7 @@ export function App() {
             <Route path="/leverandor/rediger-leverandor/:supplierId" element={<EditSupplier />} />
             <Route path="/leverandor/opprett-bruker" element={<CreateSupplierUserForSupplier />} />
 
-            <Route path="/rammeavtaler/importer-katalogfil" element={<ImporterOgValiderKatalogfil />} />
+            <Route path="/katalog/importer-fil" element={<ImportAndValidate />} />
             <Route path="/rammeavtaler/opprett" element={<CreateAgreement />} />
 
             <Route path="/logg-inn/leverandoropplysninger" element={<FirstTimeSupplierInfo />} />
