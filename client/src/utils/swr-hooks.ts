@@ -22,6 +22,7 @@ import {
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
+  ProductChunk,
 } from "./types/response-types";
 import { LoggedInUser } from "./user-util";
 
@@ -461,4 +462,19 @@ export function usePagedProductsForTechnician({
   const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${mainProductParam}`;
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET);
+}
+
+export function useCountSeriesToApprove() {
+  // Fetch first page with size=1 to derive total count from totalPages when size=1
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve?page=0&size=1`;
+  const { data, error, isLoading } = useSWR<ProdukterTilGodkjenningChunk>(path, fetcherGET);
+  const count = data?.totalPages === undefined ? undefined : data.totalPages; // since size=1
+  return { count, error, isLoading };
+}
+
+export function usePartsMissingHmsArtNr(maxPageSize: number = 500) {
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/missing-hmsartnr/supplier-created?page=0&size=${maxPageSize}`;
+  const { data, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2[]>(path, fetcherGET);
+  const count = Array.isArray(data) ? data.length : 0;
+  return { data, count, error, isLoading, mutate };
 }

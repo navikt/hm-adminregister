@@ -1,10 +1,10 @@
 import { BodyShort, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useErrorStore } from "utils/store/useErrorStore";
 import { labelRequired } from "utils/string-util";
 import { ProductRegistrationDTO } from "utils/types/response-types";
 import Content from "felleskomponenter/styledcomponents/Content";
-import { PlusCircleFillIcon, TrashIcon } from "@navikt/aksel-icons";
+import { TrashIcon } from "@navikt/aksel-icons";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { addWorksWithVariantList } from "api/WorksWithApi";
@@ -41,6 +41,11 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
     if (productIdToAdd !== undefined && !productIdsToAdd.includes(productIdToAdd)) {
       getProductByVariantId(productIdToAdd)
         .then((product) => {
+          // Prevent connecting a product to itself
+          if (product.id === productId) {
+            setProductToAddError("Kan ikke koble produkt til seg selv");
+            return;
+          }
           if (!productIdsToAdd.includes(product.hmsArtNr!)) {
             setProductIdsToAdd([...productIdsToAdd, product.hmsArtNr!]);
           }
@@ -50,7 +55,7 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
           setProductToAddError(undefined);
           setProductIdToAdd(undefined);
         })
-        .catch((error) => {
+        .catch(() => {
           setProductToAddError(`Fant ikke produkt for HMS-nummer ${productIdToAdd}`);
         });
     } else if (productIdToAdd !== undefined && productIdsToAdd.includes(productIdToAdd)) {
@@ -61,11 +66,7 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
   async function onClickLeggTilKobling() {
     setIsSaving(true);
     if (productsToAdd.length > 0) {
-      addWorksWithVariantList(
-        productId,
-        productsToAdd.map((product) => product.id),
-        isAdmin,
-      ).then(
+      addWorksWithVariantList(productId, productsToAdd.map((product) => product.id), isAdmin).then(
         () => {
           mutateProduct();
           setIsSaving(false);

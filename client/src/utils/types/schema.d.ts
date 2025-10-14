@@ -452,6 +452,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/part/hidden": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listHidden"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/part/mainProduct/{seriesId}": {
         parameters: {
             query?: never;
@@ -461,6 +477,22 @@ export interface paths {
         };
         get?: never;
         put: operations["changeToMainProduct"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/missing-hmsartnr/supplier-created": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findPartsMissingHmsArtNrCreatedBySupplier"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -563,6 +595,22 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/part/{id}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["hide"];
+        delete: operations["unhide"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2781,6 +2829,17 @@ export interface components {
             uri: string;
             newFileTitle: string;
         };
+        "HiddenPartAdminController.HiddenPartDTO": {
+            /** Format: uuid */
+            productId: string;
+            reason?: string | null;
+            created: string;
+            createdBy: string;
+            product?: components["schemas"]["ProductRegistrationDTOV2"] | null;
+        };
+        "HiddenPartAdminController.HideRequest": {
+            reason?: string | null;
+        };
         Information: {
             message: string;
             type: components["schemas"]["Type"];
@@ -4770,6 +4829,26 @@ export interface operations {
             };
         };
     };
+    listHidden: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description listHidden 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HiddenPartAdminController.HiddenPartDTO"][];
+                };
+            };
+        };
+    };
     changeToMainProduct: {
         parameters: {
             query?: never;
@@ -4792,6 +4871,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    findPartsMissingHmsArtNrCreatedBySupplier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findPartsMissingHmsArtNrCreatedBySupplier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRegistrationDTOV2"][];
                 };
             };
         };
@@ -4932,6 +5031,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRegistrationDTOV2"];
+                };
+            };
+        };
+    };
+    hide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HiddenPartAdminController.HideRequest"];
+            };
+        };
+        responses: {
+            /** @description hide 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HiddenPartAdminController.HiddenPartDTO"];
+                };
+            };
+        };
+    };
+    unhide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description unhide 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
                 };
             };
         };

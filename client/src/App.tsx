@@ -55,6 +55,7 @@ import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 import CatalogFiles from "catalog/CatalogFiles";
 import {ImportAndValidate} from "catalog/import/ImportAndValidate";
+import AdminDashboard from "admin/AdminDashboard";
 
 const usePageTracking = () => {
   const location = useLocation();
@@ -104,6 +105,7 @@ export function App() {
               <Route path="/del/:productId" element={<Part />} />
               <Route path="/tekniskdata" element={<TechLabels/>} />
               <Route path="/katalog" element={<CatalogFiles/>} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
 
             <Route path="/del/opprett" element={<CreatePart />} />

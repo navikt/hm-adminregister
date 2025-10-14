@@ -88,3 +88,30 @@ export function useProductVariantsByProductIds(productIds?: string[]) {
     error,
   };
 }
+
+export function useProductVariantsBySeriesIds(seriesIds?: string[]) {
+  const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore();
+  const isAdmin = loggedInUser?.isAdmin || false;
+  const shouldFetch = Array.isArray(seriesIds) && seriesIds.length > 0;
+
+  const { data, error, isLoading } = useSWR<ProductRegistrationDTOV2[]>(
+    shouldFetch ? ["series-variants", [...seriesIds].sort()] : null,
+    async ([_, ids]) => {
+      const results = await Promise.all(
+        (ids as string[]).map((seriesId) => fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/series/${seriesId}`), "GET")),
+      );
+      // results is an array of arrays -> flatten and ensure uniqueness by id
+      const flat: ProductRegistrationDTOV2[] = ([] as ProductRegistrationDTOV2[]).concat(...results);
+      const unique = Array.from(new Map(flat.map((p) => [p.id, p])).values());
+      return unique;
+    },
+  );
+
+  if (error) {
+    setGlobalError(error.status, error.message);
+    throw error;
+  }
+
+  return { products: data, isLoading, error };
+}
