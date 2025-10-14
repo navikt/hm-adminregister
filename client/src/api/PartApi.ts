@@ -1,5 +1,6 @@
 import {
   CompatibleWithDTO,
+  HiddenPart,
   PartDraftResponse,
   PartDraftWithDTO,
   PartDTO,
@@ -277,4 +278,26 @@ export const hidePartById = async (id: string): Promise<void> => {
   if (!res.ok) {
     throw new Error("Kunne ikke skjule del");
   }
+};
+
+export const hidePart = async (id: string): Promise<void> => {
+  // New symmetrical name; keep hidePartById exported below for backwards compatibility.
+  return hidePartById(id);
+};
+
+export const unhidePart = async (id: string): Promise<void> => {
+  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${id}/hide`;
+  const res = await fetch(url, { method: "DELETE", credentials: "include" });
+  if (!res.ok) {
+    throw new Error("Kunne ikke vise del i listen igjen");
+  }
+};
+
+export const fetchHiddenParts = async (): Promise<HiddenPart[]> => {
+  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/hidden`;
+  const res = await fetch(url, { method: "GET", credentials: "include" });
+  if (!res.ok) {
+    throw new Error("Kunne ikke hente skjulte deler");
+  }
+  return (await res.json()) as HiddenPart[];
 };

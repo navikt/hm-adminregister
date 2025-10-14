@@ -55,7 +55,7 @@ import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 import CatalogFiles from "catalog/CatalogFiles";
 import {ImportAndValidate} from "catalog/import/ImportAndValidate";
-import AdminDashboard from "admin/AdminDashboard";
+import AdminDashboard from "dashboard/AdminDashboard";
 
 const usePageTracking = () => {
   const location = useLocation();
