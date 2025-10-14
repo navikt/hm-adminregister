@@ -2,7 +2,7 @@ import { HM_REGISTER_URL } from "environments";
 import { fetchAPI } from "api/fetch";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";
-import { CatalogFileCriteria, CatalogFileChunk,CatalogFile, ProductAgreementImportDTO} from "utils/types/response-types";
+import { CatalogFileCriteria, CatalogFileChunk, CatalogFile, ProductAgreementImportDTO} from "utils/types/response-types";
 
 const BASE_URL = () => `${HM_REGISTER_URL()}/admreg/admin/api/v1/catalog-file`;
 
