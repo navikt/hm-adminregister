@@ -1,7 +1,7 @@
 $column-widths: 260px 120px 120px 120px 40px;
 
 .catalogfilesContainer {
-  max-width: 80rem;
+  max-width: 85rem;
 }
 
 .headerRow {
@@ -54,9 +54,9 @@ $column-widths: 260px 120px 120px 120px 40px;
 }
 
 .mediumColumn {
-  max-width: 200px;
-  width: 200px;
-  flex: 0 0 200px;
+  max-width: 170px;
+  width: 170px;
+  flex: 0 0 170px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

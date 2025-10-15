@@ -93,6 +93,9 @@ const CatalogFiles = () => {
                                     <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
                                         <strong>Bestillingsnr.</strong>
                                     </BodyShort>
+                                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
+                                        <strong>Anbudsnr.</strong>
+                                    </BodyShort>
                                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                                         <strong>Rader</strong>
                                     </BodyShort>
@@ -111,6 +114,8 @@ const CatalogFiles = () => {
                                             className={`${styles.cardValue} ${styles.longColumn}`}>{file.fileName}</BodyShort>
                                         <BodyShort
                                             className={`${styles.cardValue} ${styles.mediumColumn}`}>{file.orderRef}</BodyShort>
+                                        <BodyShort
+                                            className={`${styles.cardValue} ${styles.mediumColumn}`}>{file.catalogList[0].reference}</BodyShort>
                                         <BodyShort
                                             className={`${styles.cardValue} ${styles.shortColumn}`}>{file.catalogList.length}</BodyShort>
                                         {file.status === "ERROR" ? (
