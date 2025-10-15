@@ -95,6 +95,8 @@ export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrationDTO"];
 export type TechLabelType = components["schemas"]["TechLabelType"];
 export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
+export type CatalogImportExcelDTO = components["schemas"]["CatalogImportExcelDTO"];
+export type CatalogFile = components["schemas"]["CatalogFile"];
 
 
 export type ProdukterTilGodkjenningChunk = {
@@ -172,3 +174,25 @@ export type TechLabelCriteria = {
     unit?: string;
     isoCode?: string;
 }
+
+export type CatalogFileCriteria = {
+  fileName?: string;
+  orderRef?: string;
+  supplierId?: string;
+  status?: string;
+}
+
+export type CatalogFileChunk = {
+  content: CatalogFile[];
+  pageable: components["schemas"]["OpenApiPageable"];
+  /** Format: int32 */
+  pageNumber?: number;
+  /** Format: int64 */
+  offset?: number;
+  /** Format: int32 */
+  size?: number;
+  totalPages?: number;
+  empty?: boolean;
+  /** Format: int32 */
+  numberOfElements?: number;
+};

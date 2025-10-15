@@ -1,9 +1,9 @@
 import { useState } from "react";
 import "./import.scss";
-import { ValidateImportedProductAgreements } from "agreements/import/valideringsside/ValidateImportedProductAgreements";
+import { ValidateImportedProductAgreements } from "catalog/import/valideringsside/ValidateImportedProductAgreements";
 import FellesImport, { Upload } from "felleskomponenter/FellesImport";
 
-export const ImporterOgValiderKatalogfil = () => {
+export const ImportAndValidate = () => {
   const [upload, setUpload] = useState<Upload | undefined>(undefined);
   const [supplier, setSupplier] = useState<string | undefined>(undefined);
 

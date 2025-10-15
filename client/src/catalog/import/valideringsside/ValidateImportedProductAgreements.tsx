@@ -4,8 +4,8 @@ import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
 import { ProductAgreementRegistrationDTO, ProductRegistration, SeriesRegistrations } from "utils/types/response-types";
 import { Upload } from "felleskomponenter/FellesImport";
-import { ProductRegistrationTable } from "agreements/import/valideringsside/ProductRegistrationTable";
-import { ProductAgreementsTable } from "agreements/import/valideringsside/ProductAgreementsTable";
+import { ProductRegistrationTable } from "catalog/import/valideringsside/ProductRegistrationTable";
+import { ProductAgreementsTable } from "catalog/import/valideringsside/ProductAgreementsTable";
 
 interface Props {
   upload: Upload;
@@ -83,11 +83,14 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
 
             <VStack gap="4">
               <BodyShort size="large">
-                <a href={baseUrl("/rammeavtaler/importer-katalogfil")}>Gå til ny import</a>
+                <a href={baseUrl("/katalog/importer-fil")}>Gå til ny import</a>
               </BodyShort>
+                <BodyShort size="large">
+                    <a href={baseUrl("/katalog")}>Gå til katalog siden</a>
+                </BodyShort>
               {(createdMainProducts.length > 0 || createdAccessoryParts.length > 0) && (
                 <BodyShort size="medium">
-                  Det ble opprettet nye produkter/deler/tilbehør i import, disse ligger{" "}
+                  Det ble opprettet nye produkter/deler/tilbehør i import, disse vil ligge{" "}
                   <a href={baseUrl(`/til-godkjenning?filter=ADMIN`)}> til godkjenning</a>.
                 </BodyShort>
               )}
@@ -95,7 +98,7 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                 updatedProductAgreements.length > 0 ||
                 deactivatedProductAgreements.length > 0) && (
                 <BodyShort size="medium">
-                  Importeringen var vellykket. Du kan se de nye tilknytningene på{" "}
+                  Importeringen var vellykket. Etter noen minutter, blir de nye tilknytningene tilgjengelig på{" "}
                   {newProductAgreements.length > 0 ? (
                     <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
                   ) : updatedProductAgreements.length > 0 ? (

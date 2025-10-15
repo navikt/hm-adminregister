@@ -1,0 +1,97 @@
+$column-widths: 260px 120px 120px 120px 40px;
+
+.catalogfilesContainer {
+  max-width: 80rem;
+}
+
+.headerRow {
+  padding: 0 1rem;
+}
+
+.headerLabel {
+  min-width: nth($column-widths, 1);
+  &:nth-child(2) { min-width: nth($column-widths, 2); }
+  &:nth-child(3) { min-width: nth($column-widths, 3); }
+  &:nth-child(4) { min-width: nth($column-widths, 4); }
+}
+
+.headerSpacer {
+  min-width: nth($column-widths, 5);
+}
+
+.cardBox {
+  padding: 0;
+  border-width: 1;
+  border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
+  border-radius: var(--a-border-radius-large);
+  background-color: var(--a-bg-default);
+  color: var(--a-text-default);
+  text-decoration: none;
+}
+
+.cardRow {
+  display: flex;
+  align-items: center;
+  padding: var(--a-spacing-2) var(--a-spacing-4);
+}
+
+.cardData {
+  display: flex;
+  gap: 4;
+  paddingBlock: 4;
+}
+
+.cardValue {
+}
+
+.longColumn {
+  max-width: 500px;
+  width: 500px;
+  flex: 0 0 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mediumColumn {
+  max-width: 200px;
+  width: 200px;
+  flex: 0 0 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shortColumn {
+  max-width: 90px;
+  width: 90px;
+  flex: 0 0 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.optionsColumn {
+  flex: 1 1 0;
+  min-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editButton {
+  margin-left: auto;
+  min-width: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.editButtonHeader {
+  min-width: 40px;
+}
+
+.errorStatus {
+  color: var(--a-text-danger, #c30000);
+  font-weight: bold;
+}
