@@ -96,7 +96,7 @@ const EditWorksWith = () => {
             <VStack align="center" gap="4">
               <SandboxIcon title="a11y-title" fontSize="1.5rem" width={43} height={43} />
               <Heading level="1" size="medium" align="center">
-                Andre produkter som fungerer sammen med dette produktet
+                Andre hjelpemidler som fungerer sammen med dette hjelpemiddelet
               </Heading>
             </VStack>
             <Button
