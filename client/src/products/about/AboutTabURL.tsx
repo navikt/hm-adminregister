@@ -12,7 +12,7 @@ interface Props {
   isEditable: boolean;
 }
 
-export const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
+const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
   const [showEditUrlMode, setShowEditUrlMode] = useState(false);
   const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
   const [updatedUrl, setUpdatedUrl] = useState<string>(series.seriesData.attributes.url ?? "");

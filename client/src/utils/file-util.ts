@@ -19,7 +19,7 @@ export const uriForMediaFile = (file: MediaInfoDTO) => {
 
 
 export const MIME_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-export const MIME_TYPE_XLS = "application/vnd.ms-excel";
+const MIME_TYPE_XLS = "application/vnd.ms-excel";
 
 export const MIME_EXCEL_TYPES_ARRAY = [MIME_TYPE_XLSX, MIME_TYPE_XLS];
 export const MIME_EXCEL_TYPES_STRING = `${MIME_TYPE_XLSX},${MIME_TYPE_XLS}`;

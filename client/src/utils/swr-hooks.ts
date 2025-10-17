@@ -34,7 +34,7 @@ export function baseUrl(url: string = "") {
   }
 }
 
-export class CustomError extends Error {
+class CustomError extends Error {
   status: number;
 
   constructor(message: string, statusCode: number) {

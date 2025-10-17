@@ -1,4 +1,4 @@
-export const parseUrl = (s: string) => {
+const parseUrl = (s: string) => {
   let urlString = s;
   if (!urlString.startsWith("http")) {
     urlString = "https://" + urlString;
@@ -11,7 +11,7 @@ export const parseUrl = (s: string) => {
 };
 
 //Ingen sikkerhet at dette kun ligger i frontend. For brukerinfo er det ok men sikkerheten må ligge i backend
-export const validateDomain = (url: URL) => {
+const validateDomain = (url: URL) => {
   const validDomains = ["www.youtube.com", "youtube.com", "www.vimeo.com", "vimeo.com", "youtu.be"];
   return validDomains.some((d) => d === url.hostname);
 };

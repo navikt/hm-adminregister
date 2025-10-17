@@ -8,7 +8,7 @@ export function FlagProvider({ toggles, children }: PropsWithChildren<{ toggles:
   return <FlagContext.Provider value={{ toggles: toggles ?? [] }}>{children}</FlagContext.Provider>;
 }
 
-export function useFlag(name: ExpectedToggles): IToggle {
+function useFlag(name: ExpectedToggles): IToggle {
   const context = useContext(FlagContext);
   const toggle = context?.toggles.find((toggle) => toggle.name === name);
 

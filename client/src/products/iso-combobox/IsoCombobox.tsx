@@ -6,7 +6,7 @@ import { useFilteredOptionsContext } from "products/iso-combobox/FilteredOptions
 import { InputControllerIso } from "products/iso-combobox/Input/InputControllerIso";
 import { omit } from "felleskomponenter/comboboxfelles/utils";
 
-export const IsoCombobox = forwardRef<
+const IsoCombobox = forwardRef<
   HTMLInputElement,
   Omit<IsoBoxProps, "onChange" | "options" | "onClear" | "value">
 >(function IsoCombobox(props, ref) {

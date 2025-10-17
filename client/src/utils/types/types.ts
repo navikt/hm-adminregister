@@ -17,7 +17,7 @@ export interface Product {
   /** expired from backend is a Date data field like 2043-06-01T14:19:30.505665648*/
 }
 
-export interface ProductToApprove {
+interface ProductToApprove {
   title: string;
   articleName: string;
   /** Format: uuid */
@@ -53,7 +53,7 @@ export interface AgreementInfo {
   expired: string;
 }
 
-export interface TechDataDict {
+interface TechDataDict {
   [key: string]: { value: string; unit: string };
 }
 
@@ -68,12 +68,12 @@ interface Attributes {
   compatibleWith?: string[];
 }
 
-export interface ComparingData {
+interface ComparingData {
   techDataRange: TechDataRange;
   agreementRank: number | null;
 }
 
-export interface TechDataRange {
+interface TechDataRange {
   [key: string]: { minValue: string; maxValue: string | null; unit: string };
 }
 

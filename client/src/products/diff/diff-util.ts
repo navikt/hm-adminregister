@@ -71,12 +71,12 @@ export function getMediaDiff(diffDto: DifferenceDTO): MediaDiff {
   };
 }
 
-export interface TechDataDiff {
+interface TechDataDiff {
   oldData: TechData;
   newData: TechData;
 }
 
-export interface MediaDiff {
+interface MediaDiff {
   videoChanges: boolean;
   documentChanges: boolean;
   imageChanges: boolean;

@@ -3,12 +3,12 @@ import React, { useRef, useState } from "react";
 import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
 import { fileToUri, MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING } from "utils/file-util";
 
-export interface Upload {
+interface Upload {
   file: File;
   previewUrl?: string;
 }
 
-export interface Props {
+interface Props {
   validerImporterteProdukter: (upload: Upload) => void;
   seriesTitle: string;
 }

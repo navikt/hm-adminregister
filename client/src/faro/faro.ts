@@ -9,7 +9,7 @@ export function initInstrumentation(): void {
   getFaro();
 }
 
-export function getFaro(): Faro | null {
+function getFaro(): Faro | null {
   if (faro != null) return faro;
   faro = initializeFaro({
     paused: process.env.NODE_ENV !== "production",

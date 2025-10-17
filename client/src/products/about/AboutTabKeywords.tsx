@@ -14,7 +14,7 @@ interface Props {
   isEditable: boolean;
 }
 
-export const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
+const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
   const keywords = series.seriesData.attributes.keywords;
   const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
   const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);

@@ -29,7 +29,7 @@ type Props = {
   onBlur?: () => void;
 };
 
-export const RichTextEditorQuill = forwardRef(function TempComp(
+const RichTextEditorQuill = forwardRef(function TempComp(
   { onTextChange, defaultValue, className, toolbar, formats, onBlur }: Props,
   ref,
 ) {

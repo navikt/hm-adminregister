@@ -36,7 +36,7 @@ export const createDelkontrakt = (
   );
 };
 
-export const updateDelkontrakt = (
+const updateDelkontrakt = (
   delkontraktId: string,
   updatedDelkontrakt: DelkontraktRegistrationDTO
 ): Promise<DelkontraktRegistrationDTO> =>

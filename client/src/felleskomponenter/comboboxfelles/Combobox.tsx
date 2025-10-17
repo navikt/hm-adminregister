@@ -5,7 +5,7 @@ import ComboboxWrapper from "./ComboboxWrapper";
 import { useInputContext } from "./Input/Input.context";
 import { ComboboxProps } from "./types";
 
-export const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
+const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "options" | "onClear" | "value">>(
   function Combobox(props) {
     const { children, toggleIsListOpen, className, hideLabel = false, description, label } = props;
     const { error, errorId, hasError, inputDescriptionId, inputProps, showErrorMsg } = useInputContext();

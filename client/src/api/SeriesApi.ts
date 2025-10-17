@@ -141,7 +141,7 @@ const renameFiles = (uploads: FileUpload[]) =>
       : it,
   );
 
-export const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegistrationDTO): Promise<void> => {
+const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegistrationDTO): Promise<void> => {
   const nullUpdate: UpdateSeriesRegistrationDTO = { title: null, text: null, keywords: null, url: null };
   const toUpdate: UpdateSeriesRegistrationDTO = { ...nullUpdate, ...update };
   return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, "PATCH", toUpdate);

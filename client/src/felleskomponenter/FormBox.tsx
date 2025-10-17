@@ -2,7 +2,7 @@ import { Box, Heading, VStack } from "@navikt/ds-react";
 import { cloneElement, ReactElement, ReactNode } from "react";
 import "./form-box.scss";
 
-export interface FormBoxProps {
+interface FormBoxProps {
   children?: ReactNode | undefined;
   title?: string;
   icon?: ReactElement;

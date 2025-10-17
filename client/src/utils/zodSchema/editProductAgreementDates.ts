@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const editProductAgreementDatesSchema = z.object({
+const editProductAgreementDatesSchema = z.object({
   published: z.date({
     required_error: "Tilknyttningens startdato kan ikke være tom",
     invalid_type_error: "Dato er ikke gyldig",
@@ -11,7 +11,7 @@ export const editProductAgreementDatesSchema = z.object({
   }),
 });
 
-export type EditProductAgreementDatesFormData = z.infer<typeof editProductAgreementDatesSchema>;
+type EditProductAgreementDatesFormData = z.infer<typeof editProductAgreementDatesSchema>;
 
 export type EditProductAgreementDatesFormDataDto = {
   published: string;

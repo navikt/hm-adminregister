@@ -201,22 +201,6 @@ export const removeCompatibleWithVariant = async (
   return await updatePartCompatability(productId, updatedCompatibleWith);
 };
 
-export const addCompatibleWithVariant = async (
-  productId: string,
-  productIdToAdd: string,
-  isAdmin: boolean,
-): Promise<void> => {
-  const partToUpdate = await getProductById(productId, isAdmin);
-
-  const compatibleWith = partToUpdate.productData.attributes.compatibleWith;
-  const updatedCompatibleWith = {
-    productIds: [...(compatibleWith?.productIds || []), productIdToAdd],
-    seriesIds: compatibleWith?.seriesIds || [],
-  };
-
-  return await updatePartCompatability(productId, updatedCompatibleWith);
-};
-
 export const addCompatibleWithVariantList = async (
   productId: string,
   productIdToAdd: string[],
@@ -272,7 +256,7 @@ export const updateEgnetForBrukerpassbruker = async (
   return await updateSuitableForBrukerpassbruker(productId, updatedSuitableForBrukerpassbruker);
 };
 
-export const hidePartById = async (id: string): Promise<void> => {
+const hidePartById = async (id: string): Promise<void> => {
   const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/${id}/hide`;
   const res = await fetch(url, { method: "POST", credentials: "include" });
   if (!res.ok) {

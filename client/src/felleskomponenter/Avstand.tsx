@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import styled from "styled-components";
 
-export interface AvstandProps {
+interface AvstandProps {
   children?: ReactNode | undefined;
   margin?: string;
   marginTop?: number;
@@ -34,7 +34,7 @@ const Box = styled.div<MarginPadding>`
   ${(props) => ({ textAlign: props.$centered ? "center" : "unset" })}
 `;
 
-export function spacer(props: MarginPadding) {
+function spacer(props: MarginPadding) {
   return {
     margin: props.margin,
     "margin-top": spacingVar(props.marginTop),
@@ -49,6 +49,6 @@ export function spacer(props: MarginPadding) {
   };
 }
 
-export function spacingVar(space?: number): string | undefined {
+function spacingVar(space?: number): string | undefined {
   return typeof space === "number" ? `var(--a-spacing-${space})` : undefined;
 }

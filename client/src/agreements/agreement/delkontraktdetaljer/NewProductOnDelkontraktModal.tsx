@@ -21,7 +21,7 @@ interface Props {
   mutateProductAgreements: () => void;
 }
 
-export type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>;
+type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>;
 
 const NewProductOnDelkontraktModal = ({
   modalIsOpen,

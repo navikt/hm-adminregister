@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
 import { useFilteredOptionsContext } from "../FilteredOptions/filteredOptionsContext";
 
-export const ToggleListButton = forwardRef<HTMLButtonElement>(function ToggleListButton(_props, ref) {
+const ToggleListButton = forwardRef<HTMLButtonElement>(function ToggleListButton(_props, ref) {
   const { isListOpen, toggleIsListOpen } = useFilteredOptionsContext();
   return (
     <button

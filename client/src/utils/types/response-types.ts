@@ -77,7 +77,7 @@ export type FileTitleDto = components["schemas"]["FileTitleDto"];
 export type PartDTO = components["schemas"]["PartDTO"];
 export type UpdatePartDTO = components["schemas"]["UpdatePartDto"];
 
-export type CompatibleWith = components["schemas"]["CompatibleWith"];
+type CompatibleWith = components["schemas"]["CompatibleWith"];
 export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 
 export type HiddenPart = components["schemas"]["HiddenPartAdminController.HiddenPartDTO"];
@@ -95,7 +95,7 @@ export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrationDTO"];
 export type TechLabelType = components["schemas"]["TechLabelType"];
 export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
-export type CatalogImportExcelDTO = components["schemas"]["CatalogImportExcelDTO"];
+type CatalogImportExcelDTO = components["schemas"]["CatalogImportExcelDTO"];
 export type CatalogFile = components["schemas"]["CatalogFile"];
 
 

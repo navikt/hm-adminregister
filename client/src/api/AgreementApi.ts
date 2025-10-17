@@ -27,7 +27,7 @@ import { FileUpload } from "felleskomponenter/UploadModal";
 export const getAgreement = (agreementId: string): Promise<AgreementRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`, "GET");
 
-export const updateAgreement = (
+const updateAgreement = (
   agreementId: string,
   updatedAgreement: AgreementRegistrationDTO,
 ): Promise<AgreementRegistrationDTO> =>

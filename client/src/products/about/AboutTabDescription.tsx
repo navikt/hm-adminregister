@@ -16,7 +16,7 @@ interface Props {
   isEditable: boolean;
 }
 
-export const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable }: Props) => {
+const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable }: Props) => {
   const description = series.text;
   const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
   const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);

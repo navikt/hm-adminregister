@@ -1,6 +1,6 @@
 import { createContext, ReactNode } from "react";
 
-export type FieldsetContextProps = {
+type FieldsetContextProps = {
   /**
    * Error message applied to element,
    */

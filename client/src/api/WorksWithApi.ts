@@ -9,7 +9,7 @@ export const removeWorksWithVariant = async (worksWithMapping: WorksWithMapping)
   return await fetchAPI(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/works-with`, "DELETE", worksWithMapping);
 };
 
-export const createWorksWithMappingList = (sourceProductId: string, targetProductIds: string[]): WorksWithMappingList =>
+const createWorksWithMappingList = (sourceProductId: string, targetProductIds: string[]): WorksWithMappingList =>
   targetProductIds.map((targetProductId) => ({ sourceProductId, targetProductId }));
 
 export const addWorksWithVariantList = async (

@@ -50,4 +50,4 @@ export const editSupplierSchema = z.object({
   postLocation: z.string(),
 });
 
-export type newSupplier = z.infer<typeof editSupplierSchema>;
+type newSupplier = z.infer<typeof editSupplierSchema>;

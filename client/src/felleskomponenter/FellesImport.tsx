@@ -20,7 +20,7 @@ export interface Upload {
   previewUrl?: string;
 }
 
-export interface Props {
+interface Props {
   validerImporterteProdukter: (upload: Upload) => void;
   setSupplier_: (supplier: string) => void;
   tekst: string;

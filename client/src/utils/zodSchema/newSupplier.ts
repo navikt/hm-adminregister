@@ -47,4 +47,4 @@ export const newSupplierSchema = z.object({
     ),
 });
 
-export type newSupplier = z.infer<typeof newSupplierSchema>;
+type newSupplier = z.infer<typeof newSupplierSchema>;

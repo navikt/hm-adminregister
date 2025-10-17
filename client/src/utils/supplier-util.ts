@@ -69,6 +69,6 @@ export interface SupplierDTOBody {
 
 // cognita dev, prod:
 const allowlistAgreementProducts = ["52084e91-2998-42b2-8b7c-45b0f212d696", "17d6107b-dffa-451b-9565-7b86394de1d3"];
-export const supplierCanChangeAgreementProduct = (user: LoggedInUser | undefined): boolean => {
+const supplierCanChangeAgreementProduct = (user: LoggedInUser | undefined): boolean => {
   return (user && !user.isAdmin && allowlistAgreementProducts.includes(user.supplierId!)) ?? false;
 };

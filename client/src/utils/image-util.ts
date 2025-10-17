@@ -1,6 +1,6 @@
 import { IMAGE_PROXY_URL } from "environments";
 
-export type ImageLoaderProps = {
+type ImageLoaderProps = {
   src: string;
   width: number;
   quality?: number;
@@ -28,4 +28,4 @@ const imageLoaderAdvanced = ({ src, size }: ImageOptions) => {
 
 export const smallImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.SMALL });
 export const mediumImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.MEDIUM });
-export const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.LARGE });
+const largeImageLoader = ({ src }: ImageLoaderProps) => imageLoaderAdvanced({ src, size: Size.LARGE });

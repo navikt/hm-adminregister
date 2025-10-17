@@ -6,7 +6,7 @@
  */
 import React, { createContext as createReactContext, forwardRef, useContext as useReactContext } from "react";
 
-export interface CreateContextOptions<T> {
+interface CreateContextOptions<T> {
   hookName?: string;
   providerName?: string;
   errorMessage?: string;

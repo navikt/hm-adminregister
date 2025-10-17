@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const newUserSchema = z
+const newUserSchema = z
   .object({
     name: z.string().min(5, { message: "Navn må inneholde minst 5 tegn." }),
     email: z
@@ -16,7 +16,7 @@ export const newUserSchema = z
     message: "Passordene er ikke like",
   });
 
-export type newUser = z.infer<typeof newUserSchema>;
+type newUser = z.infer<typeof newUserSchema>;
 
 export const newSupplierUserSchema = z.object({
   email: z
@@ -30,7 +30,7 @@ export const newSupplierUserSchema = z.object({
     .min(8, { message: "Passord må inneholde minst 8 tegn." }),
 });
 
-export type newSupplierUser = z.infer<typeof newSupplierUserSchema>;
+type newSupplierUser = z.infer<typeof newSupplierUserSchema>;
 
 export const newAdminUserSchema = z.object({
   email: z
@@ -56,4 +56,4 @@ export const newHmsUserSchema = z.object({
     .min(8, { message: "Passord må inneholde minst 8 tegn." }),
 });
 
-export type newAdminUser = z.infer<typeof newSupplierUserSchema>;
+type newAdminUser = z.infer<typeof newSupplierUserSchema>;

@@ -11,7 +11,7 @@ type LogEvent = (params: { name: string; data?: any }) => void;
 
 let amplitudeLogger: LogEvent | undefined = undefined;
 
-export enum digihot_customevents {
+enum digihot_customevents {
   VISNING_OVERSIKT = "visning av sider fra hm-adminregister-app",
   LEVERANDORPRODUKTER_KLIKKET_V2 = "klikket på vis leverandørprodukter",
   NAVIGERE = "navigere",
@@ -20,7 +20,7 @@ export enum digihot_customevents {
   VARIANTSIDE_VIST = "visning av stor variantside",
 }
 
-export const initAmplitude = () => {
+const initAmplitude = () => {
   const apiKey = window.appSettings.MILJO
     ? window.appSettings.MILJO === "prod-gcp"
       ? AMP_PUBLIC_KEY_PROD
@@ -74,14 +74,14 @@ export function logAmplitudeEvent(eventName: string, data?: any) {
   });
 }
 
-export function logCustomEvent(event: digihot_customevents, data?: any) {
+function logCustomEvent(event: digihot_customevents, data?: any) {
   logAmplitudeEvent(event, {
     TEAM_NAME: TEAM_NAME,
     ...data,
   });
 }
 
-export function logOversiktForsideVist() {
+function logOversiktForsideVist() {
   logCustomEvent(digihot_customevents.VISNING_OVERSIKT);
 }
 
@@ -93,21 +93,21 @@ export function logNavigationEvent(komponent: string, destinasjon: string, lenke
   });
 }
 
-export function logLeverandorprodukterKlikket() {
+function logLeverandorprodukterKlikket() {
   logCustomEvent(digihot_customevents.LEVERANDORPRODUKTER_KLIKKET_V2);
 }
 
-export function logVariantSideVist() {
+function logVariantSideVist() {
   logCustomEvent(digihot_customevents.VARIANTSIDE_VIST);
 }
 
-export function logKlikk(buttonName: string) {
+function logKlikk(buttonName: string) {
   logCustomEvent(digihot_customevents.KLIKK, {
     buttonName: buttonName,
   });
 }
 
-export function logErrorOnUrl(url: string) {
+function logErrorOnUrl(url: string) {
   logCustomEvent(digihot_customevents.ERROR_URL, {
     url: url,
   });

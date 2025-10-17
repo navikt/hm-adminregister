@@ -120,7 +120,7 @@ const DelkontrakterTab = ({
 
 export default DelkontrakterTab;
 
-export const DelkontrakterTabsPanel = styled(Tabs.Panel)`
+const DelkontrakterTabsPanel = styled(Tabs.Panel)`
   margin-top: 0.5rem;
   margin-bottom: 1rem;
 `;
