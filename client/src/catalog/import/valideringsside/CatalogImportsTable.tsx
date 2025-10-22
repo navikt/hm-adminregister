@@ -1,10 +1,10 @@
 import { Table } from "@navikt/ds-react";
-import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
+import { CatalogImport } from "utils/types/response-types";
 
-export const ProductAgreementsTable = ({
-  productAgreements,
+export const CatalogImportsTable = ({
+  catalogImports,
 }: {
-  productAgreements: ProductAgreementRegistrationDTO[];
+  catalogImports: CatalogImport[];
 }) => {
   return (
     <div className="variants-table">
@@ -18,14 +18,14 @@ export const ProductAgreementsTable = ({
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {productAgreements &&
-            productAgreements.length > 0 &&
-            productAgreements.map((productAgreement, i) => (
+          {catalogImports &&
+            catalogImports.length > 0 &&
+            catalogImports.map((catalogImport, i) => (
               <Table.Row key={i}>
-                <Table.DataCell>{productAgreement.title}</Table.DataCell>
-                <Table.DataCell>{productAgreement.reference}</Table.DataCell>
-                <Table.DataCell>{productAgreement.hmsArtNr}</Table.DataCell>
-                <Table.DataCell>{productAgreement.post}</Table.DataCell>
+                <Table.DataCell>{catalogImport.title}</Table.DataCell>
+                <Table.DataCell>{catalogImport.reference}</Table.DataCell>
+                <Table.DataCell>{catalogImport.hmsArtNr}</Table.DataCell>
+                <Table.DataCell>{catalogImport.postNr}</Table.DataCell>
               </Table.Row>
             ))}
         </Table.Body>

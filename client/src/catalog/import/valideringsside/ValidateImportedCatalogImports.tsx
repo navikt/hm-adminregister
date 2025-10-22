@@ -2,10 +2,11 @@ import { Alert, BodyShort, Box, Button, ExpansionCard, Heading, HStack, Loader, 
 import { useEffect, useState } from "react";
 import { baseUrl } from "utils/swr-hooks";
 import { importKatalogfil } from "api/ImportExportApi";
-import { ProductAgreementRegistrationDTO, ProductRegistration, SeriesRegistrations } from "utils/types/response-types";
+import {
+    CatalogImport
+} from "utils/types/response-types";
 import { Upload } from "felleskomponenter/FellesImport";
-import { ProductRegistrationTable } from "catalog/import/valideringsside/ProductRegistrationTable";
-import { ProductAgreementsTable } from "catalog/import/valideringsside/ProductAgreementsTable";
+import { CatalogImportsTable } from "catalog/import/valideringsside/CatalogImportsTable";
 
 interface Props {
   upload: Upload;
@@ -13,15 +14,12 @@ interface Props {
   supplier: string;
 }
 
-export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplier }: Props) => {
-  const [newProductAgreements, setNewProductAgreements] = useState<ProductAgreementRegistrationDTO[]>([]);
-  const [updatedProductAgreements, setUpdatedProductAgreements] = useState<ProductAgreementRegistrationDTO[]>([]);
-  const [deactivatedProductAgreements, setDeactivatedProductAgreements] = useState<ProductAgreementRegistrationDTO[]>(
+export const ValidateImportedCatalogImports = ({ upload, resetUpload, supplier }: Props) => {
+  const [insertedList, setInsertedCatalogImports] = useState<CatalogImport[]>([]);
+  const [updatedList, setUpdatedCatalogImports] = useState<CatalogImport[]>([]);
+  const [deactivatedList, setDeactivatedCatalogImports] = useState<CatalogImport[]>(
     [],
   );
-  const [createdSeries, setCreatedSeries] = useState<SeriesRegistrations>([]);
-  const [createdMainProducts, setCreatedMainProducts] = useState<ProductRegistration[]>([]);
-  const [createdAccessoryParts, setCreatedAccessoryParts] = useState<ProductRegistration[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -35,12 +33,9 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
     setIsLoading(true);
     importKatalogfil(upload, true, supplier)
       .then((response) => {
-        setNewProductAgreements(response.newProductAgreements);
-        setUpdatedProductAgreements(response.updatedAgreements);
-        setDeactivatedProductAgreements(response.deactivatedAgreements);
-        setCreatedSeries(response.createdSeries);
-        setCreatedMainProducts(response.createdMainProducts);
-        setCreatedAccessoryParts(response.createdAccessoryParts);
+        setInsertedCatalogImports(response.insertedList);
+        setUpdatedCatalogImports(response.updatedList);
+        setDeactivatedCatalogImports(response.deactivatedList);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -54,15 +49,9 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
 
     importKatalogfil(upload, false, supplier)
       .then((response) => {
-        const productAgreeementsToValidate = response.productAgreementsWithInformation.map((productAgreement) => {
-          return productAgreement.first;
-        });
-        setNewProductAgreements(response.newProductAgreements);
-        setUpdatedProductAgreements(response.updatedAgreements);
-        setDeactivatedProductAgreements(response.deactivatedAgreements);
-        setCreatedSeries(response.createdSeries);
-        setCreatedMainProducts(response.createdMainProducts);
-        setCreatedAccessoryParts(response.createdAccessoryParts);
+        setInsertedCatalogImports(response.insertedList);
+        setUpdatedCatalogImports(response.updatedList);
+        setDeactivatedCatalogImports(response.deactivatedList);
         setIsLoading(false);
         setImportSuccessful(true);
       })
@@ -88,23 +77,23 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                 <BodyShort size="large">
                     <a href={baseUrl("/katalog")}>Gå til katalog siden</a>
                 </BodyShort>
-              {(createdMainProducts.length > 0 || createdAccessoryParts.length > 0) && (
+              {(insertedList.length > 0) && (
                 <BodyShort size="medium">
                   Det ble opprettet nye produkter/deler/tilbehør i import, disse vil ligge{" "}
                   <a href={baseUrl(`/til-godkjenning?filter=ADMIN`)}> til godkjenning</a>.
                 </BodyShort>
               )}
-              {(newProductAgreements.length > 0 ||
-                updatedProductAgreements.length > 0 ||
-                deactivatedProductAgreements.length > 0) && (
+              {(insertedList.length > 0 ||
+                updatedList.length > 0 ||
+                deactivatedList.length > 0) && (
                 <BodyShort size="medium">
                   Importeringen var vellykket. Etter noen minutter, blir de nye tilknytningene tilgjengelig på{" "}
-                  {newProductAgreements.length > 0 ? (
-                    <a href={baseUrl(`/rammeavtaler/${newProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
-                  ) : updatedProductAgreements.length > 0 ? (
-                    <a href={baseUrl(`/rammeavtaler/${updatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                  {insertedList.length > 0 ? (
+                    <a href={baseUrl(`/rammeavtaler/${insertedList[0]?.agreementId}`)}>rammeavtalen</a>
+                  ) : updatedList.length > 0 ? (
+                    <a href={baseUrl(`/rammeavtaler/${updatedList[0]?.agreementId}`)}>rammeavtalen</a>
                   ) : (
-                    <a href={baseUrl(`/rammeavtaler/${deactivatedProductAgreements[0]?.agreementId}`)}>rammeavtalen</a>
+                    <a href={baseUrl(`/rammeavtaler/${deactivatedList[0]?.agreementId}`)}>rammeavtalen</a>
                   )}
                 </BodyShort>
               )}
@@ -148,11 +137,9 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
             {isLoading && <Loader size="2xlarge" />}
 
             {!isLoading &&
-              (newProductAgreements.length > 0 ||
-                updatedProductAgreements.length > 0 ||
-                deactivatedProductAgreements.length > 0 ||
-                createdMainProducts.length > 0 ||
-                createdAccessoryParts.length > 0) && (
+              (insertedList.length > 0 ||
+                updatedList.length > 0 ||
+                deactivatedList.length > 0) && (
                 <VStack gap="4" minWidth="768px">
                   <HStack gap="4">
                     <Button
@@ -179,48 +166,15 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                     </Button>
                   </HStack>
 
-                  {createdMainProducts.length > 0 ? (
-                    <ExpansionCard aria-label="Nye hovedprodukter">
-                      <ExpansionCard.Header>
-                        <Heading level="2" size="medium">
-                          Nye hovedprodukter ({createdMainProducts.length})
-                        </Heading>
-                      </ExpansionCard.Header>
-                      <ExpansionCard.Content>
-                        <ProductRegistrationTable productRegistrations={createdMainProducts} />
-                      </ExpansionCard.Content>
-                    </ExpansionCard>
-                  ) : (
-                    <Alert inline variant="info" size="medium">
-                      Ingen nye hovedprodukter
-                    </Alert>
-                  )}
-                  {createdAccessoryParts.length > 0 ? (
-                    <ExpansionCard aria-label="Nye reservedeler/tilbehør">
-                      <ExpansionCard.Header>
-                        <Heading level="2" size="medium">
-                          Nye reservedeler/tilbehør ({createdAccessoryParts.length})
-                        </Heading>
-                      </ExpansionCard.Header>
-                      <ExpansionCard.Content>
-                        <ProductRegistrationTable productRegistrations={createdAccessoryParts} />
-                      </ExpansionCard.Content>
-                    </ExpansionCard>
-                  ) : (
-                    <Alert inline variant="info" size="medium">
-                      Ingen nye reservedeler/tilbehør
-                    </Alert>
-                  )}
-
-                  {newProductAgreements.length > 0 ? (
+                  {insertedList.length > 0 ? (
                     <ExpansionCard aria-label="Nye produkter på delkontrakter">
                       <ExpansionCard.Header>
                         <Heading level="2" size="medium">
-                          Nye produkter på delkontrakter ({newProductAgreements.length})
+                          Nye produkter på delkontrakter ({insertedList.length})
                         </Heading>
                       </ExpansionCard.Header>
                       <ExpansionCard.Content>
-                        <ProductAgreementsTable productAgreements={newProductAgreements} />
+                        <CatalogImportsTable catalogImports={insertedList} />
                       </ExpansionCard.Content>
                     </ExpansionCard>
                   ) : (
@@ -229,15 +183,15 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                     </Alert>
                   )}
 
-                  {updatedProductAgreements.length > 0 ? (
+                  {updatedList.length > 0 ? (
                     <ExpansionCard aria-label="Oppdaterte produkter på delkontrakter">
                       <ExpansionCard.Header>
                         <Heading level="2" size="medium">
-                          Oppdaterte produkter på delkontrakter ({updatedProductAgreements.length})
+                          Oppdaterte produkter på delkontrakter ({updatedList.length})
                         </Heading>
                       </ExpansionCard.Header>
                       <ExpansionCard.Content>
-                        <ProductAgreementsTable productAgreements={updatedProductAgreements} />
+                        <CatalogImportsTable catalogImports={updatedList} />
                       </ExpansionCard.Content>
                     </ExpansionCard>
                   ) : (
@@ -246,15 +200,15 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
                     </Alert>
                   )}
 
-                  {deactivatedProductAgreements.length > 0 ? (
+                  {deactivatedList.length > 0 ? (
                     <ExpansionCard aria-label="Deaktiverte produkter på delkontrakter">
                       <ExpansionCard.Header>
                         <Heading level="2" size="medium">
-                          Deaktiverte produkter på delkontrakter ({deactivatedProductAgreements.length})
+                          Deaktiverte produkter på delkontrakter ({deactivatedList.length})
                         </Heading>
                       </ExpansionCard.Header>
                       <ExpansionCard.Content>
-                        <ProductAgreementsTable productAgreements={deactivatedProductAgreements} />
+                        <CatalogImportsTable catalogImports={deactivatedList} />
                       </ExpansionCard.Content>
                     </ExpansionCard>
                   ) : (
@@ -266,11 +220,9 @@ export const ValidateImportedProductAgreements = ({ upload, resetUpload, supplie
               )}
 
             {!isLoading &&
-              newProductAgreements.length === 0 &&
-              updatedProductAgreements.length === 0 &&
-              deactivatedProductAgreements.length === 0 &&
-              createdMainProducts.length === 0 &&
-              createdAccessoryParts.length === 0 && (
+              insertedList.length === 0 &&
+              updatedList.length === 0 &&
+              deactivatedList.length === 0 && (
                 <VStack gap="4">
                   <Button
                     className="fit-content"

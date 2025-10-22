@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./import.scss";
-import { ValidateImportedProductAgreements } from "catalog/import/valideringsside/ValidateImportedProductAgreements";
+import { ValidateImportedCatalogImports } from "catalog/import/valideringsside/ValidateImportedCatalogImports";
 import FellesImport, { Upload } from "felleskomponenter/FellesImport";
 
 export const ImportAndValidate = () => {
@@ -13,7 +13,7 @@ export const ImportAndValidate = () => {
     );
   } else
     return (
-      <ValidateImportedProductAgreements
+      <ValidateImportedCatalogImports
         supplier={supplier}
         upload={upload}
         resetUpload={() => {
