@@ -102,6 +102,9 @@ const CatalogFiles = () => {
                                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                                         <strong>Status</strong>
                                     </BodyShort>
+                                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
+                                        <strong>Bruker</strong>
+                                    </BodyShort>
                                     <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
                                         <strong>Oppdatert</strong>
                                     </BodyShort>
@@ -130,6 +133,11 @@ const CatalogFiles = () => {
                                                 {statusLabels[file.status] || file.status}
                                             </BodyShort>
                                         )}
+                                        <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
+                                            {file.updatedByUser
+                                                ? file.updatedByUser.split(".")[0].charAt(0).toUpperCase() + file.updatedByUser.split(".")[0].slice(1)
+                                                : ""}
+                                        </BodyShort>
                                         <BodyShort
                                             className={`${styles.cardValue} ${styles.mediumColumn}`}>{toReadableDateTimeString(file.updated)}</BodyShort>
                                         {file.status === "ERROR" && (
