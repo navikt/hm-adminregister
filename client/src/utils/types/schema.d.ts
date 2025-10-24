@@ -2730,6 +2730,39 @@ export interface components {
         };
         /** @enum {string} */
         CatalogFileStatus: "PENDING" | "ERROR" | "DONE";
+        CatalogImport: {
+            /** Format: uuid */
+            id: string;
+            agreementAction: string;
+            orderRef: string;
+            hmsArtNr: string;
+            iso: string;
+            title: string;
+            /** Format: uuid */
+            supplierId: string;
+            supplierRef: string;
+            reference: string;
+            postNr?: string | null;
+            /** Format: date */
+            dateFrom: string;
+            /** Format: date */
+            dateTo: string;
+            articleAction: string;
+            articleType: string;
+            functionalChange: string;
+            forChildren: string;
+            supplierName: string;
+            supplierCity: string;
+            mainProduct: boolean;
+            sparePart: boolean;
+            accessory: boolean;
+            /** Format: uuid */
+            agreementId: string;
+            /** Format: date-time */
+            created: string;
+            /** Format: date-time */
+            updated: string;
+        };
         CatalogImportExcelDTO: {
             rammeavtaleHandling: string;
             bestillingsNr: string;
@@ -2750,6 +2783,15 @@ export interface components {
             mainProduct: boolean;
             sparePart: boolean;
             accessory: boolean;
+        };
+        CatalogImportResultReport: {
+            file: string;
+            /** Format: int32 */
+            rows: number;
+            supplier: string;
+            insertedList: components["schemas"]["CatalogImport"][];
+            updatedList: components["schemas"]["CatalogImport"][];
+            deactivatedList: components["schemas"]["CatalogImport"][];
         };
         ChangePasswordDTO: {
             oldPassword: string;
@@ -2839,10 +2881,6 @@ export interface components {
         };
         "HiddenPartAdminController.HideRequest": {
             reason?: string | null;
-        };
-        Information: {
-            message: string;
-            type: components["schemas"]["Type"];
         };
         IsoCategoryDTO: {
             isoCode: string;
@@ -3081,10 +3119,6 @@ export interface components {
             first: Record<string, never>;
             second: Record<string, never>;
         };
-        "Pair_ProductAgreementRegistrationDTO.List_Information__": {
-            first: components["schemas"]["ProductAgreementRegistrationDTO"];
-            second: components["schemas"]["Information"][];
-        };
         PakrevdGodkjenningskurs: {
             tittel: string;
             isokode: string;
@@ -3127,34 +3161,11 @@ export interface components {
             /** Format: uuid */
             id: string;
         };
-        ProductAgreementImportDTO: {
-            dryRun: boolean;
-            /**
-             * Format: int32
-             * @deprecated
-             */
-            count: number;
-            /**
-             * Format: int32
-             * @deprecated
-             */
-            newCount: number;
-            file: string;
-            supplier: string;
-            createdSeries: components["schemas"]["SeriesRegistration"][];
-            createdAccessoryParts: components["schemas"]["ProductRegistration"][];
-            createdMainProducts: components["schemas"]["ProductRegistration"][];
-            newProductAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
-            updatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
-            deactivatedAgreements: components["schemas"]["ProductAgreementRegistrationDTO"][];
-            /** @deprecated */
-            productAgreementsWithInformation: components["schemas"]["Pair_ProductAgreementRegistrationDTO.List_Information__"][];
-        };
         ProductAgreementRegistrationDTO: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
-            productId?: string | null;
+            productId: string;
             /** Format: uuid */
             seriesUuid?: string | null;
             title: string;
@@ -3818,8 +3829,6 @@ export interface components {
         };
         /** @enum {string} */
         TechLabelType: "N" | "L" | "C";
-        /** @enum {string} */
-        Type: "INFO" | "WARNING";
         Unit: Record<string, never>;
         UpdatePartDto: {
             hmsArtNr?: string | null;
@@ -4398,7 +4407,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductAgreementImportDTO"];
+                    "application/json": components["schemas"]["CatalogImportResultReport"];
                 };
             };
         };
@@ -5144,7 +5153,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["ProductAgreementRegistrationDTO"];
+                "application/json": components["schemas"]["ProductAgreementRegistrationDTO"];
             };
         };
         responses: {
@@ -5232,7 +5241,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductAgreementImportDTO"];
+                    "application/json": components["schemas"]["CatalogImportResultReport"];
                 };
             };
         };

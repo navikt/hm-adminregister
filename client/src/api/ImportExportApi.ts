@@ -1,4 +1,4 @@
-import { ProductAgreementImportDTO, ProductRegistrationDTO } from "utils/types/response-types";
+import {CatalogImportResultReport, ProductRegistrationDTO} from "utils/types/response-types";
 import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from "api/fetch";
 import { Upload } from "felleskomponenter/FellesImport";
 import { MIME_TYPE_XLSX } from "utils/file-util";
@@ -42,7 +42,7 @@ export const importKatalogfil = async (
   upload: Upload,
   dryRun: boolean,
   supplier: string,
-): Promise<ProductAgreementImportDTO> => {
+): Promise<CatalogImportResultReport> => {
   const formData = new FormData();
   formData.append("file", upload.file);
 
@@ -50,8 +50,8 @@ export const importKatalogfil = async (
     getPath(
       true,
       dryRun
-        ? `/api/v1/product-agreement/excel-import?dryRun=true&supplierId=${supplier}`
-        : `/api/v1/product-agreement/excel-import?dryRun=false&supplierId=${supplier}`,
+        ? `/api/v1/catalog-file/excel-import?dryRun=true&supplierId=${supplier}`
+        : `/api/v1/catalog-file/excel-import?dryRun=false&supplierId=${supplier}`,
     ),
     "POST",
     formData,

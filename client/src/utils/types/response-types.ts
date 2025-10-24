@@ -61,7 +61,6 @@ export type PartDraftWithDTO = components["schemas"]["PartDraftWithDTO"];
 export type TechData = components["schemas"]["TechData"];
 export type DelkontraktRegistrationDTO = components["schemas"]["DelkontraktRegistrationDTO"];
 export type ProductVariantsForDelkontraktDto = components["schemas"]["ProductVariantsForDelkontraktDto"];
-export type ProductAgreementImportDTO = components["schemas"]["ProductAgreementImportDTO"];
 export type SeriesToApproveDto = components["schemas"]["SeriesToApproveDTO"];
 export type SeriesDraftResponse = components["schemas"]["SeriesDraftResponse"];
 export type PartDraftResponse = components["schemas"]["PartDraftResponse"];
@@ -91,12 +90,12 @@ export type SuitableForKommunalTeknikerDTO = components["schemas"]["SuitableForK
 
 export type DifferenceDTO = components["schemas"]["Difference_String.Object_"];
 
-export type SeriesRegistrations = components["schemas"]["SeriesRegistration"][];
 export type TechLabelRegistrationDTO = components["schemas"]["TechLabelRegistrationDTO"];
 export type TechLabelType = components["schemas"]["TechLabelType"];
 export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpdateDTO"];
-type CatalogImportExcelDTO = components["schemas"]["CatalogImportExcelDTO"];
 export type CatalogFile = components["schemas"]["CatalogFile"];
+export type CatalogImportResultReport = components["schemas"]["CatalogImportResultReport"];
+export type CatalogImport = components["schemas"]["CatalogImport"];
 
 
 export type ProdukterTilGodkjenningChunk = {
