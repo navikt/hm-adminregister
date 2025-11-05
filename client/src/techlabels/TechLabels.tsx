@@ -12,9 +12,11 @@ import {
   Tooltip,
   Alert,
   VStack,
+    Modal,
 } from "@navikt/ds-react";
-import { PlusIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { getTechLabels } from "api/TechLabelApi";
+
+import { PlusIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
+import { getTechLabels, deleteTechLabel } from "api/TechLabelApi";
 import { TechLabelRegistrationDTO } from "utils/types/response-types";
 import styles from "./TechLabels.module.scss";
 
@@ -29,7 +31,29 @@ const TechLabels = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [forceDeleteId, setForceDeleteId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string, forcedDelete: boolean) => {
+    setDeleteError(null);
+    setLoading(true);
+    try {
+      await deleteTechLabel(id, forcedDelete);
+      setTechLabels((prev) => prev.filter((label) => label.id !== id));
+      setFilteredLabels((prev) => prev.filter((label) => label.id !== id));
+      setForceDeleteId(null);
+    } catch (err: any) {
+        const backendMessage =
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to delete techlabel: "+id;
+      setDeleteError(backendMessage);
+      setForceDeleteId(id);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +87,20 @@ const TechLabels = () => {
         </Heading>
         <div className={styles.techLabelsContainer}>
           <VStack gap="8">
+            <Modal open={!!deleteError && !!forceDeleteId} onClose={() => { setDeleteError(null); setForceDeleteId(null); }} header={{ heading: "Delete failed" }}>
+              <Modal.Body>
+                <Alert variant="error">{deleteError}</Alert>
+                <p>Vil du virkelig slette?</p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => { setDeleteError(null); setForceDeleteId(null); }}>
+                  Avbryt
+                </Button>
+                <Button variant="danger" onClick={() => { if (forceDeleteId) handleDelete(forceDeleteId, true); }}>
+                  Slett uansett
+                </Button>
+              </Modal.Footer>
+            </Modal>
             <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
               <Box role="search" className="search-box">
                 <Search
@@ -147,6 +185,14 @@ const TechLabels = () => {
                         onClick={() => navigate(`/tekniskdata/rediger/${label.id}`, { state: label })}
                         aria-label="Rediger"
                       />
+                        <Button
+                            size="xsmall"
+                            variant="tertiary"
+                            icon={<TrashIcon aria-hidden />}
+                            onClick={() => handleDelete(label.id, false)}
+                            aria-label="Slett"
+                            style={{ marginLeft: "0.5rem" }}
+                        />
                     </span>
                   </div>
                 </Box>
