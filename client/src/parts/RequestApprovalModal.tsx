@@ -31,8 +31,7 @@ export const RequestApprovalModal = ({
   const partIsValid = () => {
     const articleNameIsValid =partName && partName.trim().length > 0;
     const levartNrIsValid = supplierRef && supplierRef.trim().length > 0;
-    const connectedToSeries = part?.productData.attributes.compatibleWith?.seriesIds && part?.productData.attributes.compatibleWith?.seriesIds.length > 0;
-    return articleNameIsValid && levartNrIsValid && connectedToSeries || false
+    return articleNameIsValid && levartNrIsValid || false
   };
 
   async function onPublish() {

@@ -118,10 +118,7 @@ const Part = () => {
   const partIsValid = () => {
     const articleNameIsValid = part?.articleName && part.articleName.trim().length > 0;
     const levartNrIsValid = part?.supplierRef && part.supplierRef.trim().length > 0;
-    const connectedToSeries =
-      part?.productData.attributes.compatibleWith?.seriesIds &&
-      part?.productData.attributes.compatibleWith?.seriesIds.length > 0;
-    return (articleNameIsValid && levartNrIsValid && connectedToSeries) || false;
+    return (articleNameIsValid && levartNrIsValid) || false;
   };
 
   if (isLoading || isLoadingSeries) {
