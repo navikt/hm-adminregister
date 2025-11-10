@@ -19,6 +19,7 @@ import { PlusIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { getTechLabels, deleteTechLabel } from "api/TechLabelApi";
 import { TechLabelRegistrationDTO } from "utils/types/response-types";
 import styles from "./TechLabels.module.scss";
+import {toReadableDateString, toReadableDateTimeString} from "utils/date-util";
 
 const PAGE_SIZE = 15;
 const MAX_VISIBLE_OPTIONS = 10;
@@ -149,6 +150,9 @@ const TechLabels = () => {
                   <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                     <strong>Enhet</strong>
                   </BodyShort>
+                  <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
+                    <strong>Opprettet</strong>
+                  </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
                     <strong>Alternativer</strong>
                   </BodyShort>
@@ -162,6 +166,7 @@ const TechLabels = () => {
                     <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.isoCode}</BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.type}</BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.unit}</BodyShort>
+                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{toReadableDateString(label.created)}</BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
                       {label.options && label.options.length > 0 ? (
                         label.options.length > MAX_VISIBLE_OPTIONS ? (
