@@ -450,16 +450,20 @@ export function usePagedProductsForTechnician({
   page,
   pageSize,
   titleSearchTerm,
+  supplierFilter
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
+  supplierFilter?: string;
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
+  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
+
 
   const mainProductParam: string = `&mainProduct=true`;
 
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${mainProductParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}${mainProductParam}${supplierParam}`;
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET);
 }

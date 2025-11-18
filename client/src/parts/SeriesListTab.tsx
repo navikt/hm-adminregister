@@ -1,4 +1,16 @@
-import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  Box,
+  Heading,
+  HGrid,
+  HStack,
+  Loader,
+  Pagination,
+  Search,
+  Select,
+  UNSAFE_Combobox,
+  VStack,
+} from "@navikt/ds-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -17,6 +29,21 @@ const SeriesListTab = () => {
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
 
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
+
+  useEffect(() => {
+    setSupplierFilter(searchParams.get("supplier") || "");
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (supplierFilter) {
+      searchParams.set("supplier", supplierFilter);
+    } else {
+      searchParams.delete("supplier");
+    }
+    setSearchParams(searchParams);
+  }, [supplierFilter]);
+
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>();
 
   const {
@@ -27,6 +54,7 @@ const SeriesListTab = () => {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
+    supplierFilter: supplierFilter,
   });
 
   useEffect(() => {
@@ -37,6 +65,16 @@ const SeriesListTab = () => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
+  };
+
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+    if (!uuid) return;
+    if (isSelected) {
+      setSupplierFilter(uuid);
+    } else if (supplierFilter === uuid) {
+      setSupplierFilter("");
+    }
   };
 
   useEffect(() => {
@@ -96,6 +134,24 @@ const SeriesListTab = () => {
                   hideLabel={false}
                 />
               </Box>
+              {loggedInUser && loggedInUser.isAdmin && suppliers && (
+                <Box asChild style={{ maxWidth: "475px" }}>
+                  <UNSAFE_Combobox
+                    clearButton
+                    clearButtonLabel="Tøm"
+                    label="Leverandører"
+                    selectedOptions={
+                      supplierFilter
+                        ? suppliers
+                            ?.filter((supplier) => supplier.id === supplierFilter)
+                            .map((supplier) => supplier.name) || []
+                        : []
+                    }
+                    onToggleSelected={onToggleSelected}
+                    options={suppliers?.map((supplier) => supplier.name) || []}
+                  />
+                </Box>
+              )}
             </HGrid>
           </HGrid>
         </VStack>

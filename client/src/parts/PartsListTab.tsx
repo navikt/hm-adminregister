@@ -1,4 +1,16 @@
-import { Alert, Box, Heading, HGrid, HStack, Loader, Pagination, Search, Select, VStack } from "@navikt/ds-react";
+import {
+  Alert,
+  Box,
+  Heading,
+  HGrid,
+  HStack,
+  Loader,
+  Pagination,
+  Search,
+  Select,
+  UNSAFE_Combobox,
+  VStack,
+} from "@navikt/ds-react";
 import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
@@ -15,9 +27,23 @@ const PartsListTab = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { pathname, search } = useLocation();
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+
+  useEffect(() => {
+    setSupplierFilter(searchParams.get("supplier") || "");
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (supplierFilter) {
+      searchParams.set("supplier", supplierFilter);
+    } else {
+      searchParams.delete("supplier");
+    }
+    setSearchParams(searchParams);
+  }, [supplierFilter]);
 
   useEffect(() => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
@@ -31,6 +57,7 @@ const PartsListTab = () => {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
+    supplierFilter: supplierFilter,
   });
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
@@ -48,6 +75,16 @@ const PartsListTab = () => {
   }, [pagedData]);
 
   const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
+
+  const onToggleSelected = (option: string, isSelected: boolean) => {
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+    if (!uuid) return;
+    if (isSelected) {
+      setSupplierFilter(uuid);
+    } else if (supplierFilter === uuid) {
+      setSupplierFilter("");
+    }
+  };
 
   if (errorPaged) {
     return (
@@ -87,6 +124,24 @@ const PartsListTab = () => {
                   hideLabel={false}
                 />
               </Box>
+              {loggedInUser && loggedInUser.isAdmin && suppliers && (
+                <Box asChild style={{ maxWidth: "475px" }}>
+                  <UNSAFE_Combobox
+                    clearButton
+                    clearButtonLabel="Tøm"
+                    label="Leverandører"
+                    selectedOptions={
+                      supplierFilter
+                        ? suppliers
+                        ?.filter((supplier) => supplier.id === supplierFilter)
+                        .map((supplier) => supplier.name) || []
+                        : []
+                    }
+                    onToggleSelected={onToggleSelected}
+                    options={suppliers?.map((supplier) => supplier.name) || []}
+                  />
+                </Box>
+              )}
             </HGrid>
           </HGrid>
         </VStack>

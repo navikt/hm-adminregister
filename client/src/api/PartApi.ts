@@ -20,14 +20,18 @@ export function usePagedParts({
   page,
   pageSize,
   titleSearchTerm,
+  supplierFilter
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
+  supplierFilter?: string;
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
+  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
 
-  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC&${titleSearchParam}`;
+
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC&${titleSearchParam}${supplierParam}`;
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }
