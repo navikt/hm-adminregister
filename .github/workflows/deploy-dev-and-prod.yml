@@ -36,7 +36,7 @@ jobs:
 #        run: npm test
 
   build:
-    needs: [test]
+#    needs: [test]
     name: Build and push docker container
     permissions:
       contents: 'read'
