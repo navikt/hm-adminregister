@@ -1224,6 +1224,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/series/ungroup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ungroupSeies"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/series/versions": {
         parameters: {
             query?: never;
@@ -1330,7 +1346,7 @@ export interface paths {
         get: operations["getTechLabelById"];
         put: operations["updateTechLabel"];
         post?: never;
-        delete?: never;
+        delete: operations["deleteTechLabel"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3166,7 +3182,10 @@ export interface components {
             id: string;
             /** Format: uuid */
             productId: string;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @deprecated
+             */
             seriesUuid?: string | null;
             title: string;
             articleName?: string | null;
@@ -3177,7 +3196,6 @@ export interface components {
             /** Format: uuid */
             supplierId: string;
             supplierRef: string;
-            hmsArtNr?: string | null;
             /** Format: uuid */
             agreementId: string;
             reference: string;
@@ -6104,6 +6122,33 @@ export interface operations {
             };
         };
     };
+    ungroupSeies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    seriesId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description ungroupSeies 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     getSeriesVersions_1: {
         parameters: {
             query: {
@@ -6388,6 +6433,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TechLabelRegistrationDTO"];
+                };
+            };
+        };
+    };
+    deleteTechLabel: {
+        parameters: {
+            query: {
+                forcedDelete: boolean;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description deleteTechLabel 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
                 };
             };
         };

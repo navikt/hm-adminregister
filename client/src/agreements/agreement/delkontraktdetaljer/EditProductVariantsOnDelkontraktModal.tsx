@@ -70,7 +70,6 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
-                    <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                     <Table.DataCell>
@@ -91,7 +90,6 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                     return (
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName}</Table.DataCell>
-                        <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
                         <Table.DataCell>{variant.status === "ACTIVE" ? "Aktiv" : "Inaktiv"}</Table.DataCell>
                         <Table.DataCell>
