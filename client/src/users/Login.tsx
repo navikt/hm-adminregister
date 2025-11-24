@@ -10,7 +10,6 @@ import { mapLoggedInUser } from "utils/user-util";
 import { loginSchema } from "utils/zodSchema/login";
 import { z } from "zod";
 import { baseUrl } from "utils/swr-hooks";
-import { logAmplitudeEvent } from "utils/amplitude";
 
 type FormData = z.infer<typeof loginSchema>;
 
@@ -78,36 +77,28 @@ export default function Login() {
         if (loggedInUserRes.ok) {
           const loggedInUser = mapLoggedInUser(await loggedInUserRes.json());
           setLoggedInUser(loggedInUser);
-          logAmplitudeEvent("login", "login med suksess");
 
           if (loggedInUser.userName === "") {
             if (loggedInUser.isAdmin) {
-              logAmplitudeEvent("login, ny bruker", "admin");
               navigate("/admin/adminopplysninger");
             } else if (loggedInUser.isHmsUser) {
-              logAmplitudeEvent("login, ny bruker", "hms-bruker");
               navigate("/logg-inn/hms-brukeropplysninger");
             } else {
-              logAmplitudeEvent("login, ny bruker", "supplier");
               navigate("/logg-inn/brukeropplysninger");
             }
           } else {
             if (loggedInUser.isAdmin) {
-              logAmplitudeEvent("login, ny bruker", "admin");
               navigate(previousLocation);
             } else if (loggedInUser.isHmsUser) {
               navigate("/");
             } else {
-              logAmplitudeEvent("login, ny bruker", "supplier");
               navigate(previousLocation);
             }
           }
         } else {
-          logAmplitudeEvent("login", "innlogging bruker konto feil");
           throw new Error("Logged in user not ok");
         }
       } else {
-        logAmplitudeEvent("login", "innlogging feil - brukernavn eller passord");
         throw new Error("Feil brukernavn eller passord");
       }
     } catch (e: any) {
