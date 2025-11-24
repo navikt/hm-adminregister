@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { LoginWrapper } from "LoginWrapper";
 import { Startside } from "Startside";
@@ -41,8 +41,6 @@ import { ForgotPassword } from "users/reset-password/ForgotPassword";
 import { ResetPassword } from "users/reset-password/ResetPassword";
 import { VerifyOtp } from "users/reset-password/VerifyOtp";
 import { PasswordResetReceit } from "users/reset-password/PasswordResetReceit";
-import { useEffect } from "react";
-import { logNavigationEvent } from "utils/amplitude";
 import CreateHmsUser from "users/hms-user/CreateHmsUser";
 import FirstTimeHmsUserInfo from "users/hms-user/FirstTimeHmsUserInfo";
 import HmsUserProfile from "users/hms-user/HmsUserProfile";
@@ -54,20 +52,11 @@ import ViewWorksWith from "products/variants/ViewWorksWith";
 import TechLabels from "techlabels/TechLabels";
 import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 import CatalogFiles from "catalog/CatalogFiles";
-import {ImportAndValidate} from "catalog/import/ImportAndValidate";
+import { ImportAndValidate } from "catalog/import/ImportAndValidate";
 import AdminDashboard from "dashboard/AdminDashboard";
-
-const usePageTracking = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    logNavigationEvent("Main", "Main navigation", location.pathname);
-  }, [location]);
-};
 
 export function App() {
   const toggles = getFeatureFlags();
-  usePageTracking();
 
   return (
     <FlagProvider toggles={toggles ?? []}>
@@ -103,8 +92,8 @@ export function App() {
 
               <Route path="/deler" element={<Parts />} />
               <Route path="/del/:productId" element={<Part />} />
-              <Route path="/tekniskdata" element={<TechLabels/>} />
-              <Route path="/katalog" element={<CatalogFiles/>} />
+              <Route path="/tekniskdata" element={<TechLabels />} />
+              <Route path="/katalog" element={<CatalogFiles />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
 
@@ -143,8 +132,8 @@ export function App() {
 
             <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
             <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />
-            <Route path={"/tekniskdata/opprett"} element={<CreateAndEditTechLabel />}/>
-            <Route path={"/tekniskdata/rediger/:id"} element={<CreateAndEditTechLabel />}/>
+            <Route path={"/tekniskdata/opprett"} element={<CreateAndEditTechLabel />} />
+            <Route path={"/tekniskdata/rediger/:id"} element={<CreateAndEditTechLabel />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
