@@ -25,7 +25,7 @@ export default function CreatePart() {
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>("");
   const [levArtNr, setLevArtNr] = useState<string>("");
-  const [hmsArtNr, setHmsArtNr] = useState<string>("");
+  const [hmsArtNr, setHmsArtNr] = useState<string | null>(null);
   const [isoCategory, setIsoCategory] = useState<string>("");
   const [partType, setPartType] = useState<string>("sparePart");
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined);
