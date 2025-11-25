@@ -8,9 +8,11 @@ import "./styles/globals.scss";
 import { baseUrl } from "utils/swr-hooks";
 import { initMsw } from "mocks/initMsw";
 import { initInstrumentation } from "faro/faro";
+import { initUmami } from "utils/umami";
 
 initMsw().then(() => {
   initInstrumentation();
+  initUmami();
 
   const container = document.getElementById("root")!;
   createRoot(container).render(
