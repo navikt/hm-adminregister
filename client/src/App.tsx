@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import { LoginWrapper } from "LoginWrapper";
 import { Startside } from "Startside";
@@ -54,9 +54,20 @@ import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 import CatalogFiles from "catalog/CatalogFiles";
 import { ImportAndValidate } from "catalog/import/ImportAndValidate";
 import AdminDashboard from "dashboard/AdminDashboard";
+import { useEffect } from "react";
+import { logNavigationEvent } from "utils/umami";
+
+const usePageTracking = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    logNavigationEvent("Main", "Main navigation", location.pathname);
+  }, [location]);
+};
 
 export function App() {
   const toggles = getFeatureFlags();
+  usePageTracking();
 
   return (
     <FlagProvider toggles={toggles ?? []}>
