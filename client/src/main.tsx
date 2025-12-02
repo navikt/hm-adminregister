@@ -13,6 +13,7 @@ import { initUmami } from "utils/umami";
 initMsw().then(() => {
   initUmami();
   initInstrumentation();
+  initUmami();
 
   const container = document.getElementById("root")!;
   createRoot(container).render(
