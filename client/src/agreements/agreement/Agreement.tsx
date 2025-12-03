@@ -164,7 +164,11 @@ const Agreement = () => {
                 </Tabs.List>
                 <AboutTab agreement={agreement} onSubmit={onSubmit} />
                 <FileTab agreement={agreement} mutateAgreement={mutateAgreement} />
-                <DelkontrakterTab agreementId={agreement.id} agreementDraftStatus={agreement.draftStatus} />
+                <DelkontrakterTab
+                  agreementId={agreement.id}
+                  agreementExpireDate={agreement.expired}
+                  agreementDraftStatus={agreement.draftStatus}
+                />
               </Tabs>
             </VStack>
 

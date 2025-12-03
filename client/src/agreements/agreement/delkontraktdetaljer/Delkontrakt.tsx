@@ -1,7 +1,7 @@
 import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
 import { Button, Checkbox, Dropdown, ExpansionCard, HStack, Switch, Table, VStack } from "@navikt/ds-react";
 import { MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
 import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
 import { deleteProductsFromAgreement } from "api/AgreementProductApi";
@@ -17,9 +17,10 @@ interface Props {
   agreementDraftStatus: string;
   delkontrakt: DelkontraktRegistrationDTO;
   mutateDelkontrakter: () => void;
+  agreementExpireDate: string;
 }
 
-export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftStatus }: Props) => {
+export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftStatus, agreementExpireDate }: Props) => {
   const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
 
   const {
@@ -27,6 +28,11 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
     isLoading: productAgreementsIsLoading,
     mutateProductAgreements,
   } = useProductAgreementsByDelkontraktId(delkontrakt.id, showOnlyMainProducts);
+
+  useEffect(() => {
+    mutateProductAgreements();
+    console.log(agreementExpireDate);
+  }, [agreementExpireDate]);
 
   const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
   const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);

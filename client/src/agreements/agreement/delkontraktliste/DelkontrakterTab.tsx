@@ -11,9 +11,11 @@ import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
 const DelkontrakterTab = ({
   agreementId,
   agreementDraftStatus,
+  agreementExpireDate,
 }: {
   agreementId: string;
   agreementDraftStatus: string;
+  agreementExpireDate: string;
 }) => {
   const [newSortNr, setNewSortNr] = useState<number>(1);
 
@@ -22,6 +24,10 @@ const DelkontrakterTab = ({
     isLoading: delkontrakterIsLoading,
     mutate: mutateDelkontrakter,
   } = useDelkontrakterByAgreementId(agreementId);
+
+  useEffect(() => {
+    mutateDelkontrakter();
+  }, [agreementExpireDate]);
 
   useEffect(() => {
     const newSortNr = delkontrakter?.length ? delkontrakter[delkontrakter.length - 1].delkontraktData.sortNr + 1 : 1;
@@ -79,6 +85,7 @@ const DelkontrakterTab = ({
                       delkontrakt={delkontrakt}
                       agreementDraftStatus={agreementDraftStatus}
                       mutateDelkontrakter={mutateDelkontrakter}
+                      agreementExpireDate={agreementExpireDate}
                     />
                     <VStack gap="1" style={{ alignItems: "center" }}>
                       {i !== 0 && (
