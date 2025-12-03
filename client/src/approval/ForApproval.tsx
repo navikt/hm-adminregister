@@ -112,7 +112,7 @@ export const ForApproval = () => {
           Godkjenning av produkter
         </Heading>
 
-        <HGrid gap="3" columns={{ xs: 1, md: 3 }}>
+        <HGrid gap="3" columns={{ xs: 1, md: 2 }}>
           <Search
             className="search-button"
             label="Søk"
