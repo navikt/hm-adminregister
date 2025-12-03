@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -12,14 +12,14 @@ import {
   Tooltip,
   Alert,
   VStack,
-    Modal,
+  Modal,
 } from "@navikt/ds-react";
 
 import { PlusIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
 import { getTechLabels, deleteTechLabel } from "api/TechLabelApi";
 import { TechLabelRegistrationDTO } from "utils/types/response-types";
 import styles from "./TechLabels.module.scss";
-import {toReadableDateString, toReadableDateTimeString} from "utils/date-util";
+import { toReadableDateString, toReadableDateTimeString } from "utils/date-util";
 
 const PAGE_SIZE = 15;
 const MAX_VISIBLE_OPTIONS = 10;
@@ -28,13 +28,19 @@ const TechLabels = () => {
   const [techLabels, setTechLabels] = useState<TechLabelRegistrationDTO[]>([]);
   const [filteredLabels, setFilteredLabels] = useState<TechLabelRegistrationDTO[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchIsoCode, setSearchIsoCode] = useState("");
+  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+  const searchIsoCode = searchParams.get("searchIsoCode") || "";
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const navigate = useNavigate();
   const [forceDeleteId, setForceDeleteId] = useState<string | null>(null);
+
+  const updateUrlOnSearchIsoCodeChange = (value: string) => {
+    navigate(`${pathname}?searchIsoCode=${value}`);
+  };
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
     setDeleteError(null);
@@ -45,10 +51,7 @@ const TechLabels = () => {
       setFilteredLabels((prev) => prev.filter((label) => label.id !== id));
       setForceDeleteId(null);
     } catch (err: any) {
-        const backendMessage =
-          err?.response?.data?.message ||
-          err?.message ||
-          "Failed to delete techlabel: "+id;
+      const backendMessage = err?.response?.data?.message || err?.message || "Failed to delete techlabel: " + id;
       setDeleteError(backendMessage);
       setForceDeleteId(id);
     } finally {
@@ -88,16 +91,34 @@ const TechLabels = () => {
         </Heading>
         <div className={styles.techLabelsContainer}>
           <VStack gap="8">
-            <Modal open={!!deleteError && !!forceDeleteId} onClose={() => { setDeleteError(null); setForceDeleteId(null); }} header={{ heading: "Delete failed" }}>
+            <Modal
+              open={!!deleteError && !!forceDeleteId}
+              onClose={() => {
+                setDeleteError(null);
+                setForceDeleteId(null);
+              }}
+              header={{ heading: "Delete failed" }}
+            >
               <Modal.Body>
                 <Alert variant="error">{deleteError}</Alert>
                 <p>Vil du virkelig slette?</p>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={() => { setDeleteError(null); setForceDeleteId(null); }}>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setDeleteError(null);
+                    setForceDeleteId(null);
+                  }}
+                >
                   Avbryt
                 </Button>
-                <Button variant="danger" onClick={() => { if (forceDeleteId) handleDelete(forceDeleteId, true); }}>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    if (forceDeleteId) handleDelete(forceDeleteId, true);
+                  }}
+                >
                   Slett uansett
                 </Button>
               </Modal.Footer>
@@ -120,7 +141,7 @@ const TechLabels = () => {
                   placeholder="Søk etter ISO-kode"
                   size="medium"
                   value={searchIsoCode}
-                  onChange={setSearchIsoCode}
+                  onChange={updateUrlOnSearchIsoCodeChange}
                 />
               </Box>
               <Button
@@ -166,7 +187,9 @@ const TechLabels = () => {
                     <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>{label.isoCode}</BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.type}</BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{label.unit}</BodyShort>
-                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>{toReadableDateString(label.created)}</BodyShort>
+                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
+                      {toReadableDateString(label.created)}
+                    </BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
                       {label.options && label.options.length > 0 ? (
                         label.options.length > MAX_VISIBLE_OPTIONS ? (
@@ -190,14 +213,14 @@ const TechLabels = () => {
                         onClick={() => navigate(`/tekniskdata/rediger/${label.id}`, { state: label })}
                         aria-label="Rediger"
                       />
-                        <Button
-                            size="xsmall"
-                            variant="tertiary"
-                            icon={<TrashIcon aria-hidden />}
-                            onClick={() => handleDelete(label.id, false)}
-                            aria-label="Slett"
-                            style={{ marginLeft: "0.5rem" }}
-                        />
+                      <Button
+                        size="xsmall"
+                        variant="tertiary"
+                        icon={<TrashIcon aria-hidden />}
+                        onClick={() => handleDelete(label.id, false)}
+                        aria-label="Slett"
+                        style={{ marginLeft: "0.5rem" }}
+                      />
                     </span>
                   </div>
                 </Box>

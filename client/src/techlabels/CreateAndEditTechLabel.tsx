@@ -1,7 +1,7 @@
 import { Button, HStack, TextField, VStack, Select } from "@navikt/ds-react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import {TechLabelType, TechLabelRegistrationDTO, TechLabelCreateUpdateDTO} from "utils/types/response-types";
+import { TechLabelType, TechLabelRegistrationDTO, TechLabelCreateUpdateDTO } from "utils/types/response-types";
 import { createTechLabel, updateTechLabel } from "api/TechLabelApi";
 import FormBox from "felleskomponenter/FormBox";
 
@@ -17,7 +17,7 @@ const TECH_LABEL_TYPES = [
   { value: "", label: "Velg type" },
   { value: "N", label: "N" },
   { value: "L", label: "L" },
-  { value: "C", label: "C"},
+  { value: "C", label: "C" },
 ];
 
 const CreateAndEditTechLabel = () => {
@@ -43,15 +43,15 @@ const CreateAndEditTechLabel = () => {
   async function onSubmit(data: FormData) {
     const dto: TechLabelCreateUpdateDTO = {
       ...data,
-      options : data.options ? data.options.split(",").map(opt => opt.trim()) : [],
+      options: data.options ? data.options.split(",").map((opt) => opt.trim()) : [],
     };
 
     if (editData) {
-      await updateTechLabel(editData.id, dto)
+      await updateTechLabel(editData.id, dto);
     } else {
       await createTechLabel(dto);
     }
-    navigate("/tekniskdata");
+    navigate(`/tekniskdata?searchIsoCode=${data.isoCode}`);
   }
 
   const title = editData ? "Endre teknisk-data beskrivelse" : "Opprett ny teknisk-data beskrivelse";
@@ -80,12 +80,7 @@ const CreateAndEditTechLabel = () => {
               </option>
             ))}
           </Select>
-          <TextField
-            {...register("unit", { required:false })}
-            label="Enhet"
-            id="unit"
-            autoComplete="on"
-          />
+          <TextField {...register("unit", { required: false })} label="Enhet" id="unit" autoComplete="on" />
           <TextField
             {...register("isoCode", { required: true })}
             label="ISO-kode *"
@@ -94,10 +89,10 @@ const CreateAndEditTechLabel = () => {
             autoComplete="on"
           />
           <TextField
-              {...register("options", { required: false })}
-              label="Alternativer"
-              id="options"
-              autoComplete="on"
+            {...register("options", { required: false })}
+            label="Alternativer"
+            id="options"
+            autoComplete="on"
           />
           <HStack gap="4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
