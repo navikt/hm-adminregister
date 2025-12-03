@@ -3,7 +3,6 @@ import useSWR, { Fetcher } from "swr";
 
 import { AgreementFilterOption } from "agreements/Agreements";
 import { getPath } from "api/fetch";
-import { CreatedByFilter } from "approval/ForApproval";
 import { HM_REGISTER_URL } from "environments";
 import { useAuthStore } from "./store/useAuthStore";
 import { useErrorStore } from "./store/useErrorStore";
@@ -43,7 +42,7 @@ class CustomError extends Error {
   }
 }
 
-export const fetcherGET: Fetcher<unknown, string> = (url) =>
+export const fetcherGET: Fetcher<any, string> = (url) =>
   fetch(url, {
     method: "GET",
     credentials: "include",
@@ -157,7 +156,6 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
 export function usePagedSeriesToApprove({
   page,
   pageSize,
-  createdByFilter,
   supplierFilter,
   titleSearchTerm,
   sortUrl,
@@ -165,7 +163,6 @@ export function usePagedSeriesToApprove({
 }: {
   page: number;
   pageSize: number;
-  createdByFilter: CreatedByFilter;
   supplierFilter?: string;
   titleSearchTerm?: string;
   sortUrl: string | null;
@@ -196,12 +193,6 @@ export function usePagedSeriesToApprove({
     } else if (filters.includes("Tilbehør/Del")) {
       filterUrl.append("mainProduct", "false");
     }
-  }
-
-  if (createdByFilter === CreatedByFilter.ADMIN) {
-    filterUrl.append("createdByAdmin", "true");
-  } else if (createdByFilter === CreatedByFilter.SUPPLIER) {
-    filterUrl.append("createdByAdmin", "false");
   }
 
   const sortBy = sortUrl?.split(",")[0] || "updated";

@@ -19,12 +19,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { usePagedSeriesToApprove, useSuppliers } from "utils/swr-hooks";
 
-export enum CreatedByFilter {
-  ALL = "ALL",
-  ADMIN = "ADMIN",
-  SUPPLIER = "SUPPLIER",
-}
-
 export const ForApproval = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
@@ -42,9 +36,6 @@ export const ForApproval = () => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
   }, [pageSizeState]);
 
-  const [selectedFilterOption, setSelectedFilterOption] = useState<CreatedByFilter>(
-    (searchParams.get("filter") as CreatedByFilter) || "ALL",
-  );
 
   const visningStatusfilter = ["Endring", "Nytt produkt", "Hovedprodukt", "Tilbehør/Del"];
 
@@ -56,7 +47,6 @@ export const ForApproval = () => {
   } = usePagedSeriesToApprove({
     page: pageState - 1,
     pageSize: pageSizeState,
-    createdByFilter: selectedFilterOption,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
     sortUrl: sortUrl,
@@ -90,13 +80,6 @@ export const ForApproval = () => {
   };
 
   const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
-
-  const handeFilterChange = (filter: CreatedByFilter) => {
-    searchParams.set("filter", filter.toString());
-    setSearchParams(searchParams);
-    setSelectedFilterOption(filter);
-    setPageState(1);
-  };
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -156,15 +139,6 @@ export const ForApproval = () => {
             </Box>
           )}
 
-          <Select
-            value={selectedFilterOption}
-            label="Opprettet av"
-            onChange={(e) => handeFilterChange(e.target.value as CreatedByFilter)}
-          >
-            <option value="ALLE">Velg</option>
-            <option value="ADMIN">Administrator</option>
-            <option value="SUPPLIER">Leverandør</option>
-          </Select>
         </HGrid>
         <VStack gap="3">
           <Label>Filter</Label>
@@ -187,13 +161,12 @@ export const ForApproval = () => {
             <ProductsToApproveTable
               mutatePagedData={mutatePagedData}
               series={pagedData.content}
-              createdByFilter={selectedFilterOption}
               oversiktPath={pathname + search}
             />
           ) : (
             !isLoading && (
               <Alert variant="info">
-                {searchTerm !== "" && selectedFilterOption !== CreatedByFilter.ALL
+                {searchTerm !== ""
                   ? `Ingen produkter funnet`
                   : "Ingen produkter som venter på godkjenning."}
               </Alert>
