@@ -22,7 +22,6 @@ import {
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
-  ProductChunk,
 } from "./types/response-types";
 import { LoggedInUser } from "./user-util";
 
@@ -44,7 +43,7 @@ class CustomError extends Error {
   }
 }
 
-export const fetcherGET: Fetcher<any, string> = (url) =>
+export const fetcherGET: Fetcher<unknown, string> = (url) =>
   fetch(url, {
     method: "GET",
     credentials: "include",
@@ -54,7 +53,7 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
   }).then((res) => {
     if (!res.ok) {
       return res.json().then((data) => {
-        throw new CustomError(data.errorMessage || res.statusText, res.status);
+        throw new CustomError((data as { errorMessage?: string }).errorMessage || res.statusText, res.status);
       });
     }
     return res.json();
@@ -94,12 +93,14 @@ export function usePagedProducts({
   titleSearchTerm,
   filters,
   supplierFilter,
+  sortUrl,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
   filters: string[];
   supplierFilter?: string;
+  sortUrl?: string | null;
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
@@ -109,7 +110,11 @@ export function usePagedProducts({
 
   const mainProductParam: string = `&mainProduct=true`;
 
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}`;
+  const sortBy = sortUrl?.split(",")[0] || "updated";
+  const sortDirection = sortUrl?.split(",")[1] || "DESC";
+  const sortParam = `&sort=${sortBy},${sortDirection}`;
+
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}`;
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET);
 }
@@ -119,8 +124,6 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = [];
   let excludeExpired = true;
-
-  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert", "Ikke publisert"];
 
   const uri = new URLSearchParams();
 
@@ -140,7 +143,9 @@ const statusFilterProductsURL = (statusFilters: string[]) => {
     }
   });
 
-  excludeExpired && uri.append("excludeExpired", "true");
+  if (excludeExpired) {
+    uri.append("excludeExpired", "true");
+  }
 
   if (editStatus.length > 0) {
     uri.append("editStatus", editStatus.join(","));
@@ -170,8 +175,12 @@ export function usePagedSeriesToApprove({
 
   const filterUrl = new URLSearchParams();
 
-  supplierFilter ? filterUrl.append("supplierFilter", supplierFilter) : "";
-  titleSearchTerm ? filterUrl.append("title", titleSearchTerm) : "";
+  if (supplierFilter) {
+    filterUrl.append("supplierFilter", supplierFilter);
+  }
+  if (titleSearchTerm) {
+    filterUrl.append("title", titleSearchTerm);
+  }
 
   if (!(filters.includes("Endring") && filters.includes("Nytt produkt"))) {
     if (filters.includes("Endring")) {
@@ -188,6 +197,7 @@ export function usePagedSeriesToApprove({
       filterUrl.append("mainProduct", "false");
     }
   }
+
   if (createdByFilter === CreatedByFilter.ADMIN) {
     filterUrl.append("createdByAdmin", "true");
   } else if (createdByFilter === CreatedByFilter.SUPPLIER) {

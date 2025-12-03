@@ -38,9 +38,26 @@ const ProductListWrapper = () => {
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
 
+  // Sort is persisted in search params under the key "sort"; default is updated,DESC
+  const sortParam = searchParams.get("sort") || "updated,DESC";
+  const [sortUrl, setSortUrl] = useState<string | null>(sortParam);
+
+  // Helper to derive current sort direction for updated
+  const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
+
   useEffect(() => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
   }, [pageSizeState]);
+
+  useEffect(() => {
+    // Keep search params in sync when sortUrl changes
+    if (sortUrl) {
+      searchParams.set("sort", sortUrl);
+    } else {
+      searchParams.delete("sort");
+    }
+    setSearchParams(searchParams);
+  }, [sortUrl]);
 
   const {
     data: pagedData,
@@ -52,6 +69,7 @@ const ProductListWrapper = () => {
     titleSearchTerm: searchTerm,
     filters: [...statusFilters],
     supplierFilter: supplierFilter,
+    sortUrl,
   });
 
   const navigate = useNavigate();
@@ -224,7 +242,23 @@ const ProductListWrapper = () => {
               {loggedInUser && loggedInUser.isAdmin && (
                 <>
                   <Show above="lg">
-                    <b>Endret</b>
+                    <Button
+                      variant="tertiary"
+                      size="xsmall"
+                      onClick={() => {
+                        setSortUrl((prev) => {
+                          const current = prev || sortParam;
+                          if (!current.startsWith("updated")) {
+                            return "updated,DESC";
+                          }
+                          return current === "updated,DESC" ? "updated,ASC" : "updated,DESC";
+                        });
+                      }}
+                      iconPosition="right"
+                      icon={<span aria-hidden>{isUpdatedDesc ? "↓" : "↑"}</span>}
+                    >
+                      Sist endret
+                    </Button>
                   </Show>
                   <Show above="lg">
                     <b>Endret av</b>
