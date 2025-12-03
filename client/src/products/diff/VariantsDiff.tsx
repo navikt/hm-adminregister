@@ -8,7 +8,11 @@ import { Strikethrough } from "products/diff/Strikethrough";
 export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifferenceDTO[] }) => {
   const { t } = useTranslation();
 
-  if (!variantDiffs) {
+  if (
+    !variantDiffs ||
+    variantDiffs.length === 0 ||
+    variantDiffs.every((value) => value.difference.status === "NO_DIFF")
+  ) {
     return <BodyShort>Ingen endringer på varianter</BodyShort>;
   }
   if (!variantDiffs.some((variant) => variant.difference.status === "DIFF" || variant.difference.status === "NEW")) {
