@@ -77,6 +77,23 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
         <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
           <Table.Header>
             <Table.Row>
+                <Table.DataCell>
+                  <HStack justify={"center"}>
+                    <Checkbox
+                      className={styles.checkbox}
+                      checked={selectedRows.length === series.length}
+                      indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
+                      onChange={() => {
+                        selectedRows.length
+                          ? setSelectedRows([])
+                          : setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
+                      }}
+                      hideLabel
+                    >
+                      Velg alle rader
+                    </Checkbox>
+                  </HStack>
+                </Table.DataCell>
               <Table.HeaderCell>Produkt</Table.HeaderCell>
               <Table.ColumnHeader sortKey="status">Status</Table.ColumnHeader>
               {/* <Table.ColumnHeader sortKey="supplierName" sortable>
@@ -91,6 +108,18 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
             {series.map((series, i) => {
               return (
                 <Table.Row key={i + series.title} tabIndex={0}>
+                  <Table.DataCell>
+                    <HStack justify={"center"}>
+                      <Checkbox
+                        hideLabel
+                        checked={selectedRows.includes(series.seriesUUID)}
+                        onChange={() => toggleSelectedRow(series.seriesUUID)}
+                        aria-labelledby={`id-${series.seriesUUID}`}
+                      >
+                        {" "}
+                      </Checkbox>
+                    </HStack>
+                  </Table.DataCell>
                   <Table.DataCell className={styles.imageColumn}>
                     <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
                       <VStack gap="1" maxWidth={"350px"}>
