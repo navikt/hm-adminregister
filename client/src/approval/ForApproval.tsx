@@ -37,7 +37,7 @@ export const ForApproval = () => {
   }, [pageSizeState]);
 
 
-  const visningStatusfilter = ["Endring", "Nytt produkt", "Hovedprodukt", "Tilbehør/Del"];
+  const visningStatusfilter = ["Endring", "Nytt produkt"];
 
   const {
     data: pagedData,

@@ -85,7 +85,6 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
               <Table.ColumnHeader sortKey="updated" sortable>
                 Sist endret
               </Table.ColumnHeader>
-              <Table.ColumnHeader>Type</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -130,7 +129,6 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                   <Table.DataCell style={{ paddingLeft: "12px" }}>{`${toReadableDateTimeString(
                     series.updated,
                   )}`}</Table.DataCell>
-                  <Table.DataCell>{series.mainProduct ? "Hovedprodukt" : "Tilbehør/Del"}</Table.DataCell>
                 </Table.Row>
               );
             })}

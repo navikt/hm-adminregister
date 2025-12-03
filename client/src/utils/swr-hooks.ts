@@ -187,14 +187,6 @@ export function usePagedSeriesToApprove({
     }
   }
 
-  if (!(filters.includes("Hovedprodukt") && filters.includes("Tilbehør/Del"))) {
-    if (filters.includes("Hovedprodukt")) {
-      filterUrl.append("mainProduct", "true");
-    } else if (filters.includes("Tilbehør/Del")) {
-      filterUrl.append("mainProduct", "false");
-    }
-  }
-
   const sortBy = sortUrl?.split(",")[0] || "updated";
   const sortDirection = sortUrl?.split(",")[1] || "descending";
   const sortURL =
