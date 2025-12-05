@@ -1,5 +1,5 @@
 import { useFieldArray, useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button, HelpText, HStack, Select, TextField } from "@navikt/ds-react";
 import { updateProductVariant } from "api/ProductApi";
@@ -25,6 +25,7 @@ type FormData = {
 
 const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTOV2; mutate: () => void }) => {
   const navigate = useNavigate();
+  const { pathname, state } = useLocation();
   const {
     articleName,
     supplierRef,
@@ -67,7 +68,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
 
     updateProductVariant(loggedInUser?.isAdmin || false, product.id, productRegistrationUpdated)
       .then((product) => {
-        navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`);
+        navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`, { state: state });
         mutate();
       })
       .catch((error) => {
@@ -170,7 +171,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
           type="reset"
           variant="secondary"
           size="medium"
-          onClick={() => navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`)}
+          onClick={() => navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`, { state: state })}
         >
           Avbryt
         </Button>

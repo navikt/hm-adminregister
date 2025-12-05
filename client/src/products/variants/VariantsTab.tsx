@@ -31,7 +31,7 @@ const VariantsTab = ({
   mutateSeries: () => void;
 }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { loggedInUser } = useAuthStore();
   const { setGlobalError } = useErrorStore();
@@ -203,7 +203,7 @@ const VariantsTab = ({
                                     <>
                                       <Dropdown.Menu.List.Item
                                         onClick={() => {
-                                          navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`);
+                                          navigate(`${pathname}/rediger-variant/${product.id}`,  { state: state });
                                         }}
                                       >
                                         Endre
