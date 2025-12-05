@@ -85,7 +85,7 @@ const TechLabels = () => {
 
   return (
     <main className="show-menu">
-      <div className="page__background-container">
+      <div className="page__background-container" style={{overflow: "auto"}}>
         <Heading level="1" size="large" spacing>
           Teknisk-data beskrivelser
         </Heading>
