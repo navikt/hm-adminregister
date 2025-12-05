@@ -102,6 +102,7 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
               <Table.ColumnHeader sortKey="updated" sortable>
                 Sist endret
               </Table.ColumnHeader>
+              <Table.ColumnHeader></Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -158,6 +159,23 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                   <Table.DataCell style={{ paddingLeft: "12px" }}>{`${toReadableDateTimeString(
                     series.updated,
                   )}`}</Table.DataCell>
+                  <Table.DataCell>
+                    <VStack>
+                      <Link
+                        className={styles.linkToProduct}
+                        onClick={() => {
+                          onNavigateToProduct(series.seriesUUID);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            onNavigateToProduct(series.seriesUUID);
+                          }
+                        }}
+                      >
+                        <ChevronRightIcon aria-hidden fontSize={"1.5rem"} />
+                      </Link>
+                    </VStack>
+                  </Table.DataCell>
                 </Table.Row>
               );
             })}
