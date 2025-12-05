@@ -2,7 +2,18 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
-import { Alert, Box, Button, Heading, HStack, Loader, Pagination, Search } from "@navikt/ds-react";
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Heading,
+  HGrid,
+  Loader,
+  Pagination,
+  Search,
+} from "@navikt/ds-react";
 import ErrorAlert from "error/ErrorAlert";
 import LocalTag, { colors } from "felleskomponenter/LocalTag";
 import { SupplierDTO } from "utils/supplier-util";
@@ -12,7 +23,11 @@ import styles from "./SupplierList.module.scss";
 const Suppliers = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const { suppliers, isLoading, error } = useSuppliers(true);
+
+  const showInactiveParam = searchParams.get("showInactive");
+  const showInactive = showInactiveParam === "true";
+
+  const { suppliers, isLoading, error } = useSuppliers(true, showInactive);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
@@ -34,6 +49,15 @@ const Suppliers = () => {
     navigate("/leverandor/opprett-leverandor");
   };
 
+  const onShowInactiveChange = (values: string[]) => {
+    const isChecked = values.includes("Vis inaktive");
+
+    searchParams.set("showInactive", isChecked ? "true" : "false");
+    searchParams.set("page", "1");
+    setPageState(1);
+    setSearchParams(searchParams);
+  };
+
   if (error) {
     return (
       <main className="show-menu">
@@ -50,7 +74,14 @@ const Suppliers = () => {
         </Heading>
 
         <div className={styles.supplierPanelContainer}>
-          <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
+          <HGrid
+            columns={{
+              xs: "1",
+              md: "3fr 2fr 130px",
+            }}
+            gap="4"
+            align="start"
+          >
             <Box role="search" className="search-box ">
               <Search
                 className="search-button"
@@ -71,7 +102,15 @@ const Suppliers = () => {
             >
               Opprett leverandør
             </Button>
-          </HStack>
+            <CheckboxGroup
+              legend="Filter"
+              hideLegend
+              value={showInactive ? ["Vis inaktive"] : []}
+              onChange={onShowInactiveChange}
+            >
+              <Checkbox value="Vis inaktive">Vis inaktive</Checkbox>
+            </CheckboxGroup>
+          </HGrid>
 
           <div className="panel-list__container">
             {isLoading && <Loader size="3xlarge" title="venter..." />}

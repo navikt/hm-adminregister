@@ -55,7 +55,7 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
         throw new CustomError((data as { errorMessage?: string }).errorMessage || res.statusText, res.status);
       });
     }
-    return res.json();
+    return res.json() as Promise<unknown>;
   });
 
 export function useSeriesByVariantIdentifier(variantIdentifier: string) {
@@ -375,8 +375,9 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
   };
 }
 
-export function useSuppliers(isAdmin: boolean) {
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name`;
+export function useSuppliers(isAdmin: boolean, visInaktive: boolean = true) {
+
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name${visInaktive ? "" : "&status=ACTIVE"}`;
   const { data, error, isLoading } = useSWR<SupplierChunk>(isAdmin ? path : null, fetcherGET);
   const suppliers = data && mapSuppliers(data);
 
