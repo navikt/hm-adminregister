@@ -37,7 +37,7 @@ import AdminActions from "products/AdminActions";
 import DocumentTab from "products/files/DocumentsTab";
 import ImageTab from "products/files/images/ImagesTab";
 import { RequestApprovalModal } from "products/RequestApprovalModal";
-import { numberOfDocuments, numberOfImages, numberOfVideos } from "products/seriesUtils";
+import { numberOfDocuments, numberOfImages, numberOfVideos, seriesStatus } from "products/seriesUtils";
 import StatusPanel from "products/StatusPanel";
 import SupplierActions from "products/SupplierActions";
 import VideosTab from "products/videos/VideosTab";
@@ -134,8 +134,13 @@ const Product = () => {
   };
 
   const productIsValid = () => {
+    if (series.expired) {
+    }
+
     if (loggedInUser?.isAdmin) {
       return series.variants.length > 0;
+    } else if (series.isExpired) {
+      return true;
     } else {
       const hasDescription = series.text.length > 0;
       const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1;
@@ -382,7 +387,7 @@ const Product = () => {
                     className="fit-content"
                     variant="tertiary"
                     icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
-                   // onClick={handleSaveIsoCategory}
+                    // onClick={handleSaveIsoCategory}
                   >
                     Lagre
                   </Button>
@@ -403,7 +408,7 @@ const Product = () => {
                   icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
                   onClick={() => {
                     //setShowEditIsoCategoryMode(true);
-                    setChangeToIsoCategoryModalIsOpen(true)
+                    setChangeToIsoCategoryModalIsOpen(true);
                   }}
                 ></Button>
               )}
