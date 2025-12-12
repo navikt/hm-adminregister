@@ -24,5 +24,8 @@
     "prettier": "npm run --prefix client prettier",
     "lint": "npm run --prefix client lint",
     "knip": "knip"
+  },
+  "dependencies": {
+    "@types/umami": "^2.10.1"
   }
 }
