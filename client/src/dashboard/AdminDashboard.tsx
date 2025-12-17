@@ -5,44 +5,7 @@ import { useState, useEffect } from "react";
 import { hidePart, fetchHiddenParts, unhidePart } from "api/PartApi";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import { HiddenPart } from "utils/types/response-types";
-
-const StatPanel = ({
-  title,
-  value,
-  loading,
-  helpText,
-  warning,
-  children,
-}: {
-  title: string;
-  value: number | undefined;
-  loading: boolean;
-  helpText?: string;
-  warning?: string;
-  children?: React.ReactNode;
-}) => (
-  <Box padding="8" >
-    <VStack gap="2">
-      <Heading size="small" level="2">
-        {title}
-      </Heading>
-      {loading ? (
-        <Loader size="small" />
-      ) : (
-        <Heading size="xlarge" level="3" style={{ lineHeight: 1 }}>
-          {value ?? "-"}
-        </Heading>
-      )}
-      {helpText && <BodyShort size="small">{helpText}</BodyShort>}
-      {warning && (
-        <BodyShort size="small" style={{ color: "var(--a-text-danger)" }}>
-          {warning}
-        </BodyShort>
-      )}
-      {children}
-    </VStack>
-  </Box>
-);
+import StatPanel from "./StatPanel";
 
 const AdminDashboard = () => {
   const { count: approveCount, isLoading: approveLoading, error: approveError } = useCountSeriesToApprove();
