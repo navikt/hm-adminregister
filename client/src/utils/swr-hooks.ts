@@ -21,6 +21,8 @@ import {
   SupplierChunk,
   SupplierRegistrationDTO,
   UserDTO,
+  NewsChunk,
+  NewsRegistrationDTO,
 } from "./types/response-types";
 import { LoggedInUser } from "./user-util";
 
@@ -57,6 +59,46 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
     }
     return res.json() as Promise<unknown>;
   });
+
+// News helpers
+const isWithinNextDays = (dateString: string | undefined | null, days: number): boolean => {
+  if (!dateString) return false;
+  const expiry = new Date(dateString);
+  if (Number.isNaN(expiry.getTime())) return false;
+
+  const now = new Date();
+  const inDays = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+  return expiry > now && expiry <= inDays;
+};
+
+export function useExpiringNews(days: number = 7) {
+  // Reuse existing admin news endpoint and filter client-side
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?&sort=published,DESC&status=ACTIVE,INACTIVE`;
+  const { data, error, isLoading } = useSWR<NewsChunk>(path, fetcherGET);
+
+  let expiring: NewsRegistrationDTO[] | undefined;
+
+  if (data?.content) {
+    expiring = data.content.filter((news: NewsRegistrationDTO) => {
+      const publishTo = (news as NewsRegistrationDTO).expired as string | undefined;
+      const status = (news as NewsRegistrationDTO).status as string | undefined;
+
+      const isPublished = status === "PUBLISHED" || status === "ACTIVE" || status === "DONE";
+
+      return isPublished && isWithinNextDays(publishTo, days);
+    });
+  }
+
+  const count = expiring?.length ?? 0;
+
+  return {
+    data: expiring,
+    count,
+    isLoading,
+    error,
+  };
+}
 
 export function useSeriesByVariantIdentifier(variantIdentifier: string) {
   const encodedVariantId = encodeURIComponent(variantIdentifier);

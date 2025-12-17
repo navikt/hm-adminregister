@@ -1,6 +1,6 @@
 import { Alert, BodyShort, Box, Button, ExpansionCard, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
 import { Link } from "react-router-dom";
-import { useCountSeriesToApprove, usePartsMissingHmsArtNr } from "utils/swr-hooks";
+import { useCountSeriesToApprove, useExpiringNews, usePartsMissingHmsArtNr } from "utils/swr-hooks";
 import { useState, useEffect } from "react";
 import { hidePart, fetchHiddenParts, unhidePart } from "api/PartApi";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
@@ -21,7 +21,7 @@ const StatPanel = ({
   warning?: string;
   children?: React.ReactNode;
 }) => (
-  <Box padding="8" width="100%" background="bg-default">
+  <Box padding="8" >
     <VStack gap="2">
       <Heading size="small" level="2">
         {title}
@@ -53,6 +53,12 @@ const AdminDashboard = () => {
     data: partsData,
     mutate: mutatePartsData,
   } = usePartsMissingHmsArtNr();
+  const {
+    count: expiringNewsCount,
+    data: expiringNews,
+    isLoading: expiringNewsLoading,
+    error: expiringNewsError,
+  } = useExpiringNews(7);
   const [hidingIds, setHidingIds] = useState<string[]>([]);
   const [hideError, setHideError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,8 +76,7 @@ const AdminDashboard = () => {
     id: hp.productId,
     articleName: hp.product?.articleName,
     supplierRef: hp.product?.supplierRef,
-    // supplierName may not exist on ProductRegistrationDTOV2; leave undefined if not available
-    supplierName: (hp as any).product?.supplierName,
+    supplierName: hp.product && "supplierName" in hp.product ? (hp.product as { supplierName?: string }).supplierName : undefined,
   }));
 
   const loadHiddenParts = async () => {
@@ -212,7 +217,7 @@ const AdminDashboard = () => {
           <Heading level="1" size="large" spacing>
             Admin dashboard
           </Heading>
-          {(approveError || partsError) && (
+          {(approveError || partsError || expiringNewsError) && (
             <Alert variant="error">Kunne ikke hente alle tall. Last siden på nytt eller prøv senere.</Alert>
           )}
           <HStack gap="6" wrap>
@@ -227,6 +232,27 @@ const AdminDashboard = () => {
                   Gå til oversikt
                 </Button>
               </Box>
+            </StatPanel>
+            <StatPanel
+              title="Nyheter som utløper innen 7 dager"
+              value={expiringNewsCount}
+              loading={expiringNewsLoading}
+              warning={expiringNewsCount && expiringNewsCount > 0 ? "Vurder å forlenge eller oppdatere nyhetene." : undefined}
+            >
+              {expiringNewsError && <Alert variant="error">Kunne ikke hente nyheter som utloper snart.</Alert>}
+              {!expiringNewsLoading && !expiringNewsError && (
+                <VStack gap="1">
+                  {expiringNews && expiringNews.length > 0 ? (
+                    expiringNews.slice(0, 5).map((news) => (
+                      <BodyShort size="small" key={news.id}>
+                        <Link to={`/nyheter`}>{news.title || `Nyhet ${news.id}`}</Link>
+                      </BodyShort>
+                    ))
+                  ) : (
+                    <BodyShort size="small">Ingen nyheter utløper den neste uken.</BodyShort>
+                  )}
+                </VStack>
+              )}
             </StatPanel>
             <StatPanel
               title="Deler uten HMS-art.nr"
@@ -258,7 +284,12 @@ const AdminDashboard = () => {
               {partsData && partsData.length === 0 && !partsLoading && (
                 <BodyShort size="small">Ingen deler uten HMS-art.nr</BodyShort>
               )}
-              <ExpansionCard size="small" aria-label="Deler som er skjult fra denne listen" onToggle={setShowHidden} style={{marginTop: "40px"}}>
+              <ExpansionCard
+                size="small"
+                aria-label="Deler som er skjult fra denne listen"
+                onToggle={setShowHidden}
+                style={{ marginTop: "40px" }}
+              >
                 <ExpansionCard.Header>
                   <ExpansionCard.Title size="small">Deler som er skjult fra denne listen</ExpansionCard.Title>
                 </ExpansionCard.Header>
