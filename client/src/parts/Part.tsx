@@ -71,22 +71,28 @@ const Part = () => {
   const [switchToProductModalIsOpen, setSwitchToProductModalIsOpen] = useState(false);
 
   const handleSaveName = (name: string) => {
-    const updatePartDto = {
+    const updatePartDto: UpdatePartDTO = {
       title: name,
+      hmsArtNr: part?.hmsArtNr,
+      supplierRef: part?.supplierRef
     };
     handleSavePartInfo(updatePartDto);
   };
 
   const handleSaveSupplierRef = (levartNr: string) => {
-    const updatePartDto = {
+    const updatePartDto: UpdatePartDTO = {
       supplierRef: levartNr,
+      title: part?.articleName,
+      hmsArtNr: part?.hmsArtNr
     };
     handleSavePartInfo(updatePartDto);
   };
 
   const handleSaveHmsNr = () => {
-    const updatePartDto = {
+    const updatePartDto: UpdatePartDTO = {
       hmsArtNr: hmsNr,
+      title: part?.articleName,
+      supplierRef: part?.supplierRef
     };
     handleSavePartInfo(updatePartDto);
   };
