@@ -72,6 +72,7 @@ export type CreateUpdateNewsDTO = components["schemas"]["CreateUpdateNewsDTO"];
 export type SupplierInventoryDTO = components["schemas"]["SupplierInventoryDTO"];
 export type TechDataType = components["schemas"]["TechDataType"];
 export type NewVideo = components["schemas"]["NewVideo"];
+export type NewDocumentUrl = components["schemas"]["NewDocumentUrl"];
 export type FileTitleDto = components["schemas"]["FileTitleDto"];
 export type PartDTO = components["schemas"]["PartDTO"];
 export type UpdatePartDTO = components["schemas"]["UpdatePartDto"];

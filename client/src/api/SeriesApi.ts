@@ -2,6 +2,7 @@ import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
   FileTitleDto,
   MediaSort,
+  NewDocumentUrl,
   NewVideo,
   RejectSeriesDTO,
   SeriesDraftResponse,
@@ -161,6 +162,22 @@ export const updateProductDescription = async (seriesUUID: string, productDescri
 
 export const updateSeriesKeywords = async (seriesUUID: string, keywords: string[]): Promise<void> =>
   updateSeries(seriesUUID, { keywords: keywords });
+
+export const saveDocumentUrlToSeries = async (seriesUUID: string, newDocumentUrl: NewDocumentUrl) => {
+  await fetchAPIModify(
+    `${HM_REGISTER_URL()}/admreg/api/v1/series/add-document-url/${seriesUUID}`,
+    "PUT",
+    newDocumentUrl,
+  );
+};
+
+export const deleteDocumentUrlFromSeries = async (seriesUUID: string, documentUrl: string) => {
+  await fetchAPIModify(
+    `${HM_REGISTER_URL()}/admreg/api/v1/series/add-document-url/${seriesUUID}`,
+    "DELETE",
+    documentUrl,
+  );
+};
 
 export const updateSeriesURL = async (seriesUUID: string, url: string): Promise<void> =>
   updateSeries(seriesUUID, { url: url });

@@ -9,6 +9,7 @@ import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
 import { changeFilenameOnAttachedFile, deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from "api/SeriesApi";
 import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
 import styles from "../ProductPage.module.scss";
+import { DocumentUrlModal } from "products/files/DocumentUrlModal";
 
 interface Props {
   series: SeriesDTO;
@@ -18,6 +19,7 @@ interface Props {
 
 const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [doccumentUrlModalIsOpen, setDocumentUrlModalIsOpen] = useState(false);
   const { pdfs } = mapImagesAndPDFfromMedia(series);
   const { setGlobalError } = useErrorStore();
   const { mutate: mutateSeries } = useSeriesV2(series.id);
@@ -64,6 +66,12 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         fileType="documents"
         uploadFiles={uploadFiles}
       />
+      <DocumentUrlModal
+        seriesId={series.id}
+        mutateSeries={mutateSeries}
+        isOpen={doccumentUrlModalIsOpen}
+        setIsOpen={setDocumentUrlModalIsOpen}
+      />
       <Tabs.Panel value="documents" className={styles.tabPanel}>
         <VStack gap="10">
           {allPdfsSorted.length === 0 && (
@@ -98,6 +106,36 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                 }}
               >
                 Legg til dokumenter
+              </Button>
+            )}
+          </VStack>
+          <VStack gap={"10"}>
+            {series.seriesData.attributes.documentUrls?.map((documentUrl) => (
+              <a
+                key={documentUrl.url}
+                href={documentUrl.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-overflow-hidden-large"
+              >
+                {documentUrl.title || documentUrl.url}
+              </a>
+            ))}
+
+            {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
+              <Alert variant="info">Ingen eksterne dokumentlenker er lagt til for dette produktet.</Alert>
+            )}
+
+            {isEditable && (
+              <Button
+                className="fit-content"
+                variant="tertiary"
+                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
+                onClick={() => {
+                  setDocumentUrlModalIsOpen(true);
+                }}
+              >
+                Legg til lenke
               </Button>
             )}
           </VStack>

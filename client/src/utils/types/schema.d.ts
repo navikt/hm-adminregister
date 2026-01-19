@@ -1528,6 +1528,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/series/add-document-url/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["addDocumentUrlToSeries"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/series/add-videos/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -1555,6 +1571,22 @@ export interface paths {
         put: operations["changeFileTitle"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/series/delete-document-url/{seriesUUID}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteDocumentUrl"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2867,6 +2899,10 @@ export interface components {
             status: components["schemas"]["DiffStatus"];
             diff: components["schemas"]["MapDifference_String.Object_"];
         };
+        DocumentUrl: {
+            url: string;
+            title: string;
+        };
         /** @enum {string} */
         DraftStatus: "DRAFT" | "DONE";
         DraftVariantDTO: {
@@ -3008,6 +3044,10 @@ export interface components {
         MediaSourceType: "HMDB" | "REGISTER" | "EXTERNALURL" | "IMPORT" | "UNKNOWN";
         /** @enum {string} */
         MediaType: "PDF" | "IMAGE" | "VIDEO" | "XLS" | "OTHER";
+        NewDocumentUrl: {
+            uri: string;
+            title: string;
+        };
         NewVideo: {
             uri: string;
             title: string;
@@ -3454,6 +3494,7 @@ export interface components {
             keywords?: string[] | null;
             url?: string | null;
             compatibleWith?: components["schemas"]["CompatibleWith"] | null;
+            documentUrls?: components["schemas"]["DocumentUrl"][] | null;
         };
         SeriesDTO: {
             /** Format: uuid */
@@ -3864,6 +3905,7 @@ export interface components {
             text?: string | null;
             keywords?: string[] | null;
             url?: string | null;
+            documentUrls?: components["schemas"]["DocumentUrl"][] | null;
             isoCategory?: string | null;
             resetTechnicalData?: boolean | null;
         };
@@ -6796,6 +6838,32 @@ export interface operations {
             };
         };
     };
+    addDocumentUrlToSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewDocumentUrl"];
+            };
+        };
+        responses: {
+            /** @description addDocumentUrlToSeries 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     addVideoToSeries: {
         parameters: {
             query?: never;
@@ -6838,6 +6906,32 @@ export interface operations {
         };
         responses: {
             /** @description changeFileTitle 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    deleteDocumentUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                seriesUUID: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string;
+            };
+        };
+        responses: {
+            /** @description deleteDocumentUrl 200 response */
             200: {
                 headers: {
                     [name: string]: unknown;
