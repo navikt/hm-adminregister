@@ -17,7 +17,7 @@ import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
 import ErrorAlert from "error/ErrorAlert";
 import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { usePagedSeriesToApprove, useSuppliers } from "utils/swr-hooks";
+import { usePagedSeriesToApprove, useSeriesToApproveByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
 
 export const ForApproval = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,8 +36,9 @@ export const ForApproval = () => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
   }, [pageSizeState]);
 
-
   const visningStatusfilter = ["Endring", "Nytt produkt"];
+
+  const { data: seriesToApproveByVariantIdentifier } = useSeriesToApproveByVariantIdentifier(searchTerm);
 
   const {
     data: pagedData,
@@ -138,7 +139,6 @@ export const ForApproval = () => {
               />
             </Box>
           )}
-
         </HGrid>
         <VStack gap="3">
           <Label>Filter</Label>
@@ -154,9 +154,17 @@ export const ForApproval = () => {
             ))}
           </Chips>
         </VStack>
+
         <VStack gap="4">
+          {seriesToApproveByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
           {isLoading ? (
             <Loader size="3xlarge" />
+          ) : seriesToApproveByVariantIdentifier ? (
+            <ProductsToApproveTable
+              mutatePagedData={mutatePagedData}
+              series={[seriesToApproveByVariantIdentifier]}
+              oversiktPath={pathname + search}
+            />
           ) : pagedData && pagedData.content && pagedData?.content.length > 0 ? (
             <ProductsToApproveTable
               mutatePagedData={mutatePagedData}
@@ -166,9 +174,7 @@ export const ForApproval = () => {
           ) : (
             !isLoading && (
               <Alert variant="info">
-                {searchTerm !== ""
-                  ? `Ingen produkter funnet`
-                  : "Ingen produkter som venter på godkjenning."}
+                {searchTerm !== "" ? `Ingen produkter funnet` : "Ingen produkter som venter på godkjenning."}
               </Alert>
             )
           )}

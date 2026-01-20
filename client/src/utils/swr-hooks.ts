@@ -23,6 +23,7 @@ import {
   UserDTO,
   NewsChunk,
   NewsRegistrationDTO,
+  SeriesToApproveDto,
 } from "./types/response-types";
 import { LoggedInUser } from "./user-util";
 
@@ -105,6 +106,13 @@ export function useSeriesByVariantIdentifier(variantIdentifier: string) {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/variant-id/${encodedVariantId}`;
 
   return useSWR<SeriesSearchDTO>(variantIdentifier.length > 0 ? seriesIdPath : null, fetcherGET);
+}
+
+export function useSeriesToApproveByVariantIdentifier(variantIdentifier: string) {
+  const encodedVariantId = encodeURIComponent(variantIdentifier);
+  const seriesToApproveIdPath = `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/to-approve/variant-id/${encodedVariantId}`;
+
+  return useSWR<SeriesToApproveDto>(variantIdentifier.length > 0 ? seriesToApproveIdPath : null, fetcherGET);
 }
 
 export function userProductVariantsBySeriesId(seriesId: string) {
