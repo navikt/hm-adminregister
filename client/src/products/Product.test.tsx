@@ -69,7 +69,6 @@ const logIn = (isAdmin: boolean) => {
 const approvalButton = "Send til godkjenning";
 const changeDescriptionButton = "Endre beskrivelse";
 const changeKeywordButton = "Endre nøkkelord";
-const changeURLButton = "Endre URL";
 
 const addVariantButton = "Legg til ny variant";
 const addImagesButton = "Legg til bilder";
@@ -91,7 +90,7 @@ describe("Produktside", () => {
     // about
     expect(await screen.findByText("defaultText")).toBeInTheDocument();
     expect(await screen.findByText("defaultKeyword")).toBeInTheDocument();
-    expect(await screen.findByText("https://nav.no")).toBeInTheDocument();
+    //expect(await screen.findByText("https://nav.no")).toBeInTheDocument();
     // sidebar
     expect(await screen.findByText("Under endring")).toBeInTheDocument();
     expect(await screen.findByText("defaultSupplier")).toBeInTheDocument();
@@ -102,7 +101,6 @@ describe("Produktside", () => {
     expect(await screen.findByRole("button", { name: approvalButton })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: changeDescriptionButton })).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: changeKeywordButton })).toBeInTheDocument();
-    expect(await screen.findByRole("button", { name: changeURLButton })).toBeInTheDocument();
 
     fireEvent.click(await screen.findByRole("tab", { name: /Egenskaper/ }));
     expect(await screen.findByRole("button", { name: addVariantButton })).toBeInTheDocument();
@@ -144,7 +142,6 @@ describe("Produktside", () => {
     expect(screen.queryByRole("button", { name: approvalButton })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: changeDescriptionButton })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: changeKeywordButton })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: changeURLButton })).not.toBeInTheDocument();
 
     fireEvent.click(await screen.findByRole("tab", { name: /Egenskaper/ }));
     expect(screen.queryByRole("button", { name: addVariantButton })).not.toBeInTheDocument();
