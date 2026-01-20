@@ -1,5 +1,5 @@
 import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Alert, Button, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, Heading, HStack, Tabs, TextField, VStack } from "@navikt/ds-react";
 import { useRef, useState } from "react";
 import { MediaInfoDTO, SeriesDTO } from "utils/types/response-types";
 import { MoreMenu } from "felleskomponenter/MoreMenu";
@@ -88,6 +88,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
       />
       <Tabs.Panel value="documents" className={styles.tabPanel}>
         <VStack gap="4">
+          <Heading size="small">Dokumenter</Heading>
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
               Produktet har ingen dokumenter. Her kan man for eksempel legge med brosjyre, bruksanvisning eller
@@ -124,51 +125,59 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
             )}
           </VStack>
 
-          {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
-            <Alert variant="info">
-              Produktet har ingen eksterne lenker. Her kan man for eksempel legge med lenke til sprengskisse/delebok til
-              produktet.
-            </Alert>
-          )}
+          <VStack gap="4" marginBlock='4 0'>
+            <Heading size="small">Lenker</Heading>
+            {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
+              <Alert variant="info" >
+                Produktet har ingen lenker. Her kan man for eksempel legge med lenke til sprengskisse/delebok til
+                produktet.
+              </Alert>
+            )}
 
-          <VStack gap="1">
-            {series.seriesData.attributes.documentUrls && series.seriesData.attributes.documentUrls.length > 0 && (
-              <VStack as="ol" gap="3" className={styles.documentListContainer}>
-                {series.seriesData.attributes.documentUrls?.map((documentUrl) => (
-                  <HStack as="li" justify="space-between" wrap={false} key={documentUrl.url}>
-                    <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
-                      <LinkIcon fontSize="2rem" title="Fil" />
-                      <a href={documentUrl.url} target="_blank" rel="noreferrer" className="text-overflow-hidden-large">
-                        {documentUrl.title || documentUrl.url}
-                      </a>
+            <VStack gap="1">
+              {series.seriesData.attributes.documentUrls && series.seriesData.attributes.documentUrls.length > 0 && (
+                <VStack as="ol" gap="3" className={styles.documentListContainer}>
+                  {series.seriesData.attributes.documentUrls?.map((documentUrl) => (
+                    <HStack as="li" justify="space-between" wrap={false} key={documentUrl.url}>
+                      <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+                        <LinkIcon fontSize="2rem" title="Fil" />
+                        <a
+                          href={documentUrl.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-overflow-hidden-large"
+                        >
+                          {documentUrl.title || documentUrl.url}
+                        </a>
+                      </HStack>
+                      {isEditable && (
+                        <Button
+                          icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
+                          size="small"
+                          variant="tertiary"
+                          onClick={() => handleDeleteDocumentUrl(documentUrl.url)}
+                        >
+                          Slett
+                        </Button>
+                      )}
                     </HStack>
-                    {isEditable && (
-                      <Button
-                        icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
-                        size="small"
-                        variant="tertiary"
-                        onClick={() => handleDeleteDocumentUrl(documentUrl.url)}
-                      >
-                        Slett
-                      </Button>
-                    )}
-                  </HStack>
-                ))}
-              </VStack>
-            )}
+                  ))}
+                </VStack>
+              )}
 
-            {isEditable && (
-              <Button
-                className="fit-content"
-                variant="tertiary"
-                icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
-                onClick={() => {
-                  setDocumentUrlModalIsOpen(true);
-                }}
-              >
-                Legg til lenke
-              </Button>
-            )}
+              {isEditable && (
+                <Button
+                  className="fit-content"
+                  variant="tertiary"
+                  icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
+                  onClick={() => {
+                    setDocumentUrlModalIsOpen(true);
+                  }}
+                >
+                  Legg til lenke
+                </Button>
+              )}
+            </VStack>
           </VStack>
         </VStack>
       </Tabs.Panel>
