@@ -84,9 +84,11 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                       checked={selectedRows.length === series.length}
                       indeterminate={selectedRows.length > 0 && selectedRows.length !== series.length}
                       onChange={() => {
-                        selectedRows.length
-                          ? setSelectedRows([])
-                          : setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
+                        if (selectedRows.length) {
+                          setSelectedRows([]);
+                        } else {
+                          setSelectedRows(series.map(({ seriesUUID }) => seriesUUID));
+                        }
                       }}
                       hideLabel
                     >
@@ -121,7 +123,19 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                       </Checkbox>
                     </HStack>
                   </Table.DataCell>
-                  <Table.DataCell className={styles.imageColumn}>
+                  <Table.DataCell
+                    className={styles.imageColumn}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onNavigateToProduct(series.seriesUUID);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.stopPropagation();
+                        onNavigateToProduct(series.seriesUUID);
+                      }
+                    }}
+                  >
                     <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
                       <VStack gap="1" maxWidth={"350px"}>
                         {series.isExpired && (
@@ -131,7 +145,11 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                             </Tag>
                           </Box>
                         )}
-                        <BodyShort weight="semibold" className="text-overflow-hidden-small-2-lines">
+                        <BodyShort
+                          id={`id-${series.seriesUUID}`}
+                          weight="semibold"
+                          className="text-overflow-hidden-small-2-lines"
+                        >
                           {series.title}
                         </BodyShort>
                         <BodyShort size="small" color="subtle" className="text-overflow-hidden-small-2-lines">
@@ -163,11 +181,13 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                     <VStack>
                       <Link
                         className={styles.linkToProduct}
-                        onClick={() => {
+                        onClick={(event) => {
+                          event.stopPropagation();
                           onNavigateToProduct(series.seriesUUID);
                         }}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") {
+                            event.stopPropagation();
                             onNavigateToProduct(series.seriesUUID);
                           }
                         }}
