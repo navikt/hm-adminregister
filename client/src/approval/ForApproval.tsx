@@ -179,38 +179,40 @@ export const ForApproval = () => {
             )
           )}
 
-          <HStack
-            justify={{ xs: "center", md: "space-between" }}
-            align="center"
-            gap={"4"}
-            style={{ flexWrap: "wrap-reverse" }}
-          >
-            <Select
-              label="Ant produkter per side"
-              size="small"
-              defaultValue={pageSizeState}
-              onChange={(e) => {
-                searchParams.set("size", e.target.value);
-                setPageSizeState(parseInt(e.target.value));
-              }}
+          {!seriesToApproveByVariantIdentifier && (
+            <HStack
+              justify={{ xs: "center", md: "space-between" }}
+              align="center"
+              gap={"4"}
+              style={{ flexWrap: "wrap-reverse" }}
             >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={100}>100</option>
-            </Select>
-            {showPageNavigator && (
-              <Pagination
-                page={pageState}
-                onPageChange={(x) => {
-                  searchParams.set("page", x.toString());
-                  setSearchParams(searchParams);
-                  setPageState(x);
-                }}
-                count={pagedData.totalPages!}
+              <Select
+                label="Ant produkter per side"
                 size="small"
-              />
-            )}
-          </HStack>
+                defaultValue={pageSizeState}
+                onChange={(e) => {
+                  searchParams.set("size", e.target.value);
+                  setPageSizeState(parseInt(e.target.value));
+                }}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={100}>100</option>
+              </Select>
+              {showPageNavigator && (
+                <Pagination
+                  page={pageState}
+                  onPageChange={(x) => {
+                    searchParams.set("page", x.toString());
+                    setSearchParams(searchParams);
+                    setPageState(x);
+                  }}
+                  count={pagedData.totalPages!}
+                  size="small"
+                />
+              )}
+            </HStack>
+          )}
         </VStack>
       </VStack>
     </main>
