@@ -1,5 +1,6 @@
 import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
+  DeleteDocumentUrl,
   FileTitleDto,
   MediaSort,
   NewDocumentUrl,
@@ -171,11 +172,11 @@ export const saveDocumentUrlToSeries = async (seriesUUID: string, newDocumentUrl
   );
 };
 
-export const deleteDocumentUrlFromSeries = async (seriesUUID: string, documentUrl: string) => {
+export const deleteDocumentUrlFromSeries = async (seriesUUID: string, deleteDocumentUrl: DeleteDocumentUrl) => {
   await fetchAPIModify(
-    `${HM_REGISTER_URL()}/admreg/api/v1/series/add-document-url/${seriesUUID}`,
+    `${HM_REGISTER_URL()}/admreg/api/v1/series/delete-document-url/${seriesUUID}`,
     "DELETE",
-    documentUrl,
+    deleteDocumentUrl,
   );
 };
 

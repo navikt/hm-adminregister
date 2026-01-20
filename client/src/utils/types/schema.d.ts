@@ -2871,6 +2871,9 @@ export interface components {
             /** Format: date-time */
             expired: string;
         };
+        DeleteDocumentUrl: {
+            uri: string;
+        };
         DelkontraktData: {
             title?: string | null;
             description?: string | null;
@@ -6927,7 +6930,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": string;
+                "application/json": components["schemas"]["DeleteDocumentUrl"];
             };
         };
         responses: {
