@@ -26,7 +26,7 @@ const AboutTab = ({ series, mutateSeries, isEditable, showInputError }: Props) =
 
         <AboutTabKeywords series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
 
-        <AboutTabURL series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
+        {/*<AboutTabURL series={series} mutateSeries={mutateSeries} isEditable={isEditable} />*/}
       </VStack>
     </Tabs.Panel>
   );
