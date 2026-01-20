@@ -3,7 +3,7 @@ name: Bygg og deploy til dev og prod
 on:
   push:
     branches:
-      - main
+      - main_
 
 run-name: Bygg og deploy til dev og prod
 
