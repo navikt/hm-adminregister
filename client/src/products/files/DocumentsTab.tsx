@@ -90,7 +90,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         <VStack gap="4">
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
-              Produktet har ingen dokumenter, her kan man for eksempel legge med brosjyre, bruksanvisning eller
+              Produktet har ingen dokumenter. Her kan man for eksempel legge med brosjyre, bruksanvisning eller
               sprengskisse til produktet.
             </Alert>
           )}
@@ -126,7 +126,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
 
           {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
             <Alert variant="info">
-              Produktet har ingen eksterne lenker, her kan man for eksempel legge med lenke til sprengskisse/delebok til
+              Produktet har ingen eksterne lenker. Her kan man for eksempel legge med lenke til sprengskisse/delebok til
               produktet.
             </Alert>
           )}
