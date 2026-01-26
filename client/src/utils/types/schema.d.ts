@@ -1208,6 +1208,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/series/to-approve/variant-id/{variantIdentifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findSeriesPendingApproveByVariantIdentifier"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/series/toPart/{seriesId}": {
         parameters: {
             query?: never;
@@ -1264,6 +1280,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["compareVersionWithApproved_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/admin/api/v1/service-job/agreement/{agreementId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getServiceJobsByAgreementId"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2730,6 +2762,7 @@ export interface components {
             shortdescription?: string | null;
             text?: string | null;
             url?: string | null;
+            documentUrls?: components["schemas"]["DocumentUrl"][] | null;
             bestillingsordning?: boolean | null;
             digitalSoknad?: boolean | null;
             sortimentKategori?: string | null;
@@ -3633,6 +3666,57 @@ export interface components {
             updated: string;
             mainProduct: boolean;
         };
+        ServiceAgreementInfo: {
+            /** Format: uuid */
+            agreementId: string;
+            status: components["schemas"]["ServiceAgreementStatus"];
+            /** Format: date-time */
+            published: string;
+            /** Format: date-time */
+            expired: string;
+        };
+        /** @enum {string} */
+        ServiceAgreementStatus: "INACTIVE" | "ACTIVE" | "DELETED";
+        ServiceAttributes: {
+            keywords?: string[] | null;
+            url?: string | null;
+            text?: string | null;
+            serviceFor?: components["schemas"]["ServiceFor"] | null;
+        };
+        ServiceFor: {
+            seriesIds: string[];
+            productIds: string[];
+        };
+        ServiceJobDTO: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: uuid */
+            supplierId: string;
+            supplierRef?: string | null;
+            hmsNr: string;
+            isoCategory: string;
+            /** Format: date-time */
+            published: string;
+            /** Format: date-time */
+            expired: string;
+            /** Format: date-time */
+            updated: string;
+            draftStatus: components["schemas"]["DraftStatus"];
+            status: components["schemas"]["ServiceStatus"];
+            /** Format: date-time */
+            created: string;
+            updatedBy: string;
+            createdBy: string;
+            createdByUser: string;
+            updatedByUser: string;
+            attributes: components["schemas"]["ServiceAttributes"];
+            agreements: components["schemas"]["ServiceAgreementInfo"][];
+            /** Format: int64 */
+            version?: number | null;
+        };
+        /** @enum {string} */
+        ServiceStatus: "ACTIVE" | "INACTIVE" | "DELETED";
         Slice_AgreementBasicInformationDto_: {
             content: components["schemas"]["AgreementBasicInformationDto"][];
             pageable: components["schemas"]["OpenApiPageable"];
@@ -6141,6 +6225,28 @@ export interface operations {
             };
         };
     };
+    findSeriesPendingApproveByVariantIdentifier: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantIdentifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description findSeriesPendingApproveByVariantIdentifier 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesToApproveDTO"];
+                };
+            };
+        };
+    };
     changeMainProductToPart: {
         parameters: {
             query?: never;
@@ -6240,6 +6346,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Difference_String.Object_"];
+                };
+            };
+        };
+    };
+    getServiceJobsByAgreementId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description getServiceJobsByAgreementId 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceJobDTO"][];
                 };
             };
         };
