@@ -1304,6 +1304,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/admin/api/v1/service-job/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateServiceJob"];
+        post?: never;
+        delete: operations["deleteServiceJob"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/admin/api/v1/supplier/registrations": {
         parameters: {
             query?: never;
@@ -3996,6 +4012,10 @@ export interface components {
             isoCategory?: string | null;
             resetTechnicalData?: boolean | null;
         };
+        UpdateServiceJobRequest: {
+            title?: string | null;
+            hmsArtNr?: string | null;
+        };
         UserDTO: {
             /** Format: uuid */
             id: string;
@@ -6368,6 +6388,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ServiceJobDTO"][];
+                };
+            };
+        };
+    };
+    updateServiceJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateServiceJobRequest"];
+            };
+        };
+        responses: {
+            /** @description updateServiceJob 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceJobDTO"];
+                };
+            };
+        };
+    };
+    deleteServiceJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description deleteServiceJob 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
                 };
             };
         };
