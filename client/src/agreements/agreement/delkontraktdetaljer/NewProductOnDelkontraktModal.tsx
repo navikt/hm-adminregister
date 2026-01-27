@@ -57,7 +57,10 @@ const NewProductOnDelkontraktModal = ({
           }
         })
         .catch((error) => {
-          setGlobalError(error.status, error.message);
+          if(error.status !== 404) {
+            setGlobalError(error.status, error.message);
+          }
+
         });
     }
   }
