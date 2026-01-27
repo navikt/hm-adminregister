@@ -18,6 +18,7 @@ import FileTab from "./vedlegg/FileTab";
 import { WordWrappedHeading } from "felleskomponenter/styledcomponents/Heading";
 import ConfirmModal from "felleskomponenter/ConfirmModal";
 import AgreementStatusTag from "agreements/agreement/AgreementStatusTag";
+import ServiceJobsTab from "./ServiceJobsTab";
 
 export type EditCommonInfoAgreement = {
   description: string;
@@ -161,6 +162,7 @@ const Agreement = () => {
                   <Tabs.Tab value="about" label="Om avtalen" />
                   <Tabs.Tab value="delkontrakter" label="Delkontrakter" />
                   <Tabs.Tab value="documents" label="Dokumenter" />
+                  <Tabs.Tab value="servicejobs" label="Tjenester" />
                 </Tabs.List>
                 <AboutTab agreement={agreement} onSubmit={onSubmit} />
                 <FileTab agreement={agreement} mutateAgreement={mutateAgreement} />
@@ -169,6 +171,7 @@ const Agreement = () => {
                   agreementExpireDate={agreement.expired}
                   agreementDraftStatus={agreement.draftStatus}
                 />
+                <ServiceJobsTab agreementId={agreement.id} />
               </Tabs>
             </VStack>
 

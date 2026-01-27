@@ -78,6 +78,8 @@ export type FileTitleDto = components["schemas"]["FileTitleDto"];
 export type PartDTO = components["schemas"]["PartDTO"];
 export type UpdatePartDTO = components["schemas"]["UpdatePartDto"];
 
+export type ServiceJobDTO = components["schemas"]["ServiceJobDTO"];
+
 type CompatibleWith = components["schemas"]["CompatibleWith"];
 export type CompatibleWithDTO = components["schemas"]["CompatibleWithDTO"];
 

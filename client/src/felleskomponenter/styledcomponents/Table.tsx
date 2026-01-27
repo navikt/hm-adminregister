@@ -29,4 +29,10 @@ export const RowBoxTable = styled(Table)`
     border-left: 0;
     border-right: 0;
   }
+  
+  tr.no-hover-row:hover td {
+    background: white none;
+  }
+
+  
 `;
