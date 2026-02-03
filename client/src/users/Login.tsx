@@ -88,11 +88,11 @@ export default function Login() {
             }
           } else {
             if (loggedInUser.isAdmin) {
-              navigate(previousLocation);
+              navigate("/admin/dashboard");
             } else if (loggedInUser.isHmsUser) {
               navigate("/");
-            } else {
-              navigate(previousLocation);
+            } else if (loggedInUser.isSupplier) {
+              navigate("/leverandor/dashboard");
             }
           }
         } else {
