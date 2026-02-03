@@ -4,6 +4,24 @@ import { usePagedProducts } from "utils/swr-hooks";
 import { Link } from "react-router-dom";
 
 const VendorDashboard = () => {
+  const { data: productsToApproveData } = usePagedProducts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    filters: ["Venter på godkjenning"],
+  });
+
+  const productsToApproveCount = productsToApproveData?.totalSize ?? 0;
+
+  const { data: rejectedProductsData } = usePagedProducts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    filters: ["Avslått"],
+  });
+
+  const rejectedProductsCount = rejectedProductsData?.totalSize ?? 0;
+
   const { data: mainProductsOnAgreementData } = usePagedProducts({
     page: 0,
     pageSize: 1,
@@ -48,12 +66,75 @@ const VendorDashboard = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap="8" style={{ maxWidth: "75rem" }}>
+      <VStack gap="4" style={{ maxWidth: "75rem" }}>
         <Heading level="1" size="large" spacing>
           Dashboard
         </Heading>
 
-        <Heading level="2" size="medium" spacing>
+        <Heading level="2" size="medium" style={{ marginTop: "2rem" }}>
+          Produkter til godkjenning
+        </Heading>
+        <HStack gap="6" wrap>
+          <Box
+            padding="6"
+            borderRadius="large"
+            background="surface-subtle"
+            style={{ minWidth: "16rem", maxWidth: "calc(50% - 0.75rem)", flex: 1 }}
+          >
+            <Heading level="3" size="small">
+              Venter på godkjenning
+            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : productsToApproveCount > 0 ? (
+              <Link to="/produkter?filters=Venter på godkjenning">
+                <Heading level="3" size="large" spacing>
+                  {productsToApproveCount}
+                </Heading>
+              </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {productsToApproveCount}
+              </Heading>
+            )}
+            <BodyShort size="small">
+              Antall produkter som venter på godkjenning fra HMS-bruker.
+            </BodyShort>
+          </Box>
+
+          <Box
+            padding="6"
+            borderRadius="large"
+            background="surface-subtle"
+            style={{ minWidth: "16rem", maxWidth: "calc(50% - 0.75rem)", flex: 1 }}
+          >
+            <Heading level="3" size="small">
+              Avslåtte
+            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : rejectedProductsCount > 0 ? (
+              <Link to="/produkter?filters=Avslått">
+                <Heading level="3" size="large" spacing>
+                  {rejectedProductsCount}
+                </Heading>
+              </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {rejectedProductsCount}
+              </Heading>
+            )}
+            <BodyShort size="small">
+              Antall produkter som er avslått av HMS-bruker.
+            </BodyShort>
+          </Box>
+        </HStack>
+
+        <Heading level="2" size="medium" style={{ marginTop: "2rem" }}>
           Produkter uten bilde
         </Heading>
         <HStack gap="6" wrap>
@@ -116,7 +197,7 @@ const VendorDashboard = () => {
           </Box>
         </HStack>
 
-        <Heading level="2" size="medium" spacing>
+        <Heading level="2" size="medium" style={{ marginTop: "2rem" }}>
           Deler uten bilde
         </Heading>
         <HStack gap="6" wrap>
