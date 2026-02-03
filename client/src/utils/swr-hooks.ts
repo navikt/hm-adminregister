@@ -143,6 +143,7 @@ export function usePagedProducts({
   filters,
   supplierFilter,
   sortUrl,
+  agreementFilter,
 }: {
   page: number;
   pageSize: number;
@@ -150,6 +151,7 @@ export function usePagedProducts({
   filters: string[];
   supplierFilter?: string;
   sortUrl?: string | null;
+  agreementFilter?: string | null;
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
 
@@ -163,7 +165,9 @@ export function usePagedProducts({
   const sortDirection = sortUrl?.split(",")[1] || "DESC";
   const sortParam = `&sort=${sortBy},${sortDirection}`;
 
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}`;
+  const agreementParam = agreementFilter ? `&inAgreement=${agreementFilter}` : "";
+
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}${agreementParam}`;
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET);
 }

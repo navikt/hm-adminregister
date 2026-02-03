@@ -2,8 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
-  CheckboxGroup,
   Chips,
   Heading,
   HGrid,
@@ -42,6 +40,10 @@ const ProductListWrapper = () => {
   const sortParam = searchParams.get("sort") || "updated,DESC";
   const [sortUrl, setSortUrl] = useState<string | null>(sortParam);
 
+  // Agreement filter state - null means "all", "true" means "on agreement", "false" means "not on agreement"
+  const agreementParam = searchParams.get("agreement");
+  const [agreementFilter, setAgreementFilter] = useState<string | null>(agreementParam);
+
   // Helper to derive current sort direction for updated
   const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
 
@@ -59,6 +61,16 @@ const ProductListWrapper = () => {
     setSearchParams(searchParams);
   }, [sortUrl]);
 
+  useEffect(() => {
+    // Keep search params in sync when agreementFilter changes
+    if (agreementFilter !== null) {
+      searchParams.set("agreement", agreementFilter);
+    } else {
+      searchParams.delete("agreement");
+    }
+    setSearchParams(searchParams);
+  }, [agreementFilter]);
+
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -70,6 +82,7 @@ const ProductListWrapper = () => {
     filters: [...statusFilters],
     supplierFilter: supplierFilter,
     sortUrl,
+    agreementFilter,
   });
 
   const navigate = useNavigate();
@@ -145,7 +158,7 @@ const ProductListWrapper = () => {
             <HGrid
               columns={{
                 xs: "1",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
               gap="4"
               align="start"
@@ -178,16 +191,6 @@ const ProductListWrapper = () => {
                   />
                 </Box>
               )}
-              <Box paddingBlock={{ xs: "2", md: "8" }}>
-                <CheckboxGroup
-                  legend="Filter"
-                  hideLegend
-                  onChange={() => onFilterChange("Vis utgåtte")}
-                  value={statusFilters}
-                >
-                  <Checkbox value="Vis utgåtte">Vis utgåtte</Checkbox>
-                </CheckboxGroup>
-              </Box>
             </HGrid>
 
             {loggedInUser && (
@@ -204,20 +207,43 @@ const ProductListWrapper = () => {
               </Box>
             )}
           </HGrid>
-          <VStack gap="3">
-            <Label>Filter</Label>
-            <Chips>
-              {visningStatusfilter.map((filterName) => (
+          <HGrid columns={{ xs: "1", md: "auto 250px" }} gap="4" align="start">
+            <VStack gap="3">
+              <Label>Filter</Label>
+              <Chips>
+                {visningStatusfilter.map((filterName) => (
+                  <Chips.Toggle
+                    key={filterName}
+                    selected={statusFilters.includes(filterName)}
+                    onClick={() => onFilterChange(filterName)}
+                  >
+                    {filterName}
+                  </Chips.Toggle>
+                ))}
                 <Chips.Toggle
-                  key={filterName}
-                  selected={statusFilters.includes(filterName)}
-                  onClick={() => onFilterChange(filterName)}
+                  selected={statusFilters.includes("Vis utgåtte")}
+                  onClick={() => onFilterChange("Vis utgåtte")}
                 >
-                  {filterName}
+                  Vis utgåtte
                 </Chips.Toggle>
-              ))}
-            </Chips>
-          </VStack>
+              </Chips>
+            </VStack>
+            <Box>
+              <Select
+                label="Avtalefilter"
+                size="medium"
+                value={agreementFilter || "all"}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAgreementFilter(value === "all" ? null : value);
+                }}
+              >
+                <option value="all">Alle produkter</option>
+                <option value="true">Kun produkter på avtale</option>
+                <option value="false">Kun produkter ikke på avtale</option>
+              </Select>
+            </Box>
+          </HGrid>
         </VStack>
 
         <VStack gap="4">
