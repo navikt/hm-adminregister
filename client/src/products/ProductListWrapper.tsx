@@ -41,8 +41,12 @@ const ProductListWrapper = () => {
   const [sortUrl, setSortUrl] = useState<string | null>(sortParam);
 
   // Agreement filter state - null means "all", "true" means "on agreement", "false" means "not on agreement"
-  const agreementParam = searchParams.get("agreement");
-  const [agreementFilter, setAgreementFilter] = useState<string | null>(agreementParam);
+  const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
+    return searchParams.get("inAgreement");
+  });
+
+  // Missing media type filter - comes from URL params (e.g., from vendor dashboard links)
+  const missingMediaType = searchParams.get("missingMediaType");
 
   // Helper to derive current sort direction for updated
   const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
@@ -64,9 +68,9 @@ const ProductListWrapper = () => {
   useEffect(() => {
     // Keep search params in sync when agreementFilter changes
     if (agreementFilter !== null) {
-      searchParams.set("agreement", agreementFilter);
+      searchParams.set("inAgreement", agreementFilter);
     } else {
-      searchParams.delete("agreement");
+      searchParams.delete("inAgreement");
     }
     setSearchParams(searchParams);
   }, [agreementFilter]);
@@ -83,6 +87,7 @@ const ProductListWrapper = () => {
     supplierFilter: supplierFilter,
     sortUrl,
     agreementFilter,
+    missingMediaType,
   });
 
   const navigate = useNavigate();
@@ -141,6 +146,11 @@ const ProductListWrapper = () => {
       searchParams.set("filters", [...statusFilters, filterName].join(","));
       setSearchParams(searchParams);
     }
+  };
+
+  const removeMissingMediaTypeFilter = () => {
+    searchParams.delete("missingMediaType");
+    setSearchParams(searchParams);
   };
 
   return (
@@ -232,7 +242,7 @@ const ProductListWrapper = () => {
               <Select
                 label="Avtalefilter"
                 size="medium"
-                value={agreementFilter || "all"}
+                value={agreementFilter === null ? "all" : agreementFilter}
                 onChange={(e) => {
                   const value = e.target.value;
                   setAgreementFilter(value === "all" ? null : value);
@@ -244,6 +254,18 @@ const ProductListWrapper = () => {
               </Select>
             </Box>
           </HGrid>
+          {missingMediaType && (
+            <Box>
+              <Chips>
+                <Chips.Removable
+                  variant="action"
+                  onDelete={removeMissingMediaTypeFilter}
+                >
+                  Mangler bilder
+                </Chips.Removable>
+              </Chips>
+            </Box>
+          )}
         </VStack>
 
         <VStack gap="4">

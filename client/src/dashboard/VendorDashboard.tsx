@@ -1,5 +1,6 @@
 import { BodyShort, Heading, HStack, VStack, Box } from "@navikt/ds-react";
 import { useSeriesWithoutMediaByAgreement } from "api/SeriesApi";
+import { Link } from "react-router-dom";
 
 const VendorDashboard = () => {
   const { data: mainProductsWithoutImages, error } = useSeriesWithoutMediaByAgreement("IMAGE", true);
@@ -40,9 +41,21 @@ const VendorDashboard = () => {
             <Heading level="3" size="small">
               På rammeavtale
             </Heading>
-            <Heading level="3" size="large" spacing>
-              {isLoading ? "…" : mainProductsOnAgreementCount}
-            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : mainProductsOnAgreementCount > 0 ? (
+              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true&mainProduct=true">
+                <Heading level="3" size="large" spacing>
+                  {mainProductsOnAgreementCount}
+                </Heading>
+              </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {mainProductsOnAgreementCount}
+              </Heading>
+            )}
             <BodyShort size="small">
               Antall hovedprodukter som er på en rammeavtale og mangler bilde.
             </BodyShort>
@@ -57,9 +70,21 @@ const VendorDashboard = () => {
             <Heading level="3" size="small">
               Ikke på rammeavtale
             </Heading>
-            <Heading level="3" size="large" spacing>
-              {isLoading ? "…" : mainProductsNotOnAgreementCount}
-            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : mainProductsNotOnAgreementCount > 0 ? (
+              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false&mainProduct=true">
+                <Heading level="3" size="large" spacing>
+                  {mainProductsNotOnAgreementCount}
+                </Heading>
+              </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {mainProductsNotOnAgreementCount}
+              </Heading>
+            )}
             <BodyShort size="small">
               Antall hovedprodukter som ikke er på rammeavtale og mangler bilde.
             </BodyShort>
@@ -80,9 +105,21 @@ const VendorDashboard = () => {
             <Heading level="3" size="small">
               På rammeavtale
             </Heading>
-            <Heading level="3" size="large" spacing>
-              {isLoading ? "…" : partsOnAgreementCount}
-            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : partsOnAgreementCount > 0 ? (
+           //   <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true&mainProduct=false">
+                <Heading level="3" size="large" spacing>
+                  {partsOnAgreementCount}
+                </Heading>
+           //   </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {partsOnAgreementCount}
+              </Heading>
+            )}
             <BodyShort size="small">
               Antall deler som er på en rammeavtale og mangler bilde.
             </BodyShort>
@@ -97,9 +134,21 @@ const VendorDashboard = () => {
             <Heading level="3" size="small">
               Ikke på rammeavtale
             </Heading>
-            <Heading level="3" size="large" spacing>
-              {isLoading ? "…" : partsNotOnAgreementCount}
-            </Heading>
+            {isLoading ? (
+              <Heading level="3" size="large" spacing>
+                …
+              </Heading>
+            ) : partsNotOnAgreementCount > 0 ? (
+             // <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false&mainProduct=false">
+                <Heading level="3" size="large" spacing>
+                  {partsNotOnAgreementCount}
+                </Heading>
+             // </Link>
+            ) : (
+              <Heading level="3" size="large" spacing>
+                {partsNotOnAgreementCount}
+              </Heading>
+            )}
             <BodyShort size="small">
               Antall deler som ikke er på rammeavtale og mangler bilde.
             </BodyShort>
