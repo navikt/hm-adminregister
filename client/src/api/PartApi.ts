@@ -20,18 +20,24 @@ export function usePagedParts({
   page,
   pageSize,
   titleSearchTerm,
-  supplierFilter
+  supplierFilter,
+  agreementFilter,
+  missingMediaType,
 }: {
   page: number;
   pageSize: number;
   titleSearchTerm: string;
   supplierFilter?: string;
+  agreementFilter?: string | null;
+  missingMediaType?: string | null;
 }) {
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : "";
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : "";
+  const agreementParam =
+    agreementFilter !== null && agreementFilter !== undefined ? `&inAgreement=${agreementFilter}` : "";
+  const missingMediaParam = missingMediaType ? `&missingMediaType=${missingMediaType}` : "";
 
-
-  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC&${titleSearchParam}${supplierParam}`;
+  const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC${titleSearchParam}${supplierParam}${agreementParam}${missingMediaParam}`;
 
   return useSWR<ProductChunk>(path, fetcherGET);
 }

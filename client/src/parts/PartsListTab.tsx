@@ -1,6 +1,7 @@
 import {
   Alert,
   Box,
+  Chips,
   Heading,
   HGrid,
   HStack,
@@ -29,6 +30,12 @@ const PartsListTab = () => {
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
+  const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
+    return searchParams.get("inAgreement");
+  });
+
+  const missingMediaType = searchParams.get("missingMediaType");
+
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
 
@@ -46,6 +53,15 @@ const PartsListTab = () => {
   }, [supplierFilter]);
 
   useEffect(() => {
+    if (agreementFilter !== null) {
+      searchParams.set("inAgreement", agreementFilter);
+    } else {
+      searchParams.delete("inAgreement");
+    }
+    setSearchParams(searchParams);
+  }, [agreementFilter]);
+
+  useEffect(() => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
   }, [pageSizeState]);
 
@@ -58,6 +74,8 @@ const PartsListTab = () => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
+    agreementFilter,
+    missingMediaType,
   });
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
@@ -86,6 +104,11 @@ const PartsListTab = () => {
     }
   };
 
+  const removeMissingMediaTypeFilter = () => {
+    searchParams.delete("missingMediaType");
+    setSearchParams(searchParams);
+  };
+
   if (errorPaged) {
     return (
       <main className="show-menu">
@@ -106,7 +129,7 @@ const PartsListTab = () => {
             <HGrid
               columns={{
                 xs: "1",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 250px" : "2fr 250px",
               }}
               gap="4"
               align="start"
@@ -142,8 +165,35 @@ const PartsListTab = () => {
                   />
                 </Box>
               )}
+              <Box>
+                <Select
+                  label="Avtalefilter"
+                  size="medium"
+                  value={agreementFilter === null ? "all" : agreementFilter}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setAgreementFilter(value === "all" ? null : value);
+                  }}
+                >
+                  <option value="all">Alle deler</option>
+                  <option value="true">Kun deler på avtale</option>
+                  <option value="false">Kun deler ikke på avtale</option>
+                </Select>
+              </Box>
             </HGrid>
           </HGrid>
+          {missingMediaType && (
+            <Box>
+              <Chips>
+                <Chips.Removable
+                  variant="action"
+                  onDelete={removeMissingMediaTypeFilter}
+                >
+                  Mangler bilder
+                </Chips.Removable>
+              </Chips>
+            </Box>
+          )}
         </VStack>
 
         <VStack gap="4">

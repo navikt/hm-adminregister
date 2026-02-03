@@ -126,6 +126,8 @@ export type ProductChunk = {
   offset?: number;
   /** Format: int32 */
   size?: number;
+  /** Format: int64 */
+  totalSize?: number;
   totalPages?: number;
   empty?: boolean;
   /** Format: int32 */
@@ -141,6 +143,8 @@ export type SeriesSearchChunk = {
   offset?: number;
   /** Format: int32 */
   size?: number;
+  /** Format: int64 */
+  totalSize?: number;
   totalPages?: number;
   empty?: boolean;
   /** Format: int32 */

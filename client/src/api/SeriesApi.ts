@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
+import {fetchAPI, fetchAPIModify, fetchPostFiles, getPath} from "api/fetch";
 import {
   DeleteDocumentUrl,
   FileTitleDto,
@@ -10,14 +10,13 @@ import {
   SeriesDraftWithDTO,
   SeriesDTO,
   SeriesSearchDTO,
-  SeriesWithoutMediaByAgreementDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
-import { fetcherGET } from "utils/swr-hooks";
-import { FileUpload } from "felleskomponenter/UploadModal";
-import { HM_REGISTER_URL } from "environments";
-import { useAuthStore } from "utils/store/useAuthStore";
+import {fetcherGET} from "utils/swr-hooks";
+import {FileUpload} from "felleskomponenter/UploadModal";
+import {HM_REGISTER_URL} from "environments";
+import {useAuthStore} from "utils/store/useAuthStore";
 
 export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");
@@ -124,20 +123,6 @@ export function useSeriesV2Conditional(seriesUUID?: string) {
   } else {
     return useSWR<SeriesDTO>(seriesUUID ? `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}` : null, fetcherGET);
   }
-}
-
-export type MediaType = "IMAGE" | "VIDEO";
-
-export function useSeriesWithoutMediaByAgreement(
-  mediaType: MediaType = "IMAGE",
-  mainProduct: boolean = true
-) {
-  const url = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series/no-media/by-agreement`;
-  return useSWR<SeriesWithoutMediaByAgreementDTO>(
-    [url, mediaType, mainProduct],
-    ([url, mediaType, mainProduct]) =>
-      fetchAPI(url, "POST", { mediaType, mainProduct })
-  );
 }
 
 export const uploadFilesToSeries = async (seriesUUID: string, uploads: FileUpload[]) => {

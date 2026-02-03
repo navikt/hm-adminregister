@@ -2702,7 +2702,6 @@ export interface components {
             text?: string | null;
             identifier: string;
             attachments: components["schemas"]["AgreementAttachment"][];
-            /** @deprecated */
             posts: components["schemas"]["AgreementPost"][];
             isoCategory: string[];
         };
@@ -3290,10 +3289,7 @@ export interface components {
             id: string;
             /** Format: uuid */
             productId: string;
-            /**
-             * Format: uuid
-             * @deprecated
-             */
+            /** Format: uuid */
             seriesUuid?: string | null;
             title: string;
             articleName?: string | null;
@@ -3337,7 +3333,6 @@ export interface components {
         ProductData: {
             attributes: components["schemas"]["Attributes"];
             techData: components["schemas"]["TechData"][];
-            /** @deprecated */
             media: components["schemas"]["MediaInfoDTO"][];
             identifier?: string | null;
             seriesIdentifier?: string | null;
@@ -3394,11 +3389,8 @@ export interface components {
             hmsArtNr?: string | null;
             /** Format: uuid */
             seriesUUID: string;
-            /** @deprecated */
             seriesId: string;
-            /** @deprecated */
             isoCategory: string;
-            /** @deprecated */
             title: string;
             articleName: string;
             accessory: boolean;
@@ -7046,6 +7038,8 @@ export interface operations {
                 supplierFilter?: string[] | null;
                 editStatus?: components["schemas"]["EditStatus"][] | null;
                 title?: string | null;
+                inAgreement?: boolean | null;
+                missingMediaType?: string | null;
                 pageable: components["schemas"]["OpenApiPageable"];
             };
             header?: never;
@@ -7584,6 +7578,8 @@ export interface operations {
                 createdByUser?: string | null;
                 updatedByUser?: string | null;
                 title?: string | null;
+                inAgreement?: boolean | null;
+                missingMediaType?: string | null;
                 pageable: components["schemas"]["OpenApiPageable"];
             };
             header?: never;

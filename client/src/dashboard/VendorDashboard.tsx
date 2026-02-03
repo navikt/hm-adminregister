@@ -1,18 +1,50 @@
 import { BodyShort, Heading, HStack, VStack, Box } from "@navikt/ds-react";
-import { useSeriesWithoutMediaByAgreement } from "api/SeriesApi";
+import { usePagedParts } from "api/PartApi";
+import { usePagedProducts } from "utils/swr-hooks";
 import { Link } from "react-router-dom";
 
 const VendorDashboard = () => {
-  const { data: mainProductsWithoutImages, error } = useSeriesWithoutMediaByAgreement("IMAGE", true);
-  const { data: partsWithoutImages } = useSeriesWithoutMediaByAgreement("IMAGE", false);
+  const { data: mainProductsOnAgreementData } = usePagedProducts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    filters: [],
+    agreementFilter: "true",
+    missingMediaType: "IMAGE",
+  });
 
-  const mainProductsOnAgreementCount = mainProductsWithoutImages?.onAgreement.length ?? 0;
-  const mainProductsNotOnAgreementCount = mainProductsWithoutImages?.notOnAgreement.length ?? 0;
+  const { data: mainProductsNotOnAgreementData } = usePagedProducts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    filters: [],
+    agreementFilter: "false",
+    missingMediaType: "IMAGE",
+  });
 
-  const partsOnAgreementCount = partsWithoutImages?.onAgreement.length ?? 0;
-  const partsNotOnAgreementCount = partsWithoutImages?.notOnAgreement.length ?? 0;
+  const mainProductsOnAgreementCount = mainProductsOnAgreementData?.totalSize ?? 0;
+  const mainProductsNotOnAgreementCount = mainProductsNotOnAgreementData?.totalSize ?? 0;
 
-  const isLoading = !mainProductsWithoutImages && !error;
+  const { data: partsOnAgreementData } = usePagedParts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    agreementFilter: "true",
+    missingMediaType: "IMAGE",
+  });
+
+  const { data: partsNotOnAgreementData } = usePagedParts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: "",
+    agreementFilter: "false",
+    missingMediaType: "IMAGE",
+  });
+
+  const partsOnAgreementCount = partsOnAgreementData?.totalSize ?? 0;
+  const partsNotOnAgreementCount = partsNotOnAgreementData?.totalSize ?? 0;
+
+  const isLoading = !mainProductsOnAgreementData || !mainProductsNotOnAgreementData;
 
   return (
     <main className="show-menu">
@@ -21,15 +53,8 @@ const VendorDashboard = () => {
           Dashboard
         </Heading>
 
-        {error && (
-          <BodyShort size="small" as="p">
-            Kunne ikke hente tall for serier uten bilde. Prøv igjen senere.
-          </BodyShort>
-        )}
-
-        {/* Hovedprodukter uten bilde */}
         <Heading level="2" size="medium" spacing>
-          Hovedprodukter uten bilde
+          Produkter uten bilde
         </Heading>
         <HStack gap="6" wrap>
           <Box
@@ -46,7 +71,7 @@ const VendorDashboard = () => {
                 …
               </Heading>
             ) : mainProductsOnAgreementCount > 0 ? (
-              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true&mainProduct=true">
+              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true">
                 <Heading level="3" size="large" spacing>
                   {mainProductsOnAgreementCount}
                 </Heading>
@@ -57,7 +82,7 @@ const VendorDashboard = () => {
               </Heading>
             )}
             <BodyShort size="small">
-              Antall hovedprodukter som er på en rammeavtale og mangler bilde.
+              Antall produkter som er på en rammeavtale og mangler bilde.
             </BodyShort>
           </Box>
 
@@ -75,7 +100,7 @@ const VendorDashboard = () => {
                 …
               </Heading>
             ) : mainProductsNotOnAgreementCount > 0 ? (
-              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false&mainProduct=true">
+              <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false">
                 <Heading level="3" size="large" spacing>
                   {mainProductsNotOnAgreementCount}
                 </Heading>
@@ -86,12 +111,11 @@ const VendorDashboard = () => {
               </Heading>
             )}
             <BodyShort size="small">
-              Antall hovedprodukter som ikke er på rammeavtale og mangler bilde.
+              Antall produkter som ikke er på rammeavtale og mangler bilde.
             </BodyShort>
           </Box>
         </HStack>
 
-        {/* Deler uten bilde */}
         <Heading level="2" size="medium" spacing>
           Deler uten bilde
         </Heading>
@@ -110,11 +134,11 @@ const VendorDashboard = () => {
                 …
               </Heading>
             ) : partsOnAgreementCount > 0 ? (
-           //   <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true&mainProduct=false">
+              <Link to="/deler?missingMediaType=IMAGE&inAgreement=true">
                 <Heading level="3" size="large" spacing>
                   {partsOnAgreementCount}
                 </Heading>
-           //   </Link>
+              </Link>
             ) : (
               <Heading level="3" size="large" spacing>
                 {partsOnAgreementCount}
@@ -139,11 +163,11 @@ const VendorDashboard = () => {
                 …
               </Heading>
             ) : partsNotOnAgreementCount > 0 ? (
-             // <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false&mainProduct=false">
+              <Link to="/deler?missingMediaType=IMAGE&inAgreement=false">
                 <Heading level="3" size="large" spacing>
                   {partsNotOnAgreementCount}
                 </Heading>
-             // </Link>
+              </Link>
             ) : (
               <Heading level="3" size="large" spacing>
                 {partsNotOnAgreementCount}
