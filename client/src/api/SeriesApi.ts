@@ -10,6 +10,7 @@ import {
   SeriesDraftWithDTO,
   SeriesDTO,
   SeriesSearchDTO,
+  SeriesWithoutMediaByAgreementDTO,
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
@@ -123,6 +124,20 @@ export function useSeriesV2Conditional(seriesUUID?: string) {
   } else {
     return useSWR<SeriesDTO>(seriesUUID ? `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}` : null, fetcherGET);
   }
+}
+
+export type MediaType = "IMAGE" | "VIDEO";
+
+export function useSeriesWithoutMediaByAgreement(
+  mediaType: MediaType = "IMAGE",
+  mainProduct: boolean = true
+) {
+  const url = `${HM_REGISTER_URL()}/admreg/vendor/api/v1/series/no-media/by-agreement`;
+  return useSWR<SeriesWithoutMediaByAgreementDTO>(
+    [url, mediaType, mainProduct],
+    ([url, mediaType, mainProduct]) =>
+      fetchAPI(url, "POST", { mediaType, mainProduct })
+  );
 }
 
 export const uploadFilesToSeries = async (seriesUUID: string, uploads: FileUpload[]) => {
