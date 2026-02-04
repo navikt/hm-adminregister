@@ -1,4 +1,4 @@
-import { BodyShort, Heading, HStack, VStack, Box } from "@navikt/ds-react";
+import {BodyShort, Heading, HStack, VStack, Box, Loader} from "@navikt/ds-react";
 import { usePagedParts } from "api/PartApi";
 import { usePagedProducts } from "utils/swr-hooks";
 import { Link } from "react-router-dom";
@@ -85,9 +85,7 @@ const VendorDashboard = () => {
               Venter på godkjenning
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+              <Loader size="medium" />
             ) : productsToApproveCount > 0 ? (
               <Link to="/produkter?filters=Venter på godkjenning">
                 <Heading level="3" size="large" spacing>
@@ -114,9 +112,7 @@ const VendorDashboard = () => {
               Avslåtte
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+                <Loader size="medium" />
             ) : rejectedProductsCount > 0 ? (
               <Link to="/produkter?filters=Avslått">
                 <Heading level="3" size="large" spacing>
@@ -148,9 +144,7 @@ const VendorDashboard = () => {
               På rammeavtale
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+                <Loader size="medium" />
             ) : mainProductsOnAgreementCount > 0 ? (
               <Link to="/produkter?missingMediaType=IMAGE&inAgreement=true">
                 <Heading level="3" size="large" spacing>
@@ -177,9 +171,7 @@ const VendorDashboard = () => {
               Ikke på rammeavtale
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+                <Loader size="medium" />
             ) : mainProductsNotOnAgreementCount > 0 ? (
               <Link to="/produkter?missingMediaType=IMAGE&inAgreement=false">
                 <Heading level="3" size="large" spacing>
@@ -211,9 +203,7 @@ const VendorDashboard = () => {
               På rammeavtale
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+                <Loader size="medium" />
             ) : partsOnAgreementCount > 0 ? (
               <Link to="/deler?missingMediaType=IMAGE&inAgreement=true">
                 <Heading level="3" size="large" spacing>
@@ -240,9 +230,7 @@ const VendorDashboard = () => {
               Ikke på rammeavtale
             </Heading>
             {isLoading ? (
-              <Heading level="3" size="large" spacing>
-                …
-              </Heading>
+                <Loader size="medium" />
             ) : partsNotOnAgreementCount > 0 ? (
               <Link to="/deler?missingMediaType=IMAGE&inAgreement=false">
                 <Heading level="3" size="large" spacing>
