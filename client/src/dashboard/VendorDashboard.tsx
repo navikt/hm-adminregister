@@ -49,6 +49,7 @@ const VendorDashboard = () => {
     titleSearchTerm: "",
     agreementFilter: "true",
     missingMediaType: "IMAGE",
+    isAccessory: true
   });
 
   const { data: partsNotOnAgreementData } = usePagedParts({
@@ -57,6 +58,7 @@ const VendorDashboard = () => {
     titleSearchTerm: "",
     agreementFilter: "false",
     missingMediaType: "IMAGE",
+    isAccessory: true
   });
 
   const partsOnAgreementCount = partsOnAgreementData?.totalSize ?? 0;
@@ -190,7 +192,7 @@ const VendorDashboard = () => {
         </HStack>
 
         <Heading level="2" size="medium" style={{ marginTop: "2rem" }}>
-          Deler uten bilde
+          Tilbehør uten bilde
         </Heading>
         <HStack gap="6" wrap>
           <Box
@@ -205,7 +207,7 @@ const VendorDashboard = () => {
             {isLoading ? (
                 <Loader size="medium" />
             ) : partsOnAgreementCount > 0 ? (
-              <Link to="/deler?missingMediaType=IMAGE&inAgreement=true">
+              <Link to="/deler?missingMediaType=IMAGE&inAgreement=true&isAccessory=true">
                 <Heading level="3" size="large" spacing>
                   {partsOnAgreementCount}
                 </Heading>
@@ -216,7 +218,7 @@ const VendorDashboard = () => {
               </Heading>
             )}
             <BodyShort size="small">
-              Antall deler som er på en rammeavtale og mangler bilde.
+              Antall tilbehør som er på en rammeavtale og mangler bilde.
             </BodyShort>
           </Box>
 
@@ -232,7 +234,7 @@ const VendorDashboard = () => {
             {isLoading ? (
                 <Loader size="medium" />
             ) : partsNotOnAgreementCount > 0 ? (
-              <Link to="/deler?missingMediaType=IMAGE&inAgreement=false">
+              <Link to="/deler?missingMediaType=IMAGE&inAgreement=false&isAccessory=true">
                 <Heading level="3" size="large" spacing>
                   {partsNotOnAgreementCount}
                 </Heading>
@@ -243,7 +245,7 @@ const VendorDashboard = () => {
               </Heading>
             )}
             <BodyShort size="small">
-              Antall deler som ikke er på rammeavtale og mangler bilde.
+              Antall tilbehør som ikke er på rammeavtale og mangler bilde.
             </BodyShort>
           </Box>
 

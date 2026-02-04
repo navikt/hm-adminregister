@@ -45,8 +45,10 @@ const ProductListWrapper = () => {
     return searchParams.get("inAgreement");
   });
 
-  // Missing media type filter - comes from URL params (e.g., from vendor dashboard links)
-  const missingMediaType = searchParams.get("missingMediaType");
+  // Missing media type filter - toggle state
+  const [missingMediaType, setMissingMediaType] = useState<string | null>(() => {
+    return searchParams.get("missingMediaType");
+  });
 
   // Helper to derive current sort direction for updated
   const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
@@ -74,6 +76,16 @@ const ProductListWrapper = () => {
     }
     setSearchParams(searchParams);
   }, [agreementFilter]);
+
+  useEffect(() => {
+    // Keep search params in sync when missingMediaType changes
+    if (missingMediaType !== null) {
+      searchParams.set("missingMediaType", missingMediaType);
+    } else {
+      searchParams.delete("missingMediaType");
+    }
+    setSearchParams(searchParams);
+  }, [missingMediaType]);
 
   const {
     data: pagedData,
@@ -148,9 +160,17 @@ const ProductListWrapper = () => {
     }
   };
 
-  const removeMissingMediaTypeFilter = () => {
-    searchParams.delete("missingMediaType");
+  const toggleMissingMediaType = () => {
+    setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
+  };
+
+  const hasActiveFilters = statusFilters.length > 0 || missingMediaType !== null || agreementFilter !== null;
+
+  const resetAllFilters = () => {
+    searchParams.delete("filters");
     setSearchParams(searchParams);
+    setMissingMediaType(null);
+    setAgreementFilter(null);
   };
 
   return (
@@ -217,27 +237,33 @@ const ProductListWrapper = () => {
               </Box>
             )}
           </HGrid>
-          <HGrid columns={{ xs: "1", md: "auto 250px" }} gap="4" align="start">
-            <VStack gap="3">
-              <Label>Filter</Label>
-              <Chips>
-                {visningStatusfilter.map((filterName) => (
-                  <Chips.Toggle
-                    key={filterName}
-                    selected={statusFilters.includes(filterName)}
-                    onClick={() => onFilterChange(filterName)}
-                  >
-                    {filterName}
-                  </Chips.Toggle>
-                ))}
+          <VStack gap="3">
+            <Label>Filter</Label>
+            <Chips>
+              {visningStatusfilter.map((filterName) => (
                 <Chips.Toggle
-                  selected={statusFilters.includes("Vis utgåtte")}
-                  onClick={() => onFilterChange("Vis utgåtte")}
+                  key={filterName}
+                  selected={statusFilters.includes(filterName)}
+                  onClick={() => onFilterChange(filterName)}
                 >
-                  Vis utgåtte
+                  {filterName}
                 </Chips.Toggle>
-              </Chips>
-            </VStack>
+              ))}
+              <Chips.Toggle
+                selected={statusFilters.includes("Vis utgåtte")}
+                onClick={() => onFilterChange("Vis utgåtte")}
+              >
+                Vis utgåtte
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "IMAGE"}
+                onClick={toggleMissingMediaType}
+              >
+                Mangler bilder
+              </Chips.Toggle>
+            </Chips>
+          </VStack>
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="4" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
@@ -253,19 +279,14 @@ const ProductListWrapper = () => {
                 <option value="false">Kun produkter ikke på avtale</option>
               </Select>
             </Box>
+            {hasActiveFilters && (
+              <Box>
+                <Button variant="secondary" size="medium" onClick={resetAllFilters}>
+                  Nullstill filtre
+                </Button>
+              </Box>
+            )}
           </HGrid>
-          {missingMediaType && (
-            <Box>
-              <Chips>
-                <Chips.Removable
-                  variant="action"
-                  onDelete={removeMissingMediaTypeFilter}
-                >
-                  Mangler bilder
-                </Chips.Removable>
-              </Chips>
-            </Box>
-          )}
         </VStack>
 
         <VStack gap="4">

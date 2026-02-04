@@ -203,5 +203,3 @@ export type CatalogFileChunk = {
   /** Format: int32 */
   numberOfElements?: number;
 };
-
-export type SeriesWithoutMediaByAgreementDTO = components["schemas"]["SeriesWithoutMediaByAgreementDTO"];

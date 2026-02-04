@@ -2522,22 +2522,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admreg/vendor/api/v1/series/no-media/by-agreement": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["seriesWithoutMediaByAgreement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admreg/vendor/api/v1/series/request-approval/{seriesUUID}": {
         parameters: {
             query?: never;
@@ -3556,10 +3540,6 @@ export interface components {
             compatibleWith?: components["schemas"]["CompatibleWith"] | null;
             documentUrls?: components["schemas"]["DocumentUrl"][] | null;
         };
-        SeriesByMediaTypeAndMainProductRequest: {
-            mediaType: components["schemas"]["MediaType"];
-            mainProduct: boolean;
-        };
         SeriesDTO: {
             /** Format: uuid */
             id: string;
@@ -3605,10 +3585,6 @@ export interface components {
             seriesId: string;
             /** Format: int64 */
             count: number;
-        };
-        SeriesIdDTO: {
-            /** Format: uuid */
-            id: string;
         };
         SeriesRegistration: {
             /** Format: uuid */
@@ -3697,10 +3673,6 @@ export interface components {
             /** Format: date-time */
             updated: string;
             mainProduct: boolean;
-        };
-        SeriesWithoutMediaByAgreementDTO: {
-            onAgreement: components["schemas"]["SeriesIdDTO"][];
-            notOnAgreement: components["schemas"]["SeriesIdDTO"][];
         };
         ServiceAgreementInfo: {
             /** Format: uuid */
@@ -7578,6 +7550,7 @@ export interface operations {
                 createdByUser?: string | null;
                 updatedByUser?: string | null;
                 title?: string | null;
+                isAccessory?: boolean | null;
                 inAgreement?: boolean | null;
                 missingMediaType?: string | null;
                 pageable: components["schemas"]["OpenApiPageable"];
@@ -8583,30 +8556,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRegistrationDTOV2"];
-                };
-            };
-        };
-    };
-    seriesWithoutMediaByAgreement: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SeriesByMediaTypeAndMainProductRequest"];
-            };
-        };
-        responses: {
-            /** @description seriesWithoutMediaByAgreement 200 response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesWithoutMediaByAgreementDTO"];
                 };
             };
         };
