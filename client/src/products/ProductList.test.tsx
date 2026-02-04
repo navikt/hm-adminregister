@@ -61,7 +61,7 @@ test("Flere produkter", async () => {
     </MemoryRouter>
   );
 
-  expect(await screen.findAllByRole("listitem")).toHaveLength(5);
+  expect(await screen.findAllByRole("listitem")).toHaveLength(6);
 
   expect(await screen.findByRole("link", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
   expect(await screen.findByRole("link", { name: /Under endring/ }));
