@@ -97,7 +97,7 @@ const VendorDashboard = () => {
                         Dashboard
                     </Heading>
                     <SkyraSurveyBox
-                        buttonText={'Tilbakemelding'}
+                        buttonText={'Gi tilbakemelding!'}
                         skyraSlug={'arbeids-og-velferdsetaten-nav/digihot-lev-dashboard'}
                     />
                 </HStack>
