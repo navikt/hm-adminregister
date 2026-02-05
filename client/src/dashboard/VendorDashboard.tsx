@@ -2,8 +2,8 @@ import {BodyShort, Heading, HStack, VStack, Box, Loader} from "@navikt/ds-react"
 import {usePagedParts} from "api/PartApi";
 import {usePagedProducts} from "utils/swr-hooks";
 import {Link} from "react-router-dom";
-import {SkyraSurvey} from "skyra/SkyraSurvey";
 import {SkyraSurveyBox} from "skyra/SkyraSurveyBox";
+import styles from "./VendorDashboard.module.scss";
 
 const VendorDashboard = () => {
     const {data: productsToApproveData} = usePagedProducts({
@@ -109,7 +109,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             Venter på godkjenning
@@ -136,7 +136,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             Avslåtte
@@ -168,7 +168,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             På rammeavtale
@@ -195,7 +195,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             Ikke på rammeavtale
@@ -227,7 +227,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             På rammeavtale
@@ -254,7 +254,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             Ikke på rammeavtale
@@ -286,7 +286,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             På rammeavtale
@@ -313,7 +313,7 @@ const VendorDashboard = () => {
                         padding="6"
                         borderRadius="large"
                         background="surface-subtle"
-                        style={{minWidth: "16rem", flex: 1}}
+                        className={styles.box}
                     >
                         <Heading level="3" size="small">
                             Ikke på rammeavtale
