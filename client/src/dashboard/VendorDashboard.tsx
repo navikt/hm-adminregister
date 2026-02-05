@@ -2,6 +2,7 @@ import {BodyShort, Heading, HStack, VStack, Box, Loader} from "@navikt/ds-react"
 import { usePagedParts } from "api/PartApi";
 import { usePagedProducts } from "utils/swr-hooks";
 import { Link } from "react-router-dom";
+import {SkyraSurvey} from "skyra/SkyraSurvey";
 
 const VendorDashboard = () => {
   const { data: productsToApproveData } = usePagedProducts({
@@ -89,6 +90,10 @@ const VendorDashboard = () => {
 
   return (
     <main className="show-menu">
+      <SkyraSurvey
+          buttonText={'Tilbakemelding'}
+          skyraSlug={'arbeids-og-velferdsetaten-nav/digihot-lev-dashboard'}
+      />
       <VStack gap="4" style={{ maxWidth: "75rem" }}>
         <Heading level="1" size="large" spacing>
           Dashboard
