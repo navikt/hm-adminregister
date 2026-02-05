@@ -2,8 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
-  CheckboxGroup,
   Chips,
   Heading,
   HGrid,
@@ -42,6 +40,16 @@ const ProductListWrapper = () => {
   const sortParam = searchParams.get("sort") || "updated,DESC";
   const [sortUrl, setSortUrl] = useState<string | null>(sortParam);
 
+  // Agreement filter state - null means "all", "true" means "on agreement", "false" means "not on agreement"
+  const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
+    return searchParams.get("inAgreement");
+  });
+
+  // Missing media type filter - toggle state
+  const [missingMediaType, setMissingMediaType] = useState<string | null>(() => {
+    return searchParams.get("missingMediaType");
+  });
+
   // Helper to derive current sort direction for updated
   const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
 
@@ -59,6 +67,26 @@ const ProductListWrapper = () => {
     setSearchParams(searchParams);
   }, [sortUrl]);
 
+  useEffect(() => {
+    // Keep search params in sync when agreementFilter changes
+    if (agreementFilter !== null) {
+      searchParams.set("inAgreement", agreementFilter);
+    } else {
+      searchParams.delete("inAgreement");
+    }
+    setSearchParams(searchParams);
+  }, [agreementFilter]);
+
+  useEffect(() => {
+    // Keep search params in sync when missingMediaType changes
+    if (missingMediaType !== null) {
+      searchParams.set("missingMediaType", missingMediaType);
+    } else {
+      searchParams.delete("missingMediaType");
+    }
+    setSearchParams(searchParams);
+  }, [missingMediaType]);
+
   const {
     data: pagedData,
     isLoading: isLoadingPagedData,
@@ -70,6 +98,8 @@ const ProductListWrapper = () => {
     filters: [...statusFilters],
     supplierFilter: supplierFilter,
     sortUrl,
+    agreementFilter,
+    missingMediaType,
   });
 
   const navigate = useNavigate();
@@ -130,6 +160,23 @@ const ProductListWrapper = () => {
     }
   };
 
+  const toggleMissingMediaType = () => {
+    setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
+  };
+
+  const toggleMissingVideoType = () => {
+    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
+  };
+
+  const hasActiveFilters = statusFilters.length > 0 || missingMediaType !== null || agreementFilter !== null;
+
+  const resetAllFilters = () => {
+    searchParams.delete("filters");
+    setSearchParams(searchParams);
+    setMissingMediaType(null);
+    setAgreementFilter(null);
+  };
+
   return (
     <main className="show-menu">
       <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
@@ -145,7 +192,7 @@ const ProductListWrapper = () => {
             <HGrid
               columns={{
                 xs: "1",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
               gap="4"
               align="start"
@@ -178,16 +225,6 @@ const ProductListWrapper = () => {
                   />
                 </Box>
               )}
-              <Box paddingBlock={{ xs: "2", md: "8" }}>
-                <CheckboxGroup
-                  legend="Filter"
-                  hideLegend
-                  onChange={() => onFilterChange("Vis utgåtte")}
-                  value={statusFilters}
-                >
-                  <Checkbox value="Vis utgåtte">Vis utgåtte</Checkbox>
-                </CheckboxGroup>
-              </Box>
             </HGrid>
 
             {loggedInUser && (
@@ -216,8 +253,50 @@ const ProductListWrapper = () => {
                   {filterName}
                 </Chips.Toggle>
               ))}
+              <Chips.Toggle
+                selected={statusFilters.includes("Vis utgåtte")}
+                onClick={() => onFilterChange("Vis utgåtte")}
+              >
+                Vis utgåtte
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "IMAGE"}
+                onClick={toggleMissingMediaType}
+              >
+                Mangler bilder
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "VIDEO"}
+                onClick={toggleMissingVideoType}
+              >
+                Mangler video
+              </Chips.Toggle>
             </Chips>
           </VStack>
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="4" align="end">
+            <Box>
+              <Select
+                label="Avtalefilter"
+                size="medium"
+                value={agreementFilter === null ? "all" : agreementFilter}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAgreementFilter(value === "all" ? null : value);
+                }}
+              >
+                <option value="all">Alle produkter</option>
+                <option value="true">Kun produkter på avtale</option>
+                <option value="false">Kun produkter ikke på avtale</option>
+              </Select>
+            </Box>
+            {hasActiveFilters && (
+              <Box>
+                <Button variant="secondary" size="medium" onClick={resetAllFilters}>
+                  Nullstill filtre
+                </Button>
+              </Box>
+            )}
+          </HGrid>
         </VStack>
 
         <VStack gap="4">

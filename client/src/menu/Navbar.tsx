@@ -14,6 +14,7 @@ import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "utils/store/useAuthStore";
 import ProfileMenu from "./ProfileMenu";
+import { PersonGroupIcon } from "@navikt/aksel-icons";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,6 +88,17 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             </HStack>
           </NavLink>
         </>
+      )}
+
+      {loggedInUser && loggedInUser.isSupplier && (
+        <NavLink to="/leverandor/dashboard" className="page-link">
+          {pathname.startsWith("/leverandor/dashboard") && <div className="active-indicator" />}
+          <div className="line" />
+          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <PersonGroupIcon fontSize="1.5rem" aria-hidden />
+            <span>Dashboard</span>
+          </HStack>
+        </NavLink>
       )}
 
       {loggedInUser && (loggedInUser.isAdmin || loggedInUser.isSupplier) && (

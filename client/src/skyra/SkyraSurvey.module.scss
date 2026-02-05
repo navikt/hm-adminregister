@@ -1,0 +1,63 @@
+@import "@navikt/ds-tokens/dist/tokens";
+
+.button {
+  background-color: #f5f9ff !important;
+  border-radius: 32px !important;
+  position: absolute !important;
+  right: 1rem !important;
+  box-shadow: 0 0.0625rem 0.375rem rgba(0, 0, 0, 0.16) !important;
+
+  &:hover {
+    background-color: $a-surface-hover !important;
+  }
+
+  &:active {
+    background-color: $a-surface-active !important;
+  }
+}
+
+.container {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 70px;
+
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1000;
+  width: 100%;
+  max-width: 1408px;
+}
+
+.closeButton {
+  align-self: end;
+}
+
+.containerMobile {
+  position: fixed;
+
+  left: auto;
+  right: 10px;
+  top: auto;
+  bottom: 60px;
+
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1000;
+  width: 100%;
+  max-width: 400px;
+}
+
+.buttonMobile {
+  background-color: #f5f9ff;
+  border-radius: 32px;
+  position: absolute;
+  right: 0;
+  box-shadow: 0 0.0625rem 0.375rem rgba(0, 0, 0, 0.16);
+}
+
+.modalBody {
+  padding: 10px;
+}

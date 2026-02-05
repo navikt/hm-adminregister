@@ -1,6 +1,8 @@
 import {
   Alert,
   Box,
+  Button,
+  Chips,
   Heading,
   HGrid,
   HStack,
@@ -29,6 +31,22 @@ const PartsListTab = () => {
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
 
+  const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
+    return searchParams.get("inAgreement");
+  });
+
+  const [missingMediaType, setMissingMediaType] = useState<string | null>(() => {
+    return searchParams.get("missingMediaType");
+  });
+
+  const [isAccessoryFilter, setIsAccessoryFilter] = useState<boolean>(() => {
+    return searchParams.get("isAccessory") === "true";
+  });
+
+  const [isSparePartFilter, setIsSparePartFilter] = useState<boolean>(() => {
+    return searchParams.get("isSparePart") === "true";
+  });
+
   const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
   const [pageSizeState, setPageSizeState] = useState(initialPageSize);
 
@@ -46,8 +64,55 @@ const PartsListTab = () => {
   }, [supplierFilter]);
 
   useEffect(() => {
+    if (agreementFilter !== null) {
+      searchParams.set("inAgreement", agreementFilter);
+    } else {
+      searchParams.delete("inAgreement");
+    }
+    setSearchParams(searchParams);
+  }, [agreementFilter]);
+
+  useEffect(() => {
+    if (missingMediaType !== null) {
+      searchParams.set("missingMediaType", missingMediaType);
+    } else {
+      searchParams.delete("missingMediaType");
+    }
+    setSearchParams(searchParams);
+  }, [missingMediaType]);
+
+  useEffect(() => {
+    if (isAccessoryFilter) {
+      searchParams.set("isAccessory", "true");
+    } else {
+      searchParams.delete("isAccessory");
+    }
+    setSearchParams(searchParams);
+  }, [isAccessoryFilter]);
+
+  useEffect(() => {
+    if (isSparePartFilter) {
+      searchParams.set("isSparePart", "true");
+    } else {
+      searchParams.delete("isSparePart");
+    }
+    setSearchParams(searchParams);
+  }, [isSparePartFilter]);
+
+  useEffect(() => {
     localStorage.setItem("pageSizeState", pageSizeState.toString());
   }, [pageSizeState]);
+
+  // Determine isAccessory value based on filter states
+  const getIsAccessoryValue = (): boolean | null => {
+    if (isAccessoryFilter && !isSparePartFilter) {
+      return true;
+    } else if (isSparePartFilter && !isAccessoryFilter) {
+      return false;
+    } else {
+      return null;
+    }
+  };
 
   const {
     data: pagedData,
@@ -58,6 +123,9 @@ const PartsListTab = () => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
+    agreementFilter,
+    missingMediaType,
+    isAccessory: getIsAccessoryValue(),
   });
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
@@ -86,6 +154,31 @@ const PartsListTab = () => {
     }
   };
 
+  const removeMissingMediaTypeFilter = () => {
+    setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
+  };
+
+  const toggleMissingVideoType = () => {
+    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
+  };
+
+  const toggleIsAccessory = () => {
+    setIsAccessoryFilter(!isAccessoryFilter);
+  };
+
+  const toggleIsSparePart = () => {
+    setIsSparePartFilter(!isSparePartFilter);
+  };
+
+  const hasActiveFilters = missingMediaType !== null || agreementFilter !== null || isAccessoryFilter || isSparePartFilter;
+
+  const resetAllFilters = () => {
+    setMissingMediaType(null);
+    setAgreementFilter(null);
+    setIsAccessoryFilter(false);
+    setIsSparePartFilter(false);
+  };
+
   if (errorPaged) {
     return (
       <main className="show-menu">
@@ -106,7 +199,7 @@ const PartsListTab = () => {
             <HGrid
               columns={{
                 xs: "1",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
               gap="4"
               align="start"
@@ -143,6 +236,58 @@ const PartsListTab = () => {
                 </Box>
               )}
             </HGrid>
+          </HGrid>
+          <Box>
+            <Chips>
+              <Chips.Toggle
+                selected={missingMediaType === "IMAGE"}
+                onClick={removeMissingMediaTypeFilter}
+              >
+                Mangler bilder
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "VIDEO"}
+                onClick={toggleMissingVideoType}
+              >
+                Mangler video
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={isAccessoryFilter}
+                onClick={toggleIsAccessory}
+              >
+                Tilbehør
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={isSparePartFilter}
+                onClick={toggleIsSparePart}
+              >
+                Reservedel
+              </Chips.Toggle>
+            </Chips>
+          </Box>
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="4" align="end">
+            <Box>
+              <Select
+                label="Avtalefilter"
+                size="medium"
+                value={agreementFilter === null ? "all" : agreementFilter}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAgreementFilter(value === "all" ? null : value);
+                }}
+              >
+                <option value="all">Alle deler</option>
+                <option value="true">Kun deler på avtale</option>
+                <option value="false">Kun deler ikke på avtale</option>
+              </Select>
+            </Box>
+            {hasActiveFilters && (
+              <Box>
+                <Button variant="secondary" size="medium" onClick={resetAllFilters}>
+                  Nullstill filtre
+                </Button>
+              </Box>
+            )}
           </HGrid>
         </VStack>
 

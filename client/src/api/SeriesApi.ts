@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
+import {fetchAPI, fetchAPIModify, fetchPostFiles, getPath} from "api/fetch";
 import {
   DeleteDocumentUrl,
   FileTitleDto,
@@ -13,10 +13,10 @@ import {
   UpdateSeriesRegistrationDTO,
 } from "utils/types/response-types";
 import useSWR from "swr";
-import { fetcherGET } from "utils/swr-hooks";
-import { FileUpload } from "felleskomponenter/UploadModal";
-import { HM_REGISTER_URL } from "environments";
-import { useAuthStore } from "utils/store/useAuthStore";
+import {fetcherGET} from "utils/swr-hooks";
+import {FileUpload} from "felleskomponenter/UploadModal";
+import {HM_REGISTER_URL} from "environments";
+import {useAuthStore} from "utils/store/useAuthStore";
 
 export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), "PUT");

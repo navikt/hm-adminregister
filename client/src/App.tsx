@@ -54,6 +54,7 @@ import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
 import CatalogFiles from "catalog/CatalogFiles";
 import { ImportAndValidate } from "catalog/import/ImportAndValidate";
 import AdminDashboard from "dashboard/AdminDashboard";
+import VendorDashboard from "dashboard/VendorDashboard";
 import { useEffect } from "react";
 import { logNavigationEvent } from "utils/umami";
 
@@ -106,6 +107,7 @@ export function App() {
               <Route path="/tekniskdata" element={<TechLabels />} />
               <Route path="/katalog" element={<CatalogFiles />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/leverandor/dashboard" element={<VendorDashboard />} />
             </Route>
 
             <Route path="/del/opprett" element={<CreatePart />} />
