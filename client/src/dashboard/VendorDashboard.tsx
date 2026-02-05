@@ -102,7 +102,7 @@ const VendorDashboard = () => {
             padding="6"
             borderRadius="large"
             background="surface-subtle"
-            style={{ minWidth: "16rem", maxWidth: "calc(50% - 0.75rem)", flex: 1 }}
+            style={{ minWidth: "16rem", flex: 1 }}
           >
             <Heading level="3" size="small">
               Venter på godkjenning
@@ -129,7 +129,7 @@ const VendorDashboard = () => {
             padding="6"
             borderRadius="large"
             background="surface-subtle"
-            style={{ minWidth: "16rem", maxWidth: "calc(50% - 0.75rem)", flex: 1 }}
+            style={{ minWidth: "16rem", flex: 1 }}
           >
             <Heading level="3" size="small">
               Avslåtte
