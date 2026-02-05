@@ -15,6 +15,21 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
     delayMs: 250,
   })
 
+  useEffect(() => {
+    const surveyElement = skyraSurveyRef.current
+    if (!surveyElement) return
+
+    const handleSurveySubmit = () => {
+      window.skyra?.reload?.()
+    }
+
+    surveyElement.addEventListener('submit', handleSurveySubmit)
+
+    return () => {
+      surveyElement.removeEventListener('submit', handleSurveySubmit)
+    }
+  }, [skyraSurveyRef])
+
   return typeof window !== undefined && window.visualViewport?.width && window.visualViewport.width > 479 ? (
     <Box className={styles.container}>
       <Button
