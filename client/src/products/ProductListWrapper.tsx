@@ -164,6 +164,10 @@ const ProductListWrapper = () => {
     setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
   };
 
+  const toggleMissingVideoType = () => {
+    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
+  };
+
   const hasActiveFilters = statusFilters.length > 0 || missingMediaType !== null || agreementFilter !== null;
 
   const resetAllFilters = () => {
@@ -260,6 +264,12 @@ const ProductListWrapper = () => {
                 onClick={toggleMissingMediaType}
               >
                 Mangler bilder
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "VIDEO"}
+                onClick={toggleMissingVideoType}
+              >
+                Mangler video
               </Chips.Toggle>
             </Chips>
           </VStack>

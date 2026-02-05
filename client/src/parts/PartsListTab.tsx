@@ -158,6 +158,10 @@ const PartsListTab = () => {
     setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
   };
 
+  const toggleMissingVideoType = () => {
+    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
+  };
+
   const toggleIsAccessory = () => {
     setIsAccessoryFilter(!isAccessoryFilter);
   };
@@ -240,6 +244,12 @@ const PartsListTab = () => {
                 onClick={removeMissingMediaTypeFilter}
               >
                 Mangler bilder
+              </Chips.Toggle>
+              <Chips.Toggle
+                selected={missingMediaType === "VIDEO"}
+                onClick={toggleMissingVideoType}
+              >
+                Mangler video
               </Chips.Toggle>
               <Chips.Toggle
                 selected={isAccessoryFilter}
