@@ -7,7 +7,6 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const skyraSurveyRef = useRef<HTMLElement>(null)
   const [openState, setOpenState] = useState<boolean>(false)
-  const [surveyKey, setSurveyKey] = useState<number>(0)
 
   useSkyra({
     skyraSurveyRef,
@@ -15,21 +14,6 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
     setOpenState,
     delayMs: 250,
   })
-
-  useEffect(() => {
-    const surveyElement = skyraSurveyRef.current
-    if (!surveyElement) return
-
-    const handleSurveySubmit = () => {
-      setSurveyKey((prev) => prev + 1)
-    }
-
-    surveyElement.addEventListener('submit', handleSurveySubmit)
-
-    return () => {
-      surveyElement.removeEventListener('submit', handleSurveySubmit)
-    }
-  }, [])
 
   return typeof window !== undefined && window.visualViewport?.width && window.visualViewport.width > 479 ? (
     <Box className={styles.container}>
@@ -55,7 +39,7 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
               onClick={() => setOpenState(false)}
             />
             {/* @ts-expect-error Ikke typet */}
-            <skyra-survey key={surveyKey} ref={skyraSurveyRef} slug={skyraSlug} />
+            <skyra-survey ref={skyraSurveyRef} slug={skyraSlug} />
           </VStack>
         </Popover.Content>
       </Popover>
@@ -83,7 +67,7 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
         <Modal.Header style={{ padding: '5px' }} />
         <Modal.Body>
           {/* @ts-expect-error Ikke typet */}
-          <skyra-survey key={surveyKey} ref={skyraSurveyRef} slug={skyraSlug} />
+          <skyra-survey ref={skyraSurveyRef} slug={skyraSlug} />
         </Modal.Body>
       </Modal>
     </Box>
