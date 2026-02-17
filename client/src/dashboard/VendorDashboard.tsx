@@ -1,12 +1,13 @@
-import {BodyShort, Heading, HStack, VStack, Box, Loader} from "@navikt/ds-react";
+import {BodyShort, Heading, HStack, VStack, Box, Loader, Button} from "@navikt/ds-react";
 import {usePagedParts} from "api/PartApi";
 import {usePagedProducts} from "utils/swr-hooks";
 import {Link} from "react-router-dom";
 import {SkyraSurveyBox} from "skyra/SkyraSurveyBox";
 import styles from "./VendorDashboard.module.scss";
+import {ArrowsCirclepathIcon} from "@navikt/aksel-icons";
 
 const VendorDashboard = () => {
-    const {data: productsToApproveData} = usePagedProducts({
+    const {data: productsToApproveData, mutate: mutateProductsToApprove} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -15,7 +16,7 @@ const VendorDashboard = () => {
 
     const productsToApproveCount = productsToApproveData?.totalSize ?? 0;
 
-    const {data: rejectedProductsData} = usePagedProducts({
+    const {data: rejectedProductsData, mutate: mutateRejectedProducts} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -24,7 +25,7 @@ const VendorDashboard = () => {
 
     const rejectedProductsCount = rejectedProductsData?.totalSize ?? 0;
 
-    const {data: mainProductsOnAgreementData} = usePagedProducts({
+    const {data: mainProductsOnAgreementData, mutate: mutateMainProductsOnAgreement} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -33,7 +34,7 @@ const VendorDashboard = () => {
         missingMediaType: "IMAGE",
     });
 
-    const {data: mainProductsNotOnAgreementData} = usePagedProducts({
+    const {data: mainProductsNotOnAgreementData, mutate: mutateMainProductsNotOnAgreement} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -45,7 +46,7 @@ const VendorDashboard = () => {
     const mainProductsOnAgreementCount = mainProductsOnAgreementData?.totalSize ?? 0;
     const mainProductsNotOnAgreementCount = mainProductsNotOnAgreementData?.totalSize ?? 0;
 
-    const {data: partsOnAgreementData} = usePagedParts({
+    const {data: partsOnAgreementData, mutate: mutatePartsOnAgreement} = usePagedParts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -54,7 +55,7 @@ const VendorDashboard = () => {
         isAccessory: true
     });
 
-    const {data: partsNotOnAgreementData} = usePagedParts({
+    const {data: partsNotOnAgreementData, mutate: mutatePartsNotOnAgreement} = usePagedParts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -66,7 +67,7 @@ const VendorDashboard = () => {
     const partsOnAgreementCount = partsOnAgreementData?.totalSize ?? 0;
     const partsNotOnAgreementCount = partsNotOnAgreementData?.totalSize ?? 0;
 
-    const {data: mainProductsWithoutVideoOnAgreementData} = usePagedProducts({
+    const {data: mainProductsWithoutVideoOnAgreementData, mutate: mutateMainProductsVideoOnAgreement} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -75,7 +76,7 @@ const VendorDashboard = () => {
         missingMediaType: "VIDEO",
     });
 
-    const {data: mainProductsWithoutVideoNotOnAgreementData} = usePagedProducts({
+    const {data: mainProductsWithoutVideoNotOnAgreementData, mutate: mutateMainProductsVideoNotOnAgreement} = usePagedProducts({
         page: 0,
         pageSize: 1,
         titleSearchTerm: "",
@@ -89,13 +90,34 @@ const VendorDashboard = () => {
 
     const isLoading = !mainProductsOnAgreementData || !mainProductsNotOnAgreementData;
 
+    const refreshDashboard = () => {
+        mutateProductsToApprove();
+        mutateRejectedProducts();
+        mutateMainProductsOnAgreement();
+        mutateMainProductsNotOnAgreement();
+        mutatePartsOnAgreement();
+        mutatePartsNotOnAgreement();
+        mutateMainProductsVideoOnAgreement();
+        mutateMainProductsVideoNotOnAgreement();
+    };
+
     return (
         <main className="show-menu">
             <VStack gap="4" style={{maxWidth: "75rem"}}>
-                <HStack gap="6"  align="center" justify="space-between">
-                    <Heading level="1" size="large" spacing>
-                        Dashboard
-                    </Heading>
+                <HStack gap="6"  align="start" justify="space-between">
+                    <VStack gap="2">
+                        <Heading level="1" size="large">
+                            Dashboard
+                        </Heading>
+                        <Button
+                            variant="secondary"
+                            size="small"
+                            icon={<ArrowsCirclepathIcon aria-hidden />}
+                            onClick={refreshDashboard}
+                        >
+                            Oppdater
+                        </Button>
+                    </VStack>
                     <SkyraSurveyBox
                         buttonText={'Gi tilbakemelding!'}
                         skyraSlug={'arbeids-og-velferdsetaten-nav/digihot-lev-dashboard'}
