@@ -169,7 +169,7 @@ const Product = () => {
 
   async function onDelete() {
     setDeleteConfirmationModalIsOpen(false);
-    deleteSeries(series!.id)
+    deleteSeries(series!.id, series!.isPublished)
       .then(() => {
         mutateSeries();
         navigate("/produkter");

@@ -74,7 +74,7 @@ const Part = () => {
     const updatePartDto: UpdatePartDTO = {
       title: name,
       hmsArtNr: part?.hmsArtNr,
-      supplierRef: part?.supplierRef
+      supplierRef: part?.supplierRef,
     };
     handleSavePartInfo(updatePartDto);
   };
@@ -83,7 +83,7 @@ const Part = () => {
     const updatePartDto: UpdatePartDTO = {
       supplierRef: levartNr,
       title: part?.articleName,
-      hmsArtNr: part?.hmsArtNr
+      hmsArtNr: part?.hmsArtNr,
     };
     handleSavePartInfo(updatePartDto);
   };
@@ -92,7 +92,7 @@ const Part = () => {
     const updatePartDto: UpdatePartDTO = {
       hmsArtNr: hmsNr,
       title: part?.articleName,
-      supplierRef: part?.supplierRef
+      supplierRef: part?.supplierRef,
     };
     handleSavePartInfo(updatePartDto);
   };
@@ -156,7 +156,7 @@ const Part = () => {
 
   async function onDelete() {
     setDeleteConfirmationModalIsOpen(false);
-    deleteSeries(series!.id)
+    deleteSeries(series!.id, series!.isPublished)
       .then(() => {
         mutateSeries();
         navigate("/deler");
