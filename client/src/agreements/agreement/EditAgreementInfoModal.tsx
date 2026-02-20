@@ -40,8 +40,6 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
 
   const { datepickerProps: datepickerPropsAvtaleperiodeStart, inputProps: inputPropsAvtaleperiodeStart } =
     useDatepicker({
-      fromDate: new Date("Jan 01 2015"),
-      toDate: new Date("Jan 01 2025"),
       defaultSelected: toDate(agreement?.published),
       onDateChange: (value) => {
         if (value) setValue("avtaleperiodeStart", value);
