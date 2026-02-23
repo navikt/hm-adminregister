@@ -152,8 +152,11 @@ const AdminActions = ({
                   Slett
                   <TrashIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
-                <Dropdown.Menu.List.Item onClick={() => setSwitchToPartModalIsOpen(true)}>
-                  Endre til del
+                <Dropdown.Menu.List.Item
+                  onClick={() => setSwitchToPartModalIsOpen(true)}
+                  disabled={series?.variants.length > 1}
+                >
+                  Endre til del {series?.variants.length > 1 ? `(krever at det kun er én variant)` : ""}
                   <CogRotationIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
 

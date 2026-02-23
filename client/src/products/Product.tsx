@@ -134,9 +134,6 @@ const Product = () => {
   };
 
   const productIsValid = () => {
-    if (series.expired) {
-    }
-
     if (loggedInUser?.isAdmin) {
       return series.variants.length > 0;
     } else if (series.isExpired) {
@@ -378,9 +375,7 @@ const Product = () => {
                     selectedOptions={selectedOptions}
                     options={isoCodesAndTitles || []}
                     onToggleSelected={onToggleSelected}
-                    // onBlur={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
-                    // onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
-                    // error={fieldError?.isoCodeErrorMessage ?? ""}
+
                     maxSelected={{ limit: 1 }}
                   />
                   <Button
