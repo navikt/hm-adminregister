@@ -75,19 +75,19 @@ jobs:
           VAR: image=${{ needs.build.outputs.image }}
           VARS: .nais/nais-dev.json
 
-  deploy-prod:
-    name: Deploy prod
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    steps:
-      - uses: actions/checkout@v6
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-gcp
-          RESOURCE: .nais/nais.yaml
-          VAR: image=${{ needs.build.outputs.image }}
-          VARS: .nais/nais-prod.json
+#  deploy-prod:
+#    name: Deploy prod
+#    needs: build
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#      deployments: write
+#    steps:
+#      - uses: actions/checkout@v6
+#      - uses: nais/deploy/actions/deploy@v1
+#        env:
+#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+#          CLUSTER: prod-gcp
+#          RESOURCE: .nais/nais.yaml
+#          VAR: image=${{ needs.build.outputs.image }}
+#          VARS: .nais/nais-prod.json
