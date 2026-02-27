@@ -100,6 +100,7 @@ export type TechLabelCreateUpdateDTO = components["schemas"]["TechLabelCreateUpd
 export type CatalogFile = components["schemas"]["CatalogFile"];
 export type CatalogImportResultReport = components["schemas"]["CatalogImportResultReport"];
 export type CatalogImport = components["schemas"]["CatalogImport"];
+export type DuplicateConflict = components["schemas"]["DuplicateConflict"];
 
 
 export type ProdukterTilGodkjenningChunk = {

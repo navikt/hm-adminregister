@@ -2686,6 +2686,7 @@ export interface components {
             text?: string | null;
             identifier: string;
             attachments: components["schemas"]["AgreementAttachment"][];
+            /** @deprecated */
             posts: components["schemas"]["AgreementPost"][];
             isoCategory: string[];
         };
@@ -2888,6 +2889,7 @@ export interface components {
             insertedList: components["schemas"]["CatalogImport"][];
             updatedList: components["schemas"]["CatalogImport"][];
             deactivatedList: components["schemas"]["CatalogImport"][];
+            conflictList: components["schemas"]["DuplicateConflict"][];
         };
         ChangePasswordDTO: {
             oldPassword: string;
@@ -2959,6 +2961,16 @@ export interface components {
         DraftVariantDTO: {
             articleName: string;
             supplierRef: string;
+        };
+        DuplicateConflict: {
+            hmsArtNr: string;
+            supplierRef: string;
+            /** Format: uuid */
+            supplierId: string;
+            /** Format: uuid */
+            conflictingProductId: string;
+            conflictingHmsArtNr?: string | null;
+            message: string;
         };
         /** @enum {string} */
         EditStatus: "EDITABLE" | "PENDING_APPROVAL" | "REJECTED" | "DONE";
@@ -3273,7 +3285,10 @@ export interface components {
             id: string;
             /** Format: uuid */
             productId: string;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @deprecated
+             */
             seriesUuid?: string | null;
             title: string;
             articleName?: string | null;
@@ -3317,6 +3332,7 @@ export interface components {
         ProductData: {
             attributes: components["schemas"]["Attributes"];
             techData: components["schemas"]["TechData"][];
+            /** @deprecated */
             media: components["schemas"]["MediaInfoDTO"][];
             identifier?: string | null;
             seriesIdentifier?: string | null;
@@ -3373,8 +3389,11 @@ export interface components {
             hmsArtNr?: string | null;
             /** Format: uuid */
             seriesUUID: string;
+            /** @deprecated */
             seriesId: string;
+            /** @deprecated */
             isoCategory: string;
+            /** @deprecated */
             title: string;
             articleName: string;
             accessory: boolean;
