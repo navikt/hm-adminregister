@@ -32,7 +32,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
   if (!users) return null;
 
   return (
-    <VStack gap="3">
+    <VStack gap="space-4">
       <ConfirmModal
         title={"Bekreft sletting av bruker"}
         confirmButtonText={"Slett bruker"}

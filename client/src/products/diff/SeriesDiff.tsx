@@ -19,21 +19,21 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
   }
 
   return (
-    <VStack gap="2">
+    <VStack gap="space-2">
       <Heading size="xsmall">Endringer i felles produktinformasjon</Heading>
       {changedFields.length > 0 && (
-        <VStack gap="3">
+        <VStack gap="space-4">
           {changedFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
-                <VStack gap="2" key={index} className={styles.changeRow}>
+                <VStack gap="space-2" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
-                    <VStack gap="1">
-                      <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
+                    <VStack gap="space-1">
+                      <Box padding="space-2" background="danger-soft" className={styles.previous}>
                         <Strikethrough>{arrayCheck(value.second)}</Strikethrough>
                       </Box>
-                      <Box padding="2" background="surface-success-subtle" className={styles.current}>
+                      <Box padding="space-2" background="success-soft" className={styles.current}>
                         {arrayCheck(value.first)}
                       </Box>
                     </VStack>
@@ -44,16 +44,16 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
         </VStack>
       )}
       {newFields.length > 0 && (
-        <VStack gap="3">
+        <VStack gap="space-4">
           <BodyShort>Nye verdier: </BodyShort>
           {newFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
-                <VStack gap="2" key={index} className={styles.changeRow}>
+                <VStack gap="space-2" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
-                    <VStack gap="1">
-                      <Box padding="2" background="surface-success-subtle" className={styles.current}>
+                    <VStack gap="space-1">
+                      <Box padding="space-2" background="success-soft" className={styles.current}>
                         {arrayCheck(value)}
                       </Box>
                     </VStack>
@@ -64,16 +64,16 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
         </VStack>
       )}
       {deletedFields.length > 0 && (
-        <VStack gap="3">
+        <VStack gap="space-4">
           <BodyShort>Slettede verdier: </BodyShort>
           {deletedFields.map(
             ([key, value], index) =>
               key !== "seriesData.media" && (
-                <VStack gap="2" key={index} className={styles.changeRow}>
+                <VStack gap="space-2" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
-                    <VStack gap="1">
-                      <Box padding="2" background="surface-danger-subtle" className={styles.current}>
+                    <VStack gap="space-1">
+                      <Box padding="space-2" background="danger-soft" className={styles.current}>
                         <Strikethrough>{arrayCheck(value)}</Strikethrough>
                       </Box>
                     </VStack>
@@ -85,7 +85,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
       )}
       {(mediaDiff.videoChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
         <Box>
-          <VStack gap="1">
+          <VStack gap="space-1">
             {mediaDiff.imageChanges && (
               <div className={styles.changeRow}>
                 Det finnes endringer i <b>bilder</b>.

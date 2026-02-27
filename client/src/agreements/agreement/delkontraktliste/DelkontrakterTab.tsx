@@ -69,14 +69,14 @@ const DelkontrakterTab = ({
         {!isFirstTime && (
           <>
             <Avstand marginTop={3} />
-            <HGrid columns="auto 60px" gap="5">
+            <HGrid columns="auto 60px" gap="space-6">
               <div />
               <div style={{ margin: "auto" }}>
                 <ArrowsUpDownIcon aria-hidden={true} fontSize="1.5rem" />
               </div>
             </HGrid>
             <Avstand marginBottom={3} />
-            <HGrid columns="auto 60px" gap="4">
+            <HGrid columns="auto 60px" gap="space-4">
               {delkontrakter!.length > 0 &&
                 delkontrakter!.map((delkontrakt, i) => (
                   <Fragment key={delkontrakt.id}>
@@ -87,7 +87,7 @@ const DelkontrakterTab = ({
                       mutateDelkontrakter={mutateDelkontrakter}
                       agreementExpireDate={agreementExpireDate}
                     />
-                    <VStack gap="1" style={{ alignItems: "center" }}>
+                    <VStack gap="space-1" style={{ alignItems: "center" }}>
                       {i !== 0 && (
                         <Button
                           aria-label="sorter-opp"

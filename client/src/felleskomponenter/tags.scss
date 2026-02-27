@@ -1,21 +1,21 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .tag-container {
-  .navds-tag {
-    padding: $a-spacing-1 $a-spacing-3;
-    border-radius: $a-border-radius-medium;
+  .aksel-tag {
+    padding: $ax-space-4 $ax-space-8;
+    border-radius: $ax-radius-4;
     width: fit-content;
     border: none;
     line-height: 1.25rem;
 
-    &:has(.navds-tag__icon--left) {
+    &:has(.aksel-tag__icon--left) {
       gap: 6px;
     }
 
-    --ac-tag-neutral-bg: var(--a-gray-100);
-    --ac-tag-warning-bg: var(--a-orange-200);
-    --ac-tag-success-bg: var(--a-green-100);
-    --ac-tag-error-bg: var(--a-red-100);
-    --ac-tag-info-bg: var(--a-blue-100);
+    --ac-tag-neutral-bg: var(--ax-bg-neutral-soft);
+    --ac-tag-warning-bg: var(--ax-bg-warning-soft);
+    --ac-tag-success-bg: var(--ax-bg-success-soft);
+    --ac-tag-error-bg: var(--ax-bg-danger-soft);
+    --ac-tag-info-bg: var(--ax-bg-info-soft);
   }
 }

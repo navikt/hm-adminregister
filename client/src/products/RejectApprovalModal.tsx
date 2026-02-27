@@ -29,7 +29,7 @@ export const RejectApprovalModal = ({
 
   return (
     <Modal open={isOpen} header={{ heading: "Avslå produkt" }} onClose={() => setIsOpen(false)}>
-      <Box padding="4">
+      <Box padding="space-4">
         <Textarea
           label="Melding til leverandør"
           description="Unngå personopplysninger i meldingen"

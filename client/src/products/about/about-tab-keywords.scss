@@ -2,10 +2,10 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .keywords-static {
-  --ac-tag-alt-3-bg: var(--a-blue-700);
-  .navds-tag--alt3{
-    color: var(--a-white);
-    border-radius: var(--a-border-radius-full);
+  --ac-tag-alt-3-bg: var(--ax-bg-info-strong);
+  .aksel-tag--alt3{
+    color: var(#fff);
+    border-radius: var(--ax-radius-full);
   }
 }
 

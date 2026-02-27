@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
-  Buldings3Icon,
+  Buildings3Icon,
   ChevronDownIcon,
   LeaveIcon,
   PersonCircleIcon,
@@ -57,7 +57,7 @@ const ProfileMenu = () => {
             ) : loggedInUser?.isHmsUser ? (
               <PersonIcon fontSize="2.25rem" aria-hidden />
             ) : (
-              <Buldings3Icon fontSize="2.25rem" aria-hidden />
+              <Buildings3Icon fontSize="2.25rem" aria-hidden />
             )}
             <VStack align={"start"}>
               <BodyShort className="text-overflow-hidden-small">
@@ -72,7 +72,7 @@ const ProfileMenu = () => {
         </Button>
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
-            <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+            <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
               <Link
                 to={loggedInUser?.isAdmin ? "/admin/profil" : loggedInUser?.isHmsUser ? "/hms-bruker" : "/profil"}
                 className="user-menu__profile-link"
@@ -86,7 +86,7 @@ const ProfileMenu = () => {
               </Link>
             </HGrid>
             <span className="line" />
-            <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+            <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
               <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
                 <LeaveIcon title="Logg ut" fontSize="1.5rem" aria-hidden /> Logg ut
               </Link>
@@ -108,7 +108,7 @@ const ProfileMenu = () => {
           className="user-menu__profile-link"
           icon={<PersonCircleIcon title="profile" fontSize="2.25rem" />}
         ></Button>
-        <HGrid asChild columns={"1.7rem 1fr"} gap="2">
+        <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
           <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
             <LeaveIcon fontSize="1.5rem" aria-hidden /> <Detail>Logg ut</Detail>
           </Link>

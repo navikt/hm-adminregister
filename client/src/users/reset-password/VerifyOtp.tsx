@@ -47,7 +47,7 @@ export const VerifyOtp = () => {
 
   return (
     <FormBox title="Tilbakestill passord">
-      <VStack gap="7" style={{ width: "300px" }}>
+      <VStack gap="space-8" style={{ width: "300px" }}>
         <BodyShort>
           Kopier inn koden du har mottatt på e-post for å tilbakestille passordet. Koden er gyldig i 30 minutter.
         </BodyShort>
@@ -59,7 +59,7 @@ export const VerifyOtp = () => {
           onChange={(event) => setOtp(event.target.value)}
           error={fieldError ?? ""}
         />
-        <HStack gap="4">
+        <HStack gap="space-4">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

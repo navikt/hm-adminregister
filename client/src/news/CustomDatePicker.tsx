@@ -1,5 +1,4 @@
-import { DatePicker, useDatepicker } from "@navikt/ds-react";
-import { UseDatepickerOptions } from "@navikt/ds-react/esm/date/hooks/useDatepicker";
+import { DatePicker, useDatepicker, type UseDatepickerOptions } from "@navikt/ds-react";
 import { Control, FieldValues, Path, useController } from "react-hook-form";
 import { format, isEqual } from "date-fns";
 import { labelRequired } from "utils/string-util";
@@ -59,7 +58,7 @@ const CustomDatePicker = <T extends FieldValues>({
     date === undefined ? "" : format(date, "yyyy-MM-dd");
 
   const { datepickerProps, inputProps, setSelected, selectedDay } = useDatepicker({
-    onDateChange: (date) => {
+    onDateChange: (date?: Date) => {
       field.onChange(formatDateToLocaleDateOrEmptyString(date));
     },
 

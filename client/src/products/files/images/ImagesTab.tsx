@@ -57,7 +57,7 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
           </Alert>
         )}
 
-        <VStack gap="8">
+        <VStack gap="space-8">
           {series && (
             <FellesSortingArea
               seriesId={series.id}

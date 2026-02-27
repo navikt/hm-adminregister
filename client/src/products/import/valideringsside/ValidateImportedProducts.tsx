@@ -110,8 +110,8 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
             {isLoading && <Loader size="2xlarge" />}
 
             {!isLoading && productsToValidate.length > 0 && (
-              <HStack gap="6">
-                <HStack gap="4">
+              <HStack gap="space-6">
+                <HStack gap="space-4">
                   <Button
                     className="fit-content"
                     size="medium"

@@ -108,12 +108,12 @@ export const ForApproval = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={"64rem"}>
+      <VStack gap={{ xs: "space-8", md: "space-12" }} maxWidth={"64rem"}>
         <Heading level="1" size="large" spacing>
           Godkjenning av produkter
         </Heading>
 
-        <HGrid gap="3" columns={{ xs: 1, md: 2 }}>
+        <HGrid gap="space-4" columns={{ xs: 1, md: 2 }}>
           <Search
             className="search-button"
             label="Søk"
@@ -140,7 +140,7 @@ export const ForApproval = () => {
             </Box>
           )}
         </HGrid>
-        <VStack gap="3">
+        <VStack gap="space-4">
           <Label>Filter</Label>
           <Chips>
             {visningStatusfilter.map((filterName) => (
@@ -155,7 +155,7 @@ export const ForApproval = () => {
           </Chips>
         </VStack>
 
-        <VStack gap="4">
+        <VStack gap="space-4">
           {seriesToApproveByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
           {isLoading ? (
             <Loader size="3xlarge" />
@@ -183,7 +183,7 @@ export const ForApproval = () => {
             <HStack
               justify={{ xs: "center", md: "space-between" }}
               align="center"
-              gap={"4"}
+              gap="space-4"
               style={{ flexWrap: "wrap-reverse" }}
             >
               <Select

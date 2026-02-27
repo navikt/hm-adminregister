@@ -101,7 +101,7 @@ export default function CreateProduct() {
 
   return (
     <FormBox title="Kom i gang med nytt produkt" icon={<PackageIcon />}>
-      <VStack gap="7">
+      <VStack gap="space-24">
         <TextField
           label={labelRequired("Produktnavn")}
           id="productName"
@@ -126,12 +126,7 @@ export default function CreateProduct() {
         {loggedInUser && loggedInUser.isAdmin && suppliers && (
           <Box asChild style={{ maxWidth: "475px" }}>
             <UNSAFE_Combobox
-              clearButton
-              clearButtonLabel="Tøm"
               label="Leverandør"
-              // selectedOptions={searchParams
-              //   .getAll("supplier")
-              //   .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
               onToggleSelected={onToggleSelectedSupplier}
               onBlur={() => setFieldError({ ...fieldError, supplierErrorMessage: undefined })}
               onFocus={() => setFieldError({ ...fieldError, supplierErrorMessage: undefined })}
@@ -141,7 +136,7 @@ export default function CreateProduct() {
           </Box>
         )}
 
-        <HStack gap="4">
+        <HStack gap="space-24">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

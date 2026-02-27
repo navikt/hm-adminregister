@@ -29,7 +29,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
         isModalOpen={imageModalIsOpen}
       />
       <div className={styles.imageCard} ref={ref}>
-        <VStack gap="2">
+        <VStack gap="space-2">
           <button
             type="button"
             className={styles.buttonImage}
@@ -38,7 +38,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
           >
             <ImageContainer uri={currentImage.uri} text={currentImage.text} />
           </button>
-          <VStack gap="1" align="center">
+          <VStack gap="space-1" align="center">
             <i>Filnavn</i>
             <span className="text-overflow-hidden-small">{currentImage.filename ?? "OBS mangler beskrivelse"}</span>
           </VStack>

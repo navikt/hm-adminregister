@@ -62,7 +62,7 @@ export default function SupplierProfile() {
     <main className="show-menu">
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
-          <VStack gap="10">
+          <VStack gap="space-12">
             <SupplierInfo supplier={supplier} setIsOpen={() => {}} setIsOpenActivateSupplier={() => {}} />
             <SupplierUsers supplier={supplier} />
             <Button

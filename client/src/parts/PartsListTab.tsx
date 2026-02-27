@@ -189,19 +189,19 @@ const PartsListTab = () => {
 
   return (
     <TabPanel value="deler">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <VStack gap={{ xs: "4", md: "6" }}>
+      <VStack gap={{ xs: "space-8", md: "space-12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
+        <VStack gap={{ xs: "space-4", md: "space-6" }}>
           <HGrid
-            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
-            gap="4"
+            columns={{ xs: "space-1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            gap="space-4"
             align={"center"}
           >
             <HGrid
               columns={{
-                xs: "1",
+                xs: "space-1",
                 md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
-              gap="4"
+              gap="space-4"
               align="start"
             >
               <Box role="search" style={{ maxWidth: "475px" }}>
@@ -265,7 +265,7 @@ const PartsListTab = () => {
               </Chips.Toggle>
             </Chips>
           </Box>
-          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="4" align="end">
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-4" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
@@ -291,8 +291,8 @@ const PartsListTab = () => {
           </HGrid>
         </VStack>
 
-        <VStack gap="4">
-          <VStack gap="1-alt">
+        <VStack gap="space-4">
+          <VStack gap="space-1">
             {isLoadingPagedData && <Loader />}
             {partByVariantIdentifier && <Heading size="medium">Søketreff</Heading>}
             {partByVariantIdentifier ? (
@@ -314,7 +314,7 @@ const PartsListTab = () => {
           <HStack
             justify={{ xs: "center", md: "space-between" }}
             align="center"
-            gap={"4"}
+            gap="space-4"
             style={{ flexWrap: "wrap-reverse" }}
           >
             <Select

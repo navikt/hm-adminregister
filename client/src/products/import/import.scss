@@ -6,17 +6,17 @@
 .variants-table {
 
   thead tr {
-    background-color: $a-surface-selected;
+    background-color: $ax-bg-neutral-moderate;
   }
 
   thead tr > th:first-child {
-    background-color: $a-surface-selected;
+    background-color: $ax-bg-neutral-moderate;
   }
 }
 
 
 .import-products {
-  margin-top: $a-spacing-16;
+  margin-top: $ax-space-16;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -24,8 +24,8 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-8;
-    margin-bottom: $a-spacing-16;
+    gap: $ax-space-8;
+    margin-bottom: $ax-space-16;
   }
 
   h1 {
@@ -35,8 +35,8 @@
 
 .product-series-info {
   p {
-    margin-bottom: $a-spacing-1;
-    margin-top: $a-spacing-1;
+    margin-bottom: $ax-space-1;
+    margin-top: $ax-space-1;
 
   }
 }
@@ -48,10 +48,10 @@
   margin-top: 1rem;
 
   li {
-    padding: $a-spacing-3 $a-spacing-3;
+    padding: $ax-space-4 $ax-space-4;
     background-color: #ffffff;
-    box-shadow: $a-shadow-xsmall;
-    border-radius: $a-border-radius-medium;
+    box-shadow: $ax-shadow-dialog;
+    border-radius: $ax-radius-8;
   }
 }
 

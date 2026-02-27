@@ -59,7 +59,7 @@ const CreateAndEditTechLabel = () => {
   return (
     <FormBox title={title}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7">
+        <VStack gap="space-8">
           <TextField
             {...register("label", { required: true })}
             label="Navn *"
@@ -94,7 +94,7 @@ const CreateAndEditTechLabel = () => {
             id="options"
             autoComplete="on"
           />
-          <HStack gap="4" align="center">
+          <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

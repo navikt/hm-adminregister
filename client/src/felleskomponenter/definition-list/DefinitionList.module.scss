@@ -10,18 +10,18 @@
   dt {
     font-weight: bold;
     text-align: left;
-    padding-top: $a-spacing-3;
+    padding-top: $ax-space-4;
   }
 
   dd {
     margin-left: 0;
     padding-top: 0;
-    padding-top: $a-spacing-1;
+    padding-top: $ax-space-1;
   }
 
   @include mixins.for-size(tablet-up) {
     dt {
-      padding-top: $a-spacing-5;
+      padding-top: $ax-space-6;
     }
   }
 
@@ -33,16 +33,16 @@
 .definitionListHorizontal {
   @include mixins.for-size(tablet-up) {
     grid-template-columns: minmax(auto, max-content) auto;
-    row-gap: $a-spacing-1;
-    column-gap: $a-spacing-6;
+    row-gap: $ax-space-1;
+    column-gap: $ax-space-6;
 
     dd,
     dt {
-      padding-top: $a-spacing-2;
+      padding-top: $ax-space-2;
     }
   }
 
   dt:first-child {
-    padding-top: $a-spacing-2;
+    padding-top: $ax-space-2;
   }
 }

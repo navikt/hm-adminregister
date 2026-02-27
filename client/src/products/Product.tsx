@@ -115,7 +115,7 @@ const Product = () => {
 
   if (isLoadingSeries) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
       </HGrid>
     );
@@ -274,20 +274,20 @@ const Product = () => {
         isModalOpen={editProductModalIsOpen}
       />
       <HGrid
-        gap="12"
+        gap="space-12"
         columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
         className={styles.productPage}
       >
-        <VStack gap={{ xs: "6", md: "10" }}>
-          <VStack gap="6">
+        <VStack gap={{ xs: "space-6", md: "space-12" }}>
+          <VStack gap="space-6">
             <AkselLink as={Link} to={oversiktPath}>
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
               Tilbake til oversikt
             </AkselLink>
-            <VStack gap="2">
+            <VStack gap="space-2">
               <Label> Produktnavn</Label>
 
-              <HStack gap="1">
+              <HStack gap="space-1">
                 {!showEditProductTitleMode && (
                   <Heading level="1" size="xlarge">
                     {loggedInUser?.isAdmin && series.published ? (
@@ -351,13 +351,13 @@ const Product = () => {
               )}
               {!series.isExpired && series.status !== "DONE" && (
                 <Box
-                  paddingInline="4"
-                  paddingBlock="1"
-                  borderRadius="small"
+                  paddingInline="space-4"
+                  paddingBlock="space-1"
+                  borderRadius="4"
                   width="fit-content"
                   style={{ backgroundColor: "#EFECF4" }}
                 >
-                  <HStack gap="2" align="center">
+                  <HStack gap="space-2" align="center">
                     <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
                       <circle cx="3" cy="3.5" r="3" fill="#8269A2" />
                     </svg>
@@ -366,9 +366,9 @@ const Product = () => {
                 </Box>
               )}
             </VStack>
-            <HStack gap="2" align="center">
+            <HStack gap="space-2" align="center">
               {isEditable && loggedInUser?.isAdmin && showEditIsoCategoryMode && (
-                <HStack align="end" gap="2">
+                <HStack align="end" gap="space-2">
                   <IsoComboboxProvider
                     label={labelRequired("Iso-kategori (kode)")}
                     description={"Søk etter isokategori produktet passer best inn i"}
@@ -472,7 +472,7 @@ const Product = () => {
             <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
-        <VStack gap={{ xs: "6", md: "10" }}>
+        <VStack gap={{ xs: "space-6", md: "space-12" }}>
           {loggedInUser?.isAdmin && (
             <AdminActions
               series={series}

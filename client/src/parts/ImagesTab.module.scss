@@ -5,13 +5,13 @@
 
 
 .alertSpacing {
-  margin-bottom: var(--a-spacing-4);
+  margin-bottom: var(--ax-space-4);
 }
 
 .tabPanel {
-  padding: $a-spacing-4 0;
+  padding: $ax-space-4 0;
   @include mixins.for-size(desktop-up) {
-    padding: $a-spacing-6 0 $a-spacing-10;
+    padding: $ax-space-6 0 $ax-space-12;
   }
 
   form {

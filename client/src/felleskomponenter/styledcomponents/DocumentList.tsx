@@ -5,10 +5,10 @@ export const DocumentList = styled.ol`
   padding-left: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--a-spacing-3);
+  gap: var(--ax-space-4);
 
   li {
-    padding: var(--a-spacing-2) var(--a-spacing-4);
+    padding: var(--ax-space-2) var(--ax-space-4);
     display: flex;
     justify-content: space-between;
 

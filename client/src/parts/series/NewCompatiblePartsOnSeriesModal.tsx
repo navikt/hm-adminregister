@@ -88,7 +88,7 @@ const NewCompatiblePartsOnSeriesModal = ({
       className={styles.modal}
     >
       <Modal.Header closeButton={false}>
-        <VStack gap="6">
+        <VStack gap="space-6">
           <Box role="search" style={{ maxWidth: "475px" }}>
             <Search
               className="search-button"
@@ -102,7 +102,7 @@ const NewCompatiblePartsOnSeriesModal = ({
               hideLabel={false}
             />
           </Box>
-          <HStack gap="2">
+          <HStack gap="space-2">
             <Button
               onClick={() => {
                 onClickLeggTilKobling();
@@ -137,14 +137,14 @@ const NewCompatiblePartsOnSeriesModal = ({
       </Modal.Header>
       <Modal.Body>
         <div>
-          <VStack gap={"2"}>
+          <VStack gap="space-2">
             {isSaving && (
               <HStack justify="center">
                 <Loader size="2xlarge" title="venter..." />
               </HStack>
             )}
-            <VStack gap="4">
-              <VStack gap="1-alt">
+            <VStack gap="space-4">
+              <VStack gap="space-1">
                 {isLoadingPagedData && <Loader />}
                 {partByVariantIdentifier ? (
                   <PartsToAddTable

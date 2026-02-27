@@ -29,7 +29,7 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
 
       <Popover placement="bottom" open={openState} onClose={() => setOpenState(false)} anchorEl={buttonRef.current}>
         <Popover.Content style={{ width: '360px', paddingTop: '10px' }}>
-          <VStack gap="0">
+          <VStack gap="space-0">
             <Button
               className={styles.closeButton}
               variant={'tertiary'}

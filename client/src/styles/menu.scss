@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
 
-  padding: $a-spacing-2 $a-spacing-3;
+  padding: $ax-space-8 $ax-space-16;
 
   &.open {
     background-color: $fh-bg-default;
@@ -19,7 +19,7 @@
     }
 
     .user-menu {
-      margin-bottom: $a-spacing-4;
+      margin-bottom: $ax-space-8;
     }
   }
 
@@ -30,8 +30,8 @@
   @include mixins.for-size(phone-up) {
     margin: 0;
     width: 123px;
-    gap: $a-spacing-4;
-    padding: $a-spacing-3;
+    gap: $ax-space-16;
+    padding: $ax-space-16;
     background-color: $fh-bg-default;
     border-right: 1px solid #ebecec;
     position: fixed;
@@ -41,7 +41,7 @@
 
   @include mixins.for-size(desktop-up) {
     width: 270px;
-    padding: $a-spacing-8 $a-spacing-6;
+    padding: $ax-space-24 $ax-space-16;
   }
 
   &__desktop {
@@ -54,8 +54,9 @@
     display: none;
 
     @include mixins.for-size(desktop-up) {
-      display: block;
-      font-weight: $a-font-weight-bold;
+      display: flex;
+      flex-direction: column;
+      font-weight: 700;
       color: #fff;
       line-height: 2rem;
     }
@@ -77,16 +78,15 @@
   }
 
   &__nav-links {
-    padding: $a-spacing-2 $a-spacing-1;
-    padding-bottom: $a-spacing-6;
+    padding: $ax-space-8 $ax-space-4 $ax-space-6;
 
     @include mixins.for-size(phone-up) {
-      padding: $a-spacing-6 $a-spacing-1;
+      padding: $ax-space-16 $ax-space-8;
     }
 
     @include mixins.for-size(tablet-only) {
       align-items: center;
-      margin-top: $a-spacing-10;
+      margin-top: $ax-space-24;
     }
   }
 
@@ -104,7 +104,7 @@
         display: none;
       }
 
-      padding-right: $a-spacing-4;
+      padding-right: $ax-space-4;
     }
 
     .active-indicator {
@@ -154,7 +154,7 @@
 
     @include mixins.for-size(tablet-only) {
       display: flex;
-      gap: $a-spacing-10;
+      gap: $ax-space-12;
       flex-direction: column;
       justify-content: center;
       border: none;
@@ -164,10 +164,10 @@
 
   &__desktop-and-phone {
     align-items: stretch;
-    gap: $a-spacing-2;
-    padding: $a-spacing-2 $a-spacing-2;
+    gap: $ax-space-16;
+    padding: $ax-space-16 $ax-space-16;
     border: 1px solid $fm-border-light;
-    border-radius: $a-border-radius-medium;
+    border-radius: $ax-radius-8;
 
     @include mixins.for-size(tablet-only) {
       display: none;
@@ -175,7 +175,7 @@
   }
 
   &__button {
-    padding: $a-spacing-1;
+    padding: $ax-space-8;
     display: block;
     color: #fff;
     background: none;
@@ -183,7 +183,7 @@
     .icon-name-container {
       display: inline-flex;
       align-items: center;
-      gap: $a-spacing-2;
+      gap: $ax-space-8;
     }
   }
 
@@ -203,7 +203,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
-    gap: $a-spacing-2;
+    gap: $ax-space-8;
     animation: fadeAccordionContent 250ms ease;
   }
 
@@ -211,9 +211,9 @@
     align-items: center;
     border: 1px solid $fm-border-darker;
     color: #fff;
-    padding: $a-spacing-2 $a-spacing-3;
+    padding: $ax-space-8 $ax-space-16;
 
-    border-radius: $a-border-radius-medium;
+    border-radius: $ax-radius-8;
     text-decoration: none;
     background-color: inherit;
 
@@ -234,14 +234,14 @@
   &__logout-link {
     align-items: center;
     color: #fff;
-    padding: $a-spacing-2 $a-spacing-3;
+    padding: $ax-space-8 $ax-space-16;
     margin: 1px;
-    gap: $a-spacing-2;
+    gap: $ax-space-2;
     text-decoration: none;
-    border-radius: $a-border-radius-medium;
+    border-radius: $ax-radius-8;
 
     @include mixins.for-size(tablet-only) {
-      padding: $a-spacing-2;
+      padding: $ax-space-8;
     }
 
     &:focus-visible,

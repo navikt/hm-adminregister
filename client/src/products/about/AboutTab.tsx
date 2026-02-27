@@ -16,7 +16,7 @@ interface Props {
 const AboutTab = ({ series, mutateSeries, isEditable, showInputError }: Props) => {
   return (
     <Tabs.Panel value="about" className={styles.tabPanel}>
-      <VStack gap="14">
+      <VStack gap="space-16">
         <AboutTabDescription
           series={series}
           mutateSeries={mutateSeries}

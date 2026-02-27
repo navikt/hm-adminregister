@@ -179,22 +179,22 @@ const ProductListWrapper = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "8", md: "12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
+      <VStack gap={{ xs: "space-16", md: "space-24" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
-        <VStack gap={{ xs: "4", md: "6" }}>
+        <VStack gap={{ xs: "space-16", md: "space-32" }}>
           <HGrid
-            columns={{ xs: "1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
-            gap="4"
+            columns={{ xs: "space-2", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            gap="space-16"
             align={"center"}
           >
             <HGrid
               columns={{
-                xs: "1",
+                xs: "space-4",
                 md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
-              gap="4"
+              gap="space-16"
               align="start"
             >
               <Box role="search" style={{ maxWidth: "475px" }}>
@@ -214,8 +214,6 @@ const ProductListWrapper = () => {
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
                 <Box asChild style={{ maxWidth: "475px" }}>
                   <UNSAFE_Combobox
-                    clearButton
-                    clearButtonLabel="Tøm"
                     label="Leverandører"
                     selectedOptions={searchParams
                       .getAll("supplier")
@@ -241,7 +239,7 @@ const ProductListWrapper = () => {
               </Box>
             )}
           </HGrid>
-          <VStack gap="3">
+          <VStack gap="space-4">
             <Label>Filter</Label>
             <Chips>
               {visningStatusfilter.map((filterName) => (
@@ -273,7 +271,7 @@ const ProductListWrapper = () => {
               </Chips.Toggle>
             </Chips>
           </VStack>
-          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="4" align="end">
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-4" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
@@ -299,8 +297,8 @@ const ProductListWrapper = () => {
           </HGrid>
         </VStack>
 
-        <VStack gap="4">
-          <VStack gap="1-alt">
+        <VStack gap="space-4">
+          <VStack gap="space-1">
             {seriesByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
             <HGrid
               columns={{
@@ -311,8 +309,8 @@ const ProductListWrapper = () => {
                     ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr"
                     : ".7fr 3.5fr 2fr .8fr 0.4fr",
               }}
-              paddingBlock={"2"}
-              gap={"2"}
+              paddingBlock="space-2"
+              gap="space-2"
             >
               <span></span>
               <b>Produktnavn</b>
@@ -361,7 +359,7 @@ const ProductListWrapper = () => {
           <HStack
             justify={{ xs: "center", md: "space-between" }}
             align="center"
-            gap={"4"}
+            gap="space-4"
             style={{ flexWrap: "wrap-reverse" }}
           >
             <Select

@@ -72,7 +72,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
     >
       <Modal.Body>
         <Content>
-          <VStack gap={"2"} style={{ width: "100%" }}>
+          <VStack gap="space-2" style={{ width: "100%" }}>
             <TextField
               label={labelRequired("HMS-nummer eller levartnr.")}
               id="identifier"
@@ -100,11 +100,11 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
               </HStack>
             )}
             {seriesToAdd && (
-              <VStack gap="5">
+              <VStack gap="space-6">
                 <Box
                   key={seriesToAdd.id}
-                  background="surface-success-subtle"
-                  padding="2"
+                  background="success-soft"
+                  padding="space-2"
                   flexGrow="1"
                   style={{ borderRadius: "10px" }}
                 >

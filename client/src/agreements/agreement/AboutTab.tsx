@@ -29,8 +29,8 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
   return (
     <TabPanel value="about">
       <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>
-        <VStack gap="14">
-          <VStack gap="2">
+        <VStack gap="space-16">
+          <VStack gap="space-2">
             <Heading level="2" size="small">
               {labelRequired("Beskrivelse")}
             </Heading>

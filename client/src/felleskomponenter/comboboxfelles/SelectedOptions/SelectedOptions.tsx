@@ -20,14 +20,14 @@ const Option = ({ option, removable }: { option: ComboboxOption; removable: bool
   };
 
   if (!removable) {
-    return <div className="navds-combobox__selected-options--no-bg">{option.label}</div>;
+    return <div className="aksel-combobox__selected-options--no-bg">{option.label}</div>;
   }
   return <Chips.Removable onClick={onClick}>{option.label}</Chips.Removable>;
 };
 
 const SelectedOptions: FC<SelectedOptionsProps> = ({ selectedOptions = [], removable, children }) => {
   return (
-    <Chips className="navds-combobox__selected-options">
+    <Chips className="aksel-combobox__selected-options">
       {selectedOptions.length
         ? selectedOptions.map((option, i) => <Option key={option.label + i} option={option} removable={removable} />)
         : []}

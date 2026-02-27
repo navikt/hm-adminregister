@@ -34,7 +34,7 @@ const VideoTab = ({
 
   return (
     <Tabs.Panel value="videos" className={styles.tabPanel}>
-      <VStack gap="8">
+      <VStack gap="space-8">
         {videos.length === 0 && (
           <Alert variant="info">Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.</Alert>
         )}
@@ -42,7 +42,7 @@ const VideoTab = ({
         <VideoRequirementBox />
 
         {videos.length > 0 && (
-          <VStack gap="8 2">
+          <VStack gap="space-8 space-2">
             {series && (
               <FellesSortingArea
                 seriesId={series.id}

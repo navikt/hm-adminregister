@@ -3,11 +3,11 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-inline: var(--a-spacing-4);
+  padding-inline: var(--ax-space-8);
   border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
-  border-radius: var(--a-border-radius-large);
-  background-color: var(--a-bg-default);
-  color: var(--a-text-default);
+  border-radius: var(--ax-radius-12);
+  background-color: var(--ax-bg-default);
+  color: var(--ax-text-neutral);
   text-decoration: none;
 }
 
@@ -22,12 +22,12 @@
 
 .supplierPanel:hover {
   cursor: pointer;
-  box-shadow: var(--a-shadow-small);
+  box-shadow: var(--ax-shadow-dialog);
 }
 
 .supplierPanel:hover p {
   text-decoration: underline;
-  color: var(--ac-link-panel-hover-text, var(--a-text-action-hover));
+  color: var(--ac-link-panel-hover-text, var(--ax-text-accent));
 }
 
 .supplierPanel:hover .chevron {
@@ -36,7 +36,7 @@
 }
 
 .supplierPanel:focus {
-  box-shadow: var(--a-shadow-focus);
+  box-shadow: var(--ax-border-focus);
   outline: none;
 }
 
@@ -47,6 +47,6 @@
 .supplierPanelContainer {
   display: flex;
   flex-direction: column;
-  gap: var(--a-spacing-6);
+  gap: var(--ax-space-6);
   max-width: 55rem;
 }

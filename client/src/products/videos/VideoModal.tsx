@@ -75,7 +75,7 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: VideoM
       }}
     >
       <Modal.Body>
-        <VStack gap="4">
+        <VStack gap="space-4">
           <TextField
             value={title}
             style={{ width: "400px" }}

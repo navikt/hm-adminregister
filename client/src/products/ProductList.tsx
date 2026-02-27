@@ -11,7 +11,7 @@ import { useAuthStore } from "utils/store/useAuthStore";
 
 export const ProductList = ({ seriesList, oversiktPath }: { seriesList: SeriesSearchDTO[]; oversiktPath: string }) => {
   return (
-    <VStack as={"ol"} gap={"1-alt"} className={styles.seriesList}>
+    <VStack as={"ol"} gap="space-8" className={styles.seriesList}>
       {seriesList.map((series) => (
         <li key={series.id}>
           <SeriesCard series={series} oversiktPath={oversiktPath} />
@@ -36,13 +36,13 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesSearchDTO; oversik
         md: ".7fr 3.5fr 2fr .8fr 0.4fr",
         lg: loggedInUser && loggedInUser.isAdmin ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr" : ".7fr 3.5fr 2fr .8fr 0.4fr",
       }}
-      gap={"2"}
+      gap="space-2"
       align={"center"}
       className={styles.seriesPanel}
     >
       <Box
         className={styles.imageBox}
-        borderRadius="medium"
+        borderRadius="8"
         borderWidth="1"
         width="75px"
         height="75px"
@@ -55,7 +55,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesSearchDTO; oversik
         )}
       </Box>
 
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="1">
+      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-1">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">

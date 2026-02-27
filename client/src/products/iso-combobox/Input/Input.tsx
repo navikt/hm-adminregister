@@ -171,7 +171,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
       aria-activedescendant={activeDecendantId}
       aria-describedby={ariaDescribedBy}
       aria-invalid={inputProps["aria-invalid"]}
-      className={cl("navds-combobox__input", "navds-body-short", `navds-body-short--medium`)}
+      className={cl("aksel-combobox__input", "aksel-body-short", `aksel-body-short--medium`)}
     />
   );
 });

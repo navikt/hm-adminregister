@@ -136,8 +136,8 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                       }
                     }}
                   >
-                    <Stack wrap={false} gap="3" direction="row-reverse" align="center" justify="start">
-                      <VStack gap="1" maxWidth={"350px"}>
+                    <Stack wrap={false} gap="space-4" direction="row-reverse" align="center" justify="start">
+                      <VStack gap="space-1" maxWidth={"350px"}>
                         {series.isExpired && (
                           <Box>
                             <Tag size="small" variant="neutral-moderate">
@@ -158,7 +158,7 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
                       </VStack>
                       <Box
                         className={styles.imageBox}
-                        borderRadius="medium"
+                        borderRadius="8"
                         borderWidth="1"
                         width="75px"
                         height="75px"

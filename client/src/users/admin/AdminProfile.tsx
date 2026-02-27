@@ -32,7 +32,7 @@ export default function AdminProfile() {
 
   if (!user) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Alert variant="info">Ingen bruker funnet, prøv å last inn på nytt</Alert>
       </HGrid>
     );
@@ -44,8 +44,8 @@ export default function AdminProfile() {
         <Heading level="1" size="large" spacing>
           Min profil
         </Heading>
-        <VStack gap="5">
-          <VStack gap="20">
+        <VStack gap="space-6">
+          <VStack gap="space-20">
             <DefinitionList horizontal>
               <DefinitionList.Term>Name</DefinitionList.Term>
               <DefinitionList.Definition>{user?.name}</DefinitionList.Definition>
@@ -57,7 +57,7 @@ export default function AdminProfile() {
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
-          <VStack gap="5">
+          <VStack gap="space-6">
             <Heading level="2" size="medium">
               Admin brukere
             </Heading>
@@ -118,7 +118,7 @@ export default function AdminProfile() {
               </Table>
             )}
           </VStack>
-          <VStack gap="5">
+          <VStack gap="space-6">
             <Heading level="2" size="medium">
               HMS-brukere
             </Heading>
@@ -179,7 +179,7 @@ export default function AdminProfile() {
               </Table>
             )}
           </VStack>
-          <HStack gap="4">
+          <HStack gap="space-4">
             <Button
               variant="secondary"
               size="small"

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Buldings3Icon } from "@navikt/aksel-icons";
+import { Buildings3Icon } from "@navikt/aksel-icons";
 import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
 import { updateSupplier } from "api/SupplierApi";
 import FormBox from "felleskomponenter/FormBox";
@@ -97,9 +97,9 @@ export default function EditSupplier() {
   }
 
   return (
-    <FormBox title="Endre leverandørinformasjon" icon={<Buldings3Icon />}>
+    <FormBox title="Endre leverandørinformasjon" icon={<Buildings3Icon />}>
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7" width="300px">
+        <VStack gap="space-8" width="300px">
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -167,7 +167,7 @@ export default function EditSupplier() {
             autoComplete="off"
             error={errors.postLocation && errors.postLocation.message}
           />
-          <HStack gap="4" align="center">
+          <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

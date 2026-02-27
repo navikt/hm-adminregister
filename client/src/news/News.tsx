@@ -58,8 +58,8 @@ const News = () => {
           Nyhetsmeldinger
         </Heading>
         <div className="page__content-container">
-          <HStack justify="space-between" gap="4">
-            <ToggleGroup value={newsStatus} onChange={(value) => setNewsStatus(value)} size="small">
+          <HStack justify="space-between" gap="space-4">
+            <ToggleGroup value={newsStatus} onChange={(value) => setNewsStatus(value)} size="medium">
               <ToggleGroup.Item value={"ALL"}>Alle</ToggleGroup.Item>
               <ToggleGroup.Item value={NewsTypes.FUTURE}>Fremtidig</ToggleGroup.Item>
               <ToggleGroup.Item value={NewsTypes.PUBLISHED}>Publisert</ToggleGroup.Item>
@@ -85,7 +85,7 @@ const News = () => {
         ) : (
           pageResults && (
             <Box maxWidth="55rem">
-              <VStack className="products-page__producs" gap="4" paddingBlock="4">
+              <VStack className="products-page__producs" gap="space-24" paddingBlock="space-24">
                 {pageResults.content
                   .filter((news: NewsRegistrationDTO) => handleFilterOption(news, newsStatus))
                   .map((news: NewsRegistrationDTO) => (

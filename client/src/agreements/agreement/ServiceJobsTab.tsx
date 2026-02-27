@@ -106,7 +106,7 @@ const ServiceJobsTab = ({ agreementId }: Props) => {
         }}
         confirmButtonText="Slett"
       />
-      <VStack gap="4">
+      <VStack gap="space-4">
         <RowBoxTable size="small">
           <Table.Header>
             <Table.Row>
@@ -149,7 +149,7 @@ const ServiceJobsTab = ({ agreementId }: Props) => {
                   </Table.DataCell>
                   <Table.DataCell align="right">
                     {isEditing ? (
-                      <HStack gap="2" justify="center">
+                      <HStack gap="space-2" justify="center">
                         <Button
                           size="xsmall"
                           variant="primary"

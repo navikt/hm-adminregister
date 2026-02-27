@@ -56,7 +56,7 @@ export const ResetPassword = () => {
 
   return (
     <FormBox title="Tilbakestill passord">
-      <VStack gap="7" style={{ width: "300px" }}>
+      <VStack gap="space-8" style={{ width: "300px" }}>
         <TextField
           aria-required
           label={labelRequired("Lag nytt passord")}

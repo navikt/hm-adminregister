@@ -18,7 +18,7 @@ const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
 
   if (loggedInUser && loggedInUser.isAdmin && data && data.numberOfSeries > 0) {
     return (
-      <VStack gap="6">
+      <VStack gap="space-6">
         <Heading level="2" size="medium">
           Info
         </Heading>
@@ -38,7 +38,7 @@ const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
   }
 
   return (
-    <VStack gap="6">
+    <VStack gap="space-6">
       <Heading level="2" size="medium">
         Info
       </Heading>

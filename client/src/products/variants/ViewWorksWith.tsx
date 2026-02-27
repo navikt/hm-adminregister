@@ -23,25 +23,25 @@ const ViewWorksWith = () => {
 
   if (isLoading || !product) {
     return (
-      <VStack gap="8">
+      <VStack gap="space-8">
         <Loader />
       </VStack>
     );
   }
 
   return (
-    <VStack align="center" gap="8">
+    <VStack align="center" gap="space-8">
       <Box
-        background="surface-default"
-        marginBlock="14"
-        padding="8"
-        paddingInline="20"
-        borderRadius="large"
-        shadow="medium"
+        background="default"
+        marginBlock="space-16"
+        padding="space-8"
+        paddingInline="space-20"
+        borderRadius="8"
+        shadow="dialog"
         minWidth="800px"
       >
-        <VStack gap="8">
-          <VStack align="center" gap="4">
+        <VStack gap="space-8">
+          <VStack align="center" gap="space-4">
             <SandboxIcon title="a11y-title" fontSize="1.5rem" width={43} height={43} />
             <Heading level="1" size="medium" align="center">
               Andre hjelpemidler som fungerer sammen med dette hjelpemiddelet
@@ -52,7 +52,7 @@ const ViewWorksWith = () => {
           ) : (
             <WorksWithVariantsTable products={products} showRemove={false} />
           )}
-          <HStack gap="4">
+          <HStack gap="space-4">
             <Button
               type="reset"
               variant="secondary"

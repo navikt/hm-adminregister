@@ -19,10 +19,10 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
     return <BodyShort>Ingen endringer på varianter</BodyShort>;
   } else {
     return (
-      <VStack gap="2">
+      <VStack gap="space-2">
         <Heading size="xsmall">Endringer i varianter</Heading>
         {variantDiffs && (
-          <VStack gap="3">
+          <VStack gap="space-4">
             {variantDiffs
               .filter((changed) => changed.difference.status === "DIFF")
               .map((variant, i) => (
@@ -34,11 +34,11 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
                       .map(([key, value], index) => (
                         <VStack key={index} className={styles.field}>
                           <BodyShort weight="semibold">{t(key)}</BodyShort>
-                          <VStack gap="1">
-                            <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
+                          <VStack gap="space-1">
+                            <Box padding="space-2" background="danger-soft" className={styles.previous}>
                               <Strikethrough>{arrayCheck(value.second)}</Strikethrough>
                             </Box>
-                            <Box padding="2" background="surface-success-subtle" className={styles.current}>
+                            <Box padding="space-2" background="success-soft" className={styles.current}>
                               <>{arrayCheck(value.first)}</>
                             </Box>
                           </VStack>

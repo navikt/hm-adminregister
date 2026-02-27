@@ -69,7 +69,7 @@ export const SeriesCompabilityTab = ({
         mutatePart={mutatePart}
         productIds={productIds}
       />
-      <VStack padding={"8"} gap={"2"}>
+      <VStack padding="space-8" gap="space-2">
         {seriesIds.length === 0 && <BodyLong>Ingen koblinger til serier</BodyLong>}
         {isEditable && (
           <Button
@@ -86,8 +86,8 @@ export const SeriesCompabilityTab = ({
 
         {seriesIds.length > 0 && (
           <Box>
-            <VStack gap={"2"}>
-              <HStack gap={"2"}>
+            <VStack gap="space-2">
+              <HStack gap="space-2">
                 {seriesIds.length > 0 && (
                   <RowBoxTable>
                     <Table.Header>

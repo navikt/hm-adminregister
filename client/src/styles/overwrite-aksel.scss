@@ -1,13 +1,23 @@
-.navds-alert--info {
-  background-color: $a-purple-50;
-  border-color: $a-purple-400;
-
-  .navds-alert__icon {
-    color: $a-purple-600;
+.aksel-combobox__wrapper {
+  .aksel-combobox__list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
   }
 }
 
-.navds-button--primary {
+.aksel-alert--info {
+  background-color: $ax-bg-meta-purple-soft;
+  border-color: $ax-border-meta-purple;
+
+  .aksel-alert__icon {
+    color: $ax-text-meta-purple;
+  }
+}
+
+.aksel-button[data-variant="primary"] {
   background-color: #3a4583;
   border-radius: 10px;
 
@@ -17,7 +27,7 @@
   }
 }
 
-.navds-button--secondary {
+.aksel-button[data-variant="secondary"] {
   color: #3a4583;
   box-shadow: rgb(58, 69, 131) 0px 0px 0px 2px inset;
   border-radius: 10px;
@@ -29,7 +39,7 @@
   }
 }
 
-.navds-button--tertiary {
+.aksel-button[data-variant="tertiary"] {
   color: #3a4583;
   border-radius: 10px;
 
@@ -40,21 +50,21 @@
   }
 }
 
-.navds-toggle-group__button[aria-checked="true"] {
+.aksel-toggle-group__button[data-selected="true"] {
   background-color: #3a4583;
   color: #fff;
 }
 
-.navds-pagination__item[aria-current="true"] {
+.aksel-pagination .aksel-button[aria-current="true"] {
   background-color: #3a4583;
   color: #fff;
 }
 
-.navds-toggle-group--small > .navds-toggle-group__button {
-  padding: $a-spacing-05 $a-spacing-1;
+.aksel-toggle-group--small > .aksel-toggle-group__button {
+  padding: $ax-space-1 $ax-space-1;
 }
 
-.navds-chips__toggle[aria-pressed="true"],
-.navds-chips__toggle[aria-pressed="true"]:hover {
+.aksel-chips__toggle[data-pressed="true"],
+.aksel-chips__toggle[data-pressed="true"]:hover {
   background-color: #3a4583;
 }

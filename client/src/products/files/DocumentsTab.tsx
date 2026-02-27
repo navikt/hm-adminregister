@@ -87,7 +87,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         setIsOpen={setDocumentUrlModalIsOpen}
       />
       <Tabs.Panel value="documents" className={styles.tabPanel}>
-        <VStack gap="4">
+        <VStack gap="space-4">
           <Heading size="small">Dokumenter</Heading>
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? "error" : "info"}>
@@ -96,9 +96,9 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
             </Alert>
           )}
 
-          <VStack gap="1">
+          <VStack gap="space-1">
             {allPdfsSorted.length > 0 && (
-              <VStack as="ol" gap="3" className={styles.documentListContainer}>
+              <VStack as="ol" gap="space-4" className={styles.documentListContainer}>
                 {allPdfsSorted.map((pdf) => (
                   <DocumentListItem
                     key={pdf.uri}
@@ -125,7 +125,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
             )}
           </VStack>
 
-          <VStack gap="4" marginBlock='4 0'>
+          <VStack gap="space-4" marginBlock="space-4 space-0">
             <Heading size="small">Lenker</Heading>
             {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
               <Alert variant="info" >
@@ -134,12 +134,12 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
               </Alert>
             )}
 
-            <VStack gap="1">
+            <VStack gap="space-1">
               {series.seriesData.attributes.documentUrls && series.seriesData.attributes.documentUrls.length > 0 && (
-                <VStack as="ol" gap="3" className={styles.documentListContainer}>
+                <VStack as="ol" gap="space-4" className={styles.documentListContainer}>
                   {series.seriesData.attributes.documentUrls?.map((documentUrl) => (
                     <HStack as="li" justify="space-between" wrap={false} key={documentUrl.url}>
-                      <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+                      <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center" wrap={false}>
                         <LinkIcon fontSize="2rem" title="Fil" />
                         <a
                           href={documentUrl.url}
@@ -241,7 +241,7 @@ const DocumentListItem = ({
         </>
       ) : (
         <>
-          <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+          <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center" wrap={false}>
             <FilePdfIcon fontSize="2rem" title="Fil" />
             <a href={uriForMediaFile(file)} target="_blank" rel="noreferrer" className="text-overflow-hidden-large">
               {file.text || file.uri.split("/").pop()}

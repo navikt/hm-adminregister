@@ -10,13 +10,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $a-spacing-8;
+  gap: $ax-space-8;
 
   .headerContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: $a-spacing-4;
+    gap: $ax-space-4;
   }
 
   form {
@@ -28,8 +28,8 @@
     .buttonContainer {
       display: flex;
       width: 100%;
-      gap: $a-spacing-4;
-      margin-top: $a-spacing-8;
+      gap: $ax-space-4;
+      margin-top: $ax-space-8;
 
       button {
         flex-grow: 1;
@@ -39,7 +39,7 @@
   }
 }
 .editorStyle {
-  background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--a-surface-default)));
-  border: 1px solid var(--ac-textarea-border, var(--__ac-textarea-border, var(--a-border-default)));
-  border-radius: var(--a-border-radius-medium);
+  background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--ax-bg-default)));
+  border: 1px solid var(--ac-textarea-border, var(--__ac-textarea-border, var(--ax-border-neutral)));
+  border-radius: var(--ax-radius-8);
 }

@@ -49,7 +49,7 @@ export const ForgotPassword = () => {
 
   return (
     <FormBox title="Tilbakestill passord">
-      <VStack gap="7" style={{ width: "300px" }}>
+      <VStack gap="space-8" style={{ width: "300px" }}>
         <BodyShort>
           Du vil motta en e-post med en kode som benyttes for å tilbakestille passordet i neste steg.
         </BodyShort>
@@ -61,7 +61,7 @@ export const ForgotPassword = () => {
           onChange={(event) => setEmail(event.target.value)}
           error={fieldError ?? ""}
         />
-        <HStack gap="4">
+        <HStack gap="space-4">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

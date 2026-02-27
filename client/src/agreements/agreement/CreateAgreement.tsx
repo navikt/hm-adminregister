@@ -73,7 +73,7 @@ export default function CreateAgreement() {
   return (
     <main>
       <Content>
-        <VStack gap="8">
+        <VStack gap="space-8">
           <Heading level="1" size="large">
             Kom i gang med ny rammeavtale
           </Heading>
@@ -88,7 +88,7 @@ export default function CreateAgreement() {
             />
             <div>
               <Label>Avtaleperiode</Label>
-              <HStack gap="4" justify="space-between" style={{ marginTop: "0.5rem" }}>
+              <HStack gap="space-4" justify="space-between" style={{ marginTop: "0.5rem" }}>
                 <DatePicker {...datepickerPropsAvtaleperiodeStart}>
                   <DatePicker.Input
                     {...inputPropsAvtaleperiodeStart}

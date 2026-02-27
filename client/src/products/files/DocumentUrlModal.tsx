@@ -60,7 +60,7 @@ export const DocumentUrlModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: 
       }}
     >
       <Modal.Body>
-        <VStack gap="4">
+        <VStack gap="space-4">
           <TextField
             value={title}
             style={{ width: "400px" }}

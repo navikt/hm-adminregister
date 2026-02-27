@@ -92,7 +92,7 @@ const Agreement = () => {
 
   if (error) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         Error
       </HGrid>
     );
@@ -100,7 +100,7 @@ const Agreement = () => {
 
   if (isLoading) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
       </HGrid>
     );
@@ -108,7 +108,7 @@ const Agreement = () => {
 
   if (!agreement) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Alert variant="info">Ingen data funnet.</Alert>
       </HGrid>
     );
@@ -144,8 +144,8 @@ const Agreement = () => {
 
       <main className="show-menu">
         <FormProvider {...formMethods}>
-          <HGrid gap="12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="agreement-page">
-            <VStack gap={{ xs: "4", md: "8" }}>
+          <HGrid gap="space-12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="agreement-page">
+            <VStack gap={{ xs: "space-4", md: "space-8" }}>
               <WordWrappedHeading level="1" size="xlarge">
                 {agreement.title ?? agreement.title}
               </WordWrappedHeading>
@@ -175,7 +175,7 @@ const Agreement = () => {
               </Tabs>
             </VStack>
 
-            <VStack gap={{ xs: "2", md: "4" }}>
+            <VStack gap={{ xs: "space-2", md: "space-4" }}>
               <Dropdown>
                 <Button
                   className="fit-content"

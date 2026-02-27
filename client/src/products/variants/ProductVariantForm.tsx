@@ -114,7 +114,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         const errorForField = errors?.techData?.[index]?.value;
 
         const label = techDataField?.definition ? (
-          <HStack gap="1">
+          <HStack gap="space-1">
             {techDataField.key} <HelpText>{techDataField?.definition}</HelpText>{" "}
           </HStack>
         ) : (
@@ -122,7 +122,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         );
 
         return (
-          <HStack key={`techdata-${techDataField.key}-${index}`} align="end" gap="2" wrap={false}>
+          <HStack key={`techdata-${techDataField.key}-${index}`} align="end" gap="space-2" wrap={false}>
             {techDataField.type === "NUMBER" && (
               <TextField
                 {...register(`techData.${index}.value`, {

@@ -65,7 +65,7 @@ export default function CreateHmsUser() {
   return (
     <FormBox title="Opprett ny hms-bruker" icon={<PersonIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7" width="300px">
+        <VStack gap="space-8" width="300px">
           <TextField
             {...register("email", { required: true })}
             label={labelRequired("E-post")}
@@ -94,7 +94,7 @@ export default function CreateHmsUser() {
           <Alert variant="info">
             OBS! Det vil ikke være mulig å finne tilbake til det midlertidige passordet etter at brukeren er opprettet.
           </Alert>
-          <HStack gap="4">
+          <HStack gap="space-4">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

@@ -12,7 +12,7 @@
   color: black;
 
   &:hover {
-    color: $a-text-action;
+    color: $ax-text-accent;
   }
 }
 
@@ -20,10 +20,10 @@
   list-style: none;
 
   li {
-    padding: $a-spacing-4;
+    padding: $ax-space-4;
     background-color: #ffffff;
-    box-shadow: $a-shadow-xsmall;
-    border-radius: $a-border-radius-medium;
+    box-shadow: $ax-shadow-dialog;
+    border-radius: $ax-radius-8;
     width: 400px;
     position: relative;
 
@@ -40,23 +40,23 @@
 
   li {
     width: 100%;
-    padding: $a-spacing-4 $a-spacing-4;
+    padding: $ax-space-4 $ax-space-4;
     background-color: #ffffff;
-    box-shadow: $a-shadow-xsmall;
-    border-radius: $a-border-radius-medium;
+    box-shadow: $ax-shadow-dialog;
+    border-radius: $ax-radius-8;
   }
 }
 
 .moreMenuContainer {
   position: absolute;
-  top: $a-spacing-2;
-  right: $a-spacing-1;
+  top: $ax-space-2;
+  right: $ax-space-1;
 }
 
 .tabPanel {
-  padding: $a-spacing-4 0;
+  padding: $ax-space-4 0;
   @include mixins.for-size(desktop-up) {
-    padding: $a-spacing-6 0 $a-spacing-10;
+    padding: $ax-space-6 0 $ax-space-12;
   }
 
   form {
@@ -85,9 +85,9 @@
 
 .tabLabel {
   display: flex;
-  color: $a-text-danger;
+  color: $ax-text-danger;
 }
 
 .errorText {
-  color: $a-text-danger;
+  color: $ax-text-danger;
 }

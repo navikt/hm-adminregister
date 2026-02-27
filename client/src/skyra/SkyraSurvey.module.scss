@@ -8,11 +8,11 @@
   box-shadow: 0 0.0625rem 0.375rem rgba(0, 0, 0, 0.16) !important;
 
   &:hover {
-    background-color: $a-surface-hover !important;
+    background-color: $ax-bg-neutral-moderate-hover !important;
   }
 
   &:active {
-    background-color: $a-surface-active !important;
+    background-color: $ax-bg-neutral-moderate-pressed !important;
   }
 }
 

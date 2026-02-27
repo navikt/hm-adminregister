@@ -34,42 +34,36 @@ main.show-menu {
   }
 
   > div {
-    padding: $a-spacing-6 $a-spacing-3;
+    padding: $ax-space-6 $ax-space-4;
     @include mixins.for-size(tablet-only) {
-      padding-left: $a-spacing-4;
+      padding-left: $ax-space-8;
     }
 
     @include mixins.for-size(tablet-up) {
-      padding-right: $a-spacing-4;
-      padding-left: $a-spacing-4;
-      padding-top: $a-spacing-12;
-      padding-bottom: $a-spacing-12;
+      padding: $ax-space-48 $ax-space-24;
     }
 
     @include mixins.for-size(desktop-up) {
-      padding-right: $a-spacing-12;
-      padding-left: $a-spacing-12;
-      padding-top: $a-spacing-20;
-      padding-bottom: $a-spacing-20;
+      padding: $ax-space-80 $ax-space-48;
     }
   }
 }
 
 main:not(.show-menu) {
   > div {
-    padding: $a-spacing-6 $a-spacing-3;
+    padding: $ax-space-6 $ax-space-4;
 
     @include mixins.for-size(tablet-up) {
-      padding: $a-spacing-12 $a-spacing-3;
+      padding: $ax-space-12 $ax-space-4;
     }
   }
 }
 
 .logo-and-name-container {
   display: flex;
-  gap: $a-spacing-2;
+  gap: $ax-space-2;
   align-items: center;
-  padding: $a-spacing-8 $a-spacing-1;
+  padding: $ax-space-8 $ax-space-1;
 
   .name {
     display: flex;
@@ -113,19 +107,19 @@ main:not(.show-menu) {
 .spacing {
   &-top {
     &--small {
-      margin-top: $a-spacing-2;
+      margin-top: $ax-space-2;
     }
 
     &--medium {
-      margin-top: $a-spacing-4;
+      margin-top: $ax-space-4;
     }
 
     &--large {
-      margin-top: $a-spacing-8;
+      margin-top: $ax-space-8;
     }
 
     &--xlarge {
-      margin-top: $a-spacing-16;
+      margin-top: $ax-space-16;
     }
   }
 }
@@ -133,19 +127,19 @@ main:not(.show-menu) {
 .spacing {
   &-bottom {
     &--small {
-      margin-bottom: $a-spacing-2;
+      margin-bottom: $ax-space-2;
     }
 
     &--medium {
-      margin-bottom: $a-spacing-4;
+      margin-bottom: $ax-space-4;
     }
 
     &--large {
-      margin-bottom: $a-spacing-8;
+      margin-bottom: $ax-space-8;
     }
 
     &--xlarge {
-      margin-bottom: $a-spacing-16;
+      margin-bottom: $ax-space-16;
     }
   }
 }
@@ -184,12 +178,12 @@ main:not(.show-menu) {
 .max-width {
   max-width: 1200px;
   margin: auto;
-  padding-left: $a-spacing-3;
-  padding-right: $a-spacing-3;
+  padding-left: $ax-space-4;
+  padding-right: $ax-space-4;
 
   @include mixins.for-size(desktop-up) {
-    padding-left: $a-spacing-6;
-    padding-right: $a-spacing-6;
+    padding-left: $ax-space-6;
+    padding-right: $ax-space-6;
   }
 }
 
@@ -197,7 +191,7 @@ main:not(.show-menu) {
   &__content-container {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-12;
+    gap: $ax-space-12;
     max-width: 64rem;
   }
 }
@@ -211,15 +205,15 @@ main:not(.show-menu) {
   &__container {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-2;
+    gap: $ax-space-12;
   }
 
   &__name-panel {
     display: flex;
     justify-content: space-between;
-    padding: $a-spacing-4;
+    padding: $ax-space-12;
     border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
-    border-radius: $a-border-radius-medium;
+    border-radius: $ax-radius-8;
   }
 
   &__title {
@@ -236,13 +230,13 @@ main:not(.show-menu) {
 .form {
   display: flex;
   flex-direction: column;
-  gap: $a-spacing-7;
+  gap: $ax-space-8;
 
   .button-container {
     display: flex;
     width: 100%;
-    gap: $a-spacing-4;
-    margin-top: $a-spacing-4;
+    gap: $ax-space-4;
+    margin-top: $ax-space-4;
 
     button {
       flex-grow: 1;
@@ -273,11 +267,11 @@ main:not(.show-menu) {
 }
 
 .search-button {
-  .navds-search {
+  .aksel-search {
     &__button-search {
       background-color: #3a4583;
       color: white;
-      border-radius: 0 var(--a-border-radius-medium) var(--a-border-radius-medium) 0;
+      border-radius: 0 var(--ax-radius-8) var(--ax-radius-8) 0;
       flex-shrink: 0;
       min-height: 2rem;
       min-width: 4rem;

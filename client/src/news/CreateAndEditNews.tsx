@@ -65,7 +65,7 @@ const CreateAndEditNews = () => {
   return (
     <FormBox title={title} icon={<NewspaperIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="7">
+        <VStack gap="space-8">
           <TextField
             {...register("newsType", { required: true })}
             label={labelRequired("Type")}
@@ -97,7 +97,7 @@ const CreateAndEditNews = () => {
             <Heading level="2" size="xsmall" spacing={true}>
               Vises på FinnHjelpemiddel
             </Heading>
-            <HStack gap="4" wrap={false} align="start" justify="space-between">
+            <HStack gap="space-4" wrap={false} align="start" justify="space-between">
               <CustomDatePicker
                 name="publishedOn"
                 label={"Fra"}
@@ -129,7 +129,7 @@ const CreateAndEditNews = () => {
               className={styles.editorStyle}
             />
           </Box>
-          <HStack gap="4" align="center">
+          <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

@@ -27,14 +27,12 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [partIdToHide, setPartIdToHide] = useState<string | null>(null);
 
-  // Hidden parts state
   const [showHidden, setShowHidden] = useState(false);
   const [hiddenParts, setHiddenParts] = useState<HiddenPart[]>([]);
   const [loadingHidden, setLoadingHidden] = useState(false);
   const [hiddenError, setHiddenError] = useState<string | null>(null);
   const [unhidingIds, setUnhidingIds] = useState<string[]>([]);
 
-  // Map HiddenPart -> PartRow (id, articleName, supplierRef, supplierName)
   const hiddenPartRows = hiddenParts.map((hp) => ({
     id: hp.productId,
     articleName: hp.product?.articleName,
@@ -56,7 +54,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Lazy load when toggled on
   useEffect(() => {
     if (showHidden) {
       loadHiddenParts();
@@ -96,8 +93,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Small presentational table component for reuse
-  // Reusable lightweight row shape to avoid any casts
   interface PartRow {
     id: string;
     articleName?: string;
@@ -176,14 +171,14 @@ const AdminDashboard = () => {
         isModalOpen={isModalOpen}
       />
       <main className="show-menu">
-        <VStack gap="8" style={{ maxWidth: "75rem" }}>
+        <VStack gap="space-8" style={{ maxWidth: "75rem" }}>
           <Heading level="1" size="large" spacing>
             Admin dashboard
           </Heading>
           {(approveError || partsError || expiringNewsError) && (
             <Alert variant="error">Kunne ikke hente alle tall. Last siden på nytt eller prøv senere.</Alert>
           )}
-          <HStack gap="6" wrap>
+          <HStack gap="space-48" wrap>
             <StatPanel
               title="Produkter klare for godkjenning"
               value={approveCount}
@@ -204,7 +199,7 @@ const AdminDashboard = () => {
             >
               {expiringNewsError && <Alert variant="error">Kunne ikke hente nyheter som utloper snart.</Alert>}
               {!expiringNewsLoading && !expiringNewsError && (
-                <VStack gap="1">
+                <VStack gap="space-1">
                   {expiringNews && expiringNews.length > 0 ? (
                     expiringNews.slice(0, 5).map((news) => (
                       <BodyShort size="small" key={news.id}>

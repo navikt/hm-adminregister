@@ -32,22 +32,22 @@ const FilteredOptions = () => {
 
   return (
     <div
-      className={cl("navds-combobox__list", {
-        "navds-combobox__list--closed": !isListOpen,
-        "navds-combobox__list--with-hover": isMouseLastUsedInputDevice,
+      className={cl("aksel-combobox__list", {
+        "aksel-combobox__list--closed": !isListOpen,
+        "aksel-combobox__list--with-hover": isMouseLastUsedInputDevice,
       })}
       id={filteredOptionsUtil.getFilteredOptionsId(id)}
       tabIndex={-1}
     >
       {shouldRenderNonSelectables && (
-        <div className="navds-combobox__list_non-selectables" role="status">
+        <div className="aksel-combobox__list_non-selectables" role="status">
           {isLoading && (
-            <div className="navds-combobox__list-item--loading" id={filteredOptionsUtil.getIsLoadingId(id)}>
+            <div className="aksel-combobox__list-item--loading" id={filteredOptionsUtil.getIsLoadingId(id)}>
               <Loader title="Søker..." />
             </div>
           )}
           {!isLoading && filteredOptions.length === 0 && (
-            <div className="navds-combobox__list-item--no-options" id={filteredOptionsUtil.getNoHitsId(id)}>
+            <div className="aksel-combobox__list-item--no-options" id={filteredOptionsUtil.getNoHitsId(id)}>
               Ingen søketreff
             </div>
           )}
@@ -55,13 +55,13 @@ const FilteredOptions = () => {
       )}
 
       {shouldRenderFilteredOptionsList && (
-        <ul ref={setFilteredOptionsRef} role="listbox" className="navds-combobox__list-options">
+        <ul ref={setFilteredOptionsRef} role="listbox" className="aksel-combobox__list-options">
           {filteredOptions.map((option) => (
             <li
-              className={cl("navds-combobox__list-item", {
-                "navds-combobox__list-item--focus":
+              className={cl("aksel-combobox__list-item", {
+                "aksel-combobox__list-item--focus":
                   activeDecendantId === filteredOptionsUtil.getOptionId(id, option.label),
-                "navds-combobox__list-item--selected": isInList(option.value, selectedOptions),
+                "aksel-combobox__list-item--selected": isInList(option.value, selectedOptions),
               })}
               id={filteredOptionsUtil.getOptionId(id, option.label)}
               key={option.label}

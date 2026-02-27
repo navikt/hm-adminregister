@@ -166,7 +166,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
         )}
 
         {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
-        <VStack as="ol" gap="3" className={styles.uploadInline}>
+        <VStack as="ol" gap="space-4" className={styles.uploadInline}>
           {fileType === "documents" && uploads.length > 0 && (
             <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
           )}
@@ -273,10 +273,10 @@ const Upload = ({
           />
         </>
       ) : (
-        <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center" wrap={false}>
+        <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center" wrap={false}>
           <Box
             className={styles.uploadBox}
-            borderRadius="medium"
+            borderRadius="8"
             borderWidth="1"
             width="75px"
             height="75px"

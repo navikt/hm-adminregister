@@ -53,14 +53,14 @@ const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
 
   return (
     <>
-      <VStack gap="2">
+      <VStack gap="space-2">
         <Heading level="2" size="xsmall">
           Nøkkelord
         </Heading>
         <BodyShort>Stikkord som kan søkes på i søket til FinnHjelpemiddel</BodyShort>
         {!showEditKeywordsMode && (
           <>
-            <HStack gap="4">
+            <HStack gap="space-4">
               {updatedKeywords.map((keyword, index) => (
                 <span className="keywords-static" key={index}>
                   <Tag variant="alt3">{keyword}</Tag>

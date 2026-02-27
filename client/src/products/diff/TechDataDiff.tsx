@@ -11,9 +11,9 @@ export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {
   }
   const techDataDiff = getTechDataDiff(diffDto);
   return (
-    <VStack gap="2">
+    <VStack gap="space-2">
       <Avstand />
-      <VStack gap="3">
+      <VStack gap="space-4">
         {techDataDiff.map(({ oldData, newData }, i) => (
           <>
             {oldData.value.toLowerCase() !== newData.value.toLowerCase() && (
@@ -22,10 +22,10 @@ export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {
                   <>{oldData.key}</>
                 </BodyShort>
                 <HStack>
-                  <Box padding="2" background="surface-danger-subtle" className={styles.previous}>
+                  <Box padding="space-2" background="danger-soft" className={styles.previous}>
                     <Strikethrough>{oldData.value}</Strikethrough>
                   </Box>
-                  <Box padding="2" background="surface-success-subtle" className={styles.previous}>
+                  <Box padding="space-2" background="success-soft" className={styles.previous}>
                     <>{newData.value}</>
                   </Box>
                 </HStack>

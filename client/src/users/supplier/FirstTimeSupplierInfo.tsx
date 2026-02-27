@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Buldings3Icon, ComponentIcon } from "@navikt/aksel-icons";
+import { Buildings3Icon, ComponentIcon } from "@navikt/aksel-icons";
 import { BodyShort, Button, Heading, Label, Loader, TextField } from "@navikt/ds-react";
 import { HM_REGISTER_URL } from "environments";
 import { useEffect, useState } from "react";
@@ -50,7 +50,7 @@ const FirstTimeSupplierInfo = () => {
           </Heading>
         </span>
         <div className="auth-dialog-box__container auth-dialog-box__container--max-width">
-          <Buldings3Icon fontSize="1.5rem" aria-hidden />
+          <Buildings3Icon fontSize="1.5rem" aria-hidden />
           <Heading spacing level="2" size="medium" align="center">
             Før du går videre trenger vi også litt mer informasjon om leverandøren du representerer.
           </Heading>

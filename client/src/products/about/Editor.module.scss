@@ -1,20 +1,20 @@
 .editor {
   min-height: 300px;
-  padding: var(--a-spacing-2);
-  background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--a-surface-default)));
-  border-radius: var(--a-border-radius-medium);
-  border: 1px solid var(--ac-textarea-border, var(--__ac-textarea-border, var(--a-border-default)));
-  color: var(--ac-textarea-text, var(--__ac-textarea-text, var(--a-text-default)));
+  padding: var(--ax-space-2);
+  background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--ax-bg-default)));
+  border-radius: var(--ax-radius-8);
+  border: 1px solid var(--ac-textarea-border, var(--__ac-textarea-border, var(--ax-border-neutral)));
+  color: var(--ac-textarea-text, var(--__ac-textarea-text, var(--ax-text-neutral)));
 
   &:hover {
-    border-color: var(--ac-textarea-hover-border, var(--__ac-textarea-hover-border, var(--a-border-action-hover)))
+    border-color: var(--ac-textarea-hover-border, var(--__ac-textarea-hover-border, var(--ax-border-accent)))
   }
 
   &:focus-within {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    box-shadow: var(--a-shadow-focus);
-    border-color: var(--ac-textarea-active-border, var(--a-border-action-selected));
+    box-shadow: var(--ax-border-focus);
+    border-color: var(--ac-textarea-active-border, var(--ax-border-accent-strong));
   }
 
   :global(.public-DraftStyleDefault-block) {

@@ -61,7 +61,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
     >
       <Modal.Body>
         <Content>
-          <VStack gap="4">
+          <VStack gap="space-4">
             <TextField
               label=" Hvilken serie vil du flytte til?"
               placeholder="Serie-id (eks. 074b6837-0cd1-49c5-b048-45486c378fb4)"
@@ -73,7 +73,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
             </Button>
             {seriesToPreview && (
               <BodyShort>
-                <Box background="surface-subtle" padding="4" borderRadius="large" shadow="xsmall">
+                <Box background="raised" padding="space-4" borderRadius="8" shadow="dialog">
                   <b>{seriesToPreview ? `${seriesToPreview.title}` : "Fant ikke serie"}</b>
                 </Box>
               </BodyShort>

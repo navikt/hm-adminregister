@@ -51,9 +51,9 @@ const SupplierActions = ({
   };
 
   return (
-    <VStack gap="2">
+    <VStack gap="space-2">
       {/* Todo: legg inn "Se endringer" knapp */}
-      <HStack gap="2">
+      <HStack gap="space-2">
         {isEditable && (
           <Button
             style={{ flexGrow: 1, paddingInline: "0.75rem" }}

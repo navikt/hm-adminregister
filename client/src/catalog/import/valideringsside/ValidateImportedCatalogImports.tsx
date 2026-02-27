@@ -72,7 +72,7 @@ export const ValidateImportedCatalogImports = ({upload, resetUpload, supplier}: 
                             Import av produkter var vellykket
                         </Heading>
 
-                        <VStack gap="4">
+                        <VStack gap="space-4">
                             <BodyShort size="large">
                                 <a href={baseUrl("/katalog/importer-fil")}>Gå til ny import</a>
                             </BodyShort>
@@ -145,8 +145,8 @@ export const ValidateImportedCatalogImports = ({upload, resetUpload, supplier}: 
                             (insertedList.length > 0 ||
                                 updatedList.length > 0 ||
                                 deactivatedList.length > 0) && (
-                                <VStack gap="4" minWidth="768px">
-                                    <HStack gap="4">
+                                <VStack gap="space-4" minWidth="768px">
+                                    <HStack gap="space-4">
                                         <Button
                                             className="fit-content"
                                             size="medium"
@@ -223,12 +223,12 @@ export const ValidateImportedCatalogImports = ({upload, resetUpload, supplier}: 
                                     )}
 
                                     {duplicateConflicts.length > 0 && (
-                                        <VStack gap="3">
+                                        <VStack gap="space-4">
                                             <Alert variant="warning">Det
                                                 oppsto {duplicateConflicts.length} duplikatkonflikter under
                                                 importen</Alert>
-                                            <Box background="bg-default" padding="8">
-                                                <VStack gap="6">
+                                            <Box background="default" padding="space-8">
+                                                <VStack gap="space-6">
                                                 <HStack justify="end">
                                                     <CopyButton
                                                         copyText={duplicateConflicts.map((conflict) =>
@@ -265,7 +265,7 @@ export const ValidateImportedCatalogImports = ({upload, resetUpload, supplier}: 
                             insertedList.length === 0 &&
                             updatedList.length === 0 &&
                             deactivatedList.length === 0 && (
-                                <VStack gap="4">
+                                <VStack gap="space-4">
                                     <Button
                                         className="fit-content"
                                         size="medium"

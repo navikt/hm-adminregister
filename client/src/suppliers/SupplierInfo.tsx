@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { ArrowLeftIcon, Buldings3Icon, CogIcon, PencilWritingIcon } from "@navikt/aksel-icons";
+import { ArrowLeftIcon, Buildings3Icon, CogIcon, PencilWritingIcon } from "@navikt/aksel-icons";
 import { Button, Dropdown, Heading, HStack, VStack } from "@navikt/ds-react";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
 import LocalTag, { colors } from "felleskomponenter/LocalTag";
@@ -19,16 +19,16 @@ const SupplierInfo = ({
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
   return (
-    <VStack gap="8">
-      <VStack gap="6">
+    <VStack gap="space-8">
+      <VStack gap="space-6">
         {loggedInUser?.isAdmin && (
           <Link to="/leverandor" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
             <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
             Tilbake til alle leverandører
           </Link>
         )}
-        <Buldings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
-        <HStack gap="8" align="start" style={{ alignItems: supplier.status === "INACTIVE" ? "start" : "center" }}>
+        <Buildings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
+        <HStack gap="space-8" align="start" style={{ alignItems: supplier.status === "INACTIVE" ? "start" : "center" }}>
           <div style={{ minWidth: "300px" }}>
             <Heading level="1" size="large">
               {supplier?.name}

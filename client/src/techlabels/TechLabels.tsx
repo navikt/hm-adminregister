@@ -90,7 +90,7 @@ const TechLabels = () => {
           Teknisk-data beskrivelser
         </Heading>
         <div className={styles.techLabelsContainer}>
-          <VStack gap="8">
+          <VStack gap="space-8">
             <Modal
               open={!!deleteError && !!forceDeleteId}
               onClose={() => {
@@ -123,7 +123,7 @@ const TechLabels = () => {
                 </Button>
               </Modal.Footer>
             </Modal>
-            <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
+            <HStack justify="space-between" wrap gap="space-4" marginBlock="space-8 space-0">
               <Box role="search" className="search-box">
                 <Search
                   label="Søk etter navn på teknisk-data"

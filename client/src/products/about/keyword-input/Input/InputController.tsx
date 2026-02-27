@@ -21,7 +21,7 @@ export const InputController = forwardRef<
   const mergedInputRef = useMergeRefs(inputRef, ref);
 
   return (
-    <div className={"navds-combobox__wrapper-inner navds-text-field__input"} onClick={focusInput}>
+    <div className={"aksel-combobox__wrapper-inner aksel-text-field__input"} onClick={focusInput}>
       <SelectedOptions selectedOptions={selectedOptions} removable={true}>
         <Input id={inputProps.id} ref={mergedInputRef} {...rest} />
       </SelectedOptions>

@@ -14,18 +14,18 @@
 
   tbody tr {
     position: relative;
-    background-color: var(--a-white);
+    background-color: var(#fff);
     border: 0;
 
     &:hover {
-      outline: 1px solid var(--a-border-action);
-      border-radius: var(--a-border-radius-large);
+      outline: 1px solid var(--ax-border-accent);
+      border-radius: var(--ax-radius-12);
 
       cursor: pointer;
 
       td:first-child {
         text-decoration: underline;
-        color: var(--a-text-action);
+        color: var(--ax-text-accent);
       }
     }
   }
@@ -36,20 +36,20 @@
   }
 
   td {
-    padding: var(--a-spacing-2);
-    border: 1px solid var(--a-grayalpha-100);
+    padding: var(--ax-space-2);
+    border: 1px solid var(--ax-border-neutral-subtleA);
     align-items: center;
   }
 
   td:first-child {
-    border-top-left-radius: var(--a-border-radius-large);
-    border-bottom-left-radius: var(--a-border-radius-large);
+    border-top-left-radius: var(--ax-radius-12);
+    border-bottom-left-radius: var(--ax-radius-12);
     border-right: 0;
   }
 
   td:last-child {
-    border-top-right-radius: var(--a-border-radius-large);
-    border-bottom-right-radius: var(--a-border-radius-large);
+    border-top-right-radius: var(--ax-radius-12);
+    border-bottom-right-radius: var(--ax-radius-12);
     border-left: 0;
   }
 
@@ -70,13 +70,13 @@
   &:hover,
   &:focus {
     text-decoration: underline;
-    color: var(--a-text-action);
+    color: var(--ax-text-accent);
     background-color: transparent;
   }
 }
 
 .imageBox {
-  border-color: var(--a-grayalpha-200);
+  border-color: var(--ax-border-neutral-subtleA);
 }
 
 .checkbox {

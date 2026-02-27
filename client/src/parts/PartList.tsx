@@ -12,7 +12,7 @@ export const PartList = ({
   oversiktPath: string;
 }) => {
   return (
-    <VStack as={"ol"} gap={"1-alt"} className={styles.partsList}>
+    <VStack as={"ol"} gap="space-4" className={styles.partsList}>
       {partsList.map((part) => (
         <li key={part.id}>
           <PartCard part={part} oversiktPath={oversiktPath} />
@@ -35,11 +35,11 @@ const PartCard = ({ part, oversiktPath }: { part: ProductRegistrationDTOV2; over
         md: "1fr auto",
         lg: "1fr auto",
       }}
-      gap={"2"}
+      gap="space-2"
       align={"center"}
       className={styles.partPanel}
     >
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="1">
+      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-1">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">

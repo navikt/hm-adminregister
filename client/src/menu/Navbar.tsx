@@ -1,5 +1,6 @@
 import {
-  Buldings3Icon, DatabaseIcon,
+  Buildings3Icon,
+  DatabaseIcon,
   FileCheckmarkFillIcon, FileExcelIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
@@ -37,10 +38,10 @@ const Navbar = () => {
           variant="tertiary"
           onClick={() => setMenuOpen(!menuOpen)}
         />
-        <VStack gap="8" className="menu__desktop">
+        <VStack gap="space-8" className="menu__desktop">
           <NavigationLinks menuOpen={true} />
           <ProfileMenu />
-        </VStack>
+        </VStack>w
         <div className={classNames("menu__mobile", { open: menuOpen })}>
           <NavigationLinks menuOpen={menuOpen} />
           {menuOpen && <ProfileMenu />}
@@ -66,7 +67,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <NavLink to="/admin/dashboard" className="page-link">
             {pathname.startsWith("/admin/dashboard") && <div className="active-indicator" />}
             <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
               <FileCheckmarkFillIcon fontSize="1.5rem" aria-hidden />
               <span>Dashboard</span>
             </HStack>
@@ -74,7 +75,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <NavLink to="/rammeavtaler" className="page-link">
             {pathname.startsWith("/rammeavtaler") && <div className="active-indicator" />}
             <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
               <PencilLineIcon fontSize="1.5rem" aria-hidden />
               <span>Rammeavtaler</span>
             </HStack>
@@ -82,7 +83,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <NavLink to="/til-godkjenning" className="page-link">
             {pathname.startsWith("/til-godkjenning") && <div className="active-indicator" />}
             <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
               <FileCheckmarkFillIcon fontSize="1.5rem" aria-hidden />
               <span>Til godkjenning</span>
             </HStack>
@@ -94,7 +95,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         <NavLink to="/leverandor/dashboard" className="page-link">
           {pathname.startsWith("/leverandor/dashboard") && <div className="active-indicator" />}
           <div className="line" />
-          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+          <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
             <PersonGroupIcon fontSize="1.5rem" aria-hidden />
             <span>Dashboard</span>
           </HStack>
@@ -105,7 +106,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         <NavLink to="/produkter" className="page-link">
           {pathname.startsWith("/produkter") && <div className="active-indicator" />}
           <div className="line" />
-          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+          <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
             <PackageFillIcon fontSize={"1.5rem"} aria-hidden />
             <span>Produkter</span>
           </HStack>
@@ -116,7 +117,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
         <NavLink to="/deler" className="page-link">
           {pathname.startsWith("/deler") && <div className="active-indicator" />}
           <div className="line" />
-          <HStack gap="4" style={{ paddingLeft: "16px" }}>
+          <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
             <WrenchIcon fontSize={"1.5rem"} aria-hidden />
             <span>Deler</span>
           </HStack>
@@ -128,8 +129,8 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <NavLink to="/leverandor" className="page-link">
             {pathname.startsWith("/leverandor") && <div className="active-indicator" />}
             <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
-              <Buldings3Icon fontSize={"1.5rem"} aria-hidden />
+            <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
+              <Buildings3Icon fontSize={"1.5rem"} aria-hidden />
               <span>Leverandører</span>
             </HStack>
           </NavLink>
@@ -137,7 +138,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <NavLink to="/nyheter" className="page-link">
             {pathname.startsWith("/nyheter") && <div className="active-indicator" />}
             <div className="line" />
-            <HStack gap="4" style={{ paddingLeft: "16px" }}>
+            <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
               <NewspaperIcon fontSize={"1.5rem"} title="Nyheter" aria-hidden />
               <span>Nyheter</span>
             </HStack>
@@ -149,7 +150,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <NavLink to="/tekniskdata" className="page-link">
               {pathname.startsWith("/tekniskdata") && <div className="active-indicator" />}
               <div className="line" />
-              <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
                 <DatabaseIcon fontSize={"1.5rem"} aria-hidden />
                 <span>Teknisk-data</span>
               </HStack>
@@ -161,7 +162,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <NavLink to="/katalog" className="page-link">
               {pathname.startsWith("/katalog") && <div className="active-indicator" />}
               <div className="line" />
-              <HStack gap="4" style={{ paddingLeft: "16px" }}>
+              <HStack gap="space-4" style={{ paddingLeft: "16px" }}>
                 <FileExcelIcon fontSize={"1.5rem"} aria-hidden />
                 <span>Katalog</span>
               </HStack>

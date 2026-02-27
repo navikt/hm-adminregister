@@ -51,7 +51,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
 
   return (
     <>
-      <VStack gap="2">
+      <VStack gap="space-2">
         <Heading level="2" size="small">
           {labelRequired("Produktbeskrivelse")}
         </Heading>
@@ -111,9 +111,9 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
                 handleSaveDescription(updatedDescription);
               }}
             />
-            <div className="navds-form-field__error">
+            <div className="aksel-form-field__error">
               <p
-                className="navds-error-message navds-label"
+                className="aksel-error-message aksel-label"
                 style={{ display: descriptionLengthError ? "flex" : "none" }}
               >
                 • {descriptionLengthError}
@@ -132,9 +132,9 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
               </Button>
               <Spacer />
               {descriptionLengthError ? (
-                <p className="navds-error-message navds-label">{descriptionLength}/750 tegn</p>
+                <p className="aksel-error-message aksel-label">{descriptionLength}/750 tegn</p>
               ) : (
-                <p className="navds-body-short">{descriptionLength}/750 tegn</p>
+                <p className="aksel-body-short">{descriptionLength}/750 tegn</p>
               )}
             </HStack>
           </>

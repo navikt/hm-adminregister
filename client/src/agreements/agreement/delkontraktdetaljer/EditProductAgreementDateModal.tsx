@@ -87,10 +87,10 @@ const EditProductAgreementDateModal = ({
     >
       <Modal.Body>
         <Content>
-          <VStack gap="5" style={{ width: "100%" }}>
+          <VStack gap="space-6" style={{ width: "100%" }}>
             <div>
               <Label>Avtaleperiode</Label>
-              <HStack gap="4" justify="start" style={{ marginTop: "0.5rem" }}>
+              <HStack gap="space-4" justify="start" style={{ marginTop: "0.5rem" }}>
                 <DatePicker {...datepickerPropsPublished}>
                   <DatePicker.Input
                     {...inputPropsPublished}

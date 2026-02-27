@@ -23,7 +23,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
         setModalIsOpen={setModalIsOpen}
       />
       <TabPanel value="documents">
-        <VStack gap="5">
+        <VStack gap="space-6">
           <>
             {agreement.agreementData.attachments.length > 0 &&
               agreement.agreementData.attachments.map((attachment, i) => (

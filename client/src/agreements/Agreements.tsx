@@ -89,12 +89,12 @@ const Agreements = () => {
   return (
     <main className="show-menu">
       <div className="page__background-container">
-        <VStack gap="12" maxWidth="60rem">
+        <VStack gap="space-12" maxWidth="60rem">
           <Heading level="1" size="xlarge">
             Rammeavtaler
           </Heading>
-          <VStack gap="4">
-            <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="4">
+          <VStack gap="space-4">
+            <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="space-4">
               <Box role="search">
                 <Search
                   className="search-button"
@@ -107,7 +107,7 @@ const Agreements = () => {
                   onChange={(value) => handleSearch(value)}
                 />
               </Box>
-              <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="4">
+              <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="space-4">
                 {!inSearchMode && (
                   <>
                     <Show above="md" asChild>
@@ -194,7 +194,7 @@ const Agreements = () => {
                         key={i}
                       >
                         <LinkPanel.Title className="panel-list__title panel-list__width">
-                          <HStack gap="2 2" align="center">
+                          <HStack gap="space-2 space-2" align="center">
                             <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
                             {rammeavtale.agreementStatus === "ACTIVE" ? (
                               <Tag variant="success">Aktiv</Tag>
@@ -222,7 +222,7 @@ const Agreements = () => {
                       key={i}
                     >
                       <LinkPanel.Title className="panel-list__title panel-list__width">
-                        <HStack gap="2 2" align="center">
+                        <HStack gap="space-2 space-2" align="center">
                           <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
                           {rammeavtale.agreementStatus === "ACTIVE" ? (
                             <Tag variant="success">Aktiv</Tag>
@@ -237,7 +237,7 @@ const Agreements = () => {
             )}
 
             {showPageNavigator && (
-              <HStack marginBlock="2" justify="end">
+              <HStack marginBlock="space-2" justify="end">
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => {

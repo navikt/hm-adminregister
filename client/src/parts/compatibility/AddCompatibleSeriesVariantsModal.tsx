@@ -70,7 +70,7 @@ const AddCompatibleSeriesVariantsModal = ({
           {!filtreredVariants || !series ? (
             <Loader />
           ) : filtreredVariants.length > 0 ? (
-            <VStack gap="2" style={{ width: "100%" }}>
+            <VStack gap="space-2" style={{ width: "100%" }}>
               <Heading size={"medium"}>Varianter som ikke er tilknyttet del</Heading>
               <Table>
                 <Table.Header>

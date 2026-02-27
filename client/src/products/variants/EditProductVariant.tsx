@@ -20,7 +20,7 @@ const EditProductVariant = () => {
 
   if (isLoading || !product) {
     return (
-      <VStack gap="8">
+      <VStack gap="space-8">
         <Loader />
       </VStack>
     );
@@ -28,7 +28,7 @@ const EditProductVariant = () => {
 
   return (
     <FormBox title="Egenskaper">
-      <VStack gap="8">
+      <VStack gap="space-8">
         <ProductVariantForm product={product} mutate={mutate} />
       </VStack>
     </FormBox>

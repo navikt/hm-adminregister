@@ -18,16 +18,16 @@
     align-items: center;
     width: 100%;
     max-width: 29rem;
-    gap: $a-spacing-5;
-    background-color: $a-white;
-    padding: $a-spacing-12 $a-spacing-12;
-    border-radius: $a-border-radius-xlarge;
-    box-shadow: $a-shadow-small;
+    gap: $ax-space-6;
+    background-color: #fff;
+    padding: $ax-space-12 $ax-space-12;
+    border-radius: $ax-radius-16;
+    box-shadow: $ax-shadow-dialog;
 
     h2 {
-      font-weight: $a-font-weight-regular;
-      font-size: $a-font-size-xlarge;
-      line-height: $a-font-line-height-xlarge;
+      font-weight: 400;
+      font-size: $ax-font-size-xlarge;
+      line-height: $ax-font-line-height-xlarge;
     }
 
     &--max-width > * {
@@ -36,30 +36,30 @@
   }
 
   &__form {
-    margin-top: $a-spacing-5;
+    margin-top: $ax-space-6;
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: $a-spacing-6;
+    gap: $ax-space-6;
 
     button {
       align-self: center;
-      margin-top: $a-spacing-5;
+      margin-top: $ax-space-6;
     }
   }
 
   &__error-message {
-    color: $a-red-400;
+    color: $ax-text-danger;
   }
 
   &__success-message {
-    color: $a-green-400;
+    color: $ax-text-success;
   }
 
   &__button-container {
     display: flex;
     width: 100%;
-    gap: $a-spacing-4;
+    gap: $ax-space-4;
 
     button {
       flex-grow: 1;

@@ -31,7 +31,7 @@ export default function HmsUserProfile() {
         <Heading level="1" size="large" spacing>
           Min profil
         </Heading>
-        <VStack gap="20">
+        <VStack gap="space-20">
           <DefinitionList horizontal>
             <DefinitionList.Term>Name</DefinitionList.Term>
             <DefinitionList.Definition>{user?.name}</DefinitionList.Definition>

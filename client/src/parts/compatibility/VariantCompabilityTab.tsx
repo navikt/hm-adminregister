@@ -40,7 +40,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
         partId={partId}
         mutatePart={mutatePart}
       />
-      <VStack padding={"8"} gap={"2"}>
+      <VStack padding="space-8" gap="space-2">
         {productIds.length === 0 && <BodyLong>Ingen koblinger til varianter</BodyLong>}
         {isEditable && (
           <Button
@@ -56,8 +56,8 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
         )}
 
         {productIds.length > 0 && (
-          <VStack gap={"2"}>
-            <HStack gap={"2"}>
+          <VStack gap="space-2">
+            <HStack gap="space-2">
               {productIds.length > 0 && (
                 <RowBoxTable>
                   <Table.Header>

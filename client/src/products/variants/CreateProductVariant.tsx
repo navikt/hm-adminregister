@@ -64,7 +64,7 @@ const CreateProductVariant = () => {
   return (
     <FormBox title="Legg til variant" icon={<LayersIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="8">
+        <VStack gap="space-8">
           <TextField
             {...register("articleName", { required: true })}
             label={labelRequired("Variantnavn")}
@@ -81,7 +81,7 @@ const CreateProductVariant = () => {
             type="text"
             error={errors?.supplierRef?.message}
           />
-          <HStack gap="3">
+          <HStack gap="space-4">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

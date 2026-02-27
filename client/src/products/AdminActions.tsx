@@ -76,7 +76,7 @@ const AdminActions = ({
   }
 
   return (
-    <VStack gap="2">
+    <VStack gap="space-2">
       <ConfirmModal
         title={"Vil du publisere produktet?"}
         text=""
@@ -117,7 +117,7 @@ const AdminActions = ({
           Se endringer
         </Button>
       )}
-      <HStack gap="2">
+      <HStack gap="space-2">
         {(series.status === "EDITABLE" || isPendingApproval) && (
           <Button
             style={{ flexGrow: 1 }}
