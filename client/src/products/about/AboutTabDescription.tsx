@@ -51,7 +51,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
 
   return (
     <>
-      <VStack gap="space-2">
+      <VStack gap="space-8">
         <Heading level="2" size="small">
           {labelRequired("Produktbeskrivelse")}
         </Heading>

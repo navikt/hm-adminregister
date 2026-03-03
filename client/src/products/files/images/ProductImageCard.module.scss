@@ -1,7 +1,7 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
 .imageCard {
-  padding: var(--ax-space-6) var(--ax-space-2) var(--ax-space-1);
+  padding: var(--ax-space-16) var(--ax-space-8) var(--ax-space-1);
   position: relative;
   width: 10rem;
 }
@@ -15,6 +15,6 @@
 
 .moreMenuContainer {
   position: absolute;
-  top: $ax-space-2;
+  top: $ax-space-8;
   right: $ax-space-1;
 }

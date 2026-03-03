@@ -76,10 +76,11 @@ const Suppliers = () => {
         <div className={styles.supplierPanelContainer}>
           <HGrid
             columns={{
-              xs: "space-1",
+              xs: "space-4",
               md: "3fr 2fr 130px",
             }}
-            gap="space-4"
+            gap="space-8"
+            paddingBlock="space-16"
             align="start"
           >
             <Box role="search" className="search-box ">

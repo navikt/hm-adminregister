@@ -101,7 +101,7 @@ export default function CreateProduct() {
 
   return (
     <FormBox title="Kom i gang med nytt produkt" icon={<PackageIcon />}>
-      <VStack gap="space-24">
+      <VStack gap="space-48">
         <TextField
           label={labelRequired("Produktnavn")}
           id="productName"
@@ -136,7 +136,7 @@ export default function CreateProduct() {
           </Box>
         )}
 
-        <HStack gap="space-24">
+        <HStack gap="space-56">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

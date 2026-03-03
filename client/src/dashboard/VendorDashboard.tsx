@@ -104,8 +104,8 @@ const VendorDashboard = () => {
     return (
         <>
             <main className="show-menu">
-                <VStack gap="space-4" style={{maxWidth: "75rem"}}>
-                    <HStack gap="space-6" align="start" justify="space-between">
+                <VStack gap="space-8" style={{maxWidth: "75rem"}}>
+                    <HStack gap="space-16" align="start" justify="space-between">
                         <VStack gap="space-2">
                             <Heading level="1" size="large">
                                 Dashboard
@@ -126,9 +126,9 @@ const VendorDashboard = () => {
                     <Heading level="2" size="medium" style={{marginTop: "2rem"}}>
                         Produkter til godkjenning
                     </Heading>
-                    <HStack gap="space-6" wrap>
+                    <HStack gap="space-16" wrap>
                         <Box
-                            padding="space-6"
+                            padding="space-16"
                             borderRadius="8"
                         background="raised"
                         className={styles.box}
@@ -155,7 +155,7 @@ const VendorDashboard = () => {
                     </Box>
 
                     <Box
-                        padding="space-6"
+                        padding="space-16"
                         borderRadius="8"
                     background="raised"
                     className={styles.box}
@@ -183,9 +183,9 @@ const VendorDashboard = () => {
             </HStack>
             <Heading level="2" size="medium" style={{marginTop: "2rem"}}>
                 Produkter uten bilde
-            </Heading><HStack gap="space-6" wrap>
+            </Heading><HStack gap="space-16" wrap>
             <Box
-                padding="space-6"
+                padding="space-16"
                 borderRadius="8"
             background="raised"
             className={styles.box}
@@ -210,7 +210,7 @@ const VendorDashboard = () => {
                 Antall produkter som er på en rammeavtale og mangler bilde.
             </BodyShort>
         </Box><Box
-            padding="space-6"
+            padding="space-16"
             borderRadius="8"
                         background="raised"
                         className={styles.box}
@@ -240,9 +240,9 @@ const VendorDashboard = () => {
                 <Heading level="2" size="medium" style={{marginTop: "2rem"}}>
                     Produkter uten video
                 </Heading>
-                <HStack gap="space-6" wrap>
+                <HStack gap="space-16" wrap>
                     <Box
-                        padding="space-6"
+                        padding="space-16"
                         borderRadius="8"
                         background="raised"
                         className={styles.box}
@@ -269,7 +269,7 @@ const VendorDashboard = () => {
                     </Box>
 
                     <Box
-                        padding="space-6"
+                        padding="space-16"
                         borderRadius="8"
                         background="raised"
                         className={styles.box}
@@ -299,9 +299,9 @@ const VendorDashboard = () => {
                 <Heading level="2" size="medium" style={{marginTop: "2rem"}}>
                     Tilbehør uten bilde
                 </Heading>
-                <HStack gap="space-6" wrap>
+                <HStack gap="space-16" wrap>
                     <Box
-                        padding="space-6"
+                        padding="space-16"
                         borderRadius="8"
                         background="raised"
                         className={styles.box}
@@ -328,7 +328,7 @@ const VendorDashboard = () => {
                     </Box>
 
                     <Box
-                        padding="space-6"
+                        padding="space-16"
                         borderRadius="8"
                         background="raised"
                         className={styles.box}

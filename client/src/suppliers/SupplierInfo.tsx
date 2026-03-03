@@ -19,8 +19,8 @@ const SupplierInfo = ({
   const { loggedInUser } = useAuthStore();
   const navigate = useNavigate();
   return (
-    <VStack gap="space-8">
-      <VStack gap="space-6">
+    <VStack gap="space-24">
+      <VStack gap="space-12">
         {loggedInUser?.isAdmin && (
           <Link to="/leverandor" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
             <ArrowLeftIcon fontSize="1.5rem" aria-hidden />

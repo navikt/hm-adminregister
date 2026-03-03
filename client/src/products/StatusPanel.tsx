@@ -7,8 +7,8 @@ import { SeriesDTO } from "utils/types/response-types";
 
 const StatusPanel = ({ series }: { series: SeriesDTO }) => {
   return (
-    <VStack gap={{ xs: "space-6", md: "space-12" }}>
-      <VStack gap="space-4">
+    <VStack gap={{ xs: "space-16", md: "space-12" }}>
+      <VStack gap="space-16">
         <Heading level="1" size="medium">
           Status
         </Heading>

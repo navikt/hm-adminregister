@@ -5,7 +5,7 @@ export const DocumentList = styled.ol`
   padding-left: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-4);
+  gap: var(--ax-space-16);
 
   li {
     padding: var(--ax-space-2) var(--ax-space-4);

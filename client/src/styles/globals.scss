@@ -61,9 +61,9 @@ main:not(.show-menu) {
 
 .logo-and-name-container {
   display: flex;
-  gap: $ax-space-2;
+  gap: $ax-space-8;
   align-items: center;
-  padding: $ax-space-8 $ax-space-1;
+  padding: $ax-space-32 $ax-space-2;
 
   .name {
     display: flex;
@@ -205,7 +205,7 @@ main:not(.show-menu) {
   &__container {
     display: flex;
     flex-direction: column;
-    gap: $ax-space-12;
+    gap: $ax-space-8;
   }
 
   &__name-panel {

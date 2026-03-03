@@ -49,14 +49,14 @@
 
 .moreMenuContainer {
   position: absolute;
-  top: $ax-space-2;
+  top: $ax-space-8;
   right: $ax-space-1;
 }
 
 .tabPanel {
   padding: $ax-space-4 0;
   @include mixins.for-size(desktop-up) {
-    padding: $ax-space-6 0 $ax-space-12;
+    padding: $ax-space-16 0 $ax-space-12;
   }
 
   form {

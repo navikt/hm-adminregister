@@ -32,7 +32,7 @@ const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
 
   return (
     <>
-      <VStack gap="space-2">
+      <VStack gap="space-8">
         <Heading level="2" size="xsmall">
           {"URL til leverandørs produktside"}
         </Heading>

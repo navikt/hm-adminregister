@@ -21,7 +21,7 @@ const Parts = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "space-8", md: "space-12" }} maxWidth={loggedInUser && loggedInUser.isAdminOrHmsUser ? "80rem" : "64rem"}>
+      <VStack gap={{ xs: "space-8", md: "space-24" }} maxWidth={loggedInUser && loggedInUser.isAdminOrHmsUser ? "80rem" : "64rem"}>
         <AlertWithCloseButton variant={"warning"} alertId={"tilbReadyAlert"}>
           <Heading size={"small"}>Informasjon om deler</Heading>
           <BodyLong>

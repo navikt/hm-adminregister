@@ -106,19 +106,19 @@ const SeriesListTab = () => {
 
   return (
     <TabPanel value="serier">
-      <VStack gap={{ xs: "space-8", md: "space-12" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
+      <VStack gap={{ xs: "space-8", md: "space-12" }} paddingBlock="space-24" maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
         <VStack gap={{ xs: "space-4", md: "space-6" }}>
           <HGrid
             columns={{ xs: "space-1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
-            gap="space-4"
-            align={"center"}
+            gap="space-8"
+            align={"start"}
           >
             <HGrid
               columns={{
-                xs: "space-1",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr 130px" : "2fr 1fr",
+                xs: "space-4",
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
-              gap="space-4"
+              gap="space-8"
               align="start"
             >
               <Box role="search" style={{ maxWidth: "475px" }}>
@@ -156,8 +156,8 @@ const SeriesListTab = () => {
           </HGrid>
         </VStack>
 
-        <VStack gap="space-4">
-          <VStack gap="space-1">
+        <VStack gap="space-16">
+          <VStack gap="space-8">
             {isLoadingPagedData && <Loader />}
             {seriesByVariantIdentifier && <Heading size="medium">Søketreff</Heading>}
             {seriesByVariantIdentifier ? (

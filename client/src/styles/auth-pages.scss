@@ -18,9 +18,9 @@
     align-items: center;
     width: 100%;
     max-width: 29rem;
-    gap: $ax-space-6;
+    gap: $ax-space-12;
     background-color: #fff;
-    padding: $ax-space-12 $ax-space-12;
+    padding: $ax-space-32 $ax-space-32;
     border-radius: $ax-radius-16;
     box-shadow: $ax-shadow-dialog;
 
@@ -36,15 +36,15 @@
   }
 
   &__form {
-    margin-top: $ax-space-6;
+    margin-top: $ax-space-24;
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: $ax-space-6;
+    gap: $ax-space-24;
 
     button {
       align-self: center;
-      margin-top: $ax-space-6;
+      margin-top: $ax-space-16;
     }
   }
 
@@ -59,7 +59,7 @@
   &__button-container {
     display: flex;
     width: 100%;
-    gap: $ax-space-4;
+    gap: $ax-space-12;
 
     button {
       flex-grow: 1;

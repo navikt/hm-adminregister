@@ -44,7 +44,7 @@ export default function AdminProfile() {
         <Heading level="1" size="large" spacing>
           Min profil
         </Heading>
-        <VStack gap="space-6">
+        <VStack gap="space-24">
           <VStack gap="space-20">
             <DefinitionList horizontal>
               <DefinitionList.Term>Name</DefinitionList.Term>
@@ -57,7 +57,7 @@ export default function AdminProfile() {
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
-          <VStack gap="space-6">
+          <VStack gap="space-24">
             <Heading level="2" size="medium">
               Admin brukere
             </Heading>
@@ -118,7 +118,7 @@ export default function AdminProfile() {
               </Table>
             )}
           </VStack>
-          <VStack gap="space-6">
+          <VStack gap="space-24">
             <Heading level="2" size="medium">
               HMS-brukere
             </Heading>
@@ -179,7 +179,7 @@ export default function AdminProfile() {
               </Table>
             )}
           </VStack>
-          <HStack gap="space-4">
+          <HStack gap="space-24">
             <Button
               variant="secondary"
               size="small"

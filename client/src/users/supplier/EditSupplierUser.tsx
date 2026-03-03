@@ -120,7 +120,7 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
   return (
 
     <form method="POST" onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap="space-8" width="300px">
+      <VStack gap="space-16" width="300px">
         <TextField
           {...register("name", { required: true })}
           label={labelRequired("Navn")}
@@ -143,7 +143,7 @@ const SupplierUserProfile = ({ user }: { user: UserDTO }) => {
           onFocus={() => handleFieldFocus("phone")}
           error={blurredFields.phone && errors?.phone?.message}
         />
-        <HStack gap="space-4">
+        <HStack gap="space-16">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

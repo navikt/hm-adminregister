@@ -185,13 +185,13 @@ const ProductListWrapper = () => {
         </Heading>
         <VStack gap={{ xs: "space-16", md: "space-32" }}>
           <HGrid
-            columns={{ xs: "space-2", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            columns={{ xs: "space-8", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
             gap="space-16"
             align={"center"}
           >
             <HGrid
               columns={{
-                xs: "space-4",
+                xs: "space-16",
                 md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
               }}
               gap="space-16"
@@ -239,7 +239,7 @@ const ProductListWrapper = () => {
               </Box>
             )}
           </HGrid>
-          <VStack gap="space-4">
+          <VStack gap="space-16">
             <Label>Filter</Label>
             <Chips>
               {visningStatusfilter.map((filterName) => (
@@ -271,7 +271,7 @@ const ProductListWrapper = () => {
               </Chips.Toggle>
             </Chips>
           </VStack>
-          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-4" align="end">
+          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-16" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
@@ -297,8 +297,8 @@ const ProductListWrapper = () => {
           </HGrid>
         </VStack>
 
-        <VStack gap="space-4">
-          <VStack gap="space-1">
+        <VStack gap="space-16">
+          <VStack gap="space-8">
             {seriesByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
             <HGrid
               columns={{
@@ -309,8 +309,8 @@ const ProductListWrapper = () => {
                     ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr"
                     : ".7fr 3.5fr 2fr .8fr 0.4fr",
               }}
-              paddingBlock="space-2"
-              gap="space-2"
+              paddingBlock="space-4"
+              gap="space-8"
             >
               <span></span>
               <b>Produktnavn</b>
@@ -359,7 +359,7 @@ const ProductListWrapper = () => {
           <HStack
             justify={{ xs: "center", md: "space-between" }}
             align="center"
-            gap="space-4"
+            gap="space-16"
             style={{ flexWrap: "wrap-reverse" }}
           >
             <Select

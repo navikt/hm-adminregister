@@ -79,7 +79,7 @@ const Supplier = () => {
       />
       <HGrid columns="minmax(16rem, 55rem)">
         {supplier && (
-          <VStack gap="space-12">
+          <VStack gap="space-16">
             <SupplierInfo
               supplier={supplier}
               setIsOpen={setIsOpen}

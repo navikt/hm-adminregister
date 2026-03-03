@@ -12,7 +12,7 @@ interface SeriesListProps {
 
 export const SeriesList = ({ seriesList, onSeriesClick, selectedSeriesId }: SeriesListProps) => {
   return (
-    <VStack as={"ol"} gap="space-4" className={styles.seriesList}>
+    <VStack as={"ol"} gap="space-8" className={styles.seriesList}>
       {seriesList.map((series) => (
         <li key={series.id}>
           <SeriesCard series={series} onSeriesClick={onSeriesClick} selectedSeriesId={selectedSeriesId} />
@@ -40,12 +40,12 @@ const SeriesCard = ({
         xs: " 1fr auto",
         md: "1fr auto",
       }}
-      gap="space-2"
+      gap="space-4"
       align={"center"}
       className={selectedSeriesId === series.id ? styles.seriesPanelSelected : styles.seriesPanel}
       onClick={() => onSeriesClick(series.id)}
     >
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-1">
+      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-4"padding="space-8">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">

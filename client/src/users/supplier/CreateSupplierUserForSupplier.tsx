@@ -70,7 +70,7 @@ export default function CreateSupplierUserForSupplier() {
       icon={<PersonIcon aria-hidden={true} title="a11y-title" width={43} height={43} />}
     >
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="space-8" width="300px">
+        <VStack gap="space-16" width="300px">
           <VStack>
             <strong>Leverandør</strong>
             {supplierName}
@@ -103,7 +103,7 @@ export default function CreateSupplierUserForSupplier() {
           <Alert variant="info">
             OBS! Det ikke vil være mulig å finne tilbake til det midlertidige passordet etter at brukeren er opprettet.
           </Alert>
-          <HStack gap="space-4">
+          <HStack gap="space-16">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>

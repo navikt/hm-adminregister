@@ -17,9 +17,10 @@
 
 
 .import-products {
-  margin-top: $ax-space-16;
+  margin: $ax-space-32;
   display: flex;
   justify-content: center;
+  max-width: 1024px;
 
   .content {
     display: flex;
@@ -48,7 +49,7 @@
   margin-top: 1rem;
 
   li {
-    padding: $ax-space-4 $ax-space-4;
+    padding: $ax-space-8 $ax-space-8;
     background-color: #ffffff;
     box-shadow: $ax-shadow-dialog;
     border-radius: $ax-radius-8;

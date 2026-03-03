@@ -41,7 +41,7 @@
 
   @include mixins.for-size(desktop-up) {
     width: 270px;
-    padding: $ax-space-24 $ax-space-16;
+    padding: $ax-space-32 $ax-space-24;
   }
 
   &__desktop {
@@ -178,7 +178,7 @@
     padding: $ax-space-8;
     display: block;
     color: #fff;
-    background: none;
+    background: transparent !important;
 
     .icon-name-container {
       display: inline-flex;
@@ -195,7 +195,7 @@
 
   &__button:active,
   &__button:hover {
-    background-color: #363c5d;
+    background: #363c5d !important;
   }
 
   &__expanded-content {

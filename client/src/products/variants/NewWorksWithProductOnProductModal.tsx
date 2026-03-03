@@ -95,7 +95,7 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
     >
       <Modal.Body>
         <Content>
-          <VStack gap="space-4" style={{ width: "100%" }}>
+          <VStack gap="space-16" style={{ width: "100%" }}>
               <TextField
                 label={labelRequired("HMS-nummer eller levartnr.")}
                 hideLabel={false}
@@ -124,13 +124,13 @@ const NewWorksWithProductOnProductModal = ({ modalIsOpen, setModalIsOpen, mutate
               </HStack>
             )}
             {productsToAdd.length > 0 && (
-              <VStack gap="space-2">
+              <VStack gap="space-8">
                 {productsToAdd.map((product: ProductRegistrationDTO) => (
-                  <HStack key={product.id} width="100%" align="center" gap="space-2">
+                  <HStack key={product.id} width="100%" align="center" gap="space-8">
                     <Box
                       key={product.id}
                       background="success-soft"
-                      padding="space-2"
+                      padding="space-8"
                       flexGrow="1"
                       style={{ borderRadius: "10px" }}
                     >

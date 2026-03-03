@@ -36,7 +36,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesSearchDTO; oversik
         md: ".7fr 3.5fr 2fr .8fr 0.4fr",
         lg: loggedInUser && loggedInUser.isAdmin ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr" : ".7fr 3.5fr 2fr .8fr 0.4fr",
       }}
-      gap="space-2"
+      gap="space-8"
       align={"center"}
       className={styles.seriesPanel}
     >
@@ -55,7 +55,7 @@ const SeriesCard = ({ series, oversiktPath }: { series: SeriesSearchDTO; oversik
         )}
       </Box>
 
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-1">
+      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-16">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">

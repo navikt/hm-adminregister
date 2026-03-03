@@ -68,7 +68,7 @@ export default function CreateSupplier() {
   return (
     <FormBox title="Opprett ny leverandør" icon={<Buildings3Icon />}>
       <form method="POST" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="space-8" width="300px">
+        <VStack gap="space-16" width="300px">
           <TextField
             {...register("name", { required: true })}
             label={labelRequired("Firmanavn")}
@@ -112,7 +112,7 @@ export default function CreateSupplier() {
             value={phoneValue}
           />
 
-          <HStack gap="space-4" align="center">
+          <HStack gap="space-8" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt
             </Button>
