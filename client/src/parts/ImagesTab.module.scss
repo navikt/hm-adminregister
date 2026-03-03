@@ -9,9 +9,9 @@
 }
 
 .tabPanel {
-  padding: $ax-space-4 0;
+  padding: $ax-space-16 0;
   @include mixins.for-size(desktop-up) {
-    padding: $ax-space-6 0 $ax-space-12;
+    padding: $ax-space-16 0 $ax-space-24;
   }
 
   form {

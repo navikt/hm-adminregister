@@ -69,7 +69,7 @@ export const SeriesCompabilityTab = ({
         mutatePart={mutatePart}
         productIds={productIds}
       />
-      <VStack padding="space-8" gap="space-2">
+      <VStack padding="space-16" gap="space-8">
         {seriesIds.length === 0 && <BodyLong>Ingen koblinger til serier</BodyLong>}
         {isEditable && (
           <Button

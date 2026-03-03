@@ -40,7 +40,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
         partId={partId}
         mutatePart={mutatePart}
       />
-      <VStack padding="space-8" gap="space-2">
+      <VStack padding="space-16" gap="space-2">
         {productIds.length === 0 && <BodyLong>Ingen koblinger til varianter</BodyLong>}
         {isEditable && (
           <Button

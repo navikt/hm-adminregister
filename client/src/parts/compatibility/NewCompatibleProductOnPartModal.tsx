@@ -94,9 +94,9 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
     >
       <Modal.Body>
         <Content>
-          <VStack gap="space-2">
-            <HStack align="end" justify="start" gap="space-2" margin="space-2">
-              <VStack>
+          <VStack gap="space-6">
+            <HStack align="end" justify="start" gap="space-8" margin="space-4">
+              <VStack gap="space-8">
                 <BodyShort>HMS-artnr</BodyShort>
                 <TextField
                   label={labelRequired("HMS-nummer")}
