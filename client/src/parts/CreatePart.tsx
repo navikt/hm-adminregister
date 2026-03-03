@@ -84,7 +84,14 @@ export default function CreatePart() {
               navigate(`/del/${newPart.id}`);
             })
             .catch((error) => {
-              setGlobalError(error);
+              if (error?.errorDetail?.includes("supplier_id_supplier_ref")) {
+                setFieldError({
+                  ...fieldError,
+                  levArtNrErrorMessage: "En del med dette lev.artnummeret er allerede registrert på leverandøren",
+                });
+              } else {
+                setGlobalError(error);
+              }
             });
         } else {
           setFieldError({

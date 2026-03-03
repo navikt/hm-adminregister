@@ -19,7 +19,8 @@ export const fetchAPI = async (url: string, method: string, body?: any): Promise
     return text ? JSON.parse(text) : undefined;
   } else {
     const json = text ? JSON.parse(text) : {};
-    const error = { message: json?.message || response.statusText, status: response.status };
+    const embeddedMessage = json?._embedded?.errors?.[0]?.message ?? "";
+    const error = { message: json?.message || response.statusText, status: response.status, errorDetail: embeddedMessage };
     return Promise.reject(error);
   }
 };
