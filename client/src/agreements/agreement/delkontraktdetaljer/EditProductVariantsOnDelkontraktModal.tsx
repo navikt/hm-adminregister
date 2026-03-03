@@ -65,7 +65,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
       <Modal.Body>
         <Content>
           {variants.length > 0 && (
-            <VStack gap="2" style={{ width: "100%" }}>
+            <VStack gap="space-2" style={{ width: "100%" }}>
               <Table>
                 <Table.Header>
                   <Table.Row>

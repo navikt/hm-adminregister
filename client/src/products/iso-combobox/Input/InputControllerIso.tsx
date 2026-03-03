@@ -47,8 +47,8 @@ export const InputControllerIso = forwardRef<
 
   return (
     <div
-      className={cl("navds-combobox__wrapper-inner navds-text-field__input", {
-        "navds-combobox__wrapper-inner--virtually-unfocused": activeDecendantId !== undefined,
+      className={cl("aksel-combobox__wrapper-inner aksel-text-field__input", {
+        "aksel-combobox__wrapper-inner--virtually-unfocused": activeDecendantId !== undefined,
       })}
       onClick={() => {
         focusInput();
@@ -64,9 +64,9 @@ export const InputControllerIso = forwardRef<
             type="button"
             onClick={clearField}
             onPointerDown={(e) => e.preventDefault()}
-            className="navds-combobox__button-clear"
+            className="aksel-combobox__button-clear"
           >
-            <span className="navds-sr-only">Tøm</span>
+            <span className="aksel-sr-only">Tøm</span>
             <XMarkIcon aria-hidden />
           </button>
         )}

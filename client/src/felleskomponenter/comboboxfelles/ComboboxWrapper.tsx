@@ -31,9 +31,9 @@ const ComboboxWrapper = ({ children, className, hasError, toggleIsListOpen }: Co
   return (
     <div
       ref={wrapperRef}
-      className={cl(className, "navds-form-field", `navds-form-field--medium`, {
-        "navds-combobox--error": hasError,
-        "navds-combobox--focused": hasFocusWithin,
+      className={cl(className, "aksel-form-field", `aksel-form-field--medium`, {
+        "aksel-combobox--error": hasError,
+        "aksel-combobox--focused": hasFocusWithin,
       })}
       onFocus={onFocusInsideWrapper}
       onBlur={onBlurWrapper}

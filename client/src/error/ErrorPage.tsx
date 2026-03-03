@@ -5,10 +5,10 @@ export const ErrorPage = ({ error, resetErrorBoundary }: FallbackProps) => {
   return (
     <Page data-aksel-template="500-v2">
       <Page.Block as="main" width="xl" gutters>
-        <Box paddingBlock="20 8">
+        <Box paddingBlock="space-20 space-8">
           <HGrid columns="minmax(auto,600px)">
-            <VStack gap="16">
-              <VStack gap="12" align="start">
+            <VStack gap="space-16">
+              <VStack gap="space-12" align="start">
                 <div>
                   <BodyShort textColor="subtle" size="small">
                     {error.status + " " + error.message}

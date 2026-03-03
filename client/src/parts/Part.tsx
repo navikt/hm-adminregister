@@ -129,7 +129,7 @@ const Part = () => {
 
   if (isLoading || isLoadingSeries) {
     return (
-      <HGrid gap="12" columns="minmax(16rem, 55rem)">
+      <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
       </HGrid>
     );
@@ -213,12 +213,12 @@ const Part = () => {
         setIsOpen={setConfirmApproveModalIsOpen}
       />
       <HGrid
-        gap="12"
+        gap="space-12"
         columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
         className={styles.productPage}
       >
-        <VStack gap={{ xs: "6", md: "10" }}>
-          <VStack gap="6">
+        <VStack gap={{ xs: "space-16", md: "space-24" }}>
+          <VStack gap="space-16">
             <AkselLink
               as={Link}
               to="/deler"
@@ -229,10 +229,10 @@ const Part = () => {
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
               Tilbake
             </AkselLink>
-            <VStack gap="2">
-              {isEditable ? <Label> {labelRequired("Navn på del")}</Label> : <Label> Navn på del</Label>}
 
-              <HStack gap="1">
+
+              <VStack>
+                  {isEditable ? <Label> {labelRequired("Navn på del")}</Label> : <Label> Navn på del</Label>}
                 {isEditable && (
                   <TextField
                     defaultValue={part.articleName ?? ""}
@@ -261,7 +261,7 @@ const Part = () => {
                     )}
                   </Heading>
                 )}
-              </HStack>
+              </VStack>
 
               <VStack>
                 {isEditable ? <Label> {labelRequired("Lev-artnr")}</Label> : <Label>Lev-artnr</Label>}
@@ -303,10 +303,9 @@ const Part = () => {
                   <Tag variant="warning-moderate">Utgått</Tag>
                 </Box>
               )}
-            </VStack>
 
-            <HGrid gap={{ xs: "8", md: "10" }} columns={{ xs: 1, lg: 2 }}>
-              <VStack gap="4">
+            <HGrid gap={{ xs: "space-8", md: "space-12" }} columns={{ xs: 1, lg: 2 }}>
+              <VStack gap="space-4">
                 <VStack>
                   <Label>Type</Label>
                   <BodyShort>{part.accessory === true ? "Tilbehør" : "Reservedel"}</BodyShort>
@@ -384,7 +383,7 @@ const Part = () => {
             </Tabs.Panel>
           </Tabs>
         </VStack>
-        <VStack gap={{ xs: "6", md: "10" }}>
+        <VStack gap={{ xs: "space-6", md: "space-12" }}>
           <ActionsMenu
             series={series}
             setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}

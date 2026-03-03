@@ -9,12 +9,12 @@ const ToggleListButton = forwardRef<HTMLButtonElement>(function ToggleListButton
       type="button"
       onPointerUp={() => toggleIsListOpen()}
       onKeyDown={({ key }) => key === "Enter" && toggleIsListOpen()}
-      className="navds-combobox__button-toggle-list"
+      className="aksel-combobox__button-toggle-list"
       aria-expanded={isListOpen}
       tabIndex={-1}
       ref={ref}
     >
-      <span className="navds-sr-only">Alternativer</span>
+      <span className="aksel-sr-only">Alternativer</span>
       {isListOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
     </button>
   );

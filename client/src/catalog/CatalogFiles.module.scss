@@ -4,41 +4,20 @@ $column-widths: 260px 120px 120px 120px 40px;
   max-width: 85rem;
 }
 
-.headerRow {
-  padding: 0 1rem;
-}
-
-.headerLabel {
-  min-width: nth($column-widths, 1);
-  &:nth-child(2) { min-width: nth($column-widths, 2); }
-  &:nth-child(3) { min-width: nth($column-widths, 3); }
-  &:nth-child(4) { min-width: nth($column-widths, 4); }
-}
-
-.headerSpacer {
-  min-width: nth($column-widths, 5);
-}
-
 .cardBox {
   padding: 0;
   border-width: 1;
   border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
-  border-radius: var(--a-border-radius-large);
-  background-color: var(--a-bg-default);
-  color: var(--a-text-default);
+  border-radius: var(--ax-radius-12);
+  background-color: var(--ax-bg-default);
+  color: var(--ax-text-neutral);
   text-decoration: none;
 }
 
 .cardRow {
   display: flex;
   align-items: center;
-  padding: var(--a-spacing-2) var(--a-spacing-4);
-}
-
-.cardData {
-  display: flex;
-  gap: 4;
-  paddingBlock: 4;
+  padding: var(--ax-space-2) var(--ax-space-4);
 }
 
 .cardValue {
@@ -71,14 +50,6 @@ $column-widths: 260px 120px 120px 120px 40px;
 }
 
 
-.optionsColumn {
-  flex: 1 1 0;
-  min-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .editButton {
   margin-left: auto;
   min-width: 40px;
@@ -86,11 +57,7 @@ $column-widths: 260px 120px 120px 120px 40px;
   justify-content: flex-end;
 }
 
-.editButtonHeader {
-  min-width: 40px;
-}
-
 .errorStatus {
-  color: var(--a-text-danger, #c30000);
+  color: var(--ax-text-danger, #c30000);
   font-weight: bold;
 }

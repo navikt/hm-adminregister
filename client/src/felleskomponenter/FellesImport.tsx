@@ -159,9 +159,9 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
           )}
 
           {upload && (
-            <VStack as="ol" gap="3" className="images-inline">
+            <VStack as="ol" gap="space-4" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
-                <HStack gap={{ xs: "1", sm: "2", md: "3" }} align="center">
+                <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center">
                   <FileExcelIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
@@ -176,7 +176,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
             </VStack>
           )}
 
-          <HStack justify="end" gap="4">
+          <HStack justify="end" gap="space-4">
             <Button
               className="fit-content"
               size="medium"

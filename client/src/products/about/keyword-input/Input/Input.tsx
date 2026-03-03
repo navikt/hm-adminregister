@@ -93,12 +93,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
         onKeyDown={handleKeyDown}
         autoComplete="off"
         aria-invalid={inputProps["aria-invalid"]}
-        className={cl(`${styles.inputTest}`, "navds-combobox__input", "navds-body-short", "navds-body-short--medium")}
+        className={cl(`${styles.inputTest}`, "aksel-combobox__input", "aksel-body-short", "aksel-body-short--medium")}
         size={value.length || 1}
       />
       {!maxSelected?.isLimitReached && value.length > 0 && (
-        <button type="button" onClick={onEnter} className="navds-combobox__button-clear">
-          <span className="navds-sr-only">Legg til</span>
+        <button type="button" onClick={onEnter} className="aksel-combobox__button-clear">
+          <span className="aksel-sr-only">Legg til</span>
           <PlusCircleIcon aria-hidden />
         </button>
       )}

@@ -32,7 +32,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
   if (!users) return null;
 
   return (
-    <VStack gap="3">
+    <VStack gap="space-8">
       <ConfirmModal
         title={"Bekreft sletting av bruker"}
         confirmButtonText={"Slett bruker"}
@@ -43,8 +43,9 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
       <Heading level="2" size="medium" spacing>
         Brukere
       </Heading>
+      <VStack gap="space-16">
       {users.length > 0 && (
-        <Table>
+        <Table >
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
@@ -109,6 +110,7 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
           Legg til ny bruker
         </Button>
       )}
+      </VStack>
     </VStack>
   );
 };

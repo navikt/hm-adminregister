@@ -14,8 +14,8 @@ const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "
       <ComboboxWrapper className={className} hasError={hasError} toggleIsListOpen={toggleIsListOpen}>
         <Label
           htmlFor={inputProps.id}
-          className={cl("navds-form-field__label", {
-            "navds-sr-only": hideLabel,
+          className={cl("aksel-form-field__label", {
+            "aksel-sr-only": hideLabel,
           })}
         >
           {label}
@@ -24,8 +24,8 @@ const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "
           {!!description && (
             <BodyShort
               as="div"
-              className={cl("navds-form-field__description", {
-                "navds-sr-only": hideLabel,
+              className={cl("aksel-form-field__description", {
+                "aksel-sr-only": hideLabel,
               })}
               id={inputDescriptionId}
             >
@@ -33,8 +33,8 @@ const Combobox = forwardRef<HTMLInputElement, Omit<ComboboxProps, "onChange" | "
             </BodyShort>
           )}
         </>
-        <div className="navds-combobox__wrapper">{children}</div>
-        <div className="navds-form-field__error" id={errorId} aria-relevant="additions removals" aria-live="polite">
+        <div className="aksel-combobox__wrapper">{children}</div>
+        <div className="aksel-form-field__error" id={errorId} aria-relevant="additions removals" aria-live="polite">
           {showErrorMsg && <ErrorMessage>{error}</ErrorMessage>}
         </div>
       </ComboboxWrapper>

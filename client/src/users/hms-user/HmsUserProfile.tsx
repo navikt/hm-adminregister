@@ -1,21 +1,17 @@
-import { Heading, HGrid, Loader, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { SupplierDTO } from "utils/supplier-util";
-import { useUser } from "utils/swr-hooks";
+import {Heading, HGrid, Loader, VStack} from "@navikt/ds-react";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAuthStore} from "utils/store/useAuthStore";
+import {useErrorStore} from "utils/store/useErrorStore";
+import {SupplierDTO} from "utils/supplier-util";
+import {useUser} from "utils/swr-hooks";
 import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import { formatPhoneNumber } from "utils/string-util";
+import {formatPhoneNumber} from "utils/string-util";
 
 export default function HmsUserProfile() {
-  const [error, setError] = useState<Error | null>(null);
-  const navigate = useNavigate();
-  const [supplier, setSupplier] = useState<SupplierDTO>();
+  const [error] = useState<Error | null>(null);
   const { loggedInUser } = useAuthStore();
-  const { user, userError, userIsLoading } = useUser(loggedInUser);
-
-  const { setGlobalError } = useErrorStore();
+  const { user, userIsLoading } = useUser(loggedInUser);
 
   if (userIsLoading || !user) return <Loader size="3xlarge" title="Henter brukeropplysninger" />;
   if (error)
@@ -31,7 +27,7 @@ export default function HmsUserProfile() {
         <Heading level="1" size="large" spacing>
           Min profil
         </Heading>
-        <VStack gap="20">
+        <VStack gap="space-20">
           <DefinitionList horizontal>
             <DefinitionList.Term>Name</DefinitionList.Term>
             <DefinitionList.Definition>{user?.name}</DefinitionList.Definition>

@@ -51,7 +51,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
             </Table.Header>
             <Table.Body>
               <Table.Row key={product.id}>
-                <Table.DataCell className="no-bottom-border">{product.articleName}</Table.DataCell>
+                <Table.DataCell>{product.articleName}</Table.DataCell>
                 <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
                 <Table.DataCell>{product.supplierRef}</Table.DataCell>
                 <Table.DataCell>

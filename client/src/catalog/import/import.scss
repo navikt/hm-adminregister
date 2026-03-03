@@ -3,29 +3,17 @@
 @import '@navikt/ds-tokens/dist/tokens';
 
 
-.agreement-variants-table {
-
-
-  thead tr {
-    background-color: $a-surface-selected;
-  }
-
-  thead tr > th:first-child {
-    background-color: $a-surface-selected;
-  }
-}
-
-
 .import-products {
-  margin-top: $a-spacing-16;
+  margin: $ax-space-32;
   display: flex;
   justify-content: center;
+  max-width: 1024px;
 
   .content {
     display: flex;
     flex-direction: column;
-    gap: $a-spacing-8;
-    margin-bottom: $a-spacing-16;
+    gap: $ax-space-8;
+    margin-bottom: $ax-space-16;
   }
 
   h1 {
@@ -35,8 +23,8 @@
 
 .product-series-info {
   p {
-    margin-bottom: $a-spacing-1;
-    margin-top: $a-spacing-1;
+    margin-bottom: $ax-space-1;
+    margin-top: $ax-space-1;
 
   }
 }
@@ -48,10 +36,10 @@
   margin-top: 1rem;
 
   li {
-    padding: $a-spacing-3 $a-spacing-3;
+    padding: $ax-space-8 $ax-space-8;
     background-color: #ffffff;
-    box-shadow: $a-shadow-xsmall;
-    border-radius: $a-border-radius-medium;
+    box-shadow: $ax-shadow-dialog;
+    border-radius: $ax-radius-8;
   }
 }
 

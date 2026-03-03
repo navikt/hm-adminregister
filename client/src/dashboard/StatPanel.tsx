@@ -11,8 +11,8 @@ export interface StatPanelProps {
 }
 
 export const StatPanel = ({ title, value, loading, helpText, warning, children }: StatPanelProps) => (
-  <Box padding="8">
-    <VStack gap="2">
+  <Box padding="space-16">
+    <VStack gap="space-8">
       <Heading size="small" level="2">
         {title}
       </Heading>

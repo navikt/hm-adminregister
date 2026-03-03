@@ -69,7 +69,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
           {!filtreredVariants || !series ? (
             <Loader />
           ) : filtreredVariants.length > 0 ? (
-            <VStack gap="2" style={{ width: "100%" }}>
+            <VStack gap="space-2" style={{ width: "100%" }}>
               <Heading size={"medium"}>Varianter tilknyttet på del</Heading>
               <Table>
                 <Table.Header>

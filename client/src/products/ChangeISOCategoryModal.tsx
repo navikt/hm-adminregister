@@ -66,7 +66,7 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick }: Props) => {
     >
       <Modal.Body>
         <Content>
-          <VStack gap="4">
+          <VStack gap="space-16">
             <IsoComboboxProvider
               label={labelRequired("Iso-kategori (kode)")}
               description={"Søk etter isokategori delen passer best inn i"}

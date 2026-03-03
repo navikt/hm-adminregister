@@ -4,7 +4,7 @@ export const NotFound = () => {
   return (
     <Page data-aksel-template="404-v2">
       <Page.Block as="main" width="xl" gutters>
-        <Box paddingBlock="20 16">
+        <Box paddingBlock="space-20 space-16">
           <div>
             <Heading level="1" size="large" spacing>
               Beklager, vi fant ikke siden

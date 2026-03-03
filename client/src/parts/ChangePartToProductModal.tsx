@@ -65,7 +65,7 @@ const ChangePartToProductModal = ({ isOpen, setIsOpen, onClick }: Props) => {
     >
       <Modal.Body     style={{ height: "16rem" }}  >
         <Content>
-          <VStack gap="4">
+          <VStack gap="space-4">
             <IsoComboboxProvider
               label={labelRequired("Iso-kategori (kode)")}
               description={"Søk etter isokategori produktet passer best inn i"}

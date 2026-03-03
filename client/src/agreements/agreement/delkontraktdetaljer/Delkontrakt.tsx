@@ -123,7 +123,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
           <ExpansionCard.Title size="small">{delkontrakt!.delkontraktData.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
         <ExpansionCard.Content style={{ overflow: "auto" }}>
-          <VStack gap="3">
+          <VStack gap="space-4">
             <Switch checked={showOnlyMainProducts} onChange={(e) => setShowOnlyMainProducts(e.target.checked)}>
               Vis kun hovedprodukter
             </Switch>
@@ -132,7 +132,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
               <div className="preview">{parse(delkontrakt.delkontraktData.description)}</div>
             )}
             {productAgreements!.length > 0 && (
-              <VStack gap="2">
+              <VStack gap="space-2">
                 <RowBoxTable size="small">
                   <Table.Header>
                     <Table.Row>

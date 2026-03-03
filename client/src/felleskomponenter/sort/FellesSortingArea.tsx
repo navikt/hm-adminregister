@@ -66,7 +66,7 @@ export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile
       draggedItemClassName={styles.dragged}
       allowDrag={isEditable}
     >
-      <HStack as="ol" gap="2">
+      <HStack as="ol" gap="space-2">
         {mediaArr && mediaArr.length > 0
           ? mediaArr
               .sort((a, b) => a.priority - b.priority)

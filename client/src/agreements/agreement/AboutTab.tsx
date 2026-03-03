@@ -27,10 +27,10 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
   };
 
   return (
-    <TabPanel value="about">
+    <TabPanel value="about"style={{paddingBlock: '1.5rem'}}>
       <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>
-        <VStack gap="14">
-          <VStack gap="2">
+        <VStack gap="space-24">
+          <VStack gap="space-2">
             <Heading level="2" size="small">
               {labelRequired("Beskrivelse")}
             </Heading>
@@ -72,7 +72,6 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
                     formMethods.setValue("description", description);
                   }}
                   defaultValue={agreement.agreementData.text || ""}
-                  className="editor"
                   toolbar={[["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
                   formats={["bold", "italic", "underline", "list", "link"]}
                 />

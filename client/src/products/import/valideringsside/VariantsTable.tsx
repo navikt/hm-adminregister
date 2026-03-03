@@ -1,7 +1,6 @@
 import { HStack, Table, VStack } from "@navikt/ds-react";
 import { Fragment, useState } from "react";
 import { formatAgreementRanks, toValueAndUnit } from "utils/string-util";
-import classNames from "classnames";
 import { sortIntWithStringFallback } from "utils/sort-util";
 import { Product, ProductVariant } from "utils/types/types";
 import { PlusCircleFillIcon } from "@navikt/aksel-icons";
@@ -109,10 +108,6 @@ export const VariantsTable = ({ product }: { product: Product }) => {
               return (
                 <Table.Row
                   key={key + "row" + i}
-                  className={classNames(
-                    { "comparing-table__sorted-row": key === sortColumns.orderBy },
-                    { "comparing-table__sortable-row": isSortableRow },
-                  )}
                 >
                   <Table.HeaderCell>{key}</Table.HeaderCell>
                   {row.map((value, i) => (

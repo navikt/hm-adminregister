@@ -94,9 +94,9 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
     >
       <Modal.Body>
         <Content>
-          <VStack gap={"2"}>
-            <HStack align="end" justify="start" gap="2" margin="2">
-              <VStack>
+          <VStack gap="space-6">
+            <HStack align="end" justify="start" gap="space-8" margin="space-4">
+              <VStack gap="space-8">
                 <BodyShort>HMS-artnr</BodyShort>
                 <TextField
                   label={labelRequired("HMS-nummer")}
@@ -133,13 +133,13 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
               </HStack>
             )}
             {productsToAdd.length > 0 && (
-              <VStack gap="2">
+              <VStack gap="space-2">
                 {productsToAdd.map((product: ProductRegistrationDTOV2) => (
-                  <HStack key={product.id} width="100%" align="center" gap="2">
+                  <HStack key={product.id} width="100%" align="center" gap="space-2">
                     <Box
                       key={product.id}
-                      background="surface-success-subtle"
-                      padding="2"
+                      background="success-soft"
+                      padding="space-2"
                       flexGrow="1"
                       style={{ borderRadius: "10px" }}
                     >

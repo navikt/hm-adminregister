@@ -56,8 +56,8 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
         mutateParts={mutateParts}
         seriesParts={seriesParts.map((part) => part.id)}
       />
-      <Box className={styles.seriesParts} padding="8">
-        <VStack gap="8">
+      <Box className={styles.seriesParts} padding="space-8">
+        <VStack gap="space-8">
           <Button
             className="fit-content"
             variant="primary"
@@ -69,7 +69,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
             Legg til deler i serien
           </Button>
           {seriesParts.length === 0 && (
-            <Box padding="8">
+            <Box padding="space-8">
               <Heading level="1" size="xsmall">
                 Ingen deler i serien
               </Heading>
@@ -119,7 +119,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                   ))}
                 </Table.Body>
               </Table>
-              <HStack justify={"end"} paddingBlock="8">
+              <HStack justify={"end"} paddingBlock="space-8">
                 <Button
                   className="fit-content"
                   variant="tertiary"

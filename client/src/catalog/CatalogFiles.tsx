@@ -58,8 +58,8 @@ const CatalogFiles = () => {
           Katalog
         </Heading>
         <div className={styles.catalogfilesContainer}>
-          <VStack gap="8">
-            <HStack justify="space-between" wrap gap="4" marginBlock="8 0">
+          <VStack gap="space-8">
+            <HStack justify="space-between" wrap gap="space-4" marginBlock="space-8 space-0">
               <Box role="search" className="search-box">
                 <Search
                   label="Søk etter filnavn"
@@ -107,7 +107,7 @@ const CatalogFiles = () => {
                     <strong>Bruker</strong>
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <HStack gap="2" justify="center">
+                    <HStack gap="space-2" justify="center">
                     <strong>Sist oppdatert</strong>
                     <HelpText title="om sist oppdatert" >
                       Denne kolonnen viser når filen sist ble oppdatert, enten ved opplasting

@@ -5,10 +5,10 @@
   width: 10rem;
   height: 15rem;
   position: relative;
-  box-shadow: $a-shadow-xsmall;
-  border-radius: $a-border-radius-medium;
+  box-shadow: $ax-shadow-dialog;
+  border-radius: $ax-radius-8;
   text-align: center;
-  background-color: var(--a-gray-200);
+  background-color: var(--ax-bg-neutral-moderate);
 }
 
 .list {
@@ -22,7 +22,7 @@
     margin: 0;
     display: inline-flex;
     flex-wrap: wrap;
-    gap: $a-spacing-3;
+    gap: $ax-space-4;
   }
 }
 

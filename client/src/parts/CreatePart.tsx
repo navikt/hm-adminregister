@@ -128,7 +128,7 @@ export default function CreatePart() {
 
   return (
     <FormBox title="Opprett ny del" icon={<PackageIcon />}>
-      <VStack gap="7">
+      <VStack gap="space-16">
         <RadioGroup legend="" onChange={setPartType} value={partType}>
           <Radio value="sparePart">Reservedel</Radio>
           <Radio value="accessory">Tilbehør</Radio>
@@ -191,7 +191,7 @@ export default function CreatePart() {
           </Box>
         )}
 
-        <HStack gap="4">
+        <HStack gap="space-8">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
             Avbryt
           </Button>

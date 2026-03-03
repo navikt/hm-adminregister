@@ -158,8 +158,8 @@ const VariantsTab = ({
           </Alert>
         )}
         {!hasNoVariants && (
-          <Box background="surface-default" padding={{ xs: "2", md: "6" }} borderRadius="xlarge">
-            <VStack gap="4">
+          <Box background="default" padding={{ xs: "space-8", md: "space-16" }} borderRadius="12">
+            <VStack gap="space-16">
               {series.variants.length > columnsPerPage && (
                 <Box role="search" style={{ maxWidth: "475px" }}>
                   <Search

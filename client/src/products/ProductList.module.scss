@@ -7,18 +7,18 @@
 }
 
 .seriesPanel {
-  padding: var(--a-spacing-2);
-  border: 1px solid var(--a-grayalpha-100);
-  border-radius: var(--a-border-radius-large);
-  background-color: var(--a-bg-default);
-  color: var(--a-text-default);
+  padding: var(--ax-space-12);
+  border: 1px solid var(--ax-border-neutral-subtleA);
+  border-radius: var(--ax-radius-6);
+  background-color: var(--ax-bg-default);
+  color: var(--ax-text-neutral);
   text-decoration: none;
 
   &:hover {
-    background-color: var(--a-surface-hover);
+    background-color: var(--ax-bg-neutral-moderate-hover);
   }
 }
 
 .imageBox {
-  border-color: var(--a-grayalpha-200);
+  border-color: var(--ax-border-neutral-subtleA);
 }
