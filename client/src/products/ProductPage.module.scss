@@ -16,23 +16,6 @@
   }
 }
 
-.videos {
-  list-style: none;
-
-  li {
-    padding: $ax-space-4;
-    background-color: #ffffff;
-    box-shadow: $ax-shadow-dialog;
-    border-radius: $ax-radius-8;
-    width: 400px;
-    position: relative;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
-
 .documentListContainer {
   list-style: none;
   padding-left: 0;
@@ -81,11 +64,6 @@
       background-color: white;
     }
   }
-}
-
-.tabLabel {
-  display: flex;
-  color: $ax-text-danger;
 }
 
 .errorText {

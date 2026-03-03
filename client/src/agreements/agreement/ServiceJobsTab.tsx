@@ -122,7 +122,7 @@ const ServiceJobsTab = ({ agreementId }: Props) => {
               const isEditing = editingId === job.id;
               const draft = draftValues[job.id] ?? { title: job.title, hmsNr: job.hmsNr };
               return (
-                <Table.Row key={job.id} className="no-hover-row">
+                <Table.Row key={job.id}>
                   <Table.DataCell style={{ width: "8rem", paddingLeft: "1rem" }}>
                     {isEditing ? (
                       <TextField

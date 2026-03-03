@@ -143,7 +143,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                   <>
                     <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center">
                       <FilePdfIcon fontSize="2rem" />
-                      <a href={uriForMediaFile(pdf)} target="_blank" className="document-type" rel="noreferrer">
+                      <a href={uriForMediaFile(pdf)} target="_blank" rel="noreferrer">
                         {pdf.text || pdf.uri.split("/").pop()}
                       </a>
                     </HStack>

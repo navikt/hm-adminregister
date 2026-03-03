@@ -72,7 +72,6 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
                     formMethods.setValue("description", description);
                   }}
                   defaultValue={agreement.agreementData.text || ""}
-                  className="editor"
                   toolbar={[["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
                   formats={["bold", "italic", "underline", "list", "link"]}
                 />

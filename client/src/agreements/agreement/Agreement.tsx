@@ -144,7 +144,7 @@ const Agreement = () => {
 
       <main className="show-menu">
         <FormProvider {...formMethods}>
-          <HGrid gap="space-12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }} className="agreement-page">
+          <HGrid gap="space-12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }}>
             <VStack gap={{ xs: "space-4", md: "space-8" }}>
               <WordWrappedHeading level="1" size="xlarge">
                 {agreement.title ?? agreement.title}

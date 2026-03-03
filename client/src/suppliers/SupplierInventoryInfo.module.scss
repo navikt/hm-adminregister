@@ -1,31 +1,3 @@
 @use "../styles/mixins";
 @import "@navikt/ds-tokens/dist/tokens";
 
-.descriptionList {
-  display: grid;
-  grid-template-columns: 1fr;
-  column-gap: $ax-space-6;
-  align-items: baseline;
-  margin: 0;
-
-  dt {
-    font-weight: bold;
-    text-align: left;
-    padding-top: $ax-space-4;
-  }
-
-  dd {
-    margin-left: 0;
-    padding-top: 0;
-  }
-
-  @include mixins.for-size(tablet-up) {
-    grid-template-columns: minmax(auto, max-content) auto;
-    row-gap: $ax-space-1;
-
-    dd,
-    dt {
-      padding-top: $ax-space-2;
-    }
-  }
-}

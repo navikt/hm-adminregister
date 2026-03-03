@@ -1,19 +1,5 @@
 @import "@navikt/ds-tokens/dist/tokens";
 
-.mediaCardCopy {
-  margin: 0;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: var(--ax-space-16);
-  padding: var(--ax-space-8) var(--ax-space-2) var(--ax-space-1) var(--ax-space-2);
-  width: 20rem;
-  position: relative;
-  background-color: #ffffff;
-  box-shadow: var(--ax-shadow-dialog);
-  border-radius: var(--ax-radius-8);
-  text-align: center;
-}
-
 .mediaCard {
   background-color: #ffffff;
   box-shadow: var(--ax-shadow-dialog);
@@ -35,8 +21,3 @@
   opacity: 0.7;
 }
 
-.header {
-  gap: var(--ax-space-2);
-  align-items: center;
-  justify-content: stretch;
-}

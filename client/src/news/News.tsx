@@ -85,7 +85,7 @@ const News = () => {
         ) : (
           pageResults && (
             <Box maxWidth="55rem">
-              <VStack className="products-page__producs" gap="space-24" paddingBlock="space-24">
+              <VStack gap="space-24" paddingBlock="space-24">
                 {pageResults.content
                   .filter((news: NewsRegistrationDTO) => handleFilterOption(news, newsStatus))
                   .map((news: NewsRegistrationDTO) => (

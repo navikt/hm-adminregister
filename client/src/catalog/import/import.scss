@@ -3,19 +3,6 @@
 @import '@navikt/ds-tokens/dist/tokens';
 
 
-.agreement-variants-table {
-
-
-  thead tr {
-    background-color: $ax-bg-neutral-moderate;
-  }
-
-  thead tr > th:first-child {
-    background-color: $ax-bg-neutral-moderate;
-  }
-}
-
-
 .import-products {
   margin: $ax-space-32;
   display: flex;
