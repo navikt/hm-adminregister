@@ -202,7 +202,7 @@ export const ProductsToApproveTable = ({ series, mutatePagedData, oversiktPath }
           </Table.Body>
         </Table>
 
-        <Avstand marginTop={6}>
+        <Avstand marginTop={12}>
           <Button
             onClick={() => {
               setIsOpen(true);

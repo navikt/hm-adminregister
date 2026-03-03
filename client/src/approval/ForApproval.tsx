@@ -108,7 +108,7 @@ export const ForApproval = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "space-8", md: "space-12" }} maxWidth={"64rem"}>
+      <VStack gap={{ xs: "space-16", md: "space-24" }} maxWidth={"64rem"}>
         <Heading level="1" size="large" spacing>
           Godkjenning av produkter
         </Heading>
@@ -155,7 +155,7 @@ export const ForApproval = () => {
           </Chips>
         </VStack>
 
-        <VStack gap="space-4">
+        <VStack gap="space-24">
           {seriesToApproveByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
           {isLoading ? (
             <Loader size="3xlarge" />
