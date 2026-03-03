@@ -97,7 +97,7 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       <form>
         <Modal.Body>
           <Content>
-            <VStack gap="space-6" style={{ width: "100%" }}>
+            <VStack gap="space-16" style={{ width: "100%" }}>
               <TextField
                 {...register("agreementName", { required: true })}
                 label={labelRequired("Avtalenavn")}

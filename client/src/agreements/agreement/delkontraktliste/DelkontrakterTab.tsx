@@ -1,4 +1,4 @@
-import { Alert, Button, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
+import {Alert, Box, Button, HGrid, Loader, Tabs, VStack} from "@navikt/ds-react";
 import { Fragment, useEffect, useState } from "react";
 import { Avstand } from "felleskomponenter/Avstand";
 import NewDelkontraktModal from "./NewDelkontraktModal";
@@ -67,7 +67,7 @@ const DelkontrakterTab = ({
       <DelkontrakterTabsPanel value="delkontrakter">
         {isFirstTime && <Alert variant="info">Rammeavtalen trenger delkontrakter.</Alert>}
         {!isFirstTime && (
-          <>
+          <Box marginBlock="space-24">
             <Avstand marginTop={3} />
             <HGrid columns="auto 60px" gap="space-6">
               <div />
@@ -76,7 +76,7 @@ const DelkontrakterTab = ({
               </div>
             </HGrid>
             <Avstand marginBottom={3} />
-            <HGrid columns="auto 60px" gap="space-4">
+            <HGrid columns="auto 60px" gap="space-12">
               {delkontrakter!.length > 0 &&
                 delkontrakter!.map((delkontrakt, i) => (
                   <Fragment key={delkontrakt.id}>
@@ -114,10 +114,9 @@ const DelkontrakterTab = ({
                   </Fragment>
                 ))}
             </HGrid>
-          </>
+          </Box>
         )}
-        <Avstand marginBottom={5} />
-        <Button className="fit-content" variant="secondary" onClick={() => setNyRammeavtaleModalIsOpen(true)}>
+        <Button className="fit-content" variant="secondary" onClick={() => setNyRammeavtaleModalIsOpen(true)} >
           Legg til delkontrakt
         </Button>
       </DelkontrakterTabsPanel>

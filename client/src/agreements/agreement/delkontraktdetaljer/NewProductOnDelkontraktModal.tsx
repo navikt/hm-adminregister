@@ -101,7 +101,7 @@ const NewProductOnDelkontraktModal = ({
       <form>
         <Modal.Body>
           <Content>
-            <VStack gap="space-2" style={{ width: "100%" }}>
+            <VStack gap="space-8" style={{ width: "100%" }}>
               <TextField
                 {...register("identifikator", { required: true })}
                 label={labelRequired("HMS-nummer/Levart nr.")}

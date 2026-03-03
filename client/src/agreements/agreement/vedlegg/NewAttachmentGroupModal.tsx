@@ -68,7 +68,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
       <form>
         <Modal.Body>
           <Content>
-            <VStack style={{ width: "100%" }}>
+            <VStack style={{ width: "100%" }} gap="space-6">
               <TextField
                 {...register("tittel", { required: true })}
                 label={labelRequired("Tittel")}
