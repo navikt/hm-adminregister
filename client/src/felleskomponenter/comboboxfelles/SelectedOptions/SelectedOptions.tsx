@@ -27,7 +27,7 @@ const Option = ({ option, removable }: { option: ComboboxOption; removable: bool
 
 const SelectedOptions: FC<SelectedOptionsProps> = ({ selectedOptions = [], removable, children }) => {
   return (
-    <Chips className="aksel-combobox__selected-options">
+    <Chips className="aksel-combobox__selected-options" style={{gap: '0.5rem'}}>
       {selectedOptions.length
         ? selectedOptions.map((option, i) => <Option key={option.label + i} option={option} removable={removable} />)
         : []}
