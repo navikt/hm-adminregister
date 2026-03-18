@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "@navikt/aksel": "^8.6.0",
+    "@navikt/aksel": "^8.7.0",
     "@types/node": "^24.10.1",
-    "knip": "^5.84.1",
+    "knip": "^5.86.0",
     "npm-run-all": "^4.1.5",
     "openapi-typescript": "^7.13.0",
     "prettier": "^3.8.1",
