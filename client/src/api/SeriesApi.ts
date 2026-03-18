@@ -1,4 +1,4 @@
-import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath, httpDelete } from "api/fetch";
+import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from "api/fetch";
 import {
   DeleteDocumentUrl,
   FileTitleDto,
@@ -10,7 +10,7 @@ import {
   SeriesDraftWithDTO,
   SeriesDTO,
   SeriesSearchDTO,
-  UpdateSeriesRegistrationDTO,
+  UpdateSeriesRegistrationDTO
 } from "utils/types/response-types";
 import useSWR from "swr";
 import { fetcherGET } from "utils/swr-hooks";

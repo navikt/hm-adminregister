@@ -71,7 +71,7 @@ const SupplierActions = ({
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
             <Dropdown.Menu>
               <Dropdown.Menu.List>
-                {isEditable && !series.isPublished && (
+                {!series.isPublished && (
                   <Dropdown.Menu.List.Item
                     onClick={() => setDeleteConfirmationModalIsOpen(true)}
                     // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
