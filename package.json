@@ -12,6 +12,7 @@
     "typescript": "^5.9.3"
   },
   "scripts": {
+    "installall": "npm ci && npm --prefix client ci && npm --prefix server ci",
     "postinstall": "npm --prefix client install && npm --prefix server install",
     "dev": "npm run --prefix client dev",
     "test": "npm run --prefix client test",
