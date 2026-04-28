@@ -1,6 +1,5 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig, HtmlTagDescriptor, Plugin } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig, type HtmlTagDescriptor, type Plugin } from "vite";
 
 // https://vitejs.dev/config/
 
@@ -44,7 +43,10 @@ function htmlPlugin({ development }: { development?: boolean }): Plugin {
 
 export default defineConfig((env) => ({
   base: env.mode === "development" ? "/" : "/adminregister",
-  plugins: [htmlPlugin({ development: env.mode === "test" || env.mode === "development" }), tsconfigPaths(), react()],
+  plugins: [htmlPlugin({ development: env.mode === "test" || env.mode === "development" }), react()],
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     global: true,
     environment: "jsdom",
