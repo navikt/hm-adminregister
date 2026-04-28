@@ -1,3 +1,5 @@
+@use "@navikt/ds-tokens/dist/tokens" as *;
+
 .aksel-combobox__wrapper {
   .aksel-combobox__list {
     position: absolute;

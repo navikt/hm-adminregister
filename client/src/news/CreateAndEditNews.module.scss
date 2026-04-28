@@ -1,6 +1,6 @@
 @use "../styles/_mixins";
 
-@import "@navikt/ds-tokens/dist/tokens";
+@use "@navikt/ds-tokens/dist/tokens" as *;
 
 .editorStyle {
   background-color: var(--ac-textarea-bg, var(--__ac-textarea-bg, var(--ax-bg-default)));
