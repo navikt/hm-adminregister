@@ -68,9 +68,6 @@
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^3.2.4"
   },
-  "overrides": {
-    "nwsapi": "2.2.12"
-  },
   "eslintConfig": {
     "extends": [
       "eslint:recommended",
