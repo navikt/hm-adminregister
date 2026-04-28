@@ -7,7 +7,11 @@ export async function initMsw(): Promise<unknown> {
 
   const { worker } = await import("../mocks/browser");
   worker.listHandlers().forEach((handler) => {
-    console.log(handler.info.header);
+    if (handler.kind === "request") {
+      console.log(handler.info.header);
+    } else if (handler.kind === "websocket") {
+      console.log(handler.id);
+    }
   });
   return worker.start({
     onUnhandledRequest: "bypass",
