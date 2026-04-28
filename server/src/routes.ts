@@ -33,8 +33,8 @@ export const routes = {
         res.send(`window.appSettings = ${JSON.stringify(appSettings)}`);
       })
       .get("/features", getFeaturesHandler)
-      .get("*", express.static(config.build_path))
-      .get("*", function (req, res) {
+      .get("*splat", express.static(config.build_path))
+      .get("*splat", function (req, res) {
         res.sendFile("index.html", { root: path.join(__dirname, "../../client/dist/") });
       });
   },
