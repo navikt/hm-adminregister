@@ -1,4 +1,4 @@
-@import "@navikt/ds-tokens/dist/tokens";
+@use "@navikt/ds-tokens/dist/tokens" as *;
 
 .imageCard {
   padding: var(--ax-space-16) var(--ax-space-8) var(--ax-space-1);

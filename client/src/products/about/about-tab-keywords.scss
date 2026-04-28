@@ -1,5 +1,5 @@
 @use "../../styles/mixins";
-@import "@navikt/ds-tokens/dist/tokens";
+@use "@navikt/ds-tokens/dist/tokens" as *;
 
 .keywords-static {
   --ac-tag-alt-3-bg: var(--ax-bg-info-strong);

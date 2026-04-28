@@ -1,5 +1,5 @@
-@import "@navikt/ds-tokens/dist/tokens";
-@import "../styles/variables";
+@use "@navikt/ds-tokens/dist/tokens" as *;
+@use "../styles/variables" as *;
 
 .button {
   background-color: $fm-border-darker !important;

@@ -1,5 +1,7 @@
+@use "@navikt/ds-tokens/dist/tokens" as *;
+
 @use "./_mixins";
-@import "variables";
+@use "variables" as *;
 
 /* The navigation menu */
 .menu {

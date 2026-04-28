@@ -1,6 +1,6 @@
 @use "../styles/_mixins";
 
-@import "@navikt/ds-tokens/dist/tokens";
+@use "@navikt/ds-tokens/dist/tokens" as *;
 
 .form-box-conteiner {
   width: 100%;
