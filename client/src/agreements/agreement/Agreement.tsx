@@ -151,7 +151,7 @@ const Agreement = () => {
               </WordWrappedHeading>
               <div>
                 <div>
-                  <b>Periode:</b> {toReadableString(agreement.published)} - {toReadableString(agreement.expired)}
+                  <b>Periode:</b> {toReadableDateTimeString(agreement.published)} - {toReadableDateTimeString(agreement.expired)}
                 </div>
                 <div>
                   <b>Anbudsnr:</b> {agreement.reference}
