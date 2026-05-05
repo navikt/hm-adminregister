@@ -1,27 +1,30 @@
-import { Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { labelRequired } from "utils/string-util";
-import { createNewProductOnDelkontraktSchema } from "utils/zodSchema/newProductOnDelkontrakt";
-import { getProductByHmsNr, getProductByVariantId } from "api/ProductApi";
-import { ProductRegistrationDTO } from "utils/types/response-types";
-import { VarianterOnDelkontraktListe } from "./VarianterOnDelkontraktListe";
-import { addProductsToAgreement } from "api/AgreementProductApi";
-import { useProductVariantsBySeriesId } from "utils/swr-hooks";
-import Content from "felleskomponenter/styledcomponents/Content";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { addProductsToAgreement } from 'api/AgreementProductApi'
+import { getProductByHmsNr, getProductByVariantId } from 'api/ProductApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { useProductVariantsBySeriesId } from 'utils/swr-hooks'
+import { ProductRegistrationDTO } from 'utils/types/response-types'
+import { createNewProductOnDelkontraktSchema } from 'utils/zodSchema/newProductOnDelkontrakt'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
+
+import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  delkontraktId: string;
-  post: number;
-  mutateProductAgreements: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  delkontraktId: string
+  post: number
+  mutateProductAgreements: () => void
 }
 
-type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>;
+type NewProductDelkontraktFormData = z.infer<typeof createNewProductOnDelkontraktSchema>
 
 const NewProductOnDelkontraktModal = ({
   modalIsOpen,
@@ -30,11 +33,11 @@ const NewProductOnDelkontraktModal = ({
   delkontraktId,
   post,
 }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined);
-  const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined);
-  const [variantsToAdd, setVariantsToAdd] = useState<string[]>([]);
-  const { data: variants, isLoading } = useProductVariantsBySeriesId(productToAddSeriesId);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
+  const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
+  const [variantsToAdd, setVariantsToAdd] = useState<string[]>([])
+  const { data: variants, isLoading } = useProductVariantsBySeriesId(productToAddSeriesId)
 
   const {
     handleSubmit,
@@ -43,49 +46,51 @@ const NewProductOnDelkontraktModal = ({
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NewProductDelkontraktFormData>({
     resolver: zodResolver(createNewProductOnDelkontraktSchema),
-    mode: "onSubmit",
-  });
-  const { setGlobalError } = useErrorStore();
+    mode: 'onSubmit',
+  })
+  const { setGlobalError } = useErrorStore()
 
   async function onClickGetProduct(data: NewProductDelkontraktFormData) {
-    if (!productToAdd || productToAdd.hmsArtNr !== data.identifikator && productToAdd.supplierRef !== data.identifikator) {
+    if (
+      !productToAdd ||
+      (productToAdd.hmsArtNr !== data.identifikator && productToAdd.supplierRef !== data.identifikator)
+    ) {
       getProductByVariantId(data.identifikator)
         .then((product) => {
-          setProductToAdd(product);
+          setProductToAdd(product)
           if (product.seriesUUID) {
-            setProductToAddSeriesId(product.seriesUUID);
+            setProductToAddSeriesId(product.seriesUUID)
           }
         })
         .catch((error) => {
-          if(error.status !== 404) {
-            setGlobalError(error.status, error.message);
+          if (error.status !== 404) {
+            setGlobalError(error.status, error.message)
           }
-
-        });
+        })
     }
   }
 
   async function onClickLeggTilValgteVarianter() {
-    setIsSaving(true);
+    setIsSaving(true)
 
     addProductsToAgreement(
       delkontraktId,
       post,
-      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || [],
+      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || []
     )
       .then((agreement) => {
-        mutateProductAgreements();
-        setIsSaving(false);
+        mutateProductAgreements()
+        setIsSaving(false)
       })
       .catch((error) => {
-        setGlobalError(error.message);
-        setIsSaving(false);
-      });
-    setIsSaving(false);
-    reset();
-    setVariantsToAdd([]);
-    setProductToAdd(undefined);
-    setModalIsOpen(false);
+        setGlobalError(error.message)
+        setIsSaving(false)
+      })
+    setIsSaving(false)
+    reset()
+    setVariantsToAdd([])
+    setProductToAdd(undefined)
+    setModalIsOpen(false)
   }
 
   return (
@@ -93,7 +98,7 @@ const NewProductOnDelkontraktModal = ({
       open={modalIsOpen}
       onCancel={(e) => {}}
       header={{
-        heading: "Legg til produkt",
+        heading: 'Legg til produkt',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -101,22 +106,22 @@ const NewProductOnDelkontraktModal = ({
       <form>
         <Modal.Body>
           <Content>
-            <VStack gap="space-8" style={{ width: "100%" }}>
+            <VStack gap="space-8" style={{ width: '100%' }}>
               <TextField
-                {...register("identifikator", { required: true })}
-                label={labelRequired("HMS-nummer/Levart nr.")}
+                {...register('identifikator', { required: true })}
+                label={labelRequired('HMS-nummer/Levart nr.')}
                 id="identifikator"
                 name="identifikator"
                 type="text"
                 error={errors?.identifikator?.message}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
                   }
                 }}
                 onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    onClickGetProduct({ identifikator: e.currentTarget.value });
+                  if (e.key === 'Enter') {
+                    onClickGetProduct({ identifikator: e.currentTarget.value })
                   }
                 }}
               />
@@ -124,7 +129,7 @@ const NewProductOnDelkontraktModal = ({
                 onClick={handleSubmit(onClickGetProduct)}
                 type="button"
                 variant="secondary"
-                style={{ marginLeft: "auto" }}
+                style={{ marginLeft: 'auto' }}
               >
                 Hent produkt
               </Button>
@@ -149,10 +154,10 @@ const NewProductOnDelkontraktModal = ({
         <Modal.Footer>
           <Button
             onClick={() => {
-              setModalIsOpen(false);
-              setProductToAdd(undefined);
-              setVariantsToAdd([]);
-              reset();
+              setModalIsOpen(false)
+              setProductToAdd(undefined)
+              setVariantsToAdd([])
+              reset()
             }}
             variant="tertiary"
             type="reset"
@@ -161,7 +166,7 @@ const NewProductOnDelkontraktModal = ({
           </Button>
           <Button
             onClick={() => {
-              onClickLeggTilValgteVarianter();
+              onClickLeggTilValgteVarianter()
             }}
             disabled={variantsToAdd.length === 0}
             variant="primary"
@@ -172,7 +177,7 @@ const NewProductOnDelkontraktModal = ({
         </Modal.Footer>
       </form>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewProductOnDelkontraktModal;
+export default NewProductOnDelkontraktModal

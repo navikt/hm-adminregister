@@ -1,25 +1,5 @@
-import { useState } from "react";
-
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-
-import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import {
-  BodyShort,
-  Box,
-  Button,
-  CopyButton,
-  Detail,
-  Heading,
-  HGrid,
-  HStack,
-  Label,
-  Link as AkselLink,
-  Loader,
-  Tabs,
-  Tag,
-  TextField,
-  VStack,
-} from "@navikt/ds-react";
+import { useState } from 'react'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import {
   changeMainProductToPart,
@@ -30,95 +10,115 @@ import {
   updateProductIsoCategory,
   updateProductTitle,
   useSeriesV2,
-} from "api/SeriesApi";
-import { HM_REGISTER_URL } from "environments";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import AdminActions from "products/AdminActions";
-import DocumentTab from "products/files/DocumentsTab";
-import ImageTab from "products/files/images/ImagesTab";
-import { RequestApprovalModal } from "products/RequestApprovalModal";
-import { numberOfDocuments, numberOfImages, numberOfVideos, seriesStatus } from "products/seriesUtils";
-import StatusPanel from "products/StatusPanel";
-import SupplierActions from "products/SupplierActions";
-import VideosTab from "products/videos/VideosTab";
+} from 'api/SeriesApi'
+import { HM_REGISTER_URL } from 'environments'
+import ErrorAlert from 'error/ErrorAlert'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import { TabLabel } from 'felleskomponenter/TabLabel'
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import AdminActions from 'products/AdminActions'
+import ChangeISOCategoryModal from 'products/ChangeISOCategoryModal'
+import ChangeProductToPartModal from 'products/ChangeProductToPartModal'
+import { RequestApprovalModal } from 'products/RequestApprovalModal'
+import StatusPanel from 'products/StatusPanel'
+import SupplierActions from 'products/SupplierActions'
+import DocumentTab from 'products/files/DocumentsTab'
+import ImageTab from 'products/files/images/ImagesTab'
+import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
+import { numberOfDocuments, numberOfImages, numberOfVideos, seriesStatus } from 'products/seriesUtils'
+import VideosTab from 'products/videos/VideosTab'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { useIsoCategories } from 'utils/swr-hooks'
 
-import ErrorAlert from "error/ErrorAlert";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import AboutTab from "./about/AboutTab";
-import styles from "./ProductPage.module.scss";
-import VariantsTab from "./variants/VariantsTab";
-import { TabLabel } from "felleskomponenter/TabLabel";
-import ChangeProductToPartModal from "products/ChangeProductToPartModal";
-import { useIsoCategories } from "utils/swr-hooks";
-import IsoComboboxProvider from "products/iso-combobox/IsoComboboxProvider";
-import { labelRequired } from "utils/string-util";
-import ChangeISOCategoryModal from "products/ChangeISOCategoryModal";
+import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
+import {
+  Link as AkselLink,
+  BodyShort,
+  Box,
+  Button,
+  CopyButton,
+  Detail,
+  HGrid,
+  HStack,
+  Heading,
+  Label,
+  Loader,
+  Tabs,
+  Tag,
+  TextField,
+  VStack,
+} from '@navikt/ds-react'
+
+import AboutTab from './about/AboutTab'
+import VariantsTab from './variants/VariantsTab'
+
+import styles from './ProductPage.module.scss'
 
 type Error = {
-  isoCodeErrorMessage?: string | undefined;
-};
+  isoCodeErrorMessage?: string | undefined
+}
 
 const Product = () => {
-  const { seriesId } = useParams();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { pathname, state } = useLocation();
-  const oversiktPath = typeof state === "string" ? state : "/produkter";
-  const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false);
-  const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false);
-  const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false);
-  const [changeToIsoCategoryModalIsOpen, setChangeToIsoCategoryModalIsOpen] = useState(false);
-  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
+  const { seriesId } = useParams()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { pathname, state } = useLocation()
+  const oversiktPath = typeof state === 'string' ? state : '/produkter'
+  const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false)
+  const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false)
+  const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false)
+  const [changeToIsoCategoryModalIsOpen, setChangeToIsoCategoryModalIsOpen] = useState(false)
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false)
   const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
-    open: boolean;
-    newStatus: "ACTIVE" | "INACTIVE" | undefined;
+    open: boolean
+    newStatus: 'ACTIVE' | 'INACTIVE' | undefined
   }>({
     open: false,
     newStatus: undefined,
-  });
+  })
 
-  const [isValid, setIsValid] = useState(true);
-  const activeTab = searchParams.get("tab") ?? "about";
+  const [isValid, setIsValid] = useState(true)
+  const activeTab = searchParams.get('tab') ?? 'about'
 
-  const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false);
-  const [productTitle, setProductTitle] = useState("");
+  const [showEditProductTitleMode, setShowEditProductTitleMode] = useState(false)
+  const [productTitle, setProductTitle] = useState('')
 
-  const [showEditIsoCategoryMode, setShowEditIsoCategoryMode] = useState(false);
+  const [showEditIsoCategoryMode, setShowEditIsoCategoryMode] = useState(false)
 
-  const { isoCategories } = useIsoCategories();
-  const [isoCategory, setIsoCategory] = useState<string>("");
-  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8);
-  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + " - " + cat.isoCode).sort();
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const { isoCategories } = useIsoCategories()
+  const [isoCategory, setIsoCategory] = useState<string>('')
+  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
+  const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const handleSetFormValueIso = (value: string) => {
-    const parts = value.split("-");
-    return parts[parts.length - 1].replace(/\s/g, ""); // Remove spaces
-  };
+    const parts = value.split('-')
+    return parts[parts.length - 1].replace(/\s/g, '') // Remove spaces
+  }
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
     if (isSelected) {
-      setIsoCategory(option);
-      setSelectedOptions([option]);
+      setIsoCategory(option)
+      setSelectedOptions([option])
     } else {
-      setIsoCategory("");
-      setSelectedOptions([]);
+      setIsoCategory('')
+      setSelectedOptions([])
     }
-  };
+  }
 
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
 
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!);
+  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!)
 
   if (isLoadingSeries) {
     return (
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
       </HGrid>
-    );
+    )
   }
 
   if (!series || errorSeries) {
@@ -126,100 +126,100 @@ const Product = () => {
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   const updateUrlOnTabChange = (value: string) => {
-    navigate(`${pathname}?tab=${value}`, { state: state });
-  };
+    navigate(`${pathname}?tab=${value}`, { state: state })
+  }
 
   const productIsValid = () => {
     if (loggedInUser?.isAdmin) {
-      return series.variants.length > 0;
+      return series.variants.length > 0
     } else if (series.isExpired) {
-      return true;
+      return true
     } else {
-      const hasDescription = series.text.length > 0;
-      const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1;
-      const hasVariants = series.variants.length > 0;
-      const hasDocuments = numberOfDocuments(series) > 0;
+      const hasDescription = series.text.length > 0
+      const hasImages = series.isPublished ? numberOfImages(series) > 0 : numberOfImages(series) > 1
+      const hasVariants = series.variants.length > 0
+      const hasDocuments = numberOfDocuments(series) > 0
 
-      return hasDescription && hasImages && hasDocuments && hasVariants;
+      return hasDescription && hasImages && hasDocuments && hasVariants
     }
-  };
+  }
 
   const handleSaveProductTitle = () => {
-    setShowEditProductTitleMode(false);
+    setShowEditProductTitleMode(false)
     updateProductTitle(series!.id, productTitle)
       .then(() => mutateSeries())
-      .catch((error) => setGlobalError(error.status, error.message));
-  };
+      .catch((error) => setGlobalError(error.status, error.message))
+  }
 
   const handleSaveIsoCategory = (isoCategory: string, resetTechnicalData: boolean) => {
-    setChangeToIsoCategoryModalIsOpen(false);
+    setChangeToIsoCategoryModalIsOpen(false)
     updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory), resetTechnicalData)
       .then(() => mutateSeries())
-      .catch((error) => setGlobalError(error.status, error.message));
-  };
+      .catch((error) => setGlobalError(error.status, error.message))
+  }
 
-  const isEditable = series.status === "EDITABLE";
+  const isEditable = series.status === 'EDITABLE'
 
   async function onDelete() {
-    setDeleteConfirmationModalIsOpen(false);
+    setDeleteConfirmationModalIsOpen(false)
     deleteSeries(series!.id, series!.isPublished)
       .then(() => {
-        mutateSeries();
-        navigate("/produkter");
+        mutateSeries()
+        navigate('/produkter')
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   async function onEditMode() {
-    setEditProductModalIsOpen(false);
+    setEditProductModalIsOpen(false)
     setPublishedSeriesToDraft(series!.id)
       .then(() => {
-        mutateSeries();
+        mutateSeries()
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   async function onToActive() {
-    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })
     setSeriesToActive(series!.id)
       .then(() => {
-        mutateSeries();
+        mutateSeries()
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   async function onToInactive() {
-    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined });
+    setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })
     setSeriesToInactive(series!.id)
       .then(() => {
-        mutateSeries();
+        mutateSeries()
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   async function onSwitchToPart(accessory: boolean, newIsoCode: string) {
-    setChangeToPartModalIsOpen(false);
+    setChangeToPartModalIsOpen(false)
 
     changeMainProductToPart(series!.id, accessory, newIsoCode, false) //todo: resetTechnicalData
       .then(() => {
-        mutateSeries();
-        navigate(`/del/${series?.variants[0].id}`);
+        mutateSeries()
+        navigate(`/del/${series?.variants[0].id}`)
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   return (
@@ -232,8 +232,8 @@ const Product = () => {
         setIsOpen={setApprovalModalIsOpen}
       />
       <ConfirmModal
-        title={"Er du sikker på at du vil slette produktet?"}
-        confirmButtonText={"Slett"}
+        title={'Er du sikker på at du vil slette produktet?'}
+        confirmButtonText={'Slett'}
         onClick={onDelete}
         onClose={() => setDeleteConfirmationModalIsOpen(false)}
         isModalOpen={deleteConfirmationModalIsOpen}
@@ -248,37 +248,37 @@ const Product = () => {
         setIsOpen={setChangeToIsoCategoryModalIsOpen}
         onClick={handleSaveIsoCategory}
       />
-      {expiredSeriesModalIsOpen.newStatus === "ACTIVE" && (
+      {expiredSeriesModalIsOpen.newStatus === 'ACTIVE' && (
         <ConfirmModal
-          title={"Ønsker du å markere dette produktet og alle dens varianter som aktiv?"}
-          confirmButtonText={"Marker som aktiv"}
+          title={'Ønsker du å markere dette produktet og alle dens varianter som aktiv?'}
+          confirmButtonText={'Marker som aktiv'}
           onClick={onToActive}
           onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
           isModalOpen={expiredSeriesModalIsOpen.open}
         />
       )}
-      {expiredSeriesModalIsOpen.newStatus === "INACTIVE" && (
+      {expiredSeriesModalIsOpen.newStatus === 'INACTIVE' && (
         <ConfirmModal
-          title={"Ønsker du å markere dette produktet og alle dens varianter som utgått?"}
-          confirmButtonText={"Marker som utgått"}
+          title={'Ønsker du å markere dette produktet og alle dens varianter som utgått?'}
+          confirmButtonText={'Marker som utgått'}
           onClick={onToInactive}
           onClose={() => setExpiredSeriesModalIsOpen({ open: false, newStatus: undefined })}
           isModalOpen={expiredSeriesModalIsOpen.open}
         />
       )}
       <ConfirmModal
-        title={"Vil du sette produktet i redigeringsmodus?"}
-        confirmButtonText={"OK"}
+        title={'Vil du sette produktet i redigeringsmodus?'}
+        confirmButtonText={'OK'}
         onClick={onEditMode}
         onClose={() => setEditProductModalIsOpen(false)}
         isModalOpen={editProductModalIsOpen}
       />
       <HGrid
         gap="space-12"
-        columns={{ xs: 1, sm: "minmax(16rem, 48rem) 200px", xl: "minmax(16rem, 48rem) 250px" }}
+        columns={{ xs: 1, sm: 'minmax(16rem, 48rem) 200px', xl: 'minmax(16rem, 48rem) 250px' }}
         className={styles.productPage}
       >
-        <VStack gap={{ xs: "space-16", md: "space-12" }}>
+        <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
           <VStack gap="space-16">
             <AkselLink as={Link} to={oversiktPath}>
               <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
@@ -297,18 +297,18 @@ const Product = () => {
                         className={styles.headingLink}
                         rel="noreferrer"
                       >
-                        {series.title ?? ""}
+                        {series.title ?? ''}
                       </a>
                     ) : (
-                      <>{series.title ?? ""}</>
+                      <>{series.title ?? ''}</>
                     )}
                   </Heading>
                 )}
                 {showEditProductTitleMode && (
                   <>
                     <TextField
-                      defaultValue={series.title ?? ""}
-                      label={""}
+                      defaultValue={series.title ?? ''}
+                      label={''}
                       aria-label="Rediger tittel"
                       id="title"
                       name="title"
@@ -331,8 +331,8 @@ const Product = () => {
                     variant="tertiary"
                     icon={<PencilWritingIcon title="Endre produktnavn" fontSize="1.5rem" />}
                     onClick={() => {
-                      setProductTitle(series.title);
-                      setShowEditProductTitleMode(true);
+                      setProductTitle(series.title)
+                      setShowEditProductTitleMode(true)
                     }}
                   ></Button>
                 )}
@@ -349,19 +349,19 @@ const Product = () => {
                   <Tag variant="warning-moderate">Utgått</Tag>
                 </Box>
               )}
-              {!series.isExpired && series.status !== "DONE" && (
+              {!series.isExpired && series.status !== 'DONE' && (
                 <Box
                   paddingInline="space-16"
                   paddingBlock="space-16"
                   borderRadius="4"
                   width="fit-content"
-                  style={{ backgroundColor: "#EFECF4" }}
+                  style={{ backgroundColor: '#EFECF4' }}
                 >
                   <HStack gap="space-8" align="center">
                     <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
                       <circle cx="3" cy="3.5" r="3" fill="#8269A2" />
                     </svg>
-                    <BodyShort>{series.isPublished ? "Nye endringer" : "Nytt produkt"}</BodyShort>
+                    <BodyShort>{series.isPublished ? 'Nye endringer' : 'Nytt produkt'}</BodyShort>
                   </HStack>
                 </Box>
               )}
@@ -370,12 +370,11 @@ const Product = () => {
               {isEditable && loggedInUser?.isAdmin && showEditIsoCategoryMode && (
                 <HStack align="end" gap="space-8">
                   <IsoComboboxProvider
-                    label={labelRequired("Iso-kategori (kode)")}
-                    description={"Søk etter isokategori produktet passer best inn i"}
+                    label={labelRequired('Iso-kategori (kode)')}
+                    description={'Søk etter isokategori produktet passer best inn i'}
                     selectedOptions={selectedOptions}
                     options={isoCodesAndTitles || []}
                     onToggleSelected={onToggleSelected}
-
                     maxSelected={{ limit: 1 }}
                   />
                   <Button
@@ -392,7 +391,7 @@ const Product = () => {
                 <DefinitionList fullWidth horizontal>
                   <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
                   <DefinitionList.Definition>
-                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : "Ingen"}
+                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : 'Ingen'}
                   </DefinitionList.Definition>
                 </DefinitionList>
               )}
@@ -403,7 +402,7 @@ const Product = () => {
                   icon={<PencilWritingIcon title="Endre iso-kategori" fontSize="1.5rem" />}
                   onClick={() => {
                     //setShowEditIsoCategoryMode(true);
-                    setChangeToIsoCategoryModalIsOpen(true);
+                    setChangeToIsoCategoryModalIsOpen(true)
                   }}
                 ></Button>
               )}
@@ -472,7 +471,7 @@ const Product = () => {
             <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
-        <VStack gap={{ xs: "space-16", md: "space-12" }}>
+        <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
           {loggedInUser?.isAdmin && (
             <AdminActions
               series={series}
@@ -501,6 +500,6 @@ const Product = () => {
         </VStack>
       </HGrid>
     </main>
-  );
-};
-export default Product;
+  )
+}
+export default Product

@@ -1,93 +1,94 @@
-import { BodyShort, Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { labelRequired } from "utils/string-util";
-import { ProductRegistrationDTOV2 } from "utils/types/response-types";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithVariantList, getProductByHmsArtNr } from "api/PartApi";
-import { PlusCircleFillIcon, TrashIcon } from "@navikt/aksel-icons";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+
+import { addCompatibleWithVariantList, getProductByHmsArtNr } from 'api/PartApi'
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
+
+import { PlusCircleFillIcon, TrashIcon } from '@navikt/aksel-icons'
+import { BodyShort, Box, Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  partId: string;
-  mutatePart: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  partId: string
+  mutatePart: () => void
 }
 
 const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePart, partId }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([]);
-  const [productsToAdd, setProductsToAdd] = useState<ProductRegistrationDTOV2[]>([]);
+  const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([])
+  const [productsToAdd, setProductsToAdd] = useState<ProductRegistrationDTOV2[]>([])
 
-  const [productIdToAdd, setProductIdToAdd] = useState<string | undefined>(undefined);
-  const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined);
-  const { setGlobalError } = useErrorStore();
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const [productIdToAdd, setProductIdToAdd] = useState<string | undefined>(undefined)
+  const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined)
+  const { setGlobalError } = useErrorStore()
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   const resetModal = () => {
-    setProductIdToAdd(undefined);
-    setProductsToAdd([]);
-    setProductIdsToAdd([]);
-    setProductToAddError(undefined);
-    setModalIsOpen(false);
-  };
+    setProductIdToAdd(undefined)
+    setProductsToAdd([])
+    setProductIdsToAdd([])
+    setProductToAddError(undefined)
+    setModalIsOpen(false)
+  }
 
   async function onClickGetProduct() {
     if (productIdToAdd !== undefined && !productIdsToAdd.includes(productIdToAdd)) {
       getProductByHmsArtNr(productIdToAdd)
         .then((product) => {
           if (!productIdsToAdd.includes(product.hmsArtNr!)) {
-            setProductIdsToAdd([...productIdsToAdd, product.hmsArtNr!]);
+            setProductIdsToAdd([...productIdsToAdd, product.hmsArtNr!])
           }
           if (!productsToAdd.includes(product)) {
-            setProductsToAdd([...productsToAdd, product]);
+            setProductsToAdd([...productsToAdd, product])
           }
-          setProductToAddError(undefined);
-          setProductIdToAdd(undefined);
+          setProductToAddError(undefined)
+          setProductIdToAdd(undefined)
         })
         .catch((error) => {
-          setProductToAddError(`Fant ikke produkt for HMS-nummer ${productIdToAdd}`);
-        });
+          setProductToAddError(`Fant ikke produkt for HMS-nummer ${productIdToAdd}`)
+        })
     } else if (productIdToAdd !== undefined && productIdsToAdd.includes(productIdToAdd)) {
-      setProductToAddError("Produktet er allerede lagt til");
+      setProductToAddError('Produktet er allerede lagt til')
     }
   }
 
   async function onClickLeggTilKobling() {
-    setIsSaving(true);
+    setIsSaving(true)
     if (productsToAdd.length > 0) {
       addCompatibleWithVariantList(
         partId,
         productsToAdd.map((product) => product.id),
-        isAdmin,
+        isAdmin
       ).then(
         () => {
-          mutatePart();
-          setIsSaving(false);
-          setProductIdToAdd(undefined);
-          setProductsToAdd([]);
-          setModalIsOpen(false);
+          mutatePart()
+          setIsSaving(false)
+          setProductIdToAdd(undefined)
+          setProductsToAdd([])
+          setModalIsOpen(false)
         },
         (error) => {
-          setGlobalError(error.message);
-          setIsSaving(false);
-        },
-      );
+          setGlobalError(error.message)
+          setIsSaving(false)
+        }
+      )
     }
-    resetModal();
+    resetModal()
   }
 
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {
-      }}
+      onCancel={(e) => {}}
       header={{
-        heading: "Legg til produkt",
+        heading: 'Legg til produkt',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -99,20 +100,20 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
               <VStack gap="space-8">
                 <BodyShort>HMS-artnr</BodyShort>
                 <TextField
-                  label={labelRequired("HMS-nummer")}
+                  label={labelRequired('HMS-nummer')}
                   hideLabel={true}
                   id="identifier"
                   type="text"
-                  value={productIdToAdd || ""}
+                  value={productIdToAdd || ''}
                   onChange={(e) => setProductIdToAdd(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
                     }
                   }}
                   onKeyUp={(e) => {
-                    if (e.key === "Enter") {
-                      onClickGetProduct();
+                    if (e.key === 'Enter') {
+                      onClickGetProduct()
                     }
                   }}
                 />
@@ -126,7 +127,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
                 Søk etter produkt
               </Button>
             </HStack>
-            {productToAddError && <BodyShort style={{ color: "red" }}>{productToAddError}</BodyShort>}
+            {productToAddError && <BodyShort style={{ color: 'red' }}>{productToAddError}</BodyShort>}
             {isSaving && (
               <HStack justify="center">
                 <Loader size="2xlarge" title="venter..." />
@@ -141,7 +142,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
                       background="success-soft"
                       padding="space-2"
                       flexGrow="1"
-                      style={{ borderRadius: "10px" }}
+                      style={{ borderRadius: '10px' }}
                     >
                       <DefinitionList horizontal fullWidth key={product.id}>
                         <DefinitionList.Term>Navn</DefinitionList.Term>
@@ -154,8 +155,8 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
                       icon={<TrashIcon />}
                       variant="tertiary"
                       onClick={() => {
-                        setProductsToAdd(productsToAdd.filter((p) => p.id !== product.id));
-                        setProductIdsToAdd(productIdsToAdd.filter((id) => id !== product.hmsArtNr!));
+                        setProductsToAdd(productsToAdd.filter((p) => p.id !== product.id))
+                        setProductIdsToAdd(productIdsToAdd.filter((id) => id !== product.hmsArtNr!))
                       }}
                     />
                   </HStack>
@@ -168,8 +169,8 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
       <Modal.Footer>
         <Button
           onClick={() => {
-            setModalIsOpen(false);
-            resetModal();
+            setModalIsOpen(false)
+            resetModal()
           }}
           variant="tertiary"
           type="reset"
@@ -178,7 +179,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
         </Button>
         <Button
           onClick={() => {
-            onClickLeggTilKobling();
+            onClickLeggTilKobling()
           }}
           disabled={productsToAdd.length === 0}
           variant="primary"
@@ -188,7 +189,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewCompatibleProductOnPartModal;
+export default NewCompatibleProductOnPartModal

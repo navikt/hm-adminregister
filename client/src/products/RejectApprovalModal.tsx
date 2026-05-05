@@ -1,8 +1,10 @@
-import { SeriesDTO } from "utils/types/response-types";
-import { Box, Button, Modal, Textarea } from "@navikt/ds-react";
-import { rejectSeries } from "api/SeriesApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useState } from "react";
+import { useState } from 'react'
+
+import { rejectSeries } from 'api/SeriesApi'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { Box, Button, Modal, Textarea } from '@navikt/ds-react'
 
 export const RejectApprovalModal = ({
   series,
@@ -10,37 +12,37 @@ export const RejectApprovalModal = ({
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesDTO;
-  mutateSeries: () => void;
-  isOpen: boolean;
-  setIsOpen: (newState: boolean) => void;
+  series: SeriesDTO
+  mutateSeries: () => void
+  isOpen: boolean
+  setIsOpen: (newState: boolean) => void
 }) => {
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
-  const [message, setMessage] = useState<string | null>(series.message ?? null);
+  const [message, setMessage] = useState<string | null>(series.message ?? null)
 
   async function onRejectApproval(message: string | null) {
     rejectSeries(series.id, { message: message })
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
+        setGlobalError(error.status, error.message)
+      })
   }
 
   return (
-    <Modal open={isOpen} header={{ heading: "Avslå produkt" }} onClose={() => setIsOpen(false)}>
+    <Modal open={isOpen} header={{ heading: 'Avslå produkt' }} onClose={() => setIsOpen(false)}>
       <Box padding="space-16">
         <Textarea
           label="Melding til leverandør"
           description="Unngå personopplysninger i meldingen"
-          value={message || ""}
+          value={message || ''}
           onChange={(event) => setMessage(event.target.value)}
         />
       </Box>
       <Modal.Footer>
         <Button
           onClick={() => {
-            onRejectApproval(message).then(() => setIsOpen(false));
+            onRejectApproval(message).then(() => setIsOpen(false))
           }}
         >
           Avslå
@@ -50,5 +52,5 @@ export const RejectApprovalModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}

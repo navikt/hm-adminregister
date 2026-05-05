@@ -1,9 +1,12 @@
-import { Button, Heading, Loader, Modal } from "@navikt/ds-react";
-import { approveMultipleSeries } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import styles from "./PublishMultipleSeriesModal.module.scss";
-import { useState } from "react";
+import { useState } from 'react'
+
+import { approveMultipleSeries } from 'api/SeriesApi'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+
+import { Button, Heading, Loader, Modal } from '@navikt/ds-react'
+
+import styles from './PublishMultipleSeriesModal.module.scss'
 
 export const PublishMultipleSeriesModal = ({
   seriesIds,
@@ -12,29 +15,29 @@ export const PublishMultipleSeriesModal = ({
   mutateSeries,
   setSelectedRows,
 }: {
-  seriesIds: string[];
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  mutateSeries: () => void;
-  setSelectedRows: (selectedRows: string[]) => void;
+  seriesIds: string[]
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
+  mutateSeries: () => void
+  setSelectedRows: (selectedRows: string[]) => void
 }) => {
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   async function onPublishMultipleSeries() {
-    setIsLoading(true);
+    setIsLoading(true)
     approveMultipleSeries(seriesIds)
       .then(() => {
-        mutateSeries();
-        setSelectedRows([]);
-        setIsLoading(false);
-        setIsOpen(false);
+        mutateSeries()
+        setSelectedRows([])
+        setIsLoading(false)
+        setIsOpen(false)
       })
       .catch((error) => {
-        setGlobalError(error);
-        setIsLoading(false);
-      });
+        setGlobalError(error)
+        setIsLoading(false)
+      })
   }
 
   return (
@@ -46,7 +49,7 @@ export const PublishMultipleSeriesModal = ({
       </Modal.Header>
 
       <Modal.Footer>
-        {isLoading && <Loader size={"small"} />}
+        {isLoading && <Loader size={'small'} />}
         <Button onClick={onPublishMultipleSeries} disabled={isLoading}>
           OK
         </Button>
@@ -55,5 +58,5 @@ export const PublishMultipleSeriesModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}

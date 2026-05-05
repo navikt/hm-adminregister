@@ -1,4 +1,4 @@
-import { BodyShort, Box, Heading, Link, List, Page } from "@navikt/ds-react";
+import { BodyShort, Box, Heading, Link, List, Page } from '@navikt/ds-react'
 
 export const NotFound = () => {
   return (
@@ -20,5 +20,5 @@ export const NotFound = () => {
         </Box>
       </Page.Block>
     </Page>
-  );
-};
+  )
+}

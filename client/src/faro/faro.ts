@@ -1,21 +1,21 @@
-import { Faro, getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
+import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk'
 
-let faro: Faro | null = null;
+let faro: Faro | null = null
 
 export function initInstrumentation(): void {
-  if (window.appSettings.MILJO === "local") return;
-  if (typeof window === "undefined" || faro !== null) return;
+  if (window.appSettings.MILJO === 'local') return
+  if (typeof window === 'undefined' || faro !== null) return
 
-  getFaro();
+  getFaro()
 }
 
 function getFaro(): Faro | null {
-  if (faro != null) return faro;
+  if (faro != null) return faro
   faro = initializeFaro({
-    paused: process.env.NODE_ENV !== "production",
+    paused: process.env.NODE_ENV !== 'production',
     url: window.appSettings.VITE_FARO_URL,
     app: {
-      name: "hm-adminregister",
+      name: 'hm-adminregister',
     },
     instrumentations: [
       ...getWebInstrumentations({
@@ -23,6 +23,6 @@ function getFaro(): Faro | null {
       }),
       // new TracingInstrumentation(),
     ],
-  });
-  return faro;
+  })
+  return faro
 }

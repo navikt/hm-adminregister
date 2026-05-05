@@ -1,28 +1,30 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Buildings3Icon } from "@navikt/aksel-icons";
-import { Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
-import { updateSupplier } from "api/SupplierApi";
-import FormBox from "felleskomponenter/FormBox";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { labelRequired } from "utils/string-util";
-import { SupplierDTOBody } from "utils/supplier-util";
-import { useSupplier } from "utils/swr-hooks";
-import { z } from "zod";
-import { editSupplierSchema } from "utils/zodSchema/editSupplier";
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate, useParams } from 'react-router-dom'
 
-type FormData = z.infer<typeof editSupplierSchema>;
+import { updateSupplier } from 'api/SupplierApi'
+import FormBox from 'felleskomponenter/FormBox'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { SupplierDTOBody } from 'utils/supplier-util'
+import { useSupplier } from 'utils/swr-hooks'
+import { editSupplierSchema } from 'utils/zodSchema/editSupplier'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Buildings3Icon } from '@navikt/aksel-icons'
+import { Button, HStack, Loader, TextField, VStack } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof editSupplierSchema>
 export default function EditSupplier() {
-  const { supplierId } = useParams();
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
+  const { supplierId } = useParams()
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
 
-  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin, supplierId);
+  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin, supplierId)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const {
     handleSubmit,
@@ -32,45 +34,45 @@ export default function EditSupplier() {
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(editSupplierSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      name: supplier?.name || "",
-      email: supplier?.supplierData.email || "",
-      homepage: supplier?.supplierData.homepage || "",
-      phone: supplier?.supplierData.phone || "",
-      address: supplier?.supplierData.address || "",
-      postNr: supplier?.supplierData.postNr || "",
-      postLocation: supplier?.supplierData.postLocation || "",
+      name: supplier?.name || '',
+      email: supplier?.supplierData.email || '',
+      homepage: supplier?.supplierData.homepage || '',
+      phone: supplier?.supplierData.phone || '',
+      address: supplier?.supplierData.address || '',
+      postNr: supplier?.supplierData.postNr || '',
+      postLocation: supplier?.supplierData.postLocation || '',
     },
-  });
+  })
 
   useEffect(() => {
     reset({
-      name: supplier?.name || "",
-      email: supplier?.supplierData.email || "",
-      homepage: supplier?.supplierData.homepage || "",
-      phone: supplier?.supplierData.phone || "",
-      address: supplier?.supplierData.address || "",
-      postNr: supplier?.supplierData.postNr || "",
-      postLocation: supplier?.supplierData.postLocation || "",
-    });
-    trigger();
-  }, [supplier]);
+      name: supplier?.name || '',
+      email: supplier?.supplierData.email || '',
+      homepage: supplier?.supplierData.homepage || '',
+      phone: supplier?.supplierData.phone || '',
+      address: supplier?.supplierData.address || '',
+      postNr: supplier?.supplierData.postNr || '',
+      postLocation: supplier?.supplierData.postLocation || '',
+    })
+    trigger()
+  }, [supplier])
 
   if (supplierIsLoading) {
     return (
-      <HStack justify="center" style={{ marginTop: "60px" }}>
+      <HStack justify="center" style={{ marginTop: '60px' }}>
         <Loader size="3xlarge" title="venter..."></Loader>
       </HStack>
-    );
+    )
   }
 
   if (supplierError) {
-    setGlobalError(supplierError);
+    setGlobalError(supplierError)
   }
 
   async function onSubmit(data: FormData) {
-    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, "");
+    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, '')
 
     const editedSupplier: SupplierDTOBody = {
       ...supplier,
@@ -84,16 +86,16 @@ export default function EditSupplier() {
         postNr: data.postNr,
         postLocation: data.postLocation,
       },
-    };
+    }
 
     updateSupplier(loggedInUser?.isAdmin || false, supplierId!, editedSupplier)
       .then(() => {
-        supplierMutate();
-        navigate(loggedInUser?.isAdmin ? `/leverandor/${supplierId}` : "/profil");
+        supplierMutate()
+        navigate(loggedInUser?.isAdmin ? `/leverandor/${supplierId}` : '/profil')
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   return (
@@ -101,8 +103,8 @@ export default function EditSupplier() {
       <form action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="space-8" width="300px">
           <TextField
-            {...register("name", { required: true })}
-            label={labelRequired("Firmanavn")}
+            {...register('name', { required: true })}
+            label={labelRequired('Firmanavn')}
             id="name"
             name="name"
             type="text"
@@ -111,8 +113,8 @@ export default function EditSupplier() {
             disabled={loggedInUser?.isAdmin ? false : true}
           />
           <TextField
-            {...register("email", { required: false })}
-            label={"E-post"}
+            {...register('email', { required: false })}
+            label={'E-post'}
             id="email"
             type="email"
             name="email"
@@ -121,7 +123,7 @@ export default function EditSupplier() {
             error={errors.email && errors.email.message}
           />
           <TextField
-            {...register("homepage", { required: false })}
+            {...register('homepage', { required: false })}
             label="Nettside"
             id="homepage"
             type="text"
@@ -131,7 +133,7 @@ export default function EditSupplier() {
             error={errors.homepage && errors.homepage.message}
           />
           <TextField
-            {...register("phone", { required: false })}
+            {...register('phone', { required: false })}
             label="Telefonnummer"
             id="phoneNumber"
             type="text"
@@ -141,7 +143,7 @@ export default function EditSupplier() {
             error={errors.phone && errors.phone.message}
           />
           <TextField
-            {...register("address", { required: false })}
+            {...register('address', { required: false })}
             label="Adresse"
             id="address"
             type="text"
@@ -150,7 +152,7 @@ export default function EditSupplier() {
             error={errors.address && errors.address.message}
           />
           <TextField
-            {...register("postNr", { required: false })}
+            {...register('postNr', { required: false })}
             label="Postnummer"
             id="postNr"
             type="text"
@@ -159,7 +161,7 @@ export default function EditSupplier() {
             error={errors.postNr && errors.postNr.message}
           />
           <TextField
-            {...register("postLocation", { required: false })}
+            {...register('postLocation', { required: false })}
             label="Sted"
             id="postLocation"
             type="text"
@@ -178,5 +180,5 @@ export default function EditSupplier() {
         </VStack>
       </form>
     </FormBox>
-  );
+  )
 }

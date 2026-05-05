@@ -1,16 +1,20 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from "@navikt/aksel-icons";
+import ErrorAlert from 'error/ErrorAlert'
+import { useAgreements, usePagedAgreements } from 'utils/swr-hooks'
+import { AgreementGroupDto } from 'utils/types/response-types'
+
+import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
   BodyShort,
   Box,
   Button,
   Dropdown,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   LinkPanel,
   Loader,
   Pagination,
@@ -19,28 +23,24 @@ import {
   Tag,
   ToggleGroup,
   VStack,
-} from "@navikt/ds-react";
-
-import { useAgreements, usePagedAgreements } from "utils/swr-hooks";
-import { AgreementGroupDto } from "utils/types/response-types";
-import ErrorAlert from "error/ErrorAlert";
+} from '@navikt/ds-react'
 
 export enum AgreementFilterOption {
-  ALL = "ALL",
-  ACTIVE = "ACTIVE",
-  FUTURE = "FUTURE",
-  EXPIRED = "EXPIRED",
+  ALL = 'ALL',
+  ACTIVE = 'ACTIVE',
+  FUTURE = 'FUTURE',
+  EXPIRED = 'EXPIRED',
 }
 
 const Agreements = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams()
   const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(
-    searchParams.get("filter") ? (searchParams.get("filter") as AgreementFilterOption) : AgreementFilterOption.ALL,
-  );
+    searchParams.get('filter') ? (searchParams.get('filter') as AgreementFilterOption) : AgreementFilterOption.ALL
+  )
 
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const pageSize = 10;
-  const { data: allData, isLoading: allDataIsLoading, error: allError } = useAgreements();
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
+  const pageSize = 10
+  const { data: allData, isLoading: allDataIsLoading, error: allError } = useAgreements()
   const {
     data: pagedData,
     isLoading,
@@ -49,42 +49,41 @@ const Agreements = () => {
     page: pageState - 1,
     pageSize,
     filter: selectedFilterOption,
-  });
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>();
-  const navigate = useNavigate();
+  })
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>()
+  const navigate = useNavigate()
 
-  const showPageNavigator =
-    !!pagedData && !!pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length === 0;
-  const inSearchMode = searchTerm.length > 0;
+  const showPageNavigator = !!pagedData && !!pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length === 0
+  const inSearchMode = searchTerm.length > 0
 
   if (allError || pagedError) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   const handeFilterChange = (filter: AgreementFilterOption) => {
-    searchParams.set("filter", filter.toString());
-    setPageState(1);
-    searchParams.set("page", "1");
-    setSelectedFilterOption(filter);
-    setSearchParams(searchParams);
-  };
+    searchParams.set('filter', filter.toString())
+    setPageState(1)
+    searchParams.set('page', '1')
+    setSelectedFilterOption(filter)
+    setSearchParams(searchParams)
+  }
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
+    setSearchTerm(value)
     const filteredAgreements = allData?.content.filter((agreement) =>
-      agreement.title.toLowerCase().includes(value.toLowerCase()),
-    );
+      agreement.title.toLowerCase().includes(value.toLowerCase())
+    )
     if (value.length == 0) {
-      setFilteredData(undefined);
+      setFilteredData(undefined)
     } else {
-      setFilteredData(filteredAgreements);
+      setFilteredData(filteredAgreements)
     }
-  };
+  }
 
   return (
     <main className="show-menu">
@@ -94,7 +93,7 @@ const Agreements = () => {
             Rammeavtaler
           </Heading>
           <VStack gap="space-4">
-            <HGrid columns={{ xs: "1fr", lg: "5fr 6fr" }} gap="space-4">
+            <HGrid columns={{ xs: '1fr', lg: '5fr 6fr' }} gap="space-4">
               <Box role="search">
                 <Search
                   className="search-button"
@@ -107,7 +106,7 @@ const Agreements = () => {
                   onChange={(value) => handleSearch(value)}
                 />
               </Box>
-              <HGrid columns={{ xs: "1fr 32px", md: "1fr 48px", lg: "1fr 48px" }} gap="space-4">
+              <HGrid columns={{ xs: '1fr 32px', md: '1fr 48px', lg: '1fr 48px' }} gap="space-4">
                 {!inSearchMode && (
                   <>
                     <Show above="md" asChild>
@@ -155,7 +154,7 @@ const Agreements = () => {
                     <Dropdown.Menu.List>
                       <Dropdown.Menu.List.Item
                         onClick={() => {
-                          navigate("/rammeavtaler/opprett");
+                          navigate('/rammeavtaler/opprett')
                         }}
                       >
                         <PlusIcon aria-hidden />
@@ -163,7 +162,7 @@ const Agreements = () => {
                       </Dropdown.Menu.List.Item>
                       <Dropdown.Menu.List.Item
                         onClick={() => {
-                          navigate("/katalog/importer-fil");
+                          navigate('/katalog/importer-fil')
                         }}
                       >
                         <FileExcelIcon aria-hidden />
@@ -186,8 +185,8 @@ const Agreements = () => {
                       <LinkPanel
                         onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
                         onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            navigate(`/rammeavtaler/${rammeavtale.id}`);
+                          if (event.key === 'Enter') {
+                            navigate(`/rammeavtaler/${rammeavtale.id}`)
                           }
                         }}
                         className="panel-list__name-panel"
@@ -195,8 +194,8 @@ const Agreements = () => {
                       >
                         <LinkPanel.Title className="panel-list__title panel-list__width">
                           <HStack gap="space-2 space-2" align="center">
-                            <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
-                            {rammeavtale.agreementStatus === "ACTIVE" ? (
+                            <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
+                            {rammeavtale.agreementStatus === 'ACTIVE' ? (
                               <Tag variant="success">Aktiv</Tag>
                             ) : (
                               <Tag variant="warning">Inaktiv</Tag>
@@ -223,8 +222,8 @@ const Agreements = () => {
                     >
                       <LinkPanel.Title className="panel-list__title panel-list__width">
                         <HStack gap="space-2 space-2" align="center">
-                          <BodyShort> {rammeavtale.title || "Ukjent produktnavn"} </BodyShort>
-                          {rammeavtale.agreementStatus === "ACTIVE" ? (
+                          <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
+                          {rammeavtale.agreementStatus === 'ACTIVE' ? (
                             <Tag variant="success">Aktiv</Tag>
                           ) : (
                             <Tag variant="warning">Inaktiv</Tag>
@@ -241,9 +240,9 @@ const Agreements = () => {
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => {
-                    searchParams.set("page", x.toString());
-                    setSearchParams(searchParams);
-                    setPageState(x);
+                    searchParams.set('page', x.toString())
+                    setSearchParams(searchParams)
+                    setPageState(x)
                   }}
                   count={pagedData.totalPages!}
                 />
@@ -253,6 +252,6 @@ const Agreements = () => {
         </VStack>
       </div>
     </main>
-  );
-};
-export default Agreements;
+  )
+}
+export default Agreements

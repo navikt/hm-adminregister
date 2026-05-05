@@ -1,39 +1,38 @@
-import { useFieldArray, useForm } from "react-hook-form";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useFieldArray, useForm } from 'react-hook-form'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { Button, HelpText, HStack, Select, TextField } from "@navikt/ds-react";
-import { updateProductVariant } from "api/ProductApi";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { isUUID, labelRequired } from "utils/string-util";
-import { ProductRegistrationDTOV2, TechDataType } from "utils/types/response-types";
-import styles from "./ProductVariantForm.module.scss";
+import { updateProductVariant } from 'api/ProductApi'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { isUUID, labelRequired } from 'utils/string-util'
+import { ProductRegistrationDTOV2, TechDataType } from 'utils/types/response-types'
+
+import { Button, HStack, HelpText, Select, TextField } from '@navikt/ds-react'
+
+import styles from './ProductVariantForm.module.scss'
 
 type FormData = {
-  articleName: string;
-  supplierRef: string;
-  hmsArtNr: string | null;
+  articleName: string
+  supplierRef: string
+  hmsArtNr: string | null
   techData: Array<{
-    key: string;
-    value: string;
-    unit: string;
-    type: TechDataType;
-    definition?: string | null;
-    options?: string[] | null;
-  }>;
-};
+    key: string
+    value: string
+    unit: string
+    type: TechDataType
+    definition?: string | null
+    options?: string[] | null
+  }>
+}
 
 const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTOV2; mutate: () => void }) => {
-  const navigate = useNavigate();
-  const { pathname, state } = useLocation();
-  const {
-    articleName,
-    supplierRef,
-  } = product;
-  const [searchParams] = useSearchParams();
-  const page = Number(searchParams.get("page")) || 1;
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
+  const navigate = useNavigate()
+  const { pathname, state } = useLocation()
+  const { articleName, supplierRef } = product
+  const [searchParams] = useSearchParams()
+  const page = Number(searchParams.get('page')) || 1
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
 
   const {
     handleSubmit,
@@ -42,18 +41,16 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
     control,
     setError,
   } = useForm<FormData>({
-    mode: "onTouched",
+    mode: 'onTouched',
     defaultValues: {
       articleName,
       hmsArtNr: product.hmsArtNr,
-      supplierRef: isUUID(supplierRef) ? "" : supplierRef,
+      supplierRef: isUUID(supplierRef) ? '' : supplierRef,
       techData: product.productData.techData,
     },
-  });
+  })
 
-  const { fields: techDataFields } = useFieldArray({ name: "techData", control });
-
-
+  const { fields: techDataFields } = useFieldArray({ name: 'techData', control })
 
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
@@ -64,46 +61,46 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         ...product.productData,
         techData: data.techData,
       },
-    };
+    }
 
     updateProductVariant(loggedInUser?.isAdmin || false, product.id, productRegistrationUpdated)
       .then((product) => {
-        navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`, { state: state });
-        mutate();
+        navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`, { state: state })
+        mutate()
       })
       .catch((error) => {
-        if (error.message === "supplierIdRefId already exists") {
-          setError("supplierRef", { type: "custom", message: "Artikkelnummeret finnes allerede på en annen variant" });
+        if (error.message === 'supplierIdRefId already exists') {
+          setError('supplierRef', { type: 'custom', message: 'Artikkelnummeret finnes allerede på en annen variant' })
         } else {
-          setGlobalError(error.status, error.message);
+          setGlobalError(error.status, error.message)
         }
-      });
+      })
   }
 
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
       <TextField
-        {...register("articleName", { required: true })}
-        label={labelRequired("Artikkelnavn")}
+        {...register('articleName', { required: true })}
+        label={labelRequired('Artikkelnavn')}
         id="articleName"
         name="articleName"
         type="text"
         defaultValue={product.articleName}
-        error={errors?.articleName && "Artikkelnavn er påkrevd"}
+        error={errors?.articleName && 'Artikkelnavn er påkrevd'}
       />
       <TextField
-        {...register("supplierRef", { required: true })}
-        label={labelRequired("Leverandør artikkelnummer")}
+        {...register('supplierRef', { required: true })}
+        label={labelRequired('Leverandør artikkelnummer')}
         id="supplierRef"
         name="supplierRef"
         type="text"
-        error={errors?.supplierRef?.message || (errors?.supplierRef && "Artikkelnummer er påkrevd")}
+        error={errors?.supplierRef?.message || (errors?.supplierRef && 'Artikkelnummer er påkrevd')}
         readOnly={!loggedInUser?.isAdmin && product.isPublished}
       />
       {loggedInUser?.isAdmin && (
         <TextField
-          {...register("hmsArtNr")}
-          label={"HMS nummer"}
+          {...register('hmsArtNr')}
+          label={'HMS nummer'}
           id="hmsArtNr"
           name="hmsArtNr"
           type="text"
@@ -111,22 +108,22 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         />
       )}
       {techDataFields.map((techDataField, index) => {
-        const errorForField = errors?.techData?.[index]?.value;
+        const errorForField = errors?.techData?.[index]?.value
 
         const label = techDataField?.definition ? (
           <HStack gap="space-16">
-            {techDataField.key} <HelpText>{techDataField?.definition}</HelpText>{" "}
+            {techDataField.key} <HelpText>{techDataField?.definition}</HelpText>{' '}
           </HStack>
         ) : (
           techDataField.key
-        );
+        )
 
         return (
           <HStack key={`techdata-${techDataField.key}-${index}`} align="end" gap="space-8" wrap={false}>
-            {techDataField.type === "NUMBER" && (
+            {techDataField.type === 'NUMBER' && (
               <TextField
                 {...register(`techData.${index}.value`, {
-                  validate: (value) => value === "" || /^\d+([.,]\d+)?$/.test(value) || "Må være tall",
+                  validate: (value) => value === '' || /^\d+([.,]\d+)?$/.test(value) || 'Må være tall',
                 })}
                 label={label}
                 id={`techData.${index}.value`}
@@ -135,14 +132,14 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
                 error={errorForField?.message}
               />
             )}
-            {techDataField.type === "BOOLEAN" && (
+            {techDataField.type === 'BOOLEAN' && (
               <Select {...register(`techData.${index}.value`)} label={label}>
                 <option value="">Velg</option>
                 <option value="Ja">Ja</option>
                 <option value="Nei">Nei</option>
               </Select>
             )}
-            {techDataField.type === "OPTIONS" && (
+            {techDataField.type === 'OPTIONS' && (
               <Select {...register(`techData.${index}.value`)} label={label}>
                 <option value="">Velg</option>
                 {techDataField.options?.map((option) => (
@@ -152,7 +149,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
                 ))}
               </Select>
             )}
-            {techDataField.type === "TEXT" && (
+            {techDataField.type === 'TEXT' && (
               <TextField
                 {...register(`techData.${index}.value`)}
                 label={label}
@@ -164,7 +161,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             )}
             <span className={styles.techDataUnit}>{techDataField.unit}</span>
           </HStack>
-        );
+        )
       })}
       <div className="button-container">
         <Button
@@ -180,7 +177,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         </Button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default ProductVariantForm;
+export default ProductVariantForm

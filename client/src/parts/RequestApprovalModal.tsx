@@ -1,9 +1,11 @@
-import { PartDTO, SeriesDTO } from "utils/types/response-types";
-import { BodyLong, Button, Modal } from "@navikt/ds-react";
-import { RocketIcon } from "@navikt/aksel-icons";
-import { useErrorStore } from "utils/store/useErrorStore";
-import styles from "../products/ProductPage.module.scss";
-import { approvePart } from "api/PartApi";
+import { approvePart } from 'api/PartApi'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { PartDTO, SeriesDTO } from 'utils/types/response-types'
+
+import { RocketIcon } from '@navikt/aksel-icons'
+import { BodyLong, Button, Modal } from '@navikt/ds-react'
+
+import styles from '../products/ProductPage.module.scss'
 
 export const RequestApprovalModal = ({
   part,
@@ -16,53 +18,53 @@ export const RequestApprovalModal = ({
   isOpen,
   setIsOpen,
 }: {
-  part: PartDTO;
-  series: SeriesDTO | null;
-  mutatePart: () => void;
-  mutateSeries: () => void;
-  partName: string | undefined;
-  supplierRef: string | undefined;
-  isValid: boolean;
-  isOpen: boolean;
-  setIsOpen: (newState: boolean) => void;
+  part: PartDTO
+  series: SeriesDTO | null
+  mutatePart: () => void
+  mutateSeries: () => void
+  partName: string | undefined
+  supplierRef: string | undefined
+  isValid: boolean
+  isOpen: boolean
+  setIsOpen: (newState: boolean) => void
 }) => {
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
   const partIsValid = () => {
-    const articleNameIsValid =partName && partName.trim().length > 0;
-    const levartNrIsValid = supplierRef && supplierRef.trim().length > 0;
-    return articleNameIsValid && levartNrIsValid || false
-  };
+    const articleNameIsValid = partName && partName.trim().length > 0
+    const levartNrIsValid = supplierRef && supplierRef.trim().length > 0
+    return (articleNameIsValid && levartNrIsValid) || false
+  }
 
   async function onPublish() {
-
     if (series && partIsValid()) {
-      approvePart(series.id).then(
-        () => {
+      approvePart(series.id)
+        .then(() => {
           mutatePart()
           mutateSeries()
-        }
-      ).catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
+        })
+        .catch((error) => {
+          setGlobalError(error.status, error.message)
+        })
     }
   }
 
   const InvalidPartModal = () => {
-
     const ErrorMessages = () => {
       return (
         <>
           {!partName && <li>Delen må ha et navn</li>}
           {!supplierRef && <li>Delen må ha et levart-nummer</li>}
-          {!(part?.productData.attributes.compatibleWith?.seriesIds && part?.productData.attributes.compatibleWith?.seriesIds.length > 0) &&
-              <li>Delen må kobles til et produkt</li>}
+          {!(
+            part?.productData.attributes.compatibleWith?.seriesIds &&
+            part?.productData.attributes.compatibleWith?.seriesIds.length > 0
+          ) && <li>Delen må kobles til et produkt</li>}
         </>
-      );
-    };
+      )
+    }
 
     return (
-      <Modal open={isOpen} header={{ heading: "Delen mangler data" }} onClose={() => setIsOpen(false)}>
+      <Modal open={isOpen} header={{ heading: 'Delen mangler data' }} onClose={() => setIsOpen(false)}>
         <Modal.Body>
           <BodyLong spacing>Det er noen feil som du må rette opp.</BodyLong>
           <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
@@ -76,20 +78,20 @@ export const RequestApprovalModal = ({
           </Button>
         </Modal.Footer>
       </Modal>
-    );
-  };
+    )
+  }
 
   const RequestApprovalModal = () => {
     return (
       <Modal
         open={isOpen}
-        header={{ icon: <RocketIcon aria-hidden />, heading: "Publiser del" }}
+        header={{ icon: <RocketIcon aria-hidden />, heading: 'Publiser del' }}
         onClose={() => setIsOpen(false)}
       >
         <Modal.Footer>
           <Button
             onClick={() => {
-              onPublish().then(() => setIsOpen(false));
+              onPublish().then(() => setIsOpen(false))
             }}
           >
             Publiser
@@ -99,8 +101,8 @@ export const RequestApprovalModal = ({
           </Button>
         </Modal.Footer>
       </Modal>
-    );
-  };
+    )
+  }
 
-  return isValid ? <RequestApprovalModal /> : <InvalidPartModal />;
-};
+  return isValid ? <RequestApprovalModal /> : <InvalidPartModal />
+}

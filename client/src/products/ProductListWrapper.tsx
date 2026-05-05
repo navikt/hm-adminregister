@@ -1,11 +1,19 @@
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+
+import ErrorAlert from 'error/ErrorAlert'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
+
+import { PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
   Box,
   Button,
   Chips,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Label,
   Pagination,
   Search,
@@ -13,79 +21,73 @@ import {
   Show,
   UNSAFE_Combobox,
   VStack,
-} from "@navikt/ds-react";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
+} from '@navikt/ds-react'
 
-import { PlusIcon } from "@navikt/aksel-icons";
-import ErrorAlert from "error/ErrorAlert";
-import { ProductList } from "./ProductList";
+import { ProductList } from './ProductList'
 
 const ProductListWrapper = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
-  const { loggedInUser } = useAuthStore();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const statusFilters = searchParams.get("filters")?.split(",") || [];
-  const { pathname, search } = useLocation();
-  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
+  const { loggedInUser } = useAuthStore()
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const statusFilters = searchParams.get('filters')?.split(',') || []
+  const { pathname, search } = useLocation()
+  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false)
 
-  const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
-  const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+  const initialPageSize = Number(localStorage.getItem('pageSizeState')) || 10
+  const [pageSizeState, setPageSizeState] = useState(initialPageSize)
 
   // Sort is persisted in search params under the key "sort"; default is updated,DESC
-  const sortParam = searchParams.get("sort") || "updated,DESC";
-  const [sortUrl, setSortUrl] = useState<string | null>(sortParam);
+  const sortParam = searchParams.get('sort') || 'updated,DESC'
+  const [sortUrl, setSortUrl] = useState<string | null>(sortParam)
 
   // Agreement filter state - null means "all", "true" means "on agreement", "false" means "not on agreement"
   const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
-    return searchParams.get("inAgreement");
-  });
+    return searchParams.get('inAgreement')
+  })
 
   // Missing media type filter - toggle state
   const [missingMediaType, setMissingMediaType] = useState<string | null>(() => {
-    return searchParams.get("missingMediaType");
-  });
+    return searchParams.get('missingMediaType')
+  })
 
   // Helper to derive current sort direction for updated
-  const isUpdatedDesc = !sortUrl || sortUrl === "updated,DESC" || !sortUrl.startsWith("updated,");
+  const isUpdatedDesc = !sortUrl || sortUrl === 'updated,DESC' || !sortUrl.startsWith('updated,')
 
   useEffect(() => {
-    localStorage.setItem("pageSizeState", pageSizeState.toString());
-  }, [pageSizeState]);
+    localStorage.setItem('pageSizeState', pageSizeState.toString())
+  }, [pageSizeState])
 
   useEffect(() => {
     // Keep search params in sync when sortUrl changes
     if (sortUrl) {
-      searchParams.set("sort", sortUrl);
+      searchParams.set('sort', sortUrl)
     } else {
-      searchParams.delete("sort");
+      searchParams.delete('sort')
     }
-    setSearchParams(searchParams);
-  }, [sortUrl]);
+    setSearchParams(searchParams)
+  }, [sortUrl])
 
   useEffect(() => {
     // Keep search params in sync when agreementFilter changes
     if (agreementFilter !== null) {
-      searchParams.set("inAgreement", agreementFilter);
+      searchParams.set('inAgreement', agreementFilter)
     } else {
-      searchParams.delete("inAgreement");
+      searchParams.delete('inAgreement')
     }
-    setSearchParams(searchParams);
-  }, [agreementFilter]);
+    setSearchParams(searchParams)
+  }, [agreementFilter])
 
   useEffect(() => {
     // Keep search params in sync when missingMediaType changes
     if (missingMediaType !== null) {
-      searchParams.set("missingMediaType", missingMediaType);
+      searchParams.set('missingMediaType', missingMediaType)
     } else {
-      searchParams.delete("missingMediaType");
+      searchParams.delete('missingMediaType')
     }
-    setSearchParams(searchParams);
-  }, [missingMediaType]);
+    setSearchParams(searchParams)
+  }, [missingMediaType])
 
   const {
     data: pagedData,
@@ -100,104 +102,107 @@ const ProductListWrapper = () => {
     sortUrl,
     agreementFilter,
     missingMediaType,
-  });
+  })
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm);
+  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm)
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
-  };
+    setSearchTerm(value)
+  }
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
-      searchParams.set("page", String(pagedData.totalPages));
-      setSearchParams(searchParams);
-      setPageState(pagedData.totalPages);
+      searchParams.set('page', String(pagedData.totalPages))
+      setSearchParams(searchParams)
+      setPageState(pagedData.totalPages)
     }
-  }, [pagedData]);
+  }, [pagedData])
 
-  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
+  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1
 
   if (errorPaged) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
-  const visningStatusfilter = ["Under endring", "Venter på godkjenning", "Avslått", "Publisert"];
+  const visningStatusfilter = ['Under endring', 'Venter på godkjenning', 'Avslått', 'Publisert']
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id
 
     if (uuid) {
       if (isSelected) {
-        if (!searchParams.getAll("supplier").includes(uuid)) {
-          searchParams.set("supplier", uuid);
+        if (!searchParams.getAll('supplier').includes(uuid)) {
+          searchParams.set('supplier', uuid)
         }
       } else {
-        if (searchParams.getAll("supplier").includes(uuid)) {
-          const updated = searchParams.getAll("supplier").filter((supplier) => supplier !== uuid);
-          searchParams.delete("supplier");
-          updated.forEach((supplier) => searchParams.set("supplier", supplier));
+        if (searchParams.getAll('supplier').includes(uuid)) {
+          const updated = searchParams.getAll('supplier').filter((supplier) => supplier !== uuid)
+          searchParams.delete('supplier')
+          updated.forEach((supplier) => searchParams.set('supplier', supplier))
         }
       }
-      setSearchParams(searchParams);
-      setSupplierFilter(searchParams.get("supplier") || "");
+      setSearchParams(searchParams)
+      setSupplierFilter(searchParams.get('supplier') || '')
     }
-  };
+  }
 
   const onFilterChange = (filterName: string) => {
     if (statusFilters.includes(filterName)) {
-      searchParams.set("filters", statusFilters.filter((x) => x !== filterName).join(","));
-      setSearchParams(searchParams);
+      searchParams.set('filters', statusFilters.filter((x) => x !== filterName).join(','))
+      setSearchParams(searchParams)
     } else {
-      searchParams.set("filters", [...statusFilters, filterName].join(","));
-      setSearchParams(searchParams);
+      searchParams.set('filters', [...statusFilters, filterName].join(','))
+      setSearchParams(searchParams)
     }
-  };
+  }
 
   const toggleMissingMediaType = () => {
-    setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
-  };
+    setMissingMediaType(missingMediaType === 'IMAGE' ? null : 'IMAGE')
+  }
 
   const toggleMissingVideoType = () => {
-    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
-  };
+    setMissingMediaType(missingMediaType === 'VIDEO' ? null : 'VIDEO')
+  }
 
-  const hasActiveFilters = statusFilters.length > 0 || missingMediaType !== null || agreementFilter !== null;
+  const hasActiveFilters = statusFilters.length > 0 || missingMediaType !== null || agreementFilter !== null
 
   const resetAllFilters = () => {
-    searchParams.delete("filters");
-    setSearchParams(searchParams);
-    setMissingMediaType(null);
-    setAgreementFilter(null);
-  };
+    searchParams.delete('filters')
+    setSearchParams(searchParams)
+    setMissingMediaType(null)
+    setAgreementFilter(null)
+  }
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "space-16", md: "space-24" }} maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
+      <VStack
+        gap={{ xs: 'space-16', md: 'space-24' }}
+        maxWidth={loggedInUser && loggedInUser.isAdmin ? '80rem' : '64rem'}
+      >
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
-        <VStack gap={{ xs: "space-16", md: "space-32" }}>
+        <VStack gap={{ xs: 'space-16', md: 'space-32' }}>
           <HGrid
-            columns={{ xs: "space-8", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            columns={{ xs: 'space-8', md: loggedInUser && !loggedInUser.isAdmin ? '1fr 230px' : '1fr ' }}
             gap="space-16"
-            align={"center"}
+            align={'center'}
           >
             <HGrid
               columns={{
-                xs: "space-16",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
+                xs: 'space-16',
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? '3fr 2fr' : '2fr',
               }}
               gap="space-16"
               align="start"
             >
-              <Box role="search" style={{ maxWidth: "475px" }}>
+              <Box role="search" style={{ maxWidth: '475px' }}>
                 <Search
                   className="search-button"
                   label="Søk"
@@ -212,12 +217,12 @@ const ProductListWrapper = () => {
               </Box>
 
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
-                <Box asChild style={{ maxWidth: "475px" }}>
+                <Box asChild style={{ maxWidth: '475px' }}>
                   <UNSAFE_Combobox
                     label="Leverandører"
                     selectedOptions={searchParams
-                      .getAll("supplier")
-                      .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                      .getAll('supplier')
+                      .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || '')}
                     onToggleSelected={onToggleSelected}
                     options={suppliers?.map((supplier) => supplier.name) || []}
                   />
@@ -231,8 +236,8 @@ const ProductListWrapper = () => {
                   variant="secondary"
                   icon={<PlusIcon aria-hidden />}
                   iconPosition="left"
-                  onClick={() => navigate("/produkter/opprett")}
-                  style={{ maxHeight: "3rem" }}
+                  onClick={() => navigate('/produkter/opprett')}
+                  style={{ maxHeight: '3rem' }}
                 >
                   Opprett nytt produkt
                 </Button>
@@ -252,34 +257,28 @@ const ProductListWrapper = () => {
                 </Chips.Toggle>
               ))}
               <Chips.Toggle
-                selected={statusFilters.includes("Vis utgåtte")}
-                onClick={() => onFilterChange("Vis utgåtte")}
+                selected={statusFilters.includes('Vis utgåtte')}
+                onClick={() => onFilterChange('Vis utgåtte')}
               >
                 Vis utgåtte
               </Chips.Toggle>
-              <Chips.Toggle
-                selected={missingMediaType === "IMAGE"}
-                onClick={toggleMissingMediaType}
-              >
+              <Chips.Toggle selected={missingMediaType === 'IMAGE'} onClick={toggleMissingMediaType}>
                 Mangler bilder
               </Chips.Toggle>
-              <Chips.Toggle
-                selected={missingMediaType === "VIDEO"}
-                onClick={toggleMissingVideoType}
-              >
+              <Chips.Toggle selected={missingMediaType === 'VIDEO'} onClick={toggleMissingVideoType}>
                 Mangler video
               </Chips.Toggle>
             </Chips>
           </VStack>
-          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-16" align="end">
+          <HGrid columns={hasActiveFilters ? '250px auto' : '250px'} gap="space-16" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
                 size="medium"
-                value={agreementFilter === null ? "all" : agreementFilter}
+                value={agreementFilter === null ? 'all' : agreementFilter}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setAgreementFilter(value === "all" ? null : value);
+                  const value = e.target.value
+                  setAgreementFilter(value === 'all' ? null : value)
                 }}
               >
                 <option value="all">Alle produkter</option>
@@ -302,12 +301,12 @@ const ProductListWrapper = () => {
             {seriesByVariantIdentifier && <Heading size="medium">Treff på Variant</Heading>}
             <HGrid
               columns={{
-                xs: ".7fr 3.6fr 2.1fr .8fr",
-                md: ".7fr 3.6fr 2.1fr .9fr 0.4fr",
+                xs: '.7fr 3.6fr 2.1fr .8fr',
+                md: '.7fr 3.6fr 2.1fr .9fr 0.4fr',
                 lg:
                   loggedInUser && loggedInUser.isAdmin
-                    ? ".7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr"
-                    : ".7fr 3.5fr 2fr .8fr 0.4fr",
+                    ? '.7fr 3.5fr 2.5fr .8fr 1fr 3fr 0.4fr'
+                    : '.7fr 3.5fr 2fr .8fr 0.4fr',
               }}
               paddingBlock="space-4"
               gap="space-8"
@@ -324,15 +323,15 @@ const ProductListWrapper = () => {
                       size="xsmall"
                       onClick={() => {
                         setSortUrl((prev) => {
-                          const current = prev || sortParam;
-                          if (!current.startsWith("updated")) {
-                            return "updated,DESC";
+                          const current = prev || sortParam
+                          if (!current.startsWith('updated')) {
+                            return 'updated,DESC'
                           }
-                          return current === "updated,DESC" ? "updated,ASC" : "updated,DESC";
-                        });
+                          return current === 'updated,DESC' ? 'updated,ASC' : 'updated,DESC'
+                        })
                       }}
                       iconPosition="right"
-                      icon={<span aria-hidden>{isUpdatedDesc ? "↓" : "↑"}</span>}
+                      icon={<span aria-hidden>{isUpdatedDesc ? '↓' : '↑'}</span>}
                     >
                       Sist endret
                     </Button>
@@ -350,24 +349,24 @@ const ProductListWrapper = () => {
             ) : (
               !isLoadingPagedData && (
                 <Alert variant="info">
-                  {searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : "Ingen produkter funnet."}
+                  {searchTerm !== '' ? `Ingen produkter funnet med søket: "${searchTerm}"` : 'Ingen produkter funnet.'}
                 </Alert>
               )
             )}
           </VStack>
 
           <HStack
-            justify={{ xs: "center", md: "space-between" }}
+            justify={{ xs: 'center', md: 'space-between' }}
             align="center"
             gap="space-16"
-            style={{ flexWrap: "wrap-reverse" }}
+            style={{ flexWrap: 'wrap-reverse' }}
           >
             <Select
               label="Ant produkter per side"
               size="small"
               defaultValue={pageSizeState}
               onChange={(e) => {
-                setPageSizeState(parseInt(e.target.value));
+                setPageSizeState(parseInt(e.target.value))
               }}
             >
               <option value={10}>10</option>
@@ -378,9 +377,9 @@ const ProductListWrapper = () => {
               <Pagination
                 page={pageState}
                 onPageChange={(x) => {
-                  searchParams.set("page", x.toString());
-                  setSearchParams(searchParams);
-                  setPageState(x);
+                  searchParams.set('page', x.toString())
+                  setSearchParams(searchParams)
+                  setPageState(x)
                 }}
                 count={pagedData.totalPages!}
                 size="small"
@@ -390,7 +389,7 @@ const ProductListWrapper = () => {
         </VStack>
       </VStack>
     </main>
-  );
-};
+  )
+}
 
-export default ProductListWrapper;
+export default ProductListWrapper

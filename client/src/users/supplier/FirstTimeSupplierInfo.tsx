@@ -1,43 +1,44 @@
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Buildings3Icon, ComponentIcon } from "@navikt/aksel-icons";
-import { BodyShort, Button, Heading, Label, Loader, TextField } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { formatPhoneNumber, labelRequired } from "utils/string-util";
-import { useSupplier } from "utils/swr-hooks";
-import { SupplierRegistrationDTO } from "utils/types/response-types";
-import { supplierInfoUpdate } from "utils/zodSchema/login";
+import { HM_REGISTER_URL } from 'environments'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { formatPhoneNumber, labelRequired } from 'utils/string-util'
+import { useSupplier } from 'utils/swr-hooks'
+import { SupplierRegistrationDTO } from 'utils/types/response-types'
+import { supplierInfoUpdate } from 'utils/zodSchema/login'
+import { z } from 'zod'
 
-type FormData = z.infer<typeof supplierInfoUpdate>;
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Buildings3Icon, ComponentIcon } from '@navikt/aksel-icons'
+import { BodyShort, Button, Heading, Label, Loader, TextField } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof supplierInfoUpdate>
 
 interface BlurredFields {
-  homepage: boolean;
-  email: boolean;
-  phone: boolean;
+  homepage: boolean
+  email: boolean
+  phone: boolean
 }
 
 const FirstTimeSupplierInfo = () => {
-  const { loggedInUser } = useAuthStore();
-  const [loading, setLoading] = useState(true);
-  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin);
+  const { loggedInUser } = useAuthStore()
+  const [loading, setLoading] = useState(true)
+  const { supplier, supplierError, supplierIsLoading, supplierMutate } = useSupplier(loggedInUser?.isAdmin)
 
-  console.log("i supplier");
+  console.log('i supplier')
 
   //TODO: Gjør dette fordi supplierIsLoading er false første render så skjema vises ikke (heller ikke loader)
   // så her må vi se på en bedre løsning
   useEffect(() => {
     if (supplier || supplierError) {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [supplier, supplierError, supplierIsLoading]);
+  }, [supplier, supplierError, supplierIsLoading])
 
-  if (supplierIsLoading || loading) return <Loader size="3xlarge" title="Henter leverandørinformasjon" />;
+  if (supplierIsLoading || loading) return <Loader size="3xlarge" title="Henter leverandørinformasjon" />
 
   return (
     <main>
@@ -58,124 +59,124 @@ const FirstTimeSupplierInfo = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default FirstTimeSupplierInfo;
+export default FirstTimeSupplierInfo
 
 const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegistrationDTO; mutate: any }) => {
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     homepage: false,
     email: false,
     phone: false,
-  });
-  const [phoneValue, setPhoneValue] = useState("");
-  const navigate = useNavigate();
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  })
+  const [phoneValue, setPhoneValue] = useState('')
+  const navigate = useNavigate()
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setLoading] = useState(false)
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(supplierInfoUpdate),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      homepage: supplier.supplierData.homepage || "",
-      email: supplier.supplierData.email || "",
-      phone: supplier.supplierData.phone || "",
+      homepage: supplier.supplierData.homepage || '',
+      email: supplier.supplierData.email || '',
+      phone: supplier.supplierData.phone || '',
     },
-  });
+  })
 
   const handleFieldBlur = (fieldName: string) => {
     setBlurredFields({
       ...blurredFields,
       [fieldName]: true,
-    });
+    })
 
-    if (fieldName === "phone") {
-      const formattedValue = formatPhoneNumber(phoneValue);
-      setPhoneValue(formattedValue);
+    if (fieldName === 'phone') {
+      const formattedValue = formatPhoneNumber(phoneValue)
+      setPhoneValue(formattedValue)
     }
-  };
+  }
 
   const handleFieldFocus = (fieldName: string) => {
     setBlurredFields({
       ...blurredFields,
       [fieldName]: false,
-    });
-  };
+    })
+  }
 
   async function onSubmit(data: FormData) {
-    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, "");
+    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, '')
     const supplierBody = {
       ...supplier,
       supplierData: {
         ...supplier.supplierData,
         homepage: data.homepage,
         email: data.email,
-        phone: cleanedPhoneNumber || "",
+        phone: cleanedPhoneNumber || '',
       },
-    };
+    }
 
-    const supplierJSON = JSON.stringify(supplierBody);
-    setLoading(true);
+    const supplierJSON = JSON.stringify(supplierBody)
+    setLoading(true)
     const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/supplier/registrations`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
       body: supplierJSON,
-    });
+    })
 
     if (response.ok) {
-      mutate({ ...supplierBody });
-      navigate("/profil");
-      setLoading(false);
+      mutate({ ...supplierBody })
+      navigate('/profil')
+      setLoading(false)
     } else {
       //Mulig 400 bør håndteres direkte her siden 400 i denne konteksten betyr skjemafeil og bør kanskje skrives rett under firmanavnfeltet.
       //Samtidig så bør ikke 400 skje med riktig validering men vi får 400 feil når man registrerer to
       //leverandører med samme navn.
-      const responsData = await response.json();
-      setGlobalError(response.status, responsData.message);
+      const responsData = await response.json()
+      setGlobalError(response.status, responsData.message)
     }
   }
 
-  if (isLoading) return <Loader size="3xlarge" title="Sender..." />;
+  if (isLoading) return <Loader size="3xlarge" title="Sender..." />
 
   return (
     <form className="auth-dialog-box__form" action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
       <div>
         <Label>Leverandør</Label>
-        <BodyShort style={{ marginLeft: "8px", marginTop: "8px" }}>{supplier?.name}</BodyShort>
+        <BodyShort style={{ marginLeft: '8px', marginTop: '8px' }}>{supplier?.name}</BodyShort>
       </div>
       <TextField
-        {...register("homepage", { required: true })}
-        label={labelRequired("Nettside")}
+        {...register('homepage', { required: true })}
+        label={labelRequired('Nettside')}
         autoComplete="on"
-        onBlur={() => handleFieldBlur("homepage")}
-        onFocus={() => handleFieldFocus("name")}
+        onBlur={() => handleFieldBlur('homepage')}
+        onFocus={() => handleFieldFocus('name')}
         error={errors?.homepage && errors?.homepage?.message}
       />
       <TextField
-        {...register("email", { required: true })}
-        label={labelRequired("E-post")}
+        {...register('email', { required: true })}
+        label={labelRequired('E-post')}
         autoComplete="on"
-        onBlur={() => handleFieldBlur("email")}
-        onFocus={() => handleFieldFocus("email")}
+        onBlur={() => handleFieldBlur('email')}
+        onFocus={() => handleFieldFocus('email')}
         error={blurredFields.email && errors?.email?.message}
       />
       <TextField
-        {...register("phone", { required: true })}
-        label={labelRequired("Telefonnummer")}
+        {...register('phone', { required: true })}
+        label={labelRequired('Telefonnummer')}
         id="phoneNumber"
         type="text"
         name="phone"
         autoComplete="on"
-        onBlur={() => handleFieldBlur("phone")}
-        onFocus={() => handleFieldFocus("phone")}
+        onBlur={() => handleFieldBlur('phone')}
+        onFocus={() => handleFieldFocus('phone')}
         error={blurredFields.phone && errors?.phone?.message}
       />
       <Button type="submit">
@@ -184,7 +185,7 @@ const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegist
             <Loader />
           </div>
         ) : (
-          "Neste"
+          'Neste'
         )}
       </Button>
       {error?.name && (
@@ -193,5 +194,5 @@ const SupplierInfoUpdateForm = ({ supplier, mutate }: { supplier: SupplierRegist
         </p>
       )}
     </form>
-  );
-};
+  )
+}

@@ -1,18 +1,20 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, HGrid, Tag, VStack } from "@navikt/ds-react";
-import { SeriesSearchDTO } from "utils/types/response-types";
-import styles from "./SeriesList.module.scss";
-import { SeriesParts } from "parts/series/SeriesParts";
+import { SeriesParts } from 'parts/series/SeriesParts'
+import { SeriesSearchDTO } from 'utils/types/response-types'
+
+import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
+import { BodyShort, Box, HGrid, Tag, VStack } from '@navikt/ds-react'
+
+import styles from './SeriesList.module.scss'
 
 interface SeriesListProps {
-  seriesList: SeriesSearchDTO[];
-  onSeriesClick: (seriesId: string) => void;
-  selectedSeriesId?: string;
+  seriesList: SeriesSearchDTO[]
+  onSeriesClick: (seriesId: string) => void
+  selectedSeriesId?: string
 }
 
 export const SeriesList = ({ seriesList, onSeriesClick, selectedSeriesId }: SeriesListProps) => {
   return (
-    <VStack as={"ol"} gap="space-8" className={styles.seriesList}>
+    <VStack as={'ol'} gap="space-8" className={styles.seriesList}>
       {seriesList.map((series) => (
         <li key={series.id}>
           <SeriesCard series={series} onSeriesClick={onSeriesClick} selectedSeriesId={selectedSeriesId} />
@@ -20,32 +22,32 @@ export const SeriesList = ({ seriesList, onSeriesClick, selectedSeriesId }: Seri
         </li>
       ))}
     </VStack>
-  );
-};
+  )
+}
 
 const SeriesCard = ({
   series,
   onSeriesClick,
   selectedSeriesId,
 }: {
-  series: SeriesSearchDTO;
-  onSeriesClick: (seriesId: string) => void;
-  selectedSeriesId?: string;
+  series: SeriesSearchDTO
+  onSeriesClick: (seriesId: string) => void
+  selectedSeriesId?: string
 }) => {
-  const isExpired = series.isExpired;
+  const isExpired = series.isExpired
 
   return (
     <HGrid
       columns={{
-        xs: " 1fr auto",
-        md: "1fr auto",
+        xs: ' 1fr auto',
+        md: '1fr auto',
       }}
       gap="space-4"
-      align={"center"}
+      align={'center'}
       className={selectedSeriesId === series.id ? styles.seriesPanelSelected : styles.seriesPanel}
       onClick={() => onSeriesClick(series.id)}
     >
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-4"padding="space-8">
+      <VStack style={isExpired ? { height: '100%' } : {}} gap="space-4" padding="space-8">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">
@@ -64,5 +66,5 @@ const SeriesCard = ({
         <ChevronDownIcon aria-hidden fontSize="2rem" />
       )}
     </HGrid>
-  );
-};
+  )
+}

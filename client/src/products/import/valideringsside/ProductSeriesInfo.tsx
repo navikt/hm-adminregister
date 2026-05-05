@@ -1,4 +1,4 @@
-import { Product } from "utils/types/types";
+import { Product } from 'utils/types/types'
 
 export const ProductSeriesInfo = ({ product }: { product: Product }) => {
   return (
@@ -10,5 +10,5 @@ export const ProductSeriesInfo = ({ product }: { product: Product }) => {
         Antall varianter: <b>{product.variantCount}</b>
       </p>
     </div>
-  );
-};
+  )
+}

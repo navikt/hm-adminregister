@@ -1,35 +1,37 @@
-import { Alert, BodyLong, BodyShort, Button, Heading, HelpText, HStack, Link, Tabs, VStack } from "@navikt/ds-react";
-import { SeriesDTO } from "utils/types/response-types";
+import { useState } from 'react'
 
-import { useState } from "react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
-import { deleteFileFromSeries } from "api/SeriesApi";
-import styles from "../ProductPage.module.scss";
-import { PlusCircleIcon } from "@navikt/aksel-icons";
-import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
-import { VideoModal } from "products/videos/VideoModal";
+import { deleteFileFromSeries } from 'api/SeriesApi'
+import FellesSortingArea from 'felleskomponenter/sort/FellesSortingArea'
+import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
+import { VideoModal } from 'products/videos/VideoModal'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { PlusCircleIcon } from '@navikt/aksel-icons'
+import { Alert, BodyLong, BodyShort, Button, HStack, Heading, HelpText, Link, Tabs, VStack } from '@navikt/ds-react'
+
+import styles from '../ProductPage.module.scss'
 
 const VideoTab = ({
   series,
   mutateSeries,
   isEditable,
 }: {
-  series: SeriesDTO;
-  mutateSeries: () => void;
-  isEditable: boolean;
+  series: SeriesDTO
+  mutateSeries: () => void
+  isEditable: boolean
 }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { videos } = mapImagesAndPDFfromMedia(series);
-  const { setGlobalError } = useErrorStore();
-  const videoAmountLimit = 4;
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const { videos } = mapImagesAndPDFfromMedia(series)
+  const { setGlobalError } = useErrorStore()
+  const videoAmountLimit = 4
 
   async function handleDeleteVideoLink(uri: string) {
     deleteFileFromSeries(series.id, uri)
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   return (
@@ -55,30 +57,30 @@ const VideoTab = ({
         )}
 
         {isEditable && (
-          <HStack align={"center"}>
+          <HStack align={'center'}>
             <Button
               className="fit-content"
               variant="tertiary"
               icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                setModalIsOpen(true);
+                setModalIsOpen(true)
               }}
               disabled={videos.length >= videoAmountLimit}
             >
               Legg til videolenke
             </Button>
             {videos.length >= videoAmountLimit && (
-              <BodyShort weight={"semibold"}>Du kan ikke legge til mer enn {videoAmountLimit} videoer.</BodyShort>
+              <BodyShort weight={'semibold'}>Du kan ikke legge til mer enn {videoAmountLimit} videoer.</BodyShort>
             )}
           </HStack>
         )}
       </VStack>
       <VideoModal seriesId={series.id} mutateSeries={mutateSeries} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
     </Tabs.Panel>
-  );
-};
+  )
+}
 
-export default VideoTab;
+export default VideoTab
 
 const VideoRequirementBox = () => (
   <Alert variant="warning">
@@ -96,10 +98,10 @@ const VideoRequirementBox = () => (
       </HelpText>
     </HStack>
     <BodyLong>
-      Les mer på{" "}
+      Les mer på{' '}
       <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743" target="_blank">
         Tilsynet for universell utforming sine nettsider
       </Link>
     </BodyLong>
   </Alert>
-);
+)

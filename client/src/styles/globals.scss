@@ -1,11 +1,11 @@
-@use "./_mixins";
+@use './_mixins';
 
-@use "@navikt/ds-css" as *;
-@use "@navikt/ds-tokens/dist/tokens" as *;
-@use "overwrite-aksel";
-@use "auth-pages";
-@use "menu";
-@use "variables" as *;
+@use '@navikt/ds-css' as *;
+@use '@navikt/ds-tokens/dist/tokens' as *;
+@use 'overwrite-aksel';
+@use 'auth-pages';
+@use 'menu';
+@use 'variables' as *;
 
 html,
 body {

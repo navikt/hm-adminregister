@@ -1,7 +1,9 @@
-import { Box, Button, Modal, Popover, VStack } from '@navikt/ds-react'
 import { useEffect, useRef, useState } from 'react'
-import styles from './SkyraSurveyBox.module.scss'
+
 import { HeartFillIcon, XMarkIcon } from '@navikt/aksel-icons'
+import { Box, Button, Modal, Popover, VStack } from '@navikt/ds-react'
+
+import styles from './SkyraSurveyBox.module.scss'
 
 export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; skyraSlug: string }) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -71,7 +73,7 @@ export const SkyraSurveyBox = ({ buttonText, skyraSlug }: { buttonText: string; 
         </Modal.Body>
       </Modal>
     </Box>
-  );
+  )
 }
 
 function useSkyra({

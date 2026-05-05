@@ -1,12 +1,14 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
-import News from "news/News";
-import { MemoryRouter } from "react-router-dom";
-import { server } from "mocks/server";
-import { http, HttpResponse } from "msw";
-import { v4 as uuidv4 } from "uuid";
-import { axe } from "jest-axe";
-import { apiPath } from "mocks/apiPath";
+import { MemoryRouter } from 'react-router-dom'
+
+import { axe } from 'jest-axe'
+import { apiPath } from 'mocks/apiPath'
+import { server } from 'mocks/server'
+import { HttpResponse, http } from 'msw'
+import News from 'news/News'
+import { v4 as uuidv4 } from 'uuid'
+import { expect, test } from 'vitest'
+
+import { fireEvent, render, screen } from '@testing-library/react'
 
 const dummyNews = (title: string, text: string, published: string, expired: string, status: string) => {
   return {
@@ -14,35 +16,35 @@ const dummyNews = (title: string, text: string, published: string, expired: stri
     title: title,
     text: text,
     status: status,
-    draftStatus: "DRAFT",
+    draftStatus: 'DRAFT',
     published: published,
     expired: expired,
-    created: "2024-07-10T07:03:24.746Z",
-    updated: "2024-07-10T07:03:24.746Z",
-    author: "string",
-    createdBy: "Someone",
-    updatedBy: "Someone",
-    createdByUser: "Someone",
-    updatedByUser: "Someone",
-  };
-};
+    created: '2024-07-10T07:03:24.746Z',
+    updated: '2024-07-10T07:03:24.746Z',
+    author: 'string',
+    createdBy: 'Someone',
+    updatedBy: 'Someone',
+    createdByUser: 'Someone',
+    updatedByUser: 'Someone',
+  }
+}
 
-test("Flere nyheter", async () => {
+test('Flere nyheter', async () => {
   server.use(
-    http.get(apiPath("admin/api/v1/news"), (info) => {
+    http.get(apiPath('admin/api/v1/news'), (info) => {
       return HttpResponse.json({
         content: [
-          dummyNews("Nyhet 1", "tekst1", "2023-07-10T07:03:24.717Z", "2225-07-10T07:03:24.717Z", "ACTIVE"), //PUBLISHED
-          dummyNews("Nyhet 2", "tekst2", "2023-07-10T07:03:24.717Z", "2023-07-11T07:03:24.717Z", "INACTIVE"), //UNPUBLISHED
-          dummyNews("Nyhet 3", "tekst3", "2225-07-10T07:03:24.717Z", "2325-07-10T07:03:24.717Z", "INACTIVE"), //FUTURE
+          dummyNews('Nyhet 1', 'tekst1', '2023-07-10T07:03:24.717Z', '2225-07-10T07:03:24.717Z', 'ACTIVE'), //PUBLISHED
+          dummyNews('Nyhet 2', 'tekst2', '2023-07-10T07:03:24.717Z', '2023-07-11T07:03:24.717Z', 'INACTIVE'), //UNPUBLISHED
+          dummyNews('Nyhet 3', 'tekst3', '2225-07-10T07:03:24.717Z', '2325-07-10T07:03:24.717Z', 'INACTIVE'), //FUTURE
         ],
         pageable: {
           number: 0,
           sort: {
             orderBy: [
               {
-                property: "created",
-                direction: "DESC",
+                property: 'created',
+                direction: 'DESC',
                 ignoreCase: false,
                 ascending: false,
               },
@@ -57,31 +59,31 @@ test("Flere nyheter", async () => {
         offset: 0,
         pageNumber: 1,
         numberOfElements: 4,
-      });
-    }),
-  );
+      })
+    })
+  )
 
   const { container } = render(
     <MemoryRouter>
       <News />
-    </MemoryRouter>,
-  );
+    </MemoryRouter>
+  )
 
-  expect(await screen.findByRole("heading")).toBeInTheDocument();
-  expect(await screen.findByRole("heading", { name: /Nyhet 1/ })).toBeInTheDocument();
-  expect(await screen.findByRole("heading", { name: /Nyhet 3/ })).toBeInTheDocument();
-  expect(screen.queryByText(/Nyhet 2/)).toBeNull();
-  expect(await screen.findAllByRole("heading", { name: /Nyhet \d/ })).length(2);
+  expect(await screen.findByRole('heading')).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: /Nyhet 1/ })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: /Nyhet 3/ })).toBeInTheDocument()
+  expect(screen.queryByText(/Nyhet 2/)).toBeNull()
+  expect(await screen.findAllByRole('heading', { name: /Nyhet \d/ })).length(2)
 
-  expect(screen.queryAllByText(/Fremtidig/)).length(2);
+  expect(screen.queryAllByText(/Fremtidig/)).length(2)
 
-  const nyhet3Heading = await screen.findByRole("heading", { name: /Nyhet 3/ });
-  fireEvent.click(nyhet3Heading);
-  expect(screen.queryByText("tekst3")).exist;
+  const nyhet3Heading = await screen.findByRole('heading', { name: /Nyhet 3/ })
+  fireEvent.click(nyhet3Heading)
+  expect(screen.queryByText('tekst3')).exist
 
-  const historikkButton = await screen.findByText(/Historikk/);
-  fireEvent.click(historikkButton);
-  expect(screen.queryByText("Avpublisert")).exist;
+  const historikkButton = await screen.findByText(/Historikk/)
+  fireEvent.click(historikkButton)
+  expect(screen.queryByText('Avpublisert')).exist
 
-  expect(await axe(container)).toHaveNoViolations();
-});
+  expect(await axe(container)).toHaveNoViolations()
+})

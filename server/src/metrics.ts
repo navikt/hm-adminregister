@@ -1,4 +1,4 @@
-import { collectDefaultMetrics, Registry } from 'prom-client'
+import { Registry, collectDefaultMetrics } from 'prom-client'
 
 export function createMetrics(): Registry {
   const register = new Registry()

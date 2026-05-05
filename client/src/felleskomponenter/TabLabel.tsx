@@ -1,5 +1,6 @@
-import { ExclamationmarkTriangleIcon } from "@navikt/aksel-icons";
-import styles from "./TabLabel.module.scss";
+import { ExclamationmarkTriangleIcon } from '@navikt/aksel-icons'
+
+import styles from './TabLabel.module.scss'
 
 export const TabLabel = ({
   title,
@@ -7,10 +8,10 @@ export const TabLabel = ({
   showAlert,
   isValid,
 }: {
-  title: string;
-  numberOfElements: number;
-  showAlert: boolean;
-  isValid: boolean;
+  title: string
+  numberOfElements: number
+  showAlert: boolean
+  isValid: boolean
 }) => {
   return (
     <>
@@ -23,5 +24,5 @@ export const TabLabel = ({
         <span>({numberOfElements})</span>
       )}
     </>
-  );
-};
+  )
+}

@@ -1,61 +1,64 @@
+import React from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
+import { useProductVariantsByProductIds } from 'api/ProductApi'
+import { removeWorksWithVariant } from 'api/WorksWithApi'
+import ErrorAlert from 'error/ErrorAlert'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import FormBox from 'felleskomponenter/FormBox'
+import { RowBoxTable } from 'felleskomponenter/styledcomponents/Table'
+import NewWorksWithProductOnProductModal from 'products/variants/NewWorksWithProductOnProductModal'
+import WorksWithVariantsTable from 'products/variants/WorksWithVariantsTable'
+import { useProductByProductId } from 'utils/swr-hooks'
+import { WorksWithMapping } from 'utils/types/response-types'
+
+import { PlusCircleIcon, SandboxIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
   Alert,
   BodyShort,
   Box,
   Button,
   Checkbox,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Loader,
   Table,
   VStack,
-} from "@navikt/ds-react";
-import { useNavigate, useParams } from "react-router-dom";
-import ProductVariantForm from "./ProductVariantForm";
-import { useProductByProductId } from "utils/swr-hooks";
-import FormBox from "felleskomponenter/FormBox";
-import ErrorAlert from "error/ErrorAlert";
-import { useProductVariantsByProductIds } from "api/ProductApi";
-import { PlusCircleIcon, SandboxIcon, TrashIcon } from "@navikt/aksel-icons";
-import React from "react";
-import NewWorksWithProductOnProductModal from "products/variants/NewWorksWithProductOnProductModal";
-import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { removeWorksWithVariant } from "api/WorksWithApi";
-import { WorksWithMapping } from "utils/types/response-types";
-import WorksWithVariantsTable from "products/variants/WorksWithVariantsTable";
+} from '@navikt/ds-react'
+
+import ProductVariantForm from './ProductVariantForm'
 
 const EditWorksWith = () => {
-  const { productId } = useParams();
-  const navigate = useNavigate();
+  const { productId } = useParams()
+  const navigate = useNavigate()
 
-  const { product, isLoading, mutate, error } = useProductByProductId(productId!);
+  const { product, isLoading, mutate, error } = useProductByProductId(productId!)
 
-  const { products } = useProductVariantsByProductIds(product?.productData.attributes.worksWith?.productIds);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-  const [productIdToDelete, setProductIdToDelete] = React.useState<string | null>(null);
+  const { products } = useProductVariantsByProductIds(product?.productData.attributes.worksWith?.productIds)
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false)
+  const [productIdToDelete, setProductIdToDelete] = React.useState<string | null>(null)
 
   const removeWorksWith = () => {
     if (productIdToDelete && productId) {
       const worksWithMappingToDelete: WorksWithMapping = {
         sourceProductId: productId,
         targetProductId: productIdToDelete,
-      };
+      }
       removeWorksWithVariant(worksWithMappingToDelete).then((r) => {
-        mutate();
-        setIsDeleteModalOpen(false);
-      });
+        mutate()
+        setIsDeleteModalOpen(false)
+      })
     }
-  };
+  }
 
   if (error) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   if (isLoading || !product) {
@@ -63,7 +66,7 @@ const EditWorksWith = () => {
       <VStack gap="space-16">
         <Loader />
       </VStack>
-    );
+    )
   }
 
   return (
@@ -104,7 +107,7 @@ const EditWorksWith = () => {
               variant="primary"
               icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                setIsModalOpen(true);
+                setIsModalOpen(true)
               }}
             >
               Legg til kobling
@@ -117,8 +120,8 @@ const EditWorksWith = () => {
                 products={products}
                 showRemove
                 onRemove={(id) => {
-                  setProductIdToDelete(id);
-                  setIsDeleteModalOpen(true);
+                  setProductIdToDelete(id)
+                  setIsDeleteModalOpen(true)
                 }}
               />
             )}
@@ -137,7 +140,7 @@ const EditWorksWith = () => {
         </Box>
       </VStack>
     </>
-  );
-};
+  )
+}
 
-export default EditWorksWith;
+export default EditWorksWith

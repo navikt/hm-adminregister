@@ -1,62 +1,64 @@
-import { Box, Button, HStack, Loader, Modal, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { labelRequired } from "utils/string-util";
-import { SeriesSearchDTO } from "utils/types/response-types";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { addCompatibleWithSeries } from "api/PartApi";
-import { getSeriesByVariantId } from "api/SeriesApi";
-import { useAuthStore } from "utils/store/useAuthStore";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
+import React, { useState } from 'react'
+
+import { addCompatibleWithSeries } from 'api/PartApi'
+import { getSeriesByVariantId } from 'api/SeriesApi'
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { SeriesSearchDTO } from 'utils/types/response-types'
+
+import { Box, Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  partId: string;
-  mutatePart: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  partId: string
+  mutatePart: () => void
 }
 
 const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePart, partId }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  const [seriesToAdd, setSeriesToAdd] = useState<SeriesSearchDTO | undefined>(undefined);
-  const [identifierToAdd, setIdentifierToAdd] = useState<string | undefined>(undefined);
+  const [seriesToAdd, setSeriesToAdd] = useState<SeriesSearchDTO | undefined>(undefined)
+  const [identifierToAdd, setIdentifierToAdd] = useState<string | undefined>(undefined)
 
-  const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined);
-  const { setGlobalError } = useErrorStore();
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const [productToAddError, setProductToAddError] = useState<string | undefined>(undefined)
+  const { setGlobalError } = useErrorStore()
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   async function onClickGetProduct() {
     if (identifierToAdd !== undefined) {
       getSeriesByVariantId(identifierToAdd)
         .then((series) => {
-          setSeriesToAdd(series);
-          setProductToAddError(undefined);
+          setSeriesToAdd(series)
+          setProductToAddError(undefined)
         })
         .catch((error) => {
-          setSeriesToAdd(undefined);
-          setProductToAddError("Fant ikke produkt");
-        });
+          setSeriesToAdd(undefined)
+          setProductToAddError('Fant ikke produkt')
+        })
     }
   }
 
   async function onClickLeggTilKobling() {
-    setIsSaving(true);
+    setIsSaving(true)
     if (seriesToAdd !== undefined) {
       addCompatibleWithSeries(partId, seriesToAdd.id, isAdmin)
         .then(() => {
-          mutatePart();
-          setIsSaving(false);
+          mutatePart()
+          setIsSaving(false)
         })
         .catch((error) => {
-          setGlobalError(error.message);
-          setIsSaving(false);
-        });
-      setIsSaving(false);
-      setSeriesToAdd(undefined);
-      setIdentifierToAdd(undefined);
-      setModalIsOpen(false);
+          setGlobalError(error.message)
+          setIsSaving(false)
+        })
+      setIsSaving(false)
+      setSeriesToAdd(undefined)
+      setIdentifierToAdd(undefined)
+      setModalIsOpen(false)
     }
   }
 
@@ -65,33 +67,33 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
       open={modalIsOpen}
       onCancel={(e) => {}}
       header={{
-        heading: "Legg til serie",
+        heading: 'Legg til serie',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
     >
       <Modal.Body>
         <Content>
-          <VStack gap="space-8" style={{ width: "100%" }}>
+          <VStack gap="space-8" style={{ width: '100%' }}>
             <TextField
-              label={labelRequired("HMS-nummer eller levartnr.")}
+              label={labelRequired('HMS-nummer eller levartnr.')}
               id="identifier"
               type="text"
               error={productToAddError}
-              value={identifierToAdd || ""}
+              value={identifierToAdd || ''}
               onChange={(e) => setIdentifierToAdd(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
+                if (e.key === 'Enter') {
+                  e.preventDefault()
                 }
               }}
               onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  onClickGetProduct();
+                if (e.key === 'Enter') {
+                  onClickGetProduct()
                 }
               }}
             />
-            <Button onClick={onClickGetProduct} type="button" variant="secondary" style={{ marginLeft: "auto" }}>
+            <Button onClick={onClickGetProduct} type="button" variant="secondary" style={{ marginLeft: 'auto' }}>
               Hent serie
             </Button>
             {isSaving && (
@@ -106,7 +108,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
                   background="success-soft"
                   padding="space-4"
                   flexGrow="1"
-                  style={{ borderRadius: "10px" }}
+                  style={{ borderRadius: '10px' }}
                 >
                   <DefinitionList horizontal fullWidth key={seriesToAdd.id}>
                     <DefinitionList.Term>Navn</DefinitionList.Term>
@@ -121,8 +123,8 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
       <Modal.Footer>
         <Button
           onClick={() => {
-            setModalIsOpen(false);
-            setSeriesToAdd(undefined);
+            setModalIsOpen(false)
+            setSeriesToAdd(undefined)
           }}
           variant="tertiary"
           type="reset"
@@ -131,7 +133,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
         </Button>
         <Button
           onClick={() => {
-            onClickLeggTilKobling();
+            onClickLeggTilKobling()
           }}
           disabled={seriesToAdd === undefined}
           variant="primary"
@@ -141,7 +143,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewCompatibleSeriesOnPartModal;
+export default NewCompatibleSeriesOnPartModal

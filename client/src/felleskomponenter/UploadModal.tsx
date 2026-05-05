@@ -1,125 +1,128 @@
-import { FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
+import { useEffect, useRef, useState } from 'react'
+
+import { ImageContainer } from 'products/files/images/ImageContainer'
+import { fileToUri } from 'utils/file-util'
+
+import { FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
 import {
   BodyLong,
   BodyShort,
   Box,
   Button,
-  Heading,
   HStack,
+  Heading,
   Label,
   Loader,
   Modal,
   TextField,
   VStack,
-} from "@navikt/ds-react";
-import { ImageContainer } from "products/files/images/ImageContainer";
-import { useEffect, useRef, useState } from "react";
-import { fileToUri } from "utils/file-util";
-import styles from "./UploadModal.module.scss";
+} from '@navikt/ds-react'
+
+import styles from './UploadModal.module.scss'
 
 interface Props {
-  modalIsOpen: boolean;
-  fileType: "images" | "documents";
-  setModalIsOpen: (open: boolean) => void;
-  uploadFiles: (uploads: FileUpload[]) => Promise<void>;
+  modalIsOpen: boolean
+  fileType: 'images' | 'documents'
+  setModalIsOpen: (open: boolean) => void
+  uploadFiles: (uploads: FileUpload[]) => Promise<void>
 }
 
 const removeFileExtation = (fileName: string) => {
-  if (fileName.includes(".")) {
-    return fileName.split(".")[0];
+  if (fileName.includes('.')) {
+    return fileName.split('.')[0]
   }
-  return fileName;
-};
+  return fileName
+}
 
 export interface FileUpload {
-  file: File;
-  previewUrl?: string;
-  editedFileName?: string;
+  file: File
+  previewUrl?: string
+  editedFileName?: string
 }
 
 const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Props) => {
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploads, setUploads] = useState<FileUpload[]>([]);
-  const [fileTypeError, setFileTypeError] = useState("");
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploads, setUploads] = useState<FileUpload[]>([])
+  const [fileTypeError, setFileTypeError] = useState('')
 
   const handleMediaEvent = (files: File[]) => {
     const allChosenFiles = uploads.concat(
-      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) })),
-    );
+      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) }))
+    )
 
     const uniqueAllChosenFiles = allChosenFiles.filter(
       (item, index, uploadList) =>
         index ===
         uploadList.findIndex((compareItem) => {
-          return compareItem.file.name === item.file.name;
-        }),
-    );
+          return compareItem.file.name === item.file.name
+        })
+    )
 
-    setUploads(uniqueAllChosenFiles);
+    setUploads(uniqueAllChosenFiles)
 
     Promise.all(files.map(fileToUri)).then((urls) => {
       setUploads((previousState) =>
         previousState.map((f) => ({
           ...f,
           previewUrl: f.previewUrl || urls[files.findIndex((a) => a === f.file)],
-        })),
-      );
-    });
-  };
+        }))
+      )
+    })
+  }
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event?.currentTarget?.files || []);
-    handleMediaEvent(files);
-  };
+    const files = Array.from(event?.currentTarget?.files || [])
+    handleMediaEvent(files)
+  }
 
   const handleDelete = (file: File) => {
-    const filteredFiles = uploads.filter((upload) => upload.file !== file);
-    setUploads(filteredFiles);
-  };
+    const filteredFiles = uploads.filter((upload) => upload.file !== file)
+    setUploads(filteredFiles)
+  }
 
   const handleDragEvent = (event: React.DragEvent<HTMLDivElement>) => {
-    setFileTypeError("");
+    setFileTypeError('')
     //Check is file is a picture as it is possible to drop any type of file
-    event.preventDefault();
-    const acceptedFileTypesImages = ["image/jpeg", "image/jpg", "image/png"];
-    const acceptedFileTypesDocuments = ["application/pdf"];
+    event.preventDefault()
+    const acceptedFileTypesImages = ['image/jpeg', 'image/jpg', 'image/png']
+    const acceptedFileTypesDocuments = ['application/pdf']
 
-    const files = Array.from(event.dataTransfer.files);
+    const files = Array.from(event.dataTransfer.files)
     const isValidFiles = files.every((file) =>
-      fileType === "images"
+      fileType === 'images'
         ? acceptedFileTypesImages.includes(file.type)
-        : acceptedFileTypesDocuments.includes(file.type),
-    );
+        : acceptedFileTypesDocuments.includes(file.type)
+    )
 
     if (!isValidFiles) {
-      fileType === "images"
-        ? setFileTypeError("Ugyldig filtype. Vennligst velg en av disse filtypene jpeg, jpg, eller png.")
-        : setFileTypeError("Ugyldig filtype. Kun pdf er gyldig dokumenttype.");
+      fileType === 'images'
+        ? setFileTypeError('Ugyldig filtype. Vennligst velg en av disse filtypene jpeg, jpg, eller png.')
+        : setFileTypeError('Ugyldig filtype. Kun pdf er gyldig dokumenttype.')
 
-      return;
+      return
     }
-    handleMediaEvent(files);
-  };
+    handleMediaEvent(files)
+  }
 
   const setEditedFileName = (upload: FileUpload, newFileName: string) => {
     setUploads((prevUploads) =>
       prevUploads.map((prevUpload) =>
-        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload,
-      ),
-    );
-  };
+        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload
+      )
+    )
+  }
 
   const clearState = () => {
-    setIsUploading(false);
-    setUploads([]);
-  };
+    setIsUploading(false)
+    setUploads([])
+  }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: fileType === "images" ? "Legg til bilder" : "Legg til dokumenter",
+        heading: fileType === 'images' ? 'Legg til bilder' : 'Legg til dokumenter',
         closeButton: true,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -141,9 +144,9 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
             iconPosition="right"
             onClick={() => {
               if (fileInputRef.current) {
-                fileInputRef.current.value = "";
+                fileInputRef.current.value = ''
               }
-              fileInputRef?.current?.click();
+              fileInputRef?.current?.click()
             }}
           >
             Bla gjennom
@@ -155,7 +158,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
             ref={fileInputRef}
             type="file"
             hidden
-            accept={fileType === "images" ? "image/jpeg, image/jpg, image/png" : "application/pdf"}
+            accept={fileType === 'images' ? 'image/jpeg, image/jpg, image/png' : 'application/pdf'}
           />
         </div>
 
@@ -167,7 +170,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
 
         {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
         <VStack as="ol" gap="space-4" className={styles.uploadInline}>
-          {fileType === "documents" && uploads.length > 0 && (
+          {fileType === 'documents' && uploads.length > 0 && (
             <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
           )}
           {uploads.map((upload) => (
@@ -186,16 +189,16 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
           variant="primary"
           disabled={uploads.some((value) => value.editedFileName?.trim().length === 0) || uploads.length === 0}
           onClick={() => {
-            setIsUploading(true);
-            uploadFiles(uploads).finally(() => clearState());
+            setIsUploading(true)
+            uploadFiles(uploads).finally(() => clearState())
           }}
         >
           Last opp
         </Button>
         <Button
           onClick={() => {
-            clearState();
-            setModalIsOpen(false);
+            clearState()
+            setModalIsOpen(false)
           }}
           variant="secondary"
         >
@@ -203,10 +206,10 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default UploadModal;
+export default UploadModal
 
 const Upload = ({
   upload,
@@ -214,73 +217,73 @@ const Upload = ({
   handleDelete,
   setEditedFileName,
 }: {
-  upload: FileUpload;
-  fileType: "images" | "documents";
-  handleDelete: (file: File) => void;
-  setEditedFileName: (upload: FileUpload, newfileName: string) => void;
+  upload: FileUpload
+  fileType: 'images' | 'documents'
+  handleDelete: (file: File) => void
+  setEditedFileName: (upload: FileUpload, newfileName: string) => void
 }) => {
   //Need to initialize filName state with file.name because thats what the user chooses to upload. Then they can change it.
-  const [fileName, setFileName] = useState(upload.editedFileName || "");
-  const [onCreation] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const fileNameInputRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState(upload.editedFileName || '')
+  const [onCreation] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+  const fileNameInputRef = useRef<HTMLInputElement>(null)
 
   function isTextSelected() {
-    const selection = window.getSelection();
-    return selection && selection.rangeCount > 0 && selection.toString().length > 0;
+    const selection = window.getSelection()
+    return selection && selection.rangeCount > 0 && selection.toString().length > 0
   }
 
   useEffect(() => {
     if (fileNameInputRef.current && !isTextSelected()) {
-      fileNameInputRef.current.select();
-      fileNameInputRef.current.focus();
+      fileNameInputRef.current.select()
+      fileNameInputRef.current.focus()
     }
-  }, [onCreation]);
+  }, [onCreation])
 
   const validateFileName = () => {
-    setErrorMessage("");
+    setErrorMessage('')
 
     if (fileName.trim().length == 0) {
-      setErrorMessage("Filen må ha et navn");
+      setErrorMessage('Filen må ha et navn')
     }
-  };
+  }
 
   return (
     <HStack as="li" justify="space-between" wrap={false}>
-      {fileType === "documents" ? (
+      {fileType === 'documents' ? (
         <>
           <TextField
             ref={fileNameInputRef}
-            style={{ width: "500px" }}
-            label={"Endre filnavn"}
+            style={{ width: '500px' }}
+            label={'Endre filnavn'}
             value={fileName}
             onChange={(event) => {
-              setEditedFileName(upload, fileName);
-              validateFileName();
-              setFileName(event.currentTarget.value);
+              setEditedFileName(upload, fileName)
+              validateFileName()
+              setFileName(event.currentTarget.value)
             }}
             onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.currentTarget.blur();
+              if (event.key === 'Enter') {
+                event.currentTarget.blur()
               }
             }}
             onKeyUp={(event) => {
-              setEditedFileName(upload, fileName);
-              validateFileName();
-              setFileName(event.currentTarget.value);
+              setEditedFileName(upload, fileName)
+              validateFileName()
+              setFileName(event.currentTarget.value)
             }}
             error={errorMessage}
           />
         </>
       ) : (
-        <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center" wrap={false}>
+        <HStack gap={{ xs: 'space-1', sm: 'space-2', md: 'space-4' }} align="center" wrap={false}>
           <Box
             className={styles.uploadBox}
             borderRadius="8"
             borderWidth="1"
             width="75px"
             height="75px"
-            style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
             <ImageContainer uri={upload.previewUrl} size="xsmall" />
           </Box>
@@ -297,5 +300,5 @@ const Upload = ({
         />
       </HStack>
     </HStack>
-  );
-};
+  )
+}

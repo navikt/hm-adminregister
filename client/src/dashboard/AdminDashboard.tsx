@@ -1,103 +1,107 @@
-import { Alert, BodyShort, Box, Button, ExpansionCard, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
-import { Link } from "react-router-dom";
-import { useCountSeriesToApprove, useExpiringNews, usePartsMissingHmsArtNr } from "utils/swr-hooks";
-import { useState, useEffect } from "react";
-import { hidePart, fetchHiddenParts, unhidePart } from "api/PartApi";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { HiddenPart } from "utils/types/response-types";
-import StatPanel from "./StatPanel";
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+
+import { fetchHiddenParts, hidePart, unhidePart } from 'api/PartApi'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import { useCountSeriesToApprove, useExpiringNews, usePartsMissingHmsArtNr } from 'utils/swr-hooks'
+import { HiddenPart } from 'utils/types/response-types'
+
+import { Alert, BodyShort, Box, Button, ExpansionCard, HStack, Heading, Loader, VStack } from '@navikt/ds-react'
+
+import StatPanel from './StatPanel'
 
 const AdminDashboard = () => {
-  const { count: approveCount, isLoading: approveLoading, error: approveError } = useCountSeriesToApprove();
+  const { count: approveCount, isLoading: approveLoading, error: approveError } = useCountSeriesToApprove()
   const {
     count: partsWithoutHmsNr,
     isLoading: partsLoading,
     error: partsError,
     data: partsData,
     mutate: mutatePartsData,
-  } = usePartsMissingHmsArtNr();
+  } = usePartsMissingHmsArtNr()
   const {
     count: expiringNewsCount,
     data: expiringNews,
     isLoading: expiringNewsLoading,
     error: expiringNewsError,
-  } = useExpiringNews(7);
-  const [hidingIds, setHidingIds] = useState<string[]>([]);
-  const [hideError, setHideError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [partIdToHide, setPartIdToHide] = useState<string | null>(null);
+  } = useExpiringNews(7)
+  const [hidingIds, setHidingIds] = useState<string[]>([])
+  const [hideError, setHideError] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [partIdToHide, setPartIdToHide] = useState<string | null>(null)
 
-  const [showHidden, setShowHidden] = useState(false);
-  const [hiddenParts, setHiddenParts] = useState<HiddenPart[]>([]);
-  const [loadingHidden, setLoadingHidden] = useState(false);
-  const [hiddenError, setHiddenError] = useState<string | null>(null);
-  const [unhidingIds, setUnhidingIds] = useState<string[]>([]);
+  const [showHidden, setShowHidden] = useState(false)
+  const [hiddenParts, setHiddenParts] = useState<HiddenPart[]>([])
+  const [loadingHidden, setLoadingHidden] = useState(false)
+  const [hiddenError, setHiddenError] = useState<string | null>(null)
+  const [unhidingIds, setUnhidingIds] = useState<string[]>([])
 
   const hiddenPartRows = hiddenParts.map((hp) => ({
     id: hp.productId,
     articleName: hp.product?.articleName,
     supplierRef: hp.product?.supplierRef,
-    supplierName: hp.product && "supplierName" in hp.product ? (hp.product as { supplierName?: string }).supplierName : undefined,
-  }));
+    supplierName:
+      hp.product && 'supplierName' in hp.product ? (hp.product as { supplierName?: string }).supplierName : undefined,
+  }))
 
   const loadHiddenParts = async () => {
-    setLoadingHidden(true);
-    setHiddenError(null);
+    setLoadingHidden(true)
+    setHiddenError(null)
     try {
-      const data = await fetchHiddenParts();
-      setHiddenParts(data);
+      const data = await fetchHiddenParts()
+      setHiddenParts(data)
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Kunne ikke hente skjulte deler";
-      setHiddenError(msg);
+      const msg = e instanceof Error ? e.message : 'Kunne ikke hente skjulte deler'
+      setHiddenError(msg)
     } finally {
-      setLoadingHidden(false);
+      setLoadingHidden(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (showHidden) {
-      loadHiddenParts();
+      loadHiddenParts()
     }
-  }, [showHidden]);
+  }, [showHidden])
 
   const handleHidePart = async (id: string) => {
-    setHidingIds((prev) => [...prev, id]);
-    setHideError(null);
+    setHidingIds((prev) => [...prev, id])
+    setHideError(null)
 
     hidePart(id)
       .then(() => {
-        mutatePartsData();
-        loadHiddenParts();
+        mutatePartsData()
+        loadHiddenParts()
       })
       .catch((e: unknown) => {
-        const msg = e instanceof Error ? e.message : "Ukjent feil ved skjuling av del";
-        setHideError(msg);
+        const msg = e instanceof Error ? e.message : 'Ukjent feil ved skjuling av del'
+        setHideError(msg)
       })
       .finally(() => {
-        setHidingIds((prev) => prev.filter((hid) => hid !== id));
-      });
-  };
+        setHidingIds((prev) => prev.filter((hid) => hid !== id))
+      })
+  }
 
   const handleUnhidePart = async (id: string) => {
-    setUnhidingIds((prev) => [...prev, id]);
-    setHiddenError(null);
+    setUnhidingIds((prev) => [...prev, id])
+    setHiddenError(null)
     try {
-      await unhidePart(id);
-      await loadHiddenParts();
-      mutatePartsData();
+      await unhidePart(id)
+      await loadHiddenParts()
+      mutatePartsData()
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Ukjent feil ved visning av del";
-      setHiddenError(msg);
+      const msg = e instanceof Error ? e.message : 'Ukjent feil ved visning av del'
+      setHiddenError(msg)
     } finally {
-      setUnhidingIds((prev) => prev.filter((hid) => hid !== id));
+      setUnhidingIds((prev) => prev.filter((hid) => hid !== id))
     }
-  };
+  }
 
   interface PartRow {
-    id: string;
-    articleName?: string;
-    supplierRef?: string;
-    supplierName?: string;
+    id: string
+    articleName?: string
+    supplierRef?: string
+    supplierName?: string
   }
 
   const PartTable = ({
@@ -109,33 +113,33 @@ const AdminDashboard = () => {
     onAction,
     emptyText,
   }: {
-    parts: PartRow[];
-    showHideAction?: boolean;
-    actionLabel?: string;
-    actionVariant?: "danger" | "primary" | "secondary";
-    loadingIds?: string[];
-    onAction?: (id: string) => void;
-    emptyText: string;
+    parts: PartRow[]
+    showHideAction?: boolean
+    actionLabel?: string
+    actionVariant?: 'danger' | 'primary' | 'secondary'
+    loadingIds?: string[]
+    onAction?: (id: string) => void
+    emptyText: string
   }) => {
-    if (!parts.length) return <BodyShort size="small">{emptyText}</BodyShort>;
+    if (!parts.length) return <BodyShort size="small">{emptyText}</BodyShort>
     return (
-      <Box as="table" width="100%" style={{ borderCollapse: "collapse" }}>
+      <Box as="table" width="100%" style={{ borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={{ textAlign: "left", padding: "0.5rem" }}>Navn</th>
-            <th style={{ textAlign: "left", padding: "0.5rem" }}>Levart. nr</th>
-            {showHideAction && <th style={{ textAlign: "left", padding: "0.5rem" }} />}
+            <th style={{ textAlign: 'left', padding: '0.5rem' }}>Navn</th>
+            <th style={{ textAlign: 'left', padding: '0.5rem' }}>Levart. nr</th>
+            {showHideAction && <th style={{ textAlign: 'left', padding: '0.5rem' }} />}
           </tr>
         </thead>
         <tbody>
           {parts.map((part) => (
             <tr key={part.id}>
-              <td style={{ padding: "0.5rem" }}>
+              <td style={{ padding: '0.5rem' }}>
                 <Link to={`/del/${part.id}`}>{part.articleName || `Del ${part.id}`}</Link>
               </td>
-              <td style={{ padding: "0.5rem" }}>{part.supplierRef || "-"}</td>
+              <td style={{ padding: '0.5rem' }}>{part.supplierRef || '-'}</td>
               {showHideAction && (
-                <td style={{ padding: "0.5rem" }}>
+                <td style={{ padding: '0.5rem' }}>
                   <Button
                     size="xsmall"
                     variant={actionVariant}
@@ -150,8 +154,8 @@ const AdminDashboard = () => {
           ))}
         </tbody>
       </Box>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -160,18 +164,18 @@ const AdminDashboard = () => {
         confirmButtonText="Skjul"
         onClick={() => {
           if (partIdToHide) {
-            handleHidePart(partIdToHide);
-            setPartIdToHide(null);
-            setIsModalOpen(false);
+            handleHidePart(partIdToHide)
+            setPartIdToHide(null)
+            setIsModalOpen(false)
           }
         }}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsModalOpen(false)
         }}
         isModalOpen={isModalOpen}
       />
       <main className="show-menu">
-        <VStack gap="space-8" style={{ maxWidth: "75rem" }}>
+        <VStack gap="space-8" style={{ maxWidth: '75rem' }}>
           <Heading level="1" size="large" spacing>
             Admin dashboard
           </Heading>
@@ -195,7 +199,9 @@ const AdminDashboard = () => {
               title="Nyheter som utløper innen 7 dager"
               value={expiringNewsCount}
               loading={expiringNewsLoading}
-              warning={expiringNewsCount && expiringNewsCount > 0 ? "Vurder å forlenge eller oppdatere nyhetene." : undefined}
+              warning={
+                expiringNewsCount && expiringNewsCount > 0 ? 'Vurder å forlenge eller oppdatere nyhetene.' : undefined
+              }
             >
               {expiringNewsError && <Alert variant="error">Kunne ikke hente nyheter som utloper snart.</Alert>}
               {!expiringNewsLoading && !expiringNewsError && (
@@ -232,8 +238,8 @@ const AdminDashboard = () => {
                     actionVariant="danger"
                     loadingIds={hidingIds}
                     onAction={(id) => {
-                      setPartIdToHide(id);
-                      setIsModalOpen(true);
+                      setPartIdToHide(id)
+                      setIsModalOpen(true)
                     }}
                     emptyText="Ingen deler"
                   />
@@ -246,13 +252,13 @@ const AdminDashboard = () => {
                 size="small"
                 aria-label="Deler som er skjult fra denne listen"
                 onToggle={setShowHidden}
-                style={{ marginTop: "40px" }}
+                style={{ marginTop: '40px' }}
               >
                 <ExpansionCard.Header>
                   <ExpansionCard.Title size="small">Deler som er skjult fra denne listen</ExpansionCard.Title>
                 </ExpansionCard.Header>
                 <ExpansionCard.Content>
-                  <Box style={{ marginBottom: "1rem" }} aria-busy={loadingHidden}>
+                  <Box style={{ marginBottom: '1rem' }} aria-busy={loadingHidden}>
                     {hiddenError && <Alert variant="error">{hiddenError}</Alert>}
                     {loadingHidden ? (
                       <Loader size="small" />
@@ -275,7 +281,7 @@ const AdminDashboard = () => {
         </VStack>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default AdminDashboard;
+export default AdminDashboard

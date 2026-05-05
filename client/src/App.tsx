@@ -1,74 +1,76 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { useEffect } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
-import { LoginWrapper } from "LoginWrapper";
-import { Startside } from "Startside";
-import Agreements from "agreements/Agreements";
-import Agreement from "agreements/agreement/Agreement";
-import CreateAgreement from "agreements/agreement/CreateAgreement";
-import { getFeatureFlags } from "api/FeatureApi";
-import { ForApproval } from "approval/ForApproval";
-import { ErrorFallback } from "error/ErrorFallback";
-import ErrorModal from "error/ErrorModal";
-import { NotFound } from "error/NotFound";
-import Navbar from "menu/Navbar";
-import CreateAndEditNews from "news/CreateAndEditNews";
-import News from "news/News";
-import CreateProduct from "products/CreateProduct";
-import Product from "products/Product";
-import ProductListWrapper from "products/ProductListWrapper";
-import { ImporterOgValiderProdukter } from "products/import/ImporterOgValiderProdukter";
-import CreateProductVariant from "products/variants/CreateProductVariant";
-import EditProductVariant from "products/variants/EditProductVariant";
-import { ErrorBoundary } from "react-error-boundary";
-import CreateSupplier from "suppliers/CreateSupplier";
-import EditSupplier from "suppliers/EditSupplier";
-import Supplier from "suppliers/Supplier";
-import SupplierList from "suppliers/SupplierList";
-import { FlagProvider } from "toggles/context";
-import Login from "users/Login";
-import EditAdminUser from "users/admin/EditAdminUser";
-import CreateSupplierUser from "users/admin/CreateSupplierUser";
-import EditSupplierUser from "users/supplier/EditSupplierUser";
-import FirstTimeSupplierInfo from "users/supplier/FirstTimeSupplierInfo";
-import FirstTimeSupplierUserInfo from "users/supplier/FirstTimeSupplierUserInfo";
-import SupplierProfile from "users/supplier/SupplierProfile";
-import AdminProfile from "./users/admin/AdminProfile";
-import CreateAdminUser from "./users/admin/CreateAdminUser";
-import DeleteAdminUser from "./users/admin/DeleteAdminUser";
-import FirstTimeAdminInfo from "./users/admin/FirstTimeAdminInfo";
-import CreateSupplierUserForSupplier from "users/supplier/CreateSupplierUserForSupplier";
-import { ForgotPassword } from "users/reset-password/ForgotPassword";
-import { ResetPassword } from "users/reset-password/ResetPassword";
-import { VerifyOtp } from "users/reset-password/VerifyOtp";
-import { PasswordResetReceit } from "users/reset-password/PasswordResetReceit";
-import CreateHmsUser from "users/hms-user/CreateHmsUser";
-import FirstTimeHmsUserInfo from "users/hms-user/FirstTimeHmsUserInfo";
-import HmsUserProfile from "users/hms-user/HmsUserProfile";
-import Part from "parts/Part";
-import Parts from "parts/Parts";
-import CreatePart from "parts/CreatePart";
-import EditWorksWith from "products/variants/EditWorksWith";
-import ViewWorksWith from "products/variants/ViewWorksWith";
-import TechLabels from "techlabels/TechLabels";
-import CreateAndEditTechLabel from "techlabels/CreateAndEditTechLabel";
-import CatalogFiles from "catalog/CatalogFiles";
-import { ImportAndValidate } from "catalog/import/ImportAndValidate";
-import AdminDashboard from "dashboard/AdminDashboard";
-import VendorDashboard from "dashboard/VendorDashboard";
-import { useEffect } from "react";
-import { logNavigationEvent } from "utils/umami";
+import Agreements from 'agreements/Agreements'
+import Agreement from 'agreements/agreement/Agreement'
+import CreateAgreement from 'agreements/agreement/CreateAgreement'
+import { getFeatureFlags } from 'api/FeatureApi'
+import { ForApproval } from 'approval/ForApproval'
+import CatalogFiles from 'catalog/CatalogFiles'
+import { ImportAndValidate } from 'catalog/import/ImportAndValidate'
+import AdminDashboard from 'dashboard/AdminDashboard'
+import VendorDashboard from 'dashboard/VendorDashboard'
+import { ErrorFallback } from 'error/ErrorFallback'
+import ErrorModal from 'error/ErrorModal'
+import { NotFound } from 'error/NotFound'
+import Navbar from 'menu/Navbar'
+import CreateAndEditNews from 'news/CreateAndEditNews'
+import News from 'news/News'
+import CreatePart from 'parts/CreatePart'
+import Part from 'parts/Part'
+import Parts from 'parts/Parts'
+import CreateProduct from 'products/CreateProduct'
+import Product from 'products/Product'
+import ProductListWrapper from 'products/ProductListWrapper'
+import { ImporterOgValiderProdukter } from 'products/import/ImporterOgValiderProdukter'
+import CreateProductVariant from 'products/variants/CreateProductVariant'
+import EditProductVariant from 'products/variants/EditProductVariant'
+import EditWorksWith from 'products/variants/EditWorksWith'
+import ViewWorksWith from 'products/variants/ViewWorksWith'
+import CreateSupplier from 'suppliers/CreateSupplier'
+import EditSupplier from 'suppliers/EditSupplier'
+import Supplier from 'suppliers/Supplier'
+import SupplierList from 'suppliers/SupplierList'
+import CreateAndEditTechLabel from 'techlabels/CreateAndEditTechLabel'
+import TechLabels from 'techlabels/TechLabels'
+import { FlagProvider } from 'toggles/context'
+import Login from 'users/Login'
+import CreateSupplierUser from 'users/admin/CreateSupplierUser'
+import EditAdminUser from 'users/admin/EditAdminUser'
+import CreateHmsUser from 'users/hms-user/CreateHmsUser'
+import FirstTimeHmsUserInfo from 'users/hms-user/FirstTimeHmsUserInfo'
+import HmsUserProfile from 'users/hms-user/HmsUserProfile'
+import { ForgotPassword } from 'users/reset-password/ForgotPassword'
+import { PasswordResetReceit } from 'users/reset-password/PasswordResetReceit'
+import { ResetPassword } from 'users/reset-password/ResetPassword'
+import { VerifyOtp } from 'users/reset-password/VerifyOtp'
+import CreateSupplierUserForSupplier from 'users/supplier/CreateSupplierUserForSupplier'
+import EditSupplierUser from 'users/supplier/EditSupplierUser'
+import FirstTimeSupplierInfo from 'users/supplier/FirstTimeSupplierInfo'
+import FirstTimeSupplierUserInfo from 'users/supplier/FirstTimeSupplierUserInfo'
+import SupplierProfile from 'users/supplier/SupplierProfile'
+import { logNavigationEvent } from 'utils/umami'
+
+import { LoginWrapper } from 'LoginWrapper'
+import { Startside } from 'Startside'
+
+import AdminProfile from './users/admin/AdminProfile'
+import CreateAdminUser from './users/admin/CreateAdminUser'
+import DeleteAdminUser from './users/admin/DeleteAdminUser'
+import FirstTimeAdminInfo from './users/admin/FirstTimeAdminInfo'
 
 const usePageTracking = () => {
-  const location = useLocation();
+  const location = useLocation()
 
   useEffect(() => {
-    logNavigationEvent("Main", "Main navigation", location.pathname);
-  }, [location]);
-};
+    logNavigationEvent('Main', 'Main navigation', location.pathname)
+  }, [location])
+}
 
 export function App() {
-  const toggles = getFeatureFlags();
-  usePageTracking();
+  const toggles = getFeatureFlags()
+  usePageTracking()
 
   return (
     <FlagProvider toggles={toggles ?? []}>
@@ -145,17 +147,17 @@ export function App() {
 
             <Route path="/nyheter/opprett" element={<CreateAndEditNews />} />
             <Route path="/nyheter/rediger" element={<CreateAndEditNews />} />
-            <Route path={"/tekniskdata/opprett"} element={<CreateAndEditTechLabel />} />
-            <Route path={"/tekniskdata/rediger/:id"} element={<CreateAndEditTechLabel />} />
+            <Route path={'/tekniskdata/opprett'} element={<CreateAndEditTechLabel />} />
+            <Route path={'/tekniskdata/rediger/:id'} element={<CreateAndEditTechLabel />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </FeilGrense>
     </FlagProvider>
-  );
+  )
 }
 
 const FeilGrense = ({ children }: { children?: React.ReactNode }) => {
-  return <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>;
-};
+  return <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>
+}

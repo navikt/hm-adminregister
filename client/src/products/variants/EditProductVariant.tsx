@@ -1,21 +1,24 @@
-import { Loader, VStack } from "@navikt/ds-react";
-import { useParams } from "react-router-dom";
-import ProductVariantForm from "./ProductVariantForm";
-import { useProductByProductId } from "utils/swr-hooks";
-import FormBox from "felleskomponenter/FormBox";
-import ErrorAlert from "error/ErrorAlert";
+import { useParams } from 'react-router-dom'
+
+import ErrorAlert from 'error/ErrorAlert'
+import FormBox from 'felleskomponenter/FormBox'
+import { useProductByProductId } from 'utils/swr-hooks'
+
+import { Loader, VStack } from '@navikt/ds-react'
+
+import ProductVariantForm from './ProductVariantForm'
 
 const EditProductVariant = () => {
-  const { productId } = useParams();
+  const { productId } = useParams()
 
-  const { product, isLoading, mutate, error } = useProductByProductId(productId!);
+  const { product, isLoading, mutate, error } = useProductByProductId(productId!)
 
   if (error) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   if (isLoading || !product) {
@@ -23,7 +26,7 @@ const EditProductVariant = () => {
       <VStack gap="space-16">
         <Loader />
       </VStack>
-    );
+    )
   }
 
   return (
@@ -32,7 +35,7 @@ const EditProductVariant = () => {
         <ProductVariantForm product={product} mutate={mutate} />
       </VStack>
     </FormBox>
-  );
-};
+  )
+}
 
-export default EditProductVariant;
+export default EditProductVariant

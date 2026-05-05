@@ -1,15 +1,16 @@
-import { DifferenceDTO } from "utils/types/response-types";
-import { getTechDataDiff } from "products/diff/diff-util";
-import { BodyShort, Box, HStack, VStack } from "@navikt/ds-react";
-import styles from "products/diff/ShowDiffModal.module.scss";
-import { Strikethrough } from "products/diff/Strikethrough";
-import { Avstand } from "felleskomponenter/Avstand";
+import { Avstand } from 'felleskomponenter/Avstand'
+import styles from 'products/diff/ShowDiffModal.module.scss'
+import { Strikethrough } from 'products/diff/Strikethrough'
+import { getTechDataDiff } from 'products/diff/diff-util'
+import { DifferenceDTO } from 'utils/types/response-types'
+
+import { BodyShort, Box, HStack, VStack } from '@navikt/ds-react'
 
 export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {
-  if (!diffDto.diff.entriesDiffering["productData.techData"]) {
-    return <></>;
+  if (!diffDto.diff.entriesDiffering['productData.techData']) {
+    return <></>
   }
-  const techDataDiff = getTechDataDiff(diffDto);
+  const techDataDiff = getTechDataDiff(diffDto)
   return (
     <VStack gap="space-8">
       <Avstand />
@@ -35,5 +36,5 @@ export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {
         ))}
       </VStack>
     </VStack>
-  );
-};
+  )
+}

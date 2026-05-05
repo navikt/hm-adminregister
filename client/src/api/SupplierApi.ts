@@ -1,28 +1,28 @@
-import { fetchAPI, getPath } from "api/fetch";
-import { SupplierDTOBody } from "utils/supplier-util";
-import { SupplierRegistrationDTO } from "utils/types/response-types";
+import { fetchAPI, getPath } from 'api/fetch'
+import { SupplierDTOBody } from 'utils/supplier-util'
+import { SupplierRegistrationDTO } from 'utils/types/response-types'
 
 export const getSupplier = async (isAdmin: boolean, supplierId: string): Promise<SupplierRegistrationDTO> => {
-  const endOfPath = isAdmin ? `/api/v1/supplier/registrations/${supplierId}` : "/api/v1/supplier/registrations";
+  const endOfPath = isAdmin ? `/api/v1/supplier/registrations/${supplierId}` : '/api/v1/supplier/registrations'
 
-  return fetchAPI(getPath(isAdmin, endOfPath), "GET");
-};
+  return fetchAPI(getPath(isAdmin, endOfPath), 'GET')
+}
 
 export const updateSupplier = async (
   isAdmin: boolean,
   supplierId: string,
-  supplierDTOBody: SupplierDTOBody,
+  supplierDTOBody: SupplierDTOBody
 ): Promise<SupplierRegistrationDTO> => {
-  const supplierToUpdate = await getSupplier(isAdmin, supplierId);
-  const updatedSupplier = { ...supplierToUpdate, ...supplierDTOBody };
+  const supplierToUpdate = await getSupplier(isAdmin, supplierId)
+  const updatedSupplier = { ...supplierToUpdate, ...supplierDTOBody }
 
-  const endOfPath = isAdmin ? `/api/v1/supplier/registrations/${supplierId}` : "/api/v1/supplier/registrations";
+  const endOfPath = isAdmin ? `/api/v1/supplier/registrations/${supplierId}` : '/api/v1/supplier/registrations'
 
-  return fetchAPI(getPath(isAdmin, endOfPath), "PUT", updatedSupplier);
-};
+  return fetchAPI(getPath(isAdmin, endOfPath), 'PUT', updatedSupplier)
+}
 
 export const deactivateSupplier = async (isAdmin: boolean, supplierId: string): Promise<SupplierRegistrationDTO> =>
-  fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations/${supplierId}`), "DELETE");
+  fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations/${supplierId}`), 'DELETE')
 
 export const activateSupplier = async (isAdmin: boolean, supplierId: string): Promise<SupplierRegistrationDTO> =>
-  fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations/activate/${supplierId}`), "PUT");
+  fetchAPI(getPath(isAdmin, `/api/v1/supplier/registrations/activate/${supplierId}`), 'PUT')

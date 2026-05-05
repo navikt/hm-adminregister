@@ -1,15 +1,16 @@
-import { ComponentIcon } from "@navikt/aksel-icons";
-import { Heading, Loader } from "@navikt/ds-react";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useUser } from "utils/swr-hooks";
-import FirstTimeUserInfoForm from "users/FirstTimeUserInfoForm";
+import FirstTimeUserInfoForm from 'users/FirstTimeUserInfoForm'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useUser } from 'utils/swr-hooks'
+
+import { ComponentIcon } from '@navikt/aksel-icons'
+import { Heading, Loader } from '@navikt/ds-react'
 
 const FirstTimeAdminInfo = () => {
-  const { loggedInUser } = useAuthStore();
-  const { user, userIsLoading } = useUser(loggedInUser);
+  const { loggedInUser } = useAuthStore()
+  const { user, userIsLoading } = useUser(loggedInUser)
 
   if (userIsLoading) {
-    return <Loader size="3xlarge" title="venter..."></Loader>;
+    return <Loader size="3xlarge" title="venter..."></Loader>
   }
 
   return (
@@ -24,7 +25,7 @@ const FirstTimeAdminInfo = () => {
         {user && <FirstTimeUserInfoForm user={user} isAdmin={true} isHmsUser={false} />}
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default FirstTimeAdminInfo;
+export default FirstTimeAdminInfo

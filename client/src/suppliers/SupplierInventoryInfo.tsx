@@ -1,20 +1,22 @@
-import { Heading, VStack } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import useSWR from "swr";
-import { SupplierDTO } from "utils/supplier-util";
-import { fetcherGET } from "utils/swr-hooks";
-import { SupplierInventoryDTO } from "utils/types/response-types";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
+
+import { HM_REGISTER_URL } from 'environments'
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import useSWR from 'swr'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { SupplierDTO } from 'utils/supplier-util'
+import { fetcherGET } from 'utils/swr-hooks'
+import { SupplierInventoryDTO } from 'utils/types/response-types'
+
+import { Heading, VStack } from '@navikt/ds-react'
 
 const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
   const { data: data } = useSWR<SupplierInventoryDTO>(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/series/supplier-inventory/${supplier.id}`,
-    fetcherGET,
-  );
+    fetcherGET
+  )
 
-  const { loggedInUser } = useAuthStore();
+  const { loggedInUser } = useAuthStore()
 
   if (loggedInUser && loggedInUser.isAdmin && data && data.numberOfSeries > 0) {
     return (
@@ -34,7 +36,7 @@ const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
           <DefinitionList.Definition>{data?.numberOfVariants}</DefinitionList.Definition>
         </DefinitionList>
       </VStack>
-    );
+    )
   }
 
   return (
@@ -50,7 +52,7 @@ const SupplierInventoryInfo = ({ supplier }: { supplier: SupplierDTO }) => {
         <DefinitionList.Definition>{data?.numberOfVariants}</DefinitionList.Definition>
       </DefinitionList>
     </VStack>
-  );
-};
+  )
+}
 
-export default SupplierInventoryInfo;
+export default SupplierInventoryInfo

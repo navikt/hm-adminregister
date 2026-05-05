@@ -1,20 +1,21 @@
-import { Navigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
+import { Navigate } from 'react-router-dom'
+
+import { useAuthStore } from 'utils/store/useAuthStore'
 
 export const Startside = () => {
-  const { loggedInUser } = useAuthStore();
+  const { loggedInUser } = useAuthStore()
 
   if (!loggedInUser) {
-    return <Navigate to={"/logg-inn"} />;
+    return <Navigate to={'/logg-inn'} />
   } else if (loggedInUser?.isAdmin) {
-    return <Navigate to={"/admin/dashboard"} />;
+    return <Navigate to={'/admin/dashboard'} />
   } else if (loggedInUser?.isHmsUser) {
-    return <Navigate to={"/hms-bruker"} />;
+    return <Navigate to={'/hms-bruker'} />
   } else if (loggedInUser?.isSupplier) {
-    return <Navigate to={"/leverandor/dashboard"} />;
+    return <Navigate to={'/leverandor/dashboard'} />
   } else if (!loggedInUser?.isAdmin) {
-    return <Navigate to={"/profil"} />;
+    return <Navigate to={'/profil'} />
   } else {
-    return <Navigate to={"/logg-inn"} />;
+    return <Navigate to={'/logg-inn'} />
   }
-};
+}

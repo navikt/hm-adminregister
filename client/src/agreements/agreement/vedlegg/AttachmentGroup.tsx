@@ -1,83 +1,86 @@
-import { Button, Dropdown, ExpansionCard, HStack, TextField } from "@navikt/ds-react";
-import { FilePdfIcon, FloppydiskIcon, MenuElipsisVerticalIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { useRef, useState } from "react";
-import EditAttachmentGroupModal from "./EditAttachmentGroupModal";
-import { AgreementAttachment, MediaInfo } from "utils/types/response-types";
-import { useErrorStore } from "utils/store/useErrorStore";
+import { useRef, useState } from 'react'
+
+import { EditAttachmentMenu } from 'agreements/agreement/vedlegg/EditAttachmentMenu'
 import {
   deleteAttachmentGroup,
   deleteFileFromAttachmentGroup,
   updateFilenameOfAgreementAttachment,
   uploadFilesToAgreement,
-} from "api/AgreementApi";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { DocumentList } from "felleskomponenter/styledcomponents/DocumentList";
-import { uriForMediaFile } from "utils/file-util";
-import { EditAttachmentMenu } from "agreements/agreement/vedlegg/EditAttachmentMenu";
-import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
+} from 'api/AgreementApi'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import UploadModal, { FileUpload } from 'felleskomponenter/UploadModal'
+import { DocumentList } from 'felleskomponenter/styledcomponents/DocumentList'
+import { uriForMediaFile } from 'utils/file-util'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { AgreementAttachment, MediaInfo } from 'utils/types/response-types'
+
+import { FilePdfIcon, FloppydiskIcon, MenuElipsisVerticalIcon, PlusCircleIcon } from '@navikt/aksel-icons'
+import { Button, Dropdown, ExpansionCard, HStack, TextField } from '@navikt/ds-react'
+
+import EditAttachmentGroupModal from './EditAttachmentGroupModal'
 
 interface Props {
-  agreementId: string;
-  attachment: AgreementAttachment;
-  mutateAgreement: () => void;
+  agreementId: string
+  attachment: AgreementAttachment
+  mutateAgreement: () => void
 }
 
 export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Props) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [editAttachmentGroupModalIsOpen, setEditAttachmentGroupModalIsOpen] = useState(false);
-  const [deleteAttachmentIsOpen, setDeleteAttachmentIsOpen] = useState(false);
-  const [editModeAttachmentId, setEditModeAttachmentId] = useState<string | null>(null);
-  const containerRef = useRef<HTMLInputElement>(null);
-  const [editedFileText, setEditedFileText] = useState("");
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [editAttachmentGroupModalIsOpen, setEditAttachmentGroupModalIsOpen] = useState(false)
+  const [deleteAttachmentIsOpen, setDeleteAttachmentIsOpen] = useState(false)
+  const [editModeAttachmentId, setEditModeAttachmentId] = useState<string | null>(null)
+  const containerRef = useRef<HTMLInputElement>(null)
+  const [editedFileText, setEditedFileText] = useState('')
 
   const handleSaveUpdatedFileName = () => {
     updateFilenameOfAgreementAttachment(agreementId, editModeAttachmentId!, attachment.id!, editedFileText)
       .then(() => {
-        mutateAgreement();
-        setEditModeAttachmentId(null);
-        setEditedFileText("");
+        mutateAgreement()
+        setEditModeAttachmentId(null)
+        setEditedFileText('')
       })
       .catch((error) => {
-        setGlobalError(error.status, error.statusText);
-      });
-  };
+        setGlobalError(error.status, error.statusText)
+      })
+  }
 
   const handleEditFileName = (mediaInfo: MediaInfo) => {
-    setEditModeAttachmentId(mediaInfo.uri);
-    setEditedFileText(mediaInfo.text ?? "");
-  };
+    setEditModeAttachmentId(mediaInfo.uri)
+    setEditedFileText(mediaInfo.text ?? '')
+  }
 
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
   const handleDeleteFile = async (uri: string, attachmentIdToUpdate: string) => {
     deleteFileFromAttachmentGroup(agreementId, uri, attachmentIdToUpdate)
       .then(() => {
-        mutateAgreement();
+        mutateAgreement()
       })
       .catch((error) => {
-        setGlobalError(error.status, error.statusText);
-      });
-  };
+        setGlobalError(error.status, error.statusText)
+      })
+  }
 
   const onConfirmDeleteDelkontrakt = () => {
     deleteAttachmentGroup(agreementId, attachment.id!)
       .then(() => {
-        mutateAgreement();
+        mutateAgreement()
       })
       .catch((error) => {
-        setGlobalError(error.status, error.statusText);
-      });
-    setDeleteAttachmentIsOpen(false);
-  };
+        setGlobalError(error.status, error.statusText)
+      })
+    setDeleteAttachmentIsOpen(false)
+  }
 
   const uploadFiles = async (uploads: FileUpload[]) =>
     uploadFilesToAgreement(agreementId, attachment.id!, uploads)
       .then(() => {
-        mutateAgreement();
-        setModalIsOpen(false);
+        mutateAgreement()
+        setModalIsOpen(false)
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
 
   return (
     <>
@@ -85,7 +88,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         uploadFiles={uploadFiles}
-        fileType={"documents"}
+        fileType={'documents'}
       />
       <EditAttachmentGroupModal
         modalIsOpen={editAttachmentGroupModalIsOpen}
@@ -99,7 +102,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         text="Er du sikker på at du vil slette vedleggsgruppen?"
         onClick={onConfirmDeleteDelkontrakt}
         onClose={() => {
-          setDeleteAttachmentIsOpen(false);
+          setDeleteAttachmentIsOpen(false)
         }}
         isModalOpen={deleteAttachmentIsOpen}
         confirmButtonText="Slett"
@@ -109,7 +112,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         <ExpansionCard.Header>
           <ExpansionCard.Title size="small">{attachment.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
-        <ExpansionCard.Content style={{ overflow: "auto" }}>
+        <ExpansionCard.Content style={{ overflow: 'auto' }}>
           <DocumentList>
             <b>Beskrivelse:</b>
             {attachment.description}
@@ -119,14 +122,14 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                   <>
                     <TextField
                       ref={containerRef}
-                      style={{ width: `${pdf.text?.length ?? 0}ch`, maxWidth: "550px", minWidth: "450px" }}
+                      style={{ width: `${pdf.text?.length ?? 0}ch`, maxWidth: '550px', minWidth: '450px' }}
                       label="Endre filnavn"
                       value={editedFileText}
                       onChange={(event) => setEditedFileText(event.currentTarget.value)}
                       onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.preventDefault();
-                          handleSaveUpdatedFileName();
+                        if (event.key === 'Enter') {
+                          event.preventDefault()
+                          handleSaveUpdatedFileName()
                         }
                       }}
                     />
@@ -141,10 +144,10 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                   </>
                 ) : (
                   <>
-                    <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center">
+                    <HStack gap={{ xs: 'space-1', sm: 'space-2', md: 'space-4' }} align="center">
                       <FilePdfIcon fontSize="2rem" />
                       <a href={uriForMediaFile(pdf)} target="_blank" rel="noreferrer">
-                        {pdf.text || pdf.uri.split("/").pop()}
+                        {pdf.text || pdf.uri.split('/').pop()}
                       </a>
                     </HStack>
 
@@ -167,14 +170,14 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
               variant="tertiary"
               icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                setModalIsOpen(true);
+                setModalIsOpen(true)
               }}
             >
               <span>Legg til dokumenter</span>
             </Button>
             <Dropdown>
               <Button
-                style={{ marginLeft: "auto" }}
+                style={{ marginLeft: 'auto' }}
                 variant="tertiary"
                 icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
                 as={Dropdown.Toggle}
@@ -183,7 +186,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                 <Dropdown.Menu.GroupedList>
                   <Dropdown.Menu.GroupedList.Item
                     onClick={() => {
-                      setEditAttachmentGroupModalIsOpen(true);
+                      setEditAttachmentGroupModalIsOpen(true)
                     }}
                   >
                     Endre tittel og beskrivelse
@@ -193,7 +196,7 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
                 <Dropdown.Menu.List>
                   <Dropdown.Menu.List.Item
                     onClick={() => {
-                      setDeleteAttachmentIsOpen(true);
+                      setDeleteAttachmentIsOpen(true)
                     }}
                   >
                     Slett dokumentgruppe
@@ -205,5 +208,5 @@ export const AttachmentGroup = ({ agreementId, attachment, mutateAgreement }: Pr
         </ExpansionCard.Content>
       </ExpansionCard>
     </>
-  );
-};
+  )
+}

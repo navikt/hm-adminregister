@@ -1,6 +1,8 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import nb from "./resources/nb_translation.json";
+import { initReactI18next } from 'react-i18next'
+
+import i18n from 'i18next'
+
+import nb from './resources/nb_translation.json'
 
 i18n
   .use(initReactI18next)
@@ -10,10 +12,10 @@ i18n
         translation: nb,
       },
     },
-    lng: "nb",
+    lng: 'nb',
     fallbackLng: false,
-    supportedLngs: ["nb"],
-    fallbackNS: "App",
+    supportedLngs: ['nb'],
+    fallbackNS: 'App',
     keySeparator: false,
     nsSeparator: false,
     interpolation: {
@@ -22,6 +24,5 @@ i18n
     debug: true,
   })
   .catch((err) => {
-    console.error(err);
-  });
-
+    console.error(err)
+  })

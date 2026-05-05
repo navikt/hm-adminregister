@@ -1,20 +1,22 @@
-import { BodyLong, Box, Button, Checkbox, HStack, Table, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
-import { CompatibleSeriesRow } from "parts/compatibility/CompatibleSeriesRow";
-import RemoveCompatibleSeriesVariantsModal from "parts/compatibility/RemoveCompatibleSeriesVariantsModal";
-import AddCompatibleSeriesVariantsModal from "parts/compatibility/AddCompatibleSeriesVariantsModal";
-import NewCompatibleSeriesOnPartModal from "parts/compatibility/NewCompatibleSeriesOnPartModal";
-import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { removeCompatibleWithSeries } from "api/PartApi";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+
+import { removeCompatibleWithSeries } from 'api/PartApi'
+import { RowBoxTable } from 'felleskomponenter/styledcomponents/Table'
+import AddCompatibleSeriesVariantsModal from 'parts/compatibility/AddCompatibleSeriesVariantsModal'
+import { CompatibleSeriesRow } from 'parts/compatibility/CompatibleSeriesRow'
+import NewCompatibleSeriesOnPartModal from 'parts/compatibility/NewCompatibleSeriesOnPartModal'
+import RemoveCompatibleSeriesVariantsModal from 'parts/compatibility/RemoveCompatibleSeriesVariantsModal'
+import { useAuthStore } from 'utils/store/useAuthStore'
+
+import { PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { BodyLong, Box, Button, Checkbox, HStack, Table, VStack } from '@navikt/ds-react'
 
 interface SeriesCompabilityTabProps {
-  seriesIds: string[];
-  productIds: string[];
-  partId: string;
-  mutatePart: () => void;
-  isEditable: boolean;
+  seriesIds: string[]
+  productIds: string[]
+  partId: string
+  mutatePart: () => void
+  isEditable: boolean
 }
 
 export const SeriesCompabilityTab = ({
@@ -22,28 +24,28 @@ export const SeriesCompabilityTab = ({
   productIds,
   partId,
   mutatePart,
-  isEditable
+  isEditable,
 }: SeriesCompabilityTabProps) => {
-  const [selectedSeriesId, setSelectedSeriesId] = React.useState<string | undefined>(undefined);
+  const [selectedSeriesId, setSelectedSeriesId] = React.useState<string | undefined>(undefined)
   const [removeCompatibleSeriesVariantsModalIsOpen, setRemoveCompatibleSeriesVariantsModalIsOpen] =
-    React.useState(false);
-  const [addCompatibleSeriesVariantsModalIsOpen, setAddCompatibleSeriesVariantsModalIsOpen] = React.useState(false);
-  const [newCompatibleSeriesModalIsOpen, setNewCompatibleSeriesModalIsOpen] = React.useState(false);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    React.useState(false)
+  const [addCompatibleSeriesVariantsModalIsOpen, setAddCompatibleSeriesVariantsModalIsOpen] = React.useState(false)
+  const [newCompatibleSeriesModalIsOpen, setNewCompatibleSeriesModalIsOpen] = React.useState(false)
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   const deleteMarkedCompatibleSeries = () => {
     removeCompatibleWithSeries(partId, selectedRows, isAdmin).then(() => {
-      mutatePart();
-      setSelectedRows([]);
-    });
-  };
+      mutatePart()
+      setSelectedRows([])
+    })
+  }
 
   return (
     <>
@@ -77,7 +79,7 @@ export const SeriesCompabilityTab = ({
             variant="primary"
             icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             onClick={() => {
-              setNewCompatibleSeriesModalIsOpen(true);
+              setNewCompatibleSeriesModalIsOpen(true)
             }}
           >
             Legg til kobling
@@ -94,7 +96,7 @@ export const SeriesCompabilityTab = ({
                       <Table.Row>
                         <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                         <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
-                        {loggedInUser?.isAdminOrHmsUser &&  isEditable &&(
+                        {loggedInUser?.isAdminOrHmsUser && isEditable && (
                           <>
                             <Table.HeaderCell scope="col">Tilknyttede varianter</Table.HeaderCell>
                             <Table.HeaderCell scope="col" />
@@ -109,9 +111,9 @@ export const SeriesCompabilityTab = ({
                               checked={selectedRows.length === seriesIds.length}
                               onChange={() => {
                                 if (selectedRows.length) {
-                                  setSelectedRows([]);
+                                  setSelectedRows([])
                                 } else {
-                                  setSelectedRows(seriesIds);
+                                  setSelectedRows(seriesIds)
                                 }
                               }}
                               hideLabel
@@ -120,7 +122,6 @@ export const SeriesCompabilityTab = ({
                             </Checkbox>
                           </Table.HeaderCell>
                         )}
-
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -145,7 +146,7 @@ export const SeriesCompabilityTab = ({
               </HStack>
 
               {isEditable && (
-                <HStack justify={"end"}>
+                <HStack justify={'end'}>
                   <Button
                     className="fit-content"
                     variant="tertiary"
@@ -157,11 +158,10 @@ export const SeriesCompabilityTab = ({
                   </Button>
                 </HStack>
               )}
-
             </VStack>
           </Box>
         )}
       </VStack>
     </>
-  );
-};
+  )
+}

@@ -1,13 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import { axe } from "jest-axe";
-import { server } from "mocks/server";
-import { MemoryRouter } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import { expect, test } from "vitest";
-import ProductListWrapper from "./ProductListWrapper";
-import { http, HttpResponse } from "msw";
+import { MemoryRouter } from 'react-router-dom'
 
-const dummyProduct = (title: string, editStatus: string = "EDITABLE") => {
+import { axe } from 'jest-axe'
+import { server } from 'mocks/server'
+import { HttpResponse, http } from 'msw'
+import { v4 as uuidv4 } from 'uuid'
+import { expect, test } from 'vitest'
+
+import { render, screen } from '@testing-library/react'
+
+import ProductListWrapper from './ProductListWrapper'
+
+const dummyProduct = (title: string, editStatus: string = 'EDITABLE') => {
   return {
     id: uuidv4(),
     title: title,
@@ -15,28 +18,28 @@ const dummyProduct = (title: string, editStatus: string = "EDITABLE") => {
     isExpired: false,
     isPublished: false,
     variantCount: 23,
-    updated: "2024-05-24T09:54:25.595163",
-    updatedByUser: "system",
-  };
-};
+    updated: '2024-05-24T09:54:25.595163',
+    updatedByUser: 'system',
+  }
+}
 
-test("Flere produkter", async () => {
+test('Flere produkter', async () => {
   server.use(
     http.get(`http://localhost:8080/admreg/api/v1/series`, (info) => {
       return HttpResponse.json({
         content: [
-          dummyProduct("p1", "EDITABLE"),
-          dummyProduct("p2", "PENDING_APPROVAL"),
-          dummyProduct("p3", "REJECTED"),
-          dummyProduct("p4", "DONE"),
+          dummyProduct('p1', 'EDITABLE'),
+          dummyProduct('p2', 'PENDING_APPROVAL'),
+          dummyProduct('p3', 'REJECTED'),
+          dummyProduct('p4', 'DONE'),
         ],
         pageable: {
           number: 0,
           sort: {
             orderBy: [
               {
-                property: "created",
-                direction: "DESC",
+                property: 'created',
+                direction: 'DESC',
                 ignoreCase: false,
                 ascending: false,
               },
@@ -51,23 +54,23 @@ test("Flere produkter", async () => {
         offset: 0,
         pageNumber: 0,
         numberOfElements: 3,
-      });
+      })
     })
-  );
+  )
 
   const { container } = render(
     <MemoryRouter>
       <ProductListWrapper />
     </MemoryRouter>
-  );
+  )
 
-  expect(await screen.findAllByRole("listitem")).toHaveLength(7);
+  expect(await screen.findAllByRole('listitem')).toHaveLength(7)
 
-  expect(await screen.findByRole("link", { name: /p1/ })).toHaveTextContent(/23/); //antall varianter
-  expect(await screen.findByRole("link", { name: /Under endring/ }));
-  expect(await screen.findByRole("link", { name: /Avslått/ }));
-  expect(await screen.findByRole("link", { name: /Venter på godkjenning/ }));
-  expect(await screen.findByRole("link", { name: /Publisert/ }));
+  expect(await screen.findByRole('link', { name: /p1/ })).toHaveTextContent(/23/) //antall varianter
+  expect(await screen.findByRole('link', { name: /Under endring/ }))
+  expect(await screen.findByRole('link', { name: /Avslått/ }))
+  expect(await screen.findByRole('link', { name: /Venter på godkjenning/ }))
+  expect(await screen.findByRole('link', { name: /Publisert/ }))
 
-  expect(await axe(container)).toHaveNoViolations();
-});
+  expect(await axe(container)).toHaveNoViolations()
+})

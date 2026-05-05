@@ -1,10 +1,8 @@
-@use "../../styles/_mixins";
+@use '../../styles/_mixins';
 
 @use '@navikt/ds-tokens/dist/tokens' as *;
 
-
 .variants-table {
-
   thead tr {
     background-color: $ax-bg-neutral-moderate;
   }
@@ -13,7 +11,6 @@
     background-color: $ax-bg-neutral-moderate;
   }
 }
-
 
 .import-products {
   margin-top: $ax-space-16;
@@ -37,7 +34,6 @@
   p {
     margin-bottom: $ax-space-1;
     margin-top: $ax-space-1;
-
   }
 }
 
@@ -54,7 +50,6 @@
     border-radius: $ax-radius-8;
   }
 }
-
 
 .images-tab {
   &__upload-container {

@@ -28,7 +28,6 @@ export const initSkyra = () => {
 }
 
 export const stopSkyra = () => {
-
   // Remove Skyra script from DOM
   const skyraScript = document.querySelector('script[src*="skyra-survey.js"]')
 
@@ -44,5 +43,4 @@ export const stopSkyra = () => {
   if (typeof window.skyra === 'object') {
     delete window.skyra
   }
-
 }

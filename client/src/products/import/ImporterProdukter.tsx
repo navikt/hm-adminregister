@@ -1,70 +1,72 @@
-import { BodyLong, BodyShort, Button, Heading, HStack, Label, Loader, VStack } from "@navikt/ds-react";
-import React, { useRef, useState } from "react";
-import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { fileToUri, MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING } from "utils/file-util";
+import React, { useRef, useState } from 'react'
+
+import { MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING, fileToUri } from 'utils/file-util'
+
+import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
+import { BodyLong, BodyShort, Button, HStack, Heading, Label, Loader, VStack } from '@navikt/ds-react'
 
 interface Upload {
-  file: File;
-  previewUrl?: string;
+  file: File
+  previewUrl?: string
 }
 
 interface Props {
-  validerImporterteProdukter: (upload: Upload) => void;
-  seriesTitle: string;
+  validerImporterteProdukter: (upload: Upload) => void
+  seriesTitle: string
 }
 
 export default function ImporterProdukter({ validerImporterteProdukter, seriesTitle }: Props) {
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [upload, setUpload] = useState<Upload | undefined>(undefined);
-  const [fileTypeError, setFileTypeError] = useState("");
-  const [moreThanOnefileError, setMoreThanOnefileError] = useState("");
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [upload, setUpload] = useState<Upload | undefined>(undefined)
+  const [fileTypeError, setFileTypeError] = useState('')
+  const [moreThanOnefileError, setMoreThanOnefileError] = useState('')
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFileTypeError("");
-    setMoreThanOnefileError("");
-    const files = Array.from(event?.currentTarget?.files || []);
+    setFileTypeError('')
+    setMoreThanOnefileError('')
+    const files = Array.from(event?.currentTarget?.files || [])
 
     if (files.length !== 1) {
-      setMoreThanOnefileError("Du kan kun laste opp en fil om gangen.");
-      return;
+      setMoreThanOnefileError('Du kan kun laste opp en fil om gangen.')
+      return
     }
 
-    const file = files[0];
+    const file = files[0]
     fileToUri(file).then((url) => {
-      setUpload({ file, previewUrl: url });
-    });
-  };
+      setUpload({ file, previewUrl: url })
+    })
+  }
 
   const handleDragEvent = (event: React.DragEvent<HTMLDivElement>) => {
-    setFileTypeError("");
-    setMoreThanOnefileError("");
-    event.preventDefault();
-    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY;
+    setFileTypeError('')
+    setMoreThanOnefileError('')
+    event.preventDefault()
+    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY
 
-    const files = Array.from(event.dataTransfer.files);
-    const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type));
+    const files = Array.from(event.dataTransfer.files)
+    const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type))
 
     if (!isValidFiles) {
-      setFileTypeError("Ugyldig filtype. Kun xlsx er gyldig dokumenttype.");
-      return;
+      setFileTypeError('Ugyldig filtype. Kun xlsx er gyldig dokumenttype.')
+      return
     }
 
     if (files.length !== 1) {
-      setMoreThanOnefileError("Du kan kun laste opp en fil om gangen.");
-      return;
+      setMoreThanOnefileError('Du kan kun laste opp en fil om gangen.')
+      return
     }
 
-    const file = files[0];
+    const file = files[0]
     fileToUri(file).then((url) => {
-      setUpload({ file, previewUrl: url });
-    });
-  };
+      setUpload({ file, previewUrl: url })
+    })
+  }
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, file: File) => {
-    event.preventDefault();
-    setUpload(undefined);
-  };
+    event.preventDefault()
+    setUpload(undefined)
+  }
 
   return (
     <main>
@@ -91,8 +93,8 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
                 icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
                 iconPosition="right"
                 onClick={(event) => {
-                  event.preventDefault();
-                  fileInputRef?.current?.click();
+                  event.preventDefault()
+                  fileInputRef?.current?.click()
                 }}
               >
                 Last opp
@@ -121,13 +123,13 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
           {upload && (
             <VStack as="ol" gap="space-16" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
-                <HStack gap={{ xs: "space-16", sm: "space-8", md: "space-16" }} align="center">
+                <HStack gap={{ xs: 'space-16', sm: 'space-8', md: 'space-16' }} align="center">
                   <FileExcelIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
                 </HStack>
                 <Button
-                  variant={"tertiary"}
+                  variant={'tertiary'}
                   icon={<TrashIcon aria-hidden />}
                   title="slett"
                   onClick={(event) => handleDelete(event, upload.file)}
@@ -143,7 +145,7 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
               variant="secondary"
               iconPosition="right"
               onClick={() => {
-                history.back();
+                history.back()
               }}
             >
               Avbryt
@@ -153,7 +155,7 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
               size="medium"
               variant="primary"
               onClick={(event) => {
-                validerImporterteProdukter(upload!);
+                validerImporterteProdukter(upload!)
               }}
             >
               Gå videre
@@ -162,5 +164,5 @@ export default function ImporterProdukter({ validerImporterteProdukter, seriesTi
         </div>
       </div>
     </main>
-  );
+  )
 }

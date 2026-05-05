@@ -1,29 +1,31 @@
-import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { z } from "zod";
-import { createNewDelkontraktSchema } from "utils/zodSchema/newDelkontrakt";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { labelRequired } from "utils/string-util";
-import { Avstand } from "felleskomponenter/Avstand";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { createDelkontrakt } from "api/DelkontraktApi";
-import styles from "products/about/Editor.module.scss";
-import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { createDelkontrakt } from 'api/DelkontraktApi'
+import { Avstand } from 'felleskomponenter/Avstand'
+import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import styles from 'products/about/Editor.module.scss'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { createNewDelkontraktSchema } from 'utils/zodSchema/newDelkontrakt'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, HStack, Loader, Modal, TextField, Textarea, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  oid: string;
-  setModalIsOpen: (open: boolean) => void;
-  mutateDelkontrakter: () => void;
-  newSortNr: number;
+  modalIsOpen: boolean
+  oid: string
+  setModalIsOpen: (open: boolean) => void
+  mutateDelkontrakter: () => void
+  newSortNr: number
 }
 
-export type NyDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>;
+export type NyDelkontraktFormData = z.infer<typeof createNewDelkontraktSchema>
 
 const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontrakter, newSortNr }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
     register,
@@ -32,45 +34,45 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NyDelkontraktFormData>({
     resolver: zodResolver(createNewDelkontraktSchema),
-    mode: "onSubmit",
-  });
-  const { setGlobalError } = useErrorStore();
-  const [editorValue, setEditorValue] = useState("");
+    mode: 'onSubmit',
+  })
+  const { setGlobalError } = useErrorStore()
+  const [editorValue, setEditorValue] = useState('')
 
   const onChangeBeskrivelse = (value: string) => {
-    setEditorValue(value);
-    setValue("beskrivelse", value);
-  };
+    setEditorValue(value)
+    setValue('beskrivelse', value)
+  }
 
   async function onSubmitContinue(data: NyDelkontraktFormData) {
-    await onSubmit(data);
+    await onSubmit(data)
   }
 
   async function onSubmitClose(data: NyDelkontraktFormData) {
-    await onSubmit(data);
-    setModalIsOpen(false);
+    await onSubmit(data)
+    setModalIsOpen(false)
   }
 
   async function onSubmit(data: NyDelkontraktFormData) {
-    setIsSaving(true);
+    setIsSaving(true)
 
     createDelkontrakt(oid, data, newSortNr)
       .then((_) => {
-        setIsSaving(false);
-        mutateDelkontrakter();
+        setIsSaving(false)
+        mutateDelkontrakter()
       })
       .catch((error) => {
-        setGlobalError(error.message);
-        setIsSaving(false);
-      });
-    reset();
+        setGlobalError(error.message)
+        setIsSaving(false)
+      })
+    reset()
   }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: "Legg til delkontrakt",
+        heading: 'Legg til delkontrakt',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -78,10 +80,10 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
       <form>
         <Modal.Body>
           <Content>
-            <VStack style={{ width: "100%" }}>
+            <VStack style={{ width: '100%' }}>
               <TextField
-                {...register("tittel", { required: true })}
-                label={labelRequired("Tittel")}
+                {...register('tittel', { required: true })}
+                label={labelRequired('Tittel')}
                 id="tittel"
                 name="tittel"
                 type="text"
@@ -92,8 +94,8 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
                 defaultValue={editorValue}
                 onTextChange={onChangeBeskrivelse}
                 className={styles.editor}
-                toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
-                formats={["bold", "italic", "list", "link"]}
+                toolbar={[['bold', 'italic'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]}
+                formats={['bold', 'italic', 'list', 'link']}
               />
             </VStack>
           </Content>
@@ -106,8 +108,8 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
         <Modal.Footer>
           <Button
             onClick={() => {
-              setModalIsOpen(false);
-              reset();
+              setModalIsOpen(false)
+              reset()
             }}
             variant="tertiary"
             type="reset"
@@ -123,7 +125,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
         </Modal.Footer>
       </form>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewDelkontraktModal;
+export default NewDelkontraktModal

@@ -1,29 +1,32 @@
-import { ChevronRightIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, HGrid, Hide, Tag, VStack } from "@navikt/ds-react";
-import { Link } from "react-router-dom";
-import { ProductRegistrationDTOV2 } from "utils/types/response-types";
-import styles from "./PartList.module.scss";
+import { Link } from 'react-router-dom'
+
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
+
+import { ChevronRightIcon } from '@navikt/aksel-icons'
+import { BodyShort, Box, HGrid, Hide, Tag, VStack } from '@navikt/ds-react'
+
+import styles from './PartList.module.scss'
 
 export const PartList = ({
   partsList,
   oversiktPath,
 }: {
-  partsList: ProductRegistrationDTOV2[];
-  oversiktPath: string;
+  partsList: ProductRegistrationDTOV2[]
+  oversiktPath: string
 }) => {
   return (
-    <VStack as={"ol"} gap="space-8" className={styles.partsList}>
+    <VStack as={'ol'} gap="space-8" className={styles.partsList}>
       {partsList.map((part) => (
         <li key={part.id}>
           <PartCard part={part} oversiktPath={oversiktPath} />
         </li>
       ))}
     </VStack>
-  );
-};
+  )
+}
 
 const PartCard = ({ part, oversiktPath }: { part: ProductRegistrationDTOV2; oversiktPath: string }) => {
-  const isExpired = part.isExpired;
+  const isExpired = part.isExpired
 
   return (
     <HGrid
@@ -31,15 +34,15 @@ const PartCard = ({ part, oversiktPath }: { part: ProductRegistrationDTOV2; over
       to={`/del/${part.id}`}
       state={oversiktPath}
       columns={{
-        xs: "1fr auto",
-        md: "1fr auto",
-        lg: "1fr auto",
+        xs: '1fr auto',
+        md: '1fr auto',
+        lg: '1fr auto',
       }}
       gap="space-4"
-      align={"center"}
+      align={'center'}
       className={styles.partPanel}
     >
-      <VStack style={isExpired ? { height: "100%" } : {}} gap="space-4">
+      <VStack style={isExpired ? { height: '100%' } : {}} gap="space-4">
         {isExpired && (
           <Box>
             <Tag size="small" variant="neutral-moderate">
@@ -56,5 +59,5 @@ const PartCard = ({ part, oversiktPath }: { part: ProductRegistrationDTOV2; over
         <ChevronRightIcon aria-hidden fontSize="2rem" />
       </Hide>
     </HGrid>
-  );
-};
+  )
+}

@@ -1,48 +1,51 @@
-import { ChevronLeftIcon, ChevronRightIcon, MenuGridIcon } from "@navikt/aksel-icons";
-import { Button, HStack, VStack } from "@navikt/ds-react";
-import { handleUpdateOfSeriesMedia, moveItemInArray, updateMediaPriority } from "./FellesSortingArea";
-import { forwardRef } from "react";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { MediaInfoDTO } from "utils/types/response-types";
-import styles from "./SortCard.module.scss";
-import { SortItem } from "felleskomponenter/sort/SortItem";
+import { forwardRef } from 'react'
+
+import { SortItem } from 'felleskomponenter/sort/SortItem'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { MediaInfoDTO } from 'utils/types/response-types'
+
+import { ChevronLeftIcon, ChevronRightIcon, MenuGridIcon } from '@navikt/aksel-icons'
+import { Button, HStack, VStack } from '@navikt/ds-react'
+
+import { handleUpdateOfSeriesMedia, moveItemInArray, updateMediaPriority } from './FellesSortingArea'
+import styles from './SortCard.module.scss'
 
 interface Props {
-  seriesId: string;
-  handleDeleteFile: (uri: string) => void;
-  setMediaArr: MediaInfoDTO[] | any;
-  mediaArr: MediaInfoDTO[];
-  index: number;
-  isEditable: boolean;
+  seriesId: string
+  handleDeleteFile: (uri: string) => void
+  setMediaArr: MediaInfoDTO[] | any
+  mediaArr: MediaInfoDTO[]
+  index: number
+  isEditable: boolean
 }
 
 export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
   { seriesId, handleDeleteFile, setMediaArr, mediaArr, index, isEditable }: Props,
-  ref,
+  ref
 ) {
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
-  const rightButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll(".rightButton")) || [];
-  const leftButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll(".leftButton")) || [];
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
+  const rightButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll('.rightButton')) || []
+  const leftButtonArray: HTMLButtonElement[] = Array.from(document.querySelectorAll('.leftButton')) || []
 
   const handleMoveLeft = () => {
     if (index > 0) {
-      const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index - 1));
-      setMediaArr(updatedArray);
-      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError);
-      leftButtonArray[index - 1].focus();
+      const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index - 1))
+      setMediaArr(updatedArray)
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError)
+      leftButtonArray[index - 1].focus()
     }
-  };
+  }
 
   const handleMoveRight = () => {
     if (index < mediaArr.length - 1) {
-      const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index + 1));
-      setMediaArr(updatedArray);
-      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError);
-      rightButtonArray[index + 1].focus();
+      const updatedArray = updateMediaPriority(moveItemInArray(mediaArr, index, index + 1))
+      setMediaArr(updatedArray)
+      handleUpdateOfSeriesMedia(seriesId, updatedArray, setGlobalError)
+      rightButtonArray[index + 1].focus()
     }
-  };
+  }
 
   return (
     <VStack className={styles.mediaCard} ref={ref}>
@@ -54,7 +57,7 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
             <Button
               variant="tertiary"
               icon={<ChevronLeftIcon fontSize="1.5rem" aria-hidden />}
-              className={"leftButton"}
+              className={'leftButton'}
               onClick={handleMoveLeft}
               title="Flytt til venstre"
             ></Button>
@@ -62,7 +65,7 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
             <Button
               variant="tertiary"
               icon={<ChevronRightIcon fontSize="1.5rem" aria-hidden />}
-              className={"rightButton"}
+              className={'rightButton'}
               onClick={handleMoveRight}
               title="Flytt til høyre"
             ></Button>
@@ -70,5 +73,5 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
         )}
       </VStack>
     </VStack>
-  );
-});
+  )
+})

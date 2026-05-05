@@ -1,24 +1,27 @@
-import { VStack } from "@navikt/ds-react";
-import ImageModal from "felleskomponenter/ImageModal";
-import { MoreMenu } from "felleskomponenter/MoreMenu";
-import { ImageContainer } from "products/files/images/ImageContainer";
-import { forwardRef, useState } from "react";
-import { MediaInfoDTO } from "utils/types/response-types";
-import styles from "./ProductImageCard.module.scss";
+import { forwardRef, useState } from 'react'
+
+import ImageModal from 'felleskomponenter/ImageModal'
+import { MoreMenu } from 'felleskomponenter/MoreMenu'
+import { ImageContainer } from 'products/files/images/ImageContainer'
+import { MediaInfoDTO } from 'utils/types/response-types'
+
+import { VStack } from '@navikt/ds-react'
+
+import styles from './ProductImageCard.module.scss'
 
 interface Props {
-  handleDeleteFile: (uri: string) => void;
-  imagesArr: MediaInfoDTO[];
-  index: number;
-  isEditable: boolean;
+  handleDeleteFile: (uri: string) => void
+  imagesArr: MediaInfoDTO[]
+  index: number
+  isEditable: boolean
 }
 
 export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function ImageCard(
   { handleDeleteFile, imagesArr, index, isEditable }: Props,
-  ref,
+  ref
 ) {
-  const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false);
-  const currentImage = imagesArr[index];
+  const [imageModalIsOpen, setImageModalIsOpen] = useState<boolean>(false)
+  const currentImage = imagesArr[index]
 
   return (
     <>
@@ -34,13 +37,13 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
             type="button"
             className={styles.buttonImage}
             onClick={() => setImageModalIsOpen(true)}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
           >
             <ImageContainer uri={currentImage.uri} text={currentImage.text} />
           </button>
           <VStack gap="space-16" align="center">
             <i>Filnavn</i>
-            <span className="text-overflow-hidden-small">{currentImage.filename ?? "OBS mangler beskrivelse"}</span>
+            <span className="text-overflow-hidden-small">{currentImage.filename ?? 'OBS mangler beskrivelse'}</span>
           </VStack>
         </VStack>
         {isEditable && (
@@ -50,5 +53,5 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
         )}
       </div>
     </>
-  );
-});
+  )
+})

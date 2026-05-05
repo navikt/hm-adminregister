@@ -1,59 +1,62 @@
-import { useState } from "react";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { deleteCatalogFile, findCatalogFiles, retryCatalogFile } from 'api/CatalogFileApi'
+import { toReadableDateTimeString } from 'utils/date-util'
+import { CatalogFile } from 'utils/types/response-types'
+
+import { ArrowUpIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
+  Alert,
+  BodyShort,
   Box,
   Button,
-  Heading,
   HStack,
+  Heading,
+  HelpText,
   Loader,
   Pagination,
   Search,
-  BodyShort,
   Tooltip,
-  Alert,
   VStack,
-  HelpText,
-} from "@navikt/ds-react";
-import { TrashIcon, ArrowUpIcon, PlusIcon } from "@navikt/aksel-icons";
-import { findCatalogFiles, deleteCatalogFile, retryCatalogFile } from "api/CatalogFileApi";
-import { CatalogFile } from "utils/types/response-types";
-import styles from "./CatalogFiles.module.scss";
-import { toReadableDateTimeString } from "utils/date-util";
-import { useNavigate } from "react-router-dom";
+} from '@navikt/ds-react'
 
-const PAGE_SIZE = 15;
+import styles from './CatalogFiles.module.scss'
+
+const PAGE_SIZE = 15
 
 const CatalogFiles = () => {
-  const [searchFileName, setSearchFileName] = useState("");
-  const [page, setPage] = useState(1);
-  const navigate = useNavigate();
+  const [searchFileName, setSearchFileName] = useState('')
+  const [page, setPage] = useState(1)
+  const navigate = useNavigate()
 
   const { data, isLoading, error, mutate } = findCatalogFiles(
     { fileName: searchFileName },
     page - 1,
     PAGE_SIZE,
-    "updated,DESC",
-  );
+    'updated,DESC'
+  )
 
   const handleDelete = async (id: string) => {
-    await deleteCatalogFile(id);
-    mutate();
-  };
+    await deleteCatalogFile(id)
+    mutate()
+  }
 
   const handleRetry = async (id: string) => {
-    await retryCatalogFile(id);
-    mutate();
-  };
+    await retryCatalogFile(id)
+    mutate()
+  }
 
   const statusLabels: Record<string, string> = {
-    ERROR: "Feil",
-    DONE: "Ferdig",
-    PROCESSING: "Behandler",
-    PENDING: "I kø",
-  };
+    ERROR: 'Feil',
+    DONE: 'Ferdig',
+    PROCESSING: 'Behandler',
+    PENDING: 'I kø',
+  }
 
   return (
     <main className="show-menu">
-      <div className="page__background-container" style={{ overflow: "auto" }}>
+      <div className="page__background-container" style={{ overflow: 'auto' }}>
         <Heading level="1" size="large" spacing>
           Katalog
         </Heading>
@@ -75,7 +78,7 @@ const CatalogFiles = () => {
                 size="medium"
                 icon={<PlusIcon aria-hidden />}
                 iconPosition="left"
-                onClick={() => navigate("/katalog/importer-fil")}
+                onClick={() => navigate('/katalog/importer-fil')}
               >
                 Last opp ny katalog
               </Button>
@@ -87,7 +90,7 @@ const CatalogFiles = () => {
                 <Alert variant="info">Ingen katalogfiler funnet.</Alert>
               )}
               {!isLoading && data && data.content.length > 0 && (
-                <div className={styles.cardRow + " " + styles.cardHeader}>
+                <div className={styles.cardRow + ' ' + styles.cardHeader}>
                   <BodyShort className={`${styles.cardValue} ${styles.longColumn}`}>
                     <strong>Filnavn</strong>
                   </BodyShort>
@@ -108,11 +111,11 @@ const CatalogFiles = () => {
                   </BodyShort>
                   <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
                     <HStack gap="space-2" justify="center">
-                    <strong>Sist oppdatert</strong>
-                    <HelpText title="om sist oppdatert" >
-                      Denne kolonnen viser når filen sist ble oppdatert, enten ved opplasting
-                      eller ved nattlig synkronisering mot FinnHjelpemiddel.
-                    </HelpText>
+                      <strong>Sist oppdatert</strong>
+                      <HelpText title="om sist oppdatert">
+                        Denne kolonnen viser når filen sist ble oppdatert, enten ved opplasting eller ved nattlig
+                        synkronisering mot FinnHjelpemiddel.
+                      </HelpText>
                     </HStack>
                   </BodyShort>
                 </div>
@@ -128,8 +131,8 @@ const CatalogFiles = () => {
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                       {file.catalogList.length}
                     </BodyShort>
-                    {file.status === "ERROR" ? (
-                      <Tooltip content={file.errorMessage || ""} placement="top" maxChar={500}>
+                    {file.status === 'ERROR' ? (
+                      <Tooltip content={file.errorMessage || ''} placement="top" maxChar={500}>
                         <BodyShort className={`${styles.cardValue} ${styles.shortColumn} ${styles.errorStatus}`}>
                           {statusLabels[file.status] || file.status}
                         </BodyShort>
@@ -141,14 +144,14 @@ const CatalogFiles = () => {
                     )}
                     <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
                       {file.updatedByUser
-                        ? file.updatedByUser.split(".")[0].charAt(0).toUpperCase() +
-                          file.updatedByUser.split(".")[0].slice(1)
-                        : ""}
+                        ? file.updatedByUser.split('.')[0].charAt(0).toUpperCase() +
+                          file.updatedByUser.split('.')[0].slice(1)
+                        : ''}
                     </BodyShort>
                     <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
                       {toReadableDateTimeString(file.updated)}
                     </BodyShort>
-                    {file.status === "ERROR" && (
+                    {file.status === 'ERROR' && (
                       <span className={styles.editButton}>
                         <Button
                           size="xsmall"
@@ -177,7 +180,7 @@ const CatalogFiles = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default CatalogFiles;
+export default CatalogFiles

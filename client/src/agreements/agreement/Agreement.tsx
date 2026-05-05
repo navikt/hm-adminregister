@@ -1,93 +1,97 @@
-import React, { useState } from "react";
-import useSWR from "swr";
-import { Alert, BodyShort, Button, Dropdown, Heading, HGrid, Loader, Tabs, VStack } from "@navikt/ds-react";
-import { CogIcon } from "@navikt/aksel-icons";
-import { FormProvider, useForm } from "react-hook-form";
-import AboutTab from "./AboutTab";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { AgreementRegistrationDTO } from "utils/types/response-types";
-import { fetcherGET } from "utils/swr-hooks";
-import { HM_REGISTER_URL } from "environments";
-import { deleteAgreement, publishAgreement, updateAgreementDescription } from "api/AgreementApi";
-import { toReadableDateTimeString, toReadableString } from "utils/date-util";
-import DelkontrakterTab from "./delkontraktliste/DelkontrakterTab";
-import EditAgreementInfoModal from "./EditAgreementInfoModal";
-import FileTab from "./vedlegg/FileTab";
-import { WordWrappedHeading } from "felleskomponenter/styledcomponents/Heading";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import AgreementStatusTag from "agreements/agreement/AgreementStatusTag";
-import ServiceJobsTab from "./ServiceJobsTab";
+import React, { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+
+import AgreementStatusTag from 'agreements/agreement/AgreementStatusTag'
+import { deleteAgreement, publishAgreement, updateAgreementDescription } from 'api/AgreementApi'
+import { HM_REGISTER_URL } from 'environments'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import { WordWrappedHeading } from 'felleskomponenter/styledcomponents/Heading'
+import useSWR from 'swr'
+import { toReadableDateTimeString, toReadableString } from 'utils/date-util'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { fetcherGET } from 'utils/swr-hooks'
+import { AgreementRegistrationDTO } from 'utils/types/response-types'
+
+import { CogIcon } from '@navikt/aksel-icons'
+import { Alert, BodyShort, Button, Dropdown, HGrid, Heading, Loader, Tabs, VStack } from '@navikt/ds-react'
+
+import DelkontrakterTab from './delkontraktliste/DelkontrakterTab'
+import FileTab from './vedlegg/FileTab'
+
+import AboutTab from './AboutTab'
+import EditAgreementInfoModal from './EditAgreementInfoModal'
+import ServiceJobsTab from './ServiceJobsTab'
 
 export type EditCommonInfoAgreement = {
-  description: string;
-};
+  description: string
+}
 const Agreement = () => {
-  const [searchParams] = useSearchParams();
-  const { pathname } = useLocation();
-  const activeTab = searchParams.get("tab");
-  const { agreementId } = useParams();
+  const [searchParams] = useSearchParams()
+  const { pathname } = useLocation()
+  const activeTab = searchParams.get('tab')
+  const { agreementId } = useParams()
 
-  const { loggedInUser } = useAuthStore();
-  const { setGlobalError } = useErrorStore();
+  const { loggedInUser } = useAuthStore()
+  const { setGlobalError } = useErrorStore()
   const agreementPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/registrations/${agreementId}`
-    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`;
+    : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/agreement/registrations/${agreementId}`
 
   const {
     data: agreement,
     error,
     isLoading,
     mutate: mutateAgreement,
-  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET);
+  } = useSWR<AgreementRegistrationDTO>(loggedInUser ? agreementPath : null, fetcherGET)
 
-  const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false);
+  const [isEditAgreementModalOpen, setIsEditAgreementModalOpen] = React.useState<boolean>(false)
 
-  const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false);
-  const [publiserRammeavtaleModalIsOpen, setPubliserRammeavtaleModalIsOpen] = useState<boolean>(false);
+  const [slettRammeavtaleModalIsOpen, setSlettRammeavtaleModalIsOpen] = useState<boolean>(false)
+  const [publiserRammeavtaleModalIsOpen, setPubliserRammeavtaleModalIsOpen] = useState<boolean>(false)
 
   const handleSlettRammeavtale = () => {
-    setSlettRammeavtaleModalIsOpen(false);
-    navigate("/rammeavtaler");
+    setSlettRammeavtaleModalIsOpen(false)
+    navigate('/rammeavtaler')
 
     deleteAgreement(agreementId!)
       .then(() => {
-        setSlettRammeavtaleModalIsOpen(false);
+        setSlettRammeavtaleModalIsOpen(false)
         mutateAgreement().then(() => {
-          navigate("/rammeavtaler");
-        });
+          navigate('/rammeavtaler')
+        })
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-  };
+        setGlobalError(error.message)
+      })
+  }
 
   const handlePublishRammeavtale = () => {
-    setPubliserRammeavtaleModalIsOpen(false);
+    setPubliserRammeavtaleModalIsOpen(false)
     publishAgreement(agreementId!)
       .then(() => {
-        mutateAgreement();
+        mutateAgreement()
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-  };
+        setGlobalError(error.message)
+      })
+  }
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const updateUrlOnTabChange = (value: string) => {
-    navigate(`${pathname}?tab=${value}`);
-  };
+    navigate(`${pathname}?tab=${value}`)
+  }
 
-  const formMethods = useForm<EditCommonInfoAgreement>();
+  const formMethods = useForm<EditCommonInfoAgreement>()
 
   async function onSubmit(data: EditCommonInfoAgreement) {
     updateAgreementDescription(agreement!.id, data)
       .then((agreement) => mutateAgreement(agreement))
       .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
+        setGlobalError(error.status, error.message)
+      })
   }
 
   if (error) {
@@ -95,7 +99,7 @@ const Agreement = () => {
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         Error
       </HGrid>
-    );
+    )
   }
 
   if (isLoading) {
@@ -103,7 +107,7 @@ const Agreement = () => {
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Loader size="large" />
       </HGrid>
-    );
+    )
   }
 
   if (!agreement) {
@@ -111,10 +115,10 @@ const Agreement = () => {
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Alert variant="info">Ingen data funnet.</Alert>
       </HGrid>
-    );
+    )
   }
 
-  const isDraft = agreement.draftStatus === "DRAFT";
+  const isDraft = agreement.draftStatus === 'DRAFT'
 
   return (
     <>
@@ -125,39 +129,40 @@ const Agreement = () => {
         mutateAgreement={mutateAgreement}
       />
       <ConfirmModal
-        title={"Slett rammeavtale"}
+        title={'Slett rammeavtale'}
         text={`Er du sikker på at du vil slette rammeavtale "${agreement?.title}"`}
         onClick={() => handleSlettRammeavtale()}
         onClose={() => setSlettRammeavtaleModalIsOpen(false)}
         isModalOpen={slettRammeavtaleModalIsOpen}
-        confirmButtonText={"Slett"}
-        variant={"danger"}
+        confirmButtonText={'Slett'}
+        variant={'danger'}
       />
       <ConfirmModal
-        title={"Publiser rammeavtale"}
+        title={'Publiser rammeavtale'}
         text={`Er du sikker på at du vil publisere rammeavtale "${agreement?.title}"`}
         onClick={() => handlePublishRammeavtale()}
         onClose={() => setPubliserRammeavtaleModalIsOpen(false)}
         isModalOpen={publiserRammeavtaleModalIsOpen}
-        confirmButtonText={"Publiser"}
+        confirmButtonText={'Publiser'}
       />
 
       <main className="show-menu">
         <FormProvider {...formMethods}>
-          <HGrid gap="space-12" columns={{ xs: 1, sm: "minmax(16rem, 55rem) 200px" }}>
-            <VStack gap={{ xs: "space-4", md: "space-8" }}>
+          <HGrid gap="space-12" columns={{ xs: 1, sm: 'minmax(16rem, 55rem) 200px' }}>
+            <VStack gap={{ xs: 'space-4', md: 'space-8' }}>
               <WordWrappedHeading level="1" size="xlarge">
                 {agreement.title ?? agreement.title}
               </WordWrappedHeading>
               <div>
                 <div>
-                  <b>Periode:</b> {toReadableDateTimeString(agreement.published)} - {toReadableDateTimeString(agreement.expired)}
+                  <b>Periode:</b> {toReadableDateTimeString(agreement.published)} -{' '}
+                  {toReadableDateTimeString(agreement.expired)}
                 </div>
                 <div>
                   <b>Anbudsnr:</b> {agreement.reference}
                 </div>
               </div>
-              <Tabs defaultValue={activeTab || "about"} onChange={updateUrlOnTabChange}>
+              <Tabs defaultValue={activeTab || 'about'} onChange={updateUrlOnTabChange}>
                 <Tabs.List>
                   <Tabs.Tab value="about" label="Om avtalen" />
                   <Tabs.Tab value="delkontrakter" label="Delkontrakter" />
@@ -175,12 +180,12 @@ const Agreement = () => {
               </Tabs>
             </VStack>
 
-            <VStack gap={{ xs: "space-2", md: "space-4" }}>
+            <VStack gap={{ xs: 'space-2', md: 'space-4' }}>
               <Dropdown>
                 <Button
                   className="fit-content"
                   variant="secondary"
-                  icon={<CogIcon aria-hidden fontSize={"1.5rem"} />}
+                  icon={<CogIcon aria-hidden fontSize={'1.5rem'} />}
                   as={Dropdown.Toggle}
                   title="Endre eller slett"
                 ></Button>
@@ -188,7 +193,7 @@ const Agreement = () => {
                   <Dropdown.Menu.GroupedList>
                     <Dropdown.Menu.GroupedList.Item
                       onClick={() => {
-                        setIsEditAgreementModalOpen(true);
+                        setIsEditAgreementModalOpen(true)
                       }}
                     >
                       Endre rammeavtale
@@ -197,9 +202,9 @@ const Agreement = () => {
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
-                      disabled={agreement.draftStatus !== "DRAFT"}
+                      disabled={agreement.draftStatus !== 'DRAFT'}
                       onClick={() => {
-                        setSlettRammeavtaleModalIsOpen(true);
+                        setSlettRammeavtaleModalIsOpen(true)
                       }}
                     >
                       Slett rammeavtale
@@ -225,14 +230,14 @@ const Agreement = () => {
         </FormProvider>
       </main>
     </>
-  );
-};
-export default Agreement;
+  )
+}
+export default Agreement
 
 const PublishButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <Button style={{ marginTop: "20px" }} onClick={onClick}>
+    <Button style={{ marginTop: '20px' }} onClick={onClick}>
       Publiser
     </Button>
-  );
-};
+  )
+}

@@ -1,33 +1,35 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ComponentIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField, VStack } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { mapLoggedInUser } from "utils/user-util";
-import { loginSchema } from "utils/zodSchema/login";
-import { z } from "zod";
-import { baseUrl } from "utils/swr-hooks";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-type FormData = z.infer<typeof loginSchema>;
+import { HM_REGISTER_URL } from 'environments'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { baseUrl } from 'utils/swr-hooks'
+import { mapLoggedInUser } from 'utils/user-util'
+import { loginSchema } from 'utils/zodSchema/login'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ComponentIcon } from '@navikt/aksel-icons'
+import { Button, Heading, Loader, TextField, VStack } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof loginSchema>
 
 interface BlurredFields {
-  email: boolean;
-  password: boolean;
+  email: boolean
+  password: boolean
 }
 
 export default function Login() {
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setLoading] = useState(false)
   const [blurredFields, setBlurredFields] = useState<BlurredFields>({
     email: false,
     password: false,
-  });
-  const { setLoggedInUser } = useAuthStore();
-  const { state } = useLocation();
-  const previousLocation = typeof state === "string" ? state : "/produkter";
+  })
+  const { setLoggedInUser } = useAuthStore()
+  const { state } = useLocation()
+  const previousLocation = typeof state === 'string' ? state : '/produkter'
 
   const {
     handleSubmit,
@@ -35,79 +37,79 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(loginSchema),
-    mode: "onChange",
-  });
+    mode: 'onChange',
+  })
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleFieldBlur = (fieldName: string) => {
     setBlurredFields({
       ...blurredFields,
       [fieldName]: true,
-    });
-  };
+    })
+  }
   const handleFieldFocus = (fieldName: string) => {
     setBlurredFields({
       ...blurredFields,
       [fieldName]: false,
-    });
-  };
+    })
+  }
 
   async function onSubmit(data: FormData) {
     try {
-      setLoading(true);
+      setLoading(true)
       const loginRes = await fetch(`${HM_REGISTER_URL()}/admreg/login`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify(data),
-      });
+      })
 
       if (loginRes.ok) {
         const loggedInUserRes = await fetch(`${HM_REGISTER_URL()}/admreg/loggedInUser`, {
-          method: "GET",
-          credentials: "include",
+          method: 'GET',
+          credentials: 'include',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        });
+        })
 
         if (loggedInUserRes.ok) {
-          const loggedInUser = mapLoggedInUser(await loggedInUserRes.json());
-          setLoggedInUser(loggedInUser);
+          const loggedInUser = mapLoggedInUser(await loggedInUserRes.json())
+          setLoggedInUser(loggedInUser)
 
-          if (loggedInUser.userName === "") {
+          if (loggedInUser.userName === '') {
             if (loggedInUser.isAdmin) {
-              navigate("/admin/adminopplysninger");
+              navigate('/admin/adminopplysninger')
             } else if (loggedInUser.isHmsUser) {
-              navigate("/logg-inn/hms-brukeropplysninger");
+              navigate('/logg-inn/hms-brukeropplysninger')
             } else {
-              navigate("/logg-inn/brukeropplysninger");
+              navigate('/logg-inn/brukeropplysninger')
             }
           } else {
             if (loggedInUser.isAdmin) {
-              navigate("/admin/dashboard");
+              navigate('/admin/dashboard')
             } else if (loggedInUser.isHmsUser) {
-              navigate("/");
+              navigate('/')
             } else if (loggedInUser.isSupplier) {
-              navigate("/leverandor/dashboard");
+              navigate('/leverandor/dashboard')
             }
           }
         } else {
-          throw new Error("Logged in user not ok");
+          throw new Error('Logged in user not ok')
         }
       } else {
-        throw new Error("Feil brukernavn eller passord");
+        throw new Error('Feil brukernavn eller passord')
       }
     } catch (e: any) {
-      setError(e);
-      setLoading(false);
+      setError(e)
+      setLoading(false)
     }
   }
 
-  if (isLoading) return <Loader size="3xlarge" title="Logger inn" />;
+  if (isLoading) return <Loader size="3xlarge" title="Logger inn" />
 
   return (
     <div className="auth-page">
@@ -124,26 +126,26 @@ export default function Login() {
         </Heading>
         <form className="auth-dialog-box__form" action="" method="POST" onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            {...register("username", { required: true })}
+            {...register('username', { required: true })}
             label="E-post*"
             type="email"
             autoComplete="on"
             error={blurredFields.email && errors?.username?.message}
-            onBlur={() => handleFieldBlur("email")}
-            onFocus={() => handleFieldFocus("email")}
+            onBlur={() => handleFieldBlur('email')}
+            onFocus={() => handleFieldFocus('email')}
           />
           <TextField
-            {...register("password", { required: true })}
+            {...register('password', { required: true })}
             label="Passord*"
             type="password"
             error={blurredFields.password && errors?.password?.message}
-            onBlur={() => handleFieldBlur("password")}
-            onFocus={() => handleFieldFocus("password")}
+            onBlur={() => handleFieldBlur('password')}
+            onFocus={() => handleFieldFocus('password')}
           />
           {error !== null && (
             <VStack align="center">
               {error?.name && <span className="auth-dialog-box__error-message">{error?.message}</span>}
-              {error?.message === "Feil brukernavn eller passord" && (
+              {error?.message === 'Feil brukernavn eller passord' && (
                 <a href={baseUrl(`/logg-inn/glemt-passord`)}>Glemt passord</a>
               )}
             </VStack>
@@ -154,11 +156,11 @@ export default function Login() {
                 <Loader />
               </div>
             ) : (
-              "Logg inn"
+              'Logg inn'
             )}
           </Button>
         </form>
       </div>
     </div>
-  );
+  )
 }

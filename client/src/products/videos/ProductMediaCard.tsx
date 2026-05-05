@@ -1,21 +1,25 @@
-import { Link, VStack } from "@navikt/ds-react";
-import { MoreMenu } from "felleskomponenter/MoreMenu";
-import { forwardRef } from "react";
-import { MediaInfoDTO } from "utils/types/response-types";
-import styles from "./ProductMediaCard.module.scss";
-import productStyles from "../ProductPage.module.scss";
-import { MediaContainer } from "products/videos/MediaContainer";
+import { forwardRef } from 'react'
+
+import { MoreMenu } from 'felleskomponenter/MoreMenu'
+import { MediaContainer } from 'products/videos/MediaContainer'
+import { MediaInfoDTO } from 'utils/types/response-types'
+
+import { Link, VStack } from '@navikt/ds-react'
+
+import productStyles from '../ProductPage.module.scss'
+
+import styles from './ProductMediaCard.module.scss'
 
 interface Props {
-  handleDeleteFile: (uri: string) => void;
-  mediaArr: MediaInfoDTO[];
-  index: number;
-  isEditable: boolean;
+  handleDeleteFile: (uri: string) => void
+  mediaArr: MediaInfoDTO[]
+  index: number
+  isEditable: boolean
 }
 
 export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function MediaCard(
   { handleDeleteFile, mediaArr, index, isEditable }: Props,
-  ref,
+  ref
 ) {
   return (
     <>
@@ -33,5 +37,5 @@ export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function Media
         )}
       </div>
     </>
-  );
-});
+  )
+})

@@ -1,8 +1,7 @@
-@use "../../styles/_mixins";
+@use '../../styles/_mixins';
 
 .diffModal {
   width: 100vw;
-
 
   @include mixins.for-size(tablet-up) {
     max-height: 90% !important;
@@ -19,7 +18,6 @@
     align-items: center;
     justify-content: center;
   }
-
 }
 
 .previous {
@@ -43,5 +41,3 @@
 .field {
   margin: 1rem;
 }
-
-

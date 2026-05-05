@@ -1,91 +1,93 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+
+import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
+import { toReadableDateString, toReadableDateTimeString } from 'utils/date-util'
+import { TechLabelRegistrationDTO } from 'utils/types/response-types'
+
+import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
+  Alert,
+  BodyShort,
   Box,
   Button,
-  Heading,
   HStack,
+  Heading,
   Loader,
+  Modal,
   Pagination,
   Search,
-  BodyShort,
   Tooltip,
-  Alert,
   VStack,
-  Modal,
-} from "@navikt/ds-react";
+} from '@navikt/ds-react'
 
-import { PlusIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
-import { getTechLabels, deleteTechLabel } from "api/TechLabelApi";
-import { TechLabelRegistrationDTO } from "utils/types/response-types";
-import styles from "./TechLabels.module.scss";
-import { toReadableDateString, toReadableDateTimeString } from "utils/date-util";
+import styles from './TechLabels.module.scss'
 
-const PAGE_SIZE = 15;
-const MAX_VISIBLE_OPTIONS = 10;
+const PAGE_SIZE = 15
+const MAX_VISIBLE_OPTIONS = 10
 
 const TechLabels = () => {
-  const [techLabels, setTechLabels] = useState<TechLabelRegistrationDTO[]>([]);
-  const [filteredLabels, setFilteredLabels] = useState<TechLabelRegistrationDTO[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
-  const searchIsoCode = searchParams.get("searchIsoCode") || "";
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const [forceDeleteId, setForceDeleteId] = useState<string | null>(null);
+  const [techLabels, setTechLabels] = useState<TechLabelRegistrationDTO[]>([])
+  const [filteredLabels, setFilteredLabels] = useState<TechLabelRegistrationDTO[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
+  const searchIsoCode = searchParams.get('searchIsoCode') || ''
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const [forceDeleteId, setForceDeleteId] = useState<string | null>(null)
 
   const updateUrlOnSearchIsoCodeChange = (value: string) => {
-    navigate(`${pathname}?searchIsoCode=${value}`);
-  };
+    navigate(`${pathname}?searchIsoCode=${value}`)
+  }
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
-    setDeleteError(null);
-    setLoading(true);
+    setDeleteError(null)
+    setLoading(true)
     try {
-      await deleteTechLabel(id, forcedDelete);
-      setTechLabels((prev) => prev.filter((label) => label.id !== id));
-      setFilteredLabels((prev) => prev.filter((label) => label.id !== id));
-      setForceDeleteId(null);
+      await deleteTechLabel(id, forcedDelete)
+      setTechLabels((prev) => prev.filter((label) => label.id !== id))
+      setFilteredLabels((prev) => prev.filter((label) => label.id !== id))
+      setForceDeleteId(null)
     } catch (err: any) {
-      const backendMessage = err?.response?.data?.message || err?.message || "Failed to delete techlabel: " + id;
-      setDeleteError(backendMessage);
-      setForceDeleteId(id);
+      const backendMessage = err?.response?.data?.message || err?.message || 'Failed to delete techlabel: ' + id
+      setDeleteError(backendMessage)
+      setForceDeleteId(id)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     getTechLabels({}, 0, 5000)
       .then((res) => {
-        setTechLabels(res.content);
-        setFilteredLabels(res.content);
+        setTechLabels(res.content)
+        setFilteredLabels(res.content)
       })
-      .catch(() => setError("Failed to fetch tech labels"))
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(() => setError('Failed to fetch tech labels'))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
     const filtered = techLabels.filter(
       (label) =>
         label.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase()),
-    );
-    setFilteredLabels(filtered);
-    setPage(1);
-  }, [searchTerm, searchIsoCode, techLabels]);
+        label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase())
+    )
+    setFilteredLabels(filtered)
+    setPage(1)
+  }, [searchTerm, searchIsoCode, techLabels])
 
-  const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
     <main className="show-menu">
-      <div className="page__background-container" style={{overflow: "auto"}}>
+      <div className="page__background-container" style={{ overflow: 'auto' }}>
         <Heading level="1" size="large" spacing>
           Teknisk-data beskrivelser
         </Heading>
@@ -94,10 +96,10 @@ const TechLabels = () => {
             <Modal
               open={!!deleteError && !!forceDeleteId}
               onClose={() => {
-                setDeleteError(null);
-                setForceDeleteId(null);
+                setDeleteError(null)
+                setForceDeleteId(null)
               }}
-              header={{ heading: "Delete failed" }}
+              header={{ heading: 'Delete failed' }}
             >
               <Modal.Body>
                 <Alert variant="error">{deleteError}</Alert>
@@ -107,8 +109,8 @@ const TechLabels = () => {
                 <Button
                   variant="secondary"
                   onClick={() => {
-                    setDeleteError(null);
-                    setForceDeleteId(null);
+                    setDeleteError(null)
+                    setForceDeleteId(null)
                   }}
                 >
                   Avbryt
@@ -116,7 +118,7 @@ const TechLabels = () => {
                 <Button
                   variant="danger"
                   onClick={() => {
-                    if (forceDeleteId) handleDelete(forceDeleteId, true);
+                    if (forceDeleteId) handleDelete(forceDeleteId, true)
                   }}
                 >
                   Slett uansett
@@ -149,7 +151,7 @@ const TechLabels = () => {
                 size="medium"
                 icon={<PlusIcon aria-hidden />}
                 iconPosition="left"
-                onClick={() => navigate("/tekniskdata/opprett")}
+                onClick={() => navigate('/tekniskdata/opprett')}
               >
                 Opprett ny teknisk-data beskrivelse
               </Button>
@@ -158,7 +160,7 @@ const TechLabels = () => {
               {loading && <Loader size="3xlarge" title="venter..." />}
               {!loading && filteredLabels.length === 0 && <Alert variant="info">Ingen tekniskdata funnet.</Alert>}
               {!loading && filteredLabels.length > 0 && (
-                <div className={styles.cardRow + " " + styles.cardHeader}>
+                <div className={styles.cardRow + ' ' + styles.cardHeader}>
                   <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
                     <strong>Navn</strong>
                   </BodyShort>
@@ -193,16 +195,16 @@ const TechLabels = () => {
                     <BodyShort className={`${styles.cardValue} ${styles.optionsColumn}`}>
                       {label.options && label.options.length > 0 ? (
                         label.options.length > MAX_VISIBLE_OPTIONS ? (
-                          <Tooltip content={label.options.join(", ")}>
+                          <Tooltip content={label.options.join(', ')}>
                             <span>
-                              {label.options.slice(0, MAX_VISIBLE_OPTIONS).join(", ")}, ... ({label.options.length})
+                              {label.options.slice(0, MAX_VISIBLE_OPTIONS).join(', ')}, ... ({label.options.length})
                             </span>
                           </Tooltip>
                         ) : (
-                          label.options.join(", ")
+                          label.options.join(', ')
                         )
                       ) : (
-                        "-"
+                        '-'
                       )}
                     </BodyShort>
                     <span className={styles.editButton}>
@@ -219,7 +221,7 @@ const TechLabels = () => {
                         icon={<TrashIcon aria-hidden />}
                         onClick={() => handleDelete(label.id, false)}
                         aria-label="Slett"
-                        style={{ marginLeft: "0.5rem" }}
+                        style={{ marginLeft: '0.5rem' }}
                       />
                     </span>
                   </div>
@@ -240,7 +242,7 @@ const TechLabels = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default TechLabels;
+export default TechLabels

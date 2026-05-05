@@ -1,19 +1,21 @@
-import { Button, Checkbox, Heading, Loader, Modal, Table, VStack } from "@navikt/ds-react";
-import React, { useEffect, useState } from "react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { useSeriesV2Conditional } from "api/SeriesApi";
-import { getVariantsBySeriesUUID, removeCompatibleWithVariant } from "api/PartApi";
-import { ProductRegistrationDTOV2 } from "utils/types/response-types";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useEffect, useState } from 'react'
+
+import { getVariantsBySeriesUUID, removeCompatibleWithVariant } from 'api/PartApi'
+import { useSeriesV2Conditional } from 'api/SeriesApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
+
+import { Button, Checkbox, Heading, Loader, Modal, Table, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  seriesUUID?: string;
-  partId: string;
-  productIds: string[];
-  mutatePart: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  seriesUUID?: string
+  partId: string
+  productIds: string[]
+  mutatePart: () => void
 }
 
 const RemoveCompatibleSeriesVariantsModal = ({
@@ -24,35 +26,35 @@ const RemoveCompatibleSeriesVariantsModal = ({
   mutatePart,
   productIds,
 }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { setGlobalError } = useErrorStore();
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID);
-  const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID);
-  const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([]);
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
+  const { setGlobalError } = useErrorStore()
+  const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID)
+  const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID)
+  const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([])
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   useEffect(() => {
     if (variants) {
-      setFiltreredVariants(variants.filter((variant) => productIds.includes(variant.id!)));
+      setFiltreredVariants(variants.filter((variant) => productIds.includes(variant.id!)))
     }
-  }, [variants, productIds]);
+  }, [variants, productIds])
 
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
     removeCompatibleWithVariant(partId, selectedRows, isAdmin)
       .then(() => {
-        mutatePart();
-        setSelectedRows([]);
+        mutatePart()
+        setSelectedRows([])
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-  };
+        setGlobalError(error.message)
+      })
+  }
 
   return (
     <Modal
@@ -60,7 +62,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
       header={{
         heading: ``,
         closeButton: false,
-        size: "small",
+        size: 'small',
       }}
       onClose={() => setModalIsOpen(false)}
     >
@@ -69,8 +71,8 @@ const RemoveCompatibleSeriesVariantsModal = ({
           {!filtreredVariants || !series ? (
             <Loader />
           ) : filtreredVariants.length > 0 ? (
-            <VStack gap="space-2" style={{ width: "100%" }}>
-              <Heading size={"medium"}>Varianter tilknyttet på del</Heading>
+            <VStack gap="space-2" style={{ width: '100%' }}>
+              <Heading size={'medium'}>Varianter tilknyttet på del</Heading>
               <Table>
                 <Table.Header>
                   <Table.Row>
@@ -83,7 +85,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
                         onChange={() => {
                           selectedRows.length
                             ? setSelectedRows([])
-                            : setSelectedRows(filtreredVariants.map(({ id }) => id!));
+                            : setSelectedRows(filtreredVariants.map(({ id }) => id!))
                         }}
                         hideLabel
                       >
@@ -104,28 +106,28 @@ const RemoveCompatibleSeriesVariantsModal = ({
                             hideLabel
                             checked={selectedRows.includes(variant.id!)}
                             onChange={() => {
-                              toggleSelectedRow(variant.id!);
+                              toggleSelectedRow(variant.id!)
                             }}
                             aria-labelledby={`id-${variant.id}`}
                           >
-                            {" "}
+                            {' '}
                           </Checkbox>
                         </Table.DataCell>
                       </Table.Row>
-                    );
+                    )
                   })}
                 </Table.Body>
               </Table>
             </VStack>
           ) : (
-            <Heading size={"medium"}>Ingen varianter på serien er tilknyttet</Heading>
+            <Heading size={'medium'}>Ingen varianter på serien er tilknyttet</Heading>
           )}
         </Content>
       </Modal.Body>
       <Modal.Footer>
         <Button
           onClick={() => {
-            setModalIsOpen(false);
+            setModalIsOpen(false)
           }}
           variant="tertiary"
           type="reset"
@@ -142,7 +144,7 @@ const RemoveCompatibleSeriesVariantsModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default RemoveCompatibleSeriesVariantsModal;
+export default RemoveCompatibleSeriesVariantsModal

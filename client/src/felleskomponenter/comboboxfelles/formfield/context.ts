@@ -1,18 +1,18 @@
-import { createContext, ReactNode } from "react";
+import { ReactNode, createContext } from 'react'
 
 type FieldsetContextProps = {
   /**
    * Error message applied to element,
    */
-  error?: ReactNode;
+  error?: ReactNode
   /**
    * Overrides internal errorId
    */
-  errorId: string;
+  errorId: string
   /**
    * Read only-state
    */
-  readOnly?: boolean;
-};
+  readOnly?: boolean
+}
 
-export const FieldsetContext = createContext<FieldsetContextProps | null>(null);
+export const FieldsetContext = createContext<FieldsetContextProps | null>(null)

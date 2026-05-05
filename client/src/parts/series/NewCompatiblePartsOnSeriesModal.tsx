@@ -1,17 +1,20 @@
-import { Alert, Box, Button, HStack, Loader, Modal, Search, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { addCompatibleWithSeriesForParts, usePagedParts, usePartByVariantIdentifier } from "api/PartApi";
-import { PartsToAddTable } from "parts/series/PartsToAddTable";
-import styles from "./NewCompatiblePartsOnSeriesModal.module.scss";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+
+import { addCompatibleWithSeriesForParts, usePagedParts, usePartByVariantIdentifier } from 'api/PartApi'
+import { PartsToAddTable } from 'parts/series/PartsToAddTable'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+
+import { Alert, Box, Button, HStack, Loader, Modal, Search, VStack } from '@navikt/ds-react'
+
+import styles from './NewCompatiblePartsOnSeriesModal.module.scss'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  seriesId: string;
-  mutateParts: () => void;
-  seriesParts: string[];
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  seriesId: string
+  mutateParts: () => void
+  seriesParts: string[]
 }
 
 const NewCompatiblePartsOnSeriesModal = ({
@@ -21,20 +24,20 @@ const NewCompatiblePartsOnSeriesModal = ({
   seriesId,
   seriesParts,
 }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   const toggleSelectedRow = (value: string) =>
     setProductIdsToAdd((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
   const {
     data: pagedData,
@@ -44,52 +47,51 @@ const NewCompatiblePartsOnSeriesModal = ({
     page: 0,
     pageSize: 100,
     titleSearchTerm: searchTerm,
-  });
+  })
 
-  const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
+  const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm)
 
   const resetModal = () => {
-    setProductIdsToAdd([]);
-    setSearchTerm("");
-    setModalIsOpen(false);
-  };
+    setProductIdsToAdd([])
+    setSearchTerm('')
+    setModalIsOpen(false)
+  }
 
   async function onClickLeggTilKobling() {
-    setIsSaving(true);
+    setIsSaving(true)
     if (productIdsToAdd.length > 0) {
       addCompatibleWithSeriesForParts(seriesId, productIdsToAdd, isAdmin).then(
         () => {
-          mutateParts();
-          setProductIdsToAdd([]);
-          setIsSaving(false);
-          setModalIsOpen(false);
+          mutateParts()
+          setProductIdsToAdd([])
+          setIsSaving(false)
+          setModalIsOpen(false)
         },
         (error) => {
-          setGlobalError(error.message);
-          setIsSaving(false);
-        },
-      );
+          setGlobalError(error.message)
+          setIsSaving(false)
+        }
+      )
     }
-    resetModal();
+    resetModal()
   }
 
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {
-      }}
+      onCancel={(e) => {}}
       header={{
-        heading: "Legg til del",
+        heading: 'Legg til del',
         closeButton: true,
       }}
       onClose={() => {
-        resetModal();
+        resetModal()
       }}
       className={styles.modal}
     >
       <Modal.Header closeButton={false}>
         <VStack gap="space-24">
-          <Box role="search" style={{ maxWidth: "475px" }}>
+          <Box role="search" style={{ maxWidth: '475px' }}>
             <Search
               className="search-button"
               label="Søk"
@@ -97,7 +99,7 @@ const NewCompatiblePartsOnSeriesModal = ({
               clearButton={true}
               placeholder="Navn, hms-art nummer eller artikkelnummer"
               size="medium"
-              value={searchTerm || ""}
+              value={searchTerm || ''}
               onChange={(value) => setSearchTerm(value)}
               hideLabel={false}
             />
@@ -105,7 +107,7 @@ const NewCompatiblePartsOnSeriesModal = ({
           <HStack gap="space-8">
             <Button
               onClick={() => {
-                onClickLeggTilKobling();
+                onClickLeggTilKobling()
               }}
               disabled={productIdsToAdd.length === 0}
               variant="primary"
@@ -115,7 +117,7 @@ const NewCompatiblePartsOnSeriesModal = ({
             </Button>
             <Button
               onClick={() => {
-                resetModal();
+                resetModal()
               }}
               variant="secondary"
               type="reset"
@@ -124,8 +126,8 @@ const NewCompatiblePartsOnSeriesModal = ({
             </Button>
             <Button
               onClick={() => {
-                setProductIdsToAdd([]);
-                setSearchTerm("");
+                setProductIdsToAdd([])
+                setSearchTerm('')
               }}
               variant="secondary"
               type="reset"
@@ -163,9 +165,9 @@ const NewCompatiblePartsOnSeriesModal = ({
                 ) : (
                   !isLoadingPagedData && (
                     <Alert variant="info">
-                      {searchTerm !== ""
+                      {searchTerm !== ''
                         ? `Ingen produkter funnet med søket: "${searchTerm}"`
-                        : "Ingen produkter funnet."}
+                        : 'Ingen produkter funnet.'}
                     </Alert>
                   )
                 )}
@@ -175,7 +177,7 @@ const NewCompatiblePartsOnSeriesModal = ({
         </div>
       </Modal.Body>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewCompatiblePartsOnSeriesModal;
+export default NewCompatiblePartsOnSeriesModal

@@ -1,117 +1,120 @@
+import { useEffect, useState } from 'react'
+import { useLocation, useSearchParams } from 'react-router-dom'
+
+import { usePagedParts, usePartByVariantIdentifier } from 'api/PartApi'
+import ErrorAlert from 'error/ErrorAlert'
+import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useSuppliers } from 'utils/swr-hooks'
+
 import {
   Alert,
   Box,
   Button,
   Chips,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Loader,
   Pagination,
   Search,
   Select,
   UNSAFE_Combobox,
   VStack,
-} from "@navikt/ds-react";
-import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useSuppliers } from "utils/swr-hooks";
-import ErrorAlert from "error/ErrorAlert";
-import { PartList } from "./PartList";
-import { usePagedParts, usePartByVariantIdentifier } from "api/PartApi";
-import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
+} from '@navikt/ds-react'
+
+import { PartList } from './PartList'
 
 const PartsListTab = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const { loggedInUser } = useAuthStore();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const { pathname, search } = useLocation();
-  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
-  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
+  const { loggedInUser } = useAuthStore()
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const { pathname, search } = useLocation()
+  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false)
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
 
   const [agreementFilter, setAgreementFilter] = useState<string | null>(() => {
-    return searchParams.get("inAgreement");
-  });
+    return searchParams.get('inAgreement')
+  })
 
   const [missingMediaType, setMissingMediaType] = useState<string | null>(() => {
-    return searchParams.get("missingMediaType");
-  });
+    return searchParams.get('missingMediaType')
+  })
 
   const [isAccessoryFilter, setIsAccessoryFilter] = useState<boolean>(() => {
-    return searchParams.get("isAccessory") === "true";
-  });
+    return searchParams.get('isAccessory') === 'true'
+  })
 
   const [isSparePartFilter, setIsSparePartFilter] = useState<boolean>(() => {
-    return searchParams.get("isSparePart") === "true";
-  });
+    return searchParams.get('isSparePart') === 'true'
+  })
 
-  const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
-  const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+  const initialPageSize = Number(localStorage.getItem('pageSizeState')) || 10
+  const [pageSizeState, setPageSizeState] = useState(initialPageSize)
 
   useEffect(() => {
-    setSupplierFilter(searchParams.get("supplier") || "");
-  }, [searchParams]);
+    setSupplierFilter(searchParams.get('supplier') || '')
+  }, [searchParams])
 
   useEffect(() => {
     if (supplierFilter) {
-      searchParams.set("supplier", supplierFilter);
+      searchParams.set('supplier', supplierFilter)
     } else {
-      searchParams.delete("supplier");
+      searchParams.delete('supplier')
     }
-    setSearchParams(searchParams);
-  }, [supplierFilter]);
+    setSearchParams(searchParams)
+  }, [supplierFilter])
 
   useEffect(() => {
     if (agreementFilter !== null) {
-      searchParams.set("inAgreement", agreementFilter);
+      searchParams.set('inAgreement', agreementFilter)
     } else {
-      searchParams.delete("inAgreement");
+      searchParams.delete('inAgreement')
     }
-    setSearchParams(searchParams);
-  }, [agreementFilter]);
+    setSearchParams(searchParams)
+  }, [agreementFilter])
 
   useEffect(() => {
     if (missingMediaType !== null) {
-      searchParams.set("missingMediaType", missingMediaType);
+      searchParams.set('missingMediaType', missingMediaType)
     } else {
-      searchParams.delete("missingMediaType");
+      searchParams.delete('missingMediaType')
     }
-    setSearchParams(searchParams);
-  }, [missingMediaType]);
+    setSearchParams(searchParams)
+  }, [missingMediaType])
 
   useEffect(() => {
     if (isAccessoryFilter) {
-      searchParams.set("isAccessory", "true");
+      searchParams.set('isAccessory', 'true')
     } else {
-      searchParams.delete("isAccessory");
+      searchParams.delete('isAccessory')
     }
-    setSearchParams(searchParams);
-  }, [isAccessoryFilter]);
+    setSearchParams(searchParams)
+  }, [isAccessoryFilter])
 
   useEffect(() => {
     if (isSparePartFilter) {
-      searchParams.set("isSparePart", "true");
+      searchParams.set('isSparePart', 'true')
     } else {
-      searchParams.delete("isSparePart");
+      searchParams.delete('isSparePart')
     }
-    setSearchParams(searchParams);
-  }, [isSparePartFilter]);
+    setSearchParams(searchParams)
+  }, [isSparePartFilter])
 
   useEffect(() => {
-    localStorage.setItem("pageSizeState", pageSizeState.toString());
-  }, [pageSizeState]);
+    localStorage.setItem('pageSizeState', pageSizeState.toString())
+  }, [pageSizeState])
 
   const getIsAccessoryValue = (): boolean | null => {
     if (isAccessoryFilter && !isSparePartFilter) {
-      return true;
+      return true
     } else if (isSparePartFilter && !isAccessoryFilter) {
-      return false;
+      return false
     } else {
-      return null;
+      return null
     }
-  };
+  }
 
   const {
     data: pagedData,
@@ -125,85 +128,90 @@ const PartsListTab = () => {
     agreementFilter,
     missingMediaType,
     isAccessory: getIsAccessoryValue(),
-  });
+  })
 
-  const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm);
+  const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm)
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
-  };
+    setSearchTerm(value)
+  }
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
-      searchParams.set("page", String(pagedData.totalPages));
-      setSearchParams(searchParams);
-      setPageState(pagedData.totalPages);
+      searchParams.set('page', String(pagedData.totalPages))
+      setSearchParams(searchParams)
+      setPageState(pagedData.totalPages)
     }
-  }, [pagedData]);
+  }, [pagedData])
 
-  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
+  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
-    if (!uuid) return;
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id
+    if (!uuid) return
     if (isSelected) {
-      setSupplierFilter(uuid);
+      setSupplierFilter(uuid)
     } else if (supplierFilter === uuid) {
-      setSupplierFilter("");
+      setSupplierFilter('')
     }
-  };
+  }
 
   const removeMissingMediaTypeFilter = () => {
-    setMissingMediaType(missingMediaType === "IMAGE" ? null : "IMAGE");
-  };
+    setMissingMediaType(missingMediaType === 'IMAGE' ? null : 'IMAGE')
+  }
 
   const toggleMissingVideoType = () => {
-    setMissingMediaType(missingMediaType === "VIDEO" ? null : "VIDEO");
-  };
+    setMissingMediaType(missingMediaType === 'VIDEO' ? null : 'VIDEO')
+  }
 
   const toggleIsAccessory = () => {
-    setIsAccessoryFilter(!isAccessoryFilter);
-  };
+    setIsAccessoryFilter(!isAccessoryFilter)
+  }
 
   const toggleIsSparePart = () => {
-    setIsSparePartFilter(!isSparePartFilter);
-  };
+    setIsSparePartFilter(!isSparePartFilter)
+  }
 
-  const hasActiveFilters = missingMediaType !== null || agreementFilter !== null || isAccessoryFilter || isSparePartFilter;
+  const hasActiveFilters =
+    missingMediaType !== null || agreementFilter !== null || isAccessoryFilter || isSparePartFilter
 
   const resetAllFilters = () => {
-    setMissingMediaType(null);
-    setAgreementFilter(null);
-    setIsAccessoryFilter(false);
-    setIsSparePartFilter(false);
-  };
+    setMissingMediaType(null)
+    setAgreementFilter(null)
+    setIsAccessoryFilter(false)
+    setIsSparePartFilter(false)
+  }
 
   if (errorPaged) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   return (
     <TabPanel value="deler">
-      <VStack gap={{ xs: "space-24", md: "space-48" }} paddingBlock="space-24" maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <VStack gap={{ xs: "space-8", md: "space-24" }}>
+      <VStack
+        gap={{ xs: 'space-24', md: 'space-48' }}
+        paddingBlock="space-24"
+        maxWidth={loggedInUser && loggedInUser.isAdmin ? '80rem' : '64rem'}
+      >
+        <VStack gap={{ xs: 'space-8', md: 'space-24' }}>
           <HGrid
-            columns={{ xs: "space-4", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            columns={{ xs: 'space-4', md: loggedInUser && !loggedInUser.isAdmin ? '1fr 230px' : '1fr ' }}
             gap="space-8"
-            align={"center"}
+            align={'center'}
           >
             <HGrid
               columns={{
-                xs: "space-4",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
+                xs: 'space-4',
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? '3fr 2fr' : '2fr',
               }}
               gap="space-8"
               align="start"
             >
-              <Box role="search" style={{ maxWidth: "475px" }} >
+              <Box role="search" style={{ maxWidth: '475px' }}>
                 <Search
                   className="search-button"
                   label="Søk"
@@ -217,7 +225,7 @@ const PartsListTab = () => {
                 />
               </Box>
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
-                <Box asChild style={{ maxWidth: "475px" }}>
+                <Box asChild style={{ maxWidth: '475px' }}>
                   <UNSAFE_Combobox
                     clearButton
                     clearButtonLabel="Tøm"
@@ -225,8 +233,8 @@ const PartsListTab = () => {
                     selectedOptions={
                       supplierFilter
                         ? suppliers
-                        ?.filter((supplier) => supplier.id === supplierFilter)
-                        .map((supplier) => supplier.name) || []
+                            ?.filter((supplier) => supplier.id === supplierFilter)
+                            .map((supplier) => supplier.name) || []
                         : []
                     }
                     onToggleSelected={onToggleSelected}
@@ -238,41 +246,29 @@ const PartsListTab = () => {
           </HGrid>
           <Box>
             <Chips>
-              <Chips.Toggle
-                selected={missingMediaType === "IMAGE"}
-                onClick={removeMissingMediaTypeFilter}
-              >
+              <Chips.Toggle selected={missingMediaType === 'IMAGE'} onClick={removeMissingMediaTypeFilter}>
                 Mangler bilder
               </Chips.Toggle>
-              <Chips.Toggle
-                selected={missingMediaType === "VIDEO"}
-                onClick={toggleMissingVideoType}
-              >
+              <Chips.Toggle selected={missingMediaType === 'VIDEO'} onClick={toggleMissingVideoType}>
                 Mangler video
               </Chips.Toggle>
-              <Chips.Toggle
-                selected={isAccessoryFilter}
-                onClick={toggleIsAccessory}
-              >
+              <Chips.Toggle selected={isAccessoryFilter} onClick={toggleIsAccessory}>
                 Tilbehør
               </Chips.Toggle>
-              <Chips.Toggle
-                selected={isSparePartFilter}
-                onClick={toggleIsSparePart}
-              >
+              <Chips.Toggle selected={isSparePartFilter} onClick={toggleIsSparePart}>
                 Reservedel
               </Chips.Toggle>
             </Chips>
           </Box>
-          <HGrid columns={hasActiveFilters ? "250px auto" : "250px"} gap="space-16" align="end">
+          <HGrid columns={hasActiveFilters ? '250px auto' : '250px'} gap="space-16" align="end">
             <Box>
               <Select
                 label="Avtalefilter"
                 size="medium"
-                value={agreementFilter === null ? "all" : agreementFilter}
+                value={agreementFilter === null ? 'all' : agreementFilter}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setAgreementFilter(value === "all" ? null : value);
+                  const value = e.target.value
+                  setAgreementFilter(value === 'all' ? null : value)
                 }}
               >
                 <option value="all">Alle deler</option>
@@ -304,24 +300,24 @@ const PartsListTab = () => {
             ) : (
               !isLoadingPagedData && (
                 <Alert variant="info">
-                  {searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : "Ingen produkter funnet."}
+                  {searchTerm !== '' ? `Ingen produkter funnet med søket: "${searchTerm}"` : 'Ingen produkter funnet.'}
                 </Alert>
               )
             )}
           </VStack>
 
           <HStack
-            justify={{ xs: "center", md: "space-between" }}
+            justify={{ xs: 'center', md: 'space-between' }}
             align="center"
             gap="space-4"
-            style={{ flexWrap: "wrap-reverse" }}
+            style={{ flexWrap: 'wrap-reverse' }}
           >
             <Select
               label="Ant deler per side"
               size="small"
               defaultValue={pageSizeState}
               onChange={(e) => {
-                setPageSizeState(parseInt(e.target.value));
+                setPageSizeState(parseInt(e.target.value))
               }}
             >
               <option value={10}>10</option>
@@ -332,9 +328,9 @@ const PartsListTab = () => {
               <Pagination
                 page={pageState}
                 onPageChange={(x) => {
-                  searchParams.set("page", x.toString());
-                  setSearchParams(searchParams);
-                  setPageState(x);
+                  searchParams.set('page', x.toString())
+                  setSearchParams(searchParams)
+                  setPageState(x)
                 }}
                 count={pagedData.totalPages!}
                 size="small"
@@ -344,7 +340,7 @@ const PartsListTab = () => {
         </VStack>
       </VStack>
     </TabPanel>
-  );
-};
+  )
+}
 
-export default PartsListTab;
+export default PartsListTab

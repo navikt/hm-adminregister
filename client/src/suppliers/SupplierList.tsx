@@ -1,69 +1,69 @@
-import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { ChevronRightIcon, PlusIcon } from "@navikt/aksel-icons";
+import ErrorAlert from 'error/ErrorAlert'
+import LocalTag, { colors } from 'felleskomponenter/LocalTag'
+import { SupplierDTO } from 'utils/supplier-util'
+import { useSuppliers } from 'utils/swr-hooks'
+
+import { ChevronRightIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
   Box,
   Button,
   Checkbox,
   CheckboxGroup,
-  Heading,
   HGrid,
+  Heading,
   Loader,
   Pagination,
   Search,
-} from "@navikt/ds-react";
-import ErrorAlert from "error/ErrorAlert";
-import LocalTag, { colors } from "felleskomponenter/LocalTag";
-import { SupplierDTO } from "utils/supplier-util";
-import { useSuppliers } from "utils/swr-hooks";
-import styles from "./SupplierList.module.scss";
+} from '@navikt/ds-react'
+
+import styles from './SupplierList.module.scss'
 
 const Suppliers = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
 
-  const showInactiveParam = searchParams.get("showInactive");
-  const showInactive = showInactiveParam === "true";
+  const showInactiveParam = searchParams.get('showInactive')
+  const showInactive = showInactiveParam === 'true'
 
-  const { suppliers, isLoading, error } = useSuppliers(true, showInactive);
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>();
-  const itemsPerPage = 10;
+  const { suppliers, isLoading, error } = useSuppliers(true, showInactive)
+  const navigate = useNavigate()
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>()
+  const itemsPerPage = 10
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    const filteredSuppliers = suppliers?.filter((supplier) =>
-      supplier.name.toLowerCase().includes(value.toLowerCase()),
-    );
-    setFilteredData(filteredSuppliers);
-  };
+    setSearchTerm(value)
+    const filteredSuppliers = suppliers?.filter((supplier) => supplier.name.toLowerCase().includes(value.toLowerCase()))
+    setFilteredData(filteredSuppliers)
+  }
 
-  const renderData = filteredData ? filteredData : suppliers;
+  const renderData = filteredData ? filteredData : suppliers
 
-  const paginatedData = renderData?.slice((pageState - 1) * itemsPerPage, pageState * itemsPerPage);
+  const paginatedData = renderData?.slice((pageState - 1) * itemsPerPage, pageState * itemsPerPage)
 
   const handleCreateNewSupplier = () => {
-    navigate("/leverandor/opprett-leverandor");
-  };
+    navigate('/leverandor/opprett-leverandor')
+  }
 
   const onShowInactiveChange = (values: string[]) => {
-    const isChecked = values.includes("Vis inaktive");
+    const isChecked = values.includes('Vis inaktive')
 
-    searchParams.set("showInactive", isChecked ? "true" : "false");
-    searchParams.set("page", "1");
-    setPageState(1);
-    setSearchParams(searchParams);
-  };
+    searchParams.set('showInactive', isChecked ? 'true' : 'false')
+    searchParams.set('page', '1')
+    setPageState(1)
+    setSearchParams(searchParams)
+  }
 
   if (error) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   return (
@@ -76,8 +76,8 @@ const Suppliers = () => {
         <div className={styles.supplierPanelContainer}>
           <HGrid
             columns={{
-              xs: "space-4",
-              md: "3fr 2fr 130px",
+              xs: 'space-4',
+              md: '3fr 2fr 130px',
             }}
             gap="space-8"
             paddingBlock="space-16"
@@ -106,7 +106,7 @@ const Suppliers = () => {
             <CheckboxGroup
               legend="Filter"
               hideLegend
-              value={showInactive ? ["Vis inaktive"] : []}
+              value={showInactive ? ['Vis inaktive'] : []}
               onChange={onShowInactiveChange}
             >
               <Checkbox value="Vis inaktive">Vis inaktive</Checkbox>
@@ -123,8 +123,8 @@ const Suppliers = () => {
                     <strong>{supplier.name}</strong> {supplier.postNr} {supplier.postLocation}
                   </p>
                   <div>
-                    {supplier.status === "INACTIVE" && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
-                    {supplier.status === "ACTIVE" && <LocalTag icon={<></>} text="Aktiv" color={colors.GREEN} />}
+                    {supplier.status === 'INACTIVE' && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
+                    {supplier.status === 'ACTIVE' && <LocalTag icon={<></>} text="Aktiv" color={colors.GREEN} />}
                   </div>
                   <ChevronRightIcon className={styles.chevron} aria-hidden fontSize="24px" />
                 </Link>
@@ -134,9 +134,9 @@ const Suppliers = () => {
             <Pagination
               page={pageState}
               onPageChange={(x) => {
-                searchParams.set("page", x.toString());
-                setSearchParams(searchParams);
-                setPageState(x);
+                searchParams.set('page', x.toString())
+                setSearchParams(searchParams)
+                setPageState(x)
               }}
               count={Math.ceil(renderData.length / itemsPerPage)}
               boundaryCount={1}
@@ -147,7 +147,7 @@ const Suppliers = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default Suppliers;
+export default Suppliers

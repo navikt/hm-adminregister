@@ -1,22 +1,25 @@
-import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
-import { useTranslation } from "react-i18next";
-import styles from "./ShowDiffModal.module.scss";
-import { ProductDifferenceDTO } from "api/VersionApi";
-import { TechDataDiff } from "products/diff/TechDataDiff";
-import { Strikethrough } from "products/diff/Strikethrough";
+import { useTranslation } from 'react-i18next'
+
+import { ProductDifferenceDTO } from 'api/VersionApi'
+import { Strikethrough } from 'products/diff/Strikethrough'
+import { TechDataDiff } from 'products/diff/TechDataDiff'
+
+import { BodyShort, Box, Heading, VStack } from '@navikt/ds-react'
+
+import styles from './ShowDiffModal.module.scss'
 
 export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifferenceDTO[] }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   if (
     !variantDiffs ||
     variantDiffs.length === 0 ||
-    variantDiffs.every((value) => value.difference.status === "NO_DIFF")
+    variantDiffs.every((value) => value.difference.status === 'NO_DIFF')
   ) {
-    return <BodyShort>Ingen endringer på varianter</BodyShort>;
+    return <BodyShort>Ingen endringer på varianter</BodyShort>
   }
-  if (!variantDiffs.some((variant) => variant.difference.status === "DIFF" || variant.difference.status === "NEW")) {
-    return <BodyShort>Ingen endringer på varianter</BodyShort>;
+  if (!variantDiffs.some((variant) => variant.difference.status === 'DIFF' || variant.difference.status === 'NEW')) {
+    return <BodyShort>Ingen endringer på varianter</BodyShort>
   } else {
     return (
       <VStack gap="space-8">
@@ -24,13 +27,13 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
         {variantDiffs && (
           <VStack gap="space-16">
             {variantDiffs
-              .filter((changed) => changed.difference.status === "DIFF")
+              .filter((changed) => changed.difference.status === 'DIFF')
               .map((variant, i) => (
                 <VStack key={i} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(variant.product.articleName)}</BodyShort>
                   <VStack>
                     {Object.entries(variant.difference.diff.entriesDiffering)
-                      .filter(([key]) => key !== "productData.techData")
+                      .filter(([key]) => key !== 'productData.techData')
                       .map(([key, value], index) => (
                         <VStack key={index} className={styles.field}>
                           <BodyShort weight="semibold">{t(key)}</BodyShort>
@@ -49,12 +52,12 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
                 </VStack>
               ))}
 
-            {variantDiffs.filter((changed) => changed.difference.status === "NEW").length > 0 && (
+            {variantDiffs.filter((changed) => changed.difference.status === 'NEW').length > 0 && (
               <>
                 <Heading size="small">Nye varianter</Heading>
                 <ul>
                   {variantDiffs
-                    .filter((changed) => changed.difference.status === "NEW")
+                    .filter((changed) => changed.difference.status === 'NEW')
                     .map((variant, i) => (
                       <li key={i}>{t(variant.product.articleName)}</li>
                     ))}
@@ -64,14 +67,14 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
           </VStack>
         )}
       </VStack>
-    );
+    )
   }
-};
+}
 
 const arrayCheck = (value: unknown) => {
   if (Array.isArray(value)) {
-    return value.map((val, i) => <span key={i}> {val as string} </span>);
+    return value.map((val, i) => <span key={i}> {val as string} </span>)
   } else {
-    return <span>{value as string}</span>;
+    return <span>{value as string}</span>
   }
-};
+}

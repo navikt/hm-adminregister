@@ -1,78 +1,78 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import { HGrid, Loader, VStack } from "@navikt/ds-react";
+import { activateSupplier, deactivateSupplier, getSupplier } from 'api/SupplierApi'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import SupplierInfo from 'suppliers/SupplierInfo'
+import SupplierInventoryInfo from 'suppliers/SupplierInventoryInfo'
+import SupplierUsers from 'suppliers/SupplierUsers'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SupplierDTO, mapSupplier } from 'utils/supplier-util'
 
-import { activateSupplier, deactivateSupplier, getSupplier } from "api/SupplierApi";
-import { useParams } from "react-router-dom";
-import SupplierInfo from "suppliers/SupplierInfo";
-import SupplierInventoryInfo from "suppliers/SupplierInventoryInfo";
-import SupplierUsers from "suppliers/SupplierUsers";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { mapSupplier, SupplierDTO } from "utils/supplier-util";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
+import { HGrid, Loader, VStack } from '@navikt/ds-react'
 
 const Supplier = () => {
-  const [supplier, setSupplier] = useState<SupplierDTO>();
-  const [isLoading, setLoading] = useState(false);
-  const { setGlobalError } = useErrorStore();
-  const { loggedInUser } = useAuthStore();
+  const [supplier, setSupplier] = useState<SupplierDTO>()
+  const [isLoading, setLoading] = useState(false)
+  const { setGlobalError } = useErrorStore()
+  const { loggedInUser } = useAuthStore()
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenActivateSupplier, setIsOpenActivateSupplier] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenActivateSupplier, setIsOpenActivateSupplier] = useState(false)
 
-  const { id } = useParams();
+  const { id } = useParams()
 
   const fetchSupplier = () => {
-    setLoading(true);
+    setLoading(true)
     getSupplier(loggedInUser?.isAdmin ?? false, id!)
       .then((data) => {
-        if (!data) return;
-        setSupplier(mapSupplier(data));
+        if (!data) return
+        setSupplier(mapSupplier(data))
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchSupplier();
-  }, [id]);
+    fetchSupplier()
+  }, [id])
 
   async function onDeactivate() {
-    setIsOpen(false);
+    setIsOpen(false)
     deactivateSupplier(loggedInUser?.isAdmin ?? true, supplier!.id)
       .then(() => fetchSupplier())
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   async function onActivate() {
-    setIsOpenActivateSupplier(false);
+    setIsOpenActivateSupplier(false)
     activateSupplier(loggedInUser?.isAdmin ?? true, supplier!.id)
       .then(() => fetchSupplier())
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
-  if (isLoading || !supplier) return <Loader size="3xlarge" title="venter..." />;
+  if (isLoading || !supplier) return <Loader size="3xlarge" title="venter..." />
 
   return (
     <main className="show-menu">
       <ConfirmModal
-        title={"Er du sikker på at du vil deaktivere leverandøren?"}
-        confirmButtonText={"Deaktiver"}
+        title={'Er du sikker på at du vil deaktivere leverandøren?'}
+        confirmButtonText={'Deaktiver'}
         onClick={onDeactivate}
         onClose={() => setIsOpen(false)}
         isModalOpen={isOpen}
       />
       <ConfirmModal
-        title={"Er du sikker på at du vil aktivere leverandøren?"}
-        confirmButtonText={"Aktiver"}
+        title={'Er du sikker på at du vil aktivere leverandøren?'}
+        confirmButtonText={'Aktiver'}
         onClick={onActivate}
         onClose={() => setIsOpenActivateSupplier(false)}
         isModalOpen={isOpenActivateSupplier}
@@ -91,7 +91,7 @@ const Supplier = () => {
         )}
       </HGrid>
     </main>
-  );
-};
+  )
+}
 
-export default Supplier;
+export default Supplier

@@ -1,29 +1,31 @@
-import { HStack, Table, VStack } from "@navikt/ds-react";
-import { Fragment, useState } from "react";
-import { formatAgreementRanks, toValueAndUnit } from "utils/string-util";
-import { sortIntWithStringFallback } from "utils/sort-util";
-import { Product, ProductVariant } from "utils/types/types";
-import { PlusCircleFillIcon } from "@navikt/aksel-icons";
+import { Fragment, useState } from 'react'
+
+import { sortIntWithStringFallback } from 'utils/sort-util'
+import { formatAgreementRanks, toValueAndUnit } from 'utils/string-util'
+import { Product, ProductVariant } from 'utils/types/types'
+
+import { PlusCircleFillIcon } from '@navikt/aksel-icons'
+import { HStack, Table, VStack } from '@navikt/ds-react'
 
 type SortColumns = {
-  orderBy: string | null;
-  direction: "ascending" | "descending";
-};
+  orderBy: string | null
+  direction: 'ascending' | 'descending'
+}
 
 export const VariantsTable = ({ product }: { product: Product }) => {
-  const [sortColumns, setSortColumns] = useState<SortColumns>({ orderBy: "HMS", direction: "ascending" });
+  const [sortColumns, setSortColumns] = useState<SortColumns>({ orderBy: 'HMS', direction: 'ascending' })
 
   const sortColumnsByRowKey = (variants: ProductVariant[]) => {
     return variants.sort((variantA, variantB) => {
-      if (sortColumns.orderBy === "HMS") {
+      if (sortColumns.orderBy === 'HMS') {
         if (variantA.hmsArtNr && variantB.hmsArtNr) {
           return sortIntWithStringFallback(
             variantA.hmsArtNr,
             variantB.hmsArtNr,
-            sortColumns?.direction === "descending",
-          );
+            sortColumns?.direction === 'descending'
+          )
         }
-        return -1;
+        return -1
       }
 
       if (
@@ -34,18 +36,18 @@ export const VariantsTable = ({ product }: { product: Product }) => {
         return sortIntWithStringFallback(
           variantA.techData[sortColumns.orderBy].value,
           variantB.techData[sortColumns.orderBy].value,
-          sortColumns.direction === "descending",
-        );
-      } else return -1;
-    });
-  };
+          sortColumns.direction === 'descending'
+        )
+      } else return -1
+    })
+  }
 
-  let sortedByKey = sortColumnsByRowKey(product.variants);
-  const allDataKeys = [...new Set(sortedByKey.flatMap((variant) => Object.keys(variant.techData)))];
+  let sortedByKey = sortColumnsByRowKey(product.variants)
+  const allDataKeys = [...new Set(sortedByKey.flatMap((variant) => Object.keys(variant.techData)))]
 
   const techDataKeys = product.attributes.commonCharacteristics
     ? allDataKeys.filter((key) => product.attributes.commonCharacteristics![key] === undefined)
-    : allDataKeys;
+    : allDataKeys
 
   const rows: { [key: string]: string[] } = Object.assign(
     {},
@@ -53,16 +55,16 @@ export const VariantsTable = ({ product }: { product: Product }) => {
       [key]: product.variants.map((variant) =>
         variant.techData[key] !== undefined
           ? toValueAndUnit(variant.techData[key].value, variant.techData[key].unit)
-          : "-",
+          : '-'
       ),
-    })),
-  );
+    }))
+  )
 
   const hasDifferentValues = ({ row }: { row: string[] }) => {
-    let uniqueValues = new Set(row);
-    uniqueValues.delete("-");
-    return uniqueValues.size > 1;
-  };
+    let uniqueValues = new Set(row)
+    uniqueValues.delete('-')
+    return uniqueValues.size > 1
+  }
 
   return (
     <div className="variants-table">
@@ -81,7 +83,7 @@ export const VariantsTable = ({ product }: { product: Product }) => {
           <Table.Row key={product.id}>
             <Table.HeaderCell>HMS-nummer</Table.HeaderCell>
             {product.variants.map((variant) => (
-              <Table.DataCell key={variant.id}>{variant.hmsArtNr ?? "-"}</Table.DataCell>
+              <Table.DataCell key={variant.id}>{variant.hmsArtNr ?? '-'}</Table.DataCell>
             ))}
           </Table.Row>
 
@@ -104,33 +106,31 @@ export const VariantsTable = ({ product }: { product: Product }) => {
           </Table.Row>
           {Object.keys(rows).length > 0 &&
             Object.entries(rows).map(([key, row], i) => {
-              const isSortableRow = hasDifferentValues({ row });
+              const isSortableRow = hasDifferentValues({ row })
               return (
-                <Table.Row
-                  key={key + "row" + i}
-                >
+                <Table.Row key={key + 'row' + i}>
                   <Table.HeaderCell>{key}</Table.HeaderCell>
                   {row.map((value, i) => (
-                    <Table.DataCell key={key + "-" + i}>{value}</Table.DataCell>
+                    <Table.DataCell key={key + '-' + i}>{value}</Table.DataCell>
                   ))}
                 </Table.Row>
-              );
+              )
             })}
         </Table.Body>
       </Table>
     </div>
-  );
-};
+  )
+}
 
 const VariantTitleHeader = ({ variant }: { variant: ProductVariant }) => {
   return (
     <HStack>
-      {variant.articleName}{" "}
+      {variant.articleName}{' '}
       {!variant.id && (
         <HStack align="center">
           <PlusCircleFillIcon color="green" />
         </HStack>
       )}
     </HStack>
-  );
-};
+  )
+}

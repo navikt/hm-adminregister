@@ -1,13 +1,15 @@
-import styles from "./EditAttachmentMenu.module.scss";
-import { Button, Dropdown } from "@navikt/ds-react";
-import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from "@navikt/aksel-icons";
-import { MediaInfo } from "utils/types/response-types";
+import { MediaInfo } from 'utils/types/response-types'
+
+import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Button, Dropdown } from '@navikt/ds-react'
+
+import styles from './EditAttachmentMenu.module.scss'
 
 interface EditAttachmentMenuProps {
-  attachmentId: string;
-  mediaInfo: MediaInfo;
-  handleDeleteFile: (uri: string, attachmentIdToUpdate: string) => void;
-  handleEditFileName: (mediaInfo: MediaInfo) => void;
+  attachmentId: string
+  mediaInfo: MediaInfo
+  handleDeleteFile: (uri: string, attachmentIdToUpdate: string) => void
+  handleEditFileName: (mediaInfo: MediaInfo) => void
 }
 
 export const EditAttachmentMenu = ({
@@ -38,5 +40,5 @@ export const EditAttachmentMenu = ({
         </Dropdown.Menu>
       </Dropdown>
     </div>
-  );
-};
+  )
+}

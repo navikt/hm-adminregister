@@ -1,14 +1,15 @@
-import { Button, Modal } from "@navikt/ds-react";
-import Content from "felleskomponenter/styledcomponents/Content";
+import Content from 'felleskomponenter/styledcomponents/Content'
+
+import { Button, Modal } from '@navikt/ds-react'
 
 interface Props {
-  title: string;
-  text?: string;
-  confirmButtonText: string;
-  onClick: () => void;
-  onClose: () => void;
-  isModalOpen: boolean;
-  variant?: "danger" | "primary";
+  title: string
+  text?: string
+  confirmButtonText: string
+  onClick: () => void
+  onClose: () => void
+  isModalOpen: boolean
+  variant?: 'danger' | 'primary'
 }
 
 const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButtonText, variant }: Props) => {
@@ -20,7 +21,7 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         closeButton: false,
       }}
       onClose={onClose}
-      width={"30rem"}
+      width={'30rem'}
     >
       {text && (
         <Modal.Body>
@@ -31,13 +32,12 @@ const ConfirmModal = ({ title, text, onClick, onClose, isModalOpen, confirmButto
         <Button variant="secondary" onClick={onClose}>
           Avbryt
         </Button>
-        <Button onClick={onClick} variant={variant ?? "primary"}>
+        <Button onClick={onClick} variant={variant ?? 'primary'}>
           {confirmButtonText}
         </Button>
-
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default ConfirmModal;
+export default ConfirmModal

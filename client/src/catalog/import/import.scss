@@ -1,7 +1,6 @@
-@use "../../styles/_mixins";
+@use '../../styles/_mixins';
 
 @use '@navikt/ds-tokens/dist/tokens' as *;
-
 
 .import-products {
   margin: $ax-space-32;
@@ -25,7 +24,6 @@
   p {
     margin-bottom: $ax-space-1;
     margin-top: $ax-space-1;
-
   }
 }
 
@@ -42,7 +40,6 @@
     border-radius: $ax-radius-8;
   }
 }
-
 
 .images-tab {
   &__upload-container {

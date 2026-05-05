@@ -1,58 +1,62 @@
-import {Alert, Box, Button, HGrid, Loader, Tabs, VStack} from "@navikt/ds-react";
-import { Fragment, useEffect, useState } from "react";
-import { Avstand } from "felleskomponenter/Avstand";
-import NewDelkontraktModal from "./NewDelkontraktModal";
-import { Delkontrakt } from "../delkontraktdetaljer/Delkontrakt";
-import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@navikt/aksel-icons";
-import styled from "styled-components";
-import { reorderDelkontrakter } from "api/DelkontraktApi";
-import { useDelkontrakterByAgreementId } from "utils/swr-hooks";
+import { Fragment, useEffect, useState } from 'react'
+
+import { reorderDelkontrakter } from 'api/DelkontraktApi'
+import { Avstand } from 'felleskomponenter/Avstand'
+import styled from 'styled-components'
+import { useDelkontrakterByAgreementId } from 'utils/swr-hooks'
+
+import { ArrowsUpDownIcon, ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
+import { Alert, Box, Button, HGrid, Loader, Tabs, VStack } from '@navikt/ds-react'
+
+import { Delkontrakt } from '../delkontraktdetaljer/Delkontrakt'
+
+import NewDelkontraktModal from './NewDelkontraktModal'
 
 const DelkontrakterTab = ({
   agreementId,
   agreementDraftStatus,
   agreementExpireDate,
 }: {
-  agreementId: string;
-  agreementDraftStatus: string;
-  agreementExpireDate: string;
+  agreementId: string
+  agreementDraftStatus: string
+  agreementExpireDate: string
 }) => {
-  const [newSortNr, setNewSortNr] = useState<number>(1);
+  const [newSortNr, setNewSortNr] = useState<number>(1)
 
   const {
     data: delkontrakter,
     isLoading: delkontrakterIsLoading,
     mutate: mutateDelkontrakter,
-  } = useDelkontrakterByAgreementId(agreementId);
+  } = useDelkontrakterByAgreementId(agreementId)
 
   useEffect(() => {
-    mutateDelkontrakter();
-  }, [agreementExpireDate]);
+    mutateDelkontrakter()
+  }, [agreementExpireDate])
 
   useEffect(() => {
-    const newSortNr = delkontrakter?.length ? delkontrakter[delkontrakter.length - 1].delkontraktData.sortNr + 1 : 1;
-    setNewSortNr(newSortNr);
-  }, [delkontrakter]);
+    const newSortNr = delkontrakter?.length ? delkontrakter[delkontrakter.length - 1].delkontraktData.sortNr + 1 : 1
+    setNewSortNr(newSortNr)
+  }, [delkontrakter])
 
-  const [nyRammeavtaleModalIsOpen, setNyRammeavtaleModalIsOpen] = useState(false);
-  const isFirstTime = delkontrakter && delkontrakter.length === 0;
+  const [nyRammeavtaleModalIsOpen, setNyRammeavtaleModalIsOpen] = useState(false)
+  const isFirstTime = delkontrakter && delkontrakter.length === 0
 
   if (delkontrakterIsLoading)
     return (
       <Tabs.Panel value="delkontrakter">
         <Loader size="large" />
       </Tabs.Panel>
-    );
+    )
 
   const reorderDelkontrakt = (delkontrakt1Id: string, delkontrakt2Id: string) => {
     reorderDelkontrakter(delkontrakt1Id, delkontrakt2Id)
       .then((_) => {
-        mutateDelkontrakter();
+        mutateDelkontrakter()
       })
       .catch((error) => {
-        console.error("Reorder delkontrakt failed", error);
-      });
-  };
+        console.error('Reorder delkontrakt failed', error)
+      })
+  }
 
   return (
     <>
@@ -71,7 +75,7 @@ const DelkontrakterTab = ({
             <Avstand marginTop={3} />
             <HGrid columns="auto 60px" gap="space-6">
               <div />
-              <div style={{ margin: "auto" }}>
+              <div style={{ margin: 'auto' }}>
                 <ArrowsUpDownIcon aria-hidden={true} fontSize="1.5rem" />
               </div>
             </HGrid>
@@ -87,26 +91,26 @@ const DelkontrakterTab = ({
                       mutateDelkontrakter={mutateDelkontrakter}
                       agreementExpireDate={agreementExpireDate}
                     />
-                    <VStack gap="space-1" style={{ alignItems: "center" }}>
+                    <VStack gap="space-1" style={{ alignItems: 'center' }}>
                       {i !== 0 && (
                         <Button
                           aria-label="sorter-opp"
-                          size={"small"}
+                          size={'small'}
                           variant="tertiary"
                           icon={<ChevronUpIcon title="Sorter opp" />}
                           onClick={() => {
-                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i - 1].id);
+                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i - 1].id)
                           }}
                         />
                       )}
                       {i !== delkontrakter!.length - 1 && (
                         <Button
                           aria-label="sorter-ned"
-                          size={"small"}
+                          size={'small'}
                           variant="tertiary"
                           icon={<ChevronDownIcon title="Sorter ned" />}
                           onClick={() => {
-                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i + 1].id);
+                            reorderDelkontrakt(delkontrakt.id, delkontrakter![i + 1].id)
                           }}
                         />
                       )}
@@ -116,17 +120,17 @@ const DelkontrakterTab = ({
             </HGrid>
           </Box>
         )}
-        <Button className="fit-content" variant="secondary" onClick={() => setNyRammeavtaleModalIsOpen(true)} >
+        <Button className="fit-content" variant="secondary" onClick={() => setNyRammeavtaleModalIsOpen(true)}>
           Legg til delkontrakt
         </Button>
       </DelkontrakterTabsPanel>
     </>
-  );
-};
+  )
+}
 
-export default DelkontrakterTab;
+export default DelkontrakterTab
 
 const DelkontrakterTabsPanel = styled(Tabs.Panel)`
   margin-top: 0.5rem;
   margin-bottom: 1rem;
-`;
+`

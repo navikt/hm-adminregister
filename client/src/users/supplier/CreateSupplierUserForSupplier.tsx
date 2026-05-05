@@ -1,26 +1,28 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { PersonIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Checkbox, HStack, TextField, VStack } from "@navikt/ds-react";
-import { newSupplierUserSchema } from "utils/zodSchema/newUser";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { SupplierUserDTO } from "utils/supplier-util";
-import { labelRequired } from "utils/string-util";
-import { HM_REGISTER_URL } from "environments";
-import FormBox from "felleskomponenter/FormBox";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-type FormData = z.infer<typeof newSupplierUserSchema>;
+import { HM_REGISTER_URL } from 'environments'
+import FormBox from 'felleskomponenter/FormBox'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { SupplierUserDTO } from 'utils/supplier-util'
+import { newSupplierUserSchema } from 'utils/zodSchema/newUser'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { PersonIcon } from '@navikt/aksel-icons'
+import { Alert, Button, Checkbox, HStack, TextField, VStack } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof newSupplierUserSchema>
 
 export default function CreateSupplierUserForSupplier() {
-  const { setGlobalError } = useErrorStore();
-  const location = useLocation();
-  const supplierName = location.state as string;
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const { setGlobalError } = useErrorStore()
+  const location = useLocation()
+  const supplierName = location.state as string
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
 
   const {
     handleSubmit,
@@ -28,39 +30,39 @@ export default function CreateSupplierUserForSupplier() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(newSupplierUserSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
-  });
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+  })
 
   async function onSubmit(data: FormData) {
     const newSupplierUser: SupplierUserDTO = {
-      name: "",
-      email: data.email || "",
-      password: data.password || "",
-      roles: ["ROLE_SUPPLIER"],
+      name: '',
+      email: data.email || '',
+      password: data.password || '',
+      roles: ['ROLE_SUPPLIER'],
       attributes: {
         // supplierId: '85853609-37ef-4fea-be03-67ccc9613ee4',
-        supplierId: searchParams.get("suppid") || "",
+        supplierId: searchParams.get('suppid') || '',
       },
-    };
+    }
     const response = await fetch(`${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
       body: JSON.stringify(newSupplierUser),
-    });
+    })
     if (response.ok) {
-      const responseData = await response.json();
-      const id = responseData.attributes.supplierId;
-      if (id) navigate(`/leverandor/${id}`);
+      const responseData = await response.json()
+      const id = responseData.attributes.supplierId
+      if (id) navigate(`/leverandor/${id}`)
     } else {
       //Mulig 400 bør håndteres direkte her siden 400 i denne konteksten betyr skjemafeil og bør kanskje skrives rett under firmanavnfeltet.
       //Samtidig så bør ikke 400 skje med riktig validering men vi får 400 feil når man registrerer to
       //leverandører med samme navn.
-      const responsData = await response.json();
-      setGlobalError(response.status, responsData.message);
+      const responsData = await response.json()
+      setGlobalError(response.status, responsData.message)
     }
   }
 
@@ -76,8 +78,8 @@ export default function CreateSupplierUserForSupplier() {
             {supplierName}
           </VStack>
           <TextField
-            {...register("email", { required: true })}
-            label={labelRequired("E-post")}
+            {...register('email', { required: true })}
+            label={labelRequired('E-post')}
             id="email"
             type="email"
             name="email"
@@ -87,10 +89,10 @@ export default function CreateSupplierUserForSupplier() {
           />
           <VStack>
             <TextField
-              {...register("password", { required: true })}
-              label={labelRequired("Midlertidig passord")}
+              {...register('password', { required: true })}
+              label={labelRequired('Midlertidig passord')}
               id="password"
-              type={isPasswordShown ? "text" : "password"}
+              type={isPasswordShown ? 'text' : 'password'}
               name="password"
               description="Passordet skal byttes ved første innlogging"
               autoComplete="off"
@@ -114,5 +116,5 @@ export default function CreateSupplierUserForSupplier() {
         </VStack>
       </form>
     </FormBox>
-  );
+  )
 }

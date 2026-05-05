@@ -1,18 +1,21 @@
-import { Alert, Button, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import { PlusCircleIcon } from "@navikt/aksel-icons";
-import { AttachmentGroup } from "./AttachmentGroup";
-import { AgreementRegistrationDTO } from "utils/types/response-types";
-import NewAttachmentGroupModal from "agreements/agreement/vedlegg/NewAttachmentGroupModal";
-import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
+import { useState } from 'react'
+
+import NewAttachmentGroupModal from 'agreements/agreement/vedlegg/NewAttachmentGroupModal'
+import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import { AgreementRegistrationDTO } from 'utils/types/response-types'
+
+import { PlusCircleIcon } from '@navikt/aksel-icons'
+import { Alert, Button, VStack } from '@navikt/ds-react'
+
+import { AttachmentGroup } from './AttachmentGroup'
 
 interface Props {
-  agreement: AgreementRegistrationDTO;
-  mutateAgreement: () => void;
+  agreement: AgreementRegistrationDTO
+  mutateAgreement: () => void
 }
 
 const FileTab = ({ agreement, mutateAgreement }: Props) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   return (
     <>
@@ -43,7 +46,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
             variant="tertiary"
             icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             onClick={() => {
-              setModalIsOpen(true);
+              setModalIsOpen(true)
             }}
           >
             Legg til dokumentgruppe
@@ -51,7 +54,7 @@ const FileTab = ({ agreement, mutateAgreement }: Props) => {
         </VStack>
       </TabPanel>
     </>
-  );
-};
+  )
+}
 
-export default FileTab;
+export default FileTab

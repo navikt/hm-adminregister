@@ -1,21 +1,23 @@
-import { Checkbox, Table } from "@navikt/ds-react";
-import React from "react";
-import { ProductRegistrationDTOV2 } from "utils/types/response-types";
-import { Link } from "react-router-dom";
-import { ExternalLinkIcon } from "@navikt/aksel-icons";
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
+
+import { ExternalLinkIcon } from '@navikt/aksel-icons'
+import { Checkbox, Table } from '@navikt/ds-react'
 
 interface PartsToAddTableProps {
-  parts: ProductRegistrationDTOV2[];
-  selectedRows: string[];
-  toggleSelectedRow: (id: string) => void;
-  seriesParts: string[];
+  parts: ProductRegistrationDTOV2[]
+  selectedRows: string[]
+  toggleSelectedRow: (id: string) => void
+  seriesParts: string[]
 }
 
 export const PartsToAddTable = ({ parts, selectedRows, toggleSelectedRow, seriesParts }: PartsToAddTableProps) => {
   return (
     <Table size="small">
       <Table.Header>
-        <Table.Row key={"header"}>
+        <Table.Row key={'header'}>
           <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
           <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
           <Table.HeaderCell scope="col">Leverandør art. nr.</Table.HeaderCell>
@@ -29,7 +31,7 @@ export const PartsToAddTable = ({ parts, selectedRows, toggleSelectedRow, series
               <>
                 <Link target="_blank" to={`/del/${part.id}`}>
                   {part.articleName} <ExternalLinkIcon title="Se delside" />
-                </Link>{" "}
+                </Link>{' '}
               </>
             </Table.DataCell>
             <Table.DataCell>{part.hmsArtNr}</Table.DataCell>
@@ -40,15 +42,15 @@ export const PartsToAddTable = ({ parts, selectedRows, toggleSelectedRow, series
                 checked={selectedRows.includes(part.id) || seriesParts.includes(part.id)}
                 disabled={seriesParts.includes(part.id)}
                 onChange={() => {
-                  toggleSelectedRow(part.id!);
+                  toggleSelectedRow(part.id!)
                 }}
               >
-                {" "}
+                {' '}
               </Checkbox>
             </Table.DataCell>
           </Table.Row>
         ))}
       </Table.Body>
     </Table>
-  );
-};
+  )
+}

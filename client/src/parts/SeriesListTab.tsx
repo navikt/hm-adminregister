@@ -1,50 +1,52 @@
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+
+import ErrorAlert from 'error/ErrorAlert'
+import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import { SeriesList } from 'parts/series/SeriesList'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { usePagedProductsForTechnician, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
+
 import {
   Alert,
   Box,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Loader,
   Pagination,
   Search,
   Select,
   UNSAFE_Combobox,
   VStack,
-} from "@navikt/ds-react";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { usePagedProductsForTechnician, useSeriesByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
-import ErrorAlert from "error/ErrorAlert";
-import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
-import { SeriesList } from "parts/series/SeriesList";
+} from '@navikt/ds-react'
 
 const SeriesListTab = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const { loggedInUser } = useAuthStore();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false);
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
+  const { loggedInUser } = useAuthStore()
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false)
 
-  const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
-  const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+  const initialPageSize = Number(localStorage.getItem('pageSizeState')) || 10
+  const [pageSizeState, setPageSizeState] = useState(initialPageSize)
 
-  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
 
   useEffect(() => {
-    setSupplierFilter(searchParams.get("supplier") || "");
-  }, [searchParams]);
+    setSupplierFilter(searchParams.get('supplier') || '')
+  }, [searchParams])
 
   useEffect(() => {
     if (supplierFilter) {
-      searchParams.set("supplier", supplierFilter);
+      searchParams.set('supplier', supplierFilter)
     } else {
-      searchParams.delete("supplier");
+      searchParams.delete('supplier')
     }
-    setSearchParams(searchParams);
-  }, [supplierFilter]);
+    setSearchParams(searchParams)
+  }, [supplierFilter])
 
-  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>();
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>()
 
   const {
     data: pagedData,
@@ -55,73 +57,77 @@ const SeriesListTab = () => {
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
-  });
+  })
 
   useEffect(() => {
-    localStorage.setItem("pageSizeState", pageSizeState.toString());
-  }, [pageSizeState]);
+    localStorage.setItem('pageSizeState', pageSizeState.toString())
+  }, [pageSizeState])
 
-  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm);
+  const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm)
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
-  };
+    setSearchTerm(value)
+  }
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
-    if (!uuid) return;
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id
+    if (!uuid) return
     if (isSelected) {
-      setSupplierFilter(uuid);
+      setSupplierFilter(uuid)
     } else if (supplierFilter === uuid) {
-      setSupplierFilter("");
+      setSupplierFilter('')
     }
-  };
+  }
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
-      searchParams.set("page", String(pagedData.totalPages));
-      setSearchParams(searchParams);
-      setPageState(pagedData.totalPages);
+      searchParams.set('page', String(pagedData.totalPages))
+      setSearchParams(searchParams)
+      setPageState(pagedData.totalPages)
     }
-  }, [pagedData]);
+  }, [pagedData])
 
-  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
+  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1
 
   if (errorPaged) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   const onClickSeries = (id: string) => {
     if (selectedSeriesId === id) {
-      setSelectedSeriesId(undefined);
-      return;
+      setSelectedSeriesId(undefined)
+      return
     } else {
-      setSelectedSeriesId(id);
+      setSelectedSeriesId(id)
     }
-  };
+  }
 
   return (
     <TabPanel value="serier">
-      <VStack gap={{ xs: "space-8", md: "space-12" }} paddingBlock="space-24" maxWidth={loggedInUser && loggedInUser.isAdmin ? "80rem" : "64rem"}>
-        <VStack gap={{ xs: "space-4", md: "space-6" }}>
+      <VStack
+        gap={{ xs: 'space-8', md: 'space-12' }}
+        paddingBlock="space-24"
+        maxWidth={loggedInUser && loggedInUser.isAdmin ? '80rem' : '64rem'}
+      >
+        <VStack gap={{ xs: 'space-4', md: 'space-6' }}>
           <HGrid
-            columns={{ xs: "space-1", md: loggedInUser && !loggedInUser.isAdmin ? "1fr 230px" : "1fr " }}
+            columns={{ xs: 'space-1', md: loggedInUser && !loggedInUser.isAdmin ? '1fr 230px' : '1fr ' }}
             gap="space-8"
-            align={"start"}
+            align={'start'}
           >
             <HGrid
               columns={{
-                xs: "space-4",
-                md: loggedInUser && loggedInUser.isAdmin && suppliers ? "3fr 2fr" : "2fr",
+                xs: 'space-4',
+                md: loggedInUser && loggedInUser.isAdmin && suppliers ? '3fr 2fr' : '2fr',
               }}
               gap="space-8"
               align="start"
             >
-              <Box role="search" style={{ maxWidth: "475px" }}>
+              <Box role="search" style={{ maxWidth: '475px' }}>
                 <Search
                   className="search-button"
                   label="Søk"
@@ -135,7 +141,7 @@ const SeriesListTab = () => {
                 />
               </Box>
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
-                <Box asChild style={{ maxWidth: "475px" }}>
+                <Box asChild style={{ maxWidth: '475px' }}>
                   <UNSAFE_Combobox
                     clearButton
                     clearButtonLabel="Tøm"
@@ -182,24 +188,24 @@ const SeriesListTab = () => {
             ) : (
               !isLoadingPagedData && (
                 <Alert variant="info">
-                  {searchTerm !== "" ? `Ingen produkter funnet med søket: "${searchTerm}"` : "Ingen produkter funnet."}
+                  {searchTerm !== '' ? `Ingen produkter funnet med søket: "${searchTerm}"` : 'Ingen produkter funnet.'}
                 </Alert>
               )
             )}
           </VStack>
 
           <HStack
-            justify={{ xs: "center", md: "space-between" }}
+            justify={{ xs: 'center', md: 'space-between' }}
             align="center"
             gap="space-4"
-            style={{ flexWrap: "wrap-reverse" }}
+            style={{ flexWrap: 'wrap-reverse' }}
           >
             <Select
               label="Ant deler per side"
               size="small"
               defaultValue={pageSizeState}
               onChange={(e) => {
-                setPageSizeState(parseInt(e.target.value));
+                setPageSizeState(parseInt(e.target.value))
               }}
             >
               <option value={10}>10</option>
@@ -210,9 +216,9 @@ const SeriesListTab = () => {
               <Pagination
                 page={pageState}
                 onPageChange={(x) => {
-                  searchParams.set("page", x.toString());
-                  setSearchParams(searchParams);
-                  setPageState(x);
+                  searchParams.set('page', x.toString())
+                  setSearchParams(searchParams)
+                  setPageState(x)
                 }}
                 count={pagedData.totalPages!}
                 size="small"
@@ -222,7 +228,7 @@ const SeriesListTab = () => {
         </VStack>
       </VStack>
     </TabPanel>
-  );
-};
+  )
+}
 
-export default SeriesListTab;
+export default SeriesListTab

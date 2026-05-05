@@ -1,10 +1,17 @@
+import { useEffect, useState } from 'react'
+import { useLocation, useSearchParams } from 'react-router-dom'
+
+import { ProductsToApproveTable } from 'approval/ProductsToApproveTable'
+import ErrorAlert from 'error/ErrorAlert'
+import { usePagedSeriesToApprove, useSeriesToApproveByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
+
 import {
   Alert,
   Box,
   Chips,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Label,
   Loader,
   Pagination,
@@ -12,33 +19,28 @@ import {
   Select,
   UNSAFE_Combobox,
   VStack,
-} from "@navikt/ds-react";
-import { ProductsToApproveTable } from "approval/ProductsToApproveTable";
-import ErrorAlert from "error/ErrorAlert";
-import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { usePagedSeriesToApprove, useSeriesToApproveByVariantIdentifier, useSuppliers } from "utils/swr-hooks";
+} from '@navikt/ds-react'
 
 export const ForApproval = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageState, setPageState] = useState(Number(searchParams.get("page")) || 1);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const sortUrl = searchParams.get("sort");
-  const { pathname, search } = useLocation();
-  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get("supplier") || "");
-  const { suppliers } = useSuppliers(true);
-  const statusFilters = searchParams.get("filters")?.split(",") || [];
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const sortUrl = searchParams.get('sort')
+  const { pathname, search } = useLocation()
+  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
+  const { suppliers } = useSuppliers(true)
+  const statusFilters = searchParams.get('filters')?.split(',') || []
 
-  const initialPageSize = Number(localStorage.getItem("pageSizeState")) || 10;
-  const [pageSizeState, setPageSizeState] = useState(initialPageSize);
+  const initialPageSize = Number(localStorage.getItem('pageSizeState')) || 10
+  const [pageSizeState, setPageSizeState] = useState(initialPageSize)
 
   useEffect(() => {
-    localStorage.setItem("pageSizeState", pageSizeState.toString());
-  }, [pageSizeState]);
+    localStorage.setItem('pageSizeState', pageSizeState.toString())
+  }, [pageSizeState])
 
-  const visningStatusfilter = ["Endring", "Nytt produkt"];
+  const visningStatusfilter = ['Endring', 'Nytt produkt']
 
-  const { data: seriesToApproveByVariantIdentifier } = useSeriesToApproveByVariantIdentifier(searchTerm);
+  const { data: seriesToApproveByVariantIdentifier } = useSeriesToApproveByVariantIdentifier(searchTerm)
 
   const {
     data: pagedData,
@@ -52,63 +54,63 @@ export const ForApproval = () => {
     supplierFilter: supplierFilter,
     sortUrl: sortUrl,
     filters: [...statusFilters],
-  });
+  })
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
-      searchParams.set("page", String(pagedData.totalPages));
-      setSearchParams(searchParams);
-      setPageState(pagedData.totalPages);
+      searchParams.set('page', String(pagedData.totalPages))
+      setSearchParams(searchParams)
+      setPageState(pagedData.totalPages)
     }
-  }, [pagedData]);
+  }, [pagedData])
 
   if (pagedDataError) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   const onFilterChange = (filterName: string) => {
     if (statusFilters.includes(filterName)) {
-      searchParams.set("filters", statusFilters.filter((x) => x !== filterName).join(","));
-      setSearchParams(searchParams);
+      searchParams.set('filters', statusFilters.filter((x) => x !== filterName).join(','))
+      setSearchParams(searchParams)
     } else {
-      searchParams.set("filters", [...statusFilters, filterName].join(","));
-      setSearchParams(searchParams);
+      searchParams.set('filters', [...statusFilters, filterName].join(','))
+      setSearchParams(searchParams)
     }
-  };
+  }
 
-  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1;
+  const showPageNavigator = pagedData && pagedData.totalPages !== undefined && pagedData.totalPages > 1
 
   const handleSearch = (value: string) => {
-    setSearchTerm(value);
-  };
+    setSearchTerm(value)
+  }
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id
 
     if (uuid) {
       if (isSelected) {
-        if (!searchParams.getAll("supplier").includes(uuid)) {
-          searchParams.set("supplier", uuid);
+        if (!searchParams.getAll('supplier').includes(uuid)) {
+          searchParams.set('supplier', uuid)
         }
       } else {
-        if (searchParams.getAll("supplier").includes(uuid)) {
-          const updated = searchParams.getAll("supplier").filter((supplier) => supplier !== uuid);
-          searchParams.delete("supplier");
-          updated.forEach((supplier) => searchParams.set("supplier", supplier));
+        if (searchParams.getAll('supplier').includes(uuid)) {
+          const updated = searchParams.getAll('supplier').filter((supplier) => supplier !== uuid)
+          searchParams.delete('supplier')
+          updated.forEach((supplier) => searchParams.set('supplier', supplier))
         }
       }
-      setSearchParams(searchParams);
-      setSupplierFilter(searchParams.get("supplier") || "");
+      setSearchParams(searchParams)
+      setSupplierFilter(searchParams.get('supplier') || '')
     }
-  };
+  }
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: "space-16", md: "space-24" }} maxWidth={"64rem"}>
+      <VStack gap={{ xs: 'space-16', md: 'space-24' }} maxWidth={'64rem'}>
         <Heading level="1" size="large" spacing>
           Godkjenning av produkter
         </Heading>
@@ -126,14 +128,14 @@ export const ForApproval = () => {
             onChange={(value) => handleSearch(value)}
           />
           {suppliers && (
-            <Box asChild style={{ maxWidth: "475px" }}>
+            <Box asChild style={{ maxWidth: '475px' }}>
               <UNSAFE_Combobox
                 clearButton
                 clearButtonLabel="Tøm"
                 label="Leverandør"
                 selectedOptions={searchParams
-                  .getAll("supplier")
-                  .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || "")}
+                  .getAll('supplier')
+                  .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || '')}
                 onToggleSelected={onToggleSelected}
                 options={suppliers?.map((supplier) => supplier.name) || []}
               />
@@ -174,25 +176,25 @@ export const ForApproval = () => {
           ) : (
             !isLoading && (
               <Alert variant="info">
-                {searchTerm !== "" ? `Ingen produkter funnet` : "Ingen produkter som venter på godkjenning."}
+                {searchTerm !== '' ? `Ingen produkter funnet` : 'Ingen produkter som venter på godkjenning.'}
               </Alert>
             )
           )}
 
           {!seriesToApproveByVariantIdentifier && (
             <HStack
-              justify={{ xs: "center", md: "space-between" }}
+              justify={{ xs: 'center', md: 'space-between' }}
               align="center"
               gap="space-4"
-              style={{ flexWrap: "wrap-reverse" }}
+              style={{ flexWrap: 'wrap-reverse' }}
             >
               <Select
                 label="Ant produkter per side"
                 size="small"
                 defaultValue={pageSizeState}
                 onChange={(e) => {
-                  searchParams.set("size", e.target.value);
-                  setPageSizeState(parseInt(e.target.value));
+                  searchParams.set('size', e.target.value)
+                  setPageSizeState(parseInt(e.target.value))
                 }}
               >
                 <option value={10}>10</option>
@@ -203,9 +205,9 @@ export const ForApproval = () => {
                 <Pagination
                   page={pageState}
                   onPageChange={(x) => {
-                    searchParams.set("page", x.toString());
-                    setSearchParams(searchParams);
-                    setPageState(x);
+                    searchParams.set('page', x.toString())
+                    setSearchParams(searchParams)
+                    setPageState(x)
                   }}
                   count={pagedData.totalPages!}
                   size="small"
@@ -216,5 +218,5 @@ export const ForApproval = () => {
         </VStack>
       </VStack>
     </main>
-  );
-};
+  )
+}

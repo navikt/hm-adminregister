@@ -1,48 +1,50 @@
-import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Checkbox, Loader, Switch, Table } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { ExternalLinkIcon } from "@navikt/aksel-icons";
-import React, { useState } from "react";
-import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, useCompatibleProductById } from "api/PartApi";
-import { Link } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+
+import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, useCompatibleProductById } from 'api/PartApi'
+import { useSeriesV2Conditional } from 'api/SeriesApi'
+import { HM_REGISTER_URL } from 'environments'
+import { useAuthStore } from 'utils/store/useAuthStore'
+
+import { ExternalLinkIcon } from '@navikt/aksel-icons'
+import { Checkbox, Loader, Switch, Table } from '@navikt/ds-react'
 
 export const CompatiblePartRow = ({
   productId,
   selectedRows,
   toggleSelectedRow,
 }: {
-  productId: string;
-  selectedRows: string[];
-  toggleSelectedRow: (id: string) => void;
+  productId: string
+  selectedRows: string[]
+  toggleSelectedRow: (id: string) => void
 }) => {
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
-  const { product, isLoading, error, mutate } = useCompatibleProductById(productId, isAdmin);
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
+  const { product, isLoading, error, mutate } = useCompatibleProductById(productId, isAdmin)
   const {
     data: series,
     isLoading: isLoadingSeries,
     error: errorSeries,
     mutate: mutateSeries,
-  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined);
+  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
 
-  const [isTogglingKT, setIsTogglingKT] = useState(false);
-  const [isTogglingBP, setIsTogglingBP] = useState(false);
+  const [isTogglingKT, setIsTogglingKT] = useState(false)
+  const [isTogglingBP, setIsTogglingBP] = useState(false)
 
   const toggleEgnetForKommunalTekniker = (checked: boolean, id: string) => {
-    setIsTogglingKT(true);
+    setIsTogglingKT(true)
     updateEgnetForKommunalTekniker(id, checked).then(() => {
-      mutate();
-    });
-    setIsTogglingKT(false);
-  };
+      mutate()
+    })
+    setIsTogglingKT(false)
+  }
   const toggleEgnetForBrukerpassbruker = (checked: boolean, id: string) => {
-    setIsTogglingBP(true);
+    setIsTogglingBP(true)
     updateEgnetForBrukerpassbruker(id, checked).then(() => {
-      mutate();
-    });
-    setIsTogglingBP(false);
-  };
+      mutate()
+    })
+    setIsTogglingBP(false)
+  }
 
   if (!product || !series) {
     return (
@@ -51,14 +53,14 @@ export const CompatiblePartRow = ({
           <Loader />
         </Table.DataCell>
       </Table.Row>
-    );
+    )
   }
 
   return (
     <Table.Row key={`${productId}`} shadeOnHover={true}>
       <Table.DataCell>
         <>
-          <Link to={`/del/${product.id}`}>{product.articleName}</Link>{" "}
+          <Link to={`/del/${product.id}`}>{product.articleName}</Link>{' '}
         </>
       </Table.DataCell>
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
@@ -84,13 +86,14 @@ export const CompatiblePartRow = ({
             >
               <></>
             </Switch>
-          </Table.DataCell></>
+          </Table.DataCell>
+        </>
       )}
 
       <Table.DataCell>
-        {" "}
+        {' '}
         {series.isPublished && product.hmsArtNr && (
-          <Link to={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
+          <Link to={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={'_blank'}>
             <ExternalLinkIcon fontSize="1.5rem" title="Se variant på Finn Hjelpemiddel" />
           </Link>
         )}
@@ -101,12 +104,12 @@ export const CompatiblePartRow = ({
           hideLabel
           checked={selectedRows.includes(product.id)}
           onChange={() => {
-            toggleSelectedRow(product.id!);
+            toggleSelectedRow(product.id!)
           }}
         >
-          {" "}
+          {' '}
         </Checkbox>
       </Table.DataCell>
     </Table.Row>
-  );
-};
+  )
+}

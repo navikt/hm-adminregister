@@ -1,55 +1,58 @@
-import { BodyShort, Button, Heading, HStack, Tag, VStack } from "@navikt/ds-react";
-import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { useState } from "react";
-import { isValidKeyword } from "products/seriesUtils";
-import "./about-tab-keywords.scss";
-import { SeriesDTO } from "utils/types/response-types";
-import { updateSeriesKeywords } from "api/SeriesApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import KeywordInputProvider from "products/about/keyword-input/KeywordInputProvider";
+import { useState } from 'react'
+
+import { updateSeriesKeywords } from 'api/SeriesApi'
+import KeywordInputProvider from 'products/about/keyword-input/KeywordInputProvider'
+import { isValidKeyword } from 'products/seriesUtils'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
+import { BodyShort, Button, HStack, Heading, Tag, VStack } from '@navikt/ds-react'
+
+import './about-tab-keywords.scss'
 
 interface Props {
-  series: SeriesDTO;
-  mutateSeries: () => void;
-  isEditable: boolean;
+  series: SeriesDTO
+  mutateSeries: () => void
+  isEditable: boolean
 }
 
 const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
-  const keywords = series.seriesData.attributes.keywords;
-  const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false);
-  const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined);
-  const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : []);
-  const maxKeywords = 10;
+  const keywords = series.seriesData.attributes.keywords
+  const [showEditKeywordsMode, setShowEditKeywordsMode] = useState(false)
+  const [keywordFormatError, setKeywordFormatError] = useState<string | undefined>(undefined)
+  const [updatedKeywords, setUpdatedKeywords] = useState<string[]>(keywords ? keywords : [])
+  const maxKeywords = 10
 
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
-  const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/);
+  const validKeywordLetters = new RegExp(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9_\s]*$/)
 
   const handleSaveKeywords = () => {
     if (updatedKeywords.length <= maxKeywords && updatedKeywords.every((keyword) => allowedCharacters(keyword))) {
       updateSeriesKeywords(series!.id, updatedKeywords)
         .then(() => mutateSeries())
         .catch((error) => {
-          setGlobalError(error.status, error.message);
-        });
-      setShowEditKeywordsMode(false);
+          setGlobalError(error.status, error.message)
+        })
+      setShowEditKeywordsMode(false)
     }
-  };
+  }
 
-  const allowedCharacters = (keyword: string) => isValidKeyword(keyword) && validKeywordLetters.test(keyword);
+  const allowedCharacters = (keyword: string) => isValidKeyword(keyword) && validKeywordLetters.test(keyword)
 
   const validKeyword = (keyword: string) => {
-    setKeywordFormatError(undefined);
+    setKeywordFormatError(undefined)
     if (updatedKeywords.length >= maxKeywords) {
-      setKeywordFormatError(`Du kan maksimalt velge ${maxKeywords} nøkkelord`);
-      return false;
+      setKeywordFormatError(`Du kan maksimalt velge ${maxKeywords} nøkkelord`)
+      return false
     }
     if (!allowedCharacters(keyword)) {
-      setKeywordFormatError("Nøkkelord kan bare inneholde norske bokstaver, tall og underscore");
-      return false;
+      setKeywordFormatError('Nøkkelord kan bare inneholde norske bokstaver, tall og underscore')
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   return (
     <>
@@ -64,7 +67,7 @@ const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
               {updatedKeywords.map((keyword, index) => (
                 <span className="keywords-static" key={index}>
                   <Tag variant="alt3">{keyword}</Tag>
-                  {index < updatedKeywords.length - 1 ? "  " : ""}
+                  {index < updatedKeywords.length - 1 ? '  ' : ''}
                 </span>
               ))}
             </HStack>
@@ -97,7 +100,7 @@ const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
         {showEditKeywordsMode && (
           <>
             <KeywordInputProvider
-              label={"Nøkkelord input"}
+              label={'Nøkkelord input'}
               hideLabel
               options={[]}
               selectedOptions={updatedKeywords}
@@ -121,7 +124,7 @@ const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
         )}
       </VStack>
     </>
-  );
-};
+  )
+}
 
-export default AboutTabKeywords;
+export default AboutTabKeywords

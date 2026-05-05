@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
-import { CogIcon, CogRotationIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { SeriesDTO } from "utils/types/response-types";
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { CogIcon, CogRotationIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Button, Dropdown, HStack, VStack } from '@navikt/ds-react'
 
 const ActionsMenu = ({
   series,
@@ -13,29 +14,29 @@ const ActionsMenu = ({
   setConfirmApproveModalIsOpen,
   partIsValid,
 }: {
-  series: SeriesDTO;
-  setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
-  setSwitchToProductModalIsOpen:  (newState: boolean) => void;
-  setEditProductModalIsOpen: (newState: boolean) => void;
-  setConfirmApproveModalIsOpen: (newState: boolean) => void;
-  partIsValid: () => boolean;
+  series: SeriesDTO
+  setDeleteConfirmationModalIsOpen: (newState: boolean) => void
+  setSwitchToProductModalIsOpen: (newState: boolean) => void
+  setEditProductModalIsOpen: (newState: boolean) => void
+  setConfirmApproveModalIsOpen: (newState: boolean) => void
+  partIsValid: () => boolean
 }) => {
-  const isEditable = series.status === "EDITABLE";
-  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
-  const canSetToEditMode = series.status !== "EDITABLE";
-  const { loggedInUser } = useAuthStore();
-  const navigate = useNavigate();
+  const isEditable = series.status === 'EDITABLE'
+  const canSetExpiredStatus = series.status === 'EDITABLE' && series.isPublished
+  const canSetToEditMode = series.status !== 'EDITABLE'
+  const { loggedInUser } = useAuthStore()
+  const navigate = useNavigate()
 
-  const isAdmin = loggedInUser?.isAdmin || false;
+  const isAdmin = loggedInUser?.isAdmin || false
 
   return (
     <VStack gap="space-2">
       <HStack gap="space-2">
         {isEditable && (
           <Button
-            style={{ flexGrow: 1, paddingInline: "0.75rem" }}
+            style={{ flexGrow: 1, paddingInline: '0.75rem' }}
             onClick={() => {
-              setConfirmApproveModalIsOpen(true);
+              setConfirmApproveModalIsOpen(true)
             }}
           >
             Publiser
@@ -74,7 +75,7 @@ const ActionsMenu = ({
         )}
       </HStack>
     </VStack>
-  );
-};
+  )
+}
 
-export default ActionsMenu;
+export default ActionsMenu

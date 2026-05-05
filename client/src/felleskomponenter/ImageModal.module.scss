@@ -1,4 +1,4 @@
-@use "../styles/_mixins";
+@use '../styles/_mixins';
 
 .imageModal {
   width: 100vw;
@@ -19,18 +19,12 @@
     align-items: center;
     justify-content: center;
 
-      img {
-        width: 100%;
-        height: 100%;
-        position: relative !important;
-        border-radius: var(--ax-radius-8);
-        object-fit: contain;
-
-      }
-
-
-
+    img {
+      width: 100%;
+      height: 100%;
+      position: relative !important;
+      border-radius: var(--ax-radius-8);
+      object-fit: contain;
+    }
   }
-
-
 }

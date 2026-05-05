@@ -1,36 +1,38 @@
-import { BodyLong, Button, Checkbox, HStack, Table, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
-import { CompatibleVariantRow } from "parts/compatibility/CompatibleVariantRow";
-import NewCompatibleProductOnPartModal from "parts/compatibility/NewCompatibleProductOnPartModal";
-import { removeCompatibleWithVariant } from "api/PartApi";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+
+import { removeCompatibleWithVariant } from 'api/PartApi'
+import { RowBoxTable } from 'felleskomponenter/styledcomponents/Table'
+import { CompatibleVariantRow } from 'parts/compatibility/CompatibleVariantRow'
+import NewCompatibleProductOnPartModal from 'parts/compatibility/NewCompatibleProductOnPartModal'
+import { useAuthStore } from 'utils/store/useAuthStore'
+
+import { PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { BodyLong, Button, Checkbox, HStack, Table, VStack } from '@navikt/ds-react'
 
 interface VariantCompabilityTabProps {
-  partId: string;
-  productIds: string[];
-  mutatePart: () => void;
-  isEditable: boolean;
+  partId: string
+  productIds: string[]
+  mutatePart: () => void
+  isEditable: boolean
 }
 
 export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditable }: VariantCompabilityTabProps) => {
-  const [newCompatibleProductModalIsOpen, setNewCompatibleProductModalIsOpen] = React.useState(false);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [newCompatibleProductModalIsOpen, setNewCompatibleProductModalIsOpen] = React.useState(false)
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   const deleteMarkedCompatibleProducts = () => {
     removeCompatibleWithVariant(partId, selectedRows, isAdmin).then(() => {
-      mutatePart();
-      setSelectedRows([]);
-    });
-  };
+      mutatePart()
+      setSelectedRows([])
+    })
+  }
 
   return (
     <>
@@ -48,7 +50,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
             variant="primary"
             icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             onClick={() => {
-              setNewCompatibleProductModalIsOpen(true);
+              setNewCompatibleProductModalIsOpen(true)
             }}
           >
             Legg til kobling
@@ -61,7 +63,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
               {productIds.length > 0 && (
                 <RowBoxTable>
                   <Table.Header>
-                    <Table.Row key={"header"}>
+                    <Table.Row key={'header'}>
                       <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                       <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                       <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
@@ -72,9 +74,9 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
                             checked={selectedRows.length === productIds.length}
                             onChange={() => {
                               if (selectedRows.length) {
-                                setSelectedRows([]);
+                                setSelectedRows([])
                               } else {
-                                setSelectedRows(productIds);
+                                setSelectedRows(productIds)
                               }
                             }}
                             hideLabel
@@ -100,7 +102,7 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
               )}
             </HStack>
             {isEditable && (
-              <HStack justify={"end"}>
+              <HStack justify={'end'}>
                 <Button
                   className="fit-content"
                   variant="tertiary"
@@ -112,10 +114,9 @@ export const VariantCompabilityTab = ({ partId, productIds, mutatePart, isEditab
                 </Button>
               </HStack>
             )}
-
           </VStack>
         )}
       </VStack>
     </>
-  );
-};
+  )
+}

@@ -1,61 +1,63 @@
-import { Alert, BodyShort, Button, ExpansionCard, Heading, HStack, Loader } from "@navikt/ds-react";
-import { useEffect, useState } from "react";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { Product } from "utils/types/types";
-import { mapProductRegistrationDTOToProduct } from "utils/product-util";
-import { ProductSeriesInfo } from "products/import/valideringsside/ProductSeriesInfo";
-import { VariantsTable } from "products/import/valideringsside/VariantsTable";
-import { baseUrl } from "utils/swr-hooks";
-import { importProducts } from "api/ImportExportApi";
-import { Upload } from "felleskomponenter/FellesImport";
+import { useEffect, useState } from 'react'
+
+import { importProducts } from 'api/ImportExportApi'
+import { Upload } from 'felleskomponenter/FellesImport'
+import { ProductSeriesInfo } from 'products/import/valideringsside/ProductSeriesInfo'
+import { VariantsTable } from 'products/import/valideringsside/VariantsTable'
+import { mapProductRegistrationDTOToProduct } from 'utils/product-util'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { baseUrl } from 'utils/swr-hooks'
+import { Product } from 'utils/types/types'
+
+import { Alert, BodyShort, Button, ExpansionCard, HStack, Heading, Loader } from '@navikt/ds-react'
 
 interface Props {
-  upload: Upload;
-  reseetUpload: () => void;
-  seriesId: string;
-  seriesTitle: string;
+  upload: Upload
+  reseetUpload: () => void
+  seriesId: string
+  seriesTitle: string
 }
 
 export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, seriesTitle }: Props) => {
-  const { loggedInUser } = useAuthStore();
-  const [productsToValidate, setProductsToValidate] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [importSuccessful, setImportSuccessful] = useState(false);
+  const { loggedInUser } = useAuthStore()
+  const [productsToValidate, setProductsToValidate] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const [importSuccessful, setImportSuccessful] = useState(false)
 
   useEffect(() => {
-    importerDryrun();
-  }, []);
+    importerDryrun()
+  }, [])
 
   const importerDryrun = () => {
-    setIsLoading(true);
+    setIsLoading(true)
     importProducts(loggedInUser?.isAdmin || false, seriesId, upload, true)
       .then((response) => {
-        const products = mapProductRegistrationDTOToProduct(response);
-        setProductsToValidate(products);
-        setIsLoading(false);
+        const products = mapProductRegistrationDTOToProduct(response)
+        setProductsToValidate(products)
+        setIsLoading(false)
       })
       .catch((error) => {
-        setError(error);
-        setIsLoading(false);
-      });
-  };
+        setError(error)
+        setIsLoading(false)
+      })
+  }
 
   const importer = () => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     importProducts(loggedInUser?.isAdmin || false, seriesId, upload, false)
       .then((response) => {
-        const products = mapProductRegistrationDTOToProduct(response);
-        setProductsToValidate(products);
-        setIsLoading(false);
-        setImportSuccessful(true);
+        const products = mapProductRegistrationDTOToProduct(response)
+        setProductsToValidate(products)
+        setIsLoading(false)
+        setImportSuccessful(true)
       })
       .catch((error) => {
-        setError(error);
-        setIsLoading(false);
-      });
-  };
+        setError(error)
+        setIsLoading(false)
+      })
+  }
 
   if (importSuccessful) {
     return (
@@ -74,7 +76,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
           </div>
         </div>
       </main>
-    );
+    )
   } else if (error) {
     return (
       <main>
@@ -90,7 +92,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
               variant="secondary"
               iconPosition="right"
               onClick={() => {
-                reseetUpload();
+                reseetUpload()
               }}
             >
               Avbryt
@@ -98,7 +100,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
           </div>
         </div>
       </main>
-    );
+    )
   } else {
     return (
       <main>
@@ -118,7 +120,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
                     variant="secondary"
                     iconPosition="right"
                     onClick={() => {
-                      history.back();
+                      history.back()
                     }}
                   >
                     Avbryt
@@ -129,7 +131,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
                     variant="primary"
                     iconPosition="right"
                     onClick={() => {
-                      importer();
+                      importer()
                     }}
                   >
                     Importer
@@ -141,7 +143,7 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
                     <ExpansionCard
                       key={i}
                       aria-label="Produktserie med varianter"
-                      style={{ width: "90vw" }}
+                      style={{ width: '90vw' }}
                       size="small"
                       open={true}
                     >
@@ -155,13 +157,13 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
                         <VariantsTable product={product} />
                       </ExpansionCard.Content>
                     </ExpansionCard>
-                  );
+                  )
                 })}
               </HStack>
             )}
           </div>
         </div>
       </main>
-    );
+    )
   }
-};
+}

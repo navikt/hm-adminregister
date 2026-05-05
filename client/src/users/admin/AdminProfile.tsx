@@ -1,41 +1,42 @@
-import { Alert, Button, Heading, HGrid, HStack, Loader, Table, VStack } from "@navikt/ds-react";
+import { useNavigate } from 'react-router-dom'
 
-import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { formatPhoneNumber } from "utils/string-util";
-import { useAdminUsers, useHmsUsers, useUser } from "utils/swr-hooks";
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { formatPhoneNumber } from 'utils/string-util'
+import { useAdminUsers, useHmsUsers, useUser } from 'utils/swr-hooks'
+
+import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Alert, Button, HGrid, HStack, Heading, Loader, Table, VStack } from '@navikt/ds-react'
 
 export default function AdminProfile() {
-  const navigate = useNavigate();
-  const { loggedInUser } = useAuthStore();
-  const { user, userError, userIsLoading } = useUser(loggedInUser);
-  const { adminUsers, isLoading, error } = useAdminUsers();
-  const { hmsUsers } = useHmsUsers();
+  const navigate = useNavigate()
+  const { loggedInUser } = useAuthStore()
+  const { user, userError, userIsLoading } = useUser(loggedInUser)
+  const { adminUsers, isLoading, error } = useAdminUsers()
+  const { hmsUsers } = useHmsUsers()
 
   if (userIsLoading) {
-    return <Loader size="3xlarge" title="Henter brukerinformasjon..."></Loader>;
+    return <Loader size="3xlarge" title="Henter brukerinformasjon..."></Loader>
   }
 
   const handleCreateNewAdminUser = () => {
-    navigate("/admin/opprett-admin");
-  };
+    navigate('/admin/opprett-admin')
+  }
 
   const handleCreateNewHmsUser = () => {
-    navigate("/admin/opprett-hms-bruker");
-  };
+    navigate('/admin/opprett-hms-bruker')
+  }
 
   const handleDeleteAdminUser = (userId: string) => {
-    navigate(`/admin/slett-admin?_=${userId}`);
-  };
+    navigate(`/admin/slett-admin?_=${userId}`)
+  }
 
   if (!user) {
     return (
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
         <Alert variant="info">Ingen bruker funnet, prøv å last inn på nytt</Alert>
       </HGrid>
-    );
+    )
   }
 
   return (
@@ -53,7 +54,7 @@ export default function AdminProfile() {
               <DefinitionList.Definition>{user?.email}</DefinitionList.Definition>
               <DefinitionList.Term>Telefon</DefinitionList.Term>
               <DefinitionList.Definition>
-                {user.attributes.phone ? formatPhoneNumber(user?.attributes?.phone) : "Ikke oppgitt"}
+                {user.attributes.phone ? formatPhoneNumber(user?.attributes?.phone) : 'Ikke oppgitt'}
               </DefinitionList.Definition>
             </DefinitionList>
           </VStack>
@@ -76,7 +77,7 @@ export default function AdminProfile() {
                 <Table.Body>
                   {adminUsers.map(
                     (user, i) =>
-                      user.roles.includes("ROLE_ADMIN") && (
+                      user.roles.includes('ROLE_ADMIN') && (
                         <Table.Row key={i}>
                           <Table.DataCell>{user.name}</Table.DataCell>
                           <Table.DataCell>{user.email}</Table.DataCell>
@@ -106,13 +107,13 @@ export default function AdminProfile() {
                                 icon={<PencilWritingIcon aria-hidden />}
                                 iconPosition="right"
                                 onClick={() => {
-                                  navigate("/admin/rediger-admin");
+                                  navigate('/admin/rediger-admin')
                                 }}
                               />
                             )}
                           </Table.DataCell>
                         </Table.Row>
-                      ),
+                      )
                   )}
                 </Table.Body>
               </Table>
@@ -137,7 +138,7 @@ export default function AdminProfile() {
                 <Table.Body>
                   {hmsUsers.map(
                     (user, i) =>
-                      user.roles.includes("ROLE_HMS") && (
+                      user.roles.includes('ROLE_HMS') && (
                         <Table.Row key={i}>
                           <Table.DataCell>{user.name}</Table.DataCell>
                           <Table.DataCell>{user.email}</Table.DataCell>
@@ -167,13 +168,13 @@ export default function AdminProfile() {
                                 icon={<PencilWritingIcon aria-hidden />}
                                 iconPosition="right"
                                 onClick={() => {
-                                  navigate("/admin/rediger-admin");
+                                  navigate('/admin/rediger-admin')
                                 }}
                               />
                             )}
                           </Table.DataCell>
                         </Table.Row>
-                      ),
+                      )
                   )}
                 </Table.Body>
               </Table>
@@ -204,5 +205,5 @@ export default function AdminProfile() {
         </VStack>
       </HGrid>
     </main>
-  );
+  )
 }

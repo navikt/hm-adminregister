@@ -1,50 +1,53 @@
-import { Box, Button, Checkbox, Heading, HStack, Loader, Table, VStack } from "@navikt/ds-react";
-import { useSeriesV2 } from "api/SeriesApi";
-import styles from "./SeriesParts.module.scss";
-import { getPartsForSeriesId, removeCompatibleWithSeriesForParts } from "api/PartApi";
-import React, { useState } from "react";
-import { PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import NewCompatiblePartsOnSeriesModal from "parts/series/NewCompatiblePartsOnSeriesModal";
-import { CompatiblePartRow } from "parts/compatibility/CompatiblePartRow";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React, { useState } from 'react'
+
+import { getPartsForSeriesId, removeCompatibleWithSeriesForParts } from 'api/PartApi'
+import { useSeriesV2 } from 'api/SeriesApi'
+import { CompatiblePartRow } from 'parts/compatibility/CompatiblePartRow'
+import NewCompatiblePartsOnSeriesModal from 'parts/series/NewCompatiblePartsOnSeriesModal'
+import { useAuthStore } from 'utils/store/useAuthStore'
+
+import { PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Box, Button, Checkbox, HStack, Heading, Loader, Table, VStack } from '@navikt/ds-react'
+
+import styles from './SeriesParts.module.scss'
 
 interface SeriesPartsProps {
-  seriesId: string;
+  seriesId: string
 }
 
 export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId);
+  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId)
   const {
     data: seriesParts,
     isLoading: isLoadingSeriesParts,
     error: errorSeriesParts,
     mutate: mutateParts,
     isValidating,
-  } = getPartsForSeriesId(seriesId);
+  } = getPartsForSeriesId(seriesId)
 
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [newCompatibleProductModalIsOpen, setNewCompatibleProductModalIsOpen] = React.useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
+  const [newCompatibleProductModalIsOpen, setNewCompatibleProductModalIsOpen] = React.useState(false)
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
 
   const deleteMarkedCompatibleProducts = () => {
-    setIsDeleting(true);
+    setIsDeleting(true)
     removeCompatibleWithSeriesForParts(seriesId, selectedRows, isAdmin).then(() => {
-      mutateParts();
-      setSelectedRows([]);
-    });
-    setIsDeleting(false);
-  };
+      mutateParts()
+      setSelectedRows([])
+    })
+    setIsDeleting(false)
+  }
 
   if (isLoadingSeries || !series || isLoadingSeriesParts || !seriesParts || isValidating) {
-    return <Loader />;
+    return <Loader />
   }
 
   return (
@@ -63,7 +66,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
             variant="primary"
             icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
             onClick={() => {
-              setNewCompatibleProductModalIsOpen(true);
+              setNewCompatibleProductModalIsOpen(true)
             }}
           >
             Legg til deler i serien
@@ -80,7 +83,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
             <VStack>
               <Table size="small">
                 <Table.Header>
-                  <Table.Row key={"header"}>
+                  <Table.Row key={'header'}>
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                     <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Leverandør</Table.HeaderCell>
@@ -96,9 +99,9 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                         checked={selectedRows.length === seriesParts.length}
                         onChange={() => {
                           if (selectedRows.length) {
-                            setSelectedRows([]);
+                            setSelectedRows([])
                           } else {
-                            setSelectedRows(seriesParts.map((part) => part.id));
+                            setSelectedRows(seriesParts.map((part) => part.id))
                           }
                         }}
                         hideLabel
@@ -119,7 +122,7 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
                   ))}
                 </Table.Body>
               </Table>
-              <HStack justify={"end"} paddingBlock="space-8">
+              <HStack justify={'end'} paddingBlock="space-8">
                 <Button
                   className="fit-content"
                   variant="tertiary"
@@ -135,5 +138,5 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
         </VStack>
       </Box>
     </>
-  );
-};
+  )
+}

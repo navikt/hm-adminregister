@@ -1,38 +1,33 @@
-import {
-  MediaDTO,
-  MediaInfo,
-  ProductRegistrationDTO,
-  ProductRegistrationDTOV2,
-  TechData,
-} from "./types/response-types";
-import { Product } from "utils/types/types";
-import * as _ from "lodash";
+import * as _ from 'lodash'
+import { Product } from 'utils/types/types'
+
+import { MediaDTO, MediaInfo, ProductRegistrationDTO, ProductRegistrationDTOV2, TechData } from './types/response-types'
 
 export function getAllUniqueTechDataKeys(products: ProductRegistrationDTOV2[]): string[] {
-  const uniqueKeys = new Set<string>();
+  const uniqueKeys = new Set<string>()
   products
     .flatMap((product) => product.productData.techData.map((techData) => techData.key))
-    .forEach((key) => uniqueKeys.add(key));
+    .forEach((key) => uniqueKeys.add(key))
 
-  return Array.from(uniqueKeys);
+  return Array.from(uniqueKeys)
 }
 
 export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: ProductRegistrationDTO[]): Product[] => {
-  const groupedBySeries = _.groupBy(productRegistrationDtos, "seriesUUID");
+  const groupedBySeries = _.groupBy(productRegistrationDtos, 'seriesUUID')
 
-  const mappedProducts: Product[] = [];
+  const mappedProducts: Product[] = []
 
   Object.entries(groupedBySeries).forEach(([_, dtos]) => {
     if (dtos.length > 0) {
-      const firstProduct = dtos[0];
+      const firstProduct = dtos[0]
       const product: Product = {
         id: firstProduct.seriesUUID?.toString(),
         title: firstProduct.title,
         accessory: firstProduct.accessory,
         agreements: [],
         attributes: {
-          text: firstProduct.productData.attributes.text ? firstProduct.productData.attributes.text : "",
-          series: firstProduct.productData.attributes.series ? firstProduct.productData.attributes.series : "",
+          text: firstProduct.productData.attributes.text ? firstProduct.productData.attributes.text : '',
+          series: firstProduct.productData.attributes.series ? firstProduct.productData.attributes.series : '',
           bestillingsordning: firstProduct.productData.attributes.bestillingsordning
             ? firstProduct.productData.attributes.bestillingsordning
             : undefined,
@@ -41,12 +36,12 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
             : [],
           shortdescription: firstProduct.productData.attributes.shortdescription
             ? firstProduct.productData.attributes.shortdescription
-            : "",
+            : '',
         },
         compareData: { techDataRange: {}, agreementRank: null },
         isoCategory: firstProduct.isoCategory,
-        isoCategoryText: "",
-        isoCategoryTitle: "",
+        isoCategoryText: '',
+        isoCategoryTitle: '',
         sparepart: firstProduct.sparePart,
         supplierId: firstProduct.supplierId?.toString(),
         variantCount: dtos.length,
@@ -60,18 +55,18 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
               {},
               ...dto.productData.techData
                 .filter((data: TechData) => data.key && data.value)
-                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } })),
+                .map((data: TechData) => ({ [data.key]: { value: data.value, unit: data.unit } }))
             ),
             hasAgreement: false,
             filters: {},
-            expired: dto.expired ? dto.expired : "",
+            expired: dto.expired ? dto.expired : '',
             agreements: [],
-          };
+          }
         }),
-      };
-      mappedProducts.push(product);
+      }
+      mappedProducts.push(product)
     }
-  });
+  })
 
-  return mappedProducts;
-};
+  return mappedProducts
+}

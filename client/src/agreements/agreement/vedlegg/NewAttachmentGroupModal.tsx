@@ -1,26 +1,28 @@
-import { Button, HStack, Loader, Modal, Textarea, TextField, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { labelRequired } from "utils/string-util";
-import { Avstand } from "felleskomponenter/Avstand";
-import { updateAgreementWithNewAttachmentGroup } from "api/AgreementApi";
-import { createNewAttachmentGroupSchema } from "utils/zodSchema/newAttachmentGroup";
-import Content from "felleskomponenter/styledcomponents/Content";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { updateAgreementWithNewAttachmentGroup } from 'api/AgreementApi'
+import { Avstand } from 'felleskomponenter/Avstand'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { createNewAttachmentGroupSchema } from 'utils/zodSchema/newAttachmentGroup'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, HStack, Loader, Modal, TextField, Textarea, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  oid: string;
-  setModalIsOpen: (open: boolean) => void;
-  mutateAgreement: () => void;
+  modalIsOpen: boolean
+  oid: string
+  setModalIsOpen: (open: boolean) => void
+  mutateAgreement: () => void
 }
 
-export type NyAttachmentGroupFormData = z.infer<typeof createNewAttachmentGroupSchema>;
+export type NyAttachmentGroupFormData = z.infer<typeof createNewAttachmentGroupSchema>
 
 const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgreement }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false)
   const {
     handleSubmit,
     register,
@@ -28,39 +30,39 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<NyAttachmentGroupFormData>({
     resolver: zodResolver(createNewAttachmentGroupSchema),
-    mode: "onSubmit",
-  });
-  const { setGlobalError } = useErrorStore();
+    mode: 'onSubmit',
+  })
+  const { setGlobalError } = useErrorStore()
 
   async function onSubmitContinue(data: NyAttachmentGroupFormData) {
-    await onSubmit(data);
+    await onSubmit(data)
   }
 
   async function onSubmitClose(data: NyAttachmentGroupFormData) {
-    await onSubmit(data);
-    setModalIsOpen(false);
+    await onSubmit(data)
+    setModalIsOpen(false)
   }
 
   async function onSubmit(data: NyAttachmentGroupFormData) {
-    setIsSaving(true);
+    setIsSaving(true)
 
     updateAgreementWithNewAttachmentGroup(oid, data)
       .then((agreement) => {
-        setIsSaving(false);
-        mutateAgreement();
+        setIsSaving(false)
+        mutateAgreement()
       })
       .catch((error) => {
-        setGlobalError(error.message);
-        setIsSaving(false);
-      });
-    reset();
+        setGlobalError(error.message)
+        setIsSaving(false)
+      })
+    reset()
   }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: "Legg til dokumentgruppe",
+        heading: 'Legg til dokumentgruppe',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -68,10 +70,10 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
       <form>
         <Modal.Body>
           <Content>
-            <VStack style={{ width: "100%" }} gap="space-6">
+            <VStack style={{ width: '100%' }} gap="space-6">
               <TextField
-                {...register("tittel", { required: true })}
-                label={labelRequired("Tittel")}
+                {...register('tittel', { required: true })}
+                label={labelRequired('Tittel')}
                 id="tittel"
                 name="tittel"
                 type="text"
@@ -79,8 +81,8 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
               />
               <Avstand marginBottom={5} />
               <Textarea
-                {...register("beskrivelse", { required: true })}
-                label={labelRequired("Beskrivelse")}
+                {...register('beskrivelse', { required: true })}
+                label={labelRequired('Beskrivelse')}
                 id="beskrivelse"
                 name="beskrivelse"
                 error={errors?.beskrivelse?.message}
@@ -96,8 +98,8 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
         <Modal.Footer>
           <Button
             onClick={() => {
-              setModalIsOpen(false);
-              reset();
+              setModalIsOpen(false)
+              reset()
             }}
             variant="tertiary"
             type="reset"
@@ -113,7 +115,7 @@ const NewAttachmentGroupModal = ({ modalIsOpen, oid, setModalIsOpen, mutateAgree
         </Modal.Footer>
       </form>
     </Modal>
-  );
-};
+  )
+}
 
-export default NewAttachmentGroupModal;
+export default NewAttachmentGroupModal

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react'
 
 /*
  * usePrevious hook
@@ -8,9 +8,9 @@ import { useEffect, useRef } from "react";
  * https://blog.logrocket.com/accessing-previous-props-state-react-hooks/
  */
 export const usePrevious = <T>(value: T): T | undefined => {
-  const ref = useRef<T>(value);
+  const ref = useRef<T>(value)
   useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-};
+    ref.current = value
+  }, [value])
+  return ref.current
+}

@@ -1,41 +1,43 @@
-import { Button, Heading, Loader, Table, VStack } from "@navikt/ds-react";
-import { PencilWritingIcon, PlusIcon, TrashIcon } from "@navikt/aksel-icons";
-import React from "react";
-import { SupplierDTO } from "utils/supplier-util";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { formatPhoneNumber } from "utils/string-util";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { deleteUser, useSupplierUsers } from "api/UserApi";
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { deleteUser, useSupplierUsers } from 'api/UserApi'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { formatPhoneNumber } from 'utils/string-util'
+import { SupplierDTO } from 'utils/supplier-util'
+
+import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Button, Heading, Loader, Table, VStack } from '@navikt/ds-react'
 
 const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
-  const navigate = useNavigate();
-  const { loggedInUser } = useAuthStore();
-  const [confirmDeleteUserModalIsOpen, setConfirmDeleteUserModalIsOpen] = React.useState(false);
-  const [userIdToDelete, setUserIdToDelete] = React.useState<string>("");
+  const navigate = useNavigate()
+  const { loggedInUser } = useAuthStore()
+  const [confirmDeleteUserModalIsOpen, setConfirmDeleteUserModalIsOpen] = React.useState(false)
+  const [userIdToDelete, setUserIdToDelete] = React.useState<string>('')
 
-  const { users, isLoading, mutate } = useSupplierUsers(supplier.id);
+  const { users, isLoading, mutate } = useSupplierUsers(supplier.id)
 
   const handleCreateNewSupplierUser = () => {
-    navigate(`/admin/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name });
-  };
+    navigate(`/admin/opprett-bruker?suppid=${supplier.id}`, { state: supplier.name })
+  }
   const handleDeleteUser = () => {
     deleteUser(loggedInUser?.isAdmin ?? false, userIdToDelete).then(() => {
-      mutate();
-    });
+      mutate()
+    })
 
-    setConfirmDeleteUserModalIsOpen(false);
-  };
+    setConfirmDeleteUserModalIsOpen(false)
+  }
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loader />
 
-  if (!users) return null;
+  if (!users) return null
 
   return (
     <VStack gap="space-8">
       <ConfirmModal
-        title={"Bekreft sletting av bruker"}
-        confirmButtonText={"Slett bruker"}
+        title={'Bekreft sletting av bruker'}
+        confirmButtonText={'Slett bruker'}
         onClick={handleDeleteUser}
         onClose={() => setConfirmDeleteUserModalIsOpen(false)}
         isModalOpen={confirmDeleteUserModalIsOpen}
@@ -44,75 +46,75 @@ const SupplierUsers = ({ supplier }: { supplier: SupplierDTO }) => {
         Brukere
       </Heading>
       <VStack gap="space-16">
-      {users.length > 0 && (
-        <Table >
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
-              <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
-              <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
-              <Table.HeaderCell scope="col">Handling</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {users.map((user, i) => (
-              <Table.Row key={i}>
-                <Table.DataCell>{user.name}</Table.DataCell>
-                <Table.DataCell>{user.email}</Table.DataCell>
-                <Table.DataCell>{user.attributes?.phone && formatPhoneNumber(user.attributes.phone)}</Table.DataCell>
-                {loggedInUser?.userId !== user.id && (
-                  <Table.DataCell>
-                    <Button
-                      title="Slette bruker"
-                      variant="tertiary-neutral"
-                      size="small"
-                      icon={<TrashIcon aria-hidden />}
-                      iconPosition="right"
-                      onClick={() => {
-                        setUserIdToDelete(user.id);
-                        setConfirmDeleteUserModalIsOpen(true);
-                      }}
-                    >
-                      Slette
-                    </Button>
-                  </Table.DataCell>
-                )}
-                <Table.DataCell>
-                  {!loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
-                    <Button
-                      title="Redigere profil"
-                      variant="tertiary-neutral"
-                      size="small"
-                      disabled={false}
-                      icon={<PencilWritingIcon aria-hidden />}
-                      iconPosition="right"
-                      onClick={() => {
-                        navigate("/profil/rediger-brukerprofil");
-                      }}
-                    />
-                  )}
-                </Table.DataCell>
+        {users.length > 0 && (
+          <Table>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                <Table.HeaderCell scope="col">E-post</Table.HeaderCell>
+                <Table.HeaderCell scope="col">Telefonnummer</Table.HeaderCell>
+                <Table.HeaderCell scope="col">Handling</Table.HeaderCell>
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      )}
+            </Table.Header>
+            <Table.Body>
+              {users.map((user, i) => (
+                <Table.Row key={i}>
+                  <Table.DataCell>{user.name}</Table.DataCell>
+                  <Table.DataCell>{user.email}</Table.DataCell>
+                  <Table.DataCell>{user.attributes?.phone && formatPhoneNumber(user.attributes.phone)}</Table.DataCell>
+                  {loggedInUser?.userId !== user.id && (
+                    <Table.DataCell>
+                      <Button
+                        title="Slette bruker"
+                        variant="tertiary-neutral"
+                        size="small"
+                        icon={<TrashIcon aria-hidden />}
+                        iconPosition="right"
+                        onClick={() => {
+                          setUserIdToDelete(user.id)
+                          setConfirmDeleteUserModalIsOpen(true)
+                        }}
+                      >
+                        Slette
+                      </Button>
+                    </Table.DataCell>
+                  )}
+                  <Table.DataCell>
+                    {!loggedInUser?.isAdmin && loggedInUser?.userId === user.id && (
+                      <Button
+                        title="Redigere profil"
+                        variant="tertiary-neutral"
+                        size="small"
+                        disabled={false}
+                        icon={<PencilWritingIcon aria-hidden />}
+                        iconPosition="right"
+                        onClick={() => {
+                          navigate('/profil/rediger-brukerprofil')
+                        }}
+                      />
+                    )}
+                  </Table.DataCell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        )}
 
-      {loggedInUser?.isAdmin && (
-        <Button
-          className="fit-content"
-          variant="secondary"
-          size="small"
-          icon={<PlusIcon aria-hidden />}
-          iconPosition="left"
-          onClick={handleCreateNewSupplierUser}
-        >
-          Legg til ny bruker
-        </Button>
-      )}
+        {loggedInUser?.isAdmin && (
+          <Button
+            className="fit-content"
+            variant="secondary"
+            size="small"
+            icon={<PlusIcon aria-hidden />}
+            iconPosition="left"
+            onClick={handleCreateNewSupplierUser}
+          >
+            Legg til ny bruker
+          </Button>
+        )}
       </VStack>
     </VStack>
-  );
-};
+  )
+}
 
-export default SupplierUsers;
+export default SupplierUsers

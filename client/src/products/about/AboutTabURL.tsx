@@ -1,40 +1,42 @@
-import { Button, Heading, TextField, VStack } from "@navikt/ds-react";
-import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { useState } from "react";
-import { isValidUrl } from "products/seriesUtils";
-import { updateSeriesURL } from "api/SeriesApi";
-import { SeriesDTO } from "utils/types/response-types";
-import { useErrorStore } from "utils/store/useErrorStore";
+import { useState } from 'react'
+
+import { updateSeriesURL } from 'api/SeriesApi'
+import { isValidUrl } from 'products/seriesUtils'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
+import { Button, Heading, TextField, VStack } from '@navikt/ds-react'
 
 interface Props {
-  series: SeriesDTO;
-  mutateSeries: () => void;
-  isEditable: boolean;
+  series: SeriesDTO
+  mutateSeries: () => void
+  isEditable: boolean
 }
 
 const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
-  const [showEditUrlMode, setShowEditUrlMode] = useState(false);
-  const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined);
-  const [updatedUrl, setUpdatedUrl] = useState<string>(series.seriesData.attributes.url ?? "");
-  const { setGlobalError } = useErrorStore();
+  const [showEditUrlMode, setShowEditUrlMode] = useState(false)
+  const [urlFormatError, setUrlFormatError] = useState<string | undefined>(undefined)
+  const [updatedUrl, setUpdatedUrl] = useState<string>(series.seriesData.attributes.url ?? '')
+  const { setGlobalError } = useErrorStore()
 
-  const url = series.seriesData.attributes.url;
+  const url = series.seriesData.attributes.url
 
   const handleSaveUrl = (updatedUrl: string) => {
-    setShowEditUrlMode(false);
+    setShowEditUrlMode(false)
 
     updateSeriesURL(series!.id, updatedUrl)
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  };
+        setGlobalError(error.status, error.message)
+      })
+  }
 
   return (
     <>
       <VStack gap="space-8">
         <Heading level="2" size="xsmall">
-          {"URL til leverandørs produktside"}
+          {'URL til leverandørs produktside'}
         </Heading>
         {!showEditUrlMode && (
           <>
@@ -50,7 +52,7 @@ const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
                     Legg til URL til leverandørs produktside
                   </Button>
                 ) : (
-                  "-"
+                  '-'
                 )}
               </>
             ) : (
@@ -76,17 +78,17 @@ const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
         {showEditUrlMode && (
           <>
             <TextField
-              defaultValue={url || ""}
+              defaultValue={url || ''}
               label="Legg til url"
               id="url"
               name="url"
               type="text"
               onChange={(e) => {
                 if (e.target.value.length > 0 && !isValidUrl(e.target.value)) {
-                  setUrlFormatError("Ugyldig URL-format");
+                  setUrlFormatError('Ugyldig URL-format')
                 } else {
-                  setUpdatedUrl(e.target.value?.trim());
-                  setUrlFormatError(undefined);
+                  setUpdatedUrl(e.target.value?.trim())
+                  setUrlFormatError(undefined)
                 }
               }}
               error={urlFormatError}
@@ -96,7 +98,7 @@ const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
               variant="tertiary"
               icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                handleSaveUrl(updatedUrl);
+                handleSaveUrl(updatedUrl)
               }}
             >
               Lagre
@@ -105,7 +107,7 @@ const AboutTabURL = ({ series, mutateSeries, isEditable }: Props) => {
         )}
       </VStack>
     </>
-  );
-};
+  )
+}
 
-export default AboutTabURL;
+export default AboutTabURL

@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+
+import { HM_REGISTER_URL } from 'environments'
+import { useAuthStore } from 'utils/store/useAuthStore'
 
 import {
   Buildings3Icon,
@@ -8,36 +11,33 @@ import {
   PersonCircleIcon,
   PersonIcon,
   PersonRectangleIcon,
-} from "@navikt/aksel-icons";
-import { Alert, BodyShort, Button, Detail, HGrid, VStack } from "@navikt/ds-react";
-
-import { HM_REGISTER_URL } from "environments";
-import { useAuthStore } from "utils/store/useAuthStore";
+} from '@navikt/aksel-icons'
+import { Alert, BodyShort, Button, Detail, HGrid, VStack } from '@navikt/ds-react'
 
 const ProfileMenu = () => {
-  const [error, setError] = useState<Error | null>(null);
-  const [open, setOpen] = useState<boolean>(false);
-  const { loggedInUser, clearLoggedInState } = useAuthStore();
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
+  const [error, setError] = useState<Error | null>(null)
+  const [open, setOpen] = useState<boolean>(false)
+  const { loggedInUser, clearLoggedInState } = useAuthStore()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
 
   async function handleLogout(event: any) {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const res = await fetch(`${HM_REGISTER_URL()}/admreg/logout`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-      });
+        credentials: 'include',
+      })
 
       if (res.status === 200) {
-        clearLoggedInState();
-        navigate("/logg-inn");
+        clearLoggedInState()
+        navigate('/logg-inn')
       }
     } catch (e: any) {
-      setError(e);
+      setError(e)
     }
   }
 
@@ -59,11 +59,11 @@ const ProfileMenu = () => {
             ) : (
               <Buildings3Icon fontSize="2.25rem" aria-hidden />
             )}
-            <VStack align={"start"}>
+            <VStack align={'start'}>
               <BodyShort className="text-overflow-hidden-small">
-                {loggedInUser?.isAdmin ? "Administrator" : loggedInUser?.isHmsUser ? "HMS" : loggedInUser?.supplierName}
+                {loggedInUser?.isAdmin ? 'Administrator' : loggedInUser?.isHmsUser ? 'HMS' : loggedInUser?.supplierName}
               </BodyShort>
-              <BodyShort size="small" style={{ textAlign: "start" }}>
+              <BodyShort size="small" style={{ textAlign: 'start' }}>
                 {loggedInUser?.userName}
               </BodyShort>
             </VStack>
@@ -72,21 +72,21 @@ const ProfileMenu = () => {
         </Button>
         {open && (
           <div id="user-menu-expanded" aria-labelledby="user-menu-button" className="user-menu__expanded-content">
-            <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
+            <HGrid asChild columns={'1.7rem 1fr'} gap="space-2">
               <Link
-                to={loggedInUser?.isAdmin ? "/admin/profil" : loggedInUser?.isHmsUser ? "/hms-bruker" : "/profil"}
+                to={loggedInUser?.isAdmin ? '/admin/profil' : loggedInUser?.isHmsUser ? '/hms-bruker' : '/profil'}
                 className="user-menu__profile-link"
               >
                 <PersonRectangleIcon title="Min profil" fontSize="1.5rem" aria-hidden />
                 {loggedInUser?.isAdmin
-                  ? "Min profil og admin brukere"
+                  ? 'Min profil og admin brukere'
                   : loggedInUser?.isHmsUser
-                    ? "Min profil"
-                    : "Leverandør- og brukerinformasjon"}
+                    ? 'Min profil'
+                    : 'Leverandør- og brukerinformasjon'}
               </Link>
             </HGrid>
             <span className="line" />
-            <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
+            <HGrid asChild columns={'1.7rem 1fr'} gap="space-2">
               <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
                 <LeaveIcon title="Logg ut" fontSize="1.5rem" aria-hidden /> Logg ut
               </Link>
@@ -99,23 +99,23 @@ const ProfileMenu = () => {
         <Button
           onClick={() =>
             loggedInUser?.isAdmin
-              ? navigate("/admin/profil")
+              ? navigate('/admin/profil')
               : loggedInUser?.isHmsUser
-                ? navigate("/hms-bruker")
-                : navigate("/profil")
+                ? navigate('/hms-bruker')
+                : navigate('/profil')
           }
-          aria-selected={pathname === "/profil" || pathname === "/admin/profil"}
+          aria-selected={pathname === '/profil' || pathname === '/admin/profil'}
           className="user-menu__profile-link"
           icon={<PersonCircleIcon title="profile" fontSize="2.25rem" />}
         ></Button>
-        <HGrid asChild columns={"1.7rem 1fr"} gap="space-2">
+        <HGrid asChild columns={'1.7rem 1fr'} gap="space-2">
           <Link to="/auth/logout" className="user-menu__logout-link" onClick={handleLogout}>
             <LeaveIcon fontSize="1.5rem" aria-hidden /> <Detail>Logg ut</Detail>
           </Link>
         </HGrid>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ProfileMenu;
+export default ProfileMenu

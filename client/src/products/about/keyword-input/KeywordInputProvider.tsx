@@ -1,9 +1,10 @@
-import { forwardRef } from "react";
-import { InputContextProvider } from "felleskomponenter/comboboxfelles/Input/Input.context";
-import { SelectedOptionsProvider } from "felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext";
-import { mapToComboboxOptionArray } from "felleskomponenter/comboboxfelles/combobox-utils";
-import { ComboboxProps } from "felleskomponenter/comboboxfelles/types";
-import { KeywordCombobox } from "products/about/keyword-input/KeywordCombobox";
+import { forwardRef } from 'react'
+
+import { InputContextProvider } from 'felleskomponenter/comboboxfelles/Input/Input.context'
+import { SelectedOptionsProvider } from 'felleskomponenter/comboboxfelles/SelectedOptions/selectedOptionsContext'
+import { mapToComboboxOptionArray } from 'felleskomponenter/comboboxfelles/combobox-utils'
+import { ComboboxProps } from 'felleskomponenter/comboboxfelles/types'
+import { KeywordCombobox } from 'products/about/keyword-input/KeywordCombobox'
 
 const KeywordInputProvider = forwardRef<HTMLInputElement, ComboboxProps>(function ComboboxProvider(props, ref) {
   const {
@@ -18,9 +19,9 @@ const KeywordInputProvider = forwardRef<HTMLInputElement, ComboboxProps>(functio
     onChange,
     onClear,
     ...rest
-  } = props;
-  const options = mapToComboboxOptionArray(externalOptions) || [];
-  const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions);
+  } = props
+  const options = mapToComboboxOptionArray(externalOptions) || []
+  const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions)
   return (
     <InputContextProvider
       value={{
@@ -45,7 +46,7 @@ const KeywordInputProvider = forwardRef<HTMLInputElement, ComboboxProps>(functio
         </KeywordCombobox>
       </SelectedOptionsProvider>
     </InputContextProvider>
-  );
-});
+  )
+})
 
-export default KeywordInputProvider;
+export default KeywordInputProvider

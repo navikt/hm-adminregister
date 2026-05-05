@@ -1,78 +1,80 @@
-import { Button, HStack, TextField, VStack, Select } from "@navikt/ds-react";
-import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
-import { TechLabelType, TechLabelRegistrationDTO, TechLabelCreateUpdateDTO } from "utils/types/response-types";
-import { createTechLabel, updateTechLabel } from "api/TechLabelApi";
-import FormBox from "felleskomponenter/FormBox";
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { createTechLabel, updateTechLabel } from 'api/TechLabelApi'
+import FormBox from 'felleskomponenter/FormBox'
+import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
+
+import { Button, HStack, Select, TextField, VStack } from '@navikt/ds-react'
 
 type FormData = {
-  label: string;
-  type: TechLabelType;
-  unit: string;
-  isoCode: string;
-  options: string;
-};
+  label: string
+  type: TechLabelType
+  unit: string
+  isoCode: string
+  options: string
+}
 
 const TECH_LABEL_TYPES = [
-  { value: "", label: "Velg type" },
-  { value: "N", label: "N" },
-  { value: "L", label: "L" },
-  { value: "C", label: "C" },
-];
+  { value: '', label: 'Velg type' },
+  { value: 'N', label: 'N' },
+  { value: 'L', label: 'L' },
+  { value: 'C', label: 'C' },
+]
 
 const CreateAndEditTechLabel = () => {
-  const location = useLocation();
-  const editData = location.state as TechLabelRegistrationDTO | undefined;
-  const navigate = useNavigate();
+  const location = useLocation()
+  const editData = location.state as TechLabelRegistrationDTO | undefined
+  const navigate = useNavigate()
 
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<FormData>({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      label: editData?.label || "",
-      type: editData?.type || "N",
-      unit: editData?.unit || "",
-      isoCode: editData?.isoCode || "",
-      options: editData?.options?.join(", ") || "",
+      label: editData?.label || '',
+      type: editData?.type || 'N',
+      unit: editData?.unit || '',
+      isoCode: editData?.isoCode || '',
+      options: editData?.options?.join(', ') || '',
     },
-  });
+  })
 
   async function onSubmit(data: FormData) {
     const dto: TechLabelCreateUpdateDTO = {
       ...data,
-      options: data.options ? data.options.split(",").map((opt) => opt.trim()) : [],
-    };
+      options: data.options ? data.options.split(',').map((opt) => opt.trim()) : [],
+    }
 
     if (editData) {
-      await updateTechLabel(editData.id, dto);
+      await updateTechLabel(editData.id, dto)
     } else {
-      await createTechLabel(dto);
+      await createTechLabel(dto)
     }
-    navigate(`/tekniskdata?searchIsoCode=${data.isoCode}`);
+    navigate(`/tekniskdata?searchIsoCode=${data.isoCode}`)
   }
 
-  const title = editData ? "Endre teknisk-data beskrivelse" : "Opprett ny teknisk-data beskrivelse";
+  const title = editData ? 'Endre teknisk-data beskrivelse' : 'Opprett ny teknisk-data beskrivelse'
 
   return (
     <FormBox title={title}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="space-8">
           <TextField
-            {...register("label", { required: true })}
+            {...register('label', { required: true })}
             label="Navn *"
-            error={errors.label && "Label is required"}
+            error={errors.label && 'Label is required'}
             id="label"
             autoComplete="on"
           />
           <Select
-            {...register("type", { required: true })}
+            {...register('type', { required: true })}
             label="Type *"
-            error={errors.type && "Type is required"}
+            error={errors.type && 'Type is required'}
             id="type"
-            defaultValue={editData?.type || ""}
+            defaultValue={editData?.type || ''}
           >
             {TECH_LABEL_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -80,16 +82,16 @@ const CreateAndEditTechLabel = () => {
               </option>
             ))}
           </Select>
-          <TextField {...register("unit", { required: false })} label="Enhet" id="unit" autoComplete="on" />
+          <TextField {...register('unit', { required: false })} label="Enhet" id="unit" autoComplete="on" />
           <TextField
-            {...register("isoCode", { required: true })}
+            {...register('isoCode', { required: true })}
             label="ISO-kode *"
-            error={errors.isoCode && "ISO Code is required"}
+            error={errors.isoCode && 'ISO Code is required'}
             id="isoCode"
             autoComplete="on"
           />
           <TextField
-            {...register("options", { required: false })}
+            {...register('options', { required: false })}
             label="Alternativer"
             id="options"
             autoComplete="on"
@@ -99,13 +101,13 @@ const CreateAndEditTechLabel = () => {
               Avbryt
             </Button>
             <Button type="submit" size="medium">
-              {editData ? "Endre" : "Opprett"}
+              {editData ? 'Endre' : 'Opprett'}
             </Button>
           </HStack>
         </VStack>
       </form>
     </FormBox>
-  );
-};
+  )
+}
 
-export default CreateAndEditTechLabel;
+export default CreateAndEditTechLabel

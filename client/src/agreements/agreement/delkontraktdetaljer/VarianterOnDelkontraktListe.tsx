@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { BodyShort, Checkbox, Table, VStack } from "@navikt/ds-react";
-import { ProductRegistrationDTO } from "utils/types/response-types";
+import React, { useEffect, useState } from 'react'
+
+import { ProductRegistrationDTO } from 'utils/types/response-types'
+
+import { BodyShort, Checkbox, Table, VStack } from '@navikt/ds-react'
 
 interface Props {
-  seriesId?: string;
-  product: ProductRegistrationDTO;
-  variants: ProductRegistrationDTO[];
-  setValgteRader: (rader: string[]) => void;
+  seriesId?: string
+  product: ProductRegistrationDTO
+  variants: ProductRegistrationDTO[]
+  setValgteRader: (rader: string[]) => void
 }
 
 export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([product.supplierRef!]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([product.supplierRef!])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
   useEffect(() => {
-    setSelectedRows([product.supplierRef!]);
-  }, [product]);
+    setSelectedRows([product.supplierRef!])
+  }, [product])
 
   useEffect(() => {
-    setValgteRader(selectedRows);
-  }, [selectedRows]);
+    setValgteRader(selectedRows)
+  }, [selectedRows])
 
   return (
     <>
@@ -40,7 +42,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                     onChange={() => {
                       selectedRows.length
                         ? setSelectedRows([])
-                        : setSelectedRows(variants.map(({ supplierRef }) => supplierRef!));
+                        : setSelectedRows(variants.map(({ supplierRef }) => supplierRef!))
                     }}
                     hideLabel
                   >
@@ -59,11 +61,11 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                     hideLabel
                     checked={selectedRows.includes(product.supplierRef!)}
                     onChange={() => {
-                      toggleSelectedRow(product.supplierRef!);
+                      toggleSelectedRow(product.supplierRef!)
                     }}
                     aria-labelledby={`id-${product.supplierRef}`}
                   >
-                    {" "}
+                    {' '}
                   </Checkbox>
                 </Table.DataCell>
               </Table.Row>
@@ -80,20 +82,20 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                           hideLabel
                           checked={selectedRows.includes(variant.supplierRef!)}
                           onChange={() => {
-                            toggleSelectedRow(variant.supplierRef!);
+                            toggleSelectedRow(variant.supplierRef!)
                           }}
                           aria-labelledby={`id-${variant.supplierRef}`}
                         >
-                          {" "}
+                          {' '}
                         </Checkbox>
                       </Table.DataCell>
                     </Table.Row>
-                  );
+                  )
                 })}
             </Table.Body>
           </Table>
         </VStack>
       )) || <BodyShort>Ingen varianter: {variants?.length} </BodyShort>}
     </>
-  );
-};
+  )
+}

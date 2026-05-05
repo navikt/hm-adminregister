@@ -1,24 +1,25 @@
-import { AgreementAttachment, AgreementRegistrationDTO, MediaInfo } from "./types/response-types";
-import { EditAttachmentGroupFormData } from "agreements/agreement/vedlegg/EditAttachmentGroupModal";
-import { EditAgreementFormDataDto } from "utils/zodSchema/editAgreement";
+import { EditAttachmentGroupFormData } from 'agreements/agreement/vedlegg/EditAttachmentGroupModal'
+import { EditAgreementFormDataDto } from 'utils/zodSchema/editAgreement'
+
+import { AgreementAttachment, AgreementRegistrationDTO, MediaInfo } from './types/response-types'
 
 export const getEditedAgreementDTOAddFiles = (
   agreementToEdit: AgreementRegistrationDTO,
   attachmentIdToEdit: string,
-  files: MediaInfo[],
+  files: MediaInfo[]
 ): AgreementRegistrationDTO => {
   const indexOfAttachmentToEdit = agreementToEdit.agreementData.attachments.findIndex(
-    (attachment) => attachment.id === attachmentIdToEdit,
-  );
+    (attachment) => attachment.id === attachmentIdToEdit
+  )
   const attachmentToEdit: AgreementAttachment = {
     ...agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit],
-  };
+  }
 
-  attachmentToEdit.media = attachmentToEdit.media.concat(files);
+  attachmentToEdit.media = attachmentToEdit.media.concat(files)
 
   const oldAndNewAttachments = agreementToEdit.agreementData.attachments.map((attachment) => {
-    return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment;
-  });
+    return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment
+  })
 
   return {
     ...agreementToEdit,
@@ -26,46 +27,46 @@ export const getEditedAgreementDTOAddFiles = (
       ...agreementToEdit.agreementData,
       attachments: oldAndNewAttachments,
     },
-  };
-};
+  }
+}
 
 export const getEditedAgreementDTOchangeTextOnFile = (
   agreementToEdit: AgreementRegistrationDTO,
   attachmentIdToEdit: string,
   uri: string,
-  editedText: string,
+  editedText: string
 ): AgreementRegistrationDTO => {
   const indexOfAttachmentToEdit = agreementToEdit.agreementData.attachments.findIndex(
-    (attachment) => attachment.id === attachmentIdToEdit,
-  );
+    (attachment) => attachment.id === attachmentIdToEdit
+  )
 
   if (indexOfAttachmentToEdit !== -1) {
-    const attachmentToEdit: AgreementAttachment = agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit];
-    const mediaIndex = attachmentToEdit.media.findIndex((media) => media.uri === uri);
+    const attachmentToEdit: AgreementAttachment = agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit]
+    const mediaIndex = attachmentToEdit.media.findIndex((media) => media.uri === uri)
     if (mediaIndex !== -1) {
-      attachmentToEdit.media[mediaIndex].text = editedText;
+      attachmentToEdit.media[mediaIndex].text = editedText
     }
   }
 
-  return agreementToEdit;
-};
+  return agreementToEdit
+}
 export const getEditedAgreementDTORemoveFiles = (
   agreementToEdit: AgreementRegistrationDTO,
   attachmentIdToEdit: string,
-  fileToRemoveUri: string,
+  fileToRemoveUri: string
 ): AgreementRegistrationDTO => {
   const indexOfAttachmentToEdit = agreementToEdit.agreementData.attachments.findIndex(
-    (attachment) => attachment.id === attachmentIdToEdit,
-  );
+    (attachment) => attachment.id === attachmentIdToEdit
+  )
   const attachmentToEdit: AgreementAttachment = {
     ...agreementToEdit.agreementData.attachments[indexOfAttachmentToEdit],
-  };
+  }
 
-  attachmentToEdit.media = attachmentToEdit.media.filter((file) => file.uri !== fileToRemoveUri);
+  attachmentToEdit.media = attachmentToEdit.media.filter((file) => file.uri !== fileToRemoveUri)
 
   const oldAndNewAttachments = agreementToEdit.agreementData.attachments.map((attachment) => {
-    return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment;
-  });
+    return attachment.id === attachmentIdToEdit ? attachmentToEdit : attachment
+  })
 
   return {
     ...agreementToEdit,
@@ -73,12 +74,12 @@ export const getEditedAgreementDTORemoveFiles = (
       ...agreementToEdit.agreementData,
       attachments: oldAndNewAttachments,
     },
-  };
-};
+  }
+}
 
 export const getEditedAgreementDTO = (
   agreementToEdit: AgreementRegistrationDTO,
-  newDescription: string,
+  newDescription: string
 ): AgreementRegistrationDTO => {
   return {
     ...agreementToEdit,
@@ -86,31 +87,31 @@ export const getEditedAgreementDTO = (
       ...agreementToEdit.agreementData,
       text: newDescription,
     },
-  };
-};
+  }
+}
 
 export const getEditedAgreementWithNewAttachmentGroupInfo = (
   agreementToEdit: AgreementRegistrationDTO,
   attachmentId: string,
-  editedInfo: EditAttachmentGroupFormData,
+  editedInfo: EditAttachmentGroupFormData
 ): AgreementRegistrationDTO => {
   const indexOfAttachmentToUpdate = agreementToEdit.agreementData.attachments.findIndex(
-    (attachment) => attachment.id === attachmentId,
-  );
-  const attachmentToUpdate = agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate];
+    (attachment) => attachment.id === attachmentId
+  )
+  const attachmentToUpdate = agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate]
   agreementToEdit.agreementData.attachments[indexOfAttachmentToUpdate] = {
     id: attachmentToUpdate.id,
     title: editedInfo.tittel,
     description: editedInfo.beskrivelse,
     media: attachmentToUpdate.media,
-  };
+  }
 
-  return agreementToEdit;
-};
+  return agreementToEdit
+}
 
 export const getEditedAgreementWithNewInfoDTO = (
   agreementToEdit: AgreementRegistrationDTO,
-  editedInfo: EditAgreementFormDataDto,
+  editedInfo: EditAgreementFormDataDto
 ): AgreementRegistrationDTO => {
   return {
     ...agreementToEdit,
@@ -119,14 +120,14 @@ export const getEditedAgreementWithNewInfoDTO = (
     expired: editedInfo.avtaleperiodeSlutt,
     reference: editedInfo.anbudsnummer,
     previousAgreement: editedInfo.previousAgreement,
-  };
-};
+  }
+}
 
 export const getAgreeementWithNewAttachmentGroup = (
   agreementToEdit: AgreementRegistrationDTO,
-  newAttachment: AgreementAttachment,
+  newAttachment: AgreementAttachment
 ): AgreementRegistrationDTO => {
-  const updatedAttachments = [...agreementToEdit.agreementData.attachments, newAttachment];
+  const updatedAttachments = [...agreementToEdit.agreementData.attachments, newAttachment]
 
   return {
     ...agreementToEdit,
@@ -134,16 +135,16 @@ export const getAgreeementWithNewAttachmentGroup = (
       ...agreementToEdit.agreementData,
       attachments: updatedAttachments,
     },
-  };
-};
+  }
+}
 
 export const getAgreeementWithoutDeletedAttachmentDTO = (
   agreementToEdit: AgreementRegistrationDTO,
-  attachmentId: string,
+  attachmentId: string
 ): AgreementRegistrationDTO => {
   const updatedAttachments = agreementToEdit.agreementData.attachments.filter(
-    (attachment) => attachment.id !== attachmentId,
-  );
+    (attachment) => attachment.id !== attachmentId
+  )
 
   return {
     ...agreementToEdit,
@@ -151,5 +152,5 @@ export const getAgreeementWithoutDeletedAttachmentDTO = (
       ...agreementToEdit.agreementData,
       attachments: updatedAttachments,
     },
-  };
-};
+  }
+}

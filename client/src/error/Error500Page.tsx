@@ -1,5 +1,6 @@
-import { BodyShort, Box, Button, Heading, HGrid, Link, List, Page, VStack } from "@navikt/ds-react";
-import { FallbackProps } from "react-error-boundary";
+import { FallbackProps } from 'react-error-boundary'
+
+import { BodyShort, Box, Button, HGrid, Heading, Link, List, Page, VStack } from '@navikt/ds-react'
 
 export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
   return (
@@ -22,12 +23,12 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                   <BodyShort>Du kan prøve å</BodyShort>
                   <List>
                     <List.Item>
-                      vente noen minutter og{" "}
+                      vente noen minutter og{' '}
                       <Link
                         href="#"
                         onClick={() => {
-                          location.reload();
-                          resetErrorBoundary();
+                          location.reload()
+                          resetErrorBoundary()
                         }}
                       >
                         laste siden på nytt
@@ -38,8 +39,8 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                       <Link
                         href="#"
                         onClick={() => {
-                          history.back();
-                          resetErrorBoundary();
+                          history.back()
+                          resetErrorBoundary()
                         }}
                       >
                         gå tilbake til forrige side
@@ -47,7 +48,7 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                     </List.Item>
                   </List>
                   <BodyShort>
-                    Hvis problemet vedvarer, kan du sende oss en e-post{" "}
+                    Hvis problemet vedvarer, kan du sende oss en e-post{' '}
                     <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
                       digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
                     </a>
@@ -56,8 +57,8 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
 
                 <Button
                   onClick={() => {
-                    resetErrorBoundary();
-                    location.href = "/";
+                    resetErrorBoundary()
+                    location.href = '/'
                   }}
                 >
                   Gå til startsiden
@@ -69,12 +70,12 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                 </Heading>
                 <BodyShort spacing>
                   This was caused by a technical fault on our servers. Please refresh this page or try again in a few
-                  minutes.{" "}
+                  minutes.{' '}
                 </BodyShort>
                 <BodyShort>
                   <Link target="_blank" href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
                     Contact us by mail
-                  </Link>{" "}
+                  </Link>{' '}
                   if the problem persists.
                 </BodyShort>
               </div>
@@ -83,5 +84,5 @@ export const Error500Page = ({ error, resetErrorBoundary }: FallbackProps) => {
         </Box>
       </Page.Block>
     </Page>
-  );
-};
+  )
+}

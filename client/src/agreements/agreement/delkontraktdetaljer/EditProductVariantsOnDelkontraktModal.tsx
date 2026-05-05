@@ -1,56 +1,58 @@
-import { Button, Checkbox, Modal, Table, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
-import { activateProductsFromAgreement, deleteProductsFromAgreement } from "api/AgreementProductApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import Content from "felleskomponenter/styledcomponents/Content";
+import React, { useState } from 'react'
+
+import { activateProductsFromAgreement, deleteProductsFromAgreement } from 'api/AgreementProductApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { ProductAgreementRegistrationDTO } from 'utils/types/response-types'
+
+import { Button, Checkbox, Modal, Table, VStack } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  variants: ProductAgreementRegistrationDTO[];
-  mutateProductAgreements: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  variants: ProductAgreementRegistrationDTO[]
+  mutateProductAgreements: () => void
 }
 
 const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, mutateProductAgreements }: Props) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { setGlobalError } = useErrorStore();
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
+  const { setGlobalError } = useErrorStore()
 
-  const hasActiveVariant = variants.some((variant) => variant.status === "ACTIVE");
+  const hasActiveVariant = variants.some((variant) => variant.status === 'ACTIVE')
   const hasActiveSelected = variants
     .filter((variant) => selectedRows.includes(variant.id!))
-    .some((variant) => variant.status === "ACTIVE");
-  const hasInactiveVariant = variants.some((variant) => variant.status === "INACTIVE");
+    .some((variant) => variant.status === 'ACTIVE')
+  const hasInactiveVariant = variants.some((variant) => variant.status === 'INACTIVE')
   const hasInactiveSelected = variants
     .filter((variant) => selectedRows.includes(variant.id!))
-    .some((variant) => variant.status === "INACTIVE");
+    .some((variant) => variant.status === 'INACTIVE')
 
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
   const handleFjernValgteProdukter = (selectedRows: string[]) => {
     deleteProductsFromAgreement(selectedRows)
       .then(() => {
-        mutateProductAgreements();
-        setSelectedRows([]);
+        mutateProductAgreements()
+        setSelectedRows([])
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-  };
+        setGlobalError(error.message)
+      })
+  }
 
   const handleGjenaktiverValgteProdukter = (selectedRows: string[]) => {
     activateProductsFromAgreement(selectedRows)
       .then(() => {
-        mutateProductAgreements();
-        setSelectedRows([]);
+        mutateProductAgreements()
+        setSelectedRows([])
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-  };
+        setGlobalError(error.message)
+      })
+  }
 
   return (
     <Modal
@@ -58,14 +60,14 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
       header={{
         heading: `Produktvarianter på avtalen`,
         closeButton: false,
-        size: "small",
+        size: 'small',
       }}
       onClose={() => setModalIsOpen(false)}
     >
       <Modal.Body>
         <Content>
           {variants.length > 0 && (
-            <VStack gap="space-2" style={{ width: "100%" }}>
+            <VStack gap="space-2" style={{ width: '100%' }}>
               <Table>
                 <Table.Header>
                   <Table.Row>
@@ -76,7 +78,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                       <Checkbox
                         checked={selectedRows.length === variants.length}
                         onChange={() => {
-                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!));
+                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!))
                         }}
                         hideLabel
                       >
@@ -91,21 +93,21 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName}</Table.DataCell>
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
-                        <Table.DataCell>{variant.status === "ACTIVE" ? "Aktiv" : "Inaktiv"}</Table.DataCell>
+                        <Table.DataCell>{variant.status === 'ACTIVE' ? 'Aktiv' : 'Inaktiv'}</Table.DataCell>
                         <Table.DataCell>
                           <Checkbox
                             hideLabel
                             checked={selectedRows.includes(variant.id!)}
                             onChange={() => {
-                              toggleSelectedRow(variant.id!);
+                              toggleSelectedRow(variant.id!)
                             }}
                             aria-labelledby={`id-${variant.id}`}
                           >
-                            {" "}
+                            {' '}
                           </Checkbox>
                         </Table.DataCell>
                       </Table.Row>
-                    );
+                    )
                   })}
                 </Table.Body>
               </Table>
@@ -116,7 +118,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
       <Modal.Footer>
         <Button
           onClick={() => {
-            setModalIsOpen(false);
+            setModalIsOpen(false)
           }}
           variant="tertiary"
           type="reset"
@@ -128,7 +130,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
           <Button
             variant="primary"
             onClick={() => {
-              handleGjenaktiverValgteProdukter(selectedRows);
+              handleGjenaktiverValgteProdukter(selectedRows)
             }}
             disabled={!hasInactiveSelected}
           >
@@ -145,7 +147,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default EditProducstVariantsModal;
+export default EditProducstVariantsModal

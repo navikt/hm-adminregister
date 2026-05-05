@@ -1,4 +1,4 @@
-@use "@navikt/ds-tokens/dist/tokens" as *;
+@use '@navikt/ds-tokens/dist/tokens' as *;
 
 .aksel-combobox__wrapper {
   .aksel-combobox__list {
@@ -19,7 +19,7 @@
   }
 }
 
-.aksel-button[data-variant="primary"] {
+.aksel-button[data-variant='primary'] {
   background-color: #3a4583;
   border-radius: 10px;
 
@@ -29,7 +29,7 @@
   }
 }
 
-.aksel-button[data-variant="secondary"] {
+.aksel-button[data-variant='secondary'] {
   color: #3a4583;
   box-shadow: rgb(58, 69, 131) 0px 0px 0px 2px inset;
   border-radius: 10px;
@@ -41,7 +41,7 @@
   }
 }
 
-.aksel-button[data-variant="tertiary"] {
+.aksel-button[data-variant='tertiary'] {
   color: #3a4583;
   border-radius: 10px;
 
@@ -52,12 +52,12 @@
   }
 }
 
-.aksel-toggle-group__button[data-selected="true"] {
+.aksel-toggle-group__button[data-selected='true'] {
   background-color: #3a4583;
   color: #fff;
 }
 
-.aksel-pagination .aksel-button[aria-current="true"] {
+.aksel-pagination .aksel-button[aria-current='true'] {
   background-color: #3a4583;
   color: #fff;
 }
@@ -66,7 +66,7 @@
   padding: $ax-space-1 $ax-space-1;
 }
 
-.aksel-chips__toggle[data-pressed="true"],
-.aksel-chips__toggle[data-pressed="true"]:hover {
+.aksel-chips__toggle[data-pressed='true'],
+.aksel-chips__toggle[data-pressed='true']:hover {
   background-color: #3a4583;
 }

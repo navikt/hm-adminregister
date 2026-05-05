@@ -1,21 +1,24 @@
-import { DifferenceDTO } from "utils/types/response-types";
-import { BodyShort, Box, Heading, VStack } from "@navikt/ds-react";
-import { useTranslation } from "react-i18next";
-import styles from "./ShowDiffModal.module.scss";
-import { Strikethrough } from "products/diff/Strikethrough";
-import { getMediaDiff } from "products/diff/diff-util";
+import { useTranslation } from 'react-i18next'
+
+import { Strikethrough } from 'products/diff/Strikethrough'
+import { getMediaDiff } from 'products/diff/diff-util'
+import { DifferenceDTO } from 'utils/types/response-types'
+
+import { BodyShort, Box, Heading, VStack } from '@navikt/ds-react'
+
+import styles from './ShowDiffModal.module.scss'
 
 export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
-  const changedFields = Object.entries(seriesDiff.diff.entriesDiffering).filter(([key]) => key !== "seriesData.media");
+  const changedFields = Object.entries(seriesDiff.diff.entriesDiffering).filter(([key]) => key !== 'seriesData.media')
 
-  const mediaDiff = getMediaDiff(seriesDiff);
-  const newFields = Object.entries(seriesDiff.diff.entriesOnlyOnLeft);
-  const deletedFields = Object.entries(seriesDiff.diff.entriesOnlyOnRight);
+  const mediaDiff = getMediaDiff(seriesDiff)
+  const newFields = Object.entries(seriesDiff.diff.entriesOnlyOnLeft)
+  const deletedFields = Object.entries(seriesDiff.diff.entriesOnlyOnRight)
 
-  if (!seriesDiff || seriesDiff.status === "NO_DIFF") {
-    return <BodyShort>Ingen endringer i felles produktinformasjon</BodyShort>;
+  if (!seriesDiff || seriesDiff.status === 'NO_DIFF') {
+    return <BodyShort>Ingen endringer i felles produktinformasjon</BodyShort>
   }
 
   return (
@@ -25,7 +28,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
         <VStack gap="space-16">
           {changedFields.map(
             ([key, value], index) =>
-              key !== "seriesData.media" && (
+              key !== 'seriesData.media' && (
                 <VStack gap="space-8" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
@@ -39,7 +42,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                     </VStack>
                   </Box>
                 </VStack>
-              ),
+              )
           )}
         </VStack>
       )}
@@ -48,7 +51,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           <BodyShort>Nye verdier: </BodyShort>
           {newFields.map(
             ([key, value], index) =>
-              key !== "seriesData.media" && (
+              key !== 'seriesData.media' && (
                 <VStack gap="space-8" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
@@ -59,7 +62,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                     </VStack>
                   </Box>
                 </VStack>
-              ),
+              )
           )}
         </VStack>
       )}
@@ -68,7 +71,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           <BodyShort>Slettede verdier: </BodyShort>
           {deletedFields.map(
             ([key, value], index) =>
-              key !== "seriesData.media" && (
+              key !== 'seriesData.media' && (
                 <VStack gap="space-8" key={index} className={styles.changeRow}>
                   <BodyShort weight="semibold">{t(key)}</BodyShort>
                   <Box>
@@ -79,7 +82,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                     </VStack>
                   </Box>
                 </VStack>
-              ),
+              )
           )}
         </VStack>
       )}
@@ -105,13 +108,13 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
         </Box>
       )}
     </VStack>
-  );
-};
+  )
+}
 
 const arrayCheck = (value: unknown) => {
   if (Array.isArray(value)) {
-    return value.map((val, i) => <span key={i}> {val as string} </span>);
+    return value.map((val, i) => <span key={i}> {val as string} </span>)
   } else {
-    return <span>{value as string}</span>;
+    return <span>{value as string}</span>
   }
-};
+}

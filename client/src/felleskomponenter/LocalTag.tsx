@@ -1,13 +1,15 @@
-import { Tag } from "@navikt/ds-react";
-import { ReactNode } from "react";
-import "./tags.scss";
+import { ReactNode } from 'react'
+
+import { Tag } from '@navikt/ds-react'
+
+import './tags.scss'
 
 export enum colors {
-  "GREY" = "neutral",
-  "ORANGE" = "warning",
-  "GREEN" = "success",
-  "RED" = "error",
-  "BLUE" = "info",
+  'GREY' = 'neutral',
+  'ORANGE' = 'warning',
+  'GREEN' = 'success',
+  'RED' = 'error',
+  'BLUE' = 'info',
 }
 
 const LocalTag = ({ icon, text, color }: { icon?: ReactNode; text: string; color: colors }) => {
@@ -23,7 +25,7 @@ const LocalTag = ({ icon, text, color }: { icon?: ReactNode; text: string; color
         {text}
       </Tag>
     </div>
-  );
-};
+  )
+}
 
-export default LocalTag;
+export default LocalTag

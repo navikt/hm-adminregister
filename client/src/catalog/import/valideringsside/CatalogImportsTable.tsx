@@ -1,11 +1,8 @@
-import { Table } from "@navikt/ds-react";
-import { CatalogImport } from "utils/types/response-types";
+import { CatalogImport } from 'utils/types/response-types'
 
-export const CatalogImportsTable = ({
-  catalogImports,
-}: {
-  catalogImports: CatalogImport[];
-}) => {
+import { Table } from '@navikt/ds-react'
+
+export const CatalogImportsTable = ({ catalogImports }: { catalogImports: CatalogImport[] }) => {
   return (
     <div className="variants-table">
       <Table size="small">
@@ -31,5 +28,5 @@ export const CatalogImportsTable = ({
         </Table.Body>
       </Table>
     </div>
-  );
-};
+  )
+}

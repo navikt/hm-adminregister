@@ -1,43 +1,46 @@
-import "./error-modal.scss";
-import { useNavigate } from "react-router-dom";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { Button, Modal } from "@navikt/ds-react";
+import { useNavigate } from 'react-router-dom'
+
+import { useErrorStore } from 'utils/store/useErrorStore'
+
+import { Button, Modal } from '@navikt/ds-react'
+
+import './error-modal.scss'
 
 const ErrorModal = () => {
-  const { errorCode, errorMessage, clearError } = useErrorStore();
-  const navigate = useNavigate();
+  const { errorCode, errorMessage, clearError } = useErrorStore()
+  const navigate = useNavigate()
 
   const handleClose = () => {
-    clearError();
-  };
+    clearError()
+  }
 
   const handleClick = () => {
-    clearError();
-    navigate("/");
-  };
+    clearError()
+    navigate('/')
+  }
 
   const getUserErrorMessage = () => {
-    if(errorMessage === 'Det finnes allerede en del med det samme levart-nummeret') {
-      return errorMessage;
+    if (errorMessage === 'Det finnes allerede en del med det samme levart-nummeret') {
+      return errorMessage
     }
     if (errorCode === 403) {
-      return "Du har ikke tilgang til å utføre denne operasjonen";
+      return 'Du har ikke tilgang til å utføre denne operasjonen'
     }
     if (errorCode === 400) {
       //Dette bør ikke skje. Om det skjer så bør vi få vite om det. Vi bør lage noe som gir en alert i slack eller sentry
-      return `En feil skjedde i forbindelse med innsendt data. ${errorMessage}`;
+      return `En feil skjedde i forbindelse med innsendt data. ${errorMessage}`
     }
     if (errorCode === 500) {
-      return `En serverfeil har skjedd. Oppdater siden eller prøv igjen.`;
+      return `En serverfeil har skjedd. Oppdater siden eller prøv igjen.`
     }
     //Dette bør ikke skje. Om det skjer så bør vi få vite om det. Vi bør lage noe som gir en alert i slack eller sentry
-    return `${errorCode}: ${errorMessage} Beklager, her skjedde det noe som ikke skal skje. Våre utviklere er på saken.`;
-  };
+    return `${errorCode}: ${errorMessage} Beklager, her skjedde det noe som ikke skal skje. Våre utviklere er på saken.`
+  }
 
   const heading = () => {
-    if (errorCode === 403) return "Du har ikke tilgang";
-    else return "Det har skjedd en feil";
-  };
+    if (errorCode === 403) return 'Du har ikke tilgang'
+    else return 'Det har skjedd en feil'
+  }
 
   return (
     <Modal
@@ -58,7 +61,7 @@ const ErrorModal = () => {
         )}
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default ErrorModal;
+export default ErrorModal

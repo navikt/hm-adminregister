@@ -1,25 +1,25 @@
-import { createContext, PropsWithChildren, ReactElement, useContext } from "react";
+import { PropsWithChildren, ReactElement, createContext, useContext } from 'react'
 
-import { ExpectedToggles } from "./toggles";
+import { ExpectedToggles } from './toggles'
 
-const FlagContext = createContext<{ toggles: IToggle[] }>({ toggles: [] });
+const FlagContext = createContext<{ toggles: IToggle[] }>({ toggles: [] })
 
 export function FlagProvider({ toggles, children }: PropsWithChildren<{ toggles: IToggle[] }>): ReactElement {
-  return <FlagContext.Provider value={{ toggles: toggles ?? [] }}>{children}</FlagContext.Provider>;
+  return <FlagContext.Provider value={{ toggles: toggles ?? [] }}>{children}</FlagContext.Provider>
 }
 
 function useFlag(name: ExpectedToggles): IToggle {
-  const context = useContext(FlagContext);
-  const toggle = context?.toggles.find((toggle) => toggle.name === name);
+  const context = useContext(FlagContext)
+  const toggle = context?.toggles.find((toggle) => toggle.name === name)
 
   if (toggle == null) {
-    return { name, enabled: false };
+    return { name, enabled: false }
   }
 
-  return toggle;
+  return toggle
 }
 
 export interface IToggle {
-  name: string;
-  enabled: boolean;
+  name: string
+  enabled: boolean
 }

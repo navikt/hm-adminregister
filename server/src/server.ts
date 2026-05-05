@@ -1,11 +1,12 @@
-import { config } from "./config";
-import express from "express";
-import { routes } from "./routes";
+import express from 'express'
 
-const router = express.Router();
-router.use("/internal/", routes.internal());
-router.use("/", routes.public());
+import { config } from './config'
+import { routes } from './routes'
 
-const app = express();
-app.use(config.base_path, router);
-app.listen(config.port, () => console.info(`Listening on port ${config.port}`));
+const router = express.Router()
+router.use('/internal/', routes.internal())
+router.use('/', routes.public())
+
+const app = express()
+app.use(config.base_path, router)
+app.listen(config.port, () => console.info(`Listening on port ${config.port}`))

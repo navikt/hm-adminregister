@@ -2,7 +2,7 @@
   "title": "Tittel",
   "articleName": "Navn",
   "text": "Beskrivelse",
-  "attributes.keywords" : "Nøkkelord",
-  "attributes.url" : "URL",
-  "productData.techData" : "Tekniske data"
+  "attributes.keywords": "Nøkkelord",
+  "attributes.url": "URL",
+  "productData.techData": "Tekniske data"
 }

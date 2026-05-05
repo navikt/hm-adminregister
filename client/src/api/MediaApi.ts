@@ -1,15 +1,15 @@
-import { MediaDTO, MediaInfo } from "utils/types/response-types";
-import { FileUpload } from "felleskomponenter/UploadModal";
+import { FileUpload } from 'felleskomponenter/UploadModal'
+import { MediaDTO, MediaInfo } from 'utils/types/response-types'
 
 export const mapToMediaInfoWithFilename = (mediaDTO: MediaDTO[], uploads?: FileUpload[]): MediaInfo[] => {
   return mediaDTO.map((media, i) => {
     //Text is either the original filename, else its the edited filename chose by the user.
-    let text = media.filename;
+    let text = media.filename
 
     if (uploads) {
-      const matchingUpload = uploads.find((upload) => upload.file.name === media.filename);
+      const matchingUpload = uploads.find((upload) => upload.file.name === media.filename)
       if (matchingUpload && matchingUpload.editedFileName) {
-        text = matchingUpload.editedFileName;
+        text = matchingUpload.editedFileName
       }
     }
 
@@ -22,6 +22,6 @@ export const mapToMediaInfoWithFilename = (mediaDTO: MediaDTO[], uploads?: FileU
       type: media.type,
       source: media.source,
       updated: media.updated,
-    };
-  });
-};
+    }
+  })
+}

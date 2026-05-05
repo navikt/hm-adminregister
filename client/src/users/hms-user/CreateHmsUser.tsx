@@ -1,24 +1,26 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { PersonIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Checkbox, HStack, Heading, TextField, VStack } from "@navikt/ds-react";
-import { newAdminUserSchema, newHmsUserSchema } from "utils/zodSchema/newUser";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useNavigate } from "react-router-dom";
-import { NewAdminUserDTO, NewHmsUserDTO } from "utils/admin-util";
-import { labelRequired } from "utils/string-util";
-import { HM_REGISTER_URL } from "environments";
-import FormBox from "felleskomponenter/FormBox";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
-type FormData = z.infer<typeof newHmsUserSchema>;
+import { HM_REGISTER_URL } from 'environments'
+import FormBox from 'felleskomponenter/FormBox'
+import { NewAdminUserDTO, NewHmsUserDTO } from 'utils/admin-util'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { newAdminUserSchema, newHmsUserSchema } from 'utils/zodSchema/newUser'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { PersonIcon } from '@navikt/aksel-icons'
+import { Alert, Button, Checkbox, HStack, Heading, TextField, VStack } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof newHmsUserSchema>
 
 export default function CreateHmsUser() {
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
-  const navigate = useNavigate();
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const navigate = useNavigate()
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
 
   const {
     handleSubmit,
@@ -26,39 +28,39 @@ export default function CreateHmsUser() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(newHmsUserSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
 
   async function onSubmit(data: FormData) {
     const newHmsUser: NewHmsUserDTO = {
-      name: "",
-      email: data.email || "",
-      password: data.password || "",
-      roles: ["ROLE_HMS"],
+      name: '',
+      email: data.email || '',
+      password: data.password || '',
+      roles: ['ROLE_HMS'],
       attributes: {},
-    };
+    }
     const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
       body: JSON.stringify(newHmsUser),
-    });
+    })
     if (response.ok) {
-      const responseData = await response.json();
-      navigate("/admin/profil");
+      const responseData = await response.json()
+      navigate('/admin/profil')
     } else {
       //Mulig 400 bør håndteres direkte her siden 400 i denne konteksten betyr skjemafeil og bør kanskje skrives rett under firmanavnfeltet.
       //Samtidig så bør ikke 400 skje med riktig validering men vi får 400 feil når man registrerer to
       //leverandører med samme navn.
-      const responsData = await response.json();
-      setGlobalError(response.status, responsData.message);
+      const responsData = await response.json()
+      setGlobalError(response.status, responsData.message)
     }
   }
 
@@ -67,8 +69,8 @@ export default function CreateHmsUser() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="space-16" width="300px">
           <TextField
-            {...register("email", { required: true })}
-            label={labelRequired("E-post")}
+            {...register('email', { required: true })}
+            label={labelRequired('E-post')}
             id="email"
             type="email"
             name="email"
@@ -78,10 +80,10 @@ export default function CreateHmsUser() {
           />
           <VStack>
             <TextField
-              {...register("password", { required: true })}
-              label={labelRequired("Midlertidig passord")}
+              {...register('password', { required: true })}
+              label={labelRequired('Midlertidig passord')}
               id="password"
-              type={isPasswordShown ? "text" : "password"}
+              type={isPasswordShown ? 'text' : 'password'}
               description="Passordet skal byttes ved første innlogging"
               name="password"
               autoComplete="off"
@@ -105,5 +107,5 @@ export default function CreateHmsUser() {
         </VStack>
       </form>
     </FormBox>
-  );
+  )
 }

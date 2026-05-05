@@ -1,26 +1,28 @@
-import { Button, DatePicker, HStack, Label, Loader, Modal, TextField, useDatepicker, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from "utils/zodSchema/editAgreement";
-import { updateAgreementInfo } from "api/AgreementApi";
-import { AgreementRegistrationDTO } from "utils/types/response-types";
-import { labelRequired } from "utils/string-util";
-import { mergeDateWithTime, toDate, toDateTimeString, toTimeString } from "utils/date-util";
-import Content from "felleskomponenter/styledcomponents/Content";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { updateAgreementInfo } from 'api/AgreementApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { mergeDateWithTime, toDate, toDateTimeString, toTimeString } from 'utils/date-util'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { AgreementRegistrationDTO } from 'utils/types/response-types'
+import { EditAgreementFormData, EditAgreementFormDataDto, editAgreementSchema } from 'utils/zodSchema/editAgreement'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, DatePicker, HStack, Label, Loader, Modal, TextField, VStack, useDatepicker } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  agreement: AgreementRegistrationDTO;
-  setModalIsOpen: (open: boolean) => void;
-  mutateAgreement: () => void;
+  modalIsOpen: boolean
+  agreement: AgreementRegistrationDTO
+  setModalIsOpen: (open: boolean) => void
+  mutateAgreement: () => void
 }
 
 const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutateAgreement }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [avtaleperiodeStartTid, setAvtaleperiodeStartTid] = useState<string>(toTimeString(toDate(agreement.published)));
-  const [avtaleperiodeSluttTid, setAvtaleperiodeSluttTid] = useState<string>(toTimeString(toDate(agreement.expired)));
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [avtaleperiodeStartTid, setAvtaleperiodeStartTid] = useState<string>(toTimeString(toDate(agreement.published)))
+  const [avtaleperiodeSluttTid, setAvtaleperiodeSluttTid] = useState<string>(toTimeString(toDate(agreement.expired)))
 
   const {
     handleSubmit,
@@ -31,7 +33,7 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
     formState: { errors },
   } = useForm<EditAgreementFormData>({
     resolver: zodResolver(editAgreementSchema),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     defaultValues: {
       agreementName: agreement?.title,
       anbudsnummer: agreement?.reference,
@@ -39,35 +41,35 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       avtaleperiodeSlutt: toDate(agreement?.expired),
       previousAgreement: agreement?.previousAgreement ?? null,
     },
-  });
+  })
 
   const { datepickerProps: datepickerPropsAvtaleperiodeStart, inputProps: inputPropsAvtaleperiodeStart } =
     useDatepicker({
       defaultSelected: toDate(agreement?.published),
       onDateChange: (value) => {
-        if (value) setValue("avtaleperiodeStart", mergeDateWithTime(value, avtaleperiodeStartTid));
+        if (value) setValue('avtaleperiodeStart', mergeDateWithTime(value, avtaleperiodeStartTid))
       },
-    });
+    })
 
   const { datepickerProps: datepickerPropsAvtaleperiodeSlutt, inputProps: inputPropsAvtaleperiodeSlutt } =
     useDatepicker({
       defaultSelected: toDate(agreement.expired),
       onDateChange: (value) => {
-        if (value) setValue("avtaleperiodeSlutt", mergeDateWithTime(value, avtaleperiodeSluttTid));
+        if (value) setValue('avtaleperiodeSlutt', mergeDateWithTime(value, avtaleperiodeSluttTid))
       },
-    });
+    })
 
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
   async function onSubmitClose(data: EditAgreementFormData) {
-    await onSubmit(data);
-    setModalIsOpen(false);
+    await onSubmit(data)
+    setModalIsOpen(false)
   }
 
   async function onSubmit(data: EditAgreementFormData) {
-    setIsSaving(true);
-    const avtaleperiodeStart = mergeDateWithTime(data.avtaleperiodeStart, avtaleperiodeStartTid);
-    const avtaleperiodeSlutt = mergeDateWithTime(data.avtaleperiodeSlutt, avtaleperiodeSluttTid);
+    setIsSaving(true)
+    const avtaleperiodeStart = mergeDateWithTime(data.avtaleperiodeStart, avtaleperiodeStartTid)
+    const avtaleperiodeSlutt = mergeDateWithTime(data.avtaleperiodeSlutt, avtaleperiodeSluttTid)
 
     const editAgreementFormDataDto: EditAgreementFormDataDto = {
       agreementName: data.agreementName,
@@ -75,26 +77,26 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       avtaleperiodeStart: toDateTimeString(avtaleperiodeStart),
       avtaleperiodeSlutt: toDateTimeString(avtaleperiodeSlutt),
       previousAgreement: data.previousAgreement ?? null,
-    };
+    }
 
     updateAgreementInfo(agreement.id, editAgreementFormDataDto)
       .then(() => {
-        mutateAgreement();
-        setModalIsOpen(false);
-        setIsSaving(false);
+        mutateAgreement()
+        setModalIsOpen(false)
+        setIsSaving(false)
       })
       .catch((error) => {
-        setGlobalError(error.message);
-        setIsSaving(false);
-      });
-    reset();
+        setGlobalError(error.message)
+        setIsSaving(false)
+      })
+    reset()
   }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: "Rediger rammeavtale",
+        heading: 'Rediger rammeavtale',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
@@ -102,10 +104,10 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
       <form>
         <Modal.Body>
           <Content>
-            <VStack gap="space-16" style={{ width: "100%" }}>
+            <VStack gap="space-16" style={{ width: '100%' }}>
               <TextField
-                {...register("agreementName", { required: true })}
-                label={labelRequired("Avtalenavn")}
+                {...register('agreementName', { required: true })}
+                label={labelRequired('Avtalenavn')}
                 defaultValue={agreement?.title}
                 id="agreementName"
                 name="agreementName"
@@ -114,30 +116,30 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
               />
               <div>
                 <Label>Avtaleperiode</Label>
-                <HStack gap="space-4" justify="start" style={{ marginTop: "0.5rem" }}>
+                <HStack gap="space-4" justify="start" style={{ marginTop: '0.5rem' }}>
                   <VStack gap="space-2">
                     <DatePicker {...datepickerPropsAvtaleperiodeStart}>
                       <DatePicker.Input
                         {...inputPropsAvtaleperiodeStart}
-                        label={labelRequired("Fra")}
+                        label={labelRequired('Fra')}
                         id="avtaleperiodeStart"
                         name="avtaleperiodeStart"
                         error={errors?.avtaleperiodeStart?.message}
                       />
                     </DatePicker>
                     <TextField
-                      label={labelRequired("Tid")}
+                      label={labelRequired('Tid')}
                       id="avtaleperiodeStartTid"
                       name="avtaleperiodeStartTid"
                       type="time"
                       step={60}
                       value={avtaleperiodeStartTid}
                       onChange={(event) => {
-                        const value = event.target.value;
-                        setAvtaleperiodeStartTid(value);
-                        const currentDate = getValues("avtaleperiodeStart");
+                        const value = event.target.value
+                        setAvtaleperiodeStartTid(value)
+                        const currentDate = getValues('avtaleperiodeStart')
                         if (currentDate) {
-                          setValue("avtaleperiodeStart", mergeDateWithTime(currentDate, value));
+                          setValue('avtaleperiodeStart', mergeDateWithTime(currentDate, value))
                         }
                       }}
                     />
@@ -146,25 +148,25 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
                     <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
                       <DatePicker.Input
                         {...inputPropsAvtaleperiodeSlutt}
-                        label={labelRequired("Til")}
+                        label={labelRequired('Til')}
                         id="avtaleperiodeSlutt"
                         name="avtaleperiodeSlutt"
                         error={errors?.avtaleperiodeSlutt?.message}
                       />
                     </DatePicker>
                     <TextField
-                      label={labelRequired("Tid")}
+                      label={labelRequired('Tid')}
                       id="avtaleperiodeSluttTid"
                       name="avtaleperiodeSluttTid"
                       type="time"
                       step={60}
                       value={avtaleperiodeSluttTid}
                       onChange={(event) => {
-                        const value = event.target.value;
-                        setAvtaleperiodeSluttTid(value);
-                        const currentDate = getValues("avtaleperiodeSlutt");
+                        const value = event.target.value
+                        setAvtaleperiodeSluttTid(value)
+                        const currentDate = getValues('avtaleperiodeSlutt')
                         if (currentDate) {
-                          setValue("avtaleperiodeSlutt", mergeDateWithTime(currentDate, value));
+                          setValue('avtaleperiodeSlutt', mergeDateWithTime(currentDate, value))
                         }
                       }}
                     />
@@ -173,8 +175,8 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
               </div>
               <TextField
                 disabled={false}
-                {...register("anbudsnummer", { required: true })}
-                label={labelRequired("Anbudsnummer")}
+                {...register('anbudsnummer', { required: true })}
+                label={labelRequired('Anbudsnummer')}
                 id="anbudsnummer"
                 name="anbudsnummer"
                 defaultValue={agreement?.reference}
@@ -183,8 +185,8 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
               />
               <TextField
                 disabled={false}
-                {...register("previousAgreement", { required: false })}
-                label={"Tidligere avtale"}
+                {...register('previousAgreement', { required: false })}
+                label={'Tidligere avtale'}
                 id="previousAgreement"
                 name="previousAgreement"
                 defaultValue={agreement?.previousAgreement ?? undefined}
@@ -202,8 +204,8 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
         <Modal.Footer>
           <Button
             onClick={() => {
-              setModalIsOpen(false);
-              reset();
+              setModalIsOpen(false)
+              reset()
             }}
             variant="tertiary"
             type="reset"
@@ -216,7 +218,7 @@ const EditAgreementInfoModal = ({ modalIsOpen, agreement, setModalIsOpen, mutate
         </Modal.Footer>
       </form>
     </Modal>
-  );
-};
+  )
+}
 
-export default EditAgreementInfoModal;
+export default EditAgreementInfoModal

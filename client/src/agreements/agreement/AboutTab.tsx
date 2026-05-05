@@ -1,38 +1,41 @@
-import { Alert, Button, Heading, VStack } from "@navikt/ds-react";
-import React, { useRef, useState } from "react";
-import { SubmitHandler, useFormContext } from "react-hook-form";
-import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import { AgreementRegistrationDTO } from "utils/types/response-types";
-import { EditCommonInfoAgreement } from "./Agreement";
-import { labelRequired } from "utils/string-util";
-import { TabPanel } from "felleskomponenter/styledcomponents/TabPanel";
-import parse from "html-react-parser";
-import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
+import React, { useRef, useState } from 'react'
+import { SubmitHandler, useFormContext } from 'react-hook-form'
+
+import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
+import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import parse from 'html-react-parser'
+import { labelRequired } from 'utils/string-util'
+import { AgreementRegistrationDTO } from 'utils/types/response-types'
+
+import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
+import { Alert, Button, Heading, VStack } from '@navikt/ds-react'
+
+import { EditCommonInfoAgreement } from './Agreement'
 
 interface Props {
-  agreement: AgreementRegistrationDTO;
-  onSubmit: SubmitHandler<EditCommonInfoAgreement>;
+  agreement: AgreementRegistrationDTO
+  onSubmit: SubmitHandler<EditCommonInfoAgreement>
 }
 
 const AboutTab = ({ agreement, onSubmit }: Props) => {
-  const formMethods = useFormContext<EditCommonInfoAgreement>();
-  const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const formMethods = useFormContext<EditCommonInfoAgreement>()
+  const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
-  formMethods.setValue("description", agreement.agreementData.text ?? "");
+  formMethods.setValue('description', agreement.agreementData.text ?? '')
 
   const handleSaveDescription = () => {
-    setShowEditDescriptionMode(false);
-    formRef.current?.requestSubmit();
-  };
+    setShowEditDescriptionMode(false)
+    formRef.current?.requestSubmit()
+  }
 
   return (
-    <TabPanel value="about"style={{paddingBlock: '1.5rem'}}>
+    <TabPanel value="about" style={{ paddingBlock: '1.5rem' }}>
       <form method="POST" onSubmit={formMethods.handleSubmit(onSubmit)} ref={formRef}>
         <VStack gap="space-24">
           <VStack gap="space-2">
             <Heading level="2" size="small">
-              {labelRequired("Beskrivelse")}
+              {labelRequired('Beskrivelse')}
             </Heading>
 
             {!showEditDescriptionMode && (
@@ -69,11 +72,11 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
               <>
                 <RichTextEditorQuill
                   onTextChange={(description: string) => {
-                    formMethods.setValue("description", description);
+                    formMethods.setValue('description', description)
                   }}
-                  defaultValue={agreement.agreementData.text || ""}
-                  toolbar={[["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
-                  formats={["bold", "italic", "underline", "list", "link"]}
+                  defaultValue={agreement.agreementData.text || ''}
+                  toolbar={[['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]}
+                  formats={['bold', 'italic', 'underline', 'list', 'link']}
                 />
                 <Button
                   className="fit-content"
@@ -89,7 +92,7 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
         </VStack>
       </form>
     </TabPanel>
-  );
-};
+  )
+}
 
-export default AboutTab;
+export default AboutTab

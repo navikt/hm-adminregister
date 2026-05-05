@@ -1,20 +1,20 @@
-import z from "zod";
+import z from 'zod'
 
 export const editSupplierSchema = z.object({
-  name: z.string().min(1, { message: "Firmanavn er påkrevd" }).min(2, { message: "Navn må inneholde minst 2 tegn" }),
+  name: z.string().min(1, { message: 'Firmanavn er påkrevd' }).min(2, { message: 'Navn må inneholde minst 2 tegn' }),
   email: z
     .string()
     .transform((value) => value.trim()) // Trim whitespace
     .refine(
       (value) => {
-        if (value === "") {
-          return true;
+        if (value === '') {
+          return true
         }
-        const emailPattern = /^[\w\.-]+@[\w\.-]+\.\w+$/i;
-        return emailPattern.test(value);
+        const emailPattern = /^[\w\.-]+@[\w\.-]+\.\w+$/i
+        return emailPattern.test(value)
       },
       {
-        message: "Ugyldig e-postformat",
+        message: 'Ugyldig e-postformat',
       }
     ),
   homepage: z
@@ -22,15 +22,15 @@ export const editSupplierSchema = z.object({
     .transform((value) => value.trim()) // Trim whitespace
     .refine(
       (value) => {
-        if (value === "") {
-          return true;
+        if (value === '') {
+          return true
         }
         // Use a regular expression to check if the input resembles a URL with or without 'http://' or 'https://'.
-        const urlPattern = /^(https?:\/\/)(www\.)?(\S+\.\S{2,})$/;
-        return urlPattern.test(value);
+        const urlPattern = /^(https?:\/\/)(www\.)?(\S+\.\S{2,})$/
+        return urlPattern.test(value)
       },
       {
-        message: "Ugyldig format",
+        message: 'Ugyldig format',
       }
     ),
   phone: z
@@ -38,16 +38,16 @@ export const editSupplierSchema = z.object({
     .transform((value) => value.trim())
     .refine(
       (value) => {
-        if (value === "") {
-          return true;
+        if (value === '') {
+          return true
         }
-        return /^[+\d]+$/.test(value);
+        return /^[+\d]+$/.test(value)
       },
-      { message: "Telefonnummer må bestå av siffer" }
+      { message: 'Telefonnummer må bestå av siffer' }
     ),
   address: z.string(),
   postNr: z.string(),
   postLocation: z.string(),
-});
+})
 
-type newSupplier = z.infer<typeof editSupplierSchema>;
+type newSupplier = z.infer<typeof editSupplierSchema>

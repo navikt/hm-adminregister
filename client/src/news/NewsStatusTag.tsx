@@ -1,6 +1,7 @@
-import { EyeClosedIcon, EyeIcon, HourglassTopFilledIcon } from "@navikt/aksel-icons";
-import LocalTag, { colors } from "felleskomponenter/LocalTag";
-import { NewsTypes } from "news/NewsTypes";
+import LocalTag, { colors } from 'felleskomponenter/LocalTag'
+import { NewsTypes } from 'news/NewsTypes'
+
+import { EyeClosedIcon, EyeIcon, HourglassTopFilledIcon } from '@navikt/aksel-icons'
 
 const NewsStatusTag = ({ newsStatus }: { newsStatus: NewsTypes }) => {
   switch (newsStatus) {
@@ -11,16 +12,14 @@ const NewsStatusTag = ({ newsStatus }: { newsStatus: NewsTypes }) => {
           text="Fremtidig"
           color={colors.ORANGE}
         />
-      );
+      )
     case NewsTypes.PUBLISHED:
-      return <LocalTag icon={<EyeIcon aria-hidden fontSize={"1.5rem"} />} text="Publisert" color={colors.GREEN} />;
+      return <LocalTag icon={<EyeIcon aria-hidden fontSize={'1.5rem'} />} text="Publisert" color={colors.GREEN} />
     case NewsTypes.UNPUBLISHED:
-      return (
-        <LocalTag icon={<EyeClosedIcon aria-hidden fontSize={"1.5rem"} />} text="Avpublisert" color={colors.RED} />
-      );
+      return <LocalTag icon={<EyeClosedIcon aria-hidden fontSize={'1.5rem'} />} text="Avpublisert" color={colors.RED} />
     default:
-      return <></>;
+      return <></>
   }
-};
+}
 
-export default NewsStatusTag;
+export default NewsStatusTag

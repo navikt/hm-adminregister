@@ -1,30 +1,32 @@
-import { useSeriesV2Conditional } from "api/SeriesApi";
-import { Checkbox, Link, Loader, Table } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { ExternalLinkIcon } from "@navikt/aksel-icons";
-import React from "react";
-import { useCompatibleProductById } from "api/PartApi";
-import { useAuthStore } from "utils/store/useAuthStore";
+import React from 'react'
+
+import { useCompatibleProductById } from 'api/PartApi'
+import { useSeriesV2Conditional } from 'api/SeriesApi'
+import { HM_REGISTER_URL } from 'environments'
+import { useAuthStore } from 'utils/store/useAuthStore'
+
+import { ExternalLinkIcon } from '@navikt/aksel-icons'
+import { Checkbox, Link, Loader, Table } from '@navikt/ds-react'
 
 export const CompatibleVariantRow = ({
   productId,
   selectedRows,
   toggleSelectedRow,
-  isEditable
+  isEditable,
 }: {
-  productId: string;
-  selectedRows: string[];
-  toggleSelectedRow: (id: string) => void;
-  isEditable: boolean;
+  productId: string
+  selectedRows: string[]
+  toggleSelectedRow: (id: string) => void
+  isEditable: boolean
 }) => {
-  const loggedInUser = useAuthStore().loggedInUser;
-  const isAdmin = loggedInUser?.isAdminOrHmsUser || false;
-  const { product, isLoading, error } = useCompatibleProductById(productId, isAdmin);
+  const loggedInUser = useAuthStore().loggedInUser
+  const isAdmin = loggedInUser?.isAdminOrHmsUser || false
+  const { product, isLoading, error } = useCompatibleProductById(productId, isAdmin)
   const {
     data: series,
     isLoading: isLoadingSeries,
     error: errorSeries,
-  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined);
+  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
 
   if (isLoading || isLoadingSeries) {
     return (
@@ -33,10 +35,10 @@ export const CompatibleVariantRow = ({
           <Loader />
         </Table.DataCell>
       </Table.Row>
-    );
+    )
   }
   if (!product || !series) {
-    return <></>;
+    return <></>
   }
 
   return (
@@ -47,9 +49,9 @@ export const CompatibleVariantRow = ({
       <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
       <Table.DataCell>{series.supplierName}</Table.DataCell>
       <Table.DataCell>
-        {" "}
+        {' '}
         {series.isPublished && product.hmsArtNr && (
-          <Link href={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={"_blank"}>
+          <Link href={`${HM_REGISTER_URL()}/produkt/hmsartnr/${product.hmsArtNr}`} target={'_blank'}>
             <ExternalLinkIcon fontSize="1.5rem" title="Se variant på Finn Hjelpemiddel" />
           </Link>
         )}
@@ -60,14 +62,13 @@ export const CompatibleVariantRow = ({
             hideLabel
             checked={selectedRows.includes(product.id)}
             onChange={() => {
-              toggleSelectedRow(product.id!);
+              toggleSelectedRow(product.id!)
             }}
           >
-            {" "}
+            {' '}
           </Checkbox>
         </Table.DataCell>
       )}
-
     </Table.Row>
-  );
-};
+  )
+}

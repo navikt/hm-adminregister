@@ -1,101 +1,103 @@
-import { Button, ConfirmationPanel, Modal, TextField, VStack } from "@navikt/ds-react";
-import { useState } from "react";
-import { saveVideoToSeries } from "api/SeriesApi";
-import { validateUrl } from "products/videos/videoUrlUtils";
-import { useErrorStore } from "utils/store/useErrorStore";
+import { useState } from 'react'
+
+import { saveVideoToSeries } from 'api/SeriesApi'
+import { validateUrl } from 'products/videos/videoUrlUtils'
+import { useErrorStore } from 'utils/store/useErrorStore'
+
+import { Button, ConfirmationPanel, Modal, TextField, VStack } from '@navikt/ds-react'
 
 type VideoModalProps = {
-  seriesId: string;
-  mutateSeries: () => void;
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-};
+  seriesId: string
+  mutateSeries: () => void
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+}
 
 export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: VideoModalProps) => {
-  const { setGlobalError } = useErrorStore();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorMessageConfirmVideoRequirements, setErrorMessageConfirmVideoRequirements] = useState("");
-  const [confirmVideoRequirements, setConfirmVideoRequirements] = useState(false);
+  const { setGlobalError } = useErrorStore()
+  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessageConfirmVideoRequirements, setErrorMessageConfirmVideoRequirements] = useState('')
+  const [confirmVideoRequirements, setConfirmVideoRequirements] = useState(false)
 
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('')
+  const [url, setUrl] = useState('')
 
   async function handleSaveVideoLink() {
-    const isUrlValid = validateVideoUrlRequirements();
-    const isVideoRequirementsConfirmed = validateVideoRequirementsConfirmed();
+    const isUrlValid = validateVideoUrlRequirements()
+    const isVideoRequirementsConfirmed = validateVideoRequirementsConfirmed()
     if (isUrlValid && isVideoRequirementsConfirmed) {
       saveVideoToSeries(seriesId, { uri: url, title: title }).then(
         () => {
-          mutateSeries();
-          setIsOpen(false);
+          mutateSeries()
+          setIsOpen(false)
         },
         (error) => {
-          setGlobalError(error.status, error.statusText);
-        },
-      );
+          setGlobalError(error.status, error.statusText)
+        }
+      )
     }
   }
 
   const validateVideoUrlRequirements = () => {
-    const urlError = validateUrl(url);
+    const urlError = validateUrl(url)
     if (urlError) {
-      setErrorMessage(urlError);
-      return false;
+      setErrorMessage(urlError)
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const validateVideoRequirementsConfirmed = () => {
-    setErrorMessageConfirmVideoRequirements("");
+    setErrorMessageConfirmVideoRequirements('')
     if (!confirmVideoRequirements) {
-      setErrorMessageConfirmVideoRequirements("Du må bekrefte at kravene til videoer er oppfylt");
-      return false;
+      setErrorMessageConfirmVideoRequirements('Du må bekrefte at kravene til videoer er oppfylt')
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const resetInputFields = () => {
-    setTitle("");
-    setUrl("");
-    setErrorMessage("");
-    setConfirmVideoRequirements(false);
-    setErrorMessageConfirmVideoRequirements("");
-  };
+    setTitle('')
+    setUrl('')
+    setErrorMessage('')
+    setConfirmVideoRequirements(false)
+    setErrorMessageConfirmVideoRequirements('')
+  }
 
   return (
     <Modal
       open={isOpen}
       header={{
-        heading: "Legg til videolenke",
+        heading: 'Legg til videolenke',
         closeButton: true,
       }}
       onClose={() => {
-        resetInputFields();
-        setIsOpen(false);
+        resetInputFields()
+        setIsOpen(false)
       }}
     >
       <Modal.Body>
         <VStack gap="space-16">
           <TextField
             value={title}
-            style={{ width: "400px" }}
+            style={{ width: '400px' }}
             label="Tittel"
             onChange={(event) => setTitle(event.currentTarget.value)}
           />
           <TextField
             value={url}
-            style={{ width: "400px" }}
+            style={{ width: '400px' }}
             label="Lenke"
             description="Må være til en video og ikke en spilleliste, høyreklikk og kopier i videospilleren"
             onChange={(event) => setUrl(event.currentTarget.value)}
-            onFocus={() => setErrorMessage("")}
+            onFocus={() => setErrorMessage('')}
             error={errorMessage}
           />
           <ConfirmationPanel
             checked={confirmVideoRequirements}
             label="Jeg bekrefter at kravene til videoer er oppfylt, herunder krav til universell utforming."
             onChange={() => setConfirmVideoRequirements((x) => !x)}
-            onFocus={() => setErrorMessageConfirmVideoRequirements("")}
+            onFocus={() => setErrorMessageConfirmVideoRequirements('')}
             error={errorMessageConfirmVideoRequirements}
           />
         </VStack>
@@ -106,8 +108,8 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: VideoM
         </Button>
         <Button
           onClick={() => {
-            resetInputFields();
-            setIsOpen(false);
+            resetInputFields()
+            setIsOpen(false)
           }}
           variant="secondary"
         >
@@ -115,5 +117,5 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: VideoM
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}

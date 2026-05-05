@@ -1,39 +1,40 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom'
 
-import { ArrowLeftIcon, Buildings3Icon, CogIcon, PencilWritingIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, Heading, HStack, VStack } from "@navikt/ds-react";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import LocalTag, { colors } from "felleskomponenter/LocalTag";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { SupplierDTO } from "utils/supplier-util";
+import LocalTag, { colors } from 'felleskomponenter/LocalTag'
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { SupplierDTO } from 'utils/supplier-util'
+
+import { ArrowLeftIcon, Buildings3Icon, CogIcon, PencilWritingIcon } from '@navikt/aksel-icons'
+import { Button, Dropdown, HStack, Heading, VStack } from '@navikt/ds-react'
 
 const SupplierInfo = ({
   supplier,
   setIsOpen,
   setIsOpenActivateSupplier,
 }: {
-  supplier: SupplierDTO;
-  setIsOpen: (newState: boolean) => void;
-  setIsOpenActivateSupplier: (newState: boolean) => void;
+  supplier: SupplierDTO
+  setIsOpen: (newState: boolean) => void
+  setIsOpenActivateSupplier: (newState: boolean) => void
 }) => {
-  const { loggedInUser } = useAuthStore();
-  const navigate = useNavigate();
+  const { loggedInUser } = useAuthStore()
+  const navigate = useNavigate()
   return (
     <VStack gap="space-24">
       <VStack gap="space-12">
         {loggedInUser?.isAdmin && (
-          <Link to="/leverandor" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#3A4583" }}>
+          <Link to="/leverandor" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#3A4583' }}>
             <ArrowLeftIcon fontSize="1.5rem" aria-hidden />
             Tilbake til alle leverandører
           </Link>
         )}
         <Buildings3Icon title="leverandor" fontSize="2.5rem" aria-hidden />
-        <HStack gap="space-8" align="start" style={{ alignItems: supplier.status === "INACTIVE" ? "start" : "center" }}>
-          <div style={{ minWidth: "300px" }}>
+        <HStack gap="space-8" align="start" style={{ alignItems: supplier.status === 'INACTIVE' ? 'start' : 'center' }}>
+          <div style={{ minWidth: '300px' }}>
             <Heading level="1" size="large">
               {supplier?.name}
             </Heading>
-            {supplier.status === "INACTIVE" && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
+            {supplier.status === 'INACTIVE' && <LocalTag icon={<></>} text="Inaktiv" color={colors.GREY} />}
           </div>
           <Dropdown>
             <Button variant="secondary" icon={<CogIcon title="Handlinger" />} as={Dropdown.Toggle}></Button>
@@ -44,26 +45,26 @@ const SupplierInfo = ({
                     navigate(
                       loggedInUser?.isAdmin
                         ? `/leverandor/rediger-leverandor/${supplier.id}`
-                        : "/profil/rediger-leverandor",
-                    );
+                        : '/profil/rediger-leverandor'
+                    )
                   }}
                 >
                   Rediger
                   <PencilWritingIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
-                {loggedInUser?.isAdmin && supplier.status === "ACTIVE" && (
+                {loggedInUser?.isAdmin && supplier.status === 'ACTIVE' && (
                   <Dropdown.Menu.List.Item
                     onClick={() => {
-                      setIsOpen(true);
+                      setIsOpen(true)
                     }}
                   >
                     Deaktiver leverandør
                   </Dropdown.Menu.List.Item>
                 )}
-                {loggedInUser?.isAdmin && supplier.status === "INACTIVE" && (
+                {loggedInUser?.isAdmin && supplier.status === 'INACTIVE' && (
                   <Dropdown.Menu.List.Item
                     onClick={() => {
-                      setIsOpenActivateSupplier(true);
+                      setIsOpenActivateSupplier(true)
                     }}
                   >
                     Aktiver leverandør
@@ -77,20 +78,20 @@ const SupplierInfo = ({
 
       <DefinitionList horizontal>
         <DefinitionList.Term>E-post</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.email || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier?.email || '-'}</DefinitionList.Definition>
         <DefinitionList.Term>Telefon</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier.phone || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier.phone || '-'}</DefinitionList.Definition>
         <DefinitionList.Term>Nettside</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.homepageUrl || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier?.homepageUrl || '-'}</DefinitionList.Definition>
         <DefinitionList.Term>Adresse</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier?.address || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier?.address || '-'}</DefinitionList.Definition>
         <DefinitionList.Term>Postnummer</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier.postNr || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier.postNr || '-'}</DefinitionList.Definition>
         <DefinitionList.Term>Sted</DefinitionList.Term>
-        <DefinitionList.Definition>{supplier.postLocation || "-"}</DefinitionList.Definition>
+        <DefinitionList.Definition>{supplier.postLocation || '-'}</DefinitionList.Definition>
       </DefinitionList>
     </VStack>
-  );
-};
+  )
+}
 
-export default SupplierInfo;
+export default SupplierInfo

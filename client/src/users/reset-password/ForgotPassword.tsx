@@ -1,65 +1,67 @@
-import FormBox from "felleskomponenter/FormBox";
-import { BodyShort, Button, HStack, Loader, TextField, VStack } from "@navikt/ds-react";
-import { labelRequired } from "utils/string-util";
-import { requestOtpForPasswordReset } from "api/UserApi";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { requestOtpForPasswordReset } from 'api/UserApi'
+import FormBox from 'felleskomponenter/FormBox'
+import { labelRequired } from 'utils/string-util'
+
+import { BodyShort, Button, HStack, Loader, TextField, VStack } from '@navikt/ds-react'
 
 export const ForgotPassword = () => {
-  const [email, setEmail] = useState<string>("");
-  const [fieldError, setFieldError] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('')
+  const [fieldError, setFieldError] = useState<string | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleSendOtpRequest = () => {
     if (validateFields()) {
-      setIsLoading(true);
+      setIsLoading(true)
       requestOtpForPasswordReset(email)
         .then(() => {
-          setIsLoading(false);
-          setFieldError(undefined);
-          navigate("/logg-inn/send-kode", { state: { email: email } });
+          setIsLoading(false)
+          setFieldError(undefined)
+          navigate('/logg-inn/send-kode', { state: { email: email } })
         })
         .catch((error) => {
-          setIsLoading(false);
-          setFieldError("Noe gikk galt, prøv igjen senere");
-        });
+          setIsLoading(false)
+          setFieldError('Noe gikk galt, prøv igjen senere')
+        })
     }
-  };
+  }
 
   const validateFields = () => {
-    const emailError = !email || email === "";
-    const emailFormatError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const emailError = !email || email === ''
+    const emailFormatError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
     if (emailError) {
-      setFieldError("Du må skrive en e-postadresse");
+      setFieldError('Du må skrive en e-postadresse')
     } else if (emailFormatError) {
-      setFieldError("Ugyldig format på e-postadresse");
+      setFieldError('Ugyldig format på e-postadresse')
     } else {
-      setFieldError(undefined);
+      setFieldError(undefined)
     }
 
-    return !emailError && !emailFormatError;
-  };
+    return !emailError && !emailFormatError
+  }
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader />
   }
 
   return (
     <FormBox title="Tilbakestill passord">
-      <VStack gap="space-16" style={{ width: "300px" }}>
+      <VStack gap="space-16" style={{ width: '300px' }}>
         <BodyShort>
           Du vil motta en e-post med en kode som benyttes for å tilbakestille passordet i neste steg.
         </BodyShort>
         <TextField
-          label={labelRequired("E-post")}
+          label={labelRequired('E-post')}
           id="email"
           name="email"
           type="email"
           onChange={(event) => setEmail(event.target.value)}
-          error={fieldError ?? ""}
+          error={fieldError ?? ''}
         />
         <HStack gap="space-16">
           <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
@@ -69,7 +71,7 @@ export const ForgotPassword = () => {
             type="submit"
             size="medium"
             onClick={() => {
-              handleSendOtpRequest();
+              handleSendOtpRequest()
             }}
           >
             Fortsett
@@ -77,5 +79,5 @@ export const ForgotPassword = () => {
         </HStack>
       </VStack>
     </FormBox>
-  );
-};
+  )
+}

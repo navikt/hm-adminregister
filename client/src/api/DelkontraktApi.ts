@@ -1,13 +1,13 @@
-import { HM_REGISTER_URL } from "environments";
-import { DelkontraktRegistrationDTO } from "utils/types/response-types";
-import { EditDelkontraktFormData } from "agreements/agreement/delkontraktdetaljer/EditDelkontraktInfoModal";
-import { todayTimestamp } from "utils/date-util";
-import { v4 as uuidv4 } from "uuid";
-import { NyDelkontraktFormData } from "agreements/agreement/delkontraktliste/NewDelkontraktModal";
-import { fetchAPI, httpDelete } from "api/fetch";
+import { EditDelkontraktFormData } from 'agreements/agreement/delkontraktdetaljer/EditDelkontraktInfoModal'
+import { NyDelkontraktFormData } from 'agreements/agreement/delkontraktliste/NewDelkontraktModal'
+import { fetchAPI, httpDelete } from 'api/fetch'
+import { HM_REGISTER_URL } from 'environments'
+import { todayTimestamp } from 'utils/date-util'
+import { DelkontraktRegistrationDTO } from 'utils/types/response-types'
+import { v4 as uuidv4 } from 'uuid'
 
 export const getDelkontrakt = (delkontraktId: string): Promise<DelkontraktRegistrationDTO> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "GET");
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, 'GET')
 
 export const createDelkontrakt = (
   agreementId: string,
@@ -20,21 +20,21 @@ export const createDelkontrakt = (
     createdBy: todayTimestamp(),
     updated: todayTimestamp(),
     agreementId: agreementId,
-    updatedBy: "REGISTER",
+    updatedBy: 'REGISTER',
     delkontraktData: {
       title: data.tittel,
       description: data.beskrivelse,
       sortNr: sortnr,
     },
-    type: "WITH_DELKONTRAKT",
-  };
+    type: 'WITH_DELKONTRAKT',
+  }
 
   return fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/`,
-    "POST",
+    'POST',
     newDelkontrakt
-  );
-};
+  )
+}
 
 const updateDelkontrakt = (
   delkontraktId: string,
@@ -42,21 +42,21 @@ const updateDelkontrakt = (
 ): Promise<DelkontraktRegistrationDTO> =>
   fetchAPI(
     `${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`,
-    "PUT",
+    'PUT',
     updatedDelkontrakt
-  );
+  )
 
 export const deleteDelkontrakt = (delkontraktId: string): Promise<void> =>
-  httpDelete(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, "DELETE");
+  httpDelete(`${HM_REGISTER_URL()}/admreg/admin/api/v1/agreement/delkontrakt/registrations/${delkontraktId}`, 'DELETE')
 
 export const updateDelkontraktinfo = async (
   delkontraktId: string,
   data: EditDelkontraktFormData
 ): Promise<DelkontraktRegistrationDTO> => {
-  const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId);
+  const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId)
 
   if (delkontraktToUpdate === undefined) {
-    return Promise.reject("Delkontrakt not found");
+    return Promise.reject('Delkontrakt not found')
   }
 
   const oppdatertDelkontrakt: DelkontraktRegistrationDTO = {
@@ -68,14 +68,14 @@ export const updateDelkontraktinfo = async (
       sortNr: delkontraktToUpdate.delkontraktData.sortNr,
       refNr: delkontraktToUpdate.delkontraktData.refNr,
     },
-  };
+  }
 
-  return await updateDelkontrakt(oppdatertDelkontrakt.id, oppdatertDelkontrakt);
-};
+  return await updateDelkontrakt(oppdatertDelkontrakt.id, oppdatertDelkontrakt)
+}
 
 export const reorderDelkontrakter = async (delkontrakt1: string, delkontrakt2: string): Promise<void> => {
-  const delkontrakt1ToUpdate = await getDelkontrakt(delkontrakt1);
-  const delkontrakt2ToUpdate = await getDelkontrakt(delkontrakt2);
+  const delkontrakt1ToUpdate = await getDelkontrakt(delkontrakt1)
+  const delkontrakt2ToUpdate = await getDelkontrakt(delkontrakt2)
 
   const delkontrakt1Updated: DelkontraktRegistrationDTO = {
     ...delkontrakt1ToUpdate,
@@ -83,7 +83,7 @@ export const reorderDelkontrakter = async (delkontrakt1: string, delkontrakt2: s
       ...delkontrakt1ToUpdate.delkontraktData,
       sortNr: delkontrakt2ToUpdate.delkontraktData.sortNr,
     },
-  };
+  }
 
   const delkontrakt2Updated: DelkontraktRegistrationDTO = {
     ...delkontrakt2ToUpdate,
@@ -91,11 +91,11 @@ export const reorderDelkontrakter = async (delkontrakt1: string, delkontrakt2: s
       ...delkontrakt2ToUpdate.delkontraktData,
       sortNr: delkontrakt1ToUpdate.delkontraktData.sortNr,
     },
-  };
+  }
 
   // todo: should probably do this in one back end transaction
-  await updateDelkontrakt(delkontrakt1Updated.id, delkontrakt1Updated);
-  await updateDelkontrakt(delkontrakt2Updated.id, delkontrakt2Updated);
+  await updateDelkontrakt(delkontrakt1Updated.id, delkontrakt1Updated)
+  await updateDelkontrakt(delkontrakt2Updated.id, delkontrakt2Updated)
 
-  return;
-};
+  return
+}

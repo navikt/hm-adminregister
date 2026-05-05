@@ -1,31 +1,34 @@
-import { useState } from "react";
-import { NewspaperIcon } from "@navikt/aksel-icons";
-import { Box, Button, Heading, HStack, TextField, VStack } from "@navikt/ds-react";
-import { labelRequired } from "utils/string-util";
-import { useForm } from "react-hook-form";
-import styles from "./CreateAndEditNews.module.scss";
-import { CreateUpdateNewsDTO, NewsRegistrationDTO } from "utils/types/response-types";
-import { createNews, updateNews } from "api/NewsApi";
-import { useLocation, useNavigate } from "react-router-dom";
-import { toDateTimeString } from "utils/date-util";
-import CustomDatePicker from "news/CustomDatePicker";
-import FormBox from "felleskomponenter/FormBox";
-import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { createNews, updateNews } from 'api/NewsApi'
+import FormBox from 'felleskomponenter/FormBox'
+import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
+import CustomDatePicker from 'news/CustomDatePicker'
+import { toDateTimeString } from 'utils/date-util'
+import { labelRequired } from 'utils/string-util'
+import { CreateUpdateNewsDTO, NewsRegistrationDTO } from 'utils/types/response-types'
+
+import { NewspaperIcon } from '@navikt/aksel-icons'
+import { Box, Button, HStack, Heading, TextField, VStack } from '@navikt/ds-react'
+
+import styles from './CreateAndEditNews.module.scss'
 
 type FormData = {
-  newsTitle: string;
-  newsType: string;
-  newsText: string;
-  publishedOn: Date;
-  expiredOn: Date;
-  duration: string;
-};
+  newsTitle: string
+  newsType: string
+  newsText: string
+  publishedOn: Date
+  expiredOn: Date
+  duration: string
+}
 
 const CreateAndEditNews = () => {
-  const location = useLocation();
-  const editNewsData = location.state as NewsRegistrationDTO;
-  const navigate = useNavigate();
-  const [textHtmlContent, setTextHtmlContent] = useState(editNewsData ? editNewsData.text : "");
+  const location = useLocation()
+  const editNewsData = location.state as NewsRegistrationDTO
+  const navigate = useNavigate()
+  const [textHtmlContent, setTextHtmlContent] = useState(editNewsData ? editNewsData.text : '')
 
   const {
     handleSubmit,
@@ -34,63 +37,63 @@ const CreateAndEditNews = () => {
     control,
     watch,
   } = useForm<FormData>({
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
       publishedOn: editNewsData ? new Date(editNewsData.published) : undefined,
       expiredOn: editNewsData ? new Date(editNewsData.expired) : undefined,
     },
-  });
+  })
 
   async function onSubmit(data: FormData) {
     const newNewsRelease: CreateUpdateNewsDTO = {
-      title: (data.newsType ? `${data.newsType.toUpperCase()}: ` : "") + data.newsTitle,
+      title: (data.newsType ? `${data.newsType.toUpperCase()}: ` : '') + data.newsTitle,
       text: textHtmlContent,
       published: toDateTimeString(data.publishedOn), //new Date(data.publishedOn).toISOString()
       expired: toDateTimeString(data.expiredOn),
-    };
+    }
 
     if (editNewsData) {
       updateNews(newNewsRelease, editNewsData.id).then(() => {
-        navigate("/nyheter");
-      });
+        navigate('/nyheter')
+      })
     } else {
       createNews(newNewsRelease).then(() => {
-        navigate("/nyheter");
-      });
+        navigate('/nyheter')
+      })
     }
   }
 
-  const title = editNewsData ? "Rediger nyhetsmelding" : "Opprett ny nyhetsmelding";
+  const title = editNewsData ? 'Rediger nyhetsmelding' : 'Opprett ny nyhetsmelding'
 
   return (
     <FormBox title={title} icon={<NewspaperIcon />}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="space-8">
           <TextField
-            {...register("newsType", { required: true })}
-            label={labelRequired("Type")}
-            description={"F.eks: NY AVTALE, KOMMER"}
+            {...register('newsType', { required: true })}
+            label={labelRequired('Type')}
+            description={'F.eks: NY AVTALE, KOMMER'}
             id="newsType"
             name="newsType"
             type="text"
             autoComplete="on"
-            error={errors.newsType && "Type er påkrevd"}
+            error={errors.newsType && 'Type er påkrevd'}
             defaultValue={
-              editNewsData && editNewsData.title.includes(":") ? editNewsData.title.split(":")[0].toUpperCase() : ""
+              editNewsData && editNewsData.title.includes(':') ? editNewsData.title.split(':')[0].toUpperCase() : ''
             }
           />
           <TextField
-            {...register("newsTitle", { required: true })}
-            label={labelRequired("Tittel på nyhetsmelding")}
+            {...register('newsTitle', { required: true })}
+            label={labelRequired('Tittel på nyhetsmelding')}
             id="newsTitle"
             name="newsTitle"
             type="text"
             autoComplete="on"
-            error={errors.newsTitle && "Tittel er påkrevd"}
+            error={errors.newsTitle && 'Tittel er påkrevd'}
             defaultValue={
-              editNewsData?.title?.includes(":")
-                ? editNewsData.title.split(":")[1].trimStart()
-                : editNewsData?.title || ""
+              editNewsData?.title?.includes(':')
+                ? editNewsData.title.split(':')[1].trimStart()
+                : editNewsData?.title || ''
             }
           />
           <Box>
@@ -100,21 +103,21 @@ const CreateAndEditNews = () => {
             <HStack gap="space-4" wrap={false} align="start" justify="space-between">
               <CustomDatePicker
                 name="publishedOn"
-                label={"Fra"}
+                label={'Fra'}
                 control={control}
                 required={true}
                 shouldUnregister={true}
-                errorMessage={"Ugyldig dato"}
+                errorMessage={'Ugyldig dato'}
               />
 
               <CustomDatePicker
                 name="expiredOn"
-                label={"Til"}
+                label={'Til'}
                 control={control}
                 required={true}
                 shouldUnregister={true}
-                errorMessage={"Ugyldig dato"}
-                watchPublishDate={watch("publishedOn")}
+                errorMessage={'Ugyldig dato'}
+                watchPublishDate={watch('publishedOn')}
               />
             </HStack>
           </Box>
@@ -125,7 +128,7 @@ const CreateAndEditNews = () => {
             </Heading>
             <RichTextEditorQuill
               onTextChange={setTextHtmlContent}
-              defaultValue={editNewsData ? editNewsData.text : ""}
+              defaultValue={editNewsData ? editNewsData.text : ''}
               className={styles.editorStyle}
             />
           </Box>
@@ -135,13 +138,13 @@ const CreateAndEditNews = () => {
             </Button>
 
             <Button type="submit" size="medium">
-              {editNewsData ? "Lagre" : "Opprett"}
+              {editNewsData ? 'Lagre' : 'Opprett'}
             </Button>
           </HStack>
         </VStack>
       </form>
     </FormBox>
-  );
-};
+  )
+}
 
-export default CreateAndEditNews;
+export default CreateAndEditNews

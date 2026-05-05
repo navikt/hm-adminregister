@@ -1,7 +1,6 @@
-@use "../../styles/_mixins";
+@use '../../styles/_mixins';
 
-@use "@navikt/ds-tokens/dist/tokens" as *;
-
+@use '@navikt/ds-tokens/dist/tokens' as *;
 
 .seriesParts {
   background-color: white;

@@ -1,83 +1,86 @@
-import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from "utils/types/response-types";
-import { Button, Checkbox, Dropdown, ExpansionCard, HStack, Switch, Table, VStack } from "@navikt/ds-react";
-import { MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from "@navikt/aksel-icons";
-import React, { useEffect, useState } from "react";
-import NewProductOnDelkontraktModal from "./NewProductOnDelkontraktModal";
-import EditDelkontraktInfoModal from "./EditDelkontraktInfoModal";
-import { deleteProductsFromAgreement } from "api/AgreementProductApi";
-import { useErrorStore } from "utils/store/useErrorStore";
-import ConfirmModal from "felleskomponenter/ConfirmModal";
-import { deleteDelkontrakt } from "api/DelkontraktApi";
-import { useProductAgreementsByDelkontraktId } from "utils/swr-hooks";
-import { RowBoxTable } from "felleskomponenter/styledcomponents/Table";
-import { DelkontraktSerieRow } from "agreements/agreement/delkontraktdetaljer/DelkontraktSerieRow";
-import parse from "html-react-parser";
+import React, { useEffect, useState } from 'react'
+
+import { DelkontraktSerieRow } from 'agreements/agreement/delkontraktdetaljer/DelkontraktSerieRow'
+import { deleteProductsFromAgreement } from 'api/AgreementProductApi'
+import { deleteDelkontrakt } from 'api/DelkontraktApi'
+import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import { RowBoxTable } from 'felleskomponenter/styledcomponents/Table'
+import parse from 'html-react-parser'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { useProductAgreementsByDelkontraktId } from 'utils/swr-hooks'
+import { DelkontraktRegistrationDTO, ProductAgreementRegistrationDTOList } from 'utils/types/response-types'
+
+import { MenuElipsisVerticalIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Button, Checkbox, Dropdown, ExpansionCard, HStack, Switch, Table, VStack } from '@navikt/ds-react'
+
+import EditDelkontraktInfoModal from './EditDelkontraktInfoModal'
+import NewProductOnDelkontraktModal from './NewProductOnDelkontraktModal'
 
 interface Props {
-  agreementDraftStatus: string;
-  delkontrakt: DelkontraktRegistrationDTO;
-  mutateDelkontrakter: () => void;
-  agreementExpireDate: string;
+  agreementDraftStatus: string
+  delkontrakt: DelkontraktRegistrationDTO
+  mutateDelkontrakter: () => void
+  agreementExpireDate: string
 }
 
 export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftStatus, agreementExpireDate }: Props) => {
-  const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true);
+  const [showOnlyMainProducts, setShowOnlyMainProducts] = useState<boolean>(true)
 
   const {
     data: productAgreements,
     isLoading: productAgreementsIsLoading,
     mutateProductAgreements,
-  } = useProductAgreementsByDelkontraktId(delkontrakt.id, showOnlyMainProducts);
+  } = useProductAgreementsByDelkontraktId(delkontrakt.id, showOnlyMainProducts)
 
   useEffect(() => {
-    mutateProductAgreements();
-    console.log(agreementExpireDate);
-  }, [agreementExpireDate]);
+    mutateProductAgreements()
+    console.log(agreementExpireDate)
+  }, [agreementExpireDate])
 
-  const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false);
-  const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false);
-  const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false);
-  const [produktserierToDelete, setProduktserierToDelete] = useState<ProductAgreementRegistrationDTOList>([]);
-  const [deleteProduktserierModalIsOpen, setDeleteProduktserierModalIsOpen] = useState<boolean>(false);
+  const [nyttProduktModalIsOpen, setNyttProduktModalIsOpen] = useState<boolean>(false)
+  const [editDelkontraktModalIsOpen, setEditDelkontraktModalIsOpen] = useState<boolean>(false)
+  const [deleteDelkontraktIsOpen, setDeleteDelkontraktIsOpen] = useState<boolean>(false)
+  const [produktserierToDelete, setProduktserierToDelete] = useState<ProductAgreementRegistrationDTOList>([])
+  const [deleteProduktserierModalIsOpen, setDeleteProduktserierModalIsOpen] = useState<boolean>(false)
 
-  const { setGlobalError } = useErrorStore();
+  const { setGlobalError } = useErrorStore()
 
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
 
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
   const onConfirmDeleteDelkontrakt = () => {
     deleteDelkontrakt(delkontrakt.id)
       .then(() => {
-        mutateDelkontrakter();
+        mutateDelkontrakter()
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-    setDeleteDelkontraktIsOpen(false);
-  };
+        setGlobalError(error.message)
+      })
+    setDeleteDelkontraktIsOpen(false)
+  }
 
   const onConfirmDeleteProduktserier = () => {
     const productAgreementsToDelete = produktserierToDelete.map((variant) => {
-      return variant.id;
-    });
+      return variant.id
+    })
 
     deleteProductsFromAgreement(productAgreementsToDelete)
       .then(() => {
-        setProduktserierToDelete([]);
-        mutateProductAgreements();
-        mutateDelkontrakter();
+        setProduktserierToDelete([])
+        mutateProductAgreements()
+        mutateDelkontrakter()
       })
       .catch((error) => {
-        setGlobalError(error.message);
-      });
-    setDeleteProduktserierModalIsOpen(false);
-  };
+        setGlobalError(error.message)
+      })
+    setDeleteProduktserierModalIsOpen(false)
+  }
 
-  if (productAgreementsIsLoading) return <div>Loading...</div>;
+  if (productAgreementsIsLoading) return <div>Loading...</div>
 
   return (
     <>
@@ -92,10 +95,10 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         text="Er du sikker på at du vil slette delkontrakten?"
         onClick={onConfirmDeleteDelkontrakt}
         onClose={() => {
-          setDeleteDelkontraktIsOpen(false);
+          setDeleteDelkontraktIsOpen(false)
         }}
         isModalOpen={deleteDelkontraktIsOpen}
-        confirmButtonText={"Slett"}
+        confirmButtonText={'Slett'}
         variant="danger"
       />
 
@@ -104,7 +107,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         text="Er du sikker på at du vil slette produktserier?"
         onClick={onConfirmDeleteProduktserier}
         onClose={() => {
-          setDeleteProduktserierModalIsOpen(false);
+          setDeleteProduktserierModalIsOpen(false)
         }}
         isModalOpen={deleteProduktserierModalIsOpen}
         confirmButtonText="Slett"
@@ -122,7 +125,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         <ExpansionCard.Header>
           <ExpansionCard.Title size="small">{delkontrakt!.delkontraktData.title}</ExpansionCard.Title>
         </ExpansionCard.Header>
-        <ExpansionCard.Content style={{ overflow: "auto" }}>
+        <ExpansionCard.Content style={{ overflow: 'auto' }}>
           <VStack gap="space-4">
             <Switch checked={showOnlyMainProducts} onChange={(e) => setShowOnlyMainProducts(e.target.checked)}>
               Vis kun hovedprodukter
@@ -147,9 +150,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                           onChange={() => {
                             selectedRows.length
                               ? setSelectedRows([])
-                              : setSelectedRows(
-                                  productAgreements?.map(({ serieIdentifier }) => serieIdentifier!) ?? [],
-                                );
+                              : setSelectedRows(productAgreements?.map(({ serieIdentifier }) => serieIdentifier!) ?? [])
                           }}
                           hideLabel
                         >
@@ -162,9 +163,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                     {productAgreements!
                       .filter((product) => {
                         if (showOnlyMainProducts) {
-                          return !product.accessory && !product.sparePart;
+                          return !product.accessory && !product.sparePart
                         } else {
-                          return true;
+                          return true
                         }
                       })
                       .map((produkt, i) => {
@@ -178,7 +179,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                             productVariantsOnSeries={produkt}
                             mutateDelkontrakter={mutateDelkontrakter}
                           />
-                        );
+                        )
                       })}
                   </Table.Body>
                 </RowBoxTable>
@@ -191,7 +192,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                 variant="tertiary"
                 icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                 onClick={() => {
-                  setNyttProduktModalIsOpen(true);
+                  setNyttProduktModalIsOpen(true)
                 }}
               >
                 <span>Legg til Produkt</span>
@@ -203,20 +204,20 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                 icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
                 disabled={selectedRows.length === 0}
                 onClick={() => {
-                  console.log(selectedRows);
+                  console.log(selectedRows)
                   setProduktserierToDelete(
                     productAgreements
                       ?.filter((it) => selectedRows.includes(it.productSeries!))
-                      .flatMap((pa) => pa.productVariants) ?? [],
-                  );
-                  setDeleteProduktserierModalIsOpen(true);
+                      .flatMap((pa) => pa.productVariants) ?? []
+                  )
+                  setDeleteProduktserierModalIsOpen(true)
                 }}
               >
                 <span>Slett merkede produkter</span>
               </Button>
               <Dropdown>
                 <Button
-                  style={{ marginLeft: "auto" }}
+                  style={{ marginLeft: 'auto' }}
                   variant="tertiary"
                   icon={<MenuElipsisVerticalIcon title="Rediger" fontSize="1.5rem" />}
                   as={Dropdown.Toggle}
@@ -225,7 +226,7 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                   <Dropdown.Menu.GroupedList>
                     <Dropdown.Menu.GroupedList.Item
                       onClick={() => {
-                        setEditDelkontraktModalIsOpen(true);
+                        setEditDelkontraktModalIsOpen(true)
                       }}
                     >
                       Endre tittel og beskrivelse
@@ -234,9 +235,9 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
                   <Dropdown.Menu.Divider />
                   <Dropdown.Menu.List>
                     <Dropdown.Menu.List.Item
-                      disabled={agreementDraftStatus !== "DRAFT" && productAgreements && productAgreements?.length > 0}
+                      disabled={agreementDraftStatus !== 'DRAFT' && productAgreements && productAgreements?.length > 0}
                       onClick={() => {
-                        setDeleteDelkontraktIsOpen(true);
+                        setDeleteDelkontraktIsOpen(true)
                       }}
                     >
                       Slett delkontrakt
@@ -249,5 +250,5 @@ export const Delkontrakt = ({ delkontrakt, mutateDelkontrakter, agreementDraftSt
         </ExpansionCard.Content>
       </ExpansionCard>
     </>
-  );
-};
+  )
+}

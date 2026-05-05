@@ -1,31 +1,32 @@
-import { Alert, AlertProps } from "@navikt/ds-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
+
+import { Alert, AlertProps } from '@navikt/ds-react'
 
 export const AlertWithCloseButton = ({
-  children = "Content",
+  children = 'Content',
   variant,
   alertId,
 }: {
-  children?: React.ReactNode;
-  variant: AlertProps["variant"];
-  alertId: string;
+  children?: React.ReactNode
+  variant: AlertProps['variant']
+  alertId: string
 }) => {
-  const alertName = `hasReadAlert-${alertId}`;
-  const [hasReadAlert, setHasReadAlert] = useState(localStorage.getItem(alertName) === "true");
+  const alertName = `hasReadAlert-${alertId}`
+  const [hasReadAlert, setHasReadAlert] = useState(localStorage.getItem(alertName) === 'true')
 
   useEffect(() => {
-    localStorage.setItem(alertName, String(hasReadAlert));
-  }, [hasReadAlert]);
+    localStorage.setItem(alertName, String(hasReadAlert))
+  }, [hasReadAlert])
 
   return !hasReadAlert ? (
     <Alert
-      size={"medium"}
+      size={'medium'}
       variant={variant}
       closeButton
       onClose={() => setHasReadAlert(true)}
-      style={{ width: "fit-content" }}
+      style={{ width: 'fit-content' }}
     >
       {children}
     </Alert>
-  ) : null;
-};
+  ) : null
+}

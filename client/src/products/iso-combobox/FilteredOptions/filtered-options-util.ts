@@ -1,24 +1,24 @@
-import { ComboboxOption } from "felleskomponenter/comboboxfelles/types";
+import { ComboboxOption } from 'felleskomponenter/comboboxfelles/types'
 
-const normalizeText = (text: string): string => (typeof text === "string" ? text.toLocaleLowerCase().trim() : "");
+const normalizeText = (text: string): string => (typeof text === 'string' ? text.toLocaleLowerCase().trim() : '')
 
-const isPartOfText = (value: string, text: string) => normalizeText(text).includes(normalizeText(value ?? ""));
+const isPartOfText = (value: string, text: string) => normalizeText(text).includes(normalizeText(value ?? ''))
 
 const getMatchingValuesFromList = (value: string, list: ComboboxOption[]) =>
-  list.filter((listItem) => isPartOfText(value, listItem.label));
+  list.filter((listItem) => isPartOfText(value, listItem.label))
 
-const getFilteredOptionsId = (comboboxId: string) => `${comboboxId}-filtered-options`;
+const getFilteredOptionsId = (comboboxId: string) => `${comboboxId}-filtered-options`
 
 const getOptionId = (comboboxId: string, option: string) =>
-  `${comboboxId.toLocaleLowerCase()}-option-${option.replace(" ", "-").toLocaleLowerCase()}`;
+  `${comboboxId.toLocaleLowerCase()}-option-${option.replace(' ', '-').toLocaleLowerCase()}`
 
-const getAddNewOptionId = (comboboxId: string) => `${comboboxId}-combobox-new-option`;
+const getAddNewOptionId = (comboboxId: string) => `${comboboxId}-combobox-new-option`
 
-const getIsLoadingId = (comboboxId: string) => `${comboboxId}-is-loading`;
+const getIsLoadingId = (comboboxId: string) => `${comboboxId}-is-loading`
 
-const getNoHitsId = (comboboxId: string) => `${comboboxId}-no-hits`;
+const getNoHitsId = (comboboxId: string) => `${comboboxId}-no-hits`
 
-const getMaxSelectedOptionsId = (comboboxId: string) => `${comboboxId}-max-selected-options`;
+const getMaxSelectedOptionsId = (comboboxId: string) => `${comboboxId}-max-selected-options`
 
 export default {
   normalizeText,
@@ -30,4 +30,4 @@ export default {
   getIsLoadingId,
   getNoHitsId,
   getMaxSelectedOptionsId,
-};
+}

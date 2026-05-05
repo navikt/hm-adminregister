@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const DocumentList = styled.ol`
   list-style: none;
@@ -16,4 +16,4 @@ export const DocumentList = styled.ol`
     box-shadow: var(--a-shadow-xsmall);
     border-radius: var(--a-border-radius-medium);
   }
-`;
+`

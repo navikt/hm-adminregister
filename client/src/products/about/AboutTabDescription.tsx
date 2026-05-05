@@ -1,66 +1,69 @@
-import { Alert, BodyShort, Button, Heading, HStack, Spacer, VStack } from "@navikt/ds-react";
-import { labelRequired } from "utils/string-util";
-import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from "@navikt/aksel-icons";
-import parse from "html-react-parser";
-import { useState } from "react";
-import { updateProductDescription } from "api/SeriesApi";
-import { SeriesDTO } from "utils/types/response-types";
-import { useErrorStore } from "utils/store/useErrorStore";
-import RichTextEditorQuill from "felleskomponenter/RichTextEditorQuill";
-import styles from "./Editor.module.scss";
+import { useState } from 'react'
+
+import { updateProductDescription } from 'api/SeriesApi'
+import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
+import parse from 'html-react-parser'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { labelRequired } from 'utils/string-util'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel-icons'
+import { Alert, BodyShort, Button, HStack, Heading, Spacer, VStack } from '@navikt/ds-react'
+
+import styles from './Editor.module.scss'
 
 interface Props {
-  series: SeriesDTO;
-  mutateSeries: () => void;
-  showInputError: boolean;
-  isEditable: boolean;
+  series: SeriesDTO
+  mutateSeries: () => void
+  showInputError: boolean
+  isEditable: boolean
 }
 
 const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable }: Props) => {
-  const description = series.text;
-  const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false);
-  const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined);
-  const [updatedDescription, setUpdatedDescription] = useState<string>(description);
-  const { setGlobalError } = useErrorStore();
-  const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0);
+  const description = series.text
+  const [showEditDescriptionMode, setShowEditDescriptionMode] = useState(false)
+  const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined)
+  const [updatedDescription, setUpdatedDescription] = useState<string>(description)
+  const { setGlobalError } = useErrorStore()
+  const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0)
 
   //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
   const closeDescriptionEditor = () => {
-    if (descriptionLengthError) return;
-    setShowEditDescriptionMode(false);
-  };
+    if (descriptionLengthError) return
+    setShowEditDescriptionMode(false)
+  }
 
   const handleSaveDescription = (updatedDescription: string) => {
-    if (descriptionLengthError) return;
+    if (descriptionLengthError) return
     updateProductDescription(series!.id, updatedDescription)
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error.status, error.message);
-      });
-  };
+        setGlobalError(error.status, error.message)
+      })
+  }
 
   const onTextChange = (html: string, rawText: string) => {
-    setDescriptionLength(rawText.length);
+    setDescriptionLength(rawText.length)
     if (rawText.length > 750) {
-      setDescriptionLengthError("Beskrivelsen kan ikke være lengre enn 750 tegn");
+      setDescriptionLengthError('Beskrivelsen kan ikke være lengre enn 750 tegn')
     } else {
-      setDescriptionLengthError(undefined);
-      setUpdatedDescription(html);
+      setDescriptionLengthError(undefined)
+      setUpdatedDescription(html)
     }
-  };
+  }
 
   return (
     <>
       <VStack gap="space-8">
         <Heading level="2" size="small">
-          {labelRequired("Produktbeskrivelse")}
+          {labelRequired('Produktbeskrivelse')}
         </Heading>
 
         {!showEditDescriptionMode && (
           <>
             {!description ? (
               <>
-                <Alert variant={showInputError ? "error" : "info"}>
+                <Alert variant={showInputError ? 'error' : 'info'}>
                   Produktet trenger en beskrivelse før det kan sendes til godkjenning
                 </Alert>
                 <Button
@@ -105,16 +108,16 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
               onTextChange={onTextChange}
               defaultValue={updatedDescription}
               className={styles.editor}
-              toolbar={[["bold", "italic"], [{ list: "ordered" }, { list: "bullet" }], ["link"]]}
-              formats={["bold", "italic", "list", "link"]}
+              toolbar={[['bold', 'italic'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]}
+              formats={['bold', 'italic', 'list', 'link']}
               onBlur={() => {
-                handleSaveDescription(updatedDescription);
+                handleSaveDescription(updatedDescription)
               }}
             />
             <div className="aksel-form-field__error">
               <p
                 className="aksel-error-message aksel-label"
-                style={{ display: descriptionLengthError ? "flex" : "none" }}
+                style={{ display: descriptionLengthError ? 'flex' : 'none' }}
               >
                 • {descriptionLengthError}
               </p>
@@ -125,7 +128,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
                 variant="tertiary"
                 icon={<FloppydiskIcon fontSize="1.5rem" aria-hidden />}
                 onClick={() => {
-                  closeDescriptionEditor();
+                  closeDescriptionEditor()
                 }}
               >
                 Lagre
@@ -141,7 +144,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
         )}
       </VStack>
     </>
-  );
-};
+  )
+}
 
-export default AboutTabDescription;
+export default AboutTabDescription

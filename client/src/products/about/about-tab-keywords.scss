@@ -1,9 +1,9 @@
-@use "../../styles/mixins";
-@use "@navikt/ds-tokens/dist/tokens" as *;
+@use '../../styles/mixins';
+@use '@navikt/ds-tokens/dist/tokens' as *;
 
 .keywords-static {
   --ac-tag-alt-3-bg: var(--ax-bg-info-strong);
-  .aksel-tag--alt3{
+  .aksel-tag--alt3 {
     color: #ffffff;
     border-radius: var(--ax-radius-full);
   }

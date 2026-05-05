@@ -1,13 +1,14 @@
-import { Heading, VStack } from "@navikt/ds-react";
-import DefinitionList from "felleskomponenter/definition-list/DefinitionList";
-import SeriesStatusTag from "products/SeriesStatusTag";
-import { seriesStatus } from "products/seriesUtils";
-import { toReadableDateTimeString } from "utils/date-util";
-import { SeriesDTO } from "utils/types/response-types";
+import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
+import SeriesStatusTag from 'products/SeriesStatusTag'
+import { seriesStatus } from 'products/seriesUtils'
+import { toReadableDateTimeString } from 'utils/date-util'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { Heading, VStack } from '@navikt/ds-react'
 
 const StatusPanel = ({ series }: { series: SeriesDTO }) => {
   return (
-    <VStack gap={{ xs: "space-16", md: "space-12" }}>
+    <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
       <VStack gap="space-16">
         <Heading level="1" size="medium">
           Status
@@ -40,7 +41,7 @@ const StatusPanel = ({ series }: { series: SeriesDTO }) => {
         <DefinitionList.Definition>{toReadableDateTimeString(series.created)}</DefinitionList.Definition>
       </DefinitionList>
     </VStack>
-  );
-};
+  )
+}
 
-export default StatusPanel;
+export default StatusPanel

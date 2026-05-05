@@ -1,60 +1,62 @@
-import { BodyShort, Box, Button, Checkbox, Modal, Table, TextField, VStack } from "@navikt/ds-react";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { ProductRegistrationDTOV2, SeriesDTO } from "utils/types/response-types";
-import React, { useEffect, useState } from "react";
-import { getSeriesBySeriesId } from "api/SeriesApi";
+import React, { useEffect, useState } from 'react'
+
+import { getSeriesBySeriesId } from 'api/SeriesApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { ProductRegistrationDTOV2, SeriesDTO } from 'utils/types/response-types'
+
+import { BodyShort, Box, Button, Checkbox, Modal, Table, TextField, VStack } from '@navikt/ds-react'
 
 interface Props {
-  onClick: (seriesId: string, productVariantId: string[]) => void;
-  onClose: () => void;
-  isModalOpen: boolean;
-  seriesId: string;
-  variants: ProductRegistrationDTOV2[];
-  seriesFromIso: string;
+  onClick: (seriesId: string, productVariantId: string[]) => void
+  onClose: () => void
+  isModalOpen: boolean
+  seriesId: string
+  variants: ProductRegistrationDTOV2[]
+  seriesFromIso: string
 }
 
 const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, seriesFromIso }: Props) => {
-  const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>();
-  const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>();
-  const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined);
-  const [seriesToPreview, setSeriesToPreview] = useState<SeriesDTO | undefined>();
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>()
+  const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>()
+  const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined)
+  const [seriesToPreview, setSeriesToPreview] = useState<SeriesDTO | undefined>()
+  const [selectedRows, setSelectedRows] = useState<string[]>([])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
-      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value],
-    );
+      list.includes(value) ? list.filter((id: string) => id !== value) : [...list, value]
+    )
 
   useEffect(() => {
-    setVariantIdsToMove(selectedRows);
-  }, [selectedRows]);
+    setVariantIdsToMove(selectedRows)
+  }, [selectedRows])
 
   const onClickGetSeries = async () => {
     if (!seriesIdToMoveTo) {
-      setFeilmelding("Fyll inn serie-id");
-      setSeriesToPreview(undefined);
-      return;
+      setFeilmelding('Fyll inn serie-id')
+      setSeriesToPreview(undefined)
+      return
     }
     getSeriesBySeriesId(seriesIdToMoveTo)
       .then((series) => {
-        setSeriesIdToMoveTo(series.id);
-        setSeriesToPreview(series);
+        setSeriesIdToMoveTo(series.id)
+        setSeriesToPreview(series)
         if (seriesFromIso !== series.isoCategory?.isoCode) {
-          setFeilmelding("Seriene har ulik ISO-kode");
+          setFeilmelding('Seriene har ulik ISO-kode')
         } else {
-          setFeilmelding(undefined);
+          setFeilmelding(undefined)
         }
       })
       .catch(() => {
-        setSeriesToPreview(undefined);
-        setFeilmelding("Fant ikke serie");
-      });
-  };
+        setSeriesToPreview(undefined)
+        setFeilmelding('Fant ikke serie')
+      })
+  }
 
   return (
     <Modal
       open={isModalOpen}
       header={{
-        heading: "Flytt varianter til annen serie",
+        heading: 'Flytt varianter til annen serie',
         closeButton: false,
       }}
       onClose={onClose}
@@ -68,20 +70,20 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
               onChange={(event) => setSeriesIdToMoveTo(event.target.value)}
               error={feilmelding !== undefined ? feilmelding : undefined}
             />
-            <Button onClick={onClickGetSeries} type="button" variant="secondary" style={{ marginLeft: "auto" }}>
+            <Button onClick={onClickGetSeries} type="button" variant="secondary" style={{ marginLeft: 'auto' }}>
               Hent produkt
             </Button>
             {seriesToPreview && (
               <BodyShort>
                 <Box background="raised" padding="space-16" borderRadius="8" shadow="dialog">
-                  <b>{seriesToPreview ? `${seriesToPreview.title}` : "Fant ikke serie"}</b>
+                  <b>{seriesToPreview ? `${seriesToPreview.title}` : 'Fant ikke serie'}</b>
                 </Box>
               </BodyShort>
             )}
           </VStack>
 
           {(variants && (
-            <VStack style={{ marginTop: "1.5rem" }}>
+            <VStack style={{ marginTop: '1.5rem' }}>
               <Table>
                 <Table.Header>
                   <Table.Row>
@@ -92,7 +94,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
                       <Checkbox
                         checked={selectedRows.length === variants.length}
                         onChange={() => {
-                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!));
+                          selectedRows.length ? setSelectedRows([]) : setSelectedRows(variants.map(({ id }) => id!))
                         }}
                         hideLabel
                       >
@@ -113,15 +115,15 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
                             hideLabel
                             checked={selectedRows.includes(variant.id!)}
                             onChange={() => {
-                              toggleSelectedRow(variant.id!);
+                              toggleSelectedRow(variant.id!)
                             }}
                             aria-labelledby={`id-${variant.id}`}
                           >
-                            {" "}
+                            {' '}
                           </Checkbox>
                         </Table.DataCell>
                       </Table.Row>
-                    );
+                    )
                   })}
                 </Table.Body>
               </Table>
@@ -133,12 +135,12 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
       <Modal.Footer>
         <Button
           onClick={() => {
-            onClick(seriesIdToMoveTo!, variantIdsToMove!);
-            setVariantIdsToMove([]);
-            setFeilmelding(undefined);
-            setSelectedRows([]);
+            onClick(seriesIdToMoveTo!, variantIdsToMove!)
+            setVariantIdsToMove([])
+            setFeilmelding(undefined)
+            setSelectedRows([])
           }}
-          variant={"primary"}
+          variant={'primary'}
           disabled={
             !seriesIdToMoveTo || !variantIdsToMove || variantIdsToMove.length === 0 || feilmelding !== undefined
           }
@@ -150,7 +152,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default MoveProductVariantsModal;
+export default MoveProductVariantsModal

@@ -1,97 +1,99 @@
+import React, { useRef, useState } from 'react'
+
+import { MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING, fileToUri } from 'utils/file-util'
+import { useSuppliers } from 'utils/swr-hooks'
+
+import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
 import {
   BodyLong,
   BodyShort,
   Box,
   Button,
-  Heading,
   HStack,
+  Heading,
   Label,
   Loader,
   UNSAFE_Combobox,
   VStack,
-} from "@navikt/ds-react";
-import React, { useRef, useState } from "react";
-import { FileExcelIcon, FileImageFillIcon, TrashIcon, UploadIcon } from "@navikt/aksel-icons";
-import { fileToUri, MIME_EXCEL_TYPES_ARRAY, MIME_EXCEL_TYPES_STRING } from "utils/file-util";
-import { useSuppliers } from "utils/swr-hooks";
+} from '@navikt/ds-react'
 
 export interface Upload {
-  file: File;
-  previewUrl?: string;
+  file: File
+  previewUrl?: string
 }
 
 interface Props {
-  validerImporterteProdukter: (upload: Upload) => void;
-  setSupplier_: (supplier: string) => void;
-  tekst: string;
+  validerImporterteProdukter: (upload: Upload) => void
+  setSupplier_: (supplier: string) => void
+  tekst: string
 }
 
 export default function FellesImport({ validerImporterteProdukter, tekst, setSupplier_ }: Props) {
-  const [isUploading] = useState<boolean>(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [upload, setUpload] = useState<Upload | undefined>(undefined);
-  const [supplier, setSupplier] = useState<string | undefined>(undefined);
-  const [fileTypeError, setFileTypeError] = useState("");
-  const [moreThanOnefileError, setMoreThanOnefileError] = useState("");
-  const { suppliers } = useSuppliers(true);
+  const [isUploading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [upload, setUpload] = useState<Upload | undefined>(undefined)
+  const [supplier, setSupplier] = useState<string | undefined>(undefined)
+  const [fileTypeError, setFileTypeError] = useState('')
+  const [moreThanOnefileError, setMoreThanOnefileError] = useState('')
+  const { suppliers } = useSuppliers(true)
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFileTypeError("");
-    setMoreThanOnefileError("");
-    const files = Array.from(event?.currentTarget?.files || []);
+    setFileTypeError('')
+    setMoreThanOnefileError('')
+    const files = Array.from(event?.currentTarget?.files || [])
 
     if (files.length !== 1) {
-      setMoreThanOnefileError("Du kan kun laste opp en fil om gangen.");
-      return;
+      setMoreThanOnefileError('Du kan kun laste opp en fil om gangen.')
+      return
     }
 
-    const file = files[0];
+    const file = files[0]
     fileToUri(file).then((url) => {
-      setUpload({ file, previewUrl: url });
-    });
-  };
+      setUpload({ file, previewUrl: url })
+    })
+  }
 
   const handleDragEvent = (event: React.DragEvent<HTMLDivElement>) => {
-    setFileTypeError("");
-    setMoreThanOnefileError("");
-    event.preventDefault();
-    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY;
+    setFileTypeError('')
+    setMoreThanOnefileError('')
+    event.preventDefault()
+    const acceptedFileTypesDocuments = MIME_EXCEL_TYPES_ARRAY
 
-    const files = Array.from(event.dataTransfer.files);
-    const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type));
+    const files = Array.from(event.dataTransfer.files)
+    const isValidFiles = files.every((file) => acceptedFileTypesDocuments.includes(file.type))
 
     if (!isValidFiles) {
-      setFileTypeError("Ugyldig filtype. Kun xlsx er gyldig dokumenttype.");
-      return;
+      setFileTypeError('Ugyldig filtype. Kun xlsx er gyldig dokumenttype.')
+      return
     }
 
     if (files.length !== 1) {
-      setMoreThanOnefileError("Du kan kun laste opp en fil om gangen.");
-      return;
+      setMoreThanOnefileError('Du kan kun laste opp en fil om gangen.')
+      return
     }
 
-    const file = files[0];
+    const file = files[0]
     fileToUri(file).then((url) => {
-      setUpload({ file, previewUrl: url });
-    });
-  };
+      setUpload({ file, previewUrl: url })
+    })
+  }
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, file: File) => {
-    event.preventDefault();
-    setUpload(undefined);
-  };
+    event.preventDefault()
+    setUpload(undefined)
+  }
 
   const onToggleSelected = (option: string, isSelected: boolean) => {
-    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id;
+    const uuid = suppliers?.find((supplier) => supplier.name === option)?.id
 
     if (uuid) {
       if (isSelected) {
-        setSupplier(uuid);
+        setSupplier(uuid)
       } else {
-        setSupplier(undefined);
+        setSupplier(undefined)
       }
     }
-  };
+  }
 
   return (
     <main>
@@ -118,8 +120,8 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
                 icon={<UploadIcon fontSize="1.5rem" aria-hidden />}
                 iconPosition="right"
                 onClick={(event) => {
-                  event.preventDefault();
-                  fileInputRef?.current?.click();
+                  event.preventDefault()
+                  fileInputRef?.current?.click()
                 }}
               >
                 Last opp
@@ -146,12 +148,12 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
           {moreThanOnefileError && <BodyLong>{moreThanOnefileError}</BodyLong>}
 
           {upload && suppliers && (
-            <Box asChild style={{ maxWidth: "475px" }}>
+            <Box asChild style={{ maxWidth: '475px' }}>
               <UNSAFE_Combobox
                 clearButton
                 clearButtonLabel="Tøm"
                 label="Leverandør"
-                selectedOptions={supplier ? [suppliers.find((s) => s.id === supplier)?.name || ""] : undefined}
+                selectedOptions={supplier ? [suppliers.find((s) => s.id === supplier)?.name || ''] : undefined}
                 onToggleSelected={onToggleSelected}
                 options={suppliers?.map((supplier) => supplier.name) || []}
               />
@@ -161,7 +163,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
           {upload && (
             <VStack as="ol" gap="space-4" className="images-inline">
               <HStack as="li" justify="space-between" align="center" key={`xlxs}`}>
-                <HStack gap={{ xs: "space-1", sm: "space-2", md: "space-4" }} align="center">
+                <HStack gap={{ xs: 'space-1', sm: 'space-2', md: 'space-4' }} align="center">
                   <FileExcelIcon fontSize="1.5rem" aria-hidden />
 
                   <Label>{upload.file.name}</Label>
@@ -183,7 +185,7 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
               variant="secondary"
               iconPosition="right"
               onClick={() => {
-                history.back();
+                history.back()
               }}
             >
               Avbryt
@@ -193,8 +195,8 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
               size="medium"
               variant="primary"
               onClick={() => {
-                validerImporterteProdukter(upload!);
-                setSupplier_(supplier!);
+                validerImporterteProdukter(upload!)
+                setSupplier_(supplier!)
               }}
             >
               Gå videre
@@ -203,5 +205,5 @@ export default function FellesImport({ validerImporterteProdukter, tekst, setSup
         </div>
       </div>
     </main>
-  );
+  )
 }

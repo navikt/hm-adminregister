@@ -7,7 +7,7 @@
   color: var(--ac-textarea-text, var(--__ac-textarea-text, var(--ax-text-neutral)));
 
   &:hover {
-    border-color: var(--ac-textarea-hover-border, var(--__ac-textarea-hover-border, var(--ax-border-accent)))
+    border-color: var(--ac-textarea-hover-border, var(--__ac-textarea-hover-border, var(--ax-border-accent)));
   }
 
   &:focus-within {
@@ -24,5 +24,4 @@
   .ql-editor {
     min-height: 300px;
   }
-
 }

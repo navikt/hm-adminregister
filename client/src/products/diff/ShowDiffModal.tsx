@@ -1,42 +1,45 @@
-import { DifferenceDTO, SeriesDTO } from "utils/types/response-types";
-import { BodyLong, BodyShort, Button, Modal } from "@navikt/ds-react";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+
 import {
+  ProductDifferenceDTO,
   getDifferenceFromPublishedSeries,
   getDifferencesFromPublishedVariants,
-  ProductDifferenceDTO,
-} from "api/VersionApi";
-import styles from "./ShowDiffModal.module.scss";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import { Avstand } from "felleskomponenter/Avstand";
-import { VariantsDiff } from "products/diff/VariantsDiff";
-import { SeriesDiff } from "products/diff/SeriesDiff";
+} from 'api/VersionApi'
+import { Avstand } from 'felleskomponenter/Avstand'
+import { SeriesDiff } from 'products/diff/SeriesDiff'
+import { VariantsDiff } from 'products/diff/VariantsDiff'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { DifferenceDTO, SeriesDTO } from 'utils/types/response-types'
+
+import { BodyLong, BodyShort, Button, Modal } from '@navikt/ds-react'
+
+import styles from './ShowDiffModal.module.scss'
 
 export const ShowDiffModal = ({
   series,
   isOpen,
   setIsOpen,
 }: {
-  series: SeriesDTO;
-  isOpen: boolean;
-  setIsOpen: (newState: boolean) => void;
+  series: SeriesDTO
+  isOpen: boolean
+  setIsOpen: (newState: boolean) => void
 }) => {
-  const { setGlobalError } = useErrorStore();
-  const [seriesDifference, setSeriesDifference] = useState<null | DifferenceDTO>(null);
-  const [variantsDifferences, setVariantsDifferences] = useState<ProductDifferenceDTO[]>([]);
+  const { setGlobalError } = useErrorStore()
+  const [seriesDifference, setSeriesDifference] = useState<null | DifferenceDTO>(null)
+  const [variantsDifferences, setVariantsDifferences] = useState<ProductDifferenceDTO[]>([])
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setIsLoading(false);
+    setIsLoading(false)
     const fetchDifferences = async () => {
-      const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0);
-      setSeriesDifference(seriesDifferenceResult);
+      const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
+      setSeriesDifference(seriesDifferenceResult)
 
-      const variantsDifferencesResult = await getDifferencesFromPublishedVariants(series.variants);
-      setVariantsDifferences(variantsDifferencesResult);
-    };
+      const variantsDifferencesResult = await getDifferencesFromPublishedVariants(series.variants)
+      setVariantsDifferences(variantsDifferencesResult)
+    }
 
     fetchDifferences()
       .then((r) => r)
@@ -44,26 +47,26 @@ export const ShowDiffModal = ({
         if (error.status === 404) {
           // No versions exists
         } else {
-          setGlobalError(error.status, error.message);
+          setGlobalError(error.status, error.message)
         }
-      });
+      })
 
-    setIsLoading(false);
-  }, []);
+    setIsLoading(false)
+  }, [])
 
   const noDiff =
     seriesDifference &&
-    seriesDifference.status === "NO_DIFF" &&
-    !variantsDifferences.find((v) => v.difference.status === "DIFF" || v.difference.status === "NEW");
+    seriesDifference.status === 'NO_DIFF' &&
+    !variantsDifferences.find((v) => v.difference.status === 'DIFF' || v.difference.status === 'NEW')
 
   return (
-    <Modal open={isOpen} header={{ heading: "" }} onClose={() => setIsOpen(false)} className={styles.diffModal}>
+    <Modal open={isOpen} header={{ heading: '' }} onClose={() => setIsOpen(false)} className={styles.diffModal}>
       <Modal.Body>
         <ErrorBoundary FallbackComponent={ErrorFallbackDiffModal}>
           {isLoading ? (
             <>Laster...</>
           ) : (!seriesDifference && series && series.published) ||
-            (series && series.published && seriesDifference && seriesDifference.status === "NEW") ? (
+            (series && series.published && seriesDifference && seriesDifference.status === 'NEW') ? (
             <>Dette er et migrert produkt og det finnes ingen endringslogg per nå, vennligst sjekk produktet manuelt</>
           ) : noDiff ? (
             <>Ingen endringer funnet</>
@@ -84,8 +87,8 @@ export const ShowDiffModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
 const ErrorFallbackDiffModal = ({ error, resetErrorBoundary }: FallbackProps) => {
   return (
@@ -95,5 +98,5 @@ const ErrorFallbackDiffModal = ({ error, resetErrorBoundary }: FallbackProps) =>
       <BodyLong>{error.message}</BodyLong>
       <BodyLong>{error.error}</BodyLong>
     </div>
-  );
-};
+  )
+}

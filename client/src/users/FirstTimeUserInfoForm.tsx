@@ -1,29 +1,31 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonPencilIcon } from "@navikt/aksel-icons";
-import { Button, Heading, Loader, TextField } from "@navikt/ds-react";
-import { HM_REGISTER_URL } from "environments";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { formatPhoneNumber, labelRequired } from "utils/string-util";
-import { UserDTO } from "utils/types/response-types";
-import { userInfoUpdate } from "utils/zodSchema/login";
-import { z } from "zod";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
-type FormData = z.infer<typeof userInfoUpdate>;
+import { HM_REGISTER_URL } from 'environments'
+import { formatPhoneNumber, labelRequired } from 'utils/string-util'
+import { UserDTO } from 'utils/types/response-types'
+import { userInfoUpdate } from 'utils/zodSchema/login'
+import { z } from 'zod'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { PersonPencilIcon } from '@navikt/aksel-icons'
+import { Button, Heading, Loader, TextField } from '@navikt/ds-react'
+
+type FormData = z.infer<typeof userInfoUpdate>
 
 const FirstTimeUserInfoForm = ({
   user,
   isAdmin,
   isHmsUser,
 }: {
-  user: UserDTO;
-  isAdmin: boolean;
-  isHmsUser: boolean;
+  user: UserDTO
+  isAdmin: boolean
+  isHmsUser: boolean
 }) => {
-  const navigate = useNavigate();
-  const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setLoading] = useState(false)
 
   const {
     handleSubmit,
@@ -32,90 +34,90 @@ const FirstTimeUserInfoForm = ({
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(userInfoUpdate),
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {},
-  });
+  })
 
   const handleFieldBlur = (fieldName: string, value: string) => {
-    if (fieldName === "phone") {
-      const formattedValue = formatPhoneNumber(value);
-      setValue("phone", formattedValue, { shouldValidate: true, shouldDirty: true });
+    if (fieldName === 'phone') {
+      const formattedValue = formatPhoneNumber(value)
+      setValue('phone', formattedValue, { shouldValidate: true, shouldDirty: true })
     }
-  };
+  }
 
   const userPasswordUrl = isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/password`
     : isHmsUser
       ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/password`
-      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/password`;
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users/password`
 
   const userInfoUrl = isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/${user.id}`
     : isHmsUser
       ? `${HM_REGISTER_URL()}/admreg/hms-user/api/v1/users/${user.id}`
-      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`;
+      : `${HM_REGISTER_URL()}/admreg/vendor/api/v1/users`
 
   async function onSubmit(data: FormData) {
-    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, "");
+    const cleanedPhoneNumber = data.phone.replace(/[^+\d]+/g, '')
     const passwordBody = JSON.stringify({
       oldPassword: data.oldPassword,
       newPassword: data.confirmPassword,
-    });
+    })
     const userInfoBody = JSON.stringify({
       ...user,
       name: data.name,
       attributes: {
         ...user?.attributes,
-        phone: cleanedPhoneNumber || "",
+        phone: cleanedPhoneNumber || '',
       },
-    });
+    })
     try {
-      setLoading(true);
+      setLoading(true)
       const passwordResponse = await fetch(userPasswordUrl, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
         body: passwordBody,
-      });
+      })
 
       if (!passwordResponse.ok) {
-        throw Error("Feil passord");
+        throw Error('Feil passord')
       }
 
       const userInfoResponse = await fetch(userInfoUrl, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
         body: userInfoBody,
-      });
+      })
 
       if (passwordResponse.ok && userInfoResponse.ok) {
         if (isAdmin) {
-          navigate("/admin/profil");
+          navigate('/admin/profil')
         } else if (isHmsUser) {
-          navigate("/");
+          navigate('/')
         } else {
-          navigate("/logg-inn/leverandoropplysninger");
+          navigate('/logg-inn/leverandoropplysninger')
         }
       }
 
       if (!passwordResponse.ok || !userInfoResponse.ok) {
-        throw Error("Error from post");
+        throw Error('Error from post')
       }
 
-      setLoading(false);
+      setLoading(false)
     } catch (e: any) {
-      setError(e);
-      setLoading(false);
+      setError(e)
+      setLoading(false)
     }
   }
 
   if (isLoading) {
-    return <Loader size="3xlarge" title="Sender..."></Loader>;
+    return <Loader size="3xlarge" title="Sender..."></Loader>
   }
 
   return (
@@ -126,8 +128,8 @@ const FirstTimeUserInfoForm = ({
       </Heading>
       <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
         <TextField
-          {...register("name", { required: true })}
-          label={labelRequired("Navn")}
+          {...register('name', { required: true })}
+          label={labelRequired('Navn')}
           aria-required
           name="name"
           autoComplete="on"
@@ -135,19 +137,19 @@ const FirstTimeUserInfoForm = ({
           error={errors?.name && errors?.name?.message}
         />
         <TextField
-          {...register("phone", { required: false })}
+          {...register('phone', { required: false })}
           label="Telefonnummer"
           autoComplete="on"
           type="text"
           name="phone"
-          onBlur={(event) => handleFieldBlur("phone", event.target.value)}
+          onBlur={(event) => handleFieldBlur('phone', event.target.value)}
           error={errors?.phone && errors?.phone?.message}
         />
 
         <TextField
-          {...register("oldPassword", { required: true })}
+          {...register('oldPassword', { required: true })}
           aria-required
-          label={labelRequired("Gammelt passord")}
+          label={labelRequired('Gammelt passord')}
           type="password"
           name="oldPassword"
           placeholder="********"
@@ -155,9 +157,9 @@ const FirstTimeUserInfoForm = ({
           error={errors?.oldPassword && errors?.oldPassword?.message}
         />
         <TextField
-          {...register("newPassword", { required: true })}
+          {...register('newPassword', { required: true })}
           aria-required
-          label={labelRequired("Lag ett passord")}
+          label={labelRequired('Lag ett passord')}
           description="Minst 8 karakterer langt"
           type="password"
           name="newPassword"
@@ -166,9 +168,9 @@ const FirstTimeUserInfoForm = ({
           error={errors?.newPassword && errors?.newPassword?.message}
         />
         <TextField
-          {...register("confirmPassword", { required: true })}
+          {...register('confirmPassword', { required: true })}
           aria-required
-          label={labelRequired("Gjenta passord")}
+          label={labelRequired('Gjenta passord')}
           type="password"
           name="confirmPassword"
           placeholder="********"
@@ -177,11 +179,11 @@ const FirstTimeUserInfoForm = ({
         />
         {error?.message && <span className="auth-dialog-box__error-message">{error?.message}</span>}
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? <Loader size="small" /> : "Lagre"}
+          {isSubmitting ? <Loader size="small" /> : 'Lagre'}
         </Button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default FirstTimeUserInfoForm;
+export default FirstTimeUserInfoForm

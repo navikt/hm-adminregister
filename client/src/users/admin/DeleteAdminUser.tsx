@@ -1,20 +1,23 @@
-import { PersonCrossIcon } from "@navikt/aksel-icons";
-import { Button, ConfirmationPanel, Heading, Loader } from "@navikt/ds-react";
-import React, { useState } from "react";
-import useSWR from "swr";
-import "./slett-admin.scss";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { UserDTO } from "utils/types/response-types";
-import { fetcherGET } from "utils/swr-hooks";
-import { HM_REGISTER_URL } from "environments";
+import React, { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+
+import { HM_REGISTER_URL } from 'environments'
+import useSWR from 'swr'
+import { fetcherGET } from 'utils/swr-hooks'
+import { UserDTO } from 'utils/types/response-types'
+
+import { PersonCrossIcon } from '@navikt/aksel-icons'
+import { Button, ConfirmationPanel, Heading, Loader } from '@navikt/ds-react'
+
+import './slett-admin.scss'
 
 const DeleteAdminUser = () => {
-  const [searchParams] = useSearchParams();
-  const userId = String(searchParams.get("_")) || "";
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`;
-  const { data, error, isLoading } = useSWR<UserDTO>(userId ? path + userId : null, fetcherGET);
+  const [searchParams] = useSearchParams()
+  const userId = String(searchParams.get('_')) || ''
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/users/`
+  const { data, error, isLoading } = useSWR<UserDTO>(userId ? path + userId : null, fetcherGET)
 
-  if (!data || isLoading) return <Loader size="3xlarge" title="venter..."></Loader>;
+  if (!data || isLoading) return <Loader size="3xlarge" title="venter..."></Loader>
 
   return (
     <main>
@@ -28,48 +31,48 @@ const DeleteAdminUser = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default DeleteAdminUser;
+export default DeleteAdminUser
 
 const DeleteUserForm = ({ user }: { user: UserDTO }) => {
-  const navigate = useNavigate();
-  const [error, setError] = useState<Error | null>(null);
-  const [showError, setShowError] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState(false);
-  const [state, setState] = useState(false);
+  const navigate = useNavigate()
+  const [error, setError] = useState<Error | null>(null)
+  const [showError, setShowError] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState(false)
+  const [state, setState] = useState(false)
 
   async function onSubmit() {
     if (!state) {
-      setShowError(true);
+      setShowError(true)
     } else if (state) {
       try {
-        setLoading(true);
+        setLoading(true)
         const response = await fetch(`${HM_REGISTER_URL()}/admreg/admin/api/v1/users/${user.id}`, {
-          method: "DELETE",
+          method: 'DELETE',
           headers: {
-            accept: "application/json",
+            accept: 'application/json',
           },
-          credentials: "include",
-        });
+          credentials: 'include',
+        })
         if (response.ok) {
-          navigate("/admin/profil");
+          navigate('/admin/profil')
         }
 
         if (!response.ok) {
-          throw Error("Error from post");
+          throw Error('Error from post')
         }
-        setLoading(false);
+        setLoading(false)
       } catch (e: any) {
-        setError(e);
-        setLoading(false);
+        setError(e)
+        setLoading(false)
       }
     }
   }
 
   if (isLoading) {
-    return <Loader size="3xlarge" title="Sender..."></Loader>;
+    return <Loader size="3xlarge" title="Sender..."></Loader>
   }
 
   return (
@@ -78,13 +81,13 @@ const DeleteUserForm = ({ user }: { user: UserDTO }) => {
         checked={state}
         label="Jeg bekrefter at jeg vil slette denne adminbrukeren."
         onChange={() => {
-          setState((x) => !x);
+          setState((x) => !x)
           if (state) {
-            setShowError(false);
+            setShowError(false)
           }
         }}
         className="confirmation-panel-overwrite"
-        error={showError && "Du må bekrefte før du kan fortsette."}
+        error={showError && 'Du må bekrefte før du kan fortsette.'}
       >
         <Heading level="2" size="xsmall">
           Bekrefte handling!
@@ -103,5 +106,5 @@ const DeleteUserForm = ({ user }: { user: UserDTO }) => {
         </Button>
       </div>
     </form>
-  );
-};
+  )
+}

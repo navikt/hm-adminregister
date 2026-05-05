@@ -1,44 +1,46 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import { PlusCircleIcon } from "@navikt/aksel-icons";
-import { Alert, Button, Tabs, VStack } from "@navikt/ds-react";
-import { deleteFileFromSeries, uploadFilesToSeries } from "api/SeriesApi";
-import { mapImagesAndPDFfromMedia } from "products/seriesUtils";
-import { useErrorStore } from "utils/store/useErrorStore";
-import { SeriesDTO } from "utils/types/response-types";
-import styles from "./ImagesTab.module.scss";
-import UploadModal, { FileUpload } from "felleskomponenter/UploadModal";
-import FellesSortingArea from "felleskomponenter/sort/FellesSortingArea";
+import { deleteFileFromSeries, uploadFilesToSeries } from 'api/SeriesApi'
+import UploadModal, { FileUpload } from 'felleskomponenter/UploadModal'
+import FellesSortingArea from 'felleskomponenter/sort/FellesSortingArea'
+import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { PlusCircleIcon } from '@navikt/aksel-icons'
+import { Alert, Button, Tabs, VStack } from '@navikt/ds-react'
+
+import styles from './ImagesTab.module.scss'
 
 interface Props {
-  series: SeriesDTO;
-  isEditable: boolean;
-  showInputError: boolean;
-  mutateSeries: () => void;
+  series: SeriesDTO
+  isEditable: boolean
+  showInputError: boolean
+  mutateSeries: () => void
 }
 
 const ImagesTab = ({ series, isEditable, showInputError, mutateSeries }: Props) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { images } = mapImagesAndPDFfromMedia(series);
-  const { setGlobalError } = useErrorStore();
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const { images } = mapImagesAndPDFfromMedia(series)
+  const { setGlobalError } = useErrorStore()
 
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, fileURI)
       .then(() => mutateSeries())
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
   }
 
   const uploadFiles = async (uploads: FileUpload[]) =>
     uploadFilesToSeries(series.id, uploads)
       .then(() => {
-        mutateSeries();
-        setModalIsOpen(false);
+        mutateSeries()
+        setModalIsOpen(false)
       })
       .catch((error) => {
-        setGlobalError(error);
-      });
+        setGlobalError(error)
+      })
 
   return (
     <>
@@ -65,7 +67,7 @@ const ImagesTab = ({ series, isEditable, showInputError, mutateSeries }: Props) 
               isEditable={isEditable}
             />
           )}
-          {!series && <Alert variant={showInputError ? "error" : "info"}>Produktet har ingen bilder</Alert>}
+          {!series && <Alert variant={showInputError ? 'error' : 'info'}>Produktet har ingen bilder</Alert>}
 
           {isEditable && (
             <Button
@@ -73,7 +75,7 @@ const ImagesTab = ({ series, isEditable, showInputError, mutateSeries }: Props) 
               variant="tertiary"
               icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
-                setModalIsOpen(true);
+                setModalIsOpen(true)
               }}
             >
               Legg til bilder
@@ -82,7 +84,7 @@ const ImagesTab = ({ series, isEditable, showInputError, mutateSeries }: Props) 
         </VStack>
       </Tabs.Panel>
     </>
-  );
-};
+  )
+}
 
-export default ImagesTab;
+export default ImagesTab

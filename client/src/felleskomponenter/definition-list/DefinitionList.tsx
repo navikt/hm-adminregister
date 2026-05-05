@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+
 import styles from './DefinitionList.module.scss'
 
 const DefinitionList = ({

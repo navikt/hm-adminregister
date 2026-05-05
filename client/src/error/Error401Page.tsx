@@ -1,9 +1,10 @@
-import { BodyShort, Box, Button, Heading, HGrid, Link, Page, VStack } from "@navikt/ds-react";
-import { useNavigate } from "react-router-dom";
-import { FallbackProps } from "react-error-boundary";
+import { FallbackProps } from 'react-error-boundary'
+import { useNavigate } from 'react-router-dom'
+
+import { BodyShort, Box, Button, HGrid, Heading, Link, Page, VStack } from '@navikt/ds-react'
 
 export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <Page data-aksel-template="500-v2">
@@ -17,7 +18,7 @@ export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                     Du er logget ut!
                   </Heading>
                   <BodyShort>
-                    Hvis problemet vedvarer, kan du sende oss en e-post{" "}
+                    Hvis problemet vedvarer, kan du sende oss en e-post{' '}
                     <a href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
                       digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no
                     </a>
@@ -25,8 +26,8 @@ export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                 </div>
                 <Button
                   onClick={() => {
-                    resetErrorBoundary();
-                    navigate("/logg-inn");
+                    resetErrorBoundary()
+                    navigate('/logg-inn')
                   }}
                 >
                   Logg inn
@@ -38,13 +39,13 @@ export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
                 </Heading>
                 <BodyShort spacing>
                   This was caused by a technical fault on our servers. Please refresh this page or try again in a few
-                  minutes.{" "}
+                  minutes.{' '}
                 </BodyShort>
                 <BodyShort>
                   <Link target="_blank" href="mailto:digitalisering.av.hjelpemidler.og.tilrettelegging@nav.no">
                     Contact us by mail
                   </Link>
-                  {""}
+                  {''}
                   if the problem persists.
                 </BodyShort>
               </div>
@@ -53,5 +54,5 @@ export const Error401Page = ({ error, resetErrorBoundary }: FallbackProps) => {
         </Box>
       </Page.Block>
     </Page>
-  );
-};
+  )
+}

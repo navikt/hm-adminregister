@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
-import { CogIcon, PencilIcon, TrashIcon } from "@navikt/aksel-icons";
-import { Button, Dropdown, HStack, VStack } from "@navikt/ds-react";
-import { exportProducts } from "api/ImportExportApi";
-import { useAuthStore } from "utils/store/useAuthStore";
-import { SeriesDTO } from "utils/types/response-types";
-import { MIME_TYPE_XLSX } from "utils/file-util";
+import { exportProducts } from 'api/ImportExportApi'
+import { MIME_TYPE_XLSX } from 'utils/file-util'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { SeriesDTO } from 'utils/types/response-types'
+
+import { CogIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Button, Dropdown, HStack, VStack } from '@navikt/ds-react'
 
 const SupplierActions = ({
   series,
@@ -16,39 +17,39 @@ const SupplierActions = ({
   setExpiredSeriesModalIsOpen,
   setEditProductModalIsOpen,
 }: {
-  series: SeriesDTO;
-  setIsValid: (newState: boolean) => void;
-  productIsValid: () => boolean;
-  setApprovalModalIsOpen: (newState: boolean) => void;
-  setDeleteConfirmationModalIsOpen: (newState: boolean) => void;
+  series: SeriesDTO
+  setIsValid: (newState: boolean) => void
+  productIsValid: () => boolean
+  setApprovalModalIsOpen: (newState: boolean) => void
+  setDeleteConfirmationModalIsOpen: (newState: boolean) => void
   setExpiredSeriesModalIsOpen: ({
     open,
     newStatus,
   }: {
-    open: boolean;
-    newStatus: "ACTIVE" | "INACTIVE" | undefined;
-  }) => void;
-  setEditProductModalIsOpen: (newState: boolean) => void;
+    open: boolean
+    newStatus: 'ACTIVE' | 'INACTIVE' | undefined
+  }) => void
+  setEditProductModalIsOpen: (newState: boolean) => void
 }) => {
-  const isEditable = series.status === "EDITABLE";
-  const canSetExpiredStatus = series.status === "EDITABLE" && series.isPublished;
-  const canSetToEditMode = series.status !== "EDITABLE";
-  const isPendingApproval = series.status === "PENDING_APPROVAL";
-  const { loggedInUser } = useAuthStore();
-  const navigate = useNavigate();
+  const isEditable = series.status === 'EDITABLE'
+  const canSetExpiredStatus = series.status === 'EDITABLE' && series.isPublished
+  const canSetToEditMode = series.status !== 'EDITABLE'
+  const isPendingApproval = series.status === 'PENDING_APPROVAL'
+  const { loggedInUser } = useAuthStore()
+  const navigate = useNavigate()
 
   const exportProductsForSupplier = () => {
     exportProducts(loggedInUser?.isAdmin || false, series.id).then((response) => {
-      const bytes = new Uint8Array(response); // pass your byte response to this constructor
-      const blob = new Blob([bytes], { type: MIME_TYPE_XLSX });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "products.xlsx");
-      document.body.appendChild(link);
-      link.click();
-    });
-  };
+      const bytes = new Uint8Array(response) // pass your byte response to this constructor
+      const blob = new Blob([bytes], { type: MIME_TYPE_XLSX })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'products.xlsx')
+      document.body.appendChild(link)
+      link.click()
+    })
+  }
 
   return (
     <VStack gap="space-8">
@@ -56,10 +57,10 @@ const SupplierActions = ({
       <HStack gap="space-8">
         {isEditable && (
           <Button
-            style={{ flexGrow: 1, paddingInline: "0.75rem" }}
+            style={{ flexGrow: 1, paddingInline: '0.75rem' }}
             onClick={() => {
-              setIsValid(productIsValid());
-              setApprovalModalIsOpen(true);
+              setIsValid(productIsValid())
+              setApprovalModalIsOpen(true)
             }}
           >
             Send til godkjenning
@@ -92,13 +93,13 @@ const SupplierActions = ({
                 {canSetExpiredStatus &&
                   (series.isExpired ? (
                     <Dropdown.Menu.List.Item
-                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "ACTIVE" })}
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: 'ACTIVE' })}
                     >
                       Marker som aktiv
                     </Dropdown.Menu.List.Item>
                   ) : (
                     <Dropdown.Menu.List.Item
-                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: "INACTIVE" })}
+                      onClick={() => setExpiredSeriesModalIsOpen({ open: true, newStatus: 'INACTIVE' })}
                       // disabled={isInAgreement && !supplierCanChangeAgreementProduct(loggedInUser)}
                     >
                       Marker som utgått
@@ -119,7 +120,7 @@ const SupplierActions = ({
         )}
       </HStack>
     </VStack>
-  );
-};
+  )
+}
 
-export default SupplierActions;
+export default SupplierActions

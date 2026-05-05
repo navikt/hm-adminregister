@@ -1,24 +1,27 @@
-import { Alert, Box, Button, Heading, HStack, Loader, VStack } from "@navikt/ds-react";
-import { SandboxIcon } from "@navikt/aksel-icons";
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useProductByProductId } from "utils/swr-hooks";
-import { useProductVariantsByProductIds } from "api/ProductApi";
-import WorksWithVariantsTable from "./WorksWithVariantsTable";
-import ErrorAlert from "error/ErrorAlert";
+import React from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
+import { useProductVariantsByProductIds } from 'api/ProductApi'
+import ErrorAlert from 'error/ErrorAlert'
+import { useProductByProductId } from 'utils/swr-hooks'
+
+import { SandboxIcon } from '@navikt/aksel-icons'
+import { Alert, Box, Button, HStack, Heading, Loader, VStack } from '@navikt/ds-react'
+
+import WorksWithVariantsTable from './WorksWithVariantsTable'
 
 const ViewWorksWith = () => {
-  const { productId } = useParams();
-  const navigate = useNavigate();
-  const { product, isLoading, error } = useProductByProductId(productId!);
-  const { products } = useProductVariantsByProductIds(product?.productData.attributes.worksWith?.productIds);
+  const { productId } = useParams()
+  const navigate = useNavigate()
+  const { product, isLoading, error } = useProductByProductId(productId!)
+  const { products } = useProductVariantsByProductIds(product?.productData.attributes.worksWith?.productIds)
 
   if (error) {
     return (
       <main className="show-menu">
         <ErrorAlert />
       </main>
-    );
+    )
   }
 
   if (isLoading || !product) {
@@ -26,7 +29,7 @@ const ViewWorksWith = () => {
       <VStack gap="space-16">
         <Loader />
       </VStack>
-    );
+    )
   }
 
   return (
@@ -65,7 +68,7 @@ const ViewWorksWith = () => {
         </VStack>
       </Box>
     </VStack>
-  );
-};
+  )
+}
 
-export default ViewWorksWith;
+export default ViewWorksWith

@@ -1,18 +1,20 @@
-import { Button, DatePicker, HStack, Label, Loader, Modal, useDatepicker, VStack } from "@navikt/ds-react";
-import React, { useState } from "react";
-import { ProductAgreementRegistrationDTO } from "utils/types/response-types";
-import { labelRequired } from "utils/string-util";
-import { toDate, toDateTimeString } from "utils/date-util";
-import Content from "felleskomponenter/styledcomponents/Content";
-import { EditProductAgreementDatesFormDataDto } from "utils/zodSchema/editProductAgreementDates";
-import { changePublishedExpiredOnProductAgreements } from "api/AgreementProductApi";
+import React, { useState } from 'react'
+
+import { changePublishedExpiredOnProductAgreements } from 'api/AgreementProductApi'
+import Content from 'felleskomponenter/styledcomponents/Content'
+import { toDate, toDateTimeString } from 'utils/date-util'
+import { labelRequired } from 'utils/string-util'
+import { ProductAgreementRegistrationDTO } from 'utils/types/response-types'
+import { EditProductAgreementDatesFormDataDto } from 'utils/zodSchema/editProductAgreementDates'
+
+import { Button, DatePicker, HStack, Label, Loader, Modal, VStack, useDatepicker } from '@navikt/ds-react'
 
 interface Props {
-  modalIsOpen: boolean;
-  setModalIsOpen: (open: boolean) => void;
-  mutateProductAgreements: () => void;
-  productAgreementsToUpdate: ProductAgreementRegistrationDTO[];
-  mutateDelkontrakter: () => void;
+  modalIsOpen: boolean
+  setModalIsOpen: (open: boolean) => void
+  mutateProductAgreements: () => void
+  productAgreementsToUpdate: ProductAgreementRegistrationDTO[]
+  mutateDelkontrakter: () => void
 }
 
 const EditProductAgreementDateModal = ({
@@ -22,79 +24,79 @@ const EditProductAgreementDateModal = ({
   productAgreementsToUpdate,
   mutateDelkontrakter,
 }: Props) => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [feilmeldingPublished, setFeilmeldingPublished] = useState<string | null>(null);
-  const [feilmeldingExpired, setFeilmeldingExpired] = useState<string | null>(null);
-  const [published, setPublished] = useState<Date | undefined>(toDate(productAgreementsToUpdate[0]?.published));
-  const [expired, setExpired] = useState<Date | undefined>(toDate(productAgreementsToUpdate[0]?.expired));
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [feilmeldingPublished, setFeilmeldingPublished] = useState<string | null>(null)
+  const [feilmeldingExpired, setFeilmeldingExpired] = useState<string | null>(null)
+  const [published, setPublished] = useState<Date | undefined>(toDate(productAgreementsToUpdate[0]?.published))
+  const [expired, setExpired] = useState<Date | undefined>(toDate(productAgreementsToUpdate[0]?.expired))
 
   const { datepickerProps: datepickerPropsPublished, inputProps: inputPropsPublished } = useDatepicker({
     defaultSelected: published,
     onDateChange: (value) => {
       if (value) {
-        setPublished(value);
-        setFeilmeldingPublished(null);
+        setPublished(value)
+        setFeilmeldingPublished(null)
       } else {
-        setFeilmeldingPublished("Du må velge en dato");
+        setFeilmeldingPublished('Du må velge en dato')
       }
     },
-  });
+  })
 
   const { datepickerProps: datepickerPropsExpired, inputProps: inputPropsExpired } = useDatepicker({
     defaultSelected: expired,
     onDateChange: (value) => {
       if (value) {
-        setExpired(value);
-        setFeilmeldingExpired(null);
+        setExpired(value)
+        setFeilmeldingExpired(null)
       } else {
-        setFeilmeldingExpired("Du må velge en dato");
+        setFeilmeldingExpired('Du må velge en dato')
       }
     },
-  });
+  })
 
   async function onSubmit() {
     if (feilmeldingExpired || feilmeldingPublished || !published || !expired) {
-      setIsSaving(false);
-      return;
+      setIsSaving(false)
+      return
     }
 
-    setIsSaving(true);
+    setIsSaving(true)
 
     const editAgreementFormDataDto: EditProductAgreementDatesFormDataDto = {
       published: toDateTimeString(published),
       expired: toDateTimeString(expired),
-    };
+    }
 
     changePublishedExpiredOnProductAgreements(
       productAgreementsToUpdate.map((product) => product.id),
-      editAgreementFormDataDto,
+      editAgreementFormDataDto
     ).then(() => {
-      setIsSaving(false);
-      mutateProductAgreements();
-      mutateDelkontrakter();
-      setModalIsOpen(false);
-    });
+      setIsSaving(false)
+      mutateProductAgreements()
+      mutateDelkontrakter()
+      setModalIsOpen(false)
+    })
   }
 
   return (
     <Modal
       open={modalIsOpen}
       header={{
-        heading: "Rediger periode for tilknytting",
+        heading: 'Rediger periode for tilknytting',
         closeButton: false,
       }}
       onClose={() => setModalIsOpen(false)}
     >
       <Modal.Body>
         <Content>
-          <VStack gap="space-6" style={{ width: "100%" }}>
+          <VStack gap="space-6" style={{ width: '100%' }}>
             <div>
               <Label>Avtaleperiode</Label>
-              <HStack gap="space-16" justify="start" style={{ marginTop: "0.5rem" }}>
+              <HStack gap="space-16" justify="start" style={{ marginTop: '0.5rem' }}>
                 <DatePicker {...datepickerPropsPublished}>
                   <DatePicker.Input
                     {...inputPropsPublished}
-                    label={labelRequired("Fra")}
+                    label={labelRequired('Fra')}
                     id="published"
                     name="published"
                     error={feilmeldingPublished}
@@ -103,7 +105,7 @@ const EditProductAgreementDateModal = ({
                 <DatePicker {...datepickerPropsExpired}>
                   <DatePicker.Input
                     {...inputPropsExpired}
-                    label={labelRequired("Til")}
+                    label={labelRequired('Til')}
                     id="expired"
                     name="expired"
                     error={feilmeldingExpired}
@@ -122,7 +124,7 @@ const EditProductAgreementDateModal = ({
       <Modal.Footer>
         <Button
           onClick={() => {
-            setModalIsOpen(false);
+            setModalIsOpen(false)
           }}
           variant="tertiary"
           type="reset"
@@ -134,7 +136,7 @@ const EditProductAgreementDateModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default EditProductAgreementDateModal;
+export default EditProductAgreementDateModal
