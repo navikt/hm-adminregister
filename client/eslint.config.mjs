@@ -4,9 +4,10 @@ import tseslint from "typescript-eslint";
 import react from "eslint-plugin-react";
 import esprettierRec from "eslint-plugin-prettier/recommended";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
+  globalIgnores(["node_modules/**", "dist"]),
   {
     extends: [
       js.configs.recommended,
@@ -17,6 +18,7 @@ export default defineConfig([
       ...tseslint.configs.recommended,
     ],
     files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    ignores: ["node_modules/**", "dist"],
     plugins: { js, react },
     rules: {
       "react/display-name": "off",
@@ -45,6 +47,5 @@ export default defineConfig([
         version: "detect",
       },
     },
-    ignores: ["node_modules/**", "dist"],
   },
 ]);
