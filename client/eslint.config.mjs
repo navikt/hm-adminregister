@@ -11,6 +11,7 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       react.configs.flat.recommended,
+      react.configs.flat["jsx-runtime"],
       esprettierRec,
       jsxA11y.flatConfigs.recommended,
       ...tseslint.configs.recommended,
@@ -38,6 +39,11 @@ export default defineConfig([
       },
       parser: tseslint.parser,
       globals: { ...globals.browser, ...globals.node },
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
     ignores: ["node_modules/**", "dist"],
   },
