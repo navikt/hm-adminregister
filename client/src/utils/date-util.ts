@@ -20,6 +20,17 @@ export const toDate = (date: string): Date => {
   return parseISO(date);
 };
 
+export const mergeDateWithTime = (date: Date, time: string): Date => {
+  const [hours, minutes] = time.split(":").map((value) => Number(value));
+  const mergedDate = new Date(date);
+  mergedDate.setHours(Number.isNaN(hours) ? 0 : hours, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+  return mergedDate;
+};
+
+export const toTimeString = (date: Date): string => {
+  return format(date, "HH:mm");
+};
+
 export const todayTimestamp = (): string => {
   return toDateTimeString(new Date());
 };
