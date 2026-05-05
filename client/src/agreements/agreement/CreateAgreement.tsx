@@ -9,7 +9,7 @@ import { AgreementDraftWithDTO } from "utils/types/response-types";
 import { labelRequired } from "utils/string-util";
 import { useAuthStore } from "utils/store/useAuthStore";
 import { createNewAgreementSchema } from "utils/zodSchema/newAgreement";
-import { toDateTimeString } from "utils/date-util";
+import { mergeDateWithTime, toDateTimeString } from "utils/date-util";
 import { postAgreementDraft } from "api/AgreementApi";
 import Content from "felleskomponenter/styledcomponents/Content";
 
@@ -19,11 +19,14 @@ export default function CreateAgreement() {
   const { setGlobalError } = useErrorStore();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [avtaleperiodeStartTid, setAvtaleperiodeStartTid] = useState<string>("00:00");
+  const [avtaleperiodeSluttTid, setAvtaleperiodeSluttTid] = useState<string>("23:59");
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isSubmitting, isValid },
     setValue,
+    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(createNewAgreementSchema),
     mode: "onSubmit",
@@ -34,7 +37,7 @@ export default function CreateAgreement() {
     useDatepicker({
       fromDate: undefined,
       onDateChange: (value) => {
-        if (value) setValue("avtaleperiodeStart", value);
+        if (value) setValue("avtaleperiodeStart", mergeDateWithTime(value, avtaleperiodeStartTid));
       },
     });
 
@@ -42,17 +45,19 @@ export default function CreateAgreement() {
     useDatepicker({
       fromDate: undefined,
       onDateChange: (value) => {
-        if (value) setValue("avtaleperiodeSlutt", value);
+        if (value) setValue("avtaleperiodeSlutt", mergeDateWithTime(value, avtaleperiodeSluttTid));
       },
     });
 
   async function onSubmit(data: FormData) {
     setIsSaving(true);
+    const avtaleperiodeStart = mergeDateWithTime(data.avtaleperiodeStart, avtaleperiodeStartTid);
+    const avtaleperiodeSlutt = mergeDateWithTime(data.avtaleperiodeSlutt, avtaleperiodeSluttTid);
     const newAgreement: AgreementDraftWithDTO = {
       title: data.agreementName,
       reference: data.anbudsnummer,
-      expired: toDateTimeString(data.avtaleperiodeSlutt),
-      published: toDateTimeString(data.avtaleperiodeStart),
+      expired: toDateTimeString(avtaleperiodeSlutt),
+      published: toDateTimeString(avtaleperiodeStart),
     };
 
     postAgreementDraft(loggedInUser?.isAdmin || false, newAgreement)
@@ -89,24 +94,60 @@ export default function CreateAgreement() {
             <div>
               <Label>Avtaleperiode</Label>
               <HStack gap="space-4" justify="space-between" style={{ marginTop: "0.5rem" }}>
-                <DatePicker {...datepickerPropsAvtaleperiodeStart}>
-                  <DatePicker.Input
-                    {...inputPropsAvtaleperiodeStart}
-                    label={labelRequired("Fra")}
-                    id="avtaleperiodeStart"
-                    name="avtaleperiodeStart"
-                    error={errors?.avtaleperiodeStart?.message}
+                <VStack gap="space-2">
+                  <DatePicker {...datepickerPropsAvtaleperiodeStart}>
+                    <DatePicker.Input
+                      {...inputPropsAvtaleperiodeStart}
+                      label={labelRequired("Fra")}
+                      id="avtaleperiodeStart"
+                      name="avtaleperiodeStart"
+                      error={errors?.avtaleperiodeStart?.message}
+                    />
+                  </DatePicker>
+                  <TextField
+                    label={labelRequired("Tid")}
+                    id="avtaleperiodeStartTid"
+                    name="avtaleperiodeStartTid"
+                    type="time"
+                    step={60}
+                    value={avtaleperiodeStartTid}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setAvtaleperiodeStartTid(value);
+                      const currentDate = getValues("avtaleperiodeStart");
+                      if (currentDate) {
+                        setValue("avtaleperiodeStart", mergeDateWithTime(currentDate, value));
+                      }
+                    }}
                   />
-                </DatePicker>
-                <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
-                  <DatePicker.Input
-                    {...inputPropsAvtaleperiodeSlutt}
-                    label={labelRequired("Til")}
-                    id="avtaleperiodeSlutt"
-                    name="avtaleperiodeSlutt"
-                    error={errors?.avtaleperiodeSlutt?.message}
+                </VStack>
+                <VStack gap="space-2">
+                  <DatePicker {...datepickerPropsAvtaleperiodeSlutt}>
+                    <DatePicker.Input
+                      {...inputPropsAvtaleperiodeSlutt}
+                      label={labelRequired("Til")}
+                      id="avtaleperiodeSlutt"
+                      name="avtaleperiodeSlutt"
+                      error={errors?.avtaleperiodeSlutt?.message}
+                    />
+                  </DatePicker>
+                  <TextField
+                    label={labelRequired("Tid")}
+                    id="avtaleperiodeSluttTid"
+                    name="avtaleperiodeSluttTid"
+                    type="time"
+                    step={60}
+                    value={avtaleperiodeSluttTid}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setAvtaleperiodeSluttTid(value);
+                      const currentDate = getValues("avtaleperiodeSlutt");
+                      if (currentDate) {
+                        setValue("avtaleperiodeSlutt", mergeDateWithTime(currentDate, value));
+                      }
+                    }}
                   />
-                </DatePicker>
+                </VStack>
               </HStack>
             </div>
             <TextField
