@@ -1,8 +1,21 @@
-import { type HtmlTagDescriptor, type Plugin, defineConfig } from 'vite'
+import { type HtmlTagDescriptor, type Plugin, createLogger, defineConfig } from 'vite'
 
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
+
+const logger = createLogger()
+const loggerWarn = logger.warn
+
+logger.warn = (msg, options) => {
+  // Ignore "COMMONJS_VARIABLE_IN_ESM" warnings from DashJS as it's a known issue in their ESM distribution,
+  // and the log message is extremely long and unnecessarily bloats the output
+  // See: https://github.com/Dash-Industry-Forum/dash.js/issues/4837
+  if (msg.includes('COMMONJS_VARIABLE_IN_ESM') && msg.includes('node_modules/dashjs/dist/modern/esm/dash.all.min.js')) {
+    return
+  }
+  loggerWarn(msg, options)
+}
 
 function htmlPlugin({ development }: { development?: boolean }): Plugin {
   return {
@@ -58,4 +71,5 @@ export default defineConfig((env) => ({
     },
     setupFiles: ['vitest-setup.ts'],
   },
+  customLogger: logger,
 }))
