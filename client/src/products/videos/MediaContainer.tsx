@@ -14,7 +14,7 @@ export const MediaContainer = ({ uri, text, size }: { uri?: string; text?: strin
       <div>
         {!mediaLoadingError || uri ? (
           <ReactPlayer
-            url={uri}
+            src={uri}
             width={'100%'}
             height="100%"
             playing={false}
@@ -23,7 +23,6 @@ export const MediaContainer = ({ uri, text, size }: { uri?: string; text?: strin
             onError={() => {
               setMediaLoadingError(true)
             }}
-            alt={text ?? 'OBS mangler alt-tekst'}
           />
         ) : (
           <HStack height="100%" justify="center" align="center">
