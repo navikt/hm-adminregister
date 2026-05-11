@@ -3,21 +3,7 @@ import { phoneUtil } from 'utils/zodSchema/zod-utils.ts'
 
 export const editSupplierSchema = z.object({
   name: z.string().min(1, { message: 'Firmanavn er påkrevd' }).min(2, { message: 'Navn må inneholde minst 2 tegn' }),
-  email: z
-    .email('Ugyldig e-postformat')
-    .transform((value) => value.trim()) // Trim whitespace
-    .refine(
-      (value) => {
-        if (value === '') {
-          return true
-        }
-        const emailPattern = /^[\w\.-]+@[\w\.-]+\.\w+$/i
-        return emailPattern.test(value)
-      },
-      {
-        message: 'Ugyldig e-postformat',
-      }
-    ),
+  email: z.email('Ugyldig e-postformat').transform((value) => value.trim()),
   homepage: z
     .string()
     .transform((value) => value.trim()) // Trim whitespace
@@ -39,5 +25,3 @@ export const editSupplierSchema = z.object({
   postNr: z.string(),
   postLocation: z.string(),
 })
-
-type newSupplier = z.infer<typeof editSupplierSchema>

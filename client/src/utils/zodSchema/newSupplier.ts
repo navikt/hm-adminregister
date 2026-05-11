@@ -22,5 +22,3 @@ export const newSupplierSchema = z.object({
     ),
   phone: phoneUtil,
 })
-
-type newSupplier = z.infer<typeof newSupplierSchema>

@@ -9,5 +9,3 @@ export const editDelkontraktSchema = z.object({
     }),
   beskrivelse: z.string().min(1, { message: 'Beskrivelse kan ikke være tom' }),
 })
-
-type editAgreementSchema = z.infer<typeof editDelkontraktSchema>

@@ -36,7 +36,6 @@ export const userInfoUpdate = z
   })
 
 export const supplierInfoUpdate = z.object({
-  // name: z.string(),
   homepage: z.string(),
   email: z.email(),
   phone: phoneUtil,
