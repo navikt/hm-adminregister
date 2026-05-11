@@ -1,4 +1,5 @@
 import z from 'zod'
+import { phoneUtil } from 'utils/zodSchema/zod-utils.ts'
 
 export const newSupplierSchema = z.object({
   name: z.string().min(1, { message: 'Firmanavn er påkrevd' }).min(2, { message: 'Navn må inneholde minst 2 tegn' }),
@@ -19,18 +20,7 @@ export const newSupplierSchema = z.object({
         message: 'Ugyldig format',
       }
     ),
-  phone: z
-    .string()
-    .transform((value) => value.trim())
-    .refine(
-      (value) => {
-        if (value === '') {
-          return true
-        }
-        return /^[+\d]+$/.test(value)
-      },
-      { message: 'Telefonnummer må bestå av siffer' }
-    ),
+  phone: phoneUtil,
 })
 
 type newSupplier = z.infer<typeof newSupplierSchema>

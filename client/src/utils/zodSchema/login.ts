@@ -1,4 +1,5 @@
 import z from 'zod'
+import { phoneUtil } from 'utils/zodSchema/zod-utils.ts'
 
 export const loginSchema = z.object({
   username: z.email('Feil e-postformat'),
@@ -38,48 +39,15 @@ export const supplierInfoUpdate = z.object({
   // name: z.string(),
   homepage: z.string(),
   email: z.email(),
-  phone: z
-    .string()
-    .transform((value) => value.trim())
-    .refine(
-      (value) => {
-        if (value === '') {
-          return true
-        }
-        return /^[+\s\d]+$/.test(value.trim())
-      },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
-    ),
+  phone: phoneUtil,
 })
 
 export const supplierUserInfoUpdate = z.object({
   name: z.string().min(1, 'Navn er påkrevd'),
-  phone: z
-    .string()
-    .transform((value) => value.trim())
-    .refine(
-      (value) => {
-        if (value === '') {
-          return true
-        }
-        return /^[+\s\d]+$/.test(value.trim())
-      },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
-    ),
+  phone: phoneUtil,
 })
 
 export const adminInfoUpdate = z.object({
   name: z.string().min(1, 'Navn er påkrevd'),
-  phone: z
-    .string()
-    .transform((value) => value.trim())
-    .refine(
-      (value) => {
-        if (value === '') {
-          return true
-        }
-        return /^[+\s\d]+$/.test(value.trim())
-      },
-      { message: 'Telefonnummer må være på +47 xxxxxxxx format' }
-    ),
+  phone: phoneUtil,
 })
