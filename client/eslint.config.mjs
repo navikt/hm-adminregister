@@ -1,5 +1,4 @@
 import jsxA11y from 'eslint-plugin-jsx-a11y'
-import esprettierRec from 'eslint-plugin-prettier/recommended'
 import react from 'eslint-plugin-react'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
@@ -14,12 +13,11 @@ export default defineConfig([
       js.configs.recommended,
       react.configs.flat.recommended,
       react.configs.flat['jsx-runtime'],
-      esprettierRec,
       jsxA11y.flatConfigs.recommended,
       ...tseslint.configs.recommended,
     ],
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    ignores: ['node_modules/**', 'dist'],
+    ignores: ['node_modules/**', 'dist', '**/*.d.ts'],
     plugins: { js, react },
     rules: {
       'react/display-name': 'off',
