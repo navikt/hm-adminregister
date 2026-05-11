@@ -1,7 +1,7 @@
 import z from 'zod'
 
 export const loginSchema = z.object({
-  username: z.string().email('Feil e-postformat'),
+  username: z.email('Feil e-postformat'),
   password: z.string().min(8, 'Passord må inneholde minst 8 tegn.'),
 })
 
@@ -37,7 +37,7 @@ export const userInfoUpdate = z
 export const supplierInfoUpdate = z.object({
   // name: z.string(),
   homepage: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   phone: z
     .string()
     .transform((value) => value.trim())
