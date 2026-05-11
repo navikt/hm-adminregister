@@ -3,7 +3,7 @@ import z from 'zod'
 export const editSupplierSchema = z.object({
   name: z.string().min(1, { message: 'Firmanavn er påkrevd' }).min(2, { message: 'Navn må inneholde minst 2 tegn' }),
   email: z
-    .string()
+    .email('Ugyldig e-postformat')
     .transform((value) => value.trim()) // Trim whitespace
     .refine(
       (value) => {

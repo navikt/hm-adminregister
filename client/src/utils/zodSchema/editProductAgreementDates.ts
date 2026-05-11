@@ -2,12 +2,12 @@ import z from 'zod'
 
 const editProductAgreementDatesSchema = z.object({
   published: z.date({
-    required_error: 'Tilknyttningens startdato kan ikke være tom',
-    invalid_type_error: 'Dato er ikke gyldig',
+    error: (issue) =>
+      issue.input === undefined ? 'Tilknyttningens startdato kan ikke være tom' : 'Dato er ikke gyldig',
   }),
   expired: z.date({
-    required_error: 'Tilknyttningens sluttdato kan ikke være tom',
-    invalid_type_error: 'Dato er ikke gyldig',
+    error: (issue) =>
+      issue.input === undefined ? 'Tilknyttningens sluttdato kan ikke være tom' : 'Dato er ikke gyldig',
   }),
 })
 
