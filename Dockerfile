@@ -25,7 +25,7 @@ WORKDIR /app
 COPY server/package.json server/package-lock.json ./
 RUN npm install --omit=dev
 
-FROM gcr.io/distroless/nodejs20-debian12 AS runtime
+FROM gcr.io/distroless/nodejs24-debian13 AS runtime
 
 WORKDIR /app
 
