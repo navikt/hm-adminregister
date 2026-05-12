@@ -34,7 +34,6 @@
     "react-i18next": "^15.1.0",
     "react-player": "^3.4.0",
     "react-router-dom": "^6.30.3",
-    "sass": "^1.80.3",
     "styled-components": "^6.1.13",
     "swr": "^2.2.5",
     "uuid": "^14.0.0",
