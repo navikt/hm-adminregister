@@ -35,7 +35,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm run ciAll
         env:
           NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
 
