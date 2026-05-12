@@ -19,7 +19,6 @@
     "@navikt/aksel-icons": "^8.10.0",
     "@navikt/ds-css": "^8.10.0",
     "@navikt/ds-react": "^8.10.0",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "html-react-parser": "^5.1.18",

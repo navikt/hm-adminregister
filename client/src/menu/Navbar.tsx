@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-
-import classNames from 'classnames'
+import { clsx } from 'clsx'
 import { useAuthStore } from 'utils/store/useAuthStore'
 
 import {
@@ -13,10 +12,10 @@ import {
   NewspaperIcon,
   PackageFillIcon,
   PencilLineIcon,
+  PersonGroupIcon,
   WrenchIcon,
   XMarkIcon,
 } from '@navikt/aksel-icons'
-import { PersonGroupIcon } from '@navikt/aksel-icons'
 import { Button, HStack, VStack } from '@navikt/ds-react'
 
 import ProfileMenu from './ProfileMenu'
@@ -25,7 +24,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <>
-      <nav className={classNames('menu', { open: menuOpen })} aria-label="hovednavigering">
+      <nav className={clsx('menu', { open: menuOpen })} aria-label="hovednavigering">
         <span className="menu__logo">
           <span style={{ fontSize: '1.5rem' }}>FinnHjelpemiddel</span>
           <span style={{ fontSize: '1.125rem' }}> Admin og registrering</span>
@@ -46,7 +45,7 @@ const Navbar = () => {
           <NavigationLinks menuOpen={true} />
           <ProfileMenu />
         </VStack>
-        <div className={classNames('menu__mobile', { open: menuOpen })}>
+        <div className={clsx('menu__mobile', { open: menuOpen })}>
           <NavigationLinks menuOpen={menuOpen} />
           {menuOpen && <ProfileMenu />}
         </div>

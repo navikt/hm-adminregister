@@ -1,5 +1,4 @@
-import classNames from 'classnames'
-
+import { clsx } from 'clsx'
 import styles from './DefinitionList.module.scss'
 
 const DefinitionList = ({
@@ -15,7 +14,7 @@ const DefinitionList = ({
 }) => {
   return (
     <dl
-      className={classNames(
+      className={clsx(
         styles.definitionList,
         { [styles.definitionListFullWidth]: fullWidth },
         { [styles.definitionListHorizontal]: horizontal },
