@@ -3,10 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "ciAll": "run-p ci:*",
-    "ci:root": "npm ci",
-    "ci:client": "npm --prefix client ci",
-    "ci:server": "npm --prefix server ci",
+    "ciAll": "npm ci; npm --prefix client ci && npm --prefix server ci",
     "postinstall": "npm --prefix client install && npm --prefix server install",
     "dev": "npm run --prefix client dev",
     "test": "npm run --prefix client test",
