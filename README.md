@@ -4,6 +4,16 @@ Front-end for å administrere rammeavtaler og produkter i hjelpemiddeldatabasen.
 
 Brukere er leverandører med produkter på rammeavtale og NAV-ansatte som forvalter rammeavtaler og produkter.
 
+## Sikkerhet 🤠
+Vi har ignore-scripts i npm-instillingene våre, så post- og pre-prefiksa kommandoer vil ikke gjøres automagisk fra rota i prosjektet.
+
+Kjør følgende for å intallere alt:
+```
+npm run ciAll
+# eller
+npm install; npm run postinstall
+```
+
 ## Lokal utvikling
 
 Lokal utvikling krever per nå at bakenforliggende apper kjører lokalt:
