@@ -12,9 +12,9 @@ import {
   Box,
   Button,
   Dropdown,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   LinkPanel,
   Loader,
   Pagination,
@@ -195,6 +195,11 @@ const Agreements = () => {
                         <LinkPanel.Title className="panel-list__title panel-list__width">
                           <HStack gap="space-2 space-2" align="center">
                             <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
+                            {rammeavtale.title && rammeavtale.reference && (
+                              <Tag variant="neutral" size="small">
+                                {rammeavtale.reference}
+                              </Tag>
+                            )}
                             {rammeavtale.agreementStatus === 'ACTIVE' ? (
                               <Tag variant="success">Aktiv</Tag>
                             ) : (
@@ -223,6 +228,11 @@ const Agreements = () => {
                       <LinkPanel.Title className="panel-list__title panel-list__width">
                         <HStack gap="space-2 space-2" align="center">
                           <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
+                          {rammeavtale.title && rammeavtale.reference && (
+                            <Tag variant="neutral" size="small">
+                              {rammeavtale.reference}
+                            </Tag>
+                          )}
                           {rammeavtale.agreementStatus === 'ACTIVE' ? (
                             <Tag variant="success">Aktiv</Tag>
                           ) : (
