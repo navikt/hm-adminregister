@@ -161,7 +161,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
       value={value}
       onBlur={() => virtualFocus.moveFocusToTop()}
       onClick={() => value !== searchTerm && onChange(value)}
-      onInput={onChangeHandler}
+      onChange={onChangeHandler}
       type="text"
       role="combobox"
       onKeyUp={handleKeyUp}

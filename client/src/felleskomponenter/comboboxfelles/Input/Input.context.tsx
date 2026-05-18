@@ -8,13 +8,13 @@ interface InputContextValue extends FormFieldType {
   clearInput: NonNullable<ComboboxProps['onClear']>
   error?: ComboboxProps['error']
   focusInput: () => void
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
   value: string
   setValue: (text: string) => void
   onChange: (newValue: string) => void
   searchTerm: string
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
-  toggleOpenButtonRef: React.RefObject<HTMLButtonElement>
+  toggleOpenButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
 const [InputContextProvider, useInputContext] = createContext<InputContextValue>({
@@ -22,9 +22,9 @@ const [InputContextProvider, useInputContext] = createContext<InputContextValue>
   errorMessage: 'useInputContext must be used within an InputContextProvider',
 })
 
-interface Props {
+interface InputProps {
   children: React.ReactNode
-  value: {
+  inputProps: {
     description: ComboboxProps['description']
     error: ComboboxProps['error']
     id: ComboboxProps['id']
@@ -34,8 +34,8 @@ interface Props {
   }
 }
 
-const InputProvider = ({ children, value: props }: Props) => {
-  const { description, error, id: externalId, value: externalValue, onChange: externalOnChange, onClear } = props
+const InputProvider = ({ children, inputProps }: InputProps) => {
+  const { description, error, id: externalId, value: externalValue, onChange: externalOnChange, onClear } = inputProps
   const formFieldProps = useFormField(
     {
       description,

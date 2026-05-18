@@ -2,6 +2,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuthStore } from 'utils/store/useAuthStore'
 
+import type { JSX } from "react";
+
 const RequiredLogin = ({ children }: { children: JSX.Element }) => {
   const { loggedInUser } = useAuthStore()
   const { pathname } = useLocation()

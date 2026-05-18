@@ -14,7 +14,7 @@ import useVirtualFocus, { VirtualFocusType } from './useVirtualFocus'
 
 type FilteredOptionsProps = {
   children: React.ReactNode
-  value: Pick<IsoBoxProps, 'isListOpen' | 'isLoading'> & {
+  filteredOptProps: Pick<IsoBoxProps, 'isListOpen' | 'isLoading'> & {
     filteredOptions?: ComboboxOption[]
     options: ComboboxOption[]
   }
@@ -38,8 +38,13 @@ const [FilteredOptionsContextProvider, useFilteredOptionsContext] = createContex
   errorMessage: 'useFilteredOptionsContext must be used within a FilteredOptionsProvider',
 })
 
-const FilteredOptionsProvider = ({ children, value: props }: FilteredOptionsProps) => {
-  const { filteredOptions: externalFilteredOptions, isListOpen: isExternalListOpen, isLoading, options } = props
+const FilteredOptionsProvider = ({ children, filteredOptProps }: FilteredOptionsProps) => {
+  const {
+    filteredOptions: externalFilteredOptions,
+    isListOpen: isExternalListOpen,
+    isLoading,
+    options,
+  } = filteredOptProps
   const [filteredOptionsRef, setFilteredOptionsRef] = useState<HTMLUListElement | null>(null)
   const virtualFocus = useVirtualFocus(filteredOptionsRef)
   const {

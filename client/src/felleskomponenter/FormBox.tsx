@@ -7,7 +7,7 @@ import './form-box.scss'
 interface FormBoxProps {
   children?: ReactNode | undefined
   title?: string
-  icon?: ReactElement
+  icon?: ReactElement<any>
 }
 
 export default function FormBox(props: FormBoxProps) {
