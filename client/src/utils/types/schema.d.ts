@@ -3967,6 +3967,8 @@ export interface components {
             isoCode: string;
             type: components["schemas"]["TechLabelType"];
             unit?: string | null;
+            required: boolean;
+            sort: number;
             options: string[];
         };
         TechLabelDTO: {
@@ -3981,7 +3983,7 @@ export interface components {
             unit?: string | null;
             /** Format: int32 */
             sort: number;
-            isKeyLabel?: boolean | null;
+            required: boolean;
             systemLabel?: string | null;
             options: string[];
             createdBy: string;
@@ -4005,7 +4007,7 @@ export interface components {
             sort: number;
             options: string[];
             isActive: boolean;
-            isKeyLabel?: boolean | null;
+            required: boolean;
             systemLabel: string;
             createdBy: string;
             updatedBy: string;
