@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useCompatibleProductById } from 'api/PartApi'
 import { useSeriesV2Conditional } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
@@ -21,12 +19,8 @@ export const CompatibleVariantRow = ({
 }) => {
   const loggedInUser = useAuthStore().loggedInUser
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false
-  const { product, isLoading, error } = useCompatibleProductById(productId, isAdmin)
-  const {
-    data: series,
-    isLoading: isLoadingSeries,
-    error: errorSeries,
-  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
+  const { product, isLoading } = useCompatibleProductById(productId, isAdmin)
+  const { data: series, isLoading: isLoadingSeries } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
 
   if (isLoading || isLoadingSeries) {
     return (

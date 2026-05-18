@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { addCompatibleWithVariantList } from 'api/PartApi'
@@ -34,7 +33,7 @@ export const CompatibleSeriesRow = ({
   mutatePart,
   isEditable,
 }: CompatibleSeriesRowProps) => {
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID)
+  const { data: series, isLoading: isLoadingSeries } = useSeriesV2Conditional(seriesUUID)
 
   const connectedVariants = series?.variants.filter((variant) => productIds.includes(variant.id)) ?? []
 
@@ -52,7 +51,7 @@ export const CompatibleSeriesRow = ({
         .then(() => {
           mutatePart()
         })
-        .catch((error) => {})
+        .catch(() => {})
     }
   }
 

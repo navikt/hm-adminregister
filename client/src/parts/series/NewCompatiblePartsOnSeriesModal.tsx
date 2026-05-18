@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { addCompatibleWithSeriesForParts, usePagedParts, usePartByVariantIdentifier } from 'api/PartApi'
 import { PartsToAddTable } from 'parts/series/PartsToAddTable'
@@ -39,11 +39,7 @@ const NewCompatiblePartsOnSeriesModal = ({
 
   const { setGlobalError } = useErrorStore()
 
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedParts({
+  const { data: pagedData, isLoading: isLoadingPagedData } = usePagedParts({
     page: 0,
     pageSize: 100,
     titleSearchTerm: searchTerm,
@@ -79,7 +75,6 @@ const NewCompatiblePartsOnSeriesModal = ({
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {}}
       header={{
         heading: 'Legg til del',
         closeButton: true,

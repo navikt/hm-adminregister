@@ -227,8 +227,6 @@ const PartsListTab = () => {
               {loggedInUser && loggedInUser.isAdmin && suppliers && (
                 <Box asChild style={{ maxWidth: '475px' }}>
                   <UNSAFE_Combobox
-                    clearButton
-                    clearButtonLabel="Tøm"
                     label="Leverandører"
                     selectedOptions={
                       supplierFilter

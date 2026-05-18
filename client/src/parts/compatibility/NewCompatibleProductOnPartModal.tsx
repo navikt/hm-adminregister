@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { addCompatibleWithVariantList, getProductByHmsArtNr } from 'api/PartApi'
 import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
@@ -51,7 +51,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
           setProductToAddError(undefined)
           setProductIdToAdd(undefined)
         })
-        .catch((error) => {
+        .catch(() => {
           setProductToAddError(`Fant ikke produkt for HMS-nummer ${productIdToAdd}`)
         })
     } else if (productIdToAdd !== undefined && productIdsToAdd.includes(productIdToAdd)) {
@@ -86,7 +86,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {}}
+      onCancel={() => {}}
       header={{
         heading: 'Legg til produkt',
         closeButton: false,
@@ -139,7 +139,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
                   <HStack key={product.id} width="100%" align="center" gap="space-2">
                     <Box
                       key={product.id}
-                      background="success-soft"
+                      background={'success-soft'}
                       padding="space-2"
                       flexGrow="1"
                       style={{ borderRadius: '10px' }}

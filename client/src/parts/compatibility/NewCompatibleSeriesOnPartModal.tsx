@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { addCompatibleWithSeries } from 'api/PartApi'
 import { getSeriesByVariantId } from 'api/SeriesApi'
@@ -36,7 +36,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
           setSeriesToAdd(series)
           setProductToAddError(undefined)
         })
-        .catch((error) => {
+        .catch(() => {
           setSeriesToAdd(undefined)
           setProductToAddError('Fant ikke produkt')
         })
@@ -65,7 +65,6 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
   return (
     <Modal
       open={modalIsOpen}
-      onCancel={(e) => {}}
       header={{
         heading: 'Legg til serie',
         closeButton: false,
@@ -105,7 +104,7 @@ const NewCompatibleSeriesOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePar
               <VStack gap="space-8">
                 <Box
                   key={seriesToAdd.id}
-                  background="success-soft"
+                  background={'success-soft'}
                   padding="space-4"
                   flexGrow="1"
                   style={{ borderRadius: '10px' }}

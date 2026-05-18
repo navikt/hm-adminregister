@@ -29,13 +29,12 @@ import { UpdatePartDTO } from 'utils/types/response-types'
 
 import { ArrowLeftIcon } from '@navikt/aksel-icons'
 import {
-  Link as AkselLink,
   BodyShort,
   Box,
-  HGrid,
-  HStack,
   Heading,
+  HGrid,
   Label,
+  Link as AkselLink,
   Loader,
   Switch,
   Tabs,
@@ -52,7 +51,6 @@ const Part = () => {
   const {
     data: series,
     isLoading: isLoadingSeries,
-    error: errorSeries,
     mutate: mutateSeries,
   } = useSeriesV2Conditional(part?.seriesUUID || undefined)
 
@@ -307,7 +305,7 @@ const Part = () => {
               <VStack gap="space-4">
                 <VStack>
                   <Label>Type</Label>
-                  <BodyShort>{part.accessory === true ? 'Tilbehør' : 'Reservedel'}</BodyShort>
+                  <BodyShort>{part.accessory ? 'Tilbehør' : 'Reservedel'}</BodyShort>
                 </VStack>
 
                 <VStack>
@@ -389,7 +387,6 @@ const Part = () => {
             setSwitchToProductModalIsOpen={setSwitchToProductModalIsOpen}
             setEditProductModalIsOpen={setEditProductModalIsOpen}
             setConfirmApproveModalIsOpen={setConfirmApproveModalIsOpen}
-            partIsValid={partIsValid}
           />
           <StatusPanel series={series} />
         </VStack>

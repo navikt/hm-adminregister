@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { addCompatibleWithVariantList, getVariantsBySeriesUUID, removeCompatibleWithVariant } from 'api/PartApi'
+import { addCompatibleWithVariantList, getVariantsBySeriesUUID } from 'api/PartApi'
 import { useSeriesV2Conditional } from 'api/SeriesApi'
 import Content from 'felleskomponenter/styledcomponents/Content'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -28,8 +28,8 @@ const AddCompatibleSeriesVariantsModal = ({
 }: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const { setGlobalError } = useErrorStore()
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries } = useSeriesV2Conditional(seriesUUID)
-  const { data: variants, isLoading: isLoadingVariants, error: errorVariants } = getVariantsBySeriesUUID(seriesUUID)
+  const { data: series } = useSeriesV2Conditional(seriesUUID)
+  const { data: variants } = getVariantsBySeriesUUID(seriesUUID)
   const [filtreredVariants, setFiltreredVariants] = useState<ProductRegistrationDTOV2[]>([])
   const loggedInUser = useAuthStore().loggedInUser
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false
@@ -82,11 +82,11 @@ const AddCompatibleSeriesVariantsModal = ({
                     <Table.DataCell>
                       <Checkbox
                         checked={selectedRows.length === filtreredVariants.length}
-                        onChange={() => {
+                        onChange={() =>
                           selectedRows.length
                             ? setSelectedRows([])
                             : setSelectedRows(filtreredVariants.map(({ id }) => id!))
-                        }}
+                        }
                         hideLabel
                       >
                         Velg alle rader
@@ -95,7 +95,7 @@ const AddCompatibleSeriesVariantsModal = ({
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {filtreredVariants.map((variant, i) => {
+                  {filtreredVariants.map((variant) => {
                     return (
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName}</Table.DataCell>

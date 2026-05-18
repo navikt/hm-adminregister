@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { updateEgnetForBrukerpassbruker, updateEgnetForKommunalTekniker, useCompatibleProductById } from 'api/PartApi'
@@ -20,13 +20,8 @@ export const CompatiblePartRow = ({
 }) => {
   const loggedInUser = useAuthStore().loggedInUser
   const isAdmin = loggedInUser?.isAdminOrHmsUser || false
-  const { product, isLoading, error, mutate } = useCompatibleProductById(productId, isAdmin)
-  const {
-    data: series,
-    isLoading: isLoadingSeries,
-    error: errorSeries,
-    mutate: mutateSeries,
-  } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
+  const { product, mutate } = useCompatibleProductById(productId, isAdmin)
+  const { data: series } = useSeriesV2Conditional(product?.seriesUUID ?? undefined)
 
   const [isTogglingKT, setIsTogglingKT] = useState(false)
   const [isTogglingBP, setIsTogglingBP] = useState(false)

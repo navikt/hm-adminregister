@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { draftAndPublishNewPart, draftNewPart } from 'api/PartApi'
+import { draftNewPart } from 'api/PartApi'
 import FormBox from 'felleskomponenter/FormBox'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -181,8 +181,6 @@ export default function CreatePart() {
         {loggedInUser && loggedInUser.isAdminOrHmsUser && suppliers && (
           <Box asChild style={{ maxWidth: '475px' }}>
             <UNSAFE_Combobox
-              clearButton
-              clearButtonLabel="Tøm"
               label={labelRequired('Leverandør')}
               onToggleSelected={onToggleSelectedSupplier}
               onBlur={() => setFieldError({ ...fieldError, supplierErrorMessage: undefined })}

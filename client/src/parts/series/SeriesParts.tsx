@@ -7,7 +7,7 @@ import NewCompatiblePartsOnSeriesModal from 'parts/series/NewCompatiblePartsOnSe
 import { useAuthStore } from 'utils/store/useAuthStore'
 
 import { PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import { Box, Button, Checkbox, HStack, Heading, Loader, Table, VStack } from '@navikt/ds-react'
+import { Box, Button, Checkbox, Heading, HStack, Loader, Table, VStack } from '@navikt/ds-react'
 
 import styles from './SeriesParts.module.scss'
 
@@ -16,11 +16,10 @@ interface SeriesPartsProps {
 }
 
 export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
-  const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId)
+  const { data: series, isLoading: isLoadingSeries } = useSeriesV2(seriesId)
   const {
     data: seriesParts,
     isLoading: isLoadingSeriesParts,
-    error: errorSeriesParts,
     mutate: mutateParts,
     isValidating,
   } = getPartsForSeriesId(seriesId)

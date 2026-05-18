@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom'
-
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { SeriesDTO } from 'utils/types/response-types'
 
@@ -12,20 +10,16 @@ const ActionsMenu = ({
   setSwitchToProductModalIsOpen,
   setEditProductModalIsOpen,
   setConfirmApproveModalIsOpen,
-  partIsValid,
 }: {
   series: SeriesDTO
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void
   setSwitchToProductModalIsOpen: (newState: boolean) => void
   setEditProductModalIsOpen: (newState: boolean) => void
   setConfirmApproveModalIsOpen: (newState: boolean) => void
-  partIsValid: () => boolean
 }) => {
   const isEditable = series.status === 'EDITABLE'
-  const canSetExpiredStatus = series.status === 'EDITABLE' && series.isPublished
   const canSetToEditMode = series.status !== 'EDITABLE'
   const { loggedInUser } = useAuthStore()
-  const navigate = useNavigate()
 
   const isAdmin = loggedInUser?.isAdmin || false
 

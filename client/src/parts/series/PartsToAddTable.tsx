@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
