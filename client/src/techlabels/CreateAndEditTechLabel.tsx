@@ -8,18 +8,20 @@ import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } fro
 import { Button, HStack, Select, TextField, VStack } from '@navikt/ds-react'
 
 type FormData = {
-  label: string
-  type: TechLabelType
-  unit: string
-  isoCode: string
-  options: string
+  label: string;
+  type: TechLabelType;
+  unit: string;
+  required: boolean;
+  sort: number;
+  isoCode: string;
+  options: string;
 }
 
 const TECH_LABEL_TYPES = [
   { value: '', label: 'Velg type' },
-  { value: 'N', label: 'N' },
-  { value: 'L', label: 'L' },
-  { value: 'C', label: 'C' },
+  { value: 'N', label: 'Numerisk' },
+  { value: 'L', label: 'Ja/Nei' },
+  { value: 'C', label: 'Streng' },
 ]
 
 const CreateAndEditTechLabel = () => {
@@ -37,6 +39,8 @@ const CreateAndEditTechLabel = () => {
       label: editData?.label || '',
       type: editData?.type || 'N',
       unit: editData?.unit || '',
+      required: editData?.required || false,
+      sort: editData?.sort || 0,
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join(', ') || '',
     },
@@ -89,6 +93,23 @@ const CreateAndEditTechLabel = () => {
             error={errors.isoCode && 'ISO Code is required'}
             id="isoCode"
             autoComplete="on"
+          />
+          <Select
+              {...register('required', { required: true })}
+              label="Obligatorisk *"
+              error={errors.required && "Required is required"}
+              id="required"
+              defaultValue={editData?.required ? "true" : "false"}
+            >
+              <option value="true">Ja</option>
+              <option value="false">Nei</option>
+          </Select>
+          <TextField
+              {...register('sort', { required: true })}
+              label="Sortering *"
+              error={errors.sort && "Sortering is required"}
+              id="sort"
+              defaultValue={editData?.sort || 0}
           />
           <TextField
             {...register('options', { required: false })}
