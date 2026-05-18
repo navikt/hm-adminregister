@@ -4,7 +4,7 @@ import { ExpectedToggles } from './toggles'
 
 const FlagContext = createContext<{ toggles: IToggle[] }>({ toggles: [] })
 
-export function FlagProvider({ toggles, children }: PropsWithChildren<{ toggles: IToggle[] }>): ReactElement {
+export function FlagProvider({ toggles, children }: PropsWithChildren<{ toggles: IToggle[] }>): ReactElement<any> {
   return <FlagContext.Provider value={{ toggles: toggles ?? [] }}>{children}</FlagContext.Provider>
 }
 

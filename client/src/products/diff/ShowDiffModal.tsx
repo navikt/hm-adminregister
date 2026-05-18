@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+import { ErrorBoundary, FallbackProps, getErrorMessage } from 'react-error-boundary'
 
 import {
-  ProductDifferenceDTO,
   getDifferenceFromPublishedSeries,
   getDifferencesFromPublishedVariants,
+  ProductDifferenceDTO,
 } from 'api/VersionApi'
 import { Avstand } from 'felleskomponenter/Avstand'
 import { SeriesDiff } from 'products/diff/SeriesDiff'
@@ -91,12 +91,12 @@ export const ShowDiffModal = ({
 }
 
 const ErrorFallbackDiffModal = ({ error, resetErrorBoundary }: FallbackProps) => {
+  const errorMessage = getErrorMessage(error)
+
   return (
     <div>
       <BodyShort>Beklager, det skjedde en feil ved henting av endringer: </BodyShort>
-      <BodyLong>{error.status}</BodyLong>
-      <BodyLong>{error.message}</BodyLong>
-      <BodyLong>{error.error}</BodyLong>
+      <BodyLong>{errorMessage}</BodyLong>
     </div>
   )
 }

@@ -24,7 +24,7 @@ const KeywordInputProvider = forwardRef<HTMLInputElement, ComboboxProps>(functio
   const selectedOptions = mapToComboboxOptionArray(externalSelectedOptions)
   return (
     <InputContextProvider
-      value={{
+      inputProps={{
         description: rest.description,
         error,
         id,

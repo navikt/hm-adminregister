@@ -74,7 +74,7 @@ export function App() {
 
   return (
     <FlagProvider toggles={toggles ?? []}>
-      <FeilGrense>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <ErrorModal />
         <Routes>
           <Route path="/" element={<Startside />} />
@@ -153,11 +153,7 @@ export function App() {
 
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </FeilGrense>
+      </ErrorBoundary>
     </FlagProvider>
   )
-}
-
-const FeilGrense = ({ children }: { children?: React.ReactNode }) => {
-  return <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>
 }

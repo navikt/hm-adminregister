@@ -90,7 +90,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ ...rest 
         ref={mergedRefs}
         value={value}
         onClick={() => onChange(value)}
-        onInput={onChangeHandler}
+        onChange={onChangeHandler}
         type="text"
         onKeyUp={handleKeyUp}
         onKeyDown={handleKeyDown}

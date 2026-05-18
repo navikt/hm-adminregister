@@ -31,7 +31,7 @@ const IsoComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function C
   const filteredOptions = mapToComboboxOptionArray(externalFilteredOptions)
   return (
     <InputContextProvider
-      value={{
+      inputProps={{
         description: rest.description,
         error,
         id,
@@ -49,7 +49,7 @@ const IsoComboboxProvider = forwardRef<HTMLInputElement, IsoBoxProps>(function C
         }}
       >
         <FilteredOptionsProvider
-          value={{
+          filteredOptProps={{
             filteredOptions,
             isListOpen,
             isLoading,
