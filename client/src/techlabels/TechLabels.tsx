@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
-import { toReadableDateString, toReadableDateTimeString } from 'utils/date-util'
 import { TechLabelRegistrationDTO } from 'utils/types/response-types'
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'

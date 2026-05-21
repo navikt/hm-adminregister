@@ -1,17 +1,18 @@
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
-import { createTechLabel, updateTechLabel } from 'api/TechLabelApi'
+import { createTechLabel, updateTechLabel, listTechUnits } from 'api/TechLabelApi'
 import FormBox from 'felleskomponenter/FormBox'
 import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
 
-import { Button, HStack, Select, TextField, VStack } from '@navikt/ds-react'
+import { Button, HStack, Select, TextField, VStack, UNSAFE_Combobox } from '@navikt/ds-react'
 
 type FormData = {
   label: string;
   type: TechLabelType;
   unit: string;
-  required: boolean;
+  required: 'true' | 'false';
   sort: number;
   isoCode: string;
   options: string;
@@ -28,10 +29,16 @@ const CreateAndEditTechLabel = () => {
   const location = useLocation()
   const editData = location.state as TechLabelRegistrationDTO | undefined
   const navigate = useNavigate()
+  const [techUnits, setTechUnits] = useState<string[]>([])
+
+  useEffect(() => {
+    listTechUnits().then(setTechUnits).catch(() => setTechUnits([]))
+  }, [])
 
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     mode: 'onChange',
@@ -39,7 +46,7 @@ const CreateAndEditTechLabel = () => {
       label: editData?.label || '',
       type: editData?.type || 'N',
       unit: editData?.unit || '',
-      required: editData?.required || false,
+      required: editData?.required ? 'true' : 'false',
       sort: editData?.sort || 0,
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join(', ') || '',
@@ -49,6 +56,7 @@ const CreateAndEditTechLabel = () => {
   async function onSubmit(data: FormData) {
     const dto: TechLabelCreateUpdateDTO = {
       ...data,
+      required: data.required === 'true',
       options: data.options ? data.options.split(',').map((opt) => opt.trim()) : [],
     }
 
@@ -86,7 +94,16 @@ const CreateAndEditTechLabel = () => {
               </option>
             ))}
           </Select>
-          <TextField {...register('unit', { required: false })} label="Enhet" id="unit" autoComplete="on" />
+          <UNSAFE_Combobox
+            label="Enhet"
+            id="unit"
+            options={techUnits}
+            defaultValue={editData?.unit || ''}
+            allowNewValues
+            onToggleSelected={(option, isSelected) => {
+              setValue('unit', isSelected ? option : '')
+            }}
+          />
           <TextField
             {...register('isoCode', { required: true })}
             label="ISO-kode *"
