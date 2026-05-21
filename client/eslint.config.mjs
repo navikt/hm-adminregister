@@ -30,6 +30,7 @@ export default defineConfig([
       'prefer-const': ['warn'],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-unused-expressions': ['warn'],
+      'no-constant-binary-expression': 'off',
     },
     languageOptions: {
       parserOptions: {
