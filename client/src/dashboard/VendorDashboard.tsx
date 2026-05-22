@@ -112,7 +112,7 @@ const VendorDashboard = () => {
         <VStack gap="space-8" style={{ maxWidth: '75rem' }}>
           <HStack gap="space-16" align="start" justify="space-between">
             <VStack gap="space-2">
-              <Heading level="1" size="large">
+              <Heading level="1" size="large" spacing>
                 Dashboard
               </Heading>
               <Button

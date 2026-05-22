@@ -89,7 +89,7 @@ const Agreements = () => {
     <main className="show-menu">
       <div className="page__background-container">
         <VStack gap="space-12" maxWidth="60rem">
-          <Heading level="1" size="xlarge">
+          <Heading level="1" size="large" spacing>
             Rammeavtaler
           </Heading>
           <VStack gap="space-4">

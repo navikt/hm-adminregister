@@ -26,6 +26,9 @@ const Parts = () => {
         gap={{ xs: 'space-8', md: 'space-24' }}
         maxWidth={loggedInUser && loggedInUser.isAdminOrHmsUser ? '80rem' : '64rem'}
       >
+        <Heading level="1" size="large" spacing>
+          Deler
+        </Heading>
         <AlertWithCloseButton variant={'warning'} alertId={'tilbReadyAlert'}>
           <Heading size={'small'}>Informasjon om deler</Heading>
           <BodyLong>
@@ -33,10 +36,6 @@ const Parts = () => {
             og beskrivelser av disse delene.
           </BodyLong>
         </AlertWithCloseButton>
-
-        <Heading level="1" size="large" spacing>
-          Deler
-        </Heading>
         {loggedInUser && (
           <Box>
             <Button
