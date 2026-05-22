@@ -9,9 +9,9 @@ import {
   Alert,
   Box,
   Chips,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
   Loader,
   Pagination,
@@ -110,29 +110,29 @@ export const ForApproval = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap={{ xs: 'space-16', md: 'space-24' }} maxWidth={'64rem'}>
+      <VStack gap={{ xs: 'space-16', md: 'space-24' }} maxWidth={'80rem'}>
         <Heading level="1" size="large" spacing>
           Godkjenning av produkter
         </Heading>
 
-        <HGrid gap="space-4" columns={{ xs: 1, md: 2 }}>
-          <Search
-            className="search-button"
-            label="Søk"
-            variant="simple"
-            hideLabel={false}
-            clearButton={true}
-            placeholder="Søk etter produktnavn"
-            size="medium"
-            value={searchTerm}
-            onChange={(value) => handleSearch(value)}
-          />
+        <HGrid columns={{ xs: 'space-16', md: '3fr 2fr' }} gap="space-16" align={'start'}>
+          <Box role="search" style={{ maxWidth: '475px' }}>
+            <Search
+              className="search-button"
+              label="Søk"
+              variant="simple"
+              hideLabel={false}
+              clearButton={true}
+              placeholder="Søk etter produktnavn"
+              size="medium"
+              value={searchTerm}
+              onChange={(value) => handleSearch(value)}
+            />
+          </Box>
           {suppliers && (
             <Box asChild style={{ maxWidth: '475px' }}>
               <UNSAFE_Combobox
-                clearButton
-                clearButtonLabel="Tøm"
-                label="Leverandør"
+                label="Leverandører"
                 selectedOptions={searchParams
                   .getAll('supplier')
                   .map((uuid) => suppliers.find((supplier) => supplier.id === uuid)?.name || '')}

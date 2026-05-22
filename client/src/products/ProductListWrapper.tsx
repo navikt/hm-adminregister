@@ -188,6 +188,7 @@ const ProductListWrapper = () => {
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
+
         <VStack gap={{ xs: 'space-16', md: 'space-32' }}>
           <HGrid
             columns={{ xs: 'space-8', md: loggedInUser && !loggedInUser.isAdmin ? '1fr 230px' : '1fr ' }}
