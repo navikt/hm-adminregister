@@ -1,15 +1,18 @@
 import { fetchAPI } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import { TechLabelCreateUpdateDTO, TechLabelCriteria, TechLabelRegistrationDTO } from 'utils/types/response-types'
+import useSWR from 'swr'
+import { fetcherGET } from 'utils/swr-hooks.ts'
 
 const BASE_URL = () => `${HM_REGISTER_URL()}/admreg/admin/api/v1/techlabel/registrations`
 const LABEL_SERVICE_URL = () => `${HM_REGISTER_URL()}/admreg/api/v1/techlabels
 `
-export const getTechLabels = (
-  criteria: TechLabelCriteria = {},
-  page: number = 0,
-  size: number = 20
-): Promise<{ content: TechLabelRegistrationDTO[]; totalElements: number }> => {
+type TechLabelResponse = {
+  content: TechLabelRegistrationDTO[]
+  totalElements: number
+}
+
+export const getTechLabels = (criteria: TechLabelCriteria = {}, page: number = 0, size: number = 20) => {
   const params = new URLSearchParams()
   if (criteria.label) params.append('label', criteria.label)
   if (criteria.type) params.append('type', criteria.type)
@@ -18,7 +21,7 @@ export const getTechLabels = (
   params.append('page', page.toString())
   params.append('size', size.toString())
 
-  return fetchAPI(`${BASE_URL()}/?${params.toString()}`, 'GET')
+  return useSWR<TechLabelResponse>(`${BASE_URL()}/?${params.toString()}`, fetcherGET)
 }
 
 export const createTechLabel = (dto: TechLabelCreateUpdateDTO): Promise<TechLabelRegistrationDTO> =>
