@@ -1,62 +1,48 @@
-$column-widths: 260px 120px 120px 120px 40px;
-
 .catalogfilesContainer {
   max-width: 85rem;
 }
 
-.cardBox {
-  padding: 0;
-  border-width: 1;
-  border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
-  border-radius: var(--ax-radius-12);
-  background-color: var(--ax-bg-default);
-  color: var(--ax-text-neutral);
-  text-decoration: none;
-}
-
-.cardRow {
-  display: flex;
-  align-items: center;
-  padding: var(--ax-space-2) var(--ax-space-4);
-}
-
-.cardValue {
+.column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .longColumn {
+  @extend .column;
   max-width: 500px;
   width: 500px;
-  flex: 0 0 500px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .mediumColumn {
+  @extend .column;
   max-width: 170px;
   width: 170px;
-  flex: 0 0 170px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .shortColumn {
+  @extend .column;
   max-width: 90px;
   width: 90px;
-  flex: 0 0 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .editButton {
-  margin-left: auto;
-  min-width: 40px;
-  display: flex;
-  justify-content: flex-end;
+  padding: 0;
+}
+
+.editButtonHeader {
+  width: 90px;
 }
 
 .errorStatus {
   color: var(--ax-text-danger, #c30000);
   font-weight: bold;
+}
+
+.errorDialog {
+  white-space: wrap;
+}
+
+.helpText {
+  white-space: wrap;
 }

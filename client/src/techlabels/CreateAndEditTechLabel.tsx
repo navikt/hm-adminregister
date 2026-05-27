@@ -22,7 +22,7 @@ const TECH_LABEL_TYPES = [
   { value: '', label: 'Velg type' },
   { value: 'N', label: 'Numerisk' },
   { value: 'L', label: 'Ja/Nei' },
-  { value: 'C', label: 'Streng' },
+  { value: 'C', label: 'Tekst' },
 ]
 
 const CreateAndEditTechLabel = () => {

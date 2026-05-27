@@ -4,58 +4,42 @@ $column-widths: 260px 120px 120px 120px 40px;
   max-width: 100rem;
 }
 
-.cardBox {
-  padding: 0;
-  border-width: 1;
-  border: 1px solid var(--border-subtle, rgba(7, 26, 54, 0.21));
-  border-radius: var(--ax-radius-12);
-  background-color: var(--ax-bg-default);
-  color: var(--ax-text-neutral);
-  text-decoration: none;
-}
-
-.cardRow {
-  display: flex;
-  align-items: center;
-  padding: var(--ax-space-2) var(--ax-space-4);
-}
-
-.cardValue {
+.column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mediumColumn {
+  @extend .column;
   max-width: 200px;
   width: 200px;
-  flex: 0 0 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .shortColumn {
+  @extend .column;
   max-width: 90px;
   width: 90px;
-  flex: 0 0 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.requiredColumn {
+  @extend .column;
+  max-width: 120px;
+  width: 120px;
 }
 
 .optionsColumn {
-  flex: 1 1 0;
+  @extend .column;
   min-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 200px;
 }
 
 .editButton {
-  margin-left: auto;
-  min-width: 40px;
+  width: 90px;
   display: flex;
   justify-content: flex-end;
 }
 
 .editButtonHeader {
-  min-width: 40px;
+  width: 90px;
 }

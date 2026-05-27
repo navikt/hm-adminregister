@@ -1,22 +1,26 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { deleteCatalogFile, findCatalogFiles, retryCatalogFile } from 'api/CatalogFileApi'
+import { deleteCatalogFile, findCatalogFiles } from 'api/CatalogFileApi'
 import { toReadableDateTimeString } from 'utils/date-util'
 import { CatalogFile } from 'utils/types/response-types'
 
-import { ArrowUpIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
+import { MenuElipsisVerticalCircleIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
+  ActionMenu,
   Alert,
+  BodyLong,
   BodyShort,
   Box,
   Button,
-  HStack,
   Heading,
   HelpText,
+  HStack,
   Loader,
+  Modal,
   Pagination,
   Search,
+  Table,
   Tooltip,
   VStack,
 } from '@navikt/ds-react'
@@ -25,7 +29,7 @@ import styles from './CatalogFiles.module.scss'
 
 const PAGE_SIZE = 15
 
-const CatalogFiles = () => {
+export const CatalogFiles = () => {
   const [searchFileName, setSearchFileName] = useState('')
   const [page, setPage] = useState(1)
   const navigate = useNavigate()
@@ -38,13 +42,7 @@ const CatalogFiles = () => {
   )
 
   const handleDelete = async (id: string) => {
-    await deleteCatalogFile(id)
-    mutate()
-  }
-
-  const handleRetry = async (id: string) => {
-    await retryCatalogFile(id)
-    mutate()
+    await deleteCatalogFile(id).then(() => mutate())
   }
 
   const statusLabels: Record<string, string> = {
@@ -53,134 +51,160 @@ const CatalogFiles = () => {
     PROCESSING: 'Behandler',
     PENDING: 'I kø',
   }
-
+  console.log(data)
   return (
     <main className="show-menu">
       <div className="page__background-container" style={{ overflow: 'auto' }}>
         <Heading level="1" size="large" spacing>
           Katalog
         </Heading>
-        <div className={styles.catalogfilesContainer}>
-          <VStack gap="space-8">
-            <HStack justify="space-between" wrap gap="space-4" marginBlock="space-8 space-0">
-              <Box role="search" className="search-box">
-                <Search
-                  label="Søk etter filnavn"
-                  variant="simple"
-                  placeholder="Søk etter filnavn"
-                  size="medium"
-                  value={searchFileName}
-                  onChange={setSearchFileName}
-                />
-              </Box>
-              <Button
-                variant="secondary"
+        <VStack gap="space-8" className={styles.catalogfilesContainer}>
+          <HStack justify="space-between" wrap gap="space-4" marginBlock="space-8 space-0">
+            <Box role="search" className="search-box">
+              <Search
+                label="Søk etter filnavn"
+                variant="simple"
+                placeholder="Søk etter filnavn"
                 size="medium"
-                icon={<PlusIcon aria-hidden />}
-                iconPosition="left"
-                onClick={() => navigate('/katalog/importer-fil')}
-              >
-                Last opp ny katalog
-              </Button>
-            </HStack>
-            <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
-              {error && <Alert variant="error">Kunne ikke hente katalogfiler.</Alert>}
-              {!isLoading && data && data.content.length === 0 && (
-                <Alert variant="info">Ingen katalogfiler funnet.</Alert>
-              )}
-              {!isLoading && data && data.content.length > 0 && (
-                <div className={styles.cardRow + ' ' + styles.cardHeader}>
-                  <BodyShort className={`${styles.cardValue} ${styles.longColumn}`}>
-                    <strong>Filnavn</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <strong>Bestillingsnr.</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <strong>Anbudsnr.</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                    <strong>Rader</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                    <strong>Status</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                    <strong>Bruker</strong>
-                  </BodyShort>
-                  <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                    <HStack gap="space-2" justify="center">
-                      <strong>Sist oppdatert</strong>
-                      <HelpText title="om sist oppdatert">
-                        Denne kolonnen viser når filen sist ble oppdatert, enten ved opplasting eller ved nattlig
-                        synkronisering mot FinnHjelpemiddel.
-                      </HelpText>
-                    </HStack>
-                  </BodyShort>
-                </div>
-              )}
-              {data?.content.map((file: CatalogFile) => (
-                <Box key={file.id} className={styles.cardBox}>
-                  <div className={styles.cardRow}>
-                    <BodyShort className={`${styles.cardValue} ${styles.longColumn}`}>{file.fileName}</BodyShort>
-                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>{file.orderRef}</BodyShort>
-                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
-                      {file.catalogList[0].reference}
-                    </BodyShort>
-                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                      {file.catalogList.length}
-                    </BodyShort>
-                    {file.status === 'ERROR' ? (
-                      <Tooltip content={file.errorMessage || ''} placement="top" maxChar={500}>
-                        <BodyShort className={`${styles.cardValue} ${styles.shortColumn} ${styles.errorStatus}`}>
-                          {statusLabels[file.status] || file.status}
-                        </BodyShort>
+                value={searchFileName}
+                onChange={setSearchFileName}
+              />
+            </Box>
+            <Button
+              variant="secondary"
+              size="medium"
+              icon={<PlusIcon aria-hidden />}
+              iconPosition="left"
+              onClick={() => navigate('/katalog/importer-fil')}
+            >
+              Last opp ny katalog
+            </Button>
+          </HStack>
+
+          <Table size={'small'}>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell className={styles.longColumn}>Filnavn</Table.HeaderCell>
+                <Table.HeaderCell className={styles.mediumColumn}>Bestillingsnr.</Table.HeaderCell>
+                <Table.HeaderCell className={styles.mediumColumn}>Anbudsnr.</Table.HeaderCell>
+                <Table.HeaderCell className={styles.shortColumn}>Rader</Table.HeaderCell>
+                <Table.HeaderCell className={styles.shortColumn}>Status</Table.HeaderCell>
+                <Table.HeaderCell className={styles.shortColumn}>Bruker</Table.HeaderCell>
+                <Table.HeaderCell className={styles.mediumColumn}>
+                  <HStack gap="space-2" justify="center">
+                    <BodyShort weight={'semibold'}>Sist oppdatert</BodyShort>
+                    <HelpText title="Om sist oppdatert" wrapperClassName={styles.helpText}>
+                      Denne kolonnen viser når filen sist ble oppdatert, enten ved opplasting eller ved nattlig
+                      synkronisering mot FinnHjelpemiddel.
+                    </HelpText>
+                  </HStack>
+                </Table.HeaderCell>
+                <Table.HeaderCell className={styles.editButtonHeader} aria-label={'Meny-kolonne'} />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {isLoading ? (
+                <Table.Row style={{ backgroundColor: 'transparent', borderStyle: 'hidden' }}>
+                  <Table.DataCell style={{ backgroundColor: 'transparent' }}>
+                    <Loader size="3xlarge" title="venter..." />
+                  </Table.DataCell>
+                </Table.Row>
+              ) : error ? (
+                <Table.Row>
+                  <Table.DataCell>
+                    <Alert variant="error">Kunne ikke hente katalogfiler.</Alert>
+                  </Table.DataCell>
+                </Table.Row>
+              ) : data && data.content.length === 0 ? (
+                <Table.Row>
+                  <Table.DataCell>
+                    <Alert variant="info">Ingen katalogfiler funnet.</Alert>
+                  </Table.DataCell>
+                </Table.Row>
+              ) : (
+                data?.content.map((file: CatalogFile, index) => (
+                  <Table.Row key={index + file.id}>
+                    <Table.DataCell className={styles.longColumn}>
+                      <Tooltip content={file.fileName}>
+                        <BodyShort className={styles.column}>{file.fileName}</BodyShort>
                       </Tooltip>
-                    ) : (
-                      <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
-                        {statusLabels[file.status] || file.status}
-                      </BodyShort>
-                    )}
-                    <BodyShort className={`${styles.cardValue} ${styles.shortColumn}`}>
+                    </Table.DataCell>
+                    <Table.DataCell className={styles.mediumColumn}>{file.orderRef}</Table.DataCell>
+                    <Table.DataCell className={styles.mediumColumn}>{file.catalogList[0].reference}</Table.DataCell>
+                    <Table.DataCell className={styles.shortColumn}>{file.catalogList.length}</Table.DataCell>
+                    <Table.DataCell className={styles.shortColumn}>
+                      {file.status === 'ERROR' ? (
+                        <BodyShort className={styles.errorStatus}>{statusLabels[file.status] || file.status}</BodyShort>
+                      ) : (
+                        statusLabels[file.status] || file.status
+                      )}
+                    </Table.DataCell>
+                    <Table.DataCell className={styles.shortColumn}>
                       {file.updatedByUser
                         ? file.updatedByUser.split('.')[0].charAt(0).toUpperCase() +
                           file.updatedByUser.split('.')[0].slice(1)
                         : ''}
-                    </BodyShort>
-                    <BodyShort className={`${styles.cardValue} ${styles.mediumColumn}`}>
+                    </Table.DataCell>
+                    <Table.DataCell className={styles.mediumColumn}>
                       {toReadableDateTimeString(file.updated)}
-                    </BodyShort>
-                    {file.status === 'ERROR' && (
-                      <span className={styles.editButton}>
-                        <Button
-                          size="xsmall"
-                          variant="tertiary"
-                          icon={<TrashIcon aria-hidden />}
-                          onClick={() => handleDelete(file.id)}
-                          aria-label="Slett"
-                        />
-                      </span>
-                    )}
-                  </div>
-                </Box>
-              ))}
-              {data && data.totalPages && data.totalPages > 1 && (
-                <Pagination
-                  page={page}
-                  onPageChange={setPage}
-                  count={data.totalPages}
-                  boundaryCount={1}
-                  siblingCount={0}
-                  size="small"
-                />
+                    </Table.DataCell>
+                    <Table.DataCell className={styles.editButton}>
+                      {file.status === 'ERROR' ? <Menu file={file} handleDelete={handleDelete} /> : ' '}
+                    </Table.DataCell>
+                  </Table.Row>
+                ))
               )}
-            </div>
-          </VStack>
-        </div>
+            </Table.Body>
+          </Table>
+
+          {data && data.totalPages && data.totalPages > 1 && (
+            <Pagination
+              page={page}
+              onPageChange={setPage}
+              count={data.totalPages}
+              boundaryCount={1}
+              siblingCount={0}
+              size="small"
+            />
+          )}
+        </VStack>
       </div>
     </main>
   )
 }
 
-export default CatalogFiles
+const Menu = ({ file, handleDelete }: { file: CatalogFile; handleDelete: (file: string) => void }) => {
+  const ref = useRef<HTMLDialogElement>(null)
+
+  return (
+    <>
+      <ActionMenu>
+        <ActionMenu.Trigger>
+          <Button
+            variant={'tertiary'}
+            icon={<MenuElipsisVerticalCircleIcon aria-hidden />}
+            size={'small'}
+            aria-label={'Katalog-meny'}
+          />
+        </ActionMenu.Trigger>
+        <ActionMenu.Content>
+          <ActionMenu.Item onSelect={() => ref.current?.showModal()}>Vis feilmelding</ActionMenu.Item>
+          <ActionMenu.Item variant={'danger'} icon={<TrashIcon aria-hidden />} onSelect={() => handleDelete(file.id)}>
+            Slett katalog
+          </ActionMenu.Item>
+        </ActionMenu.Content>
+      </ActionMenu>
+
+      <Modal ref={ref} header={{ heading: 'Feilmelding' }} className={styles.errorDialog}>
+        <Modal.Body>
+          <BodyLong>{file.errorMessage}</BodyLong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="button" onClick={() => ref.current?.close()}>
+            Lukk
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )
+}
