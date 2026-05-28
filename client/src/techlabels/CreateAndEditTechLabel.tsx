@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
-import { createTechLabel, updateTechLabel, listTechUnits } from 'api/TechLabelApi'
+import { createTechLabel, updateTechLabel, listTechUnits, listTechLabelNames } from 'api/TechLabelApi'
 import FormBox from 'felleskomponenter/FormBox'
 import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
 
@@ -30,9 +30,11 @@ const CreateAndEditTechLabel = () => {
   const editData = location.state as TechLabelRegistrationDTO | undefined
   const navigate = useNavigate()
   const [techUnits, setTechUnits] = useState<string[]>([])
+  const [techLabelNames, setTechLabelNames] = useState<string[]>([])
 
   useEffect(() => {
     listTechUnits().then(setTechUnits).catch(() => setTechUnits([]))
+    listTechLabelNames().then(setTechLabelNames).catch(() => setTechLabelNames([]))
   }, [])
 
   const {
@@ -74,12 +76,20 @@ const CreateAndEditTechLabel = () => {
     <FormBox title={title}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap="space-8">
-          <TextField
-            {...register('label', { required: true })}
-            label="Navn *"
-            error={errors.label && 'Label is required'}
-            id="label"
-            autoComplete="on"
+          <input type="hidden" {...register('label', { required: true })} />
+          <UNSAFE_Combobox
+              label="Navn *"
+              id="label"
+              options={[...new Set(techLabelNames)].sort((a, b) => a.localeCompare(b, 'nb'))}
+              defaultValue={editData?.label || ''}
+              allowNewValues
+              error={errors.label && 'Label is required'}
+              onToggleSelected={(option, isSelected) => {
+                setValue('label', isSelected ? option : '', {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }}
           />
           <Select
             {...register('type', { required: true })}
@@ -101,7 +111,10 @@ const CreateAndEditTechLabel = () => {
             defaultValue={editData?.unit || ''}
             allowNewValues
             onToggleSelected={(option, isSelected) => {
-              setValue('unit', isSelected ? option : '')
+              setValue('unit', isSelected ? option : '', {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
             }}
           />
           <TextField

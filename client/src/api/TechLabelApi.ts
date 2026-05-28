@@ -34,3 +34,5 @@ export const deleteTechLabel = (id: string, forcedDelete: boolean): Promise<void
   fetchAPI(`${BASE_URL()}/${id}?forcedDelete=${forcedDelete}`, 'DELETE')
 
 export const listTechUnits = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/units`, 'GET')
+
+export const listTechLabelNames = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/names`, 'GET')
