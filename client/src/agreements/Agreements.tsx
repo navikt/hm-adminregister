@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import { AgreementFilterOption, useAgreements, usePagedAgreements } from 'utils/swr-hooks'
@@ -83,7 +83,7 @@ export const Agreements = () => {
         </Heading>
 
         <VStack gap="space-16">
-          <HGrid columns={{ xs: '1fr', md: '5fr 6fr 1fr' }} gap="space-4" align={'start'}>
+          <HGrid columns={{ xs: '1fr', md: '5fr 6fr' }} gap="space-4" align={'start'}>
             <Box role="search" style={{ maxWidth: '475px' }} asChild>
               <Search
                 className="search-button"
@@ -97,40 +97,44 @@ export const Agreements = () => {
               />
             </Box>
 
-            <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
-              <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
-              <ToggleGroup.Item value={AgreementFilterOption.ACTIVE} label={'Aktive'} />
-              <ToggleGroup.Item value={AgreementFilterOption.FUTURE} label={'Fremtidige'} />
-              <ToggleGroup.Item value={AgreementFilterOption.EXPIRED} label={'Utgåtte'} />
-            </ToggleGroup>
+            <HGrid columns={'1fr 48px'} gap={'space-4'}>
+              <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
+                <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
+                <ToggleGroup.Item value={AgreementFilterOption.ACTIVE} label={'Aktive'} />
+                <ToggleGroup.Item value={AgreementFilterOption.FUTURE} label={'Fremtidige'} />
+                <ToggleGroup.Item value={AgreementFilterOption.EXPIRED} label={'Utgåtte'} />
+              </ToggleGroup>
 
-            <ActionMenu>
-              <ActionMenu.Trigger>
-                <Button
-                  variant={'secondary'}
-                  icon={<MenuElipsisVerticalIcon aria-hidden />}
-                  aria-label={'Rammeavtale-meny'}
-                />
-              </ActionMenu.Trigger>
-              <ActionMenu.Content>
-                <ActionMenu.Item
-                  icon={<PlusIcon aria-hidden />}
-                  onSelect={() => {
-                    navigate('/rammeavtaler/opprett')
-                  }}
-                >
-                  Ny rammeavtale
-                </ActionMenu.Item>
-                <ActionMenu.Item
-                  icon={<FileExcelIcon aria-hidden />}
-                  onSelect={() => {
-                    navigate('/katalog/importer-fil')
-                  }}
-                >
-                  Importer katalogfil
-                </ActionMenu.Item>
-              </ActionMenu.Content>
-            </ActionMenu>
+              <ActionMenu>
+                <ActionMenu.Trigger>
+                  <Button
+                    variant={'secondary'}
+                    icon={<MenuElipsisVerticalIcon aria-hidden fontSize={'1.5rem'} />}
+                    aria-label={'Rammeavtale-meny'}
+                    size={'xsmall'}
+                    style={{ width: '48px', height: '48px' }}
+                  />
+                </ActionMenu.Trigger>
+                <ActionMenu.Content>
+                  <ActionMenu.Item
+                    icon={<PlusIcon aria-hidden />}
+                    onSelect={() => {
+                      navigate('/rammeavtaler/opprett')
+                    }}
+                  >
+                    Ny rammeavtale
+                  </ActionMenu.Item>
+                  <ActionMenu.Item
+                    icon={<FileExcelIcon aria-hidden />}
+                    onSelect={() => {
+                      navigate('/katalog/importer-fil')
+                    }}
+                  >
+                    Importer katalogfil
+                  </ActionMenu.Item>
+                </ActionMenu.Content>
+              </ActionMenu>
+            </HGrid>
           </HGrid>
 
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
@@ -178,9 +182,11 @@ export const AgreementLinkCard = ({ rammeavtale }: { rammeavtale: AgreementGroup
   return (
     <LinkCard size={'small'}>
       <LinkCard.Title>
-        <HStack gap={'space-12'} align={'center'}>
-          <LinkCard.Anchor href={`/rammeavtaler/${rammeavtale.id}`}>{rammeavtale.title}</LinkCard.Anchor>
-          <div>
+        <HGrid columns={'auto minmax(max-content, 1fr)'} gap={'space-12'} align={'center'}>
+          <LinkCard.Anchor asChild>
+            <Link to={`/rammeavtaler/${rammeavtale.id}`}>{rammeavtale.title}</Link>
+          </LinkCard.Anchor>
+          <HStack gap={'space-4'}>
             <Tag variant="neutral" size="small">
               {rammeavtale.reference}
             </Tag>
@@ -193,8 +199,8 @@ export const AgreementLinkCard = ({ rammeavtale }: { rammeavtale: AgreementGroup
                 Inaktiv
               </Tag>
             )}
-          </div>
-        </HStack>
+          </HStack>
+        </HGrid>
       </LinkCard.Title>
     </LinkCard>
   )
