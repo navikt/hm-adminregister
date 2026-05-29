@@ -435,8 +435,9 @@ export function useSupplier(isAdmin: boolean | undefined, id?: string) {
   }
 }
 
-export function useSuppliers(isAdmin: boolean, visInaktive: boolean = true) {
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name${visInaktive ? '' : '&status=ACTIVE'}`
+export function useSuppliers(isAdmin: boolean, vis: string = 'Alle') {
+  const vis2 = vis === 'Aktive' ? '&status=ACTIVE' : vis === 'Inaktive' ? '&status=INACTIVE' : ''
+  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/supplier/registrations?sort=name${vis2}`
   const { data, error, isLoading } = useSWR<SupplierChunk>(isAdmin ? path : null, fetcherGET)
   const suppliers = data && mapSuppliers(data)
 

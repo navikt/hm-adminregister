@@ -7,18 +7,7 @@ import { SupplierDTO } from 'utils/supplier-util'
 import { useSuppliers } from 'utils/swr-hooks'
 
 import { ChevronRightIcon, PlusIcon } from '@navikt/aksel-icons'
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  HGrid,
-  Heading,
-  Loader,
-  Pagination,
-  Search,
-} from '@navikt/ds-react'
+import { Alert, Box, Button, Heading, HGrid, Loader, Pagination, Search, ToggleGroup } from '@navikt/ds-react'
 
 import styles from './SupplierList.module.scss'
 
@@ -26,10 +15,14 @@ const Suppliers = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
 
-  const showInactiveParam = searchParams.get('showInactive')
-  const showInactive = showInactiveParam === 'true'
+  const show = {
+    all: 'Alle',
+    active: 'Aktive',
+    inactive: 'Inaktive',
+  }
+  const showParam = searchParams.get('show') || show.all
 
-  const { suppliers, isLoading, error } = useSuppliers(true, showInactive)
+  const { suppliers, isLoading, error } = useSuppliers(true, showParam)
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>()
@@ -49,10 +42,8 @@ const Suppliers = () => {
     navigate('/leverandor/opprett-leverandor')
   }
 
-  const onShowInactiveChange = (values: string[]) => {
-    const isChecked = values.includes('Vis inaktive')
-
-    searchParams.set('showInactive', isChecked ? 'true' : 'false')
+  const onShowInactiveChange = (value: string) => {
+    searchParams.set('show', value)
     searchParams.set('page', '1')
     setPageState(1)
     setSearchParams(searchParams)
@@ -77,13 +68,13 @@ const Suppliers = () => {
           <HGrid
             columns={{
               xs: 'space-4',
-              md: '3fr 2fr 130px',
+              md: '3fr 1fr 2fr',
             }}
             gap="space-8"
             paddingBlock="space-16"
             align="start"
           >
-            <Box role="search" className="search-box ">
+            <Box role="search" style={{ maxWidth: '475px' }}>
               <Search
                 className="search-button"
                 label="Søk etter en leverandør"
@@ -94,6 +85,11 @@ const Suppliers = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </Box>
+            <ToggleGroup defaultValue={show.all} onChange={onShowInactiveChange}>
+              <ToggleGroup.Item value={show.all} label={show.all} />
+              <ToggleGroup.Item value={show.active} label={show.active} />
+              <ToggleGroup.Item value={show.inactive} label={show.inactive} />
+            </ToggleGroup>
             <Button
               variant="secondary"
               size="medium"
@@ -103,14 +99,6 @@ const Suppliers = () => {
             >
               Opprett leverandør
             </Button>
-            <CheckboxGroup
-              legend="Filter"
-              hideLegend
-              value={showInactive ? ['Vis inaktive'] : []}
-              onChange={onShowInactiveChange}
-            >
-              <Checkbox value="Vis inaktive">Vis inaktive</Checkbox>
-            </CheckboxGroup>
           </HGrid>
 
           <div className="panel-list__container">
