@@ -1,21 +1,20 @@
-import React, { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import { AgreementFilterOption, useAgreements, usePagedAgreements } from 'utils/swr-hooks'
-import { AgreementGroupDto } from 'utils/types/response-types'
+import { AgreementGroup, AgreementGroupDto } from 'utils/types/response-types'
 
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   ActionMenu,
   Alert,
-  BodyShort,
   Box,
   Button,
   Heading,
   HGrid,
   HStack,
-  LinkPanel,
+  LinkCard,
   Loader,
   Pagination,
   Search,
@@ -32,10 +31,10 @@ export const Agreements = () => {
 
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const pageSize = 10
-  const { data: allData, isLoading: allDataIsLoading, error: allError } = useAgreements()
+  const { data: allData, error: allError } = useAgreements()
   const {
     data: pagedData,
-    isLoading,
+    isLoading: pagedIsLoading,
     error: pagedError,
   } = usePagedAgreements({
     page: pageState - 1,
@@ -78,7 +77,7 @@ export const Agreements = () => {
 
   return (
     <main className="show-menu">
-      <VStack gap="space-12" maxWidth="60rem">
+      <VStack gap="space-12" maxWidth="66rem">
         <Heading level="1" size="large" spacing>
           Rammeavtaler
         </Heading>
@@ -138,69 +137,21 @@ export const Agreements = () => {
             <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
           ) : filteredData && filteredData.length > 0 ? (
             <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
+              {pagedIsLoading && <Loader size="3xlarge" title="venter..." />}
               {filteredData &&
                 filteredData.map((rammeavtale, i) => (
-                  <>
-                    <LinkPanel
-                      onClick={() => navigate(`/rammeavtaler/${rammeavtale.id}`)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          navigate(`/rammeavtaler/${rammeavtale.id}`)
-                        }
-                      }}
-                      className="panel-list__name-panel"
-                      key={i}
-                    >
-                      <LinkPanel.Title className="panel-list__title panel-list__width">
-                        <HStack gap="space-2 space-2" align="center">
-                          <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
-                          {rammeavtale.title && rammeavtale.reference && (
-                            <Tag variant="neutral" size="small">
-                              {rammeavtale.reference}
-                            </Tag>
-                          )}
-                          {rammeavtale.agreementStatus === 'ACTIVE' ? (
-                            <Tag variant="success">Aktiv</Tag>
-                          ) : (
-                            <Tag variant="warning">Inaktiv</Tag>
-                          )}
-                        </HStack>
-                      </LinkPanel.Title>
-                    </LinkPanel>
-                  </>
+                  <AgreementLinkCard key={rammeavtale.id + i} rammeavtale={rammeavtale} />
                 ))}
             </div>
           ) : (
             <div className="panel-list__container">
-              {isLoading && <Loader size="3xlarge" title="venter..." />}
+              {pagedIsLoading && <Loader size="3xlarge" title="venter..." />}
               {pagedData?.content && pagedData?.content.length === 0 && (
                 <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
               )}
               {pagedData?.content &&
                 pagedData?.content.map((rammeavtale, i) => (
-                  <LinkPanel
-                    as={Link}
-                    to={`/rammeavtaler/${rammeavtale.id}`}
-                    className="panel-list__name-panel"
-                    key={i}
-                  >
-                    <LinkPanel.Title className="panel-list__title panel-list__width">
-                      <HStack gap="space-2 space-2" align="center">
-                        <BodyShort> {rammeavtale.title || 'Ukjent produktnavn'} </BodyShort>
-                        {rammeavtale.title && rammeavtale.reference && (
-                          <Tag variant="neutral" size="small">
-                            {rammeavtale.reference}
-                          </Tag>
-                        )}
-                        {rammeavtale.agreementStatus === 'ACTIVE' ? (
-                          <Tag variant="success">Aktiv</Tag>
-                        ) : (
-                          <Tag variant="warning">Inaktiv</Tag>
-                        )}
-                      </HStack>
-                    </LinkPanel.Title>
-                  </LinkPanel>
+                  <AgreementLinkCard key={rammeavtale.id + i} rammeavtale={rammeavtale} />
                 ))}
             </div>
           )}
@@ -220,5 +171,31 @@ export const Agreements = () => {
         </VStack>
       </VStack>
     </main>
+  )
+}
+
+export const AgreementLinkCard = ({ rammeavtale }: { rammeavtale: AgreementGroup }) => {
+  return (
+    <LinkCard size={'small'}>
+      <LinkCard.Title>
+        <HStack gap={'space-12'} align={'center'}>
+          <LinkCard.Anchor href={`/rammeavtaler/${rammeavtale.id}`}>{rammeavtale.title}</LinkCard.Anchor>
+          <div>
+            <Tag variant="neutral" size="small">
+              {rammeavtale.reference}
+            </Tag>
+            {rammeavtale.agreementStatus === 'ACTIVE' ? (
+              <Tag variant="success" size={'small'}>
+                Aktiv
+              </Tag>
+            ) : (
+              <Tag variant="warning" size={'small'}>
+                Inaktiv
+              </Tag>
+            )}
+          </div>
+        </HStack>
+      </LinkCard.Title>
+    </LinkCard>
   )
 }
