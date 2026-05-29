@@ -7,7 +7,7 @@ import { SupplierDTO } from 'utils/supplier-util'
 import { useSuppliers } from 'utils/swr-hooks'
 
 import { ChevronRightIcon, PlusIcon } from '@navikt/aksel-icons'
-import { Alert, Box, Button, Heading, HGrid, Loader, Pagination, Search, ToggleGroup } from '@navikt/ds-react'
+import { Alert, Box, Button, Heading, HGrid, Loader, Pagination, Search, ToggleGroup, VStack } from '@navikt/ds-react'
 
 import styles from './SupplierList.module.scss'
 
@@ -59,22 +59,21 @@ const Suppliers = () => {
 
   return (
     <main className="show-menu">
-      <div className="page__background-container">
+      <VStack gap="space-12">
         <Heading level="1" size="large" spacing>
           Leverandører
         </Heading>
 
-        <div className={styles.supplierPanelContainer}>
+        <VStack gap={'space-16'} maxWidth={'55rem'}>
           <HGrid
             columns={{
               xs: 'space-4',
               md: '3fr 1fr 2fr',
             }}
-            gap="space-8"
-            paddingBlock="space-16"
+            gap="space-4"
             align="start"
           >
-            <Box role="search" style={{ maxWidth: '475px' }}>
+            <Box role="search" style={{ maxWidth: '475px' }} asChild>
               <Search
                 className="search-button"
                 label="Søk etter en leverandør"
@@ -85,11 +84,13 @@ const Suppliers = () => {
                 onChange={(value) => handleSearch(value)}
               />
             </Box>
+
             <ToggleGroup defaultValue={show.all} onChange={onShowInactiveChange}>
               <ToggleGroup.Item value={show.all} label={show.all} />
               <ToggleGroup.Item value={show.active} label={show.active} />
               <ToggleGroup.Item value={show.inactive} label={show.inactive} />
             </ToggleGroup>
+
             <Button
               variant="secondary"
               size="medium"
@@ -132,8 +133,8 @@ const Suppliers = () => {
               size="small"
             />
           )}
-        </div>
-      </div>
+        </VStack>
+      </VStack>
     </main>
   )
 }
