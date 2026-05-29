@@ -26,8 +26,8 @@ import {
 
 export const Agreements = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [selectedFilterOption, setSelectedFilterOption] = useState<AgreementFilterOption>(
-    searchParams.get('filter') ? (searchParams.get('filter') as AgreementFilterOption) : AgreementFilterOption.ALL
+  const [selectedFilterOption, setSelectedFilterOption] = useState<string>(
+    searchParams.get('filter') ?? AgreementFilterOption.ALL
   )
 
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
@@ -40,7 +40,7 @@ export const Agreements = () => {
   } = usePagedAgreements({
     page: pageState - 1,
     pageSize,
-    filter: selectedFilterOption,
+    filter: selectedFilterOption as AgreementFilterOption,
   })
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>()
@@ -56,8 +56,8 @@ export const Agreements = () => {
     )
   }
 
-  const handeFilterChange = (filter: AgreementFilterOption) => {
-    searchParams.set('filter', filter.toString())
+  const handeFilterChange = (filter: string) => {
+    searchParams.set('filter', filter)
     setPageState(1)
     searchParams.set('page', '1')
     setSelectedFilterOption(filter)
@@ -98,17 +98,11 @@ export const Agreements = () => {
               />
             </Box>
 
-            <ToggleGroup
-              value={selectedFilterOption}
-              onChange={(value) => handeFilterChange(value as AgreementFilterOption)}
-              defaultChecked={true}
-            >
-              <ToggleGroup.Item value={AgreementFilterOption.ALL} defaultChecked>
-                Alle
-              </ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.ACTIVE}>Aktive</ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.FUTURE}>Fremtidige</ToggleGroup.Item>
-              <ToggleGroup.Item value={AgreementFilterOption.EXPIRED}>Utgåtte</ToggleGroup.Item>
+            <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
+              <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
+              <ToggleGroup.Item value={AgreementFilterOption.ACTIVE} label={'Aktive'} />
+              <ToggleGroup.Item value={AgreementFilterOption.FUTURE} label={'Fremtidige'} />
+              <ToggleGroup.Item value={AgreementFilterOption.EXPIRED} label={'Utgåtte'} />
             </ToggleGroup>
 
             <ActionMenu>
