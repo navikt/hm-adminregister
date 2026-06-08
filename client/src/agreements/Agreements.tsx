@@ -29,6 +29,8 @@ export const Agreements = () => {
     searchParams.get('filter') ?? AgreementFilterOption.ALL
   )
 
+  const [isSearching, setIsSearching] = useState(false)
+
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const pageSize = 10
   const { data: allData, error: allError } = useAgreements()
@@ -65,11 +67,13 @@ export const Agreements = () => {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
+    setIsSearching(true)
     const filteredAgreements = allData?.content.filter((agreement) =>
       agreement.title.toLowerCase().includes(value.toLowerCase())
     )
     if (value.length == 0) {
       setFilteredData(undefined)
+      setIsSearching(false)
     } else {
       setFilteredData(filteredAgreements)
     }
@@ -97,44 +101,46 @@ export const Agreements = () => {
               />
             </Box>
 
-            <HGrid columns={'1fr 48px'} gap={'space-4'}>
-              <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
-                <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
-                <ToggleGroup.Item value={AgreementFilterOption.ACTIVE} label={'Aktive'} />
-                <ToggleGroup.Item value={AgreementFilterOption.FUTURE} label={'Fremtidige'} />
-                <ToggleGroup.Item value={AgreementFilterOption.EXPIRED} label={'Utgåtte'} />
-              </ToggleGroup>
+            {!isSearching && (
+              <HGrid columns={'1fr 48px'} gap={'space-4'}>
+                <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
+                  <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
+                  <ToggleGroup.Item value={AgreementFilterOption.ACTIVE} label={'Aktive'} />
+                  <ToggleGroup.Item value={AgreementFilterOption.FUTURE} label={'Fremtidige'} />
+                  <ToggleGroup.Item value={AgreementFilterOption.EXPIRED} label={'Utgåtte'} />
+                </ToggleGroup>
 
-              <ActionMenu>
-                <ActionMenu.Trigger>
-                  <Button
-                    variant={'secondary'}
-                    icon={<MenuElipsisVerticalIcon aria-hidden fontSize={'1.5rem'} />}
-                    aria-label={'Rammeavtale-meny'}
-                    size={'xsmall'}
-                    style={{ width: '48px', height: '48px' }}
-                  />
-                </ActionMenu.Trigger>
-                <ActionMenu.Content>
-                  <ActionMenu.Item
-                    icon={<PlusIcon aria-hidden />}
-                    onSelect={() => {
-                      navigate('/rammeavtaler/opprett')
-                    }}
-                  >
-                    Ny rammeavtale
-                  </ActionMenu.Item>
-                  <ActionMenu.Item
-                    icon={<FileExcelIcon aria-hidden />}
-                    onSelect={() => {
-                      navigate('/katalog/importer-fil')
-                    }}
-                  >
-                    Importer katalogfil
-                  </ActionMenu.Item>
-                </ActionMenu.Content>
-              </ActionMenu>
-            </HGrid>
+                <ActionMenu>
+                  <ActionMenu.Trigger>
+                    <Button
+                      variant={'secondary'}
+                      icon={<MenuElipsisVerticalIcon aria-hidden fontSize={'1.5rem'} />}
+                      aria-label={'Rammeavtale-meny'}
+                      size={'xsmall'}
+                      style={{ width: '48px', height: '48px' }}
+                    />
+                  </ActionMenu.Trigger>
+                  <ActionMenu.Content>
+                    <ActionMenu.Item
+                      icon={<PlusIcon aria-hidden />}
+                      onSelect={() => {
+                        navigate('/rammeavtaler/opprett')
+                      }}
+                    >
+                      Ny rammeavtale
+                    </ActionMenu.Item>
+                    <ActionMenu.Item
+                      icon={<FileExcelIcon aria-hidden />}
+                      onSelect={() => {
+                        navigate('/katalog/importer-fil')
+                      }}
+                    >
+                      Importer katalogfil
+                    </ActionMenu.Item>
+                  </ActionMenu.Content>
+                </ActionMenu>
+              </HGrid>
+            )}
           </HGrid>
 
           {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
