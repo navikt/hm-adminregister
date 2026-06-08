@@ -26,7 +26,7 @@
       "*": ["./src/*"]
     },
 
-    "types": ["node"]
+    "types": ["node", "umami"]
   },
   "include": ["src", "vitest-setup.ts"],
   "exclude": ["node_modules"],
