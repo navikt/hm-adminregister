@@ -49,6 +49,7 @@ export type ProductAgreementRegistrationDTOList = components['schemas']['Product
 export type AgreementRegistrationDTO = components['schemas']['AgreementRegistrationDTO']
 export type IsoCategoryDTO = components['schemas']['IsoCategoryDTO']
 export type AgreementGroupDto = components['schemas']['AgreementBasicInformationDto'][]
+export type AgreementGroup = components['schemas']['AgreementBasicInformationDto']
 export type AgreementAttachment = components['schemas']['AgreementAttachment']
 export type AgreementDraftWithDTO = components['schemas']['AgreementDraftWithDTO']
 export type MediaDTO = components['schemas']['MediaDTO']

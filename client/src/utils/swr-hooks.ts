@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 
-import { AgreementFilterOption } from 'agreements/Agreements'
 import { getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR, { Fetcher } from 'swr'
@@ -262,6 +261,12 @@ export function usePagedSeriesToApprove({
     mutate,
     error,
   }
+}
+export enum AgreementFilterOption {
+  ALL = 'ALL',
+  ACTIVE = 'ACTIVE',
+  FUTURE = 'FUTURE',
+  EXPIRED = 'EXPIRED',
 }
 
 export function usePagedAgreements({

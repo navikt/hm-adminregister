@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Route, Routes, useLocation } from 'react-router-dom'
 
-import Agreements from 'agreements/Agreements'
+import { Agreements } from 'agreements/Agreements'
 import Agreement from 'agreements/agreement/Agreement'
 import CreateAgreement from 'agreements/agreement/CreateAgreement'
 import { getFeatureFlags } from 'api/FeatureApi'
