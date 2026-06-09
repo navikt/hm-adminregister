@@ -51,7 +51,7 @@ const CreateAndEditTechLabel = () => {
       required: editData?.required ? 'true' : 'false',
       sort: editData?.sort || 0,
       isoCode: editData?.isoCode || '',
-      options: editData?.options?.join(', ') || '',
+      options: editData?.options?.join('; ') || '',
     },
   })
 
@@ -59,7 +59,7 @@ const CreateAndEditTechLabel = () => {
     const dto: TechLabelCreateUpdateDTO = {
       ...data,
       required: data.required === 'true',
-      options: data.options ? data.options.split(',').map((opt) => opt.trim()) : [],
+      options: data.options ? data.options.split(';').map((opt) => opt.trim()) : [],
     }
 
     if (editData) {

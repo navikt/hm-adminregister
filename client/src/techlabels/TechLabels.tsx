@@ -97,12 +97,12 @@ export const TechLabels = () => {
   const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const optionsFix = (options: string[]) => {
-    const allOptions = options.join(', ')
+    const allOptions = options.join('; ')
     return options && options.length > 0 ? (
       <Tooltip content={allOptions}>
         {options.length > MAX_VISIBLE_OPTIONS ? (
           <BodyShort>
-            {options.slice(0, MAX_VISIBLE_OPTIONS).join(', ')}, ... ({options.length})
+            {options.slice(0, MAX_VISIBLE_OPTIONS).join('; ')}, ... ({options.length})
           </BodyShort>
         ) : (
           <BodyShort className={styles.column}>{allOptions}</BodyShort>
