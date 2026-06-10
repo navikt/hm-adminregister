@@ -1816,6 +1816,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admreg/api/v1/techlabels/all/names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["fetchLabelNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admreg/api/v1/techlabels/all/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["fetchUnits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admreg/api/v1/techlabels/name/{name}": {
         parameters: {
             query?: never;
@@ -2684,11 +2716,11 @@ export interface components {
         /** @enum {string} */
         AdminStatus: "PENDING" | "APPROVED" | "REJECTED";
         AgreementAttachment: {
+            description?: string | null;
             /** Format: uuid */
             id?: string | null;
-            title?: string | null;
             media: components["schemas"]["MediaInfo"][];
-            description?: string | null;
+            title?: string | null;
         };
         AgreementBasicInformationDto: {
             /** Format: uuid */
@@ -2715,42 +2747,42 @@ export interface components {
             expired: string;
         };
         AgreementInfo: {
+            accessory: boolean;
+            articleName: string;
+            /** Format: date-time */
+            expired: string;
             /** Format: uuid */
             id: string;
             identifier?: string | null;
-            title?: string | null;
-            /** Format: int32 */
-            rank: number;
-            /** Format: int32 */
-            postNr: number;
-            postIdentifier?: string | null;
-            postTitle?: string | null;
+            mainProduct: boolean;
             /** Format: uuid */
             postId?: string | null;
-            refNr?: string | null;
-            reference: string;
-            /** Format: date-time */
-            expired: string;
+            postIdentifier?: string | null;
+            /** Format: int32 */
+            postNr: number;
+            postTitle?: string | null;
             /** Format: date-time */
             published?: string | null;
-            status: components["schemas"]["ProductAgreementStatus"];
-            mainProduct: boolean;
-            accessory: boolean;
+            /** Format: int32 */
+            rank: number;
+            refNr?: string | null;
+            reference: string;
             sparePart: boolean;
-            articleName: string;
+            status: components["schemas"]["ProductAgreementStatus"];
+            title?: string | null;
         };
         AgreementPost: {
-            identifier: string;
+            /** Format: date-time */
+            created: string;
+            description: string;
             /** Format: uuid */
             id?: string | null;
-            type: components["schemas"]["DelkontraktType"];
+            identifier: string;
             /** Format: int32 */
             nr: number;
             refNr?: string | null;
             title: string;
-            description: string;
-            /** Format: date-time */
-            created: string;
+            type: components["schemas"]["DelkontraktType"];
         };
         AgreementRegistrationDTO: {
             /** Format: uuid */
@@ -2785,25 +2817,25 @@ export interface components {
             hmsArtNrs: string[];
         };
         Attributes: {
-            manufacturer?: string | null;
-            compatibleWith?: components["schemas"]["CompatibleWith"] | null;
             alternativeFor?: components["schemas"]["AlternativeFor"] | null;
-            worksWith?: components["schemas"]["WorksWith"] | null;
-            keywords?: string[] | null;
-            series?: string | null;
-            shortdescription?: string | null;
-            text?: string | null;
-            url?: string | null;
-            documentUrls?: components["schemas"]["DocumentUrl"][] | null;
             bestillingsordning?: boolean | null;
+            compatibleWith?: components["schemas"]["CompatibleWith"] | null;
             digitalSoknad?: boolean | null;
-            sortimentKategori?: string | null;
+            documentUrls?: components["schemas"]["DocumentUrl"][] | null;
+            egnetForBrukerpass?: boolean | null;
+            egnetForKommunalTekniker?: boolean | null;
+            hasTender?: boolean | null;
+            keywords?: string[] | null;
+            manufacturer?: string | null;
             pakrevdGodkjenningskurs?: components["schemas"]["PakrevdGodkjenningskurs"] | null;
             produkttype?: components["schemas"]["Produkttype"] | null;
+            series?: string | null;
+            shortdescription?: string | null;
+            sortimentKategori?: string | null;
             tenderId?: string | null;
-            hasTender?: boolean | null;
-            egnetForKommunalTekniker?: boolean | null;
-            egnetForBrukerpass?: boolean | null;
+            text?: string | null;
+            url?: string | null;
+            worksWith?: components["schemas"]["WorksWith"] | null;
         };
         BestillingsordningRegistrationDTO: {
             /** Format: uuid */
@@ -2921,9 +2953,9 @@ export interface components {
             hmsArtNr: string;
         };
         CompatibleWith: {
-            seriesIds: string[];
-            productIds: string[];
             connectedBy: string;
+            productIds: string[];
+            seriesIds: string[];
         };
         CompatibleWithDTO: {
             seriesIds: string[];
@@ -2969,8 +3001,8 @@ export interface components {
             diff: components["schemas"]["MapDifference_String.Object_"];
         };
         DocumentUrl: {
-            url: string;
             title: string;
+            url: string;
         };
         /** @enum {string} */
         DraftStatus: "DRAFT" | "DONE";
@@ -2996,6 +3028,7 @@ export interface components {
             unit: string;
             type: components["schemas"]["TechDataType"];
             definition?: string | null;
+            required: boolean;
             options?: string[] | null;
         };
         FileTitleDto: {
@@ -3014,22 +3047,22 @@ export interface components {
             reason?: string | null;
         };
         IsoCategoryDTO: {
-            isoCode: string;
-            isoTitle: string;
-            isoTitleShort?: string | null;
-            isoText: string;
-            isoTextShort?: string | null;
-            isoTranslations?: components["schemas"]["IsoTranslationsDTO"] | null;
-            /** Format: int32 */
-            isoLevel: number;
-            isActive: boolean;
-            showTech: boolean;
             allowMulti: boolean;
             /** Format: date-time */
             created: string;
+            isActive: boolean;
+            isoCode: string;
+            /** Format: int32 */
+            isoLevel: number;
+            isoText: string;
+            isoTextShort?: string | null;
+            isoTitle: string;
+            isoTitleShort?: string | null;
+            isoTranslations?: components["schemas"]["IsoTranslationsDTO"] | null;
+            searchWords: string[];
+            showTech: boolean;
             /** Format: date-time */
             updated: string;
-            searchWords: string[];
         };
         IsoCategoryRegistrationDTO: {
             isoCode: string;
@@ -3058,8 +3091,8 @@ export interface components {
             textEn?: string | null;
         };
         IsoTranslationsDTO: {
-            titleEn?: string | null;
             textEn?: string | null;
+            titleEn?: string | null;
         };
         "MapDifference_String.Object_": {
             entriesDiffering: {
@@ -3091,16 +3124,16 @@ export interface components {
             updated: string;
         };
         MediaInfo: {
-            sourceUri: string;
             filename?: string | null;
-            uri: string;
             /** Format: int32 */
             priority: number;
-            type: components["schemas"]["MediaType"];
-            text?: string | null;
             source: components["schemas"]["MediaSourceType"];
+            sourceUri: string;
+            text?: string | null;
+            type: components["schemas"]["MediaType"];
             /** Format: date-time */
             updated: string;
+            uri: string;
         };
         MediaInfoDTO: {
             sourceUri: string;
@@ -3180,85 +3213,85 @@ export interface components {
         };
         Page_AgreementBasicInformationDto_: components["schemas"]["Slice_AgreementBasicInformationDto_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_CatalogFile_: components["schemas"]["Slice_CatalogFile_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_NewsRegistrationDTO_: components["schemas"]["Slice_NewsRegistrationDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_ProductRegistrationDTOV2_: components["schemas"]["Slice_ProductRegistrationDTOV2_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_ProductRegistrationVersionDTO_: components["schemas"]["Slice_ProductRegistrationVersionDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_ProductToApproveDto_: components["schemas"]["Slice_ProductToApproveDto_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_SeriesRegistrationVersionDTO_: components["schemas"]["Slice_SeriesRegistrationVersionDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_SeriesSearchDTO_: components["schemas"]["Slice_SeriesSearchDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_SeriesToApproveDTO_: components["schemas"]["Slice_SeriesToApproveDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_SupplierRegistrationDTO_: components["schemas"]["Slice_SupplierRegistrationDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_TechLabelRegistrationDTO_: components["schemas"]["Slice_TechLabelRegistrationDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         Page_UserDTO_: components["schemas"]["Slice_UserDTO_"] & {
             /** Format: int64 */
-            totalSize?: number;
+            totalSize: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
         };
         "Pair_Object.Object_": {
             first: Record<string, never>;
             second: Record<string, never>;
         };
         PakrevdGodkjenningskurs: {
-            tittel: string;
             isokode: string;
             /** Format: int32 */
             kursId: number;
+            tittel: string;
         };
         PartDTO: {
             /** Format: uuid */
@@ -3712,23 +3745,23 @@ export interface components {
         ServiceAgreementInfo: {
             /** Format: uuid */
             agreementId: string;
-            status: components["schemas"]["ServiceAgreementStatus"];
-            /** Format: date-time */
-            published: string;
             /** Format: date-time */
             expired: string;
+            /** Format: date-time */
+            published: string;
+            status: components["schemas"]["ServiceAgreementStatus"];
         };
         /** @enum {string} */
         ServiceAgreementStatus: "INACTIVE" | "ACTIVE" | "DELETED";
         ServiceAttributes: {
             keywords?: string[] | null;
-            url?: string | null;
-            text?: string | null;
             serviceFor?: components["schemas"]["ServiceFor"] | null;
+            text?: string | null;
+            url?: string | null;
         };
         ServiceFor: {
-            seriesIds: string[];
             productIds: string[];
+            seriesIds: string[];
         };
         ServiceJobDTO: {
             /** Format: uuid */
@@ -3764,157 +3797,157 @@ export interface components {
             content: components["schemas"]["AgreementBasicInformationDto"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_CatalogFile_: {
             content: components["schemas"]["CatalogFile"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_NewsRegistrationDTO_: {
             content: components["schemas"]["NewsRegistrationDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_ProductRegistrationDTOV2_: {
             content: components["schemas"]["ProductRegistrationDTOV2"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_ProductRegistrationVersionDTO_: {
             content: components["schemas"]["ProductRegistrationVersionDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_ProductToApproveDto_: {
             content: components["schemas"]["ProductToApproveDto"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_SeriesRegistrationVersionDTO_: {
             content: components["schemas"]["SeriesRegistrationVersionDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_SeriesSearchDTO_: {
             content: components["schemas"]["SeriesSearchDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_SeriesToApproveDTO_: {
             content: components["schemas"]["SeriesToApproveDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_SupplierRegistrationDTO_: {
             content: components["schemas"]["SupplierRegistrationDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_TechLabelRegistrationDTO_: {
             content: components["schemas"]["TechLabelRegistrationDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         Slice_UserDTO_: {
             content: components["schemas"]["UserDTO"][];
             pageable: components["schemas"]["OpenApiPageable"];
             /** Format: int32 */
-            pageNumber?: number;
+            pageNumber: number;
             /** Format: int64 */
-            offset?: number;
+            offset: number;
             /** Format: int32 */
-            size?: number;
-            empty?: boolean;
+            size: number;
+            empty: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
         };
         SuitableForBrukerpassbrukerDTO: {
             suitableForBrukerpassbruker: boolean;
@@ -3957,8 +3990,8 @@ export interface components {
         SupplierStatus: "INACTIVE" | "ACTIVE";
         TechData: {
             key: string;
-            value: string;
             unit: string;
+            value: string;
         };
         /** @enum {string} */
         TechDataType: "NUMBER" | "BOOLEAN" | "TEXT" | "OPTIONS";
@@ -3967,6 +4000,9 @@ export interface components {
             isoCode: string;
             type: components["schemas"]["TechLabelType"];
             unit?: string | null;
+            /** Format: int32 */
+            sort: number;
+            required: boolean;
             options: string[];
         };
         TechLabelDTO: {
@@ -3981,6 +4017,8 @@ export interface components {
             unit?: string | null;
             /** Format: int32 */
             sort: number;
+            required: boolean;
+            /** @deprecated */
             isKeyLabel?: boolean | null;
             systemLabel?: string | null;
             options: string[];
@@ -4005,6 +4043,8 @@ export interface components {
             sort: number;
             options: string[];
             isActive: boolean;
+            required: boolean;
+            /** @deprecated */
             isKeyLabel?: boolean | null;
             systemLabel: string;
             createdBy: string;
@@ -4069,18 +4109,18 @@ export interface components {
             };
         };
         UsernamePasswordCredentials: {
+            identity: string;
+            secret: string;
             username: string;
             password: string;
-            identity?: string | null;
-            secret?: string | null;
         };
         VerifyOTPRequest: {
             otp: string;
             email: string;
         };
         WorksWith: {
-            seriesIds: string[];
             productIds: string[];
+            seriesIds: string[];
         };
         WorksWithMapping: {
             /** Format: uuid */
@@ -4579,7 +4619,7 @@ export interface operations {
     excelImport: {
         parameters: {
             query: {
-                dryRun: boolean;
+                dryRun?: boolean | null;
                 supplierId: string;
             };
             header?: never;
@@ -4819,7 +4859,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @example series, product or agreement */
-                type: string;
+                type: string | null;
                 oid: string;
             };
             cookie?: never;
@@ -5247,7 +5287,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "application/json": components["schemas"]["HiddenPartAdminController.HideRequest"];
             };
@@ -5413,7 +5453,7 @@ export interface operations {
     excelImportBackwardCompatibility: {
         parameters: {
             query: {
-                dryRun: boolean;
+                dryRun?: boolean | null;
                 supplierId: string;
             };
             header?: never;
@@ -6707,8 +6747,8 @@ export interface operations {
     };
     deleteTechLabel: {
         parameters: {
-            query: {
-                forcedDelete: boolean;
+            query?: {
+                forcedDelete?: boolean | null;
             };
             header?: never;
             path: {
@@ -7478,6 +7518,46 @@ export interface operations {
             };
         };
     };
+    fetchLabelNames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description fetchLabelNames 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
+    fetchUnits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description fetchUnits 200 response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
+    };
     fetchTechLabelsByName: {
         parameters: {
             query?: never;
@@ -8183,7 +8263,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @example series or product */
-                type: string;
+                type: string | null;
                 oid: string;
             };
             cookie?: never;
@@ -8212,7 +8292,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                type: string;
+                type: string | null;
                 oid: string;
             };
             cookie?: never;
@@ -8235,7 +8315,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                type: string;
+                type: string | null;
                 oid: string;
                 uri: string;
             };

@@ -21,6 +21,7 @@ type FormData = {
     unit: string
     type: TechDataType
     definition?: string | null
+    required: boolean
     options?: string[] | null
   }>
 }
