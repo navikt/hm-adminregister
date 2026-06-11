@@ -16,6 +16,7 @@ type FormData = {
   sort: number;
   isoCode: string;
   options: string;
+  definition: string;
 }
 
 const TECH_LABEL_TYPES = [
@@ -52,6 +53,7 @@ const CreateAndEditTechLabel = () => {
       sort: editData?.sort || 0,
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join('; ') || '',
+      definition: editData?.definition || ''
     },
   })
 
@@ -146,6 +148,12 @@ const CreateAndEditTechLabel = () => {
             label="Alternativer"
             id="options"
             autoComplete="on"
+          />
+          <TextField
+              {...register('definition', { required: false })}
+              label="Beskrivelse "
+              id="definition"
+              autoComplete="on"
           />
           <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

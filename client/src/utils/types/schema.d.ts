@@ -4004,6 +4004,7 @@ export interface components {
             sort: number;
             required: boolean;
             options: string[];
+            definition?: string | null;
         };
         TechLabelDTO: {
             /** Format: uuid */

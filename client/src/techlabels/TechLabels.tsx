@@ -173,6 +173,7 @@ export const TechLabels = () => {
                 <Table.HeaderCell className={styles.shortColumn}>Sortering</Table.HeaderCell>
                 <Table.HeaderCell className={styles.requiredColumn}>Obligatorisk</Table.HeaderCell>
                 <Table.HeaderCell className={styles.optionsColumn}>Alternativer</Table.HeaderCell>
+                <Table.HeaderCell className={styles.mediumColumn}>Beskrivelse</Table.HeaderCell>
                 <Table.HeaderCell className={styles.editButtonHeader} />
               </Table.Row>
             </Table.Header>
@@ -186,6 +187,7 @@ export const TechLabels = () => {
                   <Table.DataCell className={styles.shortColumn}>{label.sort}</Table.DataCell>
                   <Table.DataCell className={styles.requiredColumn}>{label.required ? 'Ja' : 'Nei'}</Table.DataCell>
                   <Table.DataCell className={styles.optionsColumn}>{optionsFix(label.options)}</Table.DataCell>
+                  <Table.DataCell className={styles.mediumColumn}>{label.definition}</Table.DataCell>
                   <Table.DataCell className={styles.editButton}>
                     <Button
                       size="xsmall"
