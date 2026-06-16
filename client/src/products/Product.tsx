@@ -30,6 +30,7 @@ import VideosTab from 'products/videos/VideosTab'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
+import type { SeriesDTO } from 'utils/types/response-types'
 import { useIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
@@ -58,6 +59,11 @@ import styles from './ProductPage.module.scss'
 
 type Error = {
   isoCodeErrorMessage?: string | undefined
+}
+
+type MissingRequiredTechData = {
+  key: string
+  variants: string[]
 }
 
 const Product = () => {
@@ -132,6 +138,32 @@ const Product = () => {
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`, { state: state })
   }
+
+  const variantDisplayName = (variant: SeriesDTO['variants'][number]) => {
+    if (variant.articleName?.trim()) return variant.articleName
+    if (variant.hmsArtNr?.trim()) return `HMS ${variant.hmsArtNr}`
+    if (variant.supplierRef?.trim()) return `Leverandørref ${variant.supplierRef}`
+    return variant.id
+  }
+
+  const missingRequiredTechData: MissingRequiredTechData[] = Object.entries(
+    series.variants.reduce<Record<string, string[]>>((acc, variant) => {
+      variant.productData.techData.forEach((techField) => {
+        const hasValue = techField.value.trim().length > 0
+        if (techField.required && !hasValue) {
+          const missingForField = acc[techField.key] ?? []
+          missingForField.push(variantDisplayName(variant))
+          acc[techField.key] = missingForField
+        }
+      })
+      return acc
+    }, {})
+  )
+    .map(([key, variants]) => ({
+      key,
+      variants,
+    }))
+    .sort((left, right) => left.key.localeCompare(right.key, 'nb'))
 
   const productIsValid = () => {
     if (loggedInUser?.isAdmin) {
@@ -228,6 +260,7 @@ const Product = () => {
         series={series}
         mutateSeries={mutateSeries}
         isValid={isValid}
+        missingRequiredTechData={missingRequiredTechData}
         isOpen={approvalModalIsOpen}
         setIsOpen={setApprovalModalIsOpen}
       />

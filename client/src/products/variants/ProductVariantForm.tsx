@@ -28,17 +28,18 @@ type FormData = {
 
 const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTOV2; mutate: () => void }) => {
   const navigate = useNavigate()
-  const { pathname, state } = useLocation()
+  const { state } = useLocation()
   const { articleName, supplierRef } = product
   const [searchParams] = useSearchParams()
   const page = Number(searchParams.get('page')) || 1
   const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useErrorStore()
+  const isAdmin = loggedInUser?.isAdmin || false
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     control,
     setError,
   } = useForm<FormData>({
@@ -126,10 +127,12 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'NUMBER' && (
               <TextField
                 {...register(`techData.${index}.value`, {
-                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                          required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
                   validate: (value) => {
-                    if (!value?.trim()) return true
-                    return /^\d+([.,]\d+)?$/.test(value) || 'Må være tall'
+                    if (!value?.trim()) {
+                      return !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : true
+                    }
+                    return /^\d+([.,]\d+)?$/.test(value.trim()) || 'Må være tall'
                   },
                 })}
                 label={label}
@@ -142,7 +145,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'BOOLEAN' && (
               <Select
                 {...register(`techData.${index}.value`, {
-                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                  required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
                 })}
                 label={label}
               >
@@ -154,9 +157,14 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'OPTIONS' && (
               <Select
                 {...register(`techData.${index}.value`, {
-                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                  required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => {
+                    if (!isAdmin && isRequired && !value) return `${techDataField.key} er påkrevd`
+                    return true
+                  },
                 })}
                 label={label}
+                error={errorForField?.message}
               >
                 <option value="">Velg</option>
                 {techDataField.options?.map((option) => (
@@ -169,8 +177,8 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'TEXT' && (
               <TextField
                 {...register(`techData.${index}.value`, {
-                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
-                  validate: (value) => (!value || value.trim() ? true : 'Feltet er påkrevd'),
+                  required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => (!value || value.trim() ? true : `${techDataField.key} er påkrevd`),
                 })}
                 label={label}
                 id={`techData.${index}.value`}
