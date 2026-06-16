@@ -7,7 +7,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { isUUID, labelRequired } from 'utils/string-util'
 import { ProductRegistrationDTOV2, TechDataType } from 'utils/types/response-types'
 
-import { Button, HStack, HelpText, Select, TextField } from '@navikt/ds-react'
+import { Button, HelpText, HStack, Select, TextField } from '@navikt/ds-react'
 
 import styles from './ProductVariantForm.module.scss'
 
@@ -110,13 +110,15 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
       )}
       {techDataFields.map((techDataField, index) => {
         const errorForField = errors?.techData?.[index]?.value
+        const isRequired = techDataField.required
+        const baseLabel = isRequired ? labelRequired(techDataField.key) : techDataField.key
 
         const label = techDataField?.definition ? (
           <HStack gap="space-16">
-            {techDataField.key} <HelpText>{techDataField?.definition}</HelpText>{' '}
+            {baseLabel} <HelpText>{techDataField?.definition}</HelpText>{' '}
           </HStack>
         ) : (
-          techDataField.key
+          baseLabel
         )
 
         return (
@@ -124,7 +126,11 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'NUMBER' && (
               <TextField
                 {...register(`techData.${index}.value`, {
-                  validate: (value) => value === '' || /^\d+([.,]\d+)?$/.test(value) || 'Må være tall',
+                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => {
+                    if (!value?.trim()) return true
+                    return /^\d+([.,]\d+)?$/.test(value) || 'Må være tall'
+                  },
                 })}
                 label={label}
                 id={`techData.${index}.value`}
@@ -134,14 +140,24 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
               />
             )}
             {techDataField.type === 'BOOLEAN' && (
-              <Select {...register(`techData.${index}.value`)} label={label}>
+              <Select
+                {...register(`techData.${index}.value`, {
+                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                })}
+                label={label}
+              >
                 <option value="">Velg</option>
                 <option value="Ja">Ja</option>
                 <option value="Nei">Nei</option>
               </Select>
             )}
             {techDataField.type === 'OPTIONS' && (
-              <Select {...register(`techData.${index}.value`)} label={label}>
+              <Select
+                {...register(`techData.${index}.value`, {
+                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                })}
+                label={label}
+              >
                 <option value="">Velg</option>
                 {techDataField.options?.map((option) => (
                   <option value={option} key={option}>
@@ -152,7 +168,10 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             )}
             {techDataField.type === 'TEXT' && (
               <TextField
-                {...register(`techData.${index}.value`)}
+                {...register(`techData.${index}.value`, {
+                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => (!value || value.trim() ? true : 'Feltet er påkrevd'),
+                })}
                 label={label}
                 id={`techData.${index}.value`}
                 name={`techData.${index}.value`}
