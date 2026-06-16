@@ -154,9 +154,13 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'OPTIONS' && (
               <Select
                 {...register(`techData.${index}.value`, {
-                  required: isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => {
+                    if (isRequired && !value) return `${techDataField.key} er påkrevd`
+                    return true
+                  },
                 })}
                 label={label}
+                error={errorForField?.message}
               >
                 <option value="">Velg</option>
                 {techDataField.options?.map((option) => (
@@ -170,7 +174,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
               <TextField
                 {...register(`techData.${index}.value`, {
                   required: isRequired ? `${techDataField.key} er påkrevd` : false,
-                  validate: (value) => (!value || value.trim() ? true : 'Feltet er påkrevd'),
+                  validate: (value) => (!value || value.trim() ? true : `${techDataField.key} er påkrevd`),
                 })}
                 label={label}
                 id={`techData.${index}.value`}
