@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -42,6 +43,8 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
     formState: { errors },
     control,
     setError,
+    getValues,
+    trigger,
   } = useForm<FormData>({
     mode: 'onTouched',
     defaultValues: {
@@ -53,6 +56,13 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   })
 
   const { fields: techDataFields } = useFieldArray({ name: 'techData', control })
+
+  // Trigger validation on mount for suppliers to show errors immediately
+  useEffect(() => {
+    if (!isAdmin) {
+      trigger('techData')
+    }
+  }, [isAdmin, trigger])
 
   async function onSubmit(data: FormData) {
     const productRegistrationUpdated = {
@@ -78,6 +88,18 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         }
       })
   }
+
+  const handleSaveWithMissingData = () => {
+    const data = getValues()
+    onSubmit(data)
+  }
+
+  // Check if there are validation errors on required fields
+  const hasRequiredFieldErrors = techDataFields.some((field, index) => {
+    if (!field.required) return false
+    const hasError = errors?.techData?.[index]?.value
+    return !isAdmin && hasError
+  })
 
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
@@ -127,7 +149,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
             {techDataField.type === 'NUMBER' && (
               <TextField
                 {...register(`techData.${index}.value`, {
-                          required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
+                  required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
                   validate: (value) => {
                     if (!value?.trim()) {
                       return !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : true
@@ -146,8 +168,13 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
               <Select
                 {...register(`techData.${index}.value`, {
                   required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
+                  validate: (value) => {
+                    if (!isAdmin && isRequired && !value) return `${techDataField.key} er påkrevd`
+                    return true
+                  },
                 })}
                 label={label}
+                error={errorForField?.message}
               >
                 <option value="">Velg</option>
                 <option value="Ja">Ja</option>
@@ -178,7 +205,8 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
               <TextField
                 {...register(`techData.${index}.value`, {
                   required: !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : false,
-                  validate: (value) => (!value || value.trim() ? true : `${techDataField.key} er påkrevd`),
+                  validate: (value) =>
+                    !value || value.trim() ? true : !isAdmin && isRequired ? `${techDataField.key} er påkrevd` : true,
                 })}
                 label={label}
                 id={`techData.${index}.value`}
@@ -200,9 +228,14 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         >
           Avbryt
         </Button>
-        <Button type="submit" size="medium">
+        <Button type="submit" size="medium" disabled={!isAdmin && hasRequiredFieldErrors}>
           Lagre
         </Button>
+        {!isAdmin && hasRequiredFieldErrors && (
+          <Button type="button" variant="secondary" size="medium" onClick={handleSaveWithMissingData}>
+            Lagre med manglende teknisk data
+          </Button>
+        )}
       </div>
     </form>
   )
