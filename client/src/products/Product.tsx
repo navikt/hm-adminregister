@@ -25,7 +25,7 @@ import SupplierActions from 'products/SupplierActions'
 import DocumentTab from 'products/files/DocumentsTab'
 import ImageTab from 'products/files/images/ImagesTab'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
-import { numberOfDocuments, numberOfImages, numberOfVideos, seriesStatus } from 'products/seriesUtils'
+import { numberOfDocuments, numberOfImages, numberOfVideos } from 'products/seriesUtils'
 import VideosTab from 'products/videos/VideosTab'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
@@ -115,6 +115,11 @@ const Product = () => {
 
   const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!)
 
+  const missingRequiredTechData = useMemo(
+    () => (series ? getMissingRequiredTechData(series.variants) : []),
+    [series?.variants]
+  )
+
   if (isLoadingSeries) {
     return (
       <HGrid gap="space-12" columns="minmax(16rem, 55rem)">
@@ -135,10 +140,6 @@ const Product = () => {
     navigate(`${pathname}?tab=${value}`, { state: state })
   }
 
-  const missingRequiredTechData = useMemo(
-    () => getMissingRequiredTechData(series.variants),
-    [series.variants]
-  )
 
   const productIsValid = () => {
     if (loggedInUser?.isAdmin) {

@@ -11,6 +11,10 @@ import {BodyLong, Button, Modal} from '@navikt/ds-react'
 
 import styles from './ProductPage.module.scss'
 
+const approvalModalFeatures = {
+  hideGuidanceWhenMissingOverviewIsOpen: true,
+} as const
+
 export const RequestApprovalModal = ({
   series,
   mutateSeries,
@@ -38,19 +42,20 @@ export const RequestApprovalModal = ({
       })
   }
 
-  const baseErrors = loggedInUser?.isAdmin
-    ? [series.variants.length === 0 ? 'Produktet mangler teknisk data' : null].filter(
-        (error): error is string => error !== null
-      )
+  const isAdmin = loggedInUser?.isAdmin || false
+  const baseErrors = isAdmin
+    ? [series.variants.length === 0 ? 'Produktet mangler teknisk data' : null]
     : [
         !series.text ? 'Produktet må ha en produktbeskrivelse' : null,
         numberOfImages(series) < 2 ? 'Produktet må ha minst to bilder' : null,
         numberOfDocuments(series) < 1 ? 'Produktet må ha minst ett dokument' : null,
         series.variants.length === 0 ? 'Produktet mangler teknisk data' : null,
-      ].filter((error): error is string => error !== null)
+      ]
+
+  const baseErrorsFiltered = baseErrors.filter((error): error is string => error !== null)
 
   const hasMissingRequiredTechData = missingRequiredTechData.length > 0
-  const hasErrors = !isValid || baseErrors.length > 0 || hasMissingRequiredTechData
+  const hasErrors = !isValid || baseErrorsFiltered.length > 0 || hasMissingRequiredTechData
 
   return (
     <Modal
@@ -65,7 +70,7 @@ export const RequestApprovalModal = ({
       }}
     >
       <Modal.Body>
-        {!showMissingOverview && (
+        {(!approvalModalFeatures.hideGuidanceWhenMissingOverviewIsOpen || !showMissingOverview) && (
           <>
             <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
             <ul>
@@ -81,10 +86,12 @@ export const RequestApprovalModal = ({
           <>
             <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
             <ul className={styles.errorText}>
-              {baseErrors.map((error) => (
+              {baseErrorsFiltered.map((error) => (
                 <li key={error}>{error}</li>
               ))}
-              {hasMissingRequiredTechData && <p>Påkrevde felt/er i tekniske data mangler verdi/er:</p>}
+              {hasMissingRequiredTechData && (
+                <p>Påkrevde felt i tekniske data som mangler verdi i aktuelle varianter:</p>
+              )}
             </ul>
           </>
         )}
@@ -102,7 +109,7 @@ export const RequestApprovalModal = ({
       <Modal.Footer>
         {hasMissingRequiredTechData && (
           <Button variant="secondary" onClick={() => setShowMissingOverview((current) => !current)}>
-            Oversikt over feil
+            Oversikt over feil {showMissingOverview ? '▲' : '▼'}
           </Button>
         )}
         <Button
