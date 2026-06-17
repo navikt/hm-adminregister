@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import {useState} from 'react'
 
-import { requestApproval } from 'api/SeriesApi'
-import { numberOfDocuments, numberOfImages } from 'products/seriesUtils'
-import { useAuthStore } from 'utils/store/useAuthStore'
-import { useErrorStore } from 'utils/store/useErrorStore'
-import { SeriesDTO } from 'utils/types/response-types'
+import {requestApproval} from 'api/SeriesApi'
+import {numberOfDocuments, numberOfImages} from 'products/seriesUtils'
+import {useAuthStore} from 'utils/store/useAuthStore'
+import {useErrorStore} from 'utils/store/useErrorStore'
+import {SeriesDTO} from 'utils/types/response-types'
 
-import { RocketIcon } from '@navikt/aksel-icons'
-import { BodyLong, Button, Modal } from '@navikt/ds-react'
+import {RocketIcon} from '@navikt/aksel-icons'
+import {BodyLong, Button, Modal} from '@navikt/ds-react'
 
 import styles from './ProductPage.module.scss'
 
@@ -65,13 +65,17 @@ export const RequestApprovalModal = ({
       }}
     >
       <Modal.Body>
-        <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
-        <ul>
-          <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
-          <li>tekniske data er korrekte.</li>
-          <li>påkrevde felter i tekniske data for alle varianter er fylt inn.</li>
-          <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
-        </ul>
+        {!showMissingOverview && (
+          <>
+            <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
+            <ul>
+              <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
+              <li>tekniske data er korrekte.</li>
+              <li>påkrevde felter i tekniske data for alle varianter er fylt inn.</li>
+              <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
+            </ul>
+          </>
+        )}
 
         {hasErrors && (
           <>
@@ -80,7 +84,7 @@ export const RequestApprovalModal = ({
               {baseErrors.map((error) => (
                 <li key={error}>{error}</li>
               ))}
-              {hasMissingRequiredTechData && <li>Påkrevde felt i tekniske data mangler verdi.</li>}
+              {hasMissingRequiredTechData && <p>Påkrevde felt/er i tekniske data mangler verdi/er:</p>}
             </ul>
           </>
         )}
@@ -125,4 +129,3 @@ export const RequestApprovalModal = ({
     </Modal>
   )
 }
-
