@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import {
@@ -135,7 +135,10 @@ const Product = () => {
     navigate(`${pathname}?tab=${value}`, { state: state })
   }
 
-  const missingRequiredTechData = getMissingRequiredTechData(series.variants)
+  const missingRequiredTechData = useMemo(
+    () => getMissingRequiredTechData(series.variants),
+    [series.variants]
+  )
 
   const productIsValid = () => {
     if (loggedInUser?.isAdmin) {
