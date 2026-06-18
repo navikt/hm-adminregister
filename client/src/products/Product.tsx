@@ -35,16 +35,16 @@ import { useIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
-  Link as AkselLink,
   BodyShort,
   Box,
   Button,
   CopyButton,
   Detail,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
+  Link as AkselLink,
   Loader,
   Tabs,
   Tag,
@@ -60,7 +60,6 @@ import styles from './ProductPage.module.scss'
 type Error = {
   isoCodeErrorMessage?: string | undefined
 }
-
 
 const Product = () => {
   const { seriesId } = useParams()
@@ -115,10 +114,7 @@ const Product = () => {
 
   const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!)
 
-  const missingRequiredTechData = useMemo(
-    () => (series ? getMissingRequiredTechData(series.variants) : []),
-    [series?.variants]
-  )
+  const missingRequiredTechData = useMemo(() => (series ? getMissingRequiredTechData(series.variants) : []), [series])
 
   if (isLoadingSeries) {
     return (
@@ -139,7 +135,6 @@ const Product = () => {
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`, { state: state })
   }
-
 
   const productIsValid = () => {
     if (loggedInUser?.isAdmin) {

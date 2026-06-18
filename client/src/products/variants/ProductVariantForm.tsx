@@ -45,6 +45,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
     setError,
     getValues,
     trigger,
+    clearErrors,
   } = useForm<FormData>({
     mode: 'onTouched',
     defaultValues: {
@@ -90,6 +91,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
   }
 
   const handleSaveWithMissingData = () => {
+    clearErrors()
     const data = getValues()
     onSubmit(data)
   }

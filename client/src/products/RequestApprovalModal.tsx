@@ -1,19 +1,15 @@
-import {useState} from 'react'
+import { useState } from 'react'
 
-import {requestApproval} from 'api/SeriesApi'
-import {numberOfDocuments, numberOfImages} from 'products/seriesUtils'
-import {useAuthStore} from 'utils/store/useAuthStore'
-import {useErrorStore} from 'utils/store/useErrorStore'
-import {SeriesDTO} from 'utils/types/response-types'
+import { requestApproval } from 'api/SeriesApi'
+import { numberOfDocuments, numberOfImages } from 'products/seriesUtils'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
 
-import {RocketIcon} from '@navikt/aksel-icons'
-import {BodyLong, Button, Modal} from '@navikt/ds-react'
+import { RocketIcon } from '@navikt/aksel-icons'
+import { BodyLong, Button, Modal } from '@navikt/ds-react'
 
 import styles from './ProductPage.module.scss'
-
-const approvalModalFeatures = {
-  hideGuidanceWhenMissingOverviewIsOpen: true,
-} as const
 
 export const RequestApprovalModal = ({
   series,
@@ -70,7 +66,7 @@ export const RequestApprovalModal = ({
       }}
     >
       <Modal.Body>
-        {(!approvalModalFeatures.hideGuidanceWhenMissingOverviewIsOpen || !showMissingOverview) && (
+        {!showMissingOverview && (
           <>
             <BodyLong>Før du sender til godkjenning, sjekk at:</BodyLong>
             <ul>
@@ -85,14 +81,26 @@ export const RequestApprovalModal = ({
         {hasErrors && (
           <>
             <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
-            <ul className={styles.errorText}>
+            {/* <ul className={styles.errorText}>
               {baseErrorsFiltered.map((error) => (
                 <li key={error}>{error}</li>
               ))}
               {hasMissingRequiredTechData && (
                 <p>Påkrevde felt i tekniske data som mangler verdi i aktuelle varianter:</p>
               )}
-            </ul>
+            </ul>*/}
+            {baseErrorsFiltered.length > 0 && (
+              <ul className={styles.errorText}>
+                {baseErrorsFiltered.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            )}
+            {hasMissingRequiredTechData && (
+              <BodyLong className={styles.errorText}>
+                Påkrevde felt i tekniske data som mangler verdi i aktuelle varianter:
+              </BodyLong>
+            )}
           </>
         )}
 
