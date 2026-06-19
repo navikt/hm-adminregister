@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
 import { moveProductsToSeries } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
-import product from 'products/Product'
 import MoveProductVariantsModal from 'products/variants/MoveProductVariantsModal'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -206,7 +205,9 @@ const VariantsTab = ({
                                     <>
                                       <Dropdown.Menu.List.Item
                                         onClick={() => {
-                                          navigate(`${pathname}/rediger-variant/${product.id}`, { state: state })
+                                          navigate(`${pathname}/rediger-variant/${product.id}?page=${pageState}`, {
+                                            state: state,
+                                          })
                                         }}
                                       >
                                         Endre
