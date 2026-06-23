@@ -66,6 +66,9 @@
     "vite": "^8.0.16",
     "vitest": "^4.1.4"
   },
+  "overrides": {
+    "@opentelemetry/core": "2.8.0"
+  },
   "msw": {
     "workerDirectory": [
       "public"
