@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import {
   changeMainProductToPart,
+  approveSeries,
   deleteSeries,
   setPublishedSeriesToDraft,
   setSeriesToActive,
@@ -25,25 +26,26 @@ import SupplierActions from 'products/SupplierActions'
 import DocumentTab from 'products/files/DocumentsTab'
 import ImageTab from 'products/files/images/ImagesTab'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
-import { numberOfDocuments, numberOfImages, numberOfVideos, seriesStatus } from 'products/seriesUtils'
+import { numberOfDocuments, numberOfImages, numberOfVideos } from 'products/seriesUtils'
 import VideosTab from 'products/videos/VideosTab'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
+import { getMissingRequiredTechData } from 'utils/product-util'
 import { useIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
-  Link as AkselLink,
   BodyShort,
   Box,
   Button,
   CopyButton,
   Detail,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
+  Link as AkselLink,
   Loader,
   Tabs,
   Tag,
@@ -112,6 +114,14 @@ const Product = () => {
   const { setGlobalError } = useErrorStore()
 
   const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!)
+
+  const missingRequiredTechData = useMemo(() => (series ? getMissingRequiredTechData(series.variants) : []), [series])
+
+  const handlePublishWithErrors = () => {
+    approveSeries(series!.id)
+      .then(() => mutateSeries())
+      .catch((error) => setGlobalError(error.status, error.message))
+  }
 
   if (isLoadingSeries) {
     return (
@@ -228,6 +238,8 @@ const Product = () => {
         series={series}
         mutateSeries={mutateSeries}
         isValid={isValid}
+        missingRequiredTechData={missingRequiredTechData}
+        onPublishWithErrors={loggedInUser?.isAdmin ? handlePublishWithErrors : undefined}
         isOpen={approvalModalIsOpen}
         setIsOpen={setApprovalModalIsOpen}
       />

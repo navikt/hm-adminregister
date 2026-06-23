@@ -40,3 +40,5 @@ export const formatAgreementRanks = (agreements: AgreementInfo[]): string => {
     .sort()
     .join(', ')
 }
+
+export const trimValue = (value: string | null | undefined): string => value?.trim() ?? ''
