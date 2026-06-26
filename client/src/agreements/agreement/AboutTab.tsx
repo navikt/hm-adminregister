@@ -11,6 +11,7 @@ import { FloppydiskIcon, PencilWritingIcon, PlusCircleIcon } from '@navikt/aksel
 import { Alert, Button, Heading, VStack } from '@navikt/ds-react'
 
 import { EditCommonInfoAgreement } from './Agreement'
+import styles from '../../products/about/Editor.module.scss'
 
 interface Props {
   agreement: AgreementRegistrationDTO
@@ -75,6 +76,7 @@ const AboutTab = ({ agreement, onSubmit }: Props) => {
                     formMethods.setValue('description', description)
                   }}
                   defaultValue={agreement.agreementData.text || ''}
+                  className={styles.editor}
                   toolbar={[['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]}
                   formats={['bold', 'italic', 'underline', 'list', 'link']}
                 />
