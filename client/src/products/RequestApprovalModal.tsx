@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import {useMemo, useState} from 'react'
 
-import { requestApproval } from 'api/SeriesApi'
-import { numberOfDocuments, numberOfImages } from 'products/seriesUtils'
-import { useAuthStore } from 'utils/store/useAuthStore'
-import { useErrorStore } from 'utils/store/useErrorStore'
-import { SeriesDTO } from 'utils/types/response-types'
+import {requestApproval} from 'api/SeriesApi'
+import {numberOfDocuments, numberOfImages} from 'products/seriesUtils'
+import {useAuthStore} from 'utils/store/useAuthStore'
+import {useErrorStore} from 'utils/store/useErrorStore'
+import {SeriesDTO} from 'utils/types/response-types'
 
 import {
   ArrowUndoIcon,
@@ -52,7 +52,7 @@ export const RequestApprovalModal = ({
   const introText = isAdmin ? 'Før du publiserer, sjekk at:' : 'Før du sender til godkjenning, sjekk at:'
   const baseErrors = [
     !series.text ? 'Produktet må ha en produktbeskrivelse' : null,
-    numberOfImages(series) < 2 ? 'Produktet må ha minst to unike bilder' : null,
+    numberOfImages(series) < 2 ? 'Produktet må ha minst to bilder' : null,
     numberOfDocuments(series) < 1 ? 'Produktet må ha minst ett dokument' : null,
     series.variants.length === 0 ? 'Produktet mangler teknisk data' : null,
   ]
@@ -116,10 +116,12 @@ export const RequestApprovalModal = ({
                     {baseErrorsFiltered.map((error) => (
                       <li key={error}>{error}</li>
                     ))}
-                    {hasMissingRequiredTechData && (
-                      <li>Påkrevde felt i tekniske data mangler verdi — se oversikt for detaljer per variant.</li>
-                    )}
                   </ul>
+                )}
+                {hasMissingRequiredTechData && (
+                  <BodyLong className={styles.errorText}>
+                    Påkrevde felt i tekniske data mangler verdi — se oversikt for detaljer per variant.
+                  </BodyLong>
                 )}
               </>
             )}
