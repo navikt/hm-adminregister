@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+
+import Quill from 'quill'
 
 import { createDelkontrakt } from 'api/DelkontraktApi'
 import { Avstand } from 'felleskomponenter/Avstand'
@@ -12,7 +14,7 @@ import { createNewDelkontraktSchema } from 'utils/zodSchema/newDelkontrakt'
 import { z } from 'zod'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, HStack, Loader, Modal, TextField, Textarea, VStack } from '@navikt/ds-react'
+import { Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
 
 interface Props {
   modalIsOpen: boolean
@@ -38,6 +40,19 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
   })
   const { setGlobalError } = useErrorStore()
   const [editorValue, setEditorValue] = useState('')
+  const quillRef = useRef<Quill | null>(null)
+
+  const resetForm = () => {
+    reset()
+    setEditorValue('')
+    quillRef.current?.setText('', 'silent')
+    quillRef.current?.history.clear()
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+    resetForm()
+  }
 
   const onChangeBeskrivelse = (value: string) => {
     setEditorValue(value)
@@ -50,7 +65,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
 
   async function onSubmitClose(data: NyDelkontraktFormData) {
     await onSubmit(data)
-    setModalIsOpen(false)
+    closeModal()
   }
 
   async function onSubmit(data: NyDelkontraktFormData) {
@@ -65,7 +80,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
         setGlobalError(error.message)
         setIsSaving(false)
       })
-    reset()
+    resetForm()
   }
 
   return (
@@ -75,7 +90,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
         heading: 'Legg til delkontrakt',
         closeButton: false,
       }}
-      onClose={() => setModalIsOpen(false)}
+      onClose={closeModal}
     >
       <form>
         <Modal.Body>
@@ -91,6 +106,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
               />
               <Avstand marginBottom={5} />
               <RichTextEditorQuill
+                ref={quillRef}
                 defaultValue={editorValue}
                 onTextChange={onChangeBeskrivelse}
                 className={styles.editor}
@@ -106,14 +122,7 @@ const NewDelkontraktModal = ({ modalIsOpen, oid, setModalIsOpen, mutateDelkontra
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={() => {
-              setModalIsOpen(false)
-              reset()
-            }}
-            variant="tertiary"
-            type="reset"
-          >
+          <Button onClick={closeModal} variant="tertiary" type="reset">
             Avbryt
           </Button>
           <Button onClick={handleSubmit(onSubmitClose)} type="submit" variant="secondary">

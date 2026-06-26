@@ -1,6 +1,7 @@
 import { fetchAPI, fetchAPIModify, getPath, httpDelete } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR from 'swr'
+import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import {
   DraftVariantDTO,
@@ -60,26 +61,38 @@ export const setVariantToActive = async (id: string, isAdmin: boolean): Promise<
 
 export function useProductVariantsByProductIds(productIds?: string[]) {
   const { setGlobalError } = useErrorStore()
+  const { loggedInUser } = useAuthStore()
+  const isAdmin = loggedInUser?.isAdmin || false
 
-  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`
+  const adminUrl = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`
   const shouldFetch = Array.isArray(productIds) && productIds.length > 0
 
   const {
-    data: products,
-    error,
-    isLoading,
-  } = useSWR<ProductRegistrationDTO[]>(shouldFetch ? [url, productIds] : null, ([postUrl, ids]) =>
+    data: adminProducts,
+    error: adminError,
+    isLoading: adminLoading,
+  } = useSWR<ProductRegistrationDTO[]>(isAdmin && shouldFetch ? [adminUrl, productIds] : null, ([postUrl, ids]) =>
     fetchAPI(postUrl, 'POST', ids)
   )
 
+  // Supplier/vendor: fetch each product individually (no bulk vendor endpoint exists)
+  const {
+    data: vendorProducts,
+    error: vendorError,
+    isLoading: vendorLoading,
+  } = useSWR<ProductRegistrationDTO[]>(!isAdmin && shouldFetch ? ['worksWithVendor', productIds] : null, ([, ids]) =>
+    Promise.all((ids as string[]).map((id) => fetchAPI(getPath(false, `/api/v1/product/registrations/${id}`), 'GET')))
+  )
+
+  const error = adminError || vendorError
   if (error) {
     setGlobalError(error.status, error.message)
     throw error
   }
 
   return {
-    products,
-    isLoading,
+    products: isAdmin ? adminProducts : vendorProducts,
+    isLoading: isAdmin ? adminLoading : vendorLoading,
     error,
   }
 }
