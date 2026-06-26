@@ -5,6 +5,7 @@ import { usePagedParts, usePartByVariantIdentifier } from 'api/PartApi'
 import ErrorAlert from 'error/ErrorAlert'
 import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
 import { useAuthStore } from 'utils/store/useAuthStore'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { useSuppliers } from 'utils/swr-hooks'
 
 import {
@@ -29,7 +30,7 @@ const PartsListTab = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const { loggedInUser } = useAuthStore()
-  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
   const { pathname, search } = useLocation()
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false)
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
@@ -132,10 +133,6 @@ const PartsListTab = () => {
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm)
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-  }
-
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
       searchParams.set('page', String(pagedData.totalPages))
@@ -220,7 +217,7 @@ const PartsListTab = () => {
                   placeholder="Navn, hms-art nummer eller artikkelnummer"
                   size="medium"
                   value={searchTerm}
-                  onChange={(value) => handleSearch(value)}
+                  onChange={setSearchTerm}
                   hideLabel={false}
                 />
               </Box>
