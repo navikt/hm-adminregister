@@ -13,7 +13,7 @@ import {
   InformationSquareIcon,
   RocketIcon,
 } from '@navikt/aksel-icons'
-import { BodyLong, Button, Modal } from '@navikt/ds-react'
+import {BodyLong, Button, Modal} from '@navikt/ds-react'
 
 import styles from './ProductPage.module.scss'
 
@@ -52,7 +52,7 @@ export const RequestApprovalModal = ({
   const introText = isAdmin ? 'Før du publiserer, sjekk at:' : 'Før du sender til godkjenning, sjekk at:'
   const baseErrors = [
     !series.text ? 'Produktet må ha en produktbeskrivelse' : null,
-    numberOfImages(series) < 2 ? 'Produktet må ha minst to bilder' : null,
+    numberOfImages(series) < 2 ? 'Produktet må ha minst to unike bilder' : null,
     numberOfDocuments(series) < 1 ? 'Produktet må ha minst ett dokument' : null,
     series.variants.length === 0 ? 'Produktet mangler teknisk data' : null,
   ]
@@ -106,23 +106,19 @@ export const RequestApprovalModal = ({
               <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
               <li>tekniske data er korrekte.</li>
               <li>påkrevde felter i tekniske data for alle varianter er fylt inn.</li>
-              <li>produktet inneholder nødvendig brosjyre, bruksanvisning etc.</li>
+              <li>produktet inneholder nødvendige bilder, brosjyre, bruksanvisning etc.</li>
             </ul>
             {hasErrors && (
               <>
                 <BodyLong className={styles.errorText}>Vennligst rett opp følgende feil:</BodyLong>
-                {baseErrorsFiltered.length > 0 && (
-                  <ul className={styles.errorText}>
-                    {baseErrorsFiltered.map((error) => (
-                      <li key={error}>{error}</li>
-                    ))}
-                  </ul>
-                )}
-                {hasMissingRequiredTechData && (
-                  <BodyLong className={styles.errorText}>
-                    Påkrevde felt i tekniske data mangler verdi — se oversikt for detaljer per variant.
-                  </BodyLong>
-                )}
+                <ul className={styles.errorText}>
+                  {baseErrorsFiltered.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                  {hasMissingRequiredTechData && (
+                    <li>Påkrevde felt i tekniske data mangler verdi — se oversikt for detaljer per variant.</li>
+                  )}
+                </ul>
               </>
             )}
           </>
