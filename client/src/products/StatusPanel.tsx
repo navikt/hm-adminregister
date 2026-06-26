@@ -1,3 +1,4 @@
+import React from 'react'
 import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
 import SeriesStatusTag from 'products/SeriesStatusTag'
 import { seriesStatus } from 'products/seriesUtils'
@@ -7,6 +8,10 @@ import { SeriesDTO } from 'utils/types/response-types'
 import { Heading, VStack } from '@navikt/ds-react'
 
 const StatusPanel = ({ series }: { series: SeriesDTO }) => {
+  const allAgreements = series.variants
+    .flatMap((variant) => variant.agreements)
+    .filter((agr, idx, arr) => arr.findIndex((a) => a.id === agr.id) === idx)
+
   return (
     <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
       <VStack gap="space-16">
@@ -19,6 +24,16 @@ const StatusPanel = ({ series }: { series: SeriesDTO }) => {
       <DefinitionList>
         <DefinitionList.Term>Leverandør</DefinitionList.Term>
         <DefinitionList.Definition>{series.supplierName}</DefinitionList.Definition>
+
+        {allAgreements.length > 0 &&
+          allAgreements.map((agr) => (
+            <React.Fragment key={agr.id}>
+              <DefinitionList.Term>Avtalenavn</DefinitionList.Term>
+              <DefinitionList.Definition>{agr.title}</DefinitionList.Definition>
+              <DefinitionList.Term>Anbudsnr</DefinitionList.Term>
+              <DefinitionList.Definition>{agr.postIdentifier || '-'}</DefinitionList.Definition>
+            </React.Fragment>
+          ))}
 
         {series.message && (
           <>
