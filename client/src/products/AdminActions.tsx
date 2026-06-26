@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { approveSeries, setPublishedSeriesToDraft } from 'api/SeriesApi'
+import { setPublishedSeriesToDraft } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
 import { RejectApprovalModal } from 'products/RejectApprovalModal'
 import { ShowDiffModal } from 'products/diff/ShowDiffModal'
@@ -46,23 +46,13 @@ const AdminActions = ({
   const canSetExpiredStatus = series.status === 'EDITABLE' && series.isPublished
   const [rejectApprovalModalIsOpen, setRejectApprovalModalIsOpen] = useState(false)
   const [showDiffModalIsOpen, setShowDiffModalIsOpen] = useState(false)
-  const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false)
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false)
 
   const isPendingApproval = series.status === 'PENDING_APPROVAL'
 
   async function onPublish() {
     setIsValid(productIsValid())
-    if (productIsValid()) {
-      approveSeries(series.id)
-        .then(() => mutateSeries())
-        .catch((error) => {
-          setGlobalError(error.status, error.message)
-        })
-      setConfirmApproveModalIsOpen(false)
-    } else {
-      setApprovalModalIsOpen(true)
-    }
+    setApprovalModalIsOpen(true)
   }
 
   async function onSetToDraft() {
@@ -78,17 +68,6 @@ const AdminActions = ({
 
   return (
     <VStack gap="space-8">
-      <ConfirmModal
-        title={'Vil du publisere produktet?'}
-        text=""
-        onClick={onPublish}
-        onClose={() => {
-          setConfirmApproveModalIsOpen(false)
-        }}
-        isModalOpen={confirmApproveModalIsOpen}
-        confirmButtonText={'Publiser'}
-        variant="primary"
-      />
       <ConfirmModal
         title={'Vil du sette produktet i redigeringsmodus?'}
         text=""
@@ -120,12 +99,7 @@ const AdminActions = ({
       )}
       <HStack gap="space-8">
         {(series.status === 'EDITABLE' || isPendingApproval) && (
-          <Button
-            style={{ flexGrow: 1 }}
-            onClick={() => {
-              setConfirmApproveModalIsOpen(true)
-            }}
-          >
+          <Button style={{ flexGrow: 1 }} onClick={onPublish}>
             Publiser
           </Button>
         )}

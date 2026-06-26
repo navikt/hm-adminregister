@@ -3,6 +3,31 @@ import { Product } from 'utils/types/types'
 
 import { MediaDTO, MediaInfo, ProductRegistrationDTO, ProductRegistrationDTOV2, TechData } from './types/response-types'
 
+export type MissingRequiredTechData = {
+  key: string
+  variants: string[]
+}
+
+export function getMissingRequiredTechData(variants: ProductRegistrationDTOV2[]): MissingRequiredTechData[] {
+  const missingByKey = new Map<string, string[]>()
+
+  variants
+    .flatMap((variant) =>
+      variant.productData.techData
+        .filter((techField) => techField.required && !techField.value.trim())
+        .map((techField) => ({ key: techField.key, articleName: variant.articleName }))
+    )
+    .forEach(({ key, articleName }) => {
+      const existing = missingByKey.get(key) ?? []
+      existing.push(articleName)
+      missingByKey.set(key, existing)
+    })
+
+  return Array.from(missingByKey.entries())
+    .map(([key, variantNames]) => ({ key, variants: variantNames }))
+    .sort((a, b) => a.key.localeCompare(b.key, 'nb'))
+}
+
 export function getAllUniqueTechDataKeys(products: ProductRegistrationDTOV2[]): string[] {
   const uniqueKeys = new Set<string>()
   products
