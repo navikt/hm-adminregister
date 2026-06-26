@@ -3,7 +3,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import { AgreementFilterOption, useAgreements, usePagedAgreements } from 'utils/swr-hooks'
-import { AgreementGroup, AgreementGroupDto } from 'utils/types/response-types'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
+import { AgreementGroup } from 'utils/types/response-types'
 
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
@@ -29,8 +30,6 @@ export const Agreements = () => {
     searchParams.get('filter') ?? AgreementFilterOption.ALL
   )
 
-  const [isSearching, setIsSearching] = useState(false)
-
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const pageSize = 10
   const { data: allData, error: allError } = useAgreements()
@@ -43,11 +42,14 @@ export const Agreements = () => {
     pageSize,
     filter: selectedFilterOption as AgreementFilterOption,
   })
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filteredData, setFilteredData] = useState<AgreementGroupDto | undefined>()
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
   const navigate = useNavigate()
 
   const showPageNavigator = !!pagedData && !!pagedData.totalPages && pagedData.totalPages > 1 && searchTerm.length === 0
+  const filteredAgreements =
+    searchTerm.length > 0
+      ? allData?.content.filter((agreement) => agreement.title.toLowerCase().includes(searchTerm.toLowerCase()))
+      : undefined
 
   if (allError || pagedError) {
     return (
@@ -63,20 +65,6 @@ export const Agreements = () => {
     searchParams.set('page', '1')
     setSelectedFilterOption(filter)
     setSearchParams(searchParams)
-  }
-
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-    setIsSearching(true)
-    const filteredAgreements = allData?.content.filter((agreement) =>
-      agreement.title.toLowerCase().includes(value.toLowerCase())
-    )
-    if (value.length == 0) {
-      setFilteredData(undefined)
-      setIsSearching(false)
-    } else {
-      setFilteredData(filteredAgreements)
-    }
   }
 
   return (
@@ -97,11 +85,11 @@ export const Agreements = () => {
                 placeholder="Søk etter rammeavtale"
                 size="medium"
                 value={searchTerm}
-                onChange={(value) => handleSearch(value)}
+                onChange={setSearchTerm}
               />
             </Box>
 
-            {!isSearching && (
+            {searchTerm.length === 0 && (
               <HGrid columns={'1fr 48px'} gap={'space-4'}>
                 <ToggleGroup defaultValue={AgreementFilterOption.ALL} onChange={handeFilterChange}>
                   <ToggleGroup.Item value={AgreementFilterOption.ALL} label={'Alle'} />
@@ -143,13 +131,12 @@ export const Agreements = () => {
             )}
           </HGrid>
 
-          {filteredData && filteredData.length === 0 && searchTerm.length > 0 ? (
+          {filteredAgreements && filteredAgreements.length === 0 ? (
             <Alert variant="info">Ingen rammeavtaler funnet.</Alert>
-          ) : filteredData && filteredData.length > 0 ? (
+          ) : filteredAgreements && filteredAgreements.length > 0 ? (
             <div className="panel-list__container">
               {pagedIsLoading && <Loader size="3xlarge" title="venter..." />}
-              {filteredData &&
-                filteredData.map((rammeavtale, i) => (
+                {filteredAgreements.map((rammeavtale, i) => (
                   <AgreementLinkCard key={rammeavtale.id + i} rammeavtale={rammeavtale} />
                 ))}
             </div>
