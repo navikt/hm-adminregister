@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import LocalTag, { colors } from 'felleskomponenter/LocalTag'
-import { SupplierDTO } from 'utils/supplier-util'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { useSuppliers } from 'utils/swr-hooks'
 
 import { ChevronRightIcon, PlusIcon } from '@navikt/aksel-icons'
@@ -24,19 +24,19 @@ const Suppliers = () => {
 
   const { suppliers, isLoading, error } = useSuppliers(true, showParam)
   const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filteredData, setFilteredData] = useState<SupplierDTO[] | undefined>()
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
   const itemsPerPage = 10
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-    const filteredSuppliers = suppliers?.filter((supplier) => supplier.name.toLowerCase().includes(value.toLowerCase()))
-    setFilteredData(filteredSuppliers)
-  }
+  const filteredData = searchTerm
+    ? suppliers?.filter((supplier) => supplier.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : undefined
 
-  const renderData = filteredData ? filteredData : suppliers
+  const renderData = searchTerm ? filteredData : suppliers
 
-  const paginatedData = renderData?.slice((pageState - 1) * itemsPerPage, pageState * itemsPerPage)
+  // When searching, always page from the start so a stale page param can't blank out matches
+  const effectivePage = searchTerm ? 1 : pageState
+
+  const paginatedData = renderData?.slice((effectivePage - 1) * itemsPerPage, effectivePage * itemsPerPage)
 
   const handleCreateNewSupplier = () => {
     navigate('/leverandor/opprett-leverandor')
@@ -81,7 +81,7 @@ const Suppliers = () => {
                 placeholder="Søk etter en leverandør"
                 size="medium"
                 value={searchTerm}
-                onChange={(value) => handleSearch(value)}
+                onChange={setSearchTerm}
               />
             </Box>
 
@@ -121,7 +121,7 @@ const Suppliers = () => {
           </div>
           {renderData && renderData?.length > itemsPerPage && (
             <Pagination
-              page={pageState}
+              page={effectivePage}
               onPageChange={(x) => {
                 searchParams.set('page', x.toString())
                 setSearchParams(searchParams)

@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
@@ -29,11 +30,10 @@ const PAGE_SIZE = 15
 const MAX_VISIBLE_OPTIONS = 10
 
 export const TechLabels = () => {
-  const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
 
   const searchIsoCode = searchParams.get('searchIsoCode') || ''
 
@@ -45,7 +45,15 @@ export const TechLabels = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
   const updateUrlOnSearchIsoCodeChange = (value: string) => {
-    navigate(`${pathname}?searchIsoCode=${value}`)
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (value) {
+      nextParams.set('searchIsoCode', value)
+    } else {
+      nextParams.delete('searchIsoCode')
+    }
+
+    setSearchParams(nextParams)
   }
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
