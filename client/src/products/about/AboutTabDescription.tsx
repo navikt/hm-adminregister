@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { updateProductDescription } from 'api/SeriesApi'
 import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
 import parse from 'html-react-parser'
+import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
 import { SeriesDTO } from 'utils/types/response-types'
@@ -25,6 +26,8 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
   const [descriptionLengthError, setDescriptionLengthError] = useState<string | undefined>(undefined)
   const [updatedDescription, setUpdatedDescription] = useState<string>(description)
   const { setGlobalError } = useErrorStore()
+  const { loggedInUser } = useAuthStore()
+  const maxLength = loggedInUser?.isAdmin ? 1000 : 750
   const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0)
 
   //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
@@ -44,8 +47,8 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
 
   const onTextChange = (html: string, rawText: string) => {
     setDescriptionLength(rawText.length)
-    if (rawText.length > 750) {
-      setDescriptionLengthError('Beskrivelsen kan ikke være lengre enn 750 tegn')
+    if (rawText.length > maxLength) {
+      setDescriptionLengthError(`Beskrivelsen kan ikke være lengre enn ${maxLength} tegn`)
     } else {
       setDescriptionLengthError(undefined)
       setUpdatedDescription(html)
@@ -99,7 +102,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
             <BodyShort as="div" textColor="subtle">
               Beskrivelsen vises på produktsiden og bør:
               <ul>
-                <li>Være mellom 100 og 750 tegn</li>
+                <li>Være mellom 100 og {maxLength} tegn</li>
                 <li>Ikke inneholde tekniske data, for eksempel. “Totalvekt i str. 42x40”</li>
                 <li>Ha en nøytral språkstil uten markedsføringsuttrykk</li>
               </ul>
@@ -135,9 +138,9 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
               </Button>
               <Spacer />
               {descriptionLengthError ? (
-                <p className="aksel-error-message aksel-label">{descriptionLength}/750 tegn</p>
+                <p className="aksel-error-message aksel-label">{descriptionLength}/{maxLength} tegn</p>
               ) : (
-                <p className="aksel-body-short">{descriptionLength}/750 tegn</p>
+                <p className="aksel-body-short">{descriptionLength}/{maxLength} tegn</p>
               )}
             </HStack>
           </>
