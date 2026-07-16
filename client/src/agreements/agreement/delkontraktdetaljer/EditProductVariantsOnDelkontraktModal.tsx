@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { activateProductsFromAgreement, deleteProductsFromAgreement } from 'api/AgreementProductApi'
 import Content from 'felleskomponenter/styledcomponents/Content'
+import { useProductVariantsBySeriesId } from 'utils/swr-hooks'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { ProductAgreementRegistrationDTO } from 'utils/types/response-types'
 
@@ -10,13 +11,29 @@ import { Button, Checkbox, Modal, Table, VStack } from '@navikt/ds-react'
 interface Props {
   modalIsOpen: boolean
   setModalIsOpen: (open: boolean) => void
+  seriesId?: string | null
   variants: ProductAgreementRegistrationDTO[]
   mutateProductAgreements: () => void
 }
 
-const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, mutateProductAgreements }: Props) => {
+const EditProducstVariantsModal = ({
+  modalIsOpen,
+  setModalIsOpen,
+  seriesId,
+  variants,
+  mutateProductAgreements,
+}: Props) => {
+  const { data: productVariants } = useProductVariantsBySeriesId(modalIsOpen ? (seriesId ?? undefined) : undefined)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const { setGlobalError } = useErrorStore()
+
+  const enrichedVariants = useMemo(() => {
+    const hmsArtNrById = new Map(productVariants?.map((v) => [v.id, v.hmsArtNr]) ?? [])
+    return variants.map((variant) => ({
+      ...variant,
+      hmsArtNr: hmsArtNrById.get(variant.productId) ?? undefined,
+    }))
+  }, [variants, productVariants])
 
   const hasActiveVariant = variants.some((variant) => variant.status === 'ACTIVE')
   const hasActiveSelected = variants
@@ -72,6 +89,7 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                    <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
                     <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                     <Table.DataCell>
@@ -88,10 +106,11 @@ const EditProducstVariantsModal = ({ modalIsOpen, setModalIsOpen, variants, muta
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {variants.map((variant, i) => {
+                  {enrichedVariants.map((variant, i) => {
                     return (
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName}</Table.DataCell>
+                        <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
                         <Table.DataCell>{variant.supplierRef}</Table.DataCell>
                         <Table.DataCell>{variant.status === 'ACTIVE' ? 'Aktiv' : 'Inaktiv'}</Table.DataCell>
                         <Table.DataCell>
