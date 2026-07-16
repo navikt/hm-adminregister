@@ -92,6 +92,7 @@ export const DelkontraktSerieRow = ({
             <EditProducstVariantsModal
               modalIsOpen={editProductsVariantsModalIsOpen}
               setModalIsOpen={setEditProductsVariantsModalIsOpen}
+              seriesId={productVariantsOnSeries.productSeries}
               variants={productVariantsOnSeries.productVariants}
               mutateProductAgreements={mutateProductAgreements}
             />
