@@ -1,18 +1,18 @@
-import { MediaInfoDTO } from 'utils/types/response-types'
-
 import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from '@navikt/aksel-icons'
 import { Button, Dropdown } from '@navikt/ds-react'
 
 import styles from './MoreMenu.module.scss'
 
 export const MoreMenu = ({
-  mediaInfo,
-  handleDeleteFile,
-  handleEditFileName,
+  id,
+  handleDelete,
+  handleEdit,
+  editText = 'Endre filnavn',
 }: {
-  mediaInfo: MediaInfoDTO
-  handleDeleteFile: (uri: string) => void
-  handleEditFileName?: (uri: string) => void
+  id: string
+  handleDelete: (id: string) => void
+  handleEdit?: (id: string) => void
+  editText?: string
 }) => {
   return (
     <>
@@ -26,12 +26,12 @@ export const MoreMenu = ({
         />
         <Dropdown.Menu className={styles.content}>
           <Dropdown.Menu.List>
-            {handleEditFileName && (
-              <Dropdown.Menu.List.Item onClick={() => handleEditFileName(mediaInfo.uri)}>
-                <PencilWritingIcon fontSize="1.5rem" aria-hidden /> Endre filnavn
+            {handleEdit && (
+              <Dropdown.Menu.List.Item onClick={() => handleEdit(id)}>
+                <PencilWritingIcon fontSize="1.5rem" aria-hidden /> {editText}
               </Dropdown.Menu.List.Item>
             )}
-            <Dropdown.Menu.List.Item onClick={() => handleDeleteFile(mediaInfo.uri)}>
+            <Dropdown.Menu.List.Item onClick={() => handleDelete(id)}>
               <TrashIcon fontSize="1.5rem" aria-hidden /> Slett
             </Dropdown.Menu.List.Item>
           </Dropdown.Menu.List>

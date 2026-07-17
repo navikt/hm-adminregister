@@ -13,9 +13,9 @@ import { DocumentUrlModal } from 'products/files/DocumentUrlModal'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { uriForMediaFile } from 'utils/file-util'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
+import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
-import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon } from '@navikt/aksel-icons'
 import { Alert, Box, Button, HStack, Heading, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
@@ -29,6 +29,7 @@ interface Props {
 const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [doccumentUrlModalIsOpen, setDocumentUrlModalIsOpen] = useState(false)
+  const [editDocumentUrl, setEditDocumentUrl] = useState<DocumentUrl | undefined>(undefined)
   const { pdfs } = mapImagesAndPDFfromMedia(series)
   const { setGlobalError } = useErrorStore()
   const { mutate: mutateSeries } = useSeriesV2(series.id)
@@ -87,7 +88,14 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         seriesId={series.id}
         mutateSeries={mutateSeries}
         isOpen={doccumentUrlModalIsOpen}
-        setIsOpen={setDocumentUrlModalIsOpen}
+        setIsOpen={(open) => {
+          setDocumentUrlModalIsOpen(open)
+          if (!open) {
+            setEditDocumentUrl(undefined)
+          }
+        }}
+        existingDocumentUrls={series.seriesData.attributes.documentUrls ?? []}
+        editDocumentUrl={editDocumentUrl}
       />
       <Tabs.Panel value="documents" className={styles.tabPanel}>
         <VStack gap="space-16">
@@ -154,14 +162,15 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                         </a>
                       </HStack>
                       {isEditable && (
-                        <Button
-                          icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
-                          size="small"
-                          variant="tertiary"
-                          onClick={() => handleDeleteDocumentUrl(documentUrl.url)}
-                        >
-                          Slett
-                        </Button>
+                        <MoreMenu
+                          id={documentUrl.url}
+                          handleDelete={handleDeleteDocumentUrl}
+                          handleEdit={() => {
+                            setEditDocumentUrl(documentUrl)
+                            setDocumentUrlModalIsOpen(true)
+                          }}
+                          editText="Endre lenke"
+                        />
                       )}
                     </HStack>
                   ))}
@@ -174,6 +183,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                   variant="tertiary"
                   icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                   onClick={() => {
+                    setEditDocumentUrl(undefined)
                     setDocumentUrlModalIsOpen(true)
                   }}
                 >
@@ -252,7 +262,7 @@ const DocumentListItem = ({
           </HStack>
           {isEditable && (
             <HStack>
-              <MoreMenu mediaInfo={file} handleDeleteFile={handleDeleteFile} handleEditFileName={handleEditFileName} />
+              <MoreMenu id={file.uri} handleDelete={handleDeleteFile} handleEdit={handleEditFileName} />
             </HStack>
           )}
         </>
