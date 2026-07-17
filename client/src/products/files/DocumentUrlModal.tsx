@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { saveDocumentUrlToSeries } from 'api/SeriesApi'
+import { saveDocumentUrlToSeries, updateSeriesDocumentUrls } from 'api/SeriesApi'
 import { isValidUrl } from 'products/seriesUtils'
 import { useErrorStore } from 'utils/store/useErrorStore'
+import { DocumentUrl } from 'utils/types/response-types'
 
 import { Button, Modal, TextField, VStack } from '@navikt/ds-react'
 
@@ -11,27 +12,54 @@ type DocumentUrlModalProps = {
   mutateSeries: () => void
   isOpen: boolean
   setIsOpen: (open: boolean) => void
+  existingDocumentUrls?: DocumentUrl[]
+  editDocumentUrl?: DocumentUrl
 }
 
-export const DocumentUrlModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: DocumentUrlModalProps) => {
+export const DocumentUrlModal = ({
+  seriesId,
+  mutateSeries,
+  isOpen,
+  setIsOpen,
+  existingDocumentUrls = [],
+  editDocumentUrl,
+}: DocumentUrlModalProps) => {
   const { setGlobalError } = useErrorStore()
   const [errorMessage, setErrorMessage] = useState('')
 
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
 
+  const isEditMode = !!editDocumentUrl
+
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(editDocumentUrl?.title ?? '')
+      setUrl(editDocumentUrl?.url ?? '')
+      setErrorMessage('')
+    }
+  }, [isOpen, editDocumentUrl])
+
   async function handleSaveLink() {
-    const isUrlValid = validateUrlRequirements()
-    if (isUrlValid) {
-      saveDocumentUrlToSeries(seriesId, { uri: url, title: title }).then(
-        () => {
-          mutateSeries()
-          setIsOpen(false)
-        },
-        (error) => {
-          setGlobalError(error.status, error.statusText)
-        }
+    if (!validateUrlRequirements()) {
+      return
+    }
+
+    const onSuccess = () => {
+      mutateSeries()
+      setIsOpen(false)
+    }
+    const onFailure = (error: { status: number; statusText: string }) => {
+      setGlobalError(error.status, error.statusText)
+    }
+
+    if (isEditMode) {
+      const updatedDocumentUrls = existingDocumentUrls.map((documentUrl) =>
+        documentUrl.url === editDocumentUrl.url ? { title, url } : documentUrl
       )
+      updateSeriesDocumentUrls(seriesId, updatedDocumentUrls).then(onSuccess, onFailure)
+    } else {
+      saveDocumentUrlToSeries(seriesId, { uri: url, title: title }).then(onSuccess, onFailure)
     }
   }
 
@@ -53,7 +81,7 @@ export const DocumentUrlModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: 
     <Modal
       open={isOpen}
       header={{
-        heading: 'Legg til lenke',
+        heading: isEditMode ? 'Endre lenke' : 'Legg til lenke',
         closeButton: true,
       }}
       onClose={() => {
