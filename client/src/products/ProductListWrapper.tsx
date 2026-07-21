@@ -52,8 +52,23 @@ const ProductListWrapper = () => {
     return searchParams.get('missingMediaType')
   })
 
-  // Helper to derive current sort direction for updated
-  const isUpdatedDesc = !sortUrl || sortUrl === 'updated,DESC' || !sortUrl.startsWith('updated,')
+  // Derive currently active sort field and direction from the persisted sort param
+  const [activeSortField, activeSortDir] = (sortUrl || sortParam).split(',')
+  const activeDir: 'ASC' | 'DESC' = activeSortDir === 'ASC' ? 'ASC' : 'DESC'
+
+  const handleSort = (field: string) => {
+    setSortUrl((prev) => {
+      const [curField, curDir] = (prev || sortParam).split(',')
+      if (curField !== field) {
+        return `${field},ASC`
+      }
+      return curDir === 'ASC' ? `${field},DESC` : `${field},ASC`
+    })
+    // Reordering the full result set: jump back to the first page
+    searchParams.set('page', '1')
+    setSearchParams(searchParams)
+    setPageState(1)
+  }
 
   useEffect(() => {
     localStorage.setItem('pageSizeState', pageSizeState.toString())
@@ -313,32 +328,40 @@ const ProductListWrapper = () => {
               gap="space-8"
             >
               <span></span>
-              <b>Produktnavn</b>
+              <SortableHeader
+                label="Produktnavn"
+                field="title"
+                activeField={activeSortField}
+                activeDir={activeDir}
+                onSort={handleSort}
+              />
               <b>Status</b>
-              <b>Varianter</b>
+              <SortableHeader
+                label="Varianter"
+                field="count"
+                activeField={activeSortField}
+                activeDir={activeDir}
+                onSort={handleSort}
+              />
               {loggedInUser && loggedInUser.isAdmin && (
                 <>
                   <Show above="lg">
-                    <Button
-                      variant="tertiary"
-                      size="xsmall"
-                      onClick={() => {
-                        setSortUrl((prev) => {
-                          const current = prev || sortParam
-                          if (!current.startsWith('updated')) {
-                            return 'updated,DESC'
-                          }
-                          return current === 'updated,DESC' ? 'updated,ASC' : 'updated,DESC'
-                        })
-                      }}
-                      iconPosition="right"
-                      icon={<span aria-hidden>{isUpdatedDesc ? '↓' : '↑'}</span>}
-                    >
-                      Sist endret
-                    </Button>
+                    <SortableHeader
+                      label="Sist endret"
+                      field="updated"
+                      activeField={activeSortField}
+                      activeDir={activeDir}
+                      onSort={handleSort}
+                    />
                   </Show>
                   <Show above="lg">
-                    <b>Endret av</b>
+                    <SortableHeader
+                      label="Endret av"
+                      field="updatedByUser"
+                      activeField={activeSortField}
+                      activeDir={activeDir}
+                      onSort={handleSort}
+                    />
                   </Show>
                 </>
               )}
@@ -394,3 +417,34 @@ const ProductListWrapper = () => {
 }
 
 export default ProductListWrapper
+
+const SortableHeader = ({
+  label,
+  field,
+  activeField,
+  activeDir,
+  onSort,
+}: {
+  label: string
+  field: string
+  activeField: string
+  activeDir: 'ASC' | 'DESC'
+  onSort: (field: string) => void
+}) => {
+  const isActive = activeField === field
+  const icon = !isActive ? '↕' : activeDir === 'ASC' ? '↑' : '↓'
+  const directionLabel = isActive ? (activeDir === 'ASC' ? ', stigende rekkefølge' : ', synkende rekkefølge') : ''
+
+  return (
+    <Button
+      variant="tertiary"
+      size="xsmall"
+      onClick={() => onSort(field)}
+      iconPosition="right"
+      icon={<span aria-hidden>{icon}</span>}
+      aria-label={`Sorter etter ${label}${directionLabel}`}
+    >
+      {label}
+    </Button>
+  )
+}

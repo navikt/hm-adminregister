@@ -14,12 +14,27 @@ import { ProductRegistrationDTOV2, SeriesDTO } from 'utils/types/response-types'
 
 import {
   ArrowsSquarepathIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   MenuElipsisHorizontalCircleIcon,
   PencilIcon,
   PlusCircleIcon,
   TrashIcon,
 } from '@navikt/aksel-icons'
-import { Alert, Box, Button, Dropdown, Pagination, Search, Table, Tabs, Tag, VStack } from '@navikt/ds-react'
+import {
+  Alert,
+  BodyShort,
+  Box,
+  Button,
+  Dropdown,
+  HStack,
+  Pagination,
+  Search,
+  Table,
+  Tabs,
+  Tag,
+  VStack,
+} from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -134,6 +149,13 @@ const VariantsTab = ({
     setPageState(1)
   }
 
+  const goToPage = (nextPage: number) => {
+    const clamped = Math.min(Math.max(nextPage, 1), totalPages)
+    searchParams.set('page', clamped.toString())
+    setSearchParams(searchParams)
+    setPageState(clamped)
+  }
+
   return (
     <>
       <ConfirmModal
@@ -162,27 +184,71 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="default" padding={{ xs: 'space-8', md: 'space-16' }} borderRadius="12">
             <VStack gap="space-16">
-              {series.variants.length > columnsPerPage && (
-                <Box role="search" style={{ maxWidth: '475px' }}>
-                  <Search
-                    className="search-button"
-                    label="Søk"
-                    variant="simple"
-                    clearButton={true}
-                    onClear={() => {
-                      setVariantFilterString('')
-                      resetPageState()
-                    }}
-                    placeholder="Filtrer på hms-nr, lev-artnr, variantnavn"
-                    size="medium"
-                    value={variantFilterString}
-                    onChange={(value) => {
-                      setVariantFilterString(value)
-                      resetPageState()
-                    }}
-                    hideLabel={true}
-                  />
-                </Box>
+              {(series.variants.length > columnsPerPage || totalPages > 1) && (
+                <HStack justify="space-between" align="center" gap="space-16" wrap>
+                  {series.variants.length > columnsPerPage ? (
+                    <Box role="search" style={{ maxWidth: '475px', flex: '1 1 260px' }}>
+                      <Search
+                        className="search-button"
+                        label="Søk"
+                        variant="simple"
+                        clearButton={true}
+                        onClear={() => {
+                          setVariantFilterString('')
+                          resetPageState()
+                        }}
+                        placeholder="Filtrer på hms-nr, lev-artnr, variantnavn"
+                        size="medium"
+                        value={variantFilterString}
+                        onChange={(value) => {
+                          setVariantFilterString(value)
+                          resetPageState()
+                        }}
+                        hideLabel={true}
+                      />
+                    </Box>
+                  ) : (
+                    <span />
+                  )}
+                  {totalPages > 1 && (
+                    <nav className="aksel-pagination aksel-pagination--medium" aria-label="Paginering topp">
+                      <ul className="aksel-pagination__list" style={{ alignItems: 'center' }}>
+                        <li>
+                          <Button
+                            className="aksel-pagination__item"
+                            variant="tertiary"
+                            data-color="neutral"
+                            size="medium"
+                            icon={<ChevronLeftIcon title="Forrige side" />}
+                            onClick={() => goToPage(pageState - 1)}
+                            disabled={pageState <= 1}
+                          />
+                        </li>
+                        <li>
+                          <BodyShort
+                            size="medium"
+                            weight="regular"
+                            aria-live="polite"
+                            style={{ color: 'var(--ax-text-accent)' }}
+                          >
+                            {`${pageState} av ${totalPages}`}
+                          </BodyShort>
+                        </li>
+                        <li>
+                          <Button
+                            className="aksel-pagination__item"
+                            variant="tertiary"
+                            data-color="neutral"
+                            size="medium"
+                            icon={<ChevronRightIcon title="Neste side" />}
+                            onClick={() => goToPage(pageState + 1)}
+                            disabled={pageState >= totalPages}
+                          />
+                        </li>
+                      </ul>
+                    </nav>
+                  )}
+                </HStack>
               )}
               <div className={styles.variantTable}>
                 <Table>
@@ -316,11 +382,7 @@ const VariantsTab = ({
               {totalPages > 1 && (
                 <Pagination
                   page={pageState}
-                  onPageChange={(x) => {
-                    searchParams.set('page', x.toString())
-                    setSearchParams(searchParams)
-                    setPageState(x)
-                  }}
+                  onPageChange={goToPage}
                   count={totalPages}
                   size="small"
                 />
