@@ -27,7 +27,7 @@ export const ForApproval = () => {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const sortUrl = searchParams.get('sort')
   const { pathname, search } = useLocation()
-  const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
+  const supplierFilter = searchParams.get('supplier') || ''
   const { suppliers } = useSuppliers(true)
   const statusFilters = searchParams.get('filters')?.split(',') || []
 
@@ -104,7 +104,6 @@ export const ForApproval = () => {
         }
       }
       setSearchParams(searchParams)
-      setSupplierFilter(searchParams.get('supplier') || '')
     }
   }
 
