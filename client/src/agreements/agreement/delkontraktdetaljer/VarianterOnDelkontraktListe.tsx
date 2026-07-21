@@ -9,9 +9,10 @@ interface Props {
   product: ProductRegistrationDTO
   variants: ProductRegistrationDTO[]
   setValgteRader: (rader: string[]) => void
+  rank: number
 }
 
-export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader }: Props) => {
+export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader, rank }: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([product.supplierRef!])
   const toggleSelectedRow = (value: string) =>
     setSelectedRows((list: string[]): string[] =>
@@ -36,6 +37,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                 <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
                 <Table.HeaderCell scope="col">HMS-nummer</Table.HeaderCell>
                 <Table.HeaderCell scope="col">Lev-artnr.</Table.HeaderCell>
+                <Table.HeaderCell scope="col">Rangering</Table.HeaderCell>
                 <Table.DataCell>
                   <Checkbox
                     checked={selectedRows.length === variants.length}
@@ -56,6 +58,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                 <Table.DataCell>{product.articleName}</Table.DataCell>
                 <Table.DataCell>{product.hmsArtNr}</Table.DataCell>
                 <Table.DataCell>{product.supplierRef}</Table.DataCell>
+                <Table.DataCell>{rank}</Table.DataCell>
                 <Table.DataCell>
                   <Checkbox
                     hideLabel
@@ -77,6 +80,7 @@ export const VarianterOnDelkontraktListe = ({ product, variants, setValgteRader 
                       <Table.DataCell>{variant.articleName}</Table.DataCell>
                       <Table.DataCell>{variant.hmsArtNr}</Table.DataCell>
                       <Table.DataCell>{variant.supplierRef}</Table.DataCell>
+                      <Table.DataCell>{rank}</Table.DataCell>
                       <Table.DataCell>
                         <Checkbox
                           hideLabel

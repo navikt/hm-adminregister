@@ -12,7 +12,7 @@ import { createNewProductOnDelkontraktSchema } from 'utils/zodSchema/newProductO
 import { z } from 'zod'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
+import { Button, HStack, Loader, Modal, Select, TextField, VStack } from '@navikt/ds-react'
 
 import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
 
@@ -37,6 +37,7 @@ const NewProductOnDelkontraktModal = ({
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
   const [variantsToAdd, setVariantsToAdd] = useState<string[]>([])
+  const [rank, setRank] = useState<number>(1)
   const { data: variants, isLoading } = useProductVariantsBySeriesId(productToAddSeriesId)
 
   const {
@@ -76,7 +77,8 @@ const NewProductOnDelkontraktModal = ({
     addProductsToAgreement(
       delkontraktId,
       post,
-      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || []
+      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || [],
+      rank
     )
       .then((agreement) => {
         mutateProductAgreements()
@@ -90,6 +92,7 @@ const NewProductOnDelkontraktModal = ({
     reset()
     setVariantsToAdd([])
     setProductToAdd(undefined)
+    setRank(1)
     setModalIsOpen(false)
   }
 
@@ -125,6 +128,19 @@ const NewProductOnDelkontraktModal = ({
                   }
                 }}
               />
+              <Select
+                label={labelRequired('Rangering')}
+                id="rank"
+                value={rank}
+                onChange={(e) => setRank(parseInt(e.target.value))}
+                style={{ width: '8rem' }}
+              >
+                {Array.from({ length: 20 }, (_, i) => i + 1).map((it) => (
+                  <option key={it} value={it}>
+                    {it}
+                  </option>
+                ))}
+              </Select>
               <Button
                 onClick={handleSubmit(onClickGetProduct)}
                 type="button"
@@ -145,6 +161,7 @@ const NewProductOnDelkontraktModal = ({
                     product={productToAdd}
                     variants={variants || []}
                     seriesId={productToAddSeriesId}
+                    rank={rank}
                   />
                 </VStack>
               )}
@@ -157,6 +174,7 @@ const NewProductOnDelkontraktModal = ({
               setModalIsOpen(false)
               setProductToAdd(undefined)
               setVariantsToAdd([])
+              setRank(1)
               reset()
             }}
             variant="tertiary"

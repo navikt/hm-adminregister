@@ -62,7 +62,8 @@ export const changePublishedExpiredOnProductAgreements = async (
 export const addProductsToAgreement = async (
   delkontraktId: string,
   post: number,
-  productsToAdd: ProductRegistrationDTO[]
+  productsToAdd: ProductRegistrationDTO[],
+  rank: number
 ): Promise<ProductAgreementRegistrationDTOList> => {
   const delkontraktToUpdate: DelkontraktRegistrationDTO = await getDelkontrakt(delkontraktId)
   const agreementToUpdate = await getAgreement(delkontraktToUpdate.agreementId)
@@ -82,7 +83,7 @@ export const addProductsToAgreement = async (
     createdBy: 'REGISTER',
     created: agreementToUpdate.created,
     updated: todayTimestamp(),
-    rank: 1,
+    rank,
     post: post,
     postId: delkontraktToUpdate.id,
     published: agreementToUpdate.published,
