@@ -1,22 +1,22 @@
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
 
-import { createTechLabel, updateTechLabel, listTechUnits, listTechLabelNames } from 'api/TechLabelApi'
+import { createTechLabel, listTechLabelNames, listTechUnits, updateTechLabel } from 'api/TechLabelApi'
 import FormBox from 'felleskomponenter/FormBox'
 import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
 
-import { Button, HStack, Select, TextField, VStack, UNSAFE_Combobox } from '@navikt/ds-react'
+import { Button, HStack, Select, TextField, UNSAFE_Combobox, VStack } from '@navikt/ds-react'
 
 type FormData = {
-  label: string;
-  type: TechLabelType;
-  unit: string;
-  required: 'true' | 'false';
-  sort: number;
-  isoCode: string;
-  options: string;
-  definition: string;
+  label: string
+  type: TechLabelType
+  unit: string
+  required: 'true' | 'false'
+  sort: number
+  isoCode: string
+  options: string
+  definition: string
 }
 
 const TECH_LABEL_TYPES = [
@@ -34,8 +34,12 @@ const CreateAndEditTechLabel = () => {
   const [techLabelNames, setTechLabelNames] = useState<string[]>([])
 
   useEffect(() => {
-    listTechUnits().then(setTechUnits).catch(() => setTechUnits([]))
-    listTechLabelNames().then(setTechLabelNames).catch(() => setTechLabelNames([]))
+    listTechUnits()
+      .then(setTechUnits)
+      .catch(() => setTechUnits([]))
+    listTechLabelNames()
+      .then(setTechLabelNames)
+      .catch(() => setTechLabelNames([]))
   }, [])
 
   const {
@@ -53,7 +57,7 @@ const CreateAndEditTechLabel = () => {
       sort: editData?.sort || 0,
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join('; ') || '',
-      definition: editData?.definition || ''
+      definition: editData?.definition || '',
     },
   })
 
@@ -80,18 +84,18 @@ const CreateAndEditTechLabel = () => {
         <VStack gap="space-8">
           <input type="hidden" {...register('label', { required: true })} />
           <UNSAFE_Combobox
-              label="Navn *"
-              id="label"
-              options={[...new Set(techLabelNames)].sort((a, b) => a.localeCompare(b, 'nb'))}
-              defaultValue={editData?.label || ''}
-              allowNewValues
-              error={errors.label && 'Label is required'}
-              onToggleSelected={(option, isSelected) => {
-                setValue('label', isSelected ? option : '', {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }}
+            label="Navn *"
+            id="label"
+            options={[...new Set(techLabelNames)].sort((a, b) => a.localeCompare(b, 'nb'))}
+            defaultValue={editData?.label || ''}
+            allowNewValues
+            error={errors.label && 'Label is required'}
+            onToggleSelected={(option, isSelected) => {
+              setValue('label', isSelected ? option : '', {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }}
           />
           <Select
             {...register('type', { required: true })}
@@ -127,21 +131,21 @@ const CreateAndEditTechLabel = () => {
             autoComplete="on"
           />
           <Select
-              {...register('required', { required: true })}
-              label="Obligatorisk *"
-              error={errors.required && "Required is required"}
-              id="required"
-              defaultValue={editData?.required ? "true" : "false"}
-            >
-              <option value="true">Ja</option>
-              <option value="false">Nei</option>
+            {...register('required', { required: true })}
+            label="Obligatorisk *"
+            error={errors.required && 'Required is required'}
+            id="required"
+            defaultValue={editData?.required ? 'true' : 'false'}
+          >
+            <option value="true">Ja</option>
+            <option value="false">Nei</option>
           </Select>
           <TextField
-              {...register('sort', { required: true })}
-              label="Sortering *"
-              error={errors.sort && "Sortering is required"}
-              id="sort"
-              defaultValue={editData?.sort || 0}
+            {...register('sort', { required: true })}
+            label="Sortering *"
+            error={errors.sort && 'Sortering is required'}
+            id="sort"
+            defaultValue={editData?.sort || 0}
           />
           <TextField
             {...register('options', { required: false })}
@@ -150,10 +154,10 @@ const CreateAndEditTechLabel = () => {
             autoComplete="on"
           />
           <TextField
-              {...register('definition', { required: false })}
-              label="Beskrivelse "
-              id="definition"
-              autoComplete="on"
+            {...register('definition', { required: false })}
+            label="Beskrivelse "
+            id="definition"
+            autoComplete="on"
           />
           <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>

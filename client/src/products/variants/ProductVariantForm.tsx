@@ -8,7 +8,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { isUUID, labelRequired, trimValue } from 'utils/string-util'
 import { ProductRegistrationDTOV2, TechDataType } from 'utils/types/response-types'
 
-import { Button, HelpText, HStack, Select, TextField, VStack } from '@navikt/ds-react'
+import { Button, HStack, HelpText, Select, TextField, VStack } from '@navikt/ds-react'
 
 import styles from './ProductVariantForm.module.scss'
 

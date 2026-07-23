@@ -29,12 +29,12 @@ import { UpdatePartDTO } from 'utils/types/response-types'
 
 import { ArrowLeftIcon } from '@navikt/aksel-icons'
 import {
+  Link as AkselLink,
   BodyShort,
   Box,
-  Heading,
   HGrid,
+  Heading,
   Label,
-  Link as AkselLink,
   Loader,
   Switch,
   Tabs,

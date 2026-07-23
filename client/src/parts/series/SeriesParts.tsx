@@ -7,7 +7,7 @@ import NewCompatiblePartsOnSeriesModal from 'parts/series/NewCompatiblePartsOnSe
 import { useAuthStore } from 'utils/store/useAuthStore'
 
 import { PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import { Box, Button, Checkbox, Heading, HStack, Loader, Table, VStack } from '@navikt/ds-react'
+import { Box, Button, Checkbox, HStack, Heading, Loader, Table, VStack } from '@navikt/ds-react'
 
 import styles from './SeriesParts.module.scss'
 

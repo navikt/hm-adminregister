@@ -7,7 +7,7 @@ import { SupplierDTO } from 'utils/supplier-util'
 import { useSuppliers } from 'utils/swr-hooks'
 
 import { ChevronRightIcon, PlusIcon } from '@navikt/aksel-icons'
-import { Alert, Box, Button, Heading, HGrid, Loader, Pagination, Search, ToggleGroup, VStack } from '@navikt/ds-react'
+import { Alert, Box, Button, HGrid, Heading, Loader, Pagination, Search, ToggleGroup, VStack } from '@navikt/ds-react'
 
 import styles from './SupplierList.module.scss'
 

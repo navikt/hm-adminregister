@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest'
-
 import { getMissingRequiredTechData } from 'utils/product-util'
 import { ProductRegistrationDTOV2, TechDataType } from 'utils/types/response-types'
+import { describe, expect, it } from 'vitest'
 
 const makeVariant = (
   articleName: string,

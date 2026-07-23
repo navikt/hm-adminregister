@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
+import ErrorAlert from 'error/ErrorAlert.tsx'
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
@@ -9,9 +10,9 @@ import {
   BodyShort,
   Box,
   Button,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Loader,
   Modal,
   Pagination,
@@ -23,7 +24,6 @@ import {
 } from '@navikt/ds-react'
 
 import styles from './TechLabels.module.scss'
-import ErrorAlert from 'error/ErrorAlert.tsx'
 
 const PAGE_SIZE = 15
 const MAX_VISIBLE_OPTIONS = 10

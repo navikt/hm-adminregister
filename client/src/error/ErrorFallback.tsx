@@ -1,6 +1,7 @@
 import React from 'react'
 import { FallbackProps, getErrorMessage } from 'react-error-boundary'
-import { BodyShort, Box, Button, Heading, HGrid, Link, List, Page, VStack } from '@navikt/ds-react'
+
+import { BodyShort, Box, Button, HGrid, Heading, Link, List, Page, VStack } from '@navikt/ds-react'
 
 export const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   const errorMessage = getErrorMessage(error)

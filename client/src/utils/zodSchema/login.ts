@@ -1,5 +1,5 @@
-import z from 'zod'
 import { phoneUtil } from 'utils/zodSchema/zod-utils.ts'
+import z from 'zod'
 
 export const loginSchema = z.object({
   username: z.email('Feil e-postformat'),

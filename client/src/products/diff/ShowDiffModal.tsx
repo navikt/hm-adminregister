@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { ErrorBoundary, FallbackProps, getErrorMessage } from 'react-error-boundary'
 
 import {
+  ProductDifferenceDTO,
   getDifferenceFromPublishedSeries,
   getDifferencesFromPublishedVariants,
-  ProductDifferenceDTO,
 } from 'api/VersionApi'
 import { Avstand } from 'felleskomponenter/Avstand'
 import { SeriesDiff } from 'products/diff/SeriesDiff'

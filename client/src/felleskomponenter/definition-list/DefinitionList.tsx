@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+
 import styles from './DefinitionList.module.scss'
 
 const DefinitionList = ({

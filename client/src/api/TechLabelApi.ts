@@ -1,8 +1,8 @@
 import { fetchAPI } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
-import { TechLabelCreateUpdateDTO, TechLabelCriteria, TechLabelRegistrationDTO } from 'utils/types/response-types'
 import useSWR from 'swr'
 import { fetcherGET } from 'utils/swr-hooks.ts'
+import { TechLabelCreateUpdateDTO, TechLabelCriteria, TechLabelRegistrationDTO } from 'utils/types/response-types'
 
 const BASE_URL = () => `${HM_REGISTER_URL()}/admreg/admin/api/v1/techlabel/registrations`
 const LABEL_SERVICE_URL = () => `${HM_REGISTER_URL()}/admreg/api/v1/techlabels

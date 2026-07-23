@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import {
-  changeMainProductToPart,
   approveSeries,
+  changeMainProductToPart,
   deleteSeries,
   setPublishedSeriesToDraft,
   setSeriesToActive,
@@ -28,24 +28,24 @@ import ImageTab from 'products/files/images/ImagesTab'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { numberOfDocuments, numberOfImages, numberOfVideos } from 'products/seriesUtils'
 import VideosTab from 'products/videos/VideosTab'
+import { getMissingRequiredTechData } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
-import { getMissingRequiredTechData } from 'utils/product-util'
 import { useIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
+  Link as AkselLink,
   BodyShort,
   Box,
   Button,
   CopyButton,
   Detail,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Label,
-  Link as AkselLink,
   Loader,
   Tabs,
   Tag,

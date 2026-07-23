@@ -1,10 +1,10 @@
-import {useMemo, useState} from 'react'
+import { useMemo, useState } from 'react'
 
-import {requestApproval} from 'api/SeriesApi'
-import {numberOfDocuments, numberOfImages} from 'products/seriesUtils'
-import {useAuthStore} from 'utils/store/useAuthStore'
-import {useErrorStore} from 'utils/store/useErrorStore'
-import {SeriesDTO} from 'utils/types/response-types'
+import { requestApproval } from 'api/SeriesApi'
+import { numberOfDocuments, numberOfImages } from 'products/seriesUtils'
+import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
+import { SeriesDTO } from 'utils/types/response-types'
 
 import {
   ArrowUndoIcon,
@@ -13,7 +13,7 @@ import {
   InformationSquareIcon,
   RocketIcon,
 } from '@navikt/aksel-icons'
-import {BodyLong, Button, Modal} from '@navikt/ds-react'
+import { BodyLong, Button, Modal } from '@navikt/ds-react'
 
 import styles from './ProductPage.module.scss'
 

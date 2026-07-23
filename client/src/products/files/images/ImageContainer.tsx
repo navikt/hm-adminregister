@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import { smallImageLoader } from 'utils/image-util'
 
 import { FileImageIcon } from '@navikt/aksel-icons'

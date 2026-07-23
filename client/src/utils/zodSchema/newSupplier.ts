@@ -1,5 +1,5 @@
-import z from 'zod'
 import { phoneUtil } from 'utils/zodSchema/zod-utils.ts'
+import z from 'zod'
 
 export const newSupplierSchema = z.object({
   name: z.string().min(1, { message: 'Firmanavn er påkrevd' }).min(2, { message: 'Navn må inneholde minst 2 tegn' }),
