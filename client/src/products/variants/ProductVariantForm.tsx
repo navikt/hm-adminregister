@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { updateProductVariant } from 'api/ProductApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { isUUID, labelRequired, trimValue } from 'utils/string-util'
+import { isUUID, labelRequired, trimValue, validateNorwegianDecimal } from 'utils/string-util'
 import { ProductRegistrationDTOV2, TechDataType } from 'utils/types/response-types'
 
 import { Button, HelpText, HStack, Select, TextField, VStack } from '@navikt/ds-react'
@@ -99,6 +99,12 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
     return !!errors?.techData?.[index]?.value
   })
 
+  const hasFormatErrors = techDataFields.some((_, index) => {
+    const hasError = !!errors?.techData?.[index]?.value
+    const value = getValues(`techData.${index}.value`)
+    return hasError && !!value?.trim()
+  })
+
   return (
     <form className="form form--max-width-small" onSubmit={handleSubmit(onSubmit)}>
       <VStack gap="space-12">
@@ -153,13 +159,14 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
                       if (!value?.trim()) {
                         return isRequired ? `${techDataField.key} er påkrevd` : true
                       }
-                      return /^\d+([.,]\d+)?$/.test(value.trim()) || 'Må være tall'
+                      return validateNorwegianDecimal(value)
                     },
                   })}
                   label={label}
                   id={`techData.${index}.value`}
                   name={`techData.${index}.value`}
                   type="text"
+                  description="Bruk komma som desimalskilletegn f.eks. 1,5"
                   error={errorForField?.message}
                 />
               )}
@@ -227,10 +234,10 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
           >
             Avbryt
           </Button>
-          <Button type="submit" size="medium" disabled={hasRequiredFieldErrors}>
+          <Button type="submit" size="medium" disabled={hasRequiredFieldErrors || hasFormatErrors}>
             Lagre
           </Button>
-          {hasRequiredFieldErrors && (
+          {hasRequiredFieldErrors && !hasFormatErrors && (
             <Button type="button" variant="secondary" size="medium" onClick={handleSaveWithMissingData}>
               Lagre med manglende teknisk data
             </Button>
