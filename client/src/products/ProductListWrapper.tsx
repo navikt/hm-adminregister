@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import { useAuthStore } from 'utils/store/useAuthStore'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
 
 import { PlusIcon } from '@navikt/aksel-icons'
@@ -30,7 +31,7 @@ const ProductListWrapper = () => {
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
   const { loggedInUser } = useAuthStore()
-  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
   const statusFilters = searchParams.get('filters')?.split(',') || []
   const { pathname, search } = useLocation()
   const { suppliers } = useSuppliers(loggedInUser?.isAdmin || false)
@@ -107,10 +108,6 @@ const ProductListWrapper = () => {
   const navigate = useNavigate()
 
   const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm)
-
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-  }
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -212,7 +209,7 @@ const ProductListWrapper = () => {
                   placeholder="Søk etter produktnavn"
                   size="medium"
                   value={searchTerm}
-                  onChange={(value) => handleSearch(value)}
+                  onChange={setSearchTerm}
                   hideLabel={false}
                 />
               </Box>

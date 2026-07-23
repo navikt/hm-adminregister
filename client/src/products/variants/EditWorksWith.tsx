@@ -5,29 +5,13 @@ import { useProductVariantsByProductIds } from 'api/ProductApi'
 import { removeWorksWithVariant } from 'api/WorksWithApi'
 import ErrorAlert from 'error/ErrorAlert'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
-import FormBox from 'felleskomponenter/FormBox'
-import { RowBoxTable } from 'felleskomponenter/styledcomponents/Table'
 import NewWorksWithProductOnProductModal from 'products/variants/NewWorksWithProductOnProductModal'
 import WorksWithVariantsTable from 'products/variants/WorksWithVariantsTable'
 import { useProductByProductId } from 'utils/swr-hooks'
 import { WorksWithMapping } from 'utils/types/response-types'
 
-import { PlusCircleIcon, SandboxIcon, TrashIcon } from '@navikt/aksel-icons'
-import {
-  Alert,
-  BodyShort,
-  Box,
-  Button,
-  Checkbox,
-  HGrid,
-  HStack,
-  Heading,
-  Loader,
-  Table,
-  VStack,
-} from '@navikt/ds-react'
-
-import ProductVariantForm from './ProductVariantForm'
+import { PlusCircleIcon, SandboxIcon } from '@navikt/aksel-icons'
+import { Alert, Box, Button, Heading, HStack, Loader, VStack } from '@navikt/ds-react'
 
 const EditWorksWith = () => {
   const { productId } = useParams()
@@ -99,7 +83,7 @@ const EditWorksWith = () => {
             <VStack align="center" gap="space-16">
               <SandboxIcon title="a11y-title" fontSize="1.5rem" width={43} height={43} />
               <Heading level="1" size="medium" align="center">
-                Andre hjelpemidler som fungerer sammen med dette hjelpemiddelet
+                Andre hjelpemidler som virker sammen med dette hjelpemiddelet
               </Heading>
             </VStack>
             <Button
