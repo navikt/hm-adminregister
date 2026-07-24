@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
+import AgreementStatusTag from 'agreements/agreement/AgreementStatusTag'
 import ErrorAlert from 'error/ErrorAlert'
-import { AgreementFilterOption, useAgreements, usePagedAgreements } from 'utils/swr-hooks'
+import { AgreementFilterOption, useAgreementById, useAgreements, usePagedAgreements } from 'utils/swr-hooks'
 import { AgreementGroup, AgreementGroupDto } from 'utils/types/response-types'
 
 import { FileExcelIcon, MenuElipsisVerticalIcon, PlusIcon } from '@navikt/aksel-icons'
@@ -185,6 +186,8 @@ export const Agreements = () => {
 }
 
 export const AgreementLinkCard = ({ rammeavtale }: { rammeavtale: AgreementGroup }) => {
+  const { data: agreement, isLoading } = useAgreementById(rammeavtale.id)
+
   return (
     <LinkCard size={'small'}>
       <LinkCard.Title>
@@ -196,13 +199,13 @@ export const AgreementLinkCard = ({ rammeavtale }: { rammeavtale: AgreementGroup
             <Tag variant="neutral" size="small">
               {rammeavtale.reference}
             </Tag>
-            {rammeavtale.agreementStatus === 'ACTIVE' ? (
-              <Tag variant="success" size={'small'}>
-                Aktiv
-              </Tag>
+            {agreement ? (
+              <AgreementStatusTag agreement={agreement} />
+            ) : isLoading ? (
+              <Loader size="small" title="Laster status" />
             ) : (
-              <Tag variant="warning" size={'small'}>
-                Inaktiv
+              <Tag variant="neutral" size="small">
+                Status utilgjengelig
               </Tag>
             )}
           </HStack>

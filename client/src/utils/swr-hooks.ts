@@ -9,6 +9,7 @@ import { useErrorStore } from './store/useErrorStore'
 import {
   AdminUserChunk,
   AgreementsChunk,
+  AgreementRegistrationDTO,
   DelkontraktRegistrationDTO,
   IsoCategoryDTO,
   NewsChunk,
@@ -294,6 +295,16 @@ export function usePagedAgreements({
     isLoading,
     error,
   }
+}
+
+export function useAgreementById(agreementId?: string) {
+  const { loggedInUser } = useAuthStore()
+  const role = loggedInUser?.isAdmin ? 'admin' : 'vendor'
+  const path = agreementId
+    ? `${HM_REGISTER_URL()}/admreg/${role}/api/v1/agreement/registrations/${agreementId}`
+    : null
+
+  return useSWR<AgreementRegistrationDTO>(loggedInUser ? path : null, fetcherGET)
 }
 
 export function useDelkontrakterByAgreementId(agreementId: string) {
