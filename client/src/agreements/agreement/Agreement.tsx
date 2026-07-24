@@ -217,7 +217,7 @@ const Agreement = () => {
               </Heading>
 
               {isDraft && <PublishButton onClick={() => setPubliserRammeavtaleModalIsOpen(true)} />}
-              <AgreementStatusTag publiseringsdato={agreement.published} isDraft={isDraft} />
+              <AgreementStatusTag agreement={agreement} />
 
               <div>
                 <BodyShort>
