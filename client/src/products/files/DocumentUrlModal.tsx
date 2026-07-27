@@ -4,7 +4,7 @@ import { saveDocumentUrlToSeries } from 'api/SeriesApi'
 import { isValidUrl } from 'products/seriesUtils'
 import { useErrorStore } from 'utils/store/useErrorStore'
 
-import { Button, Modal, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyLong, Button, Heading, List, Modal, TextField, VStack } from '@navikt/ds-react'
 
 type DocumentUrlModalProps = {
   seriesId: string
@@ -63,6 +63,7 @@ export const DocumentUrlModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: 
     >
       <Modal.Body>
         <VStack gap="space-16">
+          <DocumentUrlRequirementBox />
           <TextField
             value={title}
             style={{ width: '400px' }}
@@ -97,3 +98,28 @@ export const DocumentUrlModal = ({ seriesId, mutateSeries, isOpen, setIsOpen }: 
     </Modal>
   )
 }
+
+// TODO: Innholdet under er en midlertidig plassholder og må utarbeides i samarbeid med fagpersoner.
+const DocumentUrlRequirementBox = () => (
+  <Alert variant="info">
+    <Heading size="small" level="2">
+      Hva slags lenke bør legges inn?
+    </Heading>
+    <BodyLong weight="semibold" textColor= "subtle" >
+      (disse er bare forslag og vil bli endret i dialog med IHT)
+    </BodyLong>
+    <BodyLong>
+      Lenken bør forbeholdes sprengskisser eller andre tekniske dokumenter, ikke en salg/kjøpeside for produktet.
+    </BodyLong>
+    <BodyLong weight="semibold">Egnet innhold</BodyLong>
+    <List>
+      <List.Item>Sprengskisser</List.Item>
+      <List.Item>Tekniske dokumenter og datablad</List.Item>
+    </List>
+
+    <BodyLong weight="semibold">Unngå</BodyLong>
+    <List>
+      <List.Item>Salg/ kjøpeside eller nettbutikk for produktet....</List.Item>
+    </List>
+  </Alert>
+)
