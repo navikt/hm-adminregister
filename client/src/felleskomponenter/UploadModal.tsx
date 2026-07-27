@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import { ImageContainer } from 'products/files/images/ImageContainer'
 import { fileToUri } from 'utils/file-util'
 
-import { FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
+import { CheckmarkCircleIcon, FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
 import {
   BodyLong,
   BodyShort,
@@ -177,6 +177,17 @@ const UploadModal = ({
         {isUploading && (
           <HStack justify="center">
             <Loader size="2xlarge" title="venter..." />
+          </HStack>
+        )}
+
+        {!isUploading && uploads.length > 0 && (
+          <HStack gap="space-8" align="center" marginBlock="space-8 space-0" wrap={false}>
+            <CheckmarkCircleIcon fontSize="1.5rem" color="var(--ax-text-success-subtle)" aria-hidden />
+            <BodyShort weight="semibold" className="text-overflow-hidden-large">
+              {uploads.length === 1
+                ? `${uploads[0].file.name} er lagt til`
+                : `${uploads.length} filer er lagt til: ${uploads.map((upload) => upload.file.name).join(', ')}`}
+            </BodyShort>
           </HStack>
         )}
 
