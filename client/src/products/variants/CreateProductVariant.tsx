@@ -132,8 +132,24 @@ const VariantNameRequirementBox = () => (
             <BodyLong weight="semibold">Unngå</BodyLong>
           </HStack>
           <List>
-            <List.Item><a href="https://finnhjelpemiddel.nav.no/produkt/fcce027c-af6e-4bbf-8e58-61cb27247e20">Netti III HD 2016</a></List.Item>
-            <List.Item><a href="https://finnhjelpemiddel.nav.no/produkt/eb687083-b549-435f-9628-a08e950e8d10?term=FlexiElectric">FlexiElectric</a></List.Item>
+            <List.Item>
+              <a
+                href="https://finnhjelpemiddel.nav.no/produkt/fcce027c-af6e-4bbf-8e58-61cb27247e20"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Netti III HD 2016
+              </a>
+            </List.Item>
+            <List.Item>
+              <a
+                href="https://finnhjelpemiddel.nav.no/produkt/eb687083-b549-435f-9628-a08e950e8d10?term=FlexiElectric"
+                target="_blank"
+                rel="noreferrer"
+              >
+                FlexiElectric
+              </a>
+            </List.Item>
           </List>
         </VStack>
       </VStack>
