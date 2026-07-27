@@ -16,7 +16,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
-import { Alert, Box, Button, HStack, Heading, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyLong, Button, Heading, HStack, ReadMore, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -81,6 +81,8 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         fileType="documents"
+        requireDisplayName
+        guidance={<DocumentNameRequirementBox />}
         uploadFiles={uploadFiles}
       />
       <DocumentUrlModal
@@ -189,6 +191,31 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
 }
 
 export default DocumentsTab
+
+// TODO: Innholdet under er en midlertidig plassholder og må utarbeides i samarbeid med fagpersoner.
+const DocumentNameRequirementBox = () => (
+  <Alert variant="info">
+    <Heading size="small" level="2">
+      Gi dokumentet et godt visningsnavn
+    </Heading>
+    <BodyLong weight="semibold" textColor= "subtle" >
+      (Innhold her er bare et forslag og vil bli endret i dialog med IHT)
+    </BodyLong>
+    <BodyLong spacing>
+      Visningsnavnet er det som vises på produktet på finnhjelpemidler.no. Uten et godt navn kan dokumentet få et
+      kryptisk navn hentet fra filnavnet. Velg derfor et navn som beskriver hva dokumentet er.
+    </BodyLong>
+    <ReadMore header="Se eksempler på gode og dårlige visningsnavn" size="small">
+      <BodyLong weight="semibold">Gode eksempler</BodyLong>
+      <BodyLong>- Bruksanvisning</BodyLong>
+      <BodyLong>- Sprengskisse</BodyLong>
+      <BodyLong spacing>- Monteringsveiledning</BodyLong>
+      <BodyLong weight="semibold">Unngå</BodyLong>
+      <BodyLong>- Dokument1_final_v2</BodyLong>
+      <BodyLong>- scan_0001</BodyLong>
+    </ReadMore>
+  </Alert>
+)
 
 const DocumentListItem = ({
   isEditable,
