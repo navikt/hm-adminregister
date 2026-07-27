@@ -180,7 +180,7 @@ const UploadModal = ({
           </HStack>
         )}
 
-        {!isUploading && uploads.length > 0 && (
+        {!isUploading && fileType === 'documents' && uploads.length > 0 && (
           <HStack gap="space-8" align="center" marginBlock="space-8 space-0" wrap={false}>
             <CheckmarkCircleIcon fontSize="1.5rem" color="var(--ax-text-success-subtle)" aria-hidden />
             <BodyShort weight="semibold" className="text-overflow-hidden-large">
