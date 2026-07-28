@@ -81,13 +81,17 @@ export function useProductVariantsByProductIds(productIds?: string[]) {
     error: vendorError,
     isLoading: vendorLoading,
   } = useSWR<ProductRegistrationDTO[]>(!isAdmin && shouldFetch ? ['worksWithVendor', productIds] : null, ([, ids]) =>
-    Promise.all((ids as string[]).map((id) => fetchAPI(getPath(false, `/api/v1/product/registrations/${id}`), 'GET')))
+    Promise.allSettled((ids as string[]).map((id) => fetchAPI(getPath(false, `/api/v1/product/registrations/${id}`), 'GET')))
+      .then(results => results
+        .filter((r): r is PromiseFulfilledResult<ProductRegistrationDTO> => r.status === 'fulfilled')
+        .map(r => r.value)
+      )
   )
 
   const error = adminError || vendorError
   if (error) {
     setGlobalError(error.status, error.message)
-    throw error
+/*    throw error*/
   }
 
   return {
