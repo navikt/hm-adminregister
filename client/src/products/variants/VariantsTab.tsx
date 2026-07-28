@@ -272,6 +272,14 @@ const VariantsTab = ({
                       </Table.Row>
                     )}
                     <Table.Row>
+                      <Table.HeaderCell scope="row">På avtale</Table.HeaderCell>
+                      {paginatedVariants.map((product, i) => (
+                        <Table.DataCell key={`onAgreement-${i}`}>
+                          {product.agreements.length > 0 ? '✓' : '-'}
+                        </Table.DataCell>
+                      ))}
+                    </Table.Row>
+                    <Table.Row>
                       <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
                         <Table.DataCell key={`levart-${i}`}>
@@ -310,14 +318,6 @@ const VariantsTab = ({
                         ))}
                       </Table.Row>
                     ))}
-                    <Table.Row>
-                      <Table.HeaderCell scope="row">På avtale</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`onAgreement-${i}`}>
-                          {product.agreements.length > 0 ? '✓' : '-'}
-                        </Table.DataCell>
-                      ))}
-                    </Table.Row>
                   </Table.Body>
                 </Table>
               </div>
