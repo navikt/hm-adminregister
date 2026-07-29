@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import { activateProductsFromAgreement, deleteProductsFromAgreement } from 'api/AgreementProductApi'
 import Content from 'felleskomponenter/styledcomponents/Content'
@@ -27,13 +27,11 @@ const EditProducstVariantsModal = ({
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const { setGlobalError } = useErrorStore()
 
-  const enrichedVariants = useMemo(() => {
-    const hmsArtNrById = new Map(productVariants?.map((v) => [v.id, v.hmsArtNr]) ?? [])
-    return variants.map((variant) => ({
-      ...variant,
-      hmsArtNr: hmsArtNrById.get(variant.productId) ?? undefined,
-    }))
-  }, [variants, productVariants])
+  const hmsArtNrById = new Map(productVariants?.map((v) => [v.id, v.hmsArtNr]) ?? [])
+  const enrichedVariants = variants.map((variant) => ({
+    ...variant,
+    hmsArtNr: hmsArtNrById.get(variant.productId) ?? undefined,
+  }))
 
   const hasActiveVariant = variants.some((variant) => variant.status === 'ACTIVE')
   const hasActiveSelected = variants
