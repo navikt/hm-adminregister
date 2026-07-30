@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 
 import { ImageContainer } from 'products/files/images/ImageContainer'
 import { fileToUri } from 'utils/file-util'
 
-import { FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
+import { CheckmarkCircleIcon, FileImageFillIcon, TrashIcon, UploadIcon } from '@navikt/aksel-icons'
 import {
   BodyLong,
   BodyShort,
@@ -25,6 +25,8 @@ interface Props {
   fileType: 'images' | 'documents'
   setModalIsOpen: (open: boolean) => void
   uploadFiles: (uploads: FileUpload[]) => Promise<void>
+  requireDisplayName?: boolean
+  guidance?: ReactNode
 }
 
 const removeFileExtation = (fileName: string) => {
@@ -40,7 +42,14 @@ export interface FileUpload {
   editedFileName?: string
 }
 
-const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Props) => {
+const UploadModal = ({
+  modalIsOpen,
+  fileType,
+  setModalIsOpen,
+  uploadFiles,
+  requireDisplayName = false,
+  guidance,
+}: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploads, setUploads] = useState<FileUpload[]>([])
@@ -48,7 +57,10 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
 
   const handleMediaEvent = (files: File[]) => {
     const allChosenFiles = uploads.concat(
-      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) }))
+      files.map((file) => ({
+        file,
+        editedFileName: fileType === 'documents' && requireDisplayName ? '' : removeFileExtation(file.name),
+      }))
     )
 
     const uniqueAllChosenFiles = allChosenFiles.filter(
@@ -168,16 +180,31 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
           </HStack>
         )}
 
+        {!isUploading && fileType === 'documents' && uploads.length > 0 && (
+          <HStack gap="space-8" align="center" marginBlock="space-8 space-0" wrap={false}>
+            <CheckmarkCircleIcon fontSize="1.5rem" color="var(--ax-text-success-subtle)" aria-hidden />
+            <BodyShort weight="semibold" className="text-overflow-hidden-large">
+              {uploads.length === 1
+                ? `${uploads[0].file.name} er lagt til`
+                : `${uploads.length} filer er lagt til: ${uploads.map((upload) => upload.file.name).join(', ')}`}
+            </BodyShort>
+          </HStack>
+        )}
+
         {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
         <VStack as="ol" gap="space-4" className={styles.uploadInline}>
           {fileType === 'documents' && uploads.length > 0 && (
-            <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
+            <>
+              {guidance}
+              <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
+            </>
           )}
           {uploads.map((upload) => (
             <Upload
               key={`${upload.file.name}`}
               upload={upload}
               fileType={fileType}
+              requireDisplayName={requireDisplayName}
               handleDelete={handleDelete}
               setEditedFileName={setEditedFileName}
             />
@@ -214,11 +241,13 @@ export default UploadModal
 const Upload = ({
   upload,
   fileType,
+  requireDisplayName,
   handleDelete,
   setEditedFileName,
 }: {
   upload: FileUpload
   fileType: 'images' | 'documents'
+  requireDisplayName?: boolean
   handleDelete: (file: File) => void
   setEditedFileName: (upload: FileUpload, newfileName: string) => void
 }) => {
@@ -255,7 +284,8 @@ const Upload = ({
           <TextField
             ref={fileNameInputRef}
             style={{ width: '500px' }}
-            label={'Endre filnavn'}
+            label={requireDisplayName ? 'Visningsnavn' : 'Endre filnavn'}
+            description={requireDisplayName ? `Opprinnelig filnavn: ${upload.file.name}` : undefined}
             value={fileName}
             onChange={(event) => {
               setEditedFileName(upload, fileName)
