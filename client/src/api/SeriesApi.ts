@@ -6,6 +6,7 @@ import { useAuthStore } from 'utils/store/useAuthStore'
 import { fetcherGET } from 'utils/swr-hooks'
 import {
   DeleteDocumentUrl,
+  DocumentUrl,
   FileTitleDto,
   MediaSort,
   NewDocumentUrl,
@@ -182,3 +183,6 @@ export const deleteDocumentUrlFromSeries = async (seriesUUID: string, deleteDocu
 
 export const updateSeriesURL = async (seriesUUID: string, url: string): Promise<void> =>
   updateSeries(seriesUUID, { url: url })
+
+export const updateSeriesDocumentUrls = async (seriesUUID: string, documentUrls: DocumentUrl[]): Promise<void> =>
+  updateSeries(seriesUUID, { documentUrls: documentUrls })
