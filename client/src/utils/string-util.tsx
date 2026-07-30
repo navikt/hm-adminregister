@@ -42,3 +42,10 @@ export const formatAgreementRanks = (agreements: AgreementInfo[]): string => {
 }
 
 export const trimValue = (value: string | null | undefined): string => value?.trim() ?? ''
+
+export const validateNorwegianDecimal = (value: string): true | string => {
+  const trimmed = value.trim()
+  if (/^\d+(,\d+)?$/.test(trimmed)) return true
+  if (/^\d+\.\d+$/.test(trimmed)) return 'Bruk komma som desimalskilletegn f.eks. 1,5'
+  return 'Må være et tall'
+}
