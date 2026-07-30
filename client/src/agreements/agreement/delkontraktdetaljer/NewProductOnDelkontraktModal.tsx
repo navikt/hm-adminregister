@@ -12,7 +12,7 @@ import { createNewProductOnDelkontraktSchema } from 'utils/zodSchema/newProductO
 import { z } from 'zod'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, HStack, Loader, Modal, TextField, VStack } from '@navikt/ds-react'
+import { Button, HGrid, HStack, Loader, Modal, Select, TextField, VStack } from '@navikt/ds-react'
 
 import { VarianterOnDelkontraktListe } from './VarianterOnDelkontraktListe'
 
@@ -37,6 +37,7 @@ const NewProductOnDelkontraktModal = ({
   const [productToAdd, setProductToAdd] = useState<ProductRegistrationDTO | undefined>(undefined)
   const [productToAddSeriesId, setProductToAddSeriesId] = useState<string | undefined>(undefined)
   const [variantsToAdd, setVariantsToAdd] = useState<string[]>([])
+  const [rank, setRank] = useState<number>(1)
   const { data: variants, isLoading } = useProductVariantsBySeriesId(productToAddSeriesId)
 
   const {
@@ -76,7 +77,8 @@ const NewProductOnDelkontraktModal = ({
     addProductsToAgreement(
       delkontraktId,
       post,
-      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || []
+      variants?.filter((variant) => variantsToAdd.includes(variant.supplierRef!)) || [],
+      rank
     )
       .then((agreement) => {
         mutateProductAgreements()
@@ -90,6 +92,7 @@ const NewProductOnDelkontraktModal = ({
     reset()
     setVariantsToAdd([])
     setProductToAdd(undefined)
+    setRank(1)
     setModalIsOpen(false)
   }
 
@@ -107,32 +110,44 @@ const NewProductOnDelkontraktModal = ({
         <Modal.Body>
           <Content>
             <VStack gap="space-8" style={{ width: '100%' }}>
-              <TextField
-                {...register('identifikator', { required: true })}
-                label={labelRequired('HMS-nummer/Levart nr.')}
-                id="identifikator"
-                name="identifikator"
-                type="text"
-                error={errors?.identifikator?.message}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter') {
-                    onClickGetProduct({ identifikator: e.currentTarget.value })
-                  }
-                }}
-              />
-              <Button
-                onClick={handleSubmit(onClickGetProduct)}
-                type="button"
-                variant="secondary"
-                style={{ marginLeft: 'auto' }}
-              >
-                Hent produkt
-              </Button>
+              <HGrid columns="2fr 1fr" gap="space-16" align="start">
+                <TextField
+                  {...register('identifikator', { required: true })}
+                  label={labelRequired('HMS-nummer/Levart nr.')}
+                  id="identifikator"
+                  name="identifikator"
+                  type="text"
+                  error={errors?.identifikator?.message}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                    }
+                  }}
+                  onKeyUp={(e) => {
+                    if (e.key === 'Enter') {
+                      onClickGetProduct({ identifikator: e.currentTarget.value })
+                    }
+                  }}
+                />
+                <Select
+                  label={labelRequired('Rangering')}
+                  id="rank"
+                  value={rank}
+                  onChange={(e) => setRank(parseInt(e.target.value))}
+                >
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((it) => (
+                    <option key={it} value={it}>
+                      {it}
+                    </option>
+                  ))}
+                </Select>
+              </HGrid>
+              <HGrid columns="2fr 1fr" gap="space-16" style={{ marginTop: 'var(--ax-space-8)' }}>
+                <div />
+                <Button onClick={handleSubmit(onClickGetProduct)} type="button" variant="secondary">
+                  Hent produkt
+                </Button>
+              </HGrid>
               {isSaving && (
                 <HStack justify="center">
                   <Loader size="2xlarge" title="venter..." />
@@ -145,6 +160,7 @@ const NewProductOnDelkontraktModal = ({
                     product={productToAdd}
                     variants={variants || []}
                     seriesId={productToAddSeriesId}
+                    rank={rank}
                   />
                 </VStack>
               )}
@@ -157,10 +173,12 @@ const NewProductOnDelkontraktModal = ({
               setModalIsOpen(false)
               setProductToAdd(undefined)
               setVariantsToAdd([])
+              setRank(1)
               reset()
             }}
             variant="tertiary"
             type="reset"
+            style={{ width: '150px' }}
           >
             Avbryt
           </Button>
