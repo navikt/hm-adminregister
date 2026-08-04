@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
@@ -39,7 +39,9 @@ import styles from '../ProductPage.module.scss'
 
 const helpTextWorksWith = (
   <BodyLong>
-    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som leverandører og fageksperter har satt sammen.
+    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som er satt opp i samråd med leverandører og fageksperter.
+    Koblinger kan kun redigeres av Nav, ved spørsmål kontakt{' '}
+    <a href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</a>
     <br />
     <br />
     Man trenger ikke å velge alle hjelpemidler fra lista. Det kan være flere alternativer av samme type, der man kun
@@ -325,6 +327,8 @@ const VariantsTab = ({
                             <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter <PencilIcon />
                             </Link>
+                          ) : loggedInUser?.isSupplier ? (
+                            <span>{noWorksWith(product)} produkter</span>
                           ) : noWorksWith(product) > 0 ? (
                             <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter
