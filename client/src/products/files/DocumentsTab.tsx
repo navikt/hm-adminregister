@@ -16,7 +16,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, Box, Button, HStack, Heading, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { Alert, Button, Heading, HStack, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -169,7 +169,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                             setEditDocumentUrl(documentUrl)
                             setDocumentUrlModalIsOpen(true)
                           }}
-                          editText="Endre lenke"
+                          editText="Endre"
                         />
                       )}
                     </HStack>

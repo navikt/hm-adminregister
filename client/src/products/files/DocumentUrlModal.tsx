@@ -81,7 +81,7 @@ export const DocumentUrlModal = ({
     <Modal
       open={isOpen}
       header={{
-        heading: isEditMode ? 'Endre lenke' : 'Legg til lenke',
+        heading: isEditMode ? 'Endre lenke/ tittel' : 'Legg til lenke',
         closeButton: true,
       }}
       onClose={() => {
