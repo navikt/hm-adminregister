@@ -17,9 +17,10 @@ export const userInfoUpdate = z
           if (value === '') {
             return true
           }
-          return /^\+47\s\d{2}\s\d{2}\s\d{2}\s\d{2}$/.test(value.trim())
+          return /^[\d\s\-+]+$/.test(value.trim())
+
         },
-        { message: 'Telefonnummer må være på +47 xx xx xx xx format' }
+        { message: 'Telefonnummer må være tall' }
       ),
     oldPassword: z.string().min(8, 'Passord må inneholde minst 8 tegn.'),
     newPassword: z.string().min(8, 'Passord må inneholde minst 8 tegn.'),
