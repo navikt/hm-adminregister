@@ -16,7 +16,7 @@ interface Props {
 }
 
 const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, seriesFromIso }: Props) => {
-  const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>()
+  const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>('')
   const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>()
   const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined)
   const [seriesToPreview, setSeriesToPreview] = useState<SeriesDTO | undefined>()
@@ -67,6 +67,7 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
             <TextField
               label=" Hvilken serie vil du flytte til?"
               placeholder="Serie-id (eks. 074b6837-0cd1-49c5-b048-45486c378fb4)"
+              value={seriesIdToMoveTo}
               onChange={(event) => setSeriesIdToMoveTo(event.target.value)}
               error={feilmelding !== undefined ? feilmelding : undefined}
             />
@@ -136,6 +137,8 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
         <Button
           onClick={() => {
             onClick(seriesIdToMoveTo!, variantIdsToMove!)
+            setSeriesIdToMoveTo('')
+            setSeriesToPreview(undefined)
             setVariantIdsToMove([])
             setFeilmelding(undefined)
             setSelectedRows([])
