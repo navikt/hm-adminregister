@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import { deleteFileFromSeries, uploadFilesToSeries, useSeriesV2 } from 'api/SeriesApi'
+import { deleteFileFromSeries, updateSeriesMediaPriority, uploadFilesToSeries, useSeriesV2 } from 'api/SeriesApi'
 import UploadModal, { FileUpload } from 'felleskomponenter/UploadModal'
-import FellesSortingArea from 'felleskomponenter/sort/FellesSortingArea'
+import FellesSortingArea, { updateMediaPriority } from 'felleskomponenter/sort/FellesSortingArea'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { SeriesDTO } from 'utils/types/response-types'
@@ -28,6 +28,17 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
 
   async function handleDeleteFile(fileURI: string) {
     deleteFileFromSeries(series.id, fileURI)
+      .then(() => {
+        const resequencedImages = updateMediaPriority(
+          images.filter((media) => media.uri !== fileURI).sort((a, b) => a.priority - b.priority)
+        )
+        if (resequencedImages.length > 0) {
+          return updateSeriesMediaPriority(
+            series.id,
+            resequencedImages.map((media) => ({ uri: media.uri, priority: media.priority }))
+          )
+        }
+      })
       .then(() => mutateSeries())
       .catch((error) => {
         setGlobalError(error)
