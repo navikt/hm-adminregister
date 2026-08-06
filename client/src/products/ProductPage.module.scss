@@ -69,3 +69,12 @@
 .errorText {
   color: $ax-text-danger;
 }
+
+
+.worksWithHeader {
+  white-space: nowrap;
+}
+
+:global(.aksel-help-text__popover.aksel-popover) {
+  z-index: 2000;
+}
