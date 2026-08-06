@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
@@ -14,14 +14,43 @@ import { ProductRegistrationDTOV2, SeriesDTO } from 'utils/types/response-types'
 
 import {
   ArrowsSquarepathIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   MenuElipsisHorizontalCircleIcon,
   PencilIcon,
   PlusCircleIcon,
   TrashIcon,
 } from '@navikt/aksel-icons'
-import { Alert, Box, Button, Dropdown, Pagination, Search, Table, Tabs, Tag, VStack } from '@navikt/ds-react'
+import {
+  Alert,
+  BodyLong,
+  BodyShort,
+  Box,
+  Button,
+  Dropdown,
+  HelpText,
+  HStack,
+  Pagination,
+  Search,
+  Table,
+  Tabs,
+  Tag,
+  VStack,
+} from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
+
+const helpTextWorksWith = (
+  <BodyLong>
+    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som er satt opp i samråd med leverandører og fageksperter.
+    Koblinger kan kun redigeres av Nav, ved spørsmål kontakt{' '}
+    <a href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</a>
+    <br />
+    <br />
+    Man trenger ikke å velge alle hjelpemidler fra lista. Det kan være flere alternativer av samme type, der man kun
+    trenger å velge én.
+  </BodyLong>
+)
 
 const VariantsTab = ({
   series,
@@ -134,6 +163,13 @@ const VariantsTab = ({
     setPageState(1)
   }
 
+  const goToPage = (nextPage: number) => {
+    const clamped = Math.min(Math.max(nextPage, 1), totalPages)
+    searchParams.set('page', clamped.toString())
+    setSearchParams(searchParams)
+    setPageState(clamped)
+  }
+
   return (
     <>
       <ConfirmModal
@@ -162,27 +198,71 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="default" padding={{ xs: 'space-8', md: 'space-16' }} borderRadius="12">
             <VStack gap="space-16">
-              {series.variants.length > columnsPerPage && (
-                <Box role="search" style={{ maxWidth: '475px' }}>
-                  <Search
-                    className="search-button"
-                    label="Søk"
-                    variant="simple"
-                    clearButton={true}
-                    onClear={() => {
-                      setVariantFilterString('')
-                      resetPageState()
-                    }}
-                    placeholder="Filtrer på hms-nr, lev-artnr, variantnavn"
-                    size="medium"
-                    value={variantFilterString}
-                    onChange={(value) => {
-                      setVariantFilterString(value)
-                      resetPageState()
-                    }}
-                    hideLabel={true}
-                  />
-                </Box>
+              {(series.variants.length > columnsPerPage || totalPages > 1) && (
+                <HStack justify="space-between" align="center" gap="space-16" wrap>
+                  {series.variants.length > columnsPerPage ? (
+                    <Box role="search" style={{ maxWidth: '475px', flex: '1 1 260px' }}>
+                      <Search
+                        className="search-button"
+                        label="Søk"
+                        variant="simple"
+                        clearButton={true}
+                        onClear={() => {
+                          setVariantFilterString('')
+                          resetPageState()
+                        }}
+                        placeholder="Filtrer på hms-nr, lev-artnr, variantnavn"
+                        size="medium"
+                        value={variantFilterString}
+                        onChange={(value) => {
+                          setVariantFilterString(value)
+                          resetPageState()
+                        }}
+                        hideLabel={true}
+                      />
+                    </Box>
+                  ) : (
+                    <span />
+                  )}
+                  {totalPages > 1 && (
+                    <nav className="aksel-pagination aksel-pagination--medium" aria-label="Paginering topp">
+                      <ul className="aksel-pagination__list" style={{ alignItems: 'center' }}>
+                        <li>
+                          <Button
+                            className="aksel-pagination__item"
+                            variant="tertiary"
+                            data-color="neutral"
+                            size="medium"
+                            icon={<ChevronLeftIcon title="Forrige side" />}
+                            onClick={() => goToPage(pageState - 1)}
+                            disabled={pageState <= 1}
+                          />
+                        </li>
+                        <li>
+                          <BodyShort
+                            size="medium"
+                            weight="regular"
+                            aria-live="polite"
+                            style={{ color: 'var(--ax-text-accent)' }}
+                          >
+                            {`${pageState} av ${totalPages}`}
+                          </BodyShort>
+                        </li>
+                        <li>
+                          <Button
+                            className="aksel-pagination__item"
+                            variant="tertiary"
+                            data-color="neutral"
+                            size="medium"
+                            icon={<ChevronRightIcon title="Neste side" />}
+                            onClick={() => goToPage(pageState + 1)}
+                            disabled={pageState >= totalPages}
+                          />
+                        </li>
+                      </ul>
+                    </nav>
+                  )}
+                </HStack>
               )}
               <div className={styles.variantTable}>
                 <Table>
@@ -261,6 +341,19 @@ const VariantsTab = ({
                         <Table.DataCell key={`articleName-${i}`}>{product.articleName || '-'}</Table.DataCell>
                       ))}
                     </Table.Row>
+                    <Table.Row>
+                      <Table.HeaderCell scope="row">
+                        <HStack gap="space-4" align="center">
+                          På avtale
+                          <HelpText title="Om på avtale" strategy="fixed" placement="top">
+                            Tallet her er ett eller flere anbudsnr denne varianten er knyttet til.
+                          </HelpText>
+                        </HStack>
+                      </Table.HeaderCell>
+                      {paginatedVariants.map((product, i) => (
+                        <Table.DataCell key={`onAgreement-${i}`}>{agreementValue(product)}</Table.DataCell>
+                      ))}
+                    </Table.Row>
                     {anyExpired && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
@@ -271,14 +364,6 @@ const VariantsTab = ({
                         ))}
                       </Table.Row>
                     )}
-                    <Table.Row>
-                      <Table.HeaderCell scope="row">På avtale</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`onAgreement-${i}`}>
-                          {product.agreements.length > 0 ? '✓' : '-'}
-                        </Table.DataCell>
-                      ))}
-                    </Table.Row>
                     <Table.Row>
                       <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
@@ -294,18 +379,29 @@ const VariantsTab = ({
                       ))}
                     </Table.Row>
                     <Table.Row>
-                      <Table.HeaderCell scope="row">Passer med</Table.HeaderCell>
+                      <Table.HeaderCell scope="row">
+                        <HStack gap="space-4" align="center">
+                          <span className={styles.worksWithHeader}>Virker sammen med</span>
+                          <HelpText strategy="fixed" placement="top">
+                            {helpTextWorksWith}
+                          </HelpText>
+                        </HStack>
+                      </Table.HeaderCell>
 
                       {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`hms-${i}`}>
+                        <Table.DataCell key={`workswith-${i}`}>
                           {series.status === 'EDITABLE' && loggedInUser?.isAdmin ? (
                             <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter <PencilIcon />
                             </Link>
-                          ) : (
+                          ) : loggedInUser?.isSupplier ? (
+                            <span>{noWorksWith(product)} produkter</span>
+                          ) : noWorksWith(product) > 0 ? (
                             <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter
                             </Link>
+                          ) : (
+                            <span>0 produkter</span>
                           )}
                         </Table.DataCell>
                       ))}
@@ -324,11 +420,7 @@ const VariantsTab = ({
               {totalPages > 1 && (
                 <Pagination
                   page={pageState}
-                  onPageChange={(x) => {
-                    searchParams.set('page', x.toString())
-                    setSearchParams(searchParams)
-                    setPageState(x)
-                  }}
+                  onPageChange={goToPage}
                   count={totalPages}
                   size="small"
                 />
@@ -371,6 +463,15 @@ const VariantsTab = ({
 
 const noWorksWith = (product: ProductRegistrationDTOV2) => {
   return product.productData.attributes.worksWith?.productIds.length ?? 0
+}
+
+const agreementValue = (product: ProductRegistrationDTOV2) => {
+  if (product.agreements.length === 0) {
+    return '-'
+  }
+
+  const references = [...new Set(product.agreements.map((agreement) => agreement.reference).filter(Boolean))]
+  return references.length > 0 ? references.join(', ') : 'Ja'
 }
 
 export default VariantsTab
