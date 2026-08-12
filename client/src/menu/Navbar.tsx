@@ -17,7 +17,7 @@ import {
   WrenchIcon,
   XMarkIcon,
 } from '@navikt/aksel-icons'
-import { Button, HStack, VStack } from '@navikt/ds-react'
+import { Button, HStack, Link, VStack } from '@navikt/ds-react'
 
 import ProfileMenu from './ProfileMenu'
 
@@ -139,14 +139,13 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             </HStack>
           </NavLink>
 
-          <NavLink to="/nyheter" className="page-link">
-            {pathname.startsWith('/nyheter') && <div className="active-indicator" />}
+          <Link href={window.appSettings.VITE_HM_NEWSADMIN_URL} target="_blank" rel="noreferrer" className="page-link">
             <div className="line" />
             <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
               <NewspaperIcon fontSize={'1.5rem'} title="Nyheter" aria-hidden />
-              <span>Nyheter</span>
+              <span>Aktuelt</span>
             </HStack>
-          </NavLink>
+          </Link>
         </>
       )}
       {loggedInUser && loggedInUser.isAdmin && (
