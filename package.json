@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "ciAll": "npm ci; npm --prefix client ci && npm --prefix server ci",
+    "iAll": "npm i; npm run postinstall",
     "postinstall": "npm --prefix client install && npm --prefix server install",
     "dev": "npm run --prefix client dev",
     "test": "npm run --prefix client test",
