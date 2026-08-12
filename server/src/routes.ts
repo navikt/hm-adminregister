@@ -23,7 +23,7 @@ export const routes = {
       .get('/settings.js', (_, res) => {
         const appSettings = {
           VITE_HM_REGISTER_URL: process.env.VITE_HM_REGISTER_URL,
-          VITE_NEWSADMIN_URL: process.env.VITE_NEWSADMIN_URL,
+          VITE_HM_NEWSADMIN_URL: process.env.VITE_HM_NEWSADMIN_URL,
           VITE_IMAGE_PROXY_URL: process.env.VITE_IMAGE_PROXY_URL,
           VITE_HM_REGISTER_EXTERNAL_URL: process.env.VITE_HM_REGISTER_EXTERNAL_URL,
           VITE_IMAGE_PROXY_EXTERNAL_URL: process.env.VITE_IMAGE_PROXY_EXTERNAL_URL,
