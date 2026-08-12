@@ -287,6 +287,19 @@ const VariantsTab = ({
                         <Table.DataCell key={`articleName-${i}`}>{product.articleName || '-'}</Table.DataCell>
                       ))}
                     </Table.Row>
+                    <Table.Row>
+                      <Table.HeaderCell scope="row">
+                        <HStack gap="space-4" align="center">
+                          På avtale
+                          <HelpText title="Om på avtale" strategy="fixed" placement="top">
+                            Tallet her er ett eller flere anbudsnr denne varianten er knyttet til.
+                          </HelpText>
+                        </HStack>
+                      </Table.HeaderCell>
+                      {paginatedVariants.map((product, i) => (
+                        <Table.DataCell key={`onAgreement-${i}`}>{agreementValue(product)}</Table.DataCell>
+                      ))}
+                    </Table.Row>
                     {anyExpired && (
                       <Table.Row>
                         <Table.HeaderCell scope="row">Status:</Table.HeaderCell>
@@ -297,14 +310,6 @@ const VariantsTab = ({
                         ))}
                       </Table.Row>
                     )}
-                    <Table.Row>
-                      <Table.HeaderCell scope="row">På avtale</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`onAgreement-${i}`}>
-                          {product.agreements.length > 0 ? '✓' : '-'}
-                        </Table.DataCell>
-                      ))}
-                    </Table.Row>
                     <Table.Row>
                       <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
                       {paginatedVariants.map((product, i) => (
@@ -408,6 +413,15 @@ const VariantsTab = ({
 
 const noWorksWith = (product: ProductRegistrationDTOV2) => {
   return product.productData.attributes.worksWith?.productIds.length ?? 0
+}
+
+const agreementValue = (product: ProductRegistrationDTOV2) => {
+  if (product.agreements.length === 0) {
+    return '-'
+  }
+
+  const references = [...new Set(product.agreements.map((agreement) => agreement.reference).filter(Boolean))]
+  return references.length > 0 ? references.join(', ') : 'Ja'
 }
 
 export default VariantsTab
