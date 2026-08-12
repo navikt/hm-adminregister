@@ -292,7 +292,7 @@ const VariantsTab = ({
                         <HStack gap="space-4" align="center">
                           På avtale
                           <HelpText title="Om på avtale" strategy="fixed" placement="top">
-                            Tallet her er ett eller flere anbudsnr denne varianten er knyttet til.
+                            Anbudsnummerne denne varianten er knyttet til.
                           </HelpText>
                         </HStack>
                       </Table.HeaderCell>
