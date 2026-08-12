@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
@@ -21,6 +21,7 @@ import {
 } from '@navikt/aksel-icons'
 import {
   Alert,
+  BodyLong,
   Box,
   Button,
   Dropdown,
@@ -35,6 +36,18 @@ import {
 } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
+
+const helpTextWorksWith = (
+  <BodyLong>
+    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som er satt opp i samråd med leverandører og fageksperter.
+    Koblinger kan kun redigeres av Nav, ved spørsmål kontakt{' '}
+    <a href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</a>
+    <br />
+    <br />
+    Man trenger ikke å velge alle hjelpemidler fra lista. Det kan være flere alternativer av samme type, der man kun
+    trenger å velge én.
+  </BodyLong>
+)
 
 const VariantsTab = ({
   series,
@@ -312,18 +325,29 @@ const VariantsTab = ({
                       ))}
                     </Table.Row>
                     <Table.Row>
-                      <Table.HeaderCell scope="row">Passer med</Table.HeaderCell>
+                      <Table.HeaderCell scope="row">
+                        <HStack gap="space-4" align="center">
+                          <span className={styles.worksWithHeader}>Virker sammen med</span>
+                          <HelpText strategy="fixed" placement="top">
+                            {helpTextWorksWith}
+                          </HelpText>
+                        </HStack>
+                      </Table.HeaderCell>
 
                       {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`hms-${i}`}>
+                        <Table.DataCell key={`workswith-${i}`}>
                           {series.status === 'EDITABLE' && loggedInUser?.isAdmin ? (
                             <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter <PencilIcon />
                             </Link>
-                          ) : (
+                          ) : loggedInUser?.isSupplier ? (
+                            <span>{noWorksWith(product)} produkter</span>
+                          ) : noWorksWith(product) > 0 ? (
                             <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
                               {noWorksWith(product)} produkter
                             </Link>
+                          ) : (
+                            <span>0 produkter</span>
                           )}
                         </Table.DataCell>
                       ))}

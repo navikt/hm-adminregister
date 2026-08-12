@@ -8,6 +8,7 @@
   "public_origin": "https://finnhjelpemiddel.intern.dev.nav.no/adminregister",
   "hm_register_url": "https://finnhjelpemiddel.intern.dev.nav.no",
   "hm_register_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no",
+  "hm_newsadmin_url": "https://finnhjelpemiddel.ansatt.dev.nav.no/newsadmin/",
   "image_proxy_url": "https://finnhjelpemiddel.intern.dev.nav.no/imageproxy",
   "image_proxy_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no/imageproxy",
   "faro_url": "https://telemetry.ekstern.dev.nav.no/collect",
