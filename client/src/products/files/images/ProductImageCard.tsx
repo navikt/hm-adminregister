@@ -48,7 +48,7 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
         </VStack>
         {isEditable && (
           <div className={styles.moreMenuContainer}>
-            <MoreMenu id={currentImage.uri} handleDelete={handleDeleteFile} />
+            <MoreMenu mediaInfo={currentImage} handleDeleteFile={handleDeleteFile} />
           </div>
         )}
       </div>

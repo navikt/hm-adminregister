@@ -13,10 +13,10 @@ import { DocumentUrlModal } from 'products/files/DocumentUrlModal'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { uriForMediaFile } from 'utils/file-util'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
+import { MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
-import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, Button, Heading, HStack, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, TrashIcon } from '@navikt/aksel-icons'
+import { Alert, BodyLong, Button, Heading, HStack, ReadMore, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -29,7 +29,6 @@ interface Props {
 const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [doccumentUrlModalIsOpen, setDocumentUrlModalIsOpen] = useState(false)
-  const [editDocumentUrl, setEditDocumentUrl] = useState<DocumentUrl | undefined>(undefined)
   const { pdfs } = mapImagesAndPDFfromMedia(series)
   const { setGlobalError } = useErrorStore()
   const { mutate: mutateSeries } = useSeriesV2(series.id)
@@ -82,20 +81,15 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         fileType="documents"
+        requireDisplayName
+        guidance={<DocumentNameRequirementBox />}
         uploadFiles={uploadFiles}
       />
       <DocumentUrlModal
         seriesId={series.id}
         mutateSeries={mutateSeries}
         isOpen={doccumentUrlModalIsOpen}
-        setIsOpen={(open) => {
-          setDocumentUrlModalIsOpen(open)
-          if (!open) {
-            setEditDocumentUrl(undefined)
-          }
-        }}
-        existingDocumentUrls={series.seriesData.attributes.documentUrls ?? []}
-        editDocumentUrl={editDocumentUrl}
+        setIsOpen={setDocumentUrlModalIsOpen}
       />
       <Tabs.Panel value="documents" className={styles.tabPanel}>
         <VStack gap="space-16">
@@ -162,15 +156,14 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                         </a>
                       </HStack>
                       {isEditable && (
-                        <MoreMenu
-                          id={documentUrl.url}
-                          handleDelete={handleDeleteDocumentUrl}
-                          handleEdit={() => {
-                            setEditDocumentUrl(documentUrl)
-                            setDocumentUrlModalIsOpen(true)
-                          }}
-                          editText="Endre"
-                        />
+                        <Button
+                          icon={<TrashIcon fontSize="1.5rem" aria-hidden />}
+                          size="small"
+                          variant="tertiary"
+                          onClick={() => handleDeleteDocumentUrl(documentUrl.url)}
+                        >
+                          Slett
+                        </Button>
                       )}
                     </HStack>
                   ))}
@@ -183,7 +176,6 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                   variant="tertiary"
                   icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
                   onClick={() => {
-                    setEditDocumentUrl(undefined)
                     setDocumentUrlModalIsOpen(true)
                   }}
                 >
@@ -199,6 +191,31 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
 }
 
 export default DocumentsTab
+
+// TODO: Innholdet under er en midlertidig plassholder og må utarbeides i samarbeid med fagpersoner.
+const DocumentNameRequirementBox = () => (
+  <Alert variant="info">
+    <Heading size="small" level="2">
+      Gi dokumentet et godt visningsnavn
+    </Heading>
+    <BodyLong weight="semibold" textColor= "subtle" >
+      (Innhold her er bare et forslag og vil bli endret i dialog med IHT)
+    </BodyLong>
+    <BodyLong spacing>
+      Visningsnavnet er det som vises på produktet på finnhjelpemidler.no. Uten et godt navn kan dokumentet få et
+      kryptisk navn hentet fra filnavnet. Velg derfor et navn som beskriver hva dokumentet er.
+    </BodyLong>
+    <ReadMore header="Se eksempler på gode og dårlige visningsnavn" size="small">
+      <BodyLong weight="semibold">Gode eksempler</BodyLong>
+      <BodyLong>- Bruksanvisning</BodyLong>
+      <BodyLong>- Sprengskisse</BodyLong>
+      <BodyLong spacing>- Monteringsveiledning</BodyLong>
+      <BodyLong weight="semibold">Unngå</BodyLong>
+      <BodyLong>- Dokument1_final_v2</BodyLong>
+      <BodyLong>- scan_0001</BodyLong>
+    </ReadMore>
+  </Alert>
+)
 
 const DocumentListItem = ({
   isEditable,
@@ -262,7 +279,7 @@ const DocumentListItem = ({
           </HStack>
           {isEditable && (
             <HStack>
-              <MoreMenu id={file.uri} handleDelete={handleDeleteFile} handleEdit={handleEditFileName} />
+              <MoreMenu mediaInfo={file} handleDeleteFile={handleDeleteFile} handleEditFileName={handleEditFileName} />
             </HStack>
           )}
         </>

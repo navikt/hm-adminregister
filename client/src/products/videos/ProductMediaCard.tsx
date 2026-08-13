@@ -32,7 +32,7 @@ export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function Media
         </VStack>
         {isEditable && (
           <div className={productStyles.moreMenuContainer}>
-            <MoreMenu id={mediaArr[index].uri} handleDelete={handleDeleteFile} />
+            <MoreMenu mediaInfo={mediaArr[index]} handleDeleteFile={handleDeleteFile} />
           </div>
         )}
       </div>
