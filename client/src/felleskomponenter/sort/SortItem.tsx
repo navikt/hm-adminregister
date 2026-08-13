@@ -4,12 +4,13 @@ import { MediaInfoDTO } from 'utils/types/response-types'
 
 interface Props {
   handleDeleteFile: (uri: string) => void
+  handleEditFile?: (uri: string) => void
   imagesArr: MediaInfoDTO[]
   index: number
   isEditable: boolean
 }
 
-export const SortItem = ({ handleDeleteFile, imagesArr, index, isEditable }: Props) => {
+export const SortItem = ({ handleDeleteFile, handleEditFile, imagesArr, index, isEditable }: Props) => {
   return (
     <>
       {imagesArr[index].type === 'IMAGE' && (
@@ -23,6 +24,7 @@ export const SortItem = ({ handleDeleteFile, imagesArr, index, isEditable }: Pro
       {imagesArr[index].type === 'VIDEO' && (
         <ProductMediaCard
           handleDeleteFile={handleDeleteFile}
+          handleEditFile={handleEditFile}
           mediaArr={imagesArr}
           index={index}
           isEditable={isEditable}

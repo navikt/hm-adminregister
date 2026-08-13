@@ -5,7 +5,7 @@ import FellesSortingArea from 'felleskomponenter/sort/FellesSortingArea'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { VideoModal } from 'products/videos/VideoModal'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { SeriesDTO } from 'utils/types/response-types'
+import { MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { PlusCircleIcon } from '@navikt/aksel-icons'
 import { Alert, BodyLong, BodyShort, Button, HStack, Heading, HelpText, Link, Tabs, VStack } from '@navikt/ds-react'
@@ -22,6 +22,7 @@ const VideoTab = ({
   isEditable: boolean
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [editVideo, setEditVideo] = useState<MediaInfoDTO | undefined>(undefined)
   const { videos } = mapImagesAndPDFfromMedia(series)
   const { setGlobalError } = useErrorStore()
   const videoAmountLimit = 4
@@ -32,6 +33,11 @@ const VideoTab = ({
       .catch((error) => {
         setGlobalError(error)
       })
+  }
+
+  const handleEditVideoLink = (uri: string) => {
+    setEditVideo(videos.find((v) => v.uri === uri))
+    setModalIsOpen(true)
   }
 
   return (
@@ -50,6 +56,7 @@ const VideoTab = ({
                 seriesId={series.id}
                 allMedia={videos}
                 handleDeleteFile={handleDeleteVideoLink}
+                handleEditFile={handleEditVideoLink}
                 isEditable={isEditable}
               />
             )}
@@ -63,6 +70,7 @@ const VideoTab = ({
               variant="tertiary"
               icon={<PlusCircleIcon fontSize="1.5rem" aria-hidden />}
               onClick={() => {
+                setEditVideo(undefined)
                 setModalIsOpen(true)
               }}
               disabled={videos.length >= videoAmountLimit}
@@ -75,7 +83,16 @@ const VideoTab = ({
           </HStack>
         )}
       </VStack>
-      <VideoModal seriesId={series.id} mutateSeries={mutateSeries} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
+      <VideoModal
+        seriesId={series.id}
+        mutateSeries={mutateSeries}
+        isOpen={modalIsOpen}
+        setIsOpen={(open) => {
+          setModalIsOpen(open)
+          if (!open) setEditVideo(undefined)
+        }}
+        editVideo={editVideo}
+      />
     </Tabs.Panel>
   )
 }

@@ -14,6 +14,7 @@ interface Props {
   seriesId: string
   allMedia: MediaInfoDTO[]
   handleDeleteFile: (uri: string) => void
+  handleEditFile?: (uri: string) => void
   isEditable: boolean
 }
 
@@ -45,7 +46,7 @@ export const handleUpdateOfSeriesMedia = (
   })
 }
 
-export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile, isEditable }: Props) {
+export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile, handleEditFile, isEditable }: Props) {
   const { setGlobalError } = useErrorStore()
   const [mediaArr, setMediaArr] = useState(allMedia)
 
@@ -80,6 +81,7 @@ export default function FellesSortingArea({ seriesId, allMedia, handleDeleteFile
                         <SortCard
                           seriesId={seriesId}
                           handleDeleteFile={handleDeleteFile}
+                          handleEditFile={handleEditFile}
                           setMediaArr={setMediaArr}
                           mediaArr={mediaArr}
                           index={index}
