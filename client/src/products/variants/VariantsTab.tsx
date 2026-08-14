@@ -466,11 +466,12 @@ const noWorksWith = (product: ProductRegistrationDTOV2) => {
 }
 
 const agreementValue = (product: ProductRegistrationDTOV2) => {
-  if (product.agreements.length === 0) {
+  const activeAgreements = product.agreements.filter((agreement) => agreement.status === 'ACTIVE')
+  if (activeAgreements.length === 0) {
     return '-'
   }
 
-  const references = [...new Set(product.agreements.map((agreement) => agreement.reference).filter(Boolean))]
+  const references = [...new Set(activeAgreements.map((agreement) => agreement.reference).filter(Boolean))]
   return references.length > 0 ? references.join(', ') : 'Ja'
 }
 

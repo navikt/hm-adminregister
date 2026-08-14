@@ -9,6 +9,7 @@ import { HStack, Heading, HelpText, VStack } from '@navikt/ds-react'
 const StatusPanel = ({ series }: { series: SeriesDTO }) => {
   const allAgreements = series.variants
     .flatMap((variant) => variant.agreements)
+    .filter((agr) => agr.status === 'ACTIVE')
     .filter((agr, idx, arr) => arr.findIndex((a) => a.id === agr.id) === idx)
 
   return (
