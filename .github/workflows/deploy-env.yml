@@ -11,7 +11,7 @@ on:
           - dev
           - prod
 
-run-name: Bygg og deploy til ${{ inputs.environment }}
+run-name: ${{ github.ref_name }} til ${{ inputs.environment }}
 
 env:
   BUILD_ENV: ${{ inputs.environment == 'prod' && 'production' || inputs.environment }}
