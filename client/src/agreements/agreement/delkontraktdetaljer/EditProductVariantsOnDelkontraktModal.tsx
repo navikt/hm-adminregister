@@ -31,7 +31,11 @@ const EditProducstVariantsModal = ({
   const enrichedVariants = variants.map((variant) => ({
     ...variant,
     hmsArtNr: hmsArtNrById.get(variant.productId) ?? undefined,
-  }))
+  })).sort((var1, var2) => {
+    if (var1.hmsArtNr! < var2.hmsArtNr!) return -1
+    if (var1.hmsArtNr! > var2.hmsArtNr!) return 1
+    return 0
+  })
 
   const hasActiveVariant = variants.some((variant) => variant.status === 'ACTIVE')
   const hasActiveSelected = variants

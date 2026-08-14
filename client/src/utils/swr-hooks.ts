@@ -27,6 +27,7 @@ import {
 
 import { mapSuppliers } from './supplier-util'
 import { LoggedInUser } from './user-util'
+import useSWRImmutable from 'swr/immutable'
 
 export function baseUrl(url: string = '') {
   if (process.env.NODE_ENV === 'production') {
@@ -359,7 +360,7 @@ export function useProductVariantsBySeriesId(seriesId?: string) {
 
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/old/series/${seriesId}`
 
-  const { data, error, isLoading } = useSWR<ProductRegistrationDTO[]>(seriesId ? path : null, fetcherGET)
+  const { data, error, isLoading } = useSWRImmutable<ProductRegistrationDTO[]>(seriesId ? path : null, fetcherGET)
 
   if (error) {
     setGlobalError(error.status, error.message)
