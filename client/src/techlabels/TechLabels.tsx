@@ -57,7 +57,6 @@ export const TechLabels = () => {
     }
 
     setSearchParams(nextParams)
-    setPage(1)
   }
 
   const updateUrlOnSectionChange = (value: string) => {
@@ -70,7 +69,6 @@ export const TechLabels = () => {
     }
 
     setSearchParams(nextParams)
-    setPage(1)
   }
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
