@@ -87,7 +87,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {(mediaDiff.videoChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
+      {(mediaDiff.imageChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
         <Box>
           <VStack gap="space-16">
             {mediaDiff.imageChanges && (
