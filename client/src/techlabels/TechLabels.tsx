@@ -196,6 +196,7 @@ export const TechLabels = () => {
                   {s.label}
                 </option>
               ))}
+            </Select>
           </HStack>
           <HStack>
             <Button
