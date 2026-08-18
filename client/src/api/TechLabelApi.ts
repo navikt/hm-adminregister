@@ -18,6 +18,7 @@ export const getTechLabels = (criteria: TechLabelCriteria = {}, page: number = 0
   if (criteria.type) params.append('type', criteria.type)
   if (criteria.unit) params.append('unit', criteria.unit)
   if (criteria.isoCode) params.append('isoCode', criteria.isoCode)
+  if (criteria.section) params.append('section', criteria.section)
   params.append('page', page.toString())
   params.append('size', size.toString())
 
