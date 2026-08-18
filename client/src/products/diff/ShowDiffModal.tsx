@@ -36,26 +36,37 @@ export const ShowDiffModal = ({
       return
     }
 
-    setIsLoading(false)
-    const fetchDifferences = async () => {
-      const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
-      setSeriesDifference(seriesDifferenceResult)
+    let isCancelled = false
 
-      const variantsDifferencesResult = await getDifferencesFromPublishedVariants(series.variants)
-      setVariantsDifferences(variantsDifferencesResult)
+    const fetchDifferences = async () => {
+      setIsLoading(true)
+      try {
+        const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
+        if (!isCancelled) {
+          setSeriesDifference(seriesDifferenceResult)
+        }
+
+        const variantsDifferencesResult = await getDifferencesFromPublishedVariants(series.variants)
+        if (!isCancelled) {
+          setVariantsDifferences(variantsDifferencesResult)
+        }
+      } catch (error) {
+        const { status, message } = error as { status?: number; message?: string }
+        if (status !== 404) {
+          setGlobalError(status ?? 500, message)
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false)
+        }
+      }
     }
 
     fetchDifferences()
-      .then((r) => r)
-      .catch((error) => {
-        if (error.status === 404) {
-          // No versions exists
-        } else {
-          setGlobalError(error.status, error.message)
-        }
-      })
 
-    setIsLoading(false)
+    return () => {
+      isCancelled = true
+    }
   }, [isOpen])
 
   const noDiff =
