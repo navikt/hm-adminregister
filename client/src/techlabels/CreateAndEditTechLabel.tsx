@@ -17,6 +17,7 @@ type FormData = {
   isoCode: string
   options: string
   definition: string
+  section: string
 }
 
 const TECH_LABEL_TYPES = [
@@ -24,6 +25,15 @@ const TECH_LABEL_TYPES = [
   { value: 'N', label: 'Numerisk' },
   { value: 'L', label: 'Ja/Nei' },
   { value: 'C', label: 'Tekst' },
+]
+
+export const SECTIONS = [
+  { value: '', label: 'Diverse' },
+  { value: 'Sete', label: 'Sete' },
+  { value: 'Armlene', label: 'Armlene' },
+  { value: 'Rygg', label: 'Rygg' },
+  { value: 'Batteri', label: 'Batteri' },
+  { value: 'Mål og vekt', label: 'Mål og vekt' },
 ]
 
 const CreateAndEditTechLabel = () => {
@@ -58,6 +68,7 @@ const CreateAndEditTechLabel = () => {
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join('; ') || '',
       definition: editData?.definition || '',
+      section: editData?.section || '',
     },
   })
 
@@ -66,6 +77,7 @@ const CreateAndEditTechLabel = () => {
       ...data,
       required: data.required === 'true',
       options: data.options ? data.options.split(';').map((opt) => opt.trim()) : [],
+      section: data.section || null,
     }
 
     if (editData) {
@@ -159,6 +171,13 @@ const CreateAndEditTechLabel = () => {
             id="definition"
             autoComplete="on"
           />
+          <Select {...register('section')} label="Seksjon" id="section" defaultValue={editData?.section || ''}>
+            {SECTIONS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </Select>
           <HStack gap="space-4" align="center">
             <Button type="reset" variant="secondary" size="medium" onClick={() => window.history.back()}>
               Avbryt

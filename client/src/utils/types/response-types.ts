@@ -181,6 +181,7 @@ export type TechLabelCriteria = {
   type?: string
   unit?: string
   isoCode?: string
+  section?: string
 }
 
 export type CatalogFileCriteria = {
