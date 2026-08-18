@@ -33,24 +33,19 @@ const FILTER_DIVERSE = '__diverse__'
 
 type LabelSectionRow = {
   label: string
-  count: number
   section: string | null
 }
 
 const groupByLabel = (labels: { label: string; section?: string | null }[]): LabelSectionRow[] => {
-  const byLabel = new Map<string, { label: string; section?: string | null }[]>()
+  const byLabel = new Map<string, string | null>()
   labels.forEach((l) => {
-    const existing = byLabel.get(l.label) || []
-    existing.push(l)
-    byLabel.set(l.label, existing)
+    if (!byLabel.has(l.label)) {
+      byLabel.set(l.label, l.section || null)
+    }
   })
 
   return Array.from(byLabel.entries())
-    .map(([label, rows]) => ({
-      label,
-      count: rows.length,
-      section: rows[0].section || null,
-    }))
+    .map(([label, section]) => ({ label, section }))
     .sort((a, b) => a.label.localeCompare(b.label, 'nb'))
 }
 
@@ -166,7 +161,6 @@ export const Seksjoner = () => {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Navn</Table.HeaderCell>
-                <Table.HeaderCell className={styles.shortColumn}>Antall </Table.HeaderCell>
                 <Table.HeaderCell className={styles.mediumColumn}>Nåværende seksjon</Table.HeaderCell>
                 <Table.HeaderCell className={styles.mediumColumn}>Ny seksjon</Table.HeaderCell>
                 <Table.HeaderCell className={seksjonerStyles.saveColumn} />
@@ -178,7 +172,6 @@ export const Seksjoner = () => {
                 return (
                   <Table.Row key={row.label}>
                     <Table.DataCell>{row.label}</Table.DataCell>
-                    <Table.DataCell className={styles.shortColumn}>{row.count}</Table.DataCell>
                     <Table.DataCell className={styles.mediumColumn}>
                       {row.section || 'Diverse'}
                     </Table.DataCell>
