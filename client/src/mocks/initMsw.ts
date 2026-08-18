@@ -1,10 +1,7 @@
 import { baseUrl } from 'utils/swr-hooks'
 
-const isMswSkipped = () =>
-  new URLSearchParams(window.location.search).get('msw') === 'off' || localStorage.getItem('SKIP_MSW') === 'true'
-
 export async function initMsw(): Promise<unknown> {
-  if (!window.appSettings.USE_MSW || isMswSkipped()) {
+  if (!window.appSettings.USE_MSW) {
     return
   }
 

@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
 import ErrorAlert from 'error/ErrorAlert.tsx'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
-import { SECTIONS } from 'techlabels/CreateAndEditTechLabel'
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
@@ -20,7 +19,6 @@ import {
   Pagination,
   Popover,
   Search,
-  Select,
   Table,
   Tooltip,
   VStack,
@@ -38,7 +36,6 @@ export const TechLabels = () => {
   const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
 
   const searchIsoCode = searchParams.get('searchIsoCode') || ''
-  const sectionFilter = searchParams.get('section') || ''
 
   const [page, setPage] = useState(1)
 
@@ -57,20 +54,6 @@ export const TechLabels = () => {
     }
 
     setSearchParams(nextParams)
-    setPage(1)
-  }
-
-  const updateUrlOnSectionChange = (value: string) => {
-    const nextParams = new URLSearchParams(searchParams)
-
-    if (value) {
-      nextParams.set('section', value)
-    } else {
-      nextParams.delete('section')
-    }
-
-    setSearchParams(nextParams)
-    setPage(1)
   }
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
@@ -116,12 +99,7 @@ export const TechLabels = () => {
   const filteredLabels = techLabels.filter(
     (label) =>
       label.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase()) &&
-      (sectionFilter
-        ? sectionFilter === '__NONE__'
-          ? !label.section
-          : label.section === sectionFilter
-        : true)
+      label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase())
   )
 
   const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -160,7 +138,7 @@ export const TechLabels = () => {
         </Heading>
 
         <VStack gap="space-24" className={styles.techLabelsContainer}>
-          <HStack align="end" wrap gap="space-16" marginBlock="space-24 space-0">
+          <HStack justify="space-between" wrap gap="space-16" marginBlock="space-24 space-0">
             <Box role="search" className="search-box">
               <Search
                 label="Søk etter navn på teknisk-data"
@@ -181,24 +159,7 @@ export const TechLabels = () => {
                 onChange={updateUrlOnSearchIsoCodeChange}
               />
             </Box>
-            <Select
-              label="Filtrer på seksjon"
-              hideLabel
-              size="medium"
-              className={styles.sectionFilter}
-              value={sectionFilter}
-              onChange={(e) => updateUrlOnSectionChange(e.target.value)}
-            >
-              <option value="">Alle seksjoner</option>
-              <option value="__NONE__">Diverse</option>
-              {SECTIONS.filter((s) => s.value).map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </Select>
-          </HStack>
-          <HStack>
+
             <Button
               variant="secondary"
               size="medium"
@@ -221,7 +182,6 @@ export const TechLabels = () => {
                 <Table.HeaderCell className={styles.requiredColumn}>Obligatorisk</Table.HeaderCell>
                 <Table.HeaderCell className={styles.optionsColumn}>Alternativer</Table.HeaderCell>
                 <Table.HeaderCell className={styles.mediumColumn}>Beskrivelse</Table.HeaderCell>
-                <Table.HeaderCell className={styles.shortColumn}>Seksjon</Table.HeaderCell>
                 <Table.HeaderCell className={styles.editButtonHeader} />
               </Table.Row>
             </Table.Header>
@@ -236,7 +196,6 @@ export const TechLabels = () => {
                   <Table.DataCell className={styles.requiredColumn}>{label.required ? 'Ja' : 'Nei'}</Table.DataCell>
                   <Table.DataCell className={styles.optionsColumn}>{optionsFix(label.options)}</Table.DataCell>
                   <Table.DataCell className={styles.mediumColumn}>{label.definition}</Table.DataCell>
-                  <Table.DataCell className={styles.shortColumn}>{label.section || 'Diverse'}</Table.DataCell>
                   <Table.DataCell className={styles.editButton}>
                     <Button
                       size="xsmall"
