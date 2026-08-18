@@ -117,7 +117,11 @@ export const TechLabels = () => {
     (label) =>
       label.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
       label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase()) &&
-      (sectionFilter ? (label.section || '') === sectionFilter : true)
+      (sectionFilter
+        ? sectionFilter === '__NONE__'
+          ? !label.section
+          : label.section === sectionFilter
+        : true)
   )
 
   const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
