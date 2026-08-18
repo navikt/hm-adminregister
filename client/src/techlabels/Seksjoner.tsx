@@ -211,7 +211,7 @@ export const Seksjoner = () => {
                         size="xsmall"
                         variant="secondary"
                         loading={savingLabel === row.label}
-                        disabled={pendingValue === (row.section ?? '') && !row.mixed}
+                        disabled={(row.mixed && pendingSections[row.label] === undefined) || (!row.mixed && pendingValue === (row.section ?? ''))}
                         onClick={() => handleSave(row.label)}
                       >
                         Lagre
