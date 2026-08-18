@@ -4,7 +4,7 @@ import { seriesStatus } from 'products/seriesUtils'
 import { toReadableDateTimeString } from 'utils/date-util'
 import { SeriesDTO } from 'utils/types/response-types'
 
-import { HStack, Heading, HelpText, VStack } from '@navikt/ds-react'
+import { Heading, HelpText, HStack, VStack } from '@navikt/ds-react'
 
 const StatusPanel = ({ series }: { series: SeriesDTO }) => {
   const allAgreements = series.variants
@@ -31,8 +31,7 @@ const StatusPanel = ({ series }: { series: SeriesDTO }) => {
               <HStack gap="space-4" align="center">
                 Avtalenavn
                 <HelpText title="Om avtalenavn" strategy="fixed" placement="top">
-                  Hele produktet er ikke nødvendigvis på avtale. Variantene kan være på samme avtale, på ulike avtaler,
-                  eller noen kan være på avtale mens andre ikke er det.
+                  Alle variantene er ikke nødvendigvis på avtale. Variantene kan være på samme avtale, på ulike avtaler, eller noen kan være på avtale mens andre ikke er det.
                 </HelpText>
               </HStack>
             </DefinitionList.Term>
