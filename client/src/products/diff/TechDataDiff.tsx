@@ -17,7 +17,7 @@ export const TechDataDiff = ({ diffDto }: { diffDto: DifferenceDTO }) => {
       <VStack gap="space-16">
         {techDataDiff.map(({ oldData, newData }, i) => (
           <>
-            {oldData.value.toLowerCase() !== newData.value.toLowerCase() && (
+            {String(oldData.value ?? '').toLowerCase() !== String(newData.value ?? '').toLowerCase() && (
               <VStack>
                 <BodyShort>
                   <>{oldData.key}</>
