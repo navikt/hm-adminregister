@@ -32,6 +32,10 @@ export const ShowDiffModal = ({
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
     setIsLoading(false)
     const fetchDifferences = async () => {
       const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
@@ -52,7 +56,7 @@ export const ShowDiffModal = ({
       })
 
     setIsLoading(false)
-  }, [])
+  }, [isOpen])
 
   const noDiff =
     seriesDifference &&
