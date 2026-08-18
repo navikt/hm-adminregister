@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { ProductDifferenceDTO } from 'api/VersionApi'
+import { renderDiffValue } from 'products/diff/renderDiffValue'
 import { Strikethrough } from 'products/diff/Strikethrough'
 import { TechDataDiff } from 'products/diff/TechDataDiff'
 
@@ -39,10 +40,10 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
                           <BodyShort weight="semibold">{t(key)}</BodyShort>
                           <VStack gap="space-16">
                             <Box padding="space-8" background="danger-soft" className={styles.previous}>
-                              <Strikethrough>{arrayCheck(value.second)}</Strikethrough>
+                              <Strikethrough>{renderDiffValue(value.second)}</Strikethrough>
                             </Box>
                             <Box padding="space-8" background="success-soft" className={styles.current}>
-                              <>{arrayCheck(value.first)}</>
+                              {renderDiffValue(value.first)}
                             </Box>
                           </VStack>
                         </VStack>
@@ -68,13 +69,5 @@ export const VariantsDiff = ({ variantDiffs }: { variantDiffs: ProductDifference
         )}
       </VStack>
     )
-  }
-}
-
-const arrayCheck = (value: unknown) => {
-  if (Array.isArray(value)) {
-    return value.map((val, i) => <span key={i}> {val as string} </span>)
-  } else {
-    return <span>{value as string}</span>
   }
 }
