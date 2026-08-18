@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { getTechLabels, updateTechLabelSection } from 'api/TechLabelApi'
-import ErrorAlert from 'error/ErrorAlert.tsx'
+import ErrorAlert from 'error/ErrorAlert'
 import { SECTIONS } from 'techlabels/sections'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 
