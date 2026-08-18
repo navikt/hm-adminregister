@@ -184,12 +184,12 @@ export const TechLabels = () => {
               onChange={(e) => updateUrlOnSectionChange(e.target.value)}
             >
               <option value="">Alle seksjoner</option>
-              <option value="__NONE__">Diverse</option>
               {SECTIONS.filter((s) => s.value).map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
               ))}
+            </Select>
           </HStack>
           <HStack>
             <Button
