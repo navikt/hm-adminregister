@@ -346,7 +346,7 @@ const VariantsTab = ({
                         <HStack gap="space-4" align="center">
                           På avtale
                           <HelpText title="Om på avtale" strategy="fixed" placement="top">
-                            Anbudsnummerne denne varianten er knyttet til.
+                            Anbudsnumrene denne varianten er knyttet til.
                           </HelpText>
                         </HStack>
                       </Table.HeaderCell>
@@ -378,34 +378,34 @@ const VariantsTab = ({
                         <Table.DataCell key={`hms-${i}`}>{product.hmsArtNr || '-'}</Table.DataCell>
                       ))}
                     </Table.Row>
-                    <Table.Row>
-                      <Table.HeaderCell scope="row">
-                        <HStack gap="space-4" align="center">
-                          <span className={styles.worksWithHeader}>Virker sammen med</span>
-                          <HelpText strategy="fixed" placement="top">
-                            {helpTextWorksWith}
-                          </HelpText>
-                        </HStack>
-                      </Table.HeaderCell>
+                    {loggedInUser?.isAdmin && (
+                      <Table.Row>
+                        <Table.HeaderCell scope="row">
+                          <HStack gap="space-4" align="center">
+                            <span className={styles.worksWithHeader}>Virker sammen med</span>
+                            <HelpText strategy="fixed" placement="top">
+                              {helpTextWorksWith}
+                            </HelpText>
+                          </HStack>
+                        </Table.HeaderCell>
 
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`workswith-${i}`}>
-                          {series.status === 'EDITABLE' && loggedInUser?.isAdmin ? (
-                            <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
-                              {noWorksWith(product)} produkter <PencilIcon />
-                            </Link>
-                          ) : loggedInUser?.isSupplier ? (
-                            <span>{noWorksWith(product)} produkter</span>
-                          ) : noWorksWith(product) > 0 ? (
-                            <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
-                              {noWorksWith(product)} produkter
-                            </Link>
-                          ) : (
-                            <span>0 produkter</span>
-                          )}
-                        </Table.DataCell>
-                      ))}
-                    </Table.Row>
+                        {paginatedVariants.map((product, i) => (
+                          <Table.DataCell key={`workswith-${i}`}>
+                            {series.status === 'EDITABLE' ? (
+                              <Link to={`${pathname}/rediger-passer-med/${product.id}?page=${pageState}`}>
+                                {noWorksWith(product)} produkter <PencilIcon />
+                              </Link>
+                            ) : noWorksWith(product) > 0 ? (
+                              <Link to={`${pathname}/se-passer-med/${product.id}?page=${pageState}`}>
+                                {noWorksWith(product)} produkter
+                              </Link>
+                            ) : (
+                              <span>0 produkter</span>
+                            )}
+                          </Table.DataCell>
+                        ))}
+                      </Table.Row>
+                    )}
                     {techKeys.map((key) => (
                       <Table.Row key={key}>
                         <Table.HeaderCell scope="row">{key}</Table.HeaderCell>
