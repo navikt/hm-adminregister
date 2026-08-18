@@ -35,8 +35,6 @@ type LabelSectionRow = {
   label: string
   count: number
   section: string | null
-  /** true when rows sharing this label currently have inconsistent section values */
-  mixed: boolean
 }
 
 const groupByLabel = (labels: { label: string; section?: string | null }[]): LabelSectionRow[] => {
@@ -48,16 +46,11 @@ const groupByLabel = (labels: { label: string; section?: string | null }[]): Lab
   })
 
   return Array.from(byLabel.entries())
-    .map(([label, rows]) => {
-      const sections = new Set(rows.map((r) => r.section || ''))
-      const mixed = sections.size > 1
-      return {
-        label,
-        count: rows.length,
-        section: mixed ? null : rows[0].section || null,
-        mixed,
-      }
-    })
+    .map(([label, rows]) => ({
+      label,
+      count: rows.length,
+      section: rows[0].section || null,
+    }))
     .sort((a, b) => a.label.localeCompare(b.label, 'nb'))
 }
 
@@ -85,9 +78,9 @@ export const Seksjoner = () => {
       return true
     }
     if (sectionFilter === FILTER_DIVERSE) {
-      return !row.mixed && !row.section
+      return !row.section
     }
-    return !row.mixed && row.section === sectionFilter
+    return row.section === sectionFilter
   })
 
   useEffect(() => {
@@ -187,7 +180,7 @@ export const Seksjoner = () => {
                     <Table.DataCell>{row.label}</Table.DataCell>
                     <Table.DataCell className={styles.shortColumn}>{row.count}</Table.DataCell>
                     <Table.DataCell className={styles.mediumColumn}>
-                      {row.mixed ? 'Blandet' : row.section || 'Diverse'}
+                      {row.section || 'Diverse'}
                     </Table.DataCell>
                     <Table.DataCell className={styles.mediumColumn}>
                       <Select
@@ -211,7 +204,7 @@ export const Seksjoner = () => {
                         size="xsmall"
                         variant="secondary"
                         loading={savingLabel === row.label}
-                        disabled={(row.mixed && pendingSections[row.label] === undefined) || (!row.mixed && pendingValue === (row.section ?? ''))}
+                        disabled={pendingValue === (row.section ?? '')}
                         onClick={() => handleSave(row.label)}
                       >
                         Lagre
