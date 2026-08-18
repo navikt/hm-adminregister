@@ -15,7 +15,7 @@ import './styles/globals.scss'
 
 import './i18n'
 
-const renderApp = () => {
+initMsw().then(() => {
   initUmami()
   initInstrumentation()
   initUmami()
@@ -29,9 +29,4 @@ const renderApp = () => {
       </BrowserRouter>
     </>
   )
-}
-
-initMsw().then(renderApp, (err) => {
-  console.error('Failed to initialize MSW, rendering app without mocks', err)
-  renderApp()
 })
