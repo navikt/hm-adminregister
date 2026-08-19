@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { getTechLabels, updateTechLabelSection } from 'api/TechLabelApi'
+import { getTechLabels, listTechLabelSections, updateTechLabelSection } from 'api/TechLabelApi'
 import ErrorAlert from 'error/ErrorAlert'
-import { SECTIONS } from 'techlabels/sections'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 
 import { ArrowLeftIcon } from '@navikt/aksel-icons'
@@ -56,6 +55,13 @@ export const Seksjoner = () => {
   const [savingLabel, setSavingLabel] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [pendingSections, setPendingSections] = useState<Record<string, string>>({})
+  const [sections, setSections] = useState<string[]>([])
+
+  useEffect(() => {
+    listTechLabelSections()
+      .then(setSections)
+      .catch(() => setSections([]))
+  }, [])
 
   const { data: dataTechLabels, error: errorTechLabels, isLoading: loadingTechLabels, mutate } = getTechLabels(
     {},
@@ -148,9 +154,9 @@ export const Seksjoner = () => {
               onChange={(e) => setSectionFilter(e.target.value)}
             >
               <option value="">Alle</option>
-              {SECTIONS.filter((s) => s.value).map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
+              {sections.map((section) => (
+                <option key={section} value={section}>
+                  {section}
                 </option>
               ))}
               <option value={FILTER_DIVERSE}>Diverse</option>
@@ -185,9 +191,10 @@ export const Seksjoner = () => {
                           setPendingSections((prev) => ({ ...prev, [row.label]: e.target.value }))
                         }
                       >
-                        {SECTIONS.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {s.label}
+                        <option value="">Diverse</option>
+                        {sections.map((section) => (
+                          <option key={section} value={section}>
+                            {section}
                           </option>
                         ))}
                       </Select>

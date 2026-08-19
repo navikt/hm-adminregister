@@ -37,6 +37,8 @@ export const listTechUnits = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_
 
 export const listTechLabelNames = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/names`, 'GET')
 
+export const listTechLabelSections = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/sections`, 'GET')
+
 export const updateTechLabelSection = (
   dto: TechLabelSectionUpdateDTO
 ): Promise<TechLabelRegistrationDTO[]> => fetchAPI(`${BASE_URL()}/section`, 'PUT', dto)
