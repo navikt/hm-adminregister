@@ -3,6 +3,7 @@ import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { ProductsToApproveTable } from 'approval/ProductsToApproveTable'
 import ErrorAlert from 'error/ErrorAlert'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { usePagedSeriesToApprove, useSeriesToApproveByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
 
 import {
@@ -24,7 +25,7 @@ import {
 export const ForApproval = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
-  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useUrlSyncedSearchParam('q')
   const sortUrl = searchParams.get('sort')
   const { pathname, search } = useLocation()
   const supplierFilter = searchParams.get('supplier') || ''
@@ -37,6 +38,10 @@ export const ForApproval = () => {
   useEffect(() => {
     localStorage.setItem('pageSizeState', pageSizeState.toString())
   }, [pageSizeState])
+
+  useEffect(() => {
+    sessionStorage.setItem('approvalListPath', pathname + search)
+  }, [pathname, search])
 
   const visningStatusfilter = ['Endring', 'Nytt produkt']
 
