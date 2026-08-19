@@ -40,6 +40,8 @@ export const ShowDiffModal = ({
 
     const fetchDifferences = async () => {
       setIsLoading(true)
+      setSeriesDifference(null)
+      setVariantsDifferences([])
       try {
         const seriesDifferenceResult = await getDifferenceFromPublishedSeries(series.id, series.version ?? 0)
         if (!isCancelled) {
