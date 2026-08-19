@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { renderDiffValue } from 'products/diff/renderDiffValue'
 import { Strikethrough } from 'products/diff/Strikethrough'
 import { getMediaDiff } from 'products/diff/diff-util'
 import { DifferenceDTO } from 'utils/types/response-types'
@@ -34,10 +35,10 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                   <Box>
                     <VStack gap="space-16">
                       <Box padding="space-8" background="danger-soft" className={styles.previous}>
-                        <Strikethrough>{arrayCheck(value.second)}</Strikethrough>
+                        <Strikethrough>{renderDiffValue(value.second)}</Strikethrough>
                       </Box>
                       <Box padding="space-8" background="success-soft" className={styles.current}>
-                        {arrayCheck(value.first)}
+                        {renderDiffValue(value.first)}
                       </Box>
                     </VStack>
                   </Box>
@@ -57,7 +58,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                   <Box>
                     <VStack gap="space-16">
                       <Box padding="space-8" background="success-soft" className={styles.current}>
-                        {arrayCheck(value)}
+                        {renderDiffValue(value)}
                       </Box>
                     </VStack>
                   </Box>
@@ -77,7 +78,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
                   <Box>
                     <VStack gap="space-16">
                       <Box padding="space-8" background="danger-soft" className={styles.current}>
-                        <Strikethrough>{arrayCheck(value)}</Strikethrough>
+                        <Strikethrough>{renderDiffValue(value)}</Strikethrough>
                       </Box>
                     </VStack>
                   </Box>
@@ -86,7 +87,7 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
           )}
         </VStack>
       )}
-      {(mediaDiff.videoChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
+      {(mediaDiff.imageChanges || mediaDiff.documentChanges || mediaDiff.videoChanges) && (
         <Box>
           <VStack gap="space-16">
             {mediaDiff.imageChanges && (
@@ -109,12 +110,4 @@ export const SeriesDiff = ({ seriesDiff }: { seriesDiff: DifferenceDTO }) => {
       )}
     </VStack>
   )
-}
-
-const arrayCheck = (value: unknown) => {
-  if (Array.isArray(value)) {
-    return value.map((val, i) => <span key={i}> {val as string} </span>)
-  } else {
-    return <span>{value as string}</span>
-  }
 }
