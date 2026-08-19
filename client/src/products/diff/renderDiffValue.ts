@@ -1,5 +1,7 @@
-const hasStringProperty = (value: Record<string, unknown>, property: string): value is Record<string, string> =>
-  typeof value[property] === 'string'
+const hasStringProperty = <K extends string>(
+  value: Record<string, unknown>,
+  property: K
+): value is Record<string, unknown> & Record<K, string> => typeof value[property] === 'string'
 
 const toRecord = (value: unknown): Record<string, unknown> | null => {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
