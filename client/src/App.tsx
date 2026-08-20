@@ -33,6 +33,7 @@ import EditSupplier from 'suppliers/EditSupplier'
 import Supplier from 'suppliers/Supplier'
 import SupplierList from 'suppliers/SupplierList'
 import CreateAndEditTechLabel from 'techlabels/CreateAndEditTechLabel'
+import { Seksjoner } from 'techlabels/Seksjoner'
 import { TechLabels } from 'techlabels/TechLabels'
 import { FlagProvider } from 'toggles/context'
 import Login from 'users/Login'
@@ -107,6 +108,7 @@ export function App() {
               <Route path="/deler" element={<Parts />} />
               <Route path="/del/:productId" element={<Part />} />
               <Route path="/tekniskdata" element={<TechLabels />} />
+              <Route path="/tekniskdata/seksjoner" element={<Seksjoner />} />
               <Route path="/katalog" element={<CatalogFiles />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/leverandor/dashboard" element={<VendorDashboard />} />

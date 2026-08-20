@@ -4048,6 +4048,7 @@ export interface components {
       /** @deprecated */
       isKeyLabel?: boolean | null
       systemLabel: string
+      section?: string | null
       createdBy: string
       updatedBy: string
       updatedByUser: string

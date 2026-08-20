@@ -138,37 +138,48 @@ export const TechLabels = () => {
         </Heading>
 
         <VStack gap="space-24" className={styles.techLabelsContainer}>
-          <HStack justify="space-between" wrap gap="space-16" marginBlock="space-24 space-0">
-            <Box role="search" className="search-box">
-              <Search
-                label="Søk etter navn på teknisk-data"
-                variant="simple"
-                placeholder="Søk etter navn på teknisk-data"
-                size="medium"
-                value={searchTerm}
-                onChange={setSearchTerm}
-              />
-            </Box>
-            <Box role="search" className="search-box">
-              <Search
-                label="Søk etter ISO-kode"
-                variant="simple"
-                placeholder="Søk etter ISO-kode"
-                size="medium"
-                value={searchIsoCode}
-                onChange={updateUrlOnSearchIsoCodeChange}
-              />
-            </Box>
+          <HStack justify="space-between" wrap gap="space-16" align="end" marginBlock="space-24 space-0">
+            <HStack gap="space-16" wrap>
+              <Box role="search" className="search-box">
+                <Search
+                  label="Søk etter navn på teknisk-data"
+                  variant="simple"
+                  placeholder="Søk etter navn på teknisk-data"
+                  size="medium"
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                />
+              </Box>
+              <Box role="search" className="search-box">
+                <Search
+                  label="Søk etter ISO-kode"
+                  variant="simple"
+                  placeholder="Søk etter ISO-kode"
+                  size="medium"
+                  value={searchIsoCode}
+                  onChange={updateUrlOnSearchIsoCodeChange}
+                />
+              </Box>
+            </HStack>
 
-            <Button
-              variant="secondary"
-              size="medium"
-              icon={<PlusIcon aria-hidden />}
-              iconPosition="left"
-              onClick={() => navigate('/tekniskdata/opprett')}
-            >
-              Opprett ny teknisk-data beskrivelse
-            </Button>
+            <HStack gap="space-16" wrap>
+              <Button
+                variant="secondary"
+                size="medium"
+                onClick={() => navigate('/tekniskdata/seksjoner')}
+              >
+                Rediger seksjoner
+              </Button>
+              <Button
+                variant="secondary"
+                size="medium"
+                icon={<PlusIcon aria-hidden />}
+                iconPosition="left"
+                onClick={() => navigate('/tekniskdata/opprett')}
+              >
+                Opprett ny teknisk-data beskrivelse
+              </Button>
+            </HStack>
           </HStack>
 
           <Table size={'small'}>

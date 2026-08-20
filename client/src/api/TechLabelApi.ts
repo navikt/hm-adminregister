@@ -2,7 +2,7 @@ import { fetchAPI } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR from 'swr'
 import { fetcherGET } from 'utils/swr-hooks.ts'
-import { TechLabelCreateUpdateDTO, TechLabelCriteria, TechLabelRegistrationDTO } from 'utils/types/response-types'
+import { TechLabelCreateUpdateDTO, TechLabelCriteria, TechLabelRegistrationDTO, TechLabelSectionUpdateDTO } from 'utils/types/response-types'
 
 const BASE_URL = () => `${HM_REGISTER_URL()}/admreg/admin/api/v1/techlabel/registrations`
 const LABEL_SERVICE_URL = () => `${HM_REGISTER_URL()}/admreg/api/v1/techlabels
@@ -36,3 +36,9 @@ export const deleteTechLabel = (id: string, forcedDelete: boolean): Promise<void
 export const listTechUnits = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/units`, 'GET')
 
 export const listTechLabelNames = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/names`, 'GET')
+
+export const listTechLabelSections = (): Promise<string[]> => fetchAPI(`${LABEL_SERVICE_URL()}/all/sections`, 'GET')
+
+export const updateTechLabelSection = (
+  dto: TechLabelSectionUpdateDTO
+): Promise<TechLabelRegistrationDTO[]> => fetchAPI(`${BASE_URL()}/section`, 'PUT', dto)

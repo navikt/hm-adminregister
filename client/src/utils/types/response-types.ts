@@ -183,6 +183,11 @@ export type TechLabelCriteria = {
   isoCode?: string
 }
 
+export type TechLabelSectionUpdateDTO = {
+  label: string
+  section: string | null
+}
+
 export type CatalogFileCriteria = {
   fileName?: string
   orderRef?: string
