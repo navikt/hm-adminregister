@@ -16,7 +16,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, Button, Heading, HStack, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyLong, Button, Heading, HStack, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -145,6 +145,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
                 produktet.
               </Alert>
             )}
+            <DocumentUrlRequirementBox />
 
             <VStack gap="space-16">
               {series.seriesData.attributes.documentUrls && series.seriesData.attributes.documentUrls.length > 0 && (
@@ -200,6 +201,16 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
 }
 
 export default DocumentsTab
+
+const DocumentUrlRequirementBox = () => (
+  <Alert variant="warning">
+    <Heading spacing size="small" level="2">
+      Krav til lenke
+    </Heading>
+    <BodyLong>- Skal ikke benyttes til leverandørens produktside/nettbutikk</BodyLong>
+    <BodyLong>- Skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse</BodyLong>
+  </Alert>
+)
 
 const DocumentListItem = ({
   isEditable,
