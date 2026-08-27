@@ -82,6 +82,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         fileType="documents"
+        requireDisplayName
         uploadFiles={uploadFiles}
       />
       <DocumentUrlModal

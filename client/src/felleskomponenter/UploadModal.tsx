@@ -14,17 +14,22 @@ import {
   Label,
   Loader,
   Modal,
+  Select,
   TextField,
   VStack,
 } from '@navikt/ds-react'
 
 import styles from './UploadModal.module.scss'
 
+const DOCUMENT_DISPLAY_NAME_OPTIONS = ['Bruksanvisning', 'Brosjyre', 'Bestillingsskjema', 'Sprengskisse', 'Målskjema']
+const OTHER_DISPLAY_NAME_OPTION = 'Annet'
+
 interface Props {
   modalIsOpen: boolean
   fileType: 'images' | 'documents'
   setModalIsOpen: (open: boolean) => void
   uploadFiles: (uploads: FileUpload[]) => Promise<void>
+  requireDisplayName?: boolean
 }
 
 const removeFileExtation = (fileName: string) => {
@@ -40,7 +45,7 @@ export interface FileUpload {
   editedFileName?: string
 }
 
-const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Props) => {
+const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles, requireDisplayName = false }: Props) => {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploads, setUploads] = useState<FileUpload[]>([])
@@ -48,7 +53,10 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
 
   const handleMediaEvent = (files: File[]) => {
     const allChosenFiles = uploads.concat(
-      files.map((file) => ({ file, editedFileName: removeFileExtation(file.name) }))
+      files.map((file) => ({
+        file,
+        editedFileName: fileType === 'documents' && requireDisplayName ? '' : removeFileExtation(file.name),
+      }))
     )
 
     const uniqueAllChosenFiles = allChosenFiles.filter(
@@ -178,6 +186,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles }: Pro
               key={`${upload.file.name}`}
               upload={upload}
               fileType={fileType}
+              requireDisplayName={requireDisplayName}
               handleDelete={handleDelete}
               setEditedFileName={setEditedFileName}
             />
@@ -214,11 +223,13 @@ export default UploadModal
 const Upload = ({
   upload,
   fileType,
+  requireDisplayName,
   handleDelete,
   setEditedFileName,
 }: {
   upload: FileUpload
   fileType: 'images' | 'documents'
+  requireDisplayName?: boolean
   handleDelete: (file: File) => void
   setEditedFileName: (upload: FileUpload, newfileName: string) => void
 }) => {
@@ -227,6 +238,10 @@ const Upload = ({
   const [onCreation] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const fileNameInputRef = useRef<HTMLInputElement>(null)
+
+  const [selectedType, setSelectedType] = useState('')
+  const [customName, setCustomName] = useState('')
+  const customNameInputRef = useRef<HTMLInputElement>(null)
 
   function isTextSelected() {
     const selection = window.getSelection()
@@ -248,10 +263,66 @@ const Upload = ({
     }
   }
 
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value)
+    setErrorMessage('')
+    setEditedFileName(upload, value === OTHER_DISPLAY_NAME_OPTION ? customName : value)
+  }
+
+  const handleCustomNameChange = (value: string) => {
+    setCustomName(value)
+    setEditedFileName(upload, value)
+    setErrorMessage(value.trim().length === 0 ? 'Filen må ha et navn' : '')
+  }
+
+  const fileExtension = upload.file.name.includes('.') ? upload.file.name.split('.').pop()!.toUpperCase() : ''
+  const effectiveDisplayName = selectedType === OTHER_DISPLAY_NAME_OPTION ? customName : selectedType
+  const displayNamePreview =
+    effectiveDisplayName.trim().length > 0
+      ? `${effectiveDisplayName}${fileExtension ? ` (${fileExtension})` : ''}`
+      : ''
+
   return (
     <HStack as="li" justify="space-between" wrap={false}>
       {fileType === 'documents' ? (
-        <>
+        requireDisplayName ? (
+          <VStack gap="space-4" style={{ width: '500px' }}>
+            <Select
+              label="Visningsnavn"
+              description={
+                <>
+                  Opprinnelig filnavn: {upload.file.name}
+                  {displayNamePreview && (
+                    <>
+                      <br />
+                      Visningsnavn: {displayNamePreview}
+                    </>
+                  )}
+                </>
+              }
+              value={selectedType}
+              onChange={(event) => handleTypeChange(event.currentTarget.value)}
+            >
+              <option value="">Velg dokumenttype</option>
+              {DOCUMENT_DISPLAY_NAME_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+              <option value={OTHER_DISPLAY_NAME_OPTION}>{OTHER_DISPLAY_NAME_OPTION}</option>
+            </Select>
+            {selectedType === OTHER_DISPLAY_NAME_OPTION && (
+              <TextField
+                ref={customNameInputRef}
+                label="Skriv inn visningsnavn"
+                value={customName}
+                onChange={(event) => handleCustomNameChange(event.currentTarget.value)}
+                error={errorMessage}
+                autoFocus
+              />
+            )}
+          </VStack>
+        ) : (
           <TextField
             ref={fileNameInputRef}
             style={{ width: '500px' }}
@@ -274,7 +345,7 @@ const Upload = ({
             }}
             error={errorMessage}
           />
-        </>
+        )
       ) : (
         <HStack gap={{ xs: 'space-1', sm: 'space-2', md: 'space-4' }} align="center" wrap={false}>
           <Box
