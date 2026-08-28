@@ -63,10 +63,12 @@ export default function CreateProduct() {
         if (loggedInUser && loggedInUser.isAdmin) {
           const supplierUUID = suppliers?.find((sup) => sup.name === supplier)?.id
           const createdSeries = await draftNewSeries(newSeries, supplierUUID!)
-          navigate(`/produkter/${createdSeries.id}`)
+          sessionStorage.removeItem('approvalListPath')
+          navigate(`/produkter/${createdSeries.id}`, { state: '/produkter' })
         } else if (loggedInUser) {
           const createdSeries = await draftNewSeries(newSeries, loggedInUser.supplierId!)
-          navigate(`/produkter/${createdSeries.id}`)
+          sessionStorage.removeItem('approvalListPath')
+          navigate(`/produkter/${createdSeries.id}`, { state: '/produkter' })
         }
       } catch (error: any) {
         setGlobalError(error.status, error.message)

@@ -6,7 +6,7 @@ import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test } from 'vitest'
 
 import { fireEvent, render, renderHook, screen } from '@testing-library/react'
 
@@ -156,5 +156,62 @@ describe('Produktside', () => {
 
     fireEvent.click(await screen.findByRole('tab', { name: /Videolenker/ }))
     expect(screen.queryByRole('button', { name: addVideoButton })).not.toBeInTheDocument()
+  })
+})
+
+describe('Tilbake til oversikt – oversiktPath fallback', () => {
+  const backLinkName = /Tilbake til oversikt/
+
+  afterEach(() => {
+    sessionStorage.clear()
+  })
+
+  test('Bruker location.state naar den finnes', async () => {
+    logIn(false)
+    sessionStorage.setItem('approvalListPath', '/til-godkjenning?q=fraStorage')
+
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/produkter/test-state', state: '/til-godkjenning?q=fraState&supplier=abc' }]}
+      >
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    const link = await screen.findByRole('link', { name: backLinkName })
+    expect(link).toHaveAttribute('href', '/til-godkjenning?q=fraState&supplier=abc')
+  })
+
+  test('Faller tilbake til sessionStorage naar state mangler', async () => {
+    logIn(false)
+    sessionStorage.setItem('approvalListPath', '/til-godkjenning?q=fraStorage&supplier=abc')
+
+    render(
+      <MemoryRouter initialEntries={['/produkter/test-storage']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    const link = await screen.findByRole('link', { name: backLinkName })
+    expect(link).toHaveAttribute('href', '/til-godkjenning?q=fraStorage&supplier=abc')
+  })
+
+  test('Faller tilbake til /produkter naar bade state og sessionStorage mangler', async () => {
+    logIn(false)
+
+    render(
+      <MemoryRouter initialEntries={['/produkter/test-default']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    const link = await screen.findByRole('link', { name: backLinkName })
+    expect(link).toHaveAttribute('href', '/produkter')
   })
 })

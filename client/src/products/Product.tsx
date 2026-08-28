@@ -67,7 +67,7 @@ const Product = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { pathname, state } = useLocation()
-  const oversiktPath = typeof state === 'string' ? state : '/produkter'
+  const oversiktPath = typeof state === 'string' ? state : (sessionStorage.getItem('approvalListPath') ?? '/produkter')
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false)
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false)
   const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false)

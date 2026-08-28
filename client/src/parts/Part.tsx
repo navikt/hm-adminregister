@@ -169,7 +169,8 @@ const Part = () => {
     changePartToMainProduct(series!.id, newIsoCode)
       .then(() => {
         mutateSeries()
-        navigate(`/produkter/${series?.id}`)
+        sessionStorage.removeItem('approvalListPath')
+        navigate(`/produkter/${series?.id}`, { state: '/produkter' })
       })
       .catch((error) => {
         setGlobalError(error)
