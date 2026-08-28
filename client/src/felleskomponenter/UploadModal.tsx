@@ -255,12 +255,8 @@ const Upload = ({
     }
   }, [onCreation])
 
-  const validateFileName = () => {
-    setErrorMessage('')
-
-    if (fileName.trim().length == 0) {
-      setErrorMessage('Filen må ha et navn')
-    }
+  const validateFileName = (currentFileName: string) => {
+    setErrorMessage(currentFileName.trim().length === 0 ? 'Filen må ha et navn' : '')
   }
 
   const handleTypeChange = (value: string) => {
@@ -329,19 +325,15 @@ const Upload = ({
             label={'Endre filnavn'}
             value={fileName}
             onChange={(event) => {
-              setEditedFileName(upload, fileName)
-              validateFileName()
-              setFileName(event.currentTarget.value)
+              const newFileName = event.currentTarget.value
+              setFileName(newFileName)
+              setEditedFileName(upload, newFileName)
+              validateFileName(newFileName)
             }}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
                 event.currentTarget.blur()
               }
-            }}
-            onKeyUp={(event) => {
-              setEditedFileName(upload, fileName)
-              validateFileName()
-              setFileName(event.currentTarget.value)
             }}
             error={errorMessage}
           />
