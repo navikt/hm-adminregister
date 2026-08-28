@@ -21,8 +21,8 @@ import {
 
 import styles from './UploadModal.module.scss'
 
-const DOCUMENT_DISPLAY_NAME_OPTIONS = ['Bruksanvisning', 'Brosjyre', 'Bestillingsskjema', 'Sprengskisse', 'Målskjema']
-const OTHER_DISPLAY_NAME_OPTION = 'Annet'
+export const DOCUMENT_DISPLAY_NAME_OPTIONS = ['Bruksanvisning', 'Brosjyre', 'Bestillingsskjema', 'Sprengskisse', 'Målskjema']
+export const OTHER_DISPLAY_NAME_OPTION = 'Annet'
 
 interface Props {
   modalIsOpen: boolean
@@ -116,7 +116,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles, requi
   const setEditedFileName = (upload: FileUpload, newFileName: string) => {
     setUploads((prevUploads) =>
       prevUploads.map((prevUpload) =>
-        prevUpload.previewUrl === upload.previewUrl ? { ...prevUpload, editedFileName: newFileName } : prevUpload
+        prevUpload.file === upload.file ? { ...prevUpload, editedFileName: newFileName } : prevUpload
       )
     )
   }

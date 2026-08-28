@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 import {
   changeFilenameOnAttachedFile,
@@ -8,15 +8,15 @@ import {
   useSeriesV2,
 } from 'api/SeriesApi'
 import { MoreMenu } from 'felleskomponenter/MoreMenu'
-import UploadModal, { FileUpload } from 'felleskomponenter/UploadModal'
+import UploadModal, { FileUpload, DOCUMENT_DISPLAY_NAME_OPTIONS, OTHER_DISPLAY_NAME_OPTION } from 'felleskomponenter/UploadModal'
 import { DocumentUrlModal } from 'products/files/DocumentUrlModal'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { uriForMediaFile } from 'utils/file-util'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
-import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, BodyLong, Button, Heading, HStack, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, XMarkIcon } from '@navikt/aksel-icons'
+import { Alert, BodyLong, Button, Heading, HStack, Select, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -223,44 +223,81 @@ const DocumentListItem = ({
   handleDeleteFile: (uri: string) => void
   handleUpdateFileName: (uri: string, text: string) => void
 }) => {
-  const [editedFileText, setEditedFileText] = useState(file.text || '')
+  const initialSelectedType = DOCUMENT_DISPLAY_NAME_OPTIONS.includes(file.text || '')
+    ? file.text!
+    : file.text
+      ? OTHER_DISPLAY_NAME_OPTION
+      : ''
+  const [selectedType, setSelectedType] = useState(initialSelectedType)
+  const [customName, setCustomName] = useState(initialSelectedType === OTHER_DISPLAY_NAME_OPTION ? (file.text || '') : '')
   const [editMode, setEditMode] = useState(false)
-  const containerRef = useRef<HTMLInputElement>(null)
 
   const handleEditFileName = () => {
     setEditMode(true)
   }
 
+  const effectiveDisplayName = selectedType === OTHER_DISPLAY_NAME_OPTION ? customName : selectedType
+  const canSave = selectedType !== '' && (selectedType !== OTHER_DISPLAY_NAME_OPTION || customName.trim() !== '')
+
+  const fileExtension = (() => {
+    const filename = file.uri.split('/').pop() || ''
+    return filename.includes('.') ? filename.split('.').pop()!.toUpperCase() : ''
+  })()
+  const displayNamePreview =
+    effectiveDisplayName.trim().length > 0
+      ? `${effectiveDisplayName}${fileExtension ? ` (${fileExtension})` : ''}`
+      : ''
+
   const handleSaveFileName = () => {
     setEditMode(false)
-    handleUpdateFileName(file.uri, editedFileText)
+    handleUpdateFileName(file.uri, effectiveDisplayName)
   }
-
-  const textLength = editedFileText.length + 4
 
   return (
     <HStack as="li" justify="space-between" wrap={false}>
       {editMode ? (
         <>
-          <TextField
-            ref={containerRef}
-            style={{ width: `${textLength}ch`, maxWidth: '550px', minWidth: '450px' }}
-            label="Endre filnavn"
-            value={editedFileText}
-            onChange={(event) => setEditedFileText(event.currentTarget.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault()
-                handleSaveFileName()
-              }
-            }}
-          />
+          <VStack gap="space-4" style={{ minWidth: '300px', maxWidth: '500px' }}>
+            <Select
+              label="Visningsnavn"
+              description={displayNamePreview ? `Visningsnavn: ${displayNamePreview}` : undefined}
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.currentTarget.value)}
+            >
+              <option value="">Velg dokumenttype</option>
+              {DOCUMENT_DISPLAY_NAME_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+              <option value={OTHER_DISPLAY_NAME_OPTION}>{OTHER_DISPLAY_NAME_OPTION}</option>
+            </Select>
+            {selectedType === OTHER_DISPLAY_NAME_OPTION && (
+              <TextField
+                label="Skriv inn visningsnavn"
+                value={customName}
+                onChange={(e) => setCustomName(e.currentTarget.value)}
+                autoFocus
+              />
+            )}
+          </VStack>
           <HStack align="end">
             <Button
               variant="tertiary"
               title="Lagre"
               onClick={handleSaveFileName}
+              disabled={!canSave}
               icon={<FloppydiskIcon fontSize="2rem" aria-hidden />}
+            />
+            <Button
+              variant="tertiary"
+              title="Avbryt"
+              onClick={() => {
+                setSelectedType(initialSelectedType)
+                setCustomName(initialSelectedType === OTHER_DISPLAY_NAME_OPTION ? (file.text || '') : '')
+                setEditMode(false)
+              }}
+              icon={<XMarkIcon fontSize="2rem" aria-hidden />}
             />
           </HStack>
         </>
