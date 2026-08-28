@@ -14,6 +14,7 @@ import styles from './SortCard.module.scss'
 interface Props {
   seriesId: string
   handleDeleteFile: (uri: string) => void
+  handleEditFile?: (uri: string) => void
   setMediaArr: MediaInfoDTO[] | any
   mediaArr: MediaInfoDTO[]
   index: number
@@ -21,7 +22,7 @@ interface Props {
 }
 
 export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
-  { seriesId, handleDeleteFile, setMediaArr, mediaArr, index, isEditable }: Props,
+  { seriesId, handleDeleteFile, handleEditFile, setMediaArr, mediaArr, index, isEditable }: Props,
   ref
 ) {
   const { loggedInUser } = useAuthStore()
@@ -49,7 +50,13 @@ export const SortCard = forwardRef<HTMLDivElement, Props>(function SortCard(
 
   return (
     <VStack className={styles.mediaCard} ref={ref}>
-      <SortItem handleDeleteFile={handleDeleteFile} imagesArr={mediaArr} index={index} isEditable={isEditable} />
+      <SortItem
+        handleDeleteFile={handleDeleteFile}
+        handleEditFile={handleEditFile}
+        imagesArr={mediaArr}
+        index={index}
+        isEditable={isEditable}
+      />
       <VStack align="center" paddingBlock="space-2 space-2">
         <b>{index + 1}</b>
         {isEditable && (
