@@ -58,9 +58,9 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
       if (url === editVideo.uri) {
         changeFilenameOnAttachedFile(seriesId, { uri: url, newFileTitle: title }).then(onSuccess, onFailure)
       } else {
-        deleteFileFromSeries(seriesId, editVideo.uri)
-          .then(() => saveVideoToSeries(seriesId, { uri: url, title }))
+        saveVideoToSeries(seriesId, { uri: url, title })
           .then(() => updateSeriesMediaPriority(seriesId, [{ uri: url, priority: editVideo.priority }]))
+          .then(() => deleteFileFromSeries(seriesId, editVideo.uri))
           .then(onSuccess)
           .catch(onFailure)
       }
