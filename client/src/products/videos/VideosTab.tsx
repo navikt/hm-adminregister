@@ -36,7 +36,10 @@ const VideoTab = ({
   }
 
   const handleEditVideoLink = (uri: string) => {
-    setEditVideo(videos.find((v) => v.uri === uri))
+    const video = videos.find((v) => v.uri === uri)
+    if (!video) return
+
+    setEditVideo(video)
     setModalIsOpen(true)
   }
 

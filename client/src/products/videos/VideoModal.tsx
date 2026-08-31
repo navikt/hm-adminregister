@@ -25,11 +25,16 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
   const [errorMessage, setErrorMessage] = useState('')
   const [errorMessageConfirmVideoRequirements, setErrorMessageConfirmVideoRequirements] = useState('')
   const [confirmVideoRequirements, setConfirmVideoRequirements] = useState(false)
+  const [titleErrorMessage, setTitleErrorMessage] = useState('')
 
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
 
   const isEditMode = !!editVideo
+  const isUrlChanged = isEditMode && url !== editVideo?.uri
+  const isTitleChanged = isEditMode && title !== (editVideo?.text ?? '')
+  const showConfirmationPanel = !isEditMode || isUrlChanged || isTitleChanged
+  const isSaveDisabled = !title.trim() || (showConfirmationPanel && !confirmVideoRequirements)
 
   useEffect(() => {
     if (isOpen) {
@@ -38,12 +43,14 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
       setErrorMessage('')
       setConfirmVideoRequirements(false)
       setErrorMessageConfirmVideoRequirements('')
+      setTitleErrorMessage('')
     }
   }, [isOpen, editVideo])
 
   async function handleSaveVideoLink() {
+    if (!validateTitle()) return
     if (!validateVideoUrlRequirements()) return
-    if (!isEditMode && !validateVideoRequirementsConfirmed()) return
+    if (showConfirmationPanel && !validateVideoRequirementsConfirmed()) return
 
     const onSuccess = () => {
       mutateSeries()
@@ -52,6 +59,12 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
     const onFailure = (error: { status: number; statusText: string }) => {
       mutateSeries()
       setGlobalError(error.status, error.statusText)
+    }
+    const onEditFailure = (error: { status: number; statusText: string }) => {
+      deleteFileFromSeries(seriesId, url).then(
+        () => onFailure(error),
+        () => onFailure(error)
+      )
     }
 
     if (isEditMode) {
@@ -62,11 +75,20 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
           .then(() => updateSeriesMediaPriority(seriesId, [{ uri: url, priority: editVideo.priority }]))
           .then(() => deleteFileFromSeries(seriesId, editVideo.uri))
           .then(onSuccess)
-          .catch(onFailure)
+          .catch(onEditFailure)
       }
     } else {
       saveVideoToSeries(seriesId, { uri: url, title: title }).then(onSuccess, onFailure)
     }
+  }
+
+  const validateTitle = () => {
+    setTitleErrorMessage('')
+    if (!title.trim()) {
+      setTitleErrorMessage('Tittel er påkrevd')
+      return false
+    }
+    return true
   }
 
   const validateVideoUrlRequirements = () => {
@@ -93,6 +115,7 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
     setErrorMessage('')
     setConfirmVideoRequirements(false)
     setErrorMessageConfirmVideoRequirements('')
+    setTitleErrorMessage('')
   }
 
   return (
@@ -113,18 +136,35 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
             value={title}
             style={{ width: '400px' }}
             label="Tittel"
-            onChange={(event) => setTitle(event.currentTarget.value)}
+            onChange={(event) => {
+              const newTitle = event.currentTarget.value
+              setTitle(newTitle)
+              if (!newTitle.trim()) {
+                setTitleErrorMessage('Tittel er påkrevd')
+              } else {
+                setTitleErrorMessage('')
+              }
+            }}
+            onFocus={() => {
+              if (!title.trim()) {
+                setTitleErrorMessage('Tittel er påkrevd')
+              }
+            }}
+            error={titleErrorMessage}
           />
           <TextField
             value={url}
             style={{ width: '400px' }}
             label="Lenke"
             description="Må være til en video og ikke en spilleliste, høyreklikk og kopier i videospilleren"
-            onChange={(event) => setUrl(event.currentTarget.value)}
+            onChange={(event) => {
+              setUrl(event.currentTarget.value)
+              setErrorMessageConfirmVideoRequirements('')
+            }}
             onFocus={() => setErrorMessage('')}
             error={errorMessage}
           />
-          {!isEditMode && (
+          {showConfirmationPanel && (
             <ConfirmationPanel
               checked={confirmVideoRequirements}
               label="Jeg bekrefter at kravene til videoer er oppfylt, herunder krav til universell utforming."
@@ -136,7 +176,7 @@ export const VideoModal = ({ seriesId, mutateSeries, isOpen, setIsOpen, editVide
         </VStack>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => handleSaveVideoLink()} variant="primary">
+        <Button onClick={() => handleSaveVideoLink()} variant="primary" disabled={isSaveDisabled}>
           Lagre
         </Button>
         <Button
