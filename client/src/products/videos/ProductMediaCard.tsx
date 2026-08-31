@@ -12,13 +12,14 @@ import styles from './ProductMediaCard.module.scss'
 
 interface Props {
   handleDeleteFile: (uri: string) => void
+  handleEditFile?: (uri: string) => void
   mediaArr: MediaInfoDTO[]
   index: number
   isEditable: boolean
 }
 
 export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function MediaCard(
-  { handleDeleteFile, mediaArr, index, isEditable }: Props,
+  { handleDeleteFile, handleEditFile, mediaArr, index, isEditable }: Props,
   ref
 ) {
   return (
@@ -32,7 +33,12 @@ export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function Media
         </VStack>
         {isEditable && (
           <div className={productStyles.moreMenuContainer}>
-            <MoreMenu id={mediaArr[index].uri} handleDelete={handleDeleteFile} />
+            <MoreMenu
+              id={mediaArr[index].uri}
+              handleDelete={handleDeleteFile}
+              handleEdit={handleEditFile}
+              editText="Endre"
+            />
           </div>
         )}
       </div>
