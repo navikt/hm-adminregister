@@ -30,6 +30,11 @@ export const createTechLabel = (dto: TechLabelCreateUpdateDTO): Promise<TechLabe
 export const updateTechLabel = (id: string, dto: TechLabelCreateUpdateDTO): Promise<TechLabelRegistrationDTO> =>
   fetchAPI(`${BASE_URL()}/${id}`, 'PUT', dto)
 
+export const getTechLabelsByLabel = (label: string): Promise<TechLabelRegistrationDTO[]> =>
+  fetchAPI(`${BASE_URL()}/?label=${encodeURIComponent(label)}&size=50`, 'GET').then(
+    (res: TechLabelResponse) => res.content
+  )
+
 export const deleteTechLabel = (id: string, forcedDelete: boolean): Promise<void> =>
   fetchAPI(`${BASE_URL()}/${id}?forcedDelete=${forcedDelete}`, 'DELETE')
 

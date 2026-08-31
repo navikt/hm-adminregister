@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { createTechLabel, listTechLabelNames, listTechUnits, updateTechLabel } from 'api/TechLabelApi'
+import {
+  createTechLabel,
+  getTechLabelsByLabel,
+  listTechLabelNames,
+  listTechLabelSections,
+  listTechUnits,
+  updateTechLabel,
+} from 'api/TechLabelApi'
 import FormBox from 'felleskomponenter/FormBox'
 import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
 
@@ -17,7 +24,10 @@ type FormData = {
   isoCode: string
   options: string
   definition: string
+  section: string
 }
+
+const DIVERSE_VALUE = 'DIVERSE'
 
 const TECH_LABEL_TYPES = [
   { value: '', label: 'Velg type' },
@@ -26,12 +36,30 @@ const TECH_LABEL_TYPES = [
   { value: 'C', label: 'Tekst' },
 ]
 
+const mostCommonSection = (labels: TechLabelRegistrationDTO[]): string => {
+  const counts = new Map<string, number>()
+  labels.forEach((l) => {
+    const key = l.section ?? DIVERSE_VALUE
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  })
+  let best = ''
+  let bestCount = -1
+  counts.forEach((count, key) => {
+    if (count > bestCount) {
+      best = key
+      bestCount = count
+    }
+  })
+  return best
+}
+
 const CreateAndEditTechLabel = () => {
   const location = useLocation()
   const editData = location.state as TechLabelRegistrationDTO | undefined
   const navigate = useNavigate()
   const [techUnits, setTechUnits] = useState<string[]>([])
   const [techLabelNames, setTechLabelNames] = useState<string[]>([])
+  const [techSections, setTechSections] = useState<string[]>([])
 
   useEffect(() => {
     listTechUnits()
@@ -40,6 +68,12 @@ const CreateAndEditTechLabel = () => {
     listTechLabelNames()
       .then(setTechLabelNames)
       .catch(() => setTechLabelNames([]))
+    listTechLabelSections()
+      .then(setTechSections)
+      .catch((e) => {
+        console.error('Failed to fetch tech label sections', e)
+        setTechSections([])
+      })
   }, [])
 
   const {
@@ -58,6 +92,7 @@ const CreateAndEditTechLabel = () => {
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join('; ') || '',
       definition: editData?.definition || '',
+      section: editData ? (editData.section ?? DIVERSE_VALUE) : '',
     },
   })
 
@@ -66,6 +101,7 @@ const CreateAndEditTechLabel = () => {
       ...data,
       required: data.required === 'true',
       options: data.options ? data.options.split(';').map((opt) => opt.trim()) : [],
+      section: data.section === DIVERSE_VALUE ? null : data.section,
     }
 
     if (editData) {
@@ -95,6 +131,15 @@ const CreateAndEditTechLabel = () => {
                 shouldDirty: true,
                 shouldValidate: true,
               })
+              if (isSelected) {
+                getTechLabelsByLabel(option)
+                  .then((existing) => {
+                    if (existing.length > 0) {
+                      setValue('section', mostCommonSection(existing), { shouldDirty: false })
+                    }
+                  })
+                  .catch(() => undefined)
+              }
             }}
           />
           <Select
@@ -107,6 +152,21 @@ const CreateAndEditTechLabel = () => {
             {TECH_LABEL_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
                 {t.label}
+              </option>
+            ))}
+          </Select>
+          <Select
+            {...register('section', { required: true })}
+            label="Seksjon *"
+            error={errors.section && 'Seksjon is required'}
+            id="section"
+            defaultValue={editData ? (editData.section ?? DIVERSE_VALUE) : ''}
+          >
+            <option value="">Velg seksjon</option>
+            <option value={DIVERSE_VALUE}>Diverse</option>
+            {techSections.map((s) => (
+              <option key={s} value={s}>
+                {s}
               </option>
             ))}
           </Select>

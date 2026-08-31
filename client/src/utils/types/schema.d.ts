@@ -4005,6 +4005,7 @@ export interface components {
       required: boolean
       options: string[]
       definition?: string | null
+      section?: string | null
     }
     TechLabelDTO: {
       /** Format: uuid */
@@ -4023,6 +4024,7 @@ export interface components {
       isKeyLabel?: boolean | null
       systemLabel?: string | null
       options: string[]
+      section?: string | null
       createdBy: string
       updatedBy: string
       /** Format: date-time */

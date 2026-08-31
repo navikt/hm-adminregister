@@ -33,16 +33,17 @@
 .definitionListHorizontal {
   @include mixins.for-size(tablet-up) {
     grid-template-columns: minmax(auto, max-content) auto;
+    align-items: center;
     row-gap: $ax-space-4;
     column-gap: $ax-space-16;
 
     dd,
     dt {
-      padding-top: $ax-space-4;
+      padding-top: 0;
     }
   }
 
   dt:first-child {
-    padding-top: $ax-space-8;
+    padding-top: 0;
   }
 }
