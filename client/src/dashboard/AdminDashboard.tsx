@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { fetchHiddenParts, hidePart, unhidePart } from 'api/PartApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
-import { useCountSeriesToApprove, useExpiringNews, usePartsMissingHmsArtNr } from 'utils/swr-hooks'
+import { isWithinNextDays, useCountSeriesToApprove, useNews, usePartsMissingHmsArtNr } from 'utils/swr-hooks'
 import { HiddenPart } from 'utils/types/response-types'
 
 import { Alert, BodyShort, Box, Button, ExpansionCard, HStack, Heading, Loader, VStack } from '@navikt/ds-react'
@@ -20,11 +20,12 @@ const AdminDashboard = () => {
     mutate: mutatePartsData,
   } = usePartsMissingHmsArtNr()
   const {
-    count: expiringNewsCount,
-    data: expiringNews,
-    isLoading: expiringNewsLoading,
-    error: expiringNewsError,
-  } = useExpiringNews(7)
+    data: newsPage,
+    isLoading: newsLoading,
+    error: newsError,
+  } = useNews()
+  const expiredNews = newsPage?.content.filter((news) => isWithinNextDays(news.publishedTo, 7))
+
   const [hidingIds, setHidingIds] = useState<string[]>([])
   const [hideError, setHideError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -179,7 +180,7 @@ const AdminDashboard = () => {
           <Heading level="1" size="large" spacing>
             Admin dashboard
           </Heading>
-          {(approveError || partsError || expiringNewsError) && (
+          {(approveError || partsError || newsError) && (
             <Alert variant="error">Kunne ikke hente alle tall. Last siden på nytt eller prøv senere.</Alert>
           )}
           <HStack gap="space-48" wrap>
@@ -197,17 +198,17 @@ const AdminDashboard = () => {
             </StatPanel>
             <StatPanel
               title="Nyheter som utløper innen 7 dager"
-              value={expiringNewsCount}
-              loading={expiringNewsLoading}
+              value={expiredNews?.length}
+              loading={newsLoading}
               warning={
-                expiringNewsCount && expiringNewsCount > 0 ? 'Vurder å forlenge eller oppdatere nyhetene.' : undefined
+                (expiredNews?.length ?? 0) > 0 ? 'Vurder å forlenge eller oppdatere nyhetene.' : undefined
               }
             >
-              {expiringNewsError && <Alert variant="error">Kunne ikke hente nyheter som utloper snart.</Alert>}
-              {!expiringNewsLoading && !expiringNewsError && (
+              {newsError && <Alert variant="error">Kunne ikke hente nyheter som utloper snart.</Alert>}
+              {!newsLoading && !newsError && (
                 <VStack gap="space-1">
-                  {expiringNews && expiringNews.length > 0 ? (
-                    expiringNews.slice(0, 5).map((news) => (
+                  {expiredNews && expiredNews.length > 0 ? (
+                    expiredNews.map((news) => (
                       <BodyShort size="small" key={news.id}>
                         <Link to={`/nyheter`}>{news.title || `Nyhet ${news.id}`}</Link>
                       </BodyShort>

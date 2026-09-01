@@ -11,8 +11,6 @@ import {
   AgreementsChunk,
   DelkontraktRegistrationDTO,
   IsoCategoryDTO,
-  NewsChunk,
-  NewsRegistrationDTO,
   ProductRegistrationDTO,
   ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
@@ -64,7 +62,7 @@ export const fetcherGET: Fetcher<any, string> = (url) =>
   })
 
 // News helpers
-const isWithinNextDays = (dateString: string | undefined | null, days: number): boolean => {
+export const isWithinNextDays = (dateString: string | undefined | null, days: number): boolean => {
   if (!dateString) return false
   const expiry = new Date(dateString)
   if (Number.isNaN(expiry.getTime())) return false
@@ -75,29 +73,33 @@ const isWithinNextDays = (dateString: string | undefined | null, days: number): 
   return expiry > now && expiry <= inDays
 }
 
-export function useExpiringNews(days: number = 7) {
-  // Reuse existing admin news endpoint and filter client-side
-  const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/news?&sort=published,DESC&status=ACTIVE,INACTIVE`
-  const { data, error, isLoading } = useSWR<NewsChunk>(path, fetcherGET)
+export interface NewsDTO {
+  id: string
+  title: string
+  description: string
+  body: string
+  created: string
+  updated: string
+  publishedFrom: string
+  publishedTo: string
+  imageUrl: string
+  imageDescription: string
+}
 
-  let expiring: NewsRegistrationDTO[] | undefined
-
-  if (data?.content) {
-    expiring = data.content.filter((news: NewsRegistrationDTO) => {
-      const publishTo = (news as NewsRegistrationDTO).expired as string | undefined
-      const status = (news as NewsRegistrationDTO).status as string | undefined
-
-      const isPublished = status === 'PUBLISHED' || status === 'ACTIVE' || status === 'DONE'
-
-      return isPublished && isWithinNextDays(publishTo, days)
-    })
+export interface NewsPageDTO {
+  content: NewsDTO[]
+  totalSize: number
+  pageable: {
+    number: number
+    size: number
   }
+}
 
-  const count = expiring?.length ?? 0
+export function useNews() {
+  const { data, error, isLoading } = useSWR<NewsPageDTO>(`/news`, fetcherGET)
 
   return {
-    data: expiring,
-    count,
+    data,
     isLoading,
     error,
   }

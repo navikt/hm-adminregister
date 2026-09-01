@@ -9,6 +9,7 @@
   "hm_register_url": "https://finnhjelpemiddel.intern.dev.nav.no",
   "hm_register_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no",
   "hm_newsadmin_url": "https://finnhjelpemiddel.ansatt.dev.nav.no/newsadmin/",
+  "hm_news_url": "http://hm-finnhjelpemiddel-news",
   "image_proxy_url": "https://finnhjelpemiddel.intern.dev.nav.no/imageproxy",
   "image_proxy_external_url": "https://finnhjelpemiddel.ansatt.dev.nav.no/imageproxy",
   "faro_url": "https://telemetry.ekstern.dev.nav.no/collect",
