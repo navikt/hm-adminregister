@@ -20,7 +20,7 @@ export const routes = {
   },
   public(): Router {
     const newsProxy = createProxyMiddleware({
-      target: process.env.HM_NEWS_URL,
+      target: process.env.VITE_HM_NEWS_URL,
       changeOrigin: true,
       pathFilter: config.proxy_path_filter,
     })
