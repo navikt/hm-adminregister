@@ -5,6 +5,7 @@ import path from 'path'
 import { config } from './config'
 import { getFeaturesHandler } from './features'
 import { createMetrics } from './metrics'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
 export const routes = {
   internal(): Router {
@@ -18,8 +19,14 @@ export const routes = {
       })
   },
   public(): Router {
+    const newsProxy = createProxyMiddleware({
+      target: process.env.HM_NEWS_URL,
+      changeOrigin: true,
+      pathFilter: config.proxy_path_filter,
+    })
     return Router()
       .use(cookieParser())
+      .use(newsProxy)
       .get('/settings.js', (_, res) => {
         const appSettings = {
           VITE_HM_REGISTER_URL: process.env.VITE_HM_REGISTER_URL,
