@@ -179,7 +179,7 @@ const UploadModal = ({ modalIsOpen, fileType, setModalIsOpen, uploadFiles, requi
         {fileTypeError && <BodyLong>{fileTypeError}</BodyLong>}
         <VStack as="ol" gap="space-4" className={styles.uploadInline}>
           {fileType === 'documents' && uploads.length > 0 && (
-            <Heading size="small">Filnavn som vises på finnhjelpemidler.no</Heading>
+            <Heading size="small">Filnavn som vises på finnhjelpemiddel.nav.no</Heading>
           )}
           {uploads.map((upload) => (
             <Upload
