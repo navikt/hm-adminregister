@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
 import { moveProductsToSeries } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
+import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
 import MoveProductVariantsModal from 'products/variants/MoveProductVariantsModal'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -16,6 +17,7 @@ import {
   ArrowsSquarepathIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  FileExportIcon,
   MenuElipsisHorizontalCircleIcon,
   PencilIcon,
   PlusCircleIcon,
@@ -135,6 +137,52 @@ const VariantsTab = ({
 
   const paginatedVariants = variantsToShow.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage)
 
+  const [exportOpen, setExportOpen] = useState(false)
+
+  const exportBaseFields: ExportField[] = [
+    { key: 'articleName', label: 'Variantnavn' },
+    { key: 'hmsArtNr', label: 'HMS-nr.' },
+    { key: 'supplierRef', label: 'Lev-artnr' },
+    { key: 'accessory', label: 'Tilbehør' },
+    { key: 'sparePart', label: 'Reservedel' },
+    { key: 'isPublished', label: 'Publisert' },
+    { key: 'isExpired', label: 'Utgått' },
+  ]
+  const exportTechFields: ExportField[] = techKeys.map((key) => ({ key: `tech:${key}`, label: key }))
+  const exportFields: ExportField[] = [...exportBaseFields, ...exportTechFields]
+  const defaultExportFieldKeys = [
+    'articleName',
+    'hmsArtNr',
+    'supplierRef',
+    ...exportTechFields.map((field) => field.key),
+  ]
+
+  const variantToExportRow = (product: ProductRegistrationDTOV2): Record<string, unknown> => {
+    const row: Record<string, unknown> = {
+      articleName: product.articleName,
+      hmsArtNr: product.hmsArtNr ?? '',
+      supplierRef: product.supplierRef,
+      accessory: product.accessory ? 'Ja' : 'Nei',
+      sparePart: product.sparePart ? 'Ja' : 'Nei',
+      isPublished: product.isPublished ? 'Ja' : 'Nei',
+      isExpired: product.isExpired ? 'Ja' : 'Nei',
+    }
+    techKeys.forEach((key) => {
+      row[`tech:${key}`] = techValue(product, key) ?? ''
+    })
+    return row
+  }
+
+  const getExportRows = async (scope: ExportScope): Promise<Record<string, unknown>[]> => {
+    const rows = scope === 'all' ? variantsToShow : paginatedVariants
+    return rows.map(variantToExportRow)
+  }
+
+  const estimateExport = (scope: ExportScope) => {
+    const rows = scope === 'all' ? variantsToShow.length : paginatedVariants.length
+    return { rows, requests: 0, approximate: false }
+  }
+
   const anyExpired = series.variants.some((variant) => variant.isExpired)
 
   const setAsExpired = (product: ProductRegistrationDTOV2) => {
@@ -187,6 +235,17 @@ const VariantsTab = ({
         onClose={() => setMoveProductVariantModalIsOpen(false)}
         isModalOpen={moveProductVariantModalIsOpen}
       />
+      <ExportModal
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        fileBaseName="varianter"
+        availableFields={exportFields}
+        defaultFieldKeys={defaultExportFieldKeys}
+        scopeLabels={{ page: 'Denne siden', all: 'Alle (etter filter)' }}
+        getRows={getExportRows}
+        estimate={estimateExport}
+        rowNoun="varianter"
+      />
       <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
           <Alert variant={showInputError ? 'error' : 'info'}>
@@ -198,6 +257,17 @@ const VariantsTab = ({
         {!hasNoVariants && (
           <Box background="default" padding={{ xs: 'space-8', md: 'space-16' }} borderRadius="12">
             <VStack gap="space-16">
+              <HStack justify="end">
+                <Button
+                  variant="secondary"
+                  size="small"
+                  icon={<FileExportIcon aria-hidden />}
+                  iconPosition="left"
+                  onClick={() => setExportOpen(true)}
+                >
+                  Eksporter
+                </Button>
+              </HStack>
               {(series.variants.length > columnsPerPage || totalPages > 1) && (
                 <HStack justify="space-between" align="center" gap="space-16" wrap>
                   {series.variants.length > columnsPerPage ? (
