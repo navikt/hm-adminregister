@@ -4,17 +4,12 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import ErrorAlert from 'error/ErrorAlert'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
+import { buildSeriesSearchPath } from 'utils/export/seriesSearchPath'
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { toReadableDateTimeString } from 'utils/date-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
-import {
-  buildSeriesSearchPath,
-  fetcherGET,
-  usePagedProducts,
-  useSeriesByVariantIdentifier,
-  useSuppliers,
-} from 'utils/swr-hooks'
+import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers, } from 'utils/swr-hooks'
 import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/response-types'
 
 import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
@@ -23,9 +18,9 @@ import {
   Box,
   Button,
   Chips,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
   Pagination,
   Search,
@@ -126,6 +121,7 @@ const ProductListWrapper = () => {
 
   const productLevelFields: ExportField[] = [
     { key: 'title', label: 'Produktnavn' },
+    { key: 'supplierName', label: 'Leverandørnavn' },
     { key: 'status', label: 'Status' },
     { key: 'variantCount', label: 'Antall varianter' },
     { key: 'updated', label: 'Sist endret' },
@@ -139,6 +135,7 @@ const ProductListWrapper = () => {
 
   const variantLevelFields: ExportField[] = [
     { key: 'productTitle', label: 'Produktnavn' },
+    { key: 'supplierName', label: 'Leverandørnavn' },
     { key: 'articleName', label: 'Variantnavn' },
     { key: 'hmsArtNr', label: 'HMS-nr.' },
     { key: 'supplierRef', label: 'Lev-artnr' },
@@ -147,6 +144,9 @@ const ProductListWrapper = () => {
     { key: 'avtale', label: 'Avtale' },
     { key: 'rangering', label: 'Rangering' },
     { key: 'delkontraktNr', label: 'Delkontraktnr.' },
+    { key: 'delkontraktTittel', label: 'Delkontrakttittel' },
+    { key: 'anbudsnr', label: 'Anbudsnr.' },
+    { key: 'avtaleTittel', label: 'Avtaletittel' },
   ]
   const variantLevelDefaults = [
     'productTitle',
@@ -165,6 +165,7 @@ const ProductListWrapper = () => {
 
   const seriesToProductRow = (series: SeriesSearchDTO): Record<string, unknown> => ({
     title: series.title,
+    supplierName: series.supplierName,
     status: series.status,
     variantCount: series.variantCount,
     updated: toReadableDateTimeString(series.updated).replace(',', ''),
@@ -180,6 +181,7 @@ const ProductListWrapper = () => {
       const firstAgreement = variant.agreements?.[0]
       return {
         productTitle: series.title,
+        supplierName: series.supplierName,
         articleName: variant.articleName,
         hmsArtNr: variant.hmsArtNr ?? '',
         supplierRef: variant.supplierRef,
@@ -188,6 +190,9 @@ const ProductListWrapper = () => {
         avtale: (variant.agreements?.length ?? 0) > 0 ? 'Ja' : 'Nei',
         rangering: firstAgreement?.rank ?? '',
         delkontraktNr: firstAgreement?.postNr ?? '',
+        delkontraktTittel: firstAgreement?.postTitle ?? '',
+        anbudsnr: firstAgreement?.reference ?? '',
+        avtaleTittel: firstAgreement?.title ?? '',
       }
     })
 
@@ -393,13 +398,13 @@ const ProductListWrapper = () => {
             </HGrid>
 
             {loggedInUser && (
-              <HGrid columns={2} gap="space-8" align="center">
+              <HStack gap="space-8" align="center">
                 <Button
                   variant="secondary"
                   icon={<PlusIcon aria-hidden />}
                   iconPosition="left"
                   onClick={() => navigate('/produkter/opprett')}
-                  style={{ maxHeight: '3rem', width: '100%' }}
+                  style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
                 >
                   Opprett nytt produkt
                 </Button>
@@ -408,11 +413,11 @@ const ProductListWrapper = () => {
                   icon={<FileExportIcon aria-hidden />}
                   iconPosition="left"
                   onClick={() => setExportOpen(true)}
-                  style={{ maxHeight: '3rem', width: '100%' }}
+                  style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
                 >
                   Eksporter
                 </Button>
-              </HGrid>
+              </HStack>
             )}
           </HGrid>
           <VStack gap="space-16">
