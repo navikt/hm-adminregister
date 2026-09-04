@@ -5,6 +5,7 @@ import { deleteProducts, setVariantToActive, setVariantToExpired } from 'api/Pro
 import { moveProductsToSeries } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
 import MoveProductVariantsModal from 'products/variants/MoveProductVariantsModal'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -183,6 +184,8 @@ const VariantsTab = ({
     return { rows, requests: 0, approximate: false }
   }
 
+  const variantExportFileName = buildDefaultFileName('varianter', [series.title, variantFilterString])
+
   const anyExpired = series.variants.some((variant) => variant.isExpired)
 
   const setAsExpired = (product: ProductRegistrationDTOV2) => {
@@ -238,7 +241,7 @@ const VariantsTab = ({
       <ExportModal
         open={exportOpen}
         onClose={() => setExportOpen(false)}
-        fileBaseName="varianter"
+        fileBaseName={variantExportFileName}
         availableFields={exportFields}
         defaultFieldKeys={defaultExportFieldKeys}
         scopeLabels={{ page: 'Denne siden', all: 'Alle (etter filter)' }}

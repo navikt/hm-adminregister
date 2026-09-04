@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { toReadableDateTimeString } from 'utils/date-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -257,6 +258,13 @@ const ProductListWrapper = () => {
     const detailBatches = level === 'variant' ? Math.ceil(products / 20) : 0
     return { rows, products, requests: summaryPages + detailBatches, approximate: level === 'variant' }
   }
+
+  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
+  const productExportFileName = buildDefaultFileName('produkter', [
+    searchTerm,
+    exportSupplierName,
+    statusFilters.length ? statusFilters.join('-') : undefined,
+  ])
 
   const isUnfilteredExport =
     statusFilters.length === 0 &&
@@ -555,7 +563,7 @@ const ProductListWrapper = () => {
       <ExportModal
         open={exportOpen}
         onClose={() => setExportOpen(false)}
-        fileBaseName="produkter"
+        fileBaseName={productExportFileName}
         levels={exportLevels}
         getRows={getExportRows}
         estimate={estimateExport}
