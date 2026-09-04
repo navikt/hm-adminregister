@@ -140,7 +140,7 @@ export function userProductVariantsBySeriesId(seriesId: string) {
   }
 }
 
-export function buildSeriesSearchPath({
+export function usePagedProducts({
   page,
   pageSize,
   titleSearchTerm,
@@ -175,43 +175,12 @@ export function buildSeriesSearchPath({
 
   const missingMediaParam = missingMediaType ? `&missingMediaType=${missingMediaType}` : ''
 
-  return `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}${agreementParam}${missingMediaParam}`
-}
-
-export function usePagedProducts({
-  page,
-  pageSize,
-  titleSearchTerm,
-  filters,
-  supplierFilter,
-  sortUrl,
-  agreementFilter,
-  missingMediaType,
-}: {
-  page: number
-  pageSize: number
-  titleSearchTerm: string
-  filters: string[]
-  supplierFilter?: string
-  sortUrl?: string | null
-  agreementFilter?: string | null
-  missingMediaType?: string | null
-}) {
-  const path = buildSeriesSearchPath({
-    page,
-    pageSize,
-    titleSearchTerm,
-    filters,
-    supplierFilter,
-    sortUrl,
-    agreementFilter,
-    missingMediaType,
-  })
+  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}${agreementParam}${missingMediaParam}`
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET)
 }
 
-const statusFilterProductsURL = (statusFilters: string[]) => {
+export const statusFilterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = []

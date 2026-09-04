@@ -3717,6 +3717,7 @@ export interface components {
       title: string
       /** Format: uuid */
       id: string
+      supplierName: string
       status: components['schemas']['EditStatus']
       thumbnail?: components['schemas']['MediaInfoDTO'] | null
       isExpired: boolean
