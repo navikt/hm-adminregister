@@ -26,7 +26,12 @@ export const ProductMediaCard = forwardRef<HTMLDivElement, Props>(function Media
     <>
       <div className={styles.mediaCard} ref={ref}>
         <VStack gap="space-8">
-          <Link target="_blank" title={mediaArr[index].uri} href={mediaArr[index].uri}>
+          <Link
+            target="_blank"
+            title={mediaArr[index].uri}
+            href={mediaArr[index].uri}
+            className={styles.mediaCardTitle}
+          >
             {mediaArr[index].text || mediaArr[index].uri}
           </Link>
           <MediaContainer uri={mediaArr[index].uri} text={mediaArr[index].text} />
