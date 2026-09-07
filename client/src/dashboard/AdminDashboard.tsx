@@ -9,6 +9,7 @@ import { HiddenPart } from 'utils/types/response-types'
 import { Alert, BodyShort, Box, Button, ExpansionCard, HStack, Heading, Loader, VStack } from '@navikt/ds-react'
 
 import StatPanel from './StatPanel'
+import styles from './AdminDashboard.module.scss'
 
 const AdminDashboard = () => {
   const { count: approveCount, isLoading: approveLoading, error: approveError } = useCountSeriesToApprove()
@@ -124,36 +125,42 @@ const AdminDashboard = () => {
   }) => {
     if (!parts.length) return <BodyShort size="small">{emptyText}</BodyShort>
     return (
-      <Box as="table" width="100%" style={{ borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th style={{ textAlign: 'left', padding: '0.5rem' }}>Navn</th>
-            <th style={{ textAlign: 'left', padding: '0.5rem' }}>Levart. nr</th>
-            {showHideAction && <th style={{ textAlign: 'left', padding: '0.5rem' }} />}
-          </tr>
-        </thead>
-        <tbody>
-          {parts.map((part) => (
-            <tr key={part.id}>
-              <td style={{ padding: '0.5rem' }}>
-                <Link to={`/del/${part.id}`}>{part.articleName || `Del ${part.id}`}</Link>
-              </td>
-              <td style={{ padding: '0.5rem' }}>{part.supplierRef || '-'}</td>
-              {showHideAction && (
-                <td style={{ padding: '0.5rem' }}>
-                  <Button
-                    size="xsmall"
-                    variant={actionVariant}
-                    loading={loadingIds?.includes(part.id)}
-                    onClick={() => onAction && onAction(part.id)}
-                  >
-                    {actionLabel}
-                  </Button>
-                </td>
-              )}
+      <Box style={{ overflowX: 'auto', width: '100%' }}>
+        <Box as="table" width="100%" style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left', padding: '0.5rem', width: '80%' }}>Navn</th>
+              <th style={{ textAlign: 'left', padding: '0.5rem', width: '20%' }}>Levart. nr</th>
+              {showHideAction && <th style={{ textAlign: 'right', padding: '0.5rem', width: '11rem' }} />}
             </tr>
-          ))}
-        </tbody>
+          </thead>
+          <tbody>
+            {parts.map((part) => (
+              <tr key={part.id} className={styles.partRow}>
+                <td style={{ padding: '0.5rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <Link to={`/del/${part.id}`} title={part.articleName || `Del ${part.id}`}>
+                    {part.articleName || `Del ${part.id}`}
+                  </Link>
+                </td>
+                <td style={{ padding: '0.5rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {part.supplierRef || '-'}
+                </td>
+                {showHideAction && (
+                  <td style={{ padding: '0.5rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <Button
+                      size="xsmall"
+                      variant={actionVariant}
+                      loading={loadingIds?.includes(part.id)}
+                      onClick={() => onAction && onAction(part.id)}
+                    >
+                      {actionLabel}
+                    </Button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </Box>
       </Box>
     )
   }
@@ -219,6 +226,8 @@ const AdminDashboard = () => {
                 </VStack>
               )}
             </StatPanel>
+          </HStack>
+          <Box width="100%">
             <StatPanel
               title="Deler uten HMS-art.nr"
               value={partsWithoutHmsNr}
@@ -278,7 +287,7 @@ const AdminDashboard = () => {
                 </ExpansionCard.Content>
               </ExpansionCard>
             </StatPanel>
-          </HStack>
+          </Box>
         </VStack>
       </main>
     </>
