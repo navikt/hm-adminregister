@@ -180,7 +180,7 @@ export function usePagedProducts({
   return useSWR<SeriesSearchChunk>(path, fetcherGET)
 }
 
-const statusFilterProductsURL = (statusFilters: string[]) => {
+export const statusFilterProductsURL = (statusFilters: string[]) => {
   // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
   // const otherStatuses = ["includeInactive", "onlyUnpublished"];
   const editStatus: string[] = []
