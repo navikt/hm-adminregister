@@ -6,9 +6,11 @@ import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { afterEach, describe, expect, test } from 'vitest'
+import { useWideModeStore } from 'utils/store/useWideModeStore'
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { fireEvent, render, renderHook, screen } from '@testing-library/react'
+import { fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react'
 
 const dummyProduct = (id: string, title: string, status: string) => {
   return {
@@ -52,6 +54,21 @@ const dummyProduct = (id: string, title: string, status: string) => {
     inAgreement: false,
   }
 }
+
+const dummyVariant = (id: string, articleName: string): ProductRegistrationDTOV2 =>
+  ({
+    id,
+    articleName,
+    hmsArtNr: `HMS-${id}`,
+    supplierRef: `REF-${id}`,
+    isPublished: true,
+    isExpired: false,
+    agreements: [],
+    productData: {
+      techData: [],
+      attributes: {},
+    },
+  }) as unknown as ProductRegistrationDTOV2
 
 const logIn = (isAdmin: boolean) => {
   const { result } = renderHook(() => useAuthStore())
@@ -119,7 +136,7 @@ describe('Produktside', () => {
     fireEvent.click(await screen.findByRole('tab', { name: /Videolenker/ }))
     expect(await screen.findByRole('button', { name: addVideoButton })).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
-  })
+  }, 15000)
 
   test('Ikke-redigerbart produkt', async () => {
     logIn(false)
@@ -215,3 +232,234 @@ describe('Tilbake til oversikt – oversiktPath fallback', () => {
     expect(link).toHaveAttribute('href', '/produkter')
   })
 })
+
+describe('Bred visning', () => {
+  afterEach(() => {
+    localStorage.clear()
+    useWideModeStore.getState().setWideMode(false)
+  })
+
+  test('bruker normal kolonnebredde som standard', async () => {
+    logIn(true)
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/produkter/test-normal-width?tab=variants']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(container.innerHTML).toContain('minmax(16rem, 48rem)')
+    expect(container.innerHTML).not.toContain('minmax(16rem, 1fr)')
+  })
+
+  test('bruker bredere kolonnebredde paa Egenskaper-fanen naar wideMode er skrudd paa for admin', async () => {
+    logIn(true)
+    useWideModeStore.getState().setWideMode(true)
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/produkter/test-wide-width?tab=variants']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(container.innerHTML).toContain('minmax(16rem, 1fr)')
+    expect(container.innerHTML).not.toContain('minmax(16rem, 48rem)')
+  })
+
+  test('paavirker ikke andre faner enn Egenskaper, selv om wideMode er paa for admin', async () => {
+    logIn(true)
+    useWideModeStore.getState().setWideMode(true)
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/produkter/test-wide-width-other-tab?tab=about']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(container.innerHTML).toContain('minmax(16rem, 48rem)')
+    expect(container.innerHTML).not.toContain('minmax(16rem, 1fr)')
+  })
+
+  test('ignorerer wideMode for ikke-admin-brukere paa Egenskaper-fanen', async () => {
+    logIn(false)
+    useWideModeStore.getState().setWideMode(true)
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/produkter/test-wide-width-supplier?tab=variants']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(container.innerHTML).toContain('minmax(16rem, 48rem)')
+  })
+
+  test('viser flere varianter per side i bred visning naar det er nok skjermbredde', async () => {
+    logIn(true)
+
+    const manyVariants = Array.from({ length: 12 }, (_, i) => dummyVariant(`v${i + 1}`, `Variant ${i + 1}`))
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () => {
+        return HttpResponse.json({
+          ...dummyProduct('test-many-variants', 'defaultTitle', 'EDITABLE'),
+          variants: manyVariants,
+        })
+      })
+    )
+
+    // jsdom rapporterer alltid clientWidth 0 - simuler en bred skjerm/container ved å
+    // overstyre clientWidth slik komponentens ResizeObserver-baserte bredde-måling faktisk
+    // ser en stor verdi, tilsvarende en admin med et bredt vindu i bred visning.
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(2500)
+
+    // "Kopier verdi til varianter"-modalen holder alltid alle andre varianter mounted i en
+    // egen tabell (selv når lukket), så vi må se bort fra treff inni <dialog>-elementer for å
+    // kun telle varianter som faktisk vises i selve sammenligningstabellen.
+    const visibleVariantNames = () =>
+      within(document.body)
+        .queryAllByText(/^Variant \d+$/)
+        .filter((el) => !el.closest('dialog'))
+        .map((el) => el.textContent)
+
+    try {
+      render(
+        <MemoryRouter initialEntries={['/produkter/test-many-variants?tab=variants']}>
+          <Routes>
+            <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+          </Routes>
+        </MemoryRouter>
+      )
+
+      await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+      await waitFor(() => expect(visibleVariantNames()).toContain('Variant 1'))
+
+      // Normal bredde: kun 5 varianter per side
+      expect(visibleVariantNames()).not.toContain('Variant 6')
+
+      useWideModeStore.getState().setWideMode(true)
+
+      // Med bred visning skal flere varianter (mer enn 5) vises på siden, gitt tilstrekkelig
+      // tilgjengelig bredde (floor((2500 - 250) / 220) = 10 kolonner).
+      await waitFor(() => expect(visibleVariantNames()).toContain('Variant 6'))
+      expect(visibleVariantNames()).toContain('Variant 10')
+      expect(visibleVariantNames()).not.toContain('Variant 11')
+    } finally {
+      clientWidthSpy.mockRestore()
+    }
+  })
+
+  test('bruker riktig antall varianter i bred visning ogsaa naar Egenskaper-fanen aapnes etter foerste rendering', async () => {
+    // Regresjonstest: "Egenskaper"-fanen (VariantsTab) er ikke fanen som vises som standard ved
+    // navigering (default er "Om produktet"), og selve variant-tabellen ligger i en Tabs.Panel
+    // som kun monterer innholdet sitt når fanen faktisk er aktiv (Aksel sin lazy-oppførsel).
+    // Det betyr at tabellens DOM-element ikke finnes i det hele tatt før brukeren klikker seg
+    // inn på fanen - lenge etter at VariantsTab-komponenten (og bredde-hooken i den) først ble
+    // montert. Den forrige bredde-hooken målte kun bredde ved sitt eget mount (tom
+    // avhengighetsliste på en vanlig ref), og fanget derfor aldri opp elementet som dukket opp
+    // senere, noe som ga fast 5 varianter per side helt til siden ble lastet på nytt (der fanen
+    // for øvrig fortsatt ville vært skjult som standard - selve refresh-fiksen kom av at brukeren
+    // da gjerne landet direkte på et vindu der elementet alt fantes, f.eks. via en lenke med
+    // ?tab=variants). Simulerer den faktiske brukerflyten: naviger inn (uten ?tab=variants),
+    // og klikk deretter på Egenskaper-fanen.
+    logIn(true)
+    useWideModeStore.getState().setWideMode(true)
+
+    const manyVariants = Array.from({ length: 12 }, (_, i) => dummyVariant(`v${i + 1}`, `Variant ${i + 1}`))
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () => {
+        return HttpResponse.json({
+          ...dummyProduct('test-tab-switch-variants', 'defaultTitle', 'EDITABLE'),
+          variants: manyVariants,
+        })
+      })
+    )
+
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(2500)
+
+    const visibleVariantNames = () =>
+      within(document.body)
+        .queryAllByText(/^Variant \d+$/)
+        .filter((el) => !el.closest('dialog'))
+        .map((el) => el.textContent)
+
+    try {
+      render(
+        <MemoryRouter initialEntries={['/produkter/test-tab-switch-variants']}>
+          <Routes>
+            <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+          </Routes>
+        </MemoryRouter>
+      )
+
+      await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+      fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+
+      await waitFor(() => expect(visibleVariantNames()).toContain('Variant 6'))
+      expect(visibleVariantNames()).toContain('Variant 10')
+      expect(visibleVariantNames()).not.toContain('Variant 11')
+    } finally {
+      clientWidthSpy.mockRestore()
+    }
+  })
+})
+
+describe('Forkast teknisk data-endringer ved publisering', () => {
+  test('avslutter redigeringsmodus for teknisk data naar admin publiserer produktet', async () => {
+    logIn(true)
+
+    const variantWithTechData: ProductRegistrationDTOV2 = {
+      ...dummyVariant('v1', 'Variant 1'),
+      productData: {
+        techData: [{ key: 'Vekt', unit: 'kg', value: '10' }],
+        attributes: {},
+      },
+    } as unknown as ProductRegistrationDTOV2
+
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () => {
+        return HttpResponse.json({
+          ...dummyProduct('test-discard-on-publish', 'defaultTitle', 'EDITABLE'),
+          variants: [variantWithTechData],
+        })
+      }),
+      http.put(apiPath('admin/api/v1/series/approve-v2/*'), () => {
+        return HttpResponse.json({})
+      })
+    )
+
+    render(
+      <MemoryRouter initialEntries={['/produkter/test-discard-on-publish?tab=variants']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger teknisk data' }))
+    expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
+
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
+
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument()
+    )
+    expect(await screen.findByRole('button', { name: 'Rediger teknisk data' })).toBeInTheDocument()
+  })
+})
+

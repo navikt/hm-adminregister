@@ -20,6 +20,7 @@ import {
 import { Button, HStack, Link, VStack } from '@navikt/ds-react'
 
 import ProfileMenu from './ProfileMenu'
+import WideModeToggle from './WideModeToggle'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -51,6 +52,9 @@ const Navbar = () => {
           {menuOpen && <ProfileMenu />}
         </div>
       </nav>
+      <div className="page-toolbar">
+        <WideModeToggle />
+      </div>
       <Outlet />
     </>
   )

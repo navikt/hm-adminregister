@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useImperativeHandle, useState, forwardRef } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { bulkUpdateTechData, deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
@@ -11,9 +11,11 @@ import { useTechDataChanges } from 'products/variants/useTechDataChanges'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
+import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { isUUID, toValueAndUnit } from 'utils/string-util'
 import { userProductVariantsBySeriesId } from 'utils/swr-hooks'
 import { ProductRegistrationDTOV2, SeriesDTO } from 'utils/types/response-types'
+import { useElementWidth } from 'utils/useElementWidth'
 
 import {
   ArrowsSquarepathIcon,
@@ -57,22 +59,43 @@ const helpTextWorksWith = (
   </BodyLong>
 )
 
-const VariantsTab = ({
-  series,
-  showInputError,
-  mutateSeries,
-}: {
+// Standard antall varianter per side. I bred visning økes dette dynamisk basert på tilgjengelig
+// bredde, slik at flere varianter vises samtidig på store skjermer i stedet for tomrom.
+const MIN_COLUMNS_PER_PAGE = 5
+const LABEL_COLUMN_WIDTH_PX = 250
+const VARIANT_COLUMN_WIDTH_PX = 220
+
+export interface VariantsTabHandle {
+  /**
+   * Discards any uncommitted tech-data changes and exits edit mode, without asking for
+   * confirmation. Used when the admin publishes the product while still in edit mode, so a
+   * publish never leaves the UI in a half-edited state with unsaved local changes.
+   */
+  discardTechDataEditsAndExit: () => void
+}
+
+interface VariantsTabProps {
   series: SeriesDTO
   showInputError: boolean
   mutateSeries: () => void
-}) => {
+}
+
+const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, showInputError, mutateSeries }, ref) => {
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const { loggedInUser } = useAuthStore()
+  const { wideMode } = useWideModeStore()
   const { setGlobalError } = useErrorStore()
   const techKeys = getAllUniqueTechDataKeys(series.variants)
-  const columnsPerPage = 5
+  const isWideMode = wideMode && (loggedInUser?.isAdmin ?? false)
+  const [tableContainerRef, tableContainerWidth] = useElementWidth<HTMLDivElement>()
+  const columnsPerPage = isWideMode
+    ? Math.max(
+        MIN_COLUMNS_PER_PAGE,
+        Math.floor((tableContainerWidth - LABEL_COLUMN_WIDTH_PX) / VARIANT_COLUMN_WIDTH_PX)
+      )
+    : MIN_COLUMNS_PER_PAGE
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const [variant, setVariant] = useState<undefined | ProductRegistrationDTOV2>(undefined)
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false)
@@ -166,6 +189,16 @@ const VariantsTab = ({
     }
   }
 
+  // Eksponeres til Product.tsx slik at en publisering kan forkaste ulagrede endringer og
+  // avslutte redigeringsmodus uten bekreftelsesdialog, i stedet for å la produktet publiseres
+  // mens tabellen fortsatt viser halvferdige, ulagrede endringer.
+  useImperativeHandle(ref, () => ({
+    discardTechDataEditsAndExit: () => {
+      setCancelEditConfirmationModalIsOpen(false)
+      closeTechDataEditMode()
+    },
+  }))
+
   const onSaveTechDataChanges = () => {
     const bulkUpdateDTO = techDataChanges.buildBulkUpdateDTO(variantsById)
     if (bulkUpdateDTO.updates.length === 0) return
@@ -244,6 +277,14 @@ const VariantsTab = ({
     setSearchParams(searchParams)
     setPageState(clamped)
   }
+
+  // columnsPerPage endres dynamisk i bred visning etter hvert som vinduet endrer størrelse.
+  // Sørg for at gjeldende side alltid er gyldig for det nye antallet sider.
+  useEffect(() => {
+    if (totalPages > 0 && pageState > totalPages) {
+      goToPage(totalPages)
+    }
+  }, [totalPages])
 
   return (
     <>
@@ -385,7 +426,7 @@ const VariantsTab = ({
                   )}
                 </HStack>
               )}
-              <div className={styles.variantTable}>
+              <div className={styles.variantTable} ref={tableContainerRef}>
                 <Table>
                   <Table.Header>
                     <Table.Row>
@@ -637,7 +678,9 @@ const VariantsTab = ({
       </Tabs.Panel>
     </>
   )
-}
+})
+
+VariantsTab.displayName = 'VariantsTab'
 
 const noWorksWith = (product: ProductRegistrationDTOV2) => {
   return product.productData.attributes.worksWith?.productIds.length ?? 0

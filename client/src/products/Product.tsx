@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import {
@@ -31,6 +31,7 @@ import VideosTab from 'products/videos/VideosTab'
 import { getMissingRequiredTechData } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
+import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { labelRequired } from 'utils/string-util'
 import { useIsoCategories } from 'utils/swr-hooks'
 
@@ -54,7 +55,7 @@ import {
 } from '@navikt/ds-react'
 
 import AboutTab from './about/AboutTab'
-import VariantsTab from './variants/VariantsTab'
+import VariantsTab, { VariantsTabHandle } from './variants/VariantsTab'
 
 import styles from './ProductPage.module.scss'
 
@@ -94,6 +95,7 @@ const Product = () => {
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  const variantsTabRef = useRef<VariantsTabHandle>(null)
 
   const handleSetFormValueIso = (value: string) => {
     const parts = value.split('-')
@@ -112,12 +114,14 @@ const Product = () => {
 
   const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useErrorStore()
+  const { wideMode } = useWideModeStore()
 
   const { data: series, isLoading: isLoadingSeries, error: errorSeries, mutate: mutateSeries } = useSeriesV2(seriesId!)
 
   const missingRequiredTechData = useMemo(() => (series ? getMissingRequiredTechData(series.variants) : []), [series])
 
   const handlePublishWithErrors = () => {
+    variantsTabRef.current?.discardTechDataEditsAndExit()
     approveSeries(series!.id)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message))
@@ -287,7 +291,13 @@ const Product = () => {
       />
       <HGrid
         gap="space-12"
-        columns={{ xs: 1, sm: 'minmax(16rem, 48rem) 200px', xl: 'minmax(16rem, 48rem) 250px' }}
+        columns={
+          // Wide mode only widens the layout while the "Egenskaper" (variants) tab is active -
+          // it must not affect any other tab or page.
+          wideMode && loggedInUser?.isAdmin && activeTab === 'variants'
+            ? { xs: 1, sm: 'minmax(16rem, 1fr) 200px', xl: 'minmax(16rem, 1fr) 250px' }
+            : { xs: 1, sm: 'minmax(16rem, 48rem) 200px', xl: 'minmax(16rem, 48rem) 250px' }
+        }
         className={styles.productPage}
       >
         <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
@@ -480,7 +490,12 @@ const Product = () => {
             <ImageTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <DocumentTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
-            <VariantsTab series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
+            <VariantsTab
+              ref={variantsTabRef}
+              series={series}
+              mutateSeries={mutateSeries}
+              showInputError={!isValid}
+            />
           </Tabs>
         </VStack>
         <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
