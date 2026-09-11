@@ -161,6 +161,32 @@ export type SeriesSearchChunk = {
 
 export type UpdateSeriesRegistrationDTO = components['schemas']['UpdateSeriesRegistrationDTO']
 
+// Manually defined (not yet in the generated OpenAPI schema): bulk tech data update endpoint.
+// Regenerate schema.d.ts from the backend OpenAPI spec and replace these with generated
+// components['schemas'][...] types once the backend endpoint has been deployed and the spec
+// includes it.
+export type ExtendedTechDataDTO = components['schemas']['ExtendedTechDataDTO']
+
+export type VariantTechDataUpdate = {
+  productId: string
+  techData: ExtendedTechDataDTO[]
+}
+
+export type BulkTechDataUpdateDTO = {
+  updates: VariantTechDataUpdate[]
+}
+
+export type BulkTechDataUpdateError = {
+  productId: string
+  message: string
+}
+
+export type BulkTechDataUpdateResultDTO = {
+  updated: ProductRegistrationDTOV2[]
+  failed: BulkTechDataUpdateError[]
+}
+
+
 export type OTPRequest = {
   email: string
 }
