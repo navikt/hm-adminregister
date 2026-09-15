@@ -7,6 +7,7 @@ import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { buildSeriesSearchPath } from 'utils/export/seriesSearchPath'
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { toReadableDateTimeString } from 'utils/date-util'
+import { isUUID } from 'utils/string-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers, } from 'utils/swr-hooks'
@@ -178,21 +179,26 @@ const ProductListWrapper = () => {
 
   const seriesDetailToVariantRows = (series: SeriesDTO): Record<string, unknown>[] =>
     (series.variants || []).map((variant) => {
-      const firstAgreement = variant.agreements?.[0]
+      const activeAgreements = (variant.agreements ?? []).filter((agreement) => agreement.status === 'ACTIVE')
+      const joinAgreementValues = (values: Array<string | number | null | undefined>) =>
+        values
+          .map((value) => (value === null || value === undefined ? '' : String(value)))
+          .filter((value) => value.trim() !== '')
+          .join(', ')
       return {
         productTitle: series.title,
         supplierName: series.supplierName,
         articleName: variant.articleName,
         hmsArtNr: variant.hmsArtNr ?? '',
-        supplierRef: variant.supplierRef,
+        supplierRef: variant.supplierRef && isUUID(variant.supplierRef) ? '' : variant.supplierRef,
         isPublished: variant.isPublished ? 'Ja' : 'Nei',
         isExpired: variant.isExpired ? 'Ja' : 'Nei',
-        avtale: (variant.agreements?.length ?? 0) > 0 ? 'Ja' : 'Nei',
-        rangering: firstAgreement?.rank ?? '',
-        delkontraktNr: firstAgreement?.postNr ?? '',
-        delkontraktTittel: firstAgreement?.postTitle ?? '',
-        anbudsnr: firstAgreement?.reference ?? '',
-        avtaleTittel: firstAgreement?.title ?? '',
+        avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
+        rangering: joinAgreementValues(activeAgreements.map((agreement) => agreement.rank)),
+        delkontraktNr: joinAgreementValues(activeAgreements.map((agreement) => agreement.postNr)),
+        delkontraktTittel: joinAgreementValues(activeAgreements.map((agreement) => agreement.postTitle)),
+        anbudsnr: joinAgreementValues(activeAgreements.map((agreement) => agreement.reference)),
+        avtaleTittel: joinAgreementValues(activeAgreements.map((agreement) => agreement.title)),
       }
     })
 
@@ -217,11 +223,8 @@ const ProductListWrapper = () => {
     const batchSize = 20
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize)
-      // allSettled so a single failing series does not abort the whole export.
-      const settled = await Promise.allSettled(batch.map((id) => getSeriesBySeriesId(id)))
-      settled.forEach((result) => {
-        if (result.status === 'fulfilled') results.push(result.value)
-      })
+      const seriesInBatch = await Promise.all(batch.map((id) => getSeriesBySeriesId(id)))
+      results.push(...seriesInBatch)
     }
     return results
   }

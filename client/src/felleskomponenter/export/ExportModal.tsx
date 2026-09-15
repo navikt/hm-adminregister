@@ -117,7 +117,7 @@ export const ExportModal = ({
       : estimatedSeconds < 60
         ? `~${estimatedSeconds} sekunder`
         : `~${Math.ceil(estimatedSeconds / 60)} min`
-  const isLargeExport = !!est && (est.rows > warnRowThreshold || isUnfiltered)
+  const isLargeExport = !!est && (est.rows > warnRowThreshold || (isUnfiltered && scope === 'all'))
 
   const onLevelChange = (key: string) => {
     setLevelKey(key)
@@ -214,7 +214,7 @@ export const ExportModal = ({
           {est && (
             <Alert variant={isLargeExport ? 'warning' : 'info'} size="small" style={{ width: '100%' }}>
               <VStack gap="space-2">
-                {isUnfiltered && (
+                {isUnfiltered && scope === 'all' && (
                   <BodyShort size="small" weight="semibold">
                     Ingen filtre er satt – hele katalogen eksporteres.
                   </BodyShort>
