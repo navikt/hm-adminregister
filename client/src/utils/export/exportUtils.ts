@@ -7,6 +7,11 @@ const escapeHtml = (value: unknown): string =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
 
+const sanitizeExcelCellValue = (value: unknown): string => {
+  const text = String(value ?? '')
+  return /^[=+\-@]/.test(text) ? `'${text}` : text
+}
+
 export const downloadBlob = (blob: Blob, fileName: string) => {
   const url = window.URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -39,7 +44,9 @@ export const rowsToXls = (rows: Record<string, unknown>[]): Blob => {
   const columns = columnsFromRows(rows)
   const thead = `<tr>${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join('')}</tr>`
   const tbody = rows
-    .map((row) => `<tr>${columns.map((column) => `<td>${escapeHtml(row[column])}</td>`).join('')}</tr>`)
+    .map((row) =>
+      `<tr>${columns.map((column) => `<td>${escapeHtml(sanitizeExcelCellValue(row[column]))}</td>`).join('')}</tr>`
+    )
     .join('')
   // Plain table: let Excel render its own default (faint) gridlines rather than prominent borders.
   const html = `<html><head><meta charset="UTF-8"></head><body><table>${thead}${tbody}</table></body></html>`

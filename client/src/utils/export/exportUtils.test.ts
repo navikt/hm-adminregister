@@ -42,12 +42,11 @@ describe('rowsToXls', () => {
     expect(cells(html, 'td')).toEqual(['&lt;b&gt;&amp;&quot;x'])
   })
 
-  it('preserves text values verbatim (no formula sanitization)', async () => {
-    // supplierRef / articleName are free text: values must be exported exactly as stored.
+  it('marks formula-like values as text', async () => {
     const html = await textOf(
       rowsToXls([{ supplierRef: '-12345', articleName: '=A-100', code: '+B', ref: '@x', safe: 'hello' }])
     )
-    expect(cells(html, 'td')).toEqual(['-12345', '=A-100', '+B', '@x', 'hello'])
+    expect(cells(html, 'td')).toEqual(["'-12345", "'=A-100", "'+B", "'@x", 'hello'])
   })
 
   it('renders null/undefined as empty cells', async () => {

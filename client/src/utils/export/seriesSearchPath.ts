@@ -24,7 +24,7 @@ export function buildSeriesSearchPath({
   agreementFilter,
   missingMediaType,
 }: SeriesSearchParams) {
-  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : ''
+  const titleSearchParam = titleSearchTerm ? `&title=${encodeURIComponent(titleSearchTerm)}` : ''
   const filterUrl = statusFilterProductsURL(filters)
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : ''
   const mainProductParam = `&mainProduct=true`

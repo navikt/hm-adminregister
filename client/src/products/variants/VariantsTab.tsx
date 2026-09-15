@@ -162,7 +162,7 @@ const VariantsTab = ({
     const row: Record<string, unknown> = {
       articleName: product.articleName,
       hmsArtNr: product.hmsArtNr ?? '',
-      supplierRef: product.supplierRef,
+      supplierRef: product.supplierRef && isUUID(product.supplierRef) ? '' : product.supplierRef,
       accessory: product.accessory ? 'Ja' : 'Nei',
       sparePart: product.sparePart ? 'Ja' : 'Nei',
       isPublished: product.isPublished ? 'Ja' : 'Nei',
