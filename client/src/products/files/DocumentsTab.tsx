@@ -8,7 +8,11 @@ import {
   useSeriesV2,
 } from 'api/SeriesApi'
 import { MoreMenu } from 'felleskomponenter/MoreMenu'
-import UploadModal, { FileUpload, DOCUMENT_DISPLAY_NAME_OPTIONS, OTHER_DISPLAY_NAME_OPTION } from 'felleskomponenter/UploadModal'
+import UploadModal, {
+  DOCUMENT_DISPLAY_NAME_OPTIONS,
+  FileUpload,
+  OTHER_DISPLAY_NAME_OPTION
+} from 'felleskomponenter/UploadModal'
 import { DocumentUrlModal } from 'products/files/DocumentUrlModal'
 import { mapImagesAndPDFfromMedia } from 'products/seriesUtils'
 import { uriForMediaFile } from 'utils/file-util'
@@ -139,14 +143,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
 
           <VStack gap="space-16" marginBlock="space-4 space-0">
             <Heading size="small">Lenker</Heading>
-            {(!series.seriesData.attributes.documentUrls || series.seriesData.attributes.documentUrls.length === 0) && (
-              <Alert variant="info">
-                Produktet har ingen lenker. Her kan man for eksempel legge med lenke til sprengskisse/delebok til
-                produktet.
-              </Alert>
-            )}
             <DocumentUrlRequirementBox />
-
             <VStack gap="space-16">
               {series.seriesData.attributes.documentUrls && series.seriesData.attributes.documentUrls.length > 0 && (
                 <VStack as="ol" gap="space-16" className={styles.documentListContainer}>
