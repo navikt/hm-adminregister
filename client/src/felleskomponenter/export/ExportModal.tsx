@@ -135,10 +135,18 @@ export const ExportModal = ({
     try {
       const rows = await getRows(scope, hasLevels ? levelKey : undefined)
       const selectedFields = fields.filter((field) => selectedKeys.includes(field.key))
+      const knownFieldKeys = new Set(fields.map((field) => field.key))
       const projected = rows.map((row) => {
         const out: Record<string, unknown> = {}
         selectedFields.forEach((field) => {
           out[field.label] = row[field.key] ?? ''
+        })
+        // Pass through any row keys the caller didn't declare as a selectable field (e.g. dynamic,
+        // data-dependent columns such as per-slot agreement fields) so they are always included.
+        Object.keys(row).forEach((key) => {
+          if (!knownFieldKeys.has(key)) {
+            out[key] = row[key] ?? ''
+          }
         })
         return out
       })
