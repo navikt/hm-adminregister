@@ -66,7 +66,7 @@ export function useTechDataChanges() {
           if (!variant) return null
           const techData: ExtendedTechDataDTO[] = variant.productData.techData.map((field) => {
             const change = changes.get(changeKey(productId, field.key))
-            return change ? { ...field, value: change.value } : field
+            return change ? { ...field, value: change.value.trim() } : field
           })
           return { productId, techData, version: variant.version ?? null }
         })
