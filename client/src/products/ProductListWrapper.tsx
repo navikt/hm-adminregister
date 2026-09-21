@@ -120,6 +120,8 @@ const ProductListWrapper = () => {
 
   const [exportOpen, setExportOpen] = useState(false)
 
+  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
+
   const productLevelFields: ExportField[] = [
     { key: 'title', label: 'Produktnavn' },
     { key: 'supplierName', label: 'Leverandørnavn' },
@@ -143,11 +145,6 @@ const ProductListWrapper = () => {
     { key: 'isPublished', label: 'Publisert' },
     { key: 'isExpired', label: 'Utgått' },
     { key: 'avtale', label: 'Avtale' },
-    { key: 'rangering', label: 'Rangering' },
-    { key: 'delkontraktNr', label: 'Delkontraktnr.' },
-    { key: 'delkontraktTittel', label: 'Delkontrakttittel' },
-    { key: 'anbudsnr', label: 'Anbudsnr.' },
-    { key: 'avtaleTittel', label: 'Avtaletittel' },
   ]
   const variantLevelDefaults = [
     'productTitle',
@@ -164,9 +161,9 @@ const ProductListWrapper = () => {
     { key: 'variant', label: 'Variant', availableFields: variantLevelFields, defaultFieldKeys: variantLevelDefaults },
   ]
 
-  const seriesToProductRow = (series: SeriesSearchDTO): Record<string, unknown> => ({
+  const seriesToProductRow = (series: SeriesSearchDTO, supplierName: string): Record<string, unknown> => ({
     title: series.title,
-    supplierName: series.supplierName,
+    supplierName,
     status: series.status,
     variantCount: series.variantCount,
     updated: toReadableDateTimeString(series.updated).replace(',', ''),
@@ -177,30 +174,47 @@ const ProductListWrapper = () => {
     id: series.id,
   })
 
-  const seriesDetailToVariantRows = (series: SeriesDTO): Record<string, unknown>[] =>
+  type VariantExportRow = { base: Record<string, unknown>; activeAgreements: SeriesDTO['variants'][number]['agreements'] }
+
+  const seriesDetailToVariantRows = (series: SeriesDTO): VariantExportRow[] =>
     (series.variants || []).map((variant) => {
-      const activeAgreements = (variant.agreements ?? []).filter((agreement) => agreement.status === 'ACTIVE')
-      const joinAgreementValues = (values: Array<string | number | null | undefined>) =>
-        values
-          .map((value) => (value === null || value === undefined ? '' : String(value)))
-          .filter((value) => value.trim() !== '')
-          .join(', ')
+      const activeAgreements = (variant.agreements ?? [])
+        .filter((agreement) => agreement.status === 'ACTIVE')
+        .sort((a, b) => a.rank - b.rank)
       return {
-        productTitle: series.title,
-        supplierName: series.supplierName,
-        articleName: variant.articleName,
-        hmsArtNr: variant.hmsArtNr ?? '',
-        supplierRef: variant.supplierRef && isUUID(variant.supplierRef) ? '' : variant.supplierRef,
-        isPublished: variant.isPublished ? 'Ja' : 'Nei',
-        isExpired: variant.isExpired ? 'Ja' : 'Nei',
-        avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
-        rangering: joinAgreementValues(activeAgreements.map((agreement) => agreement.rank)),
-        delkontraktNr: joinAgreementValues(activeAgreements.map((agreement) => agreement.postNr)),
-        delkontraktTittel: joinAgreementValues(activeAgreements.map((agreement) => agreement.postTitle)),
-        anbudsnr: joinAgreementValues(activeAgreements.map((agreement) => agreement.reference)),
-        avtaleTittel: joinAgreementValues(activeAgreements.map((agreement) => agreement.title)),
+        base: {
+          productTitle: series.title,
+          supplierName: series.supplierName,
+          articleName: variant.articleName,
+          hmsArtNr: variant.hmsArtNr ?? '',
+          supplierRef: variant.supplierRef && isUUID(variant.supplierRef) ? '' : variant.supplierRef,
+          isPublished: variant.isPublished ? 'Ja' : 'Nei',
+          isExpired: variant.isExpired ? 'Ja' : 'Nei',
+          avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
+        },
+        activeAgreements,
       }
     })
+
+  // Widens variant rows with one column set per agreement "slot" (1-indexed), e.g. "Rangering 1",
+  // "Delkontrakt 1", ... up to the highest number of active agreements found on any variant in the
+  // batch. Agreements are already sorted by rank, so slot order is stable and meaningful. Variants
+  // with fewer active agreements than the batch max get blank values in the unused higher slots.
+  const widenVariantRowsWithAgreementSlots = (variantRows: VariantExportRow[]): Record<string, unknown>[] => {
+    const maxAgreementCount = variantRows.reduce((max, row) => Math.max(max, row.activeAgreements.length), 0)
+    return variantRows.map(({ base, activeAgreements }) => {
+      const row: Record<string, unknown> = { ...base }
+      for (let slot = 1; slot <= maxAgreementCount; slot++) {
+        const agreement = activeAgreements[slot - 1]
+        row[`Rangering ${slot}`] = agreement?.rank ?? ''
+        row[`Delkontrakt ${slot}`] = agreement?.postTitle ?? ''
+        row[`Delkontraktnr ${slot}`] = agreement?.postNr ?? ''
+        row[`Anbudsnr ${slot}`] = agreement?.reference ?? ''
+        row[`Avtaletittel ${slot}`] = agreement?.title ?? ''
+      }
+      return row
+    })
+  }
 
   const fetchAllMatchingSeries = async (): Promise<SeriesSearchDTO[]> => {
     const size = 100
@@ -239,12 +253,14 @@ const ProductListWrapper = () => {
           : await fetchAllMatchingSeries()
         : currentPageSeries
 
+    const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
+
     if (level === 'variant') {
-      const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
-      return details.flatMap(seriesDetailToVariantRows)
+      return widenVariantRowsWithAgreementSlots(details.flatMap(seriesDetailToVariantRows))
     }
 
-    return seriesInScope.map(seriesToProductRow)
+    const supplierNameBySeriesId = new Map(details.map((series) => [series.id, series.supplierName ?? '']))
+    return seriesInScope.map((series) => seriesToProductRow(series, supplierNameBySeriesId.get(series.id) ?? ''))
   }
 
   // Instant magnitude estimate (no extra fetch): product count from totalSize, variants via current-page average.
@@ -263,19 +279,19 @@ const ProductListWrapper = () => {
     const variants = Math.round(products * avgVariantsPerProduct)
     const rows = level === 'variant' ? variants : products
     const summaryPages = scope === 'all' && !seriesByVariantIdentifier ? Math.ceil(products / 100) : 0
-    const detailBatches = level === 'variant' ? Math.ceil(products / 20) : 0
+    const detailBatches = Math.ceil(products / 20)
     return { rows, products, requests: summaryPages + detailBatches, approximate: level === 'variant' }
   }
 
-  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
+  const exportStatusFilters = statusFilters.filter(Boolean)
   const productExportFileName = buildDefaultFileName('produkter', [
     searchTerm,
     exportSupplierName,
-    statusFilters.length ? statusFilters.join('-') : undefined,
+    exportStatusFilters.length ? exportStatusFilters.join('-') : undefined,
   ])
 
   const isUnfilteredExport =
-    statusFilters.length === 0 &&
+    exportStatusFilters.length === 0 &&
     !supplierFilter &&
     searchTerm === '' &&
     !missingMediaType &&
