@@ -90,12 +90,15 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const techKeys = getAllUniqueTechDataKeys(series.variants)
   const isWideMode = wideMode && (loggedInUser?.isAdmin ?? false)
   const [tableContainerRef, tableContainerWidth] = useElementWidth<HTMLDivElement>()
-  const columnsPerPage = isWideMode
-    ? Math.max(
-        MIN_COLUMNS_PER_PAGE,
-        Math.floor((tableContainerWidth - LABEL_COLUMN_WIDTH_PX) / VARIANT_COLUMN_WIDTH_PX)
-      )
-    : MIN_COLUMNS_PER_PAGE
+
+  const [techDataEditMode, setTechDataEditMode] = useState<boolean>(false)
+  const columnsPerPage =
+    isWideMode || techDataEditMode
+      ? Math.max(
+          isWideMode ? MIN_COLUMNS_PER_PAGE : 1,
+          Math.floor((tableContainerWidth - LABEL_COLUMN_WIDTH_PX) / VARIANT_COLUMN_WIDTH_PX)
+        )
+      : MIN_COLUMNS_PER_PAGE
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const [variant, setVariant] = useState<undefined | ProductRegistrationDTOV2>(undefined)
   const [deleteVariantConfirmationModalIsOpen, setDeleteVariantConfirmationModalIsOpen] = useState<boolean>(false)
@@ -103,7 +106,6 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const [moveProductVariantModalIsOpen, setMoveProductVariantModalIsOpen] = useState<boolean>(false)
   const [variantFilterString, setVariantFilterString] = useState<string>('')
 
-  const [techDataEditMode, setTechDataEditMode] = useState<boolean>(false)
   const [cancelEditConfirmationModalIsOpen, setCancelEditConfirmationModalIsOpen] = useState<boolean>(false)
   const [copyTechDataSource, setCopyTechDataSource] = useState<
     { product: ProductRegistrationDTOV2; key: string; value: string } | undefined
