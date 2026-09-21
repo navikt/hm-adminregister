@@ -43,6 +43,30 @@ const supplierLoggedInUser = {
   exp: undefined,
 }
 
+const hmsLoggedInUser = {
+  isAdmin: false,
+  isHmsUser: true,
+  isAdminOrHmsUser: true,
+  isSupplier: false,
+  userId: 'hms-user-id',
+  supplierId: undefined,
+  userName: 'HMS-bruker',
+  supplierName: undefined,
+  exp: undefined,
+}
+
+const adminLoggedInUser = {
+  isAdmin: true,
+  isHmsUser: false,
+  isAdminOrHmsUser: true,
+  isSupplier: false,
+  userId: 'admin-id',
+  supplierId: undefined,
+  userName: 'Adminbruker',
+  supplierName: undefined,
+  exp: undefined,
+}
+
 afterEach(() => {
   useAuthStore.setState({ loggedInUser: undefined })
   vi.mocked(exportRows).mockClear()
@@ -125,8 +149,41 @@ test('Flere produkter', async () => {
   expect(await axe(container)).toHaveNoViolations()
 })
 
-test('viser fullkatalogvarsel for "Alle treff" når filters-parameteret er tomt', async () => {
+test('viser eksporterknappen kun for admin, ikke leverandør eller HMS-bruker', async () => {
+  mockProductSearch([dummyProduct('p1')])
+
   useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  const { unmount: unmountSupplier } = render(
+    <MemoryRouter>
+      <ProductListWrapper />
+    </MemoryRouter>
+  )
+  await screen.findByText('p1')
+  expect(screen.queryByRole('button', { name: 'Eksporter' })).not.toBeInTheDocument()
+  unmountSupplier()
+
+  useAuthStore.setState({ loggedInUser: hmsLoggedInUser })
+  const { unmount: unmountHms } = render(
+    <MemoryRouter>
+      <ProductListWrapper />
+    </MemoryRouter>
+  )
+  await screen.findByText('p1')
+  expect(screen.queryByRole('button', { name: 'Eksporter' })).not.toBeInTheDocument()
+  unmountHms()
+
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
+  render(
+    <MemoryRouter>
+      <ProductListWrapper />
+    </MemoryRouter>
+  )
+  await screen.findByText('p1')
+  expect(await screen.findByRole('button', { name: 'Eksporter' })).toBeInTheDocument()
+})
+
+test('viser fullkatalogvarsel for "Alle treff" når filters-parameteret er tomt', async () => {
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   mockProductSearch([dummyProduct('p1')])
 
   render(
@@ -144,7 +201,7 @@ test('viser fullkatalogvarsel for "Alle treff" når filters-parameteret er tomt'
 })
 
 test('viser ikke fullkatalogvarsel når et statusfilter er aktivt', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   mockProductSearch([dummyProduct('p1')])
 
   render(
@@ -163,7 +220,7 @@ test('viser ikke fullkatalogvarsel når et statusfilter er aktivt', async () => 
 })
 
 test('henter leverandørnavn på produktnivå fra batchet detaljkall (SeriesDTO)', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -198,7 +255,7 @@ test('henter leverandørnavn på produktnivå fra batchet detaljkall (SeriesDTO)
 })
 
 test('hopper over detaljkall på produktnivå når leverandørnavn ikke er valgt', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   const detailCallSpy = vi.fn()
@@ -237,7 +294,7 @@ test('hopper over detaljkall på produktnivå når leverandørnavn ikke er valgt
 })
 
 test('stopper eksporten og viser feil hvis et detaljkall for produkter feiler', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -263,7 +320,7 @@ test('stopper eksporten og viser feil hvis et detaljkall for produkter feiler', 
 })
 
 test('stopper eksporten og viser feil hvis et detaljkall for varianter feiler', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -288,7 +345,7 @@ test('stopper eksporten og viser feil hvis et detaljkall for varianter feiler', 
 })
 
 test('eksporterer én aktiv avtale kun i kolonnesett 1', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -333,7 +390,7 @@ test('eksporterer én aktiv avtale kun i kolonnesett 1', async () => {
 })
 
 test('sorterer flere aktive avtaler etter rangering og fyller ubrukte kolonnesett med tomme verdier', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -388,7 +445,7 @@ test('sorterer flere aktive avtaler etter rangering og fyller ubrukte kolonneset
 })
 
 test('beregner maxAgreementCount som høyeste antall aktive avtaler i eksportbatchen', async () => {
-  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   const productId = uuidv4()
   mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
   server.use(
@@ -437,19 +494,7 @@ test('beregner maxAgreementCount som høyeste antall aktive avtaler i eksportbat
 })
 
 test('oppdaterer standardfilnavnet fra filtre og valg i eksportmodalen', async () => {
-  useAuthStore.setState({
-    loggedInUser: {
-      isAdmin: false,
-      isHmsUser: true,
-      isAdminOrHmsUser: true,
-      isSupplier: false,
-      userId: 'user-id',
-      supplierId: undefined,
-      userName: 'Testbruker',
-      supplierName: undefined,
-      exp: undefined,
-    },
-  })
+  useAuthStore.setState({ loggedInUser: adminLoggedInUser })
   server.use(
     http.get(`http://localhost:8080/admreg/api/v1/series`, () =>
       HttpResponse.json({

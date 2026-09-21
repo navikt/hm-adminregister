@@ -453,15 +453,17 @@ const ProductListWrapper = () => {
                 >
                   Opprett nytt produkt
                 </Button>
-                <Button
-                  variant="secondary"
-                  icon={<FileExportIcon aria-hidden />}
-                  iconPosition="left"
-                  onClick={() => setExportOpen(true)}
-                  style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
-                >
-                  Eksporter
-                </Button>
+                {loggedInUser.isAdmin && (
+                  <Button
+                    variant="secondary"
+                    icon={<FileExportIcon aria-hidden />}
+                    iconPosition="left"
+                    onClick={() => setExportOpen(true)}
+                    style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
+                  >
+                    Eksporter
+                  </Button>
+                )}
               </HStack>
             )}
           </HGrid>
@@ -611,7 +613,7 @@ const ProductListWrapper = () => {
       </VStack>
 
       <ExportModal
-        open={exportOpen}
+        open={exportOpen && !!loggedInUser?.isAdmin}
         onClose={() => setExportOpen(false)}
         fileBaseName={productExportFileName}
         levels={exportLevels}

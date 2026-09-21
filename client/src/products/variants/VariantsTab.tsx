@@ -240,7 +240,7 @@ const VariantsTab = ({
         isModalOpen={moveProductVariantModalIsOpen}
       />
       <ExportModal
-        open={exportOpen}
+        open={exportOpen && !!loggedInUser?.isAdmin}
         onClose={() => setExportOpen(false)}
         fileBaseName={variantExportFileName}
         availableFields={exportFields}
@@ -262,15 +262,17 @@ const VariantsTab = ({
           <Box background="default" padding={{ xs: 'space-8', md: 'space-16' }} borderRadius="12">
             <VStack gap="space-16">
               <HStack justify="end">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  icon={<FileExportIcon aria-hidden />}
-                  iconPosition="left"
-                  onClick={() => setExportOpen(true)}
-                >
-                  Eksporter
-                </Button>
+                {loggedInUser?.isAdmin && (
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    icon={<FileExportIcon aria-hidden />}
+                    iconPosition="left"
+                    onClick={() => setExportOpen(true)}
+                  >
+                    Eksporter
+                  </Button>
+                )}
               </HStack>
               {(series.variants.length > columnsPerPage || totalPages > 1) && (
                 <HStack justify="space-between" align="center" gap="space-16" wrap>
