@@ -121,9 +121,11 @@ const Product = () => {
   const missingRequiredTechData = useMemo(() => (series ? getMissingRequiredTechData(series.variants) : []), [series])
 
   const handlePublishWithErrors = () => {
-    variantsTabRef.current?.discardTechDataEditsAndExit()
     approveSeries(series!.id)
-      .then(() => mutateSeries())
+      .then(() => {
+        mutateSeries()
+        variantsTabRef.current?.discardTechDataEditsAndExit()
+      })
       .catch((error) => setGlobalError(error.status, error.message))
   }
 

@@ -461,5 +461,53 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     )
     expect(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })).toBeInTheDocument()
   })
+
+  test('beholder redigeringsmodus og ulagrede endringer naar publisering feiler', async () => {
+    logIn(true)
+
+    const variantWithTechData: ProductRegistrationDTOV2 = {
+      ...dummyVariant('v1', 'Variant 1'),
+      productData: {
+        techData: [{ key: 'Vekt', unit: 'kg', value: '10' }],
+        attributes: {},
+      },
+    } as unknown as ProductRegistrationDTOV2
+
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () => {
+        return HttpResponse.json({
+          ...dummyProduct('test-discard-on-publish-failure', 'defaultTitle', 'EDITABLE'),
+          variants: [variantWithTechData],
+        })
+      }),
+      http.put(apiPath('admin/api/v1/series/approve-v2/*'), () => {
+        return HttpResponse.json({ message: 'Publisering feilet' }, { status: 500 })
+      })
+    )
+
+    render(
+      <MemoryRouter initialEntries={['/produkter/test-discard-on-publish-failure?tab=variants']}>
+        <Routes>
+          <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
+
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
+
+    // Publishing failed - edit mode (and the admin's unsaved changes) must NOT be discarded, so
+    // they don't have to redo their edits after a transient publish failure.
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+  })
 })
 
