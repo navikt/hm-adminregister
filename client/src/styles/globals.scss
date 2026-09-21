@@ -49,6 +49,26 @@ main.show-menu {
   }
 }
 
+// Holds WideModeToggle. Positioned like `main.show-menu` (same margin-left as the sidebar
+// width) so it lines up above the page content instead of being hidden under the fixed sidebar,
+// but it is otherwise fully independent of the sidebar/menu markup and styling.
+.page-toolbar {
+  display: flex;
+  justify-content: flex-end;
+
+  @include mixins.for-size(phone-up) {
+    margin-left: 123px;
+  }
+
+  @include mixins.for-size(desktop-up) {
+    margin-left: 270px;
+    padding: $ax-space-8 $ax-space-48 0;
+  }
+}
+
+// Wide mode widens the variant-comparison table in VariantsTab via the HGrid columns prop in
+// Product.tsx (see WideModeToggle.tsx / useWideModeStore.ts) - it intentionally does not touch
+// any other page or tab via CSS.
 main:not(.show-menu) {
   > div {
     padding: $ax-space-6 $ax-space-4;

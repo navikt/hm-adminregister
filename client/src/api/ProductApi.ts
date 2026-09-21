@@ -3,6 +3,8 @@ import { HM_REGISTER_URL } from 'environments'
 import useSWR from 'swr'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import {
+  BulkTechDataUpdateDTO,
+  BulkTechDataUpdateResultDTO,
   DraftVariantDTO,
   ProductRegistrationDTO,
   ProductRegistrationDTOV2,
@@ -25,6 +27,11 @@ export const updateProductVariant = async (
   updatedProduct: UpdateProductRegistrationDTO
 ): Promise<ProductRegistrationDTOV2> =>
   fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${id}`), 'PUT', updatedProduct)
+
+export const bulkUpdateTechData = async (
+  bulkUpdateDTO: BulkTechDataUpdateDTO
+): Promise<BulkTechDataUpdateResultDTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/tech-data/bulk`, 'PUT', bulkUpdateDTO)
 
 export const draftProductVariantV2 = async (
   isAdmin: boolean,
