@@ -13,10 +13,11 @@ const techDataField = (key: string, value: string): ExtendedTechDataDTO => ({
   required: false,
 })
 
-const variant = (id: string, techData: ExtendedTechDataDTO[]): ProductRegistrationDTOV2 =>
+const variant = (id: string, techData: ExtendedTechDataDTO[], version: number | null = null): ProductRegistrationDTOV2 =>
   ({
     id,
     productData: { techData },
+    version,
   }) as ProductRegistrationDTOV2
 
 describe('useTechDataChanges', () => {
@@ -85,7 +86,7 @@ describe('useTechDataChanges', () => {
   test('buildBulkUpdateDTO sends the full tech data array per touched product, with only changed values overridden', () => {
     const { result } = renderHook(() => useTechDataChanges())
 
-    const p1 = variant('p1', [techDataField('bredde', '10'), techDataField('hoyde', '20')])
+    const p1 = variant('p1', [techDataField('bredde', '10'), techDataField('hoyde', '20')], 3)
     const p2 = variant('p2', [techDataField('bredde', '5')])
     const variantsById = new Map([
       ['p1', p1],
@@ -101,6 +102,9 @@ describe('useTechDataChanges', () => {
     expect(dto.updates[0].productId).toBe('p1')
     // Full tech data array is sent, with only the changed key updated.
     expect(dto.updates[0].techData).toEqual([techDataField('bredde', '99'), techDataField('hoyde', '20')])
+    // The variant's current version is sent as the optimistic-lock token, so the backend can reject
+    // the write if the variant was changed by someone else since this version was read.
+    expect(dto.updates[0].version).toBe(3)
   })
 
   test('buildBulkUpdateDTO skips productIds that are no longer present in variantsById', () => {

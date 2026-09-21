@@ -24,6 +24,12 @@ import WideModeToggle from './WideModeToggle'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { pathname, search } = useLocation()
+  const { loggedInUser } = useAuthStore()
+
+  const isProductVariantsTab = /^\/produkter\/[^/]+$/.test(pathname) && new URLSearchParams(search).get('tab') === 'variants'
+  const showWideModeToggle = isProductVariantsTab && (loggedInUser?.isAdmin ?? false)
+
   return (
     <>
       <nav className={clsx('menu', { open: menuOpen })} aria-label="hovednavigering">
@@ -52,9 +58,11 @@ const Navbar = () => {
           {menuOpen && <ProfileMenu />}
         </div>
       </nav>
-      <div className="page-toolbar">
-        <WideModeToggle />
-      </div>
+      {showWideModeToggle && (
+        <div className="page-toolbar">
+          <WideModeToggle />
+        </div>
+      )}
       <Outlet />
     </>
   )

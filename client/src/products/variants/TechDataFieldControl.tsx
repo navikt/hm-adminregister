@@ -3,10 +3,6 @@ import { ExtendedTechDataDTO } from 'utils/types/response-types'
 
 import { Select, TextField } from '@navikt/ds-react'
 
-// Controlled, type-specific rendering of a single tech data field (NUMBER/BOOLEAN/OPTIONS/TEXT).
-// Mirrors the field-type mapping used in ProductVariantForm.tsx, but as a plain controlled
-// component (value/onChange) so it can be reused outside of a react-hook-form context, e.g. for
-// inline editing of many variants at once in VariantsTab.
 const TechDataFieldControl = ({
   techData,
   value,

@@ -170,6 +170,7 @@ export type ExtendedTechDataDTO = components['schemas']['ExtendedTechDataDTO']
 export type VariantTechDataUpdate = {
   productId: string
   techData: ExtendedTechDataDTO[]
+  version: number | null
 }
 
 export type BulkTechDataUpdateDTO = {

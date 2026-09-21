@@ -2,16 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 
 import { BulkTechDataUpdateDTO, ExtendedTechDataDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
 
-// Local "uncommitted changes" state for the tech data bulk-edit flow in VariantsTab.
-//
-// Both inline table editing and "copy value to variants" write into this same state, keyed by
-// `productId::key`, so a single "Lagre endringer" action can save everything in one bulk call.
-//
-// RED ZONE: this is the core state model for the bulk-edit feature. Getting this subtly wrong
-// (e.g. losing edits on an swr re-fetch, or building the save payload from stale data) would
-// silently drop admin's changes or overwrite unrelated tech data - read this carefully before
-// relying on it, and preferably write your own tests for the merge/save logic once you understand
-// it, rather than trusting generated tests alone.
 export type TechDataChange = {
   productId: string
   key: string
@@ -68,10 +58,6 @@ export function useTechDataChanges() {
 
   const changeCount = changes.size
 
-  // Builds the full bulk-update payload. The backend replaces the *entire* tech data list per
-  // variant (it does not patch individual keys), so for every touched product we must send its
-  // complete, current tech data array with only the changed values overridden - not just the
-  // fields that changed.
   const buildBulkUpdateDTO = useCallback(
     (variantsById: Map<string, ProductRegistrationDTOV2>): BulkTechDataUpdateDTO => {
       const updates = changedProductIds
@@ -82,9 +68,12 @@ export function useTechDataChanges() {
             const change = changes.get(changeKey(productId, field.key))
             return change ? { ...field, value: change.value } : field
           })
-          return { productId, techData }
+          return { productId, techData, version: variant.version ?? null }
         })
-        .filter((update): update is { productId: string; techData: ExtendedTechDataDTO[] } => update !== null)
+        .filter(
+          (update): update is { productId: string; techData: ExtendedTechDataDTO[]; version: number | null } =>
+            update !== null
+        )
 
       return { updates }
     },

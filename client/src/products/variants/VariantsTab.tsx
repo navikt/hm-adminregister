@@ -112,6 +112,8 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const [techDataIsSaving, setTechDataIsSaving] = useState<boolean>(false)
   const techDataChanges = useTechDataChanges()
 
+  const [techDataSnapshot, setTechDataSnapshot] = useState<Map<string, ProductRegistrationDTOV2>>(new Map())
+
   const { mutateVariants } = userProductVariantsBySeriesId(series.id)
 
   const hasNoVariants = series.variants.length === 0
@@ -179,6 +181,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
     techDataChanges.clearAll()
     setTechDataSaveError(undefined)
     setTechDataEditMode(false)
+    setTechDataSnapshot(new Map())
   }
 
   const onCancelTechDataEdit = () => {
@@ -200,7 +203,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   }))
 
   const onSaveTechDataChanges = () => {
-    const bulkUpdateDTO = techDataChanges.buildBulkUpdateDTO(variantsById)
+    const bulkUpdateDTO = techDataChanges.buildBulkUpdateDTO(techDataSnapshot)
     if (bulkUpdateDTO.updates.length === 0) return
 
     setTechDataIsSaving(true)
@@ -211,6 +214,14 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
         techDataChanges.clearForProducts(savedProductIds)
         mutateVariants()
         mutateSeries()
+
+        if (result.updated.length > 0) {
+          setTechDataSnapshot((prev) => {
+            const next = new Map(prev)
+            result.updated.forEach((product) => next.set(product.id!, product))
+            return next
+          })
+        }
 
         if (result.failed.length > 0) {
           const names = result.failed
@@ -278,8 +289,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
     setPageState(clamped)
   }
 
-  // columnsPerPage endres dynamisk i bred visning etter hvert som vinduet endrer størrelse.
-  // Sørg for at gjeldende side alltid er gyldig for det nye antallet sider.
+
   useEffect(() => {
     if (totalPages > 0 && pageState > totalPages) {
       goToPage(totalPages)
@@ -343,9 +353,12 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                       variant="secondary"
                       size="small"
                       icon={<PencilIcon aria-hidden />}
-                      onClick={() => setTechDataEditMode(true)}
+                      onClick={() => {
+                        setTechDataSnapshot(new Map(series.variants.map((v) => [v.id!, v])))
+                        setTechDataEditMode(true)
+                      }}
                     >
-                      Rediger teknisk data
+                      Rediger egenskaper på flere varianter
                     </Button>
                   ) : (
                     <Button

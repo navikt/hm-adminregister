@@ -448,7 +448,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger teknisk data' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
     expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
@@ -459,7 +459,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     await waitFor(() =>
       expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument()
     )
-    expect(await screen.findByRole('button', { name: 'Rediger teknisk data' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })).toBeInTheDocument()
   })
 })
 

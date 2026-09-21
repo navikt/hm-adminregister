@@ -15,16 +15,9 @@ interface Props {
   otherVariants: ProductRegistrationDTOV2[]
 }
 
-// Lets admin copy the current value of one tech data field from one variant to a chosen set of
-// other variants in the same series, in one action. The result is written into the same local
-// "uncommitted changes" state as inline editing (see useTechDataChanges) and saved together with
-// any other pending edits when the admin clicks "Lagre endringer" - this modal itself does not
-// call the save API.
 const CopyTechDataValueModal = ({ isModalOpen, onClose, onConfirm, techKey, value, sourceProduct, otherVariants }: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
 
-  // Pre-select variants that are missing the value or have a different value, since those are
-  // the most likely targets for a "copy this value everywhere" action.
   useEffect(() => {
     if (!isModalOpen) return
     setSelectedRows(
