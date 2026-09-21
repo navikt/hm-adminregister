@@ -39,7 +39,7 @@ export type ExportEstimate = {
 interface Props {
   open: boolean
   onClose: () => void
-  fileBaseName: string
+  fileBaseName: string | ((scope: ExportScope, level?: string) => string)
   /** Single-level mode: provide fields directly. */
   availableFields?: ExportField[]
   defaultFieldKeys?: string[]
@@ -89,16 +89,19 @@ export const ExportModal = ({
   )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [fileName, setFileName] = useState<string>(fileBaseName)
+  const [customFileName, setCustomFileName] = useState<string | null>(null)
+  const generatedFileName =
+    typeof fileBaseName === 'function' ? fileBaseName(scope, hasLevels ? levelKey : undefined) : fileBaseName
+  const fileName = customFileName ?? generatedFileName
 
   // Reset transient state each time the modal is opened (avoid a stale error / accidental huge scope).
   useEffect(() => {
     if (open) {
       setError(null)
       setScope('page')
-      setFileName(fileBaseName)
+      setCustomFileName(null)
     }
-  }, [open, fileBaseName])
+  }, [open])
 
   const est = estimate ? estimate(scope, hasLevels ? levelKey : undefined) : null
 
@@ -117,7 +120,8 @@ export const ExportModal = ({
       : estimatedSeconds < 60
         ? `~${estimatedSeconds} sekunder`
         : `~${Math.ceil(estimatedSeconds / 60)} min`
-  const isLargeExport = !!est && (est.rows > warnRowThreshold || (isUnfiltered && scope === 'all'))
+  const isFullCatalogueExport = isUnfiltered && scope === 'all'
+  const isLargeExport = !!est && (est.rows > warnRowThreshold || isFullCatalogueExport)
 
   const onLevelChange = (key: string) => {
     setLevelKey(key)
@@ -131,18 +135,10 @@ export const ExportModal = ({
     try {
       const rows = await getRows(scope, hasLevels ? levelKey : undefined)
       const selectedFields = fields.filter((field) => selectedKeys.includes(field.key))
-      const knownFieldKeys = new Set(fields.map((field) => field.key))
       const projected = rows.map((row) => {
         const out: Record<string, unknown> = {}
         selectedFields.forEach((field) => {
           out[field.label] = row[field.key] ?? ''
-        })
-        // Pass through any row keys the caller didn't declare as a selectable field (e.g. dynamic,
-        // data-dependent columns such as per-slot agreement fields) so they are always included.
-        Object.keys(row).forEach((key) => {
-          if (!knownFieldKeys.has(key)) {
-            out[key] = row[key] ?? ''
-          }
         })
         return out
       })
@@ -150,7 +146,7 @@ export const ExportModal = ({
         setError('Fant ingen rader å eksportere')
         return
       }
-      exportRows(projected, format, sanitizeFileName(fileName, fileBaseName))
+      exportRows(projected, format, sanitizeFileName(fileName, generatedFileName))
       onClose()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Eksport feilet')
@@ -192,8 +188,8 @@ export const ExportModal = ({
           <TextField
             label="Filnavn"
             value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            description={`Lagres som ${fileName || fileBaseName}.${format === 'json' ? 'json' : 'xls'}`}
+            onChange={(e) => setCustomFileName(e.target.value)}
+            description={`Lagres som ${fileName || generatedFileName}.${format === 'json' ? 'json' : 'xls'}`}
           />
 
           <CheckboxGroup legend="Felter" value={selectedKeys} onChange={setSelectedKeys}>
@@ -222,7 +218,7 @@ export const ExportModal = ({
           {est && (
             <Alert variant={isLargeExport ? 'warning' : 'info'} size="small" style={{ width: '100%' }}>
               <VStack gap="space-2">
-                {isUnfiltered && scope === 'all' && (
+                {isFullCatalogueExport && (
                   <BodyShort size="small" weight="semibold">
                     Ingen filtre er satt – hele katalogen eksporteres.
                   </BodyShort>

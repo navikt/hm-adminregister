@@ -7,9 +7,9 @@ import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { buildSeriesSearchPath } from 'utils/export/seriesSearchPath'
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { toReadableDateTimeString } from 'utils/date-util'
-import { isUUID } from 'utils/string-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
+import { isUUID } from 'utils/string-util'
 import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers, } from 'utils/swr-hooks'
 import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/response-types'
 
@@ -120,8 +120,6 @@ const ProductListWrapper = () => {
 
   const [exportOpen, setExportOpen] = useState(false)
 
-  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
-
   const productLevelFields: ExportField[] = [
     { key: 'title', label: 'Produktnavn' },
     { key: 'supplierName', label: 'Leverandørnavn' },
@@ -131,7 +129,6 @@ const ProductListWrapper = () => {
     { key: 'updatedByUser', label: 'Endret av' },
     { key: 'isPublished', label: 'Publisert' },
     { key: 'isExpired', label: 'Utgått' },
-    { key: 'mainProduct', label: 'Hovedprodukt' },
     { key: 'id', label: 'Id' },
   ]
   const productLevelDefaults = ['title', 'status', 'variantCount', 'updated', 'updatedByUser']
@@ -145,6 +142,11 @@ const ProductListWrapper = () => {
     { key: 'isPublished', label: 'Publisert' },
     { key: 'isExpired', label: 'Utgått' },
     { key: 'avtale', label: 'Avtale' },
+    { key: 'rangering', label: 'Rangering' },
+    { key: 'delkontraktNr', label: 'Delkontraktnr.' },
+    { key: 'delkontraktTittel', label: 'Delkontrakttittel' },
+    { key: 'anbudsnr', label: 'Anbudsnr.' },
+    { key: 'avtaleTittel', label: 'Avtaletittel' },
   ]
   const variantLevelDefaults = [
     'productTitle',
@@ -161,60 +163,38 @@ const ProductListWrapper = () => {
     { key: 'variant', label: 'Variant', availableFields: variantLevelFields, defaultFieldKeys: variantLevelDefaults },
   ]
 
-  const seriesToProductRow = (series: SeriesSearchDTO, supplierName: string): Record<string, unknown> => ({
+  const seriesToProductRow = (series: SeriesSearchDTO): Record<string, unknown> => ({
     title: series.title,
-    supplierName,
+    supplierName: series.supplierName,
     status: series.status,
     variantCount: series.variantCount,
     updated: toReadableDateTimeString(series.updated).replace(',', ''),
     updatedByUser: series.updatedByUser,
     isPublished: series.isPublished ? 'Ja' : 'Nei',
     isExpired: series.isExpired ? 'Ja' : 'Nei',
-    mainProduct: series.mainProduct ? 'Ja' : 'Nei',
     id: series.id,
   })
 
-  type VariantExportRow = { base: Record<string, unknown>; activeAgreements: SeriesDTO['variants'][number]['agreements'] }
-
-  const seriesDetailToVariantRows = (series: SeriesDTO): VariantExportRow[] =>
+  const seriesDetailToVariantRows = (series: SeriesDTO): Record<string, unknown>[] =>
     (series.variants || []).map((variant) => {
-      const activeAgreements = (variant.agreements ?? [])
-        .filter((agreement) => agreement.status === 'ACTIVE')
-        .sort((a, b) => a.rank - b.rank)
+      const activeAgreements = variant.agreements?.filter((agreement) => agreement.status === 'ACTIVE') ?? []
+      const firstAgreement = activeAgreements[0]
       return {
-        base: {
-          productTitle: series.title,
-          supplierName: series.supplierName,
-          articleName: variant.articleName,
-          hmsArtNr: variant.hmsArtNr ?? '',
-          supplierRef: variant.supplierRef && isUUID(variant.supplierRef) ? '' : variant.supplierRef,
-          isPublished: variant.isPublished ? 'Ja' : 'Nei',
-          isExpired: variant.isExpired ? 'Ja' : 'Nei',
-          avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
-        },
-        activeAgreements,
+        productTitle: series.title,
+        supplierName: series.supplierName,
+        articleName: variant.articleName,
+        hmsArtNr: variant.hmsArtNr ?? '',
+        supplierRef: isUUID(variant.supplierRef) ? '' : variant.supplierRef,
+        isPublished: variant.isPublished ? 'Ja' : 'Nei',
+        isExpired: variant.isExpired ? 'Ja' : 'Nei',
+        avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
+        rangering: firstAgreement?.rank ?? '',
+        delkontraktNr: firstAgreement?.postNr ?? '',
+        delkontraktTittel: firstAgreement?.postTitle ?? '',
+        anbudsnr: firstAgreement?.reference ?? '',
+        avtaleTittel: firstAgreement?.title ?? '',
       }
     })
-
-  // Widens variant rows with one column set per agreement "slot" (1-indexed), e.g. "Rangering 1",
-  // "Delkontrakt 1", ... up to the highest number of active agreements found on any variant in the
-  // batch. Agreements are already sorted by rank, so slot order is stable and meaningful. Variants
-  // with fewer active agreements than the batch max get blank values in the unused higher slots.
-  const widenVariantRowsWithAgreementSlots = (variantRows: VariantExportRow[]): Record<string, unknown>[] => {
-    const maxAgreementCount = variantRows.reduce((max, row) => Math.max(max, row.activeAgreements.length), 0)
-    return variantRows.map(({ base, activeAgreements }) => {
-      const row: Record<string, unknown> = { ...base }
-      for (let slot = 1; slot <= maxAgreementCount; slot++) {
-        const agreement = activeAgreements[slot - 1]
-        row[`Rangering ${slot}`] = agreement?.rank ?? ''
-        row[`Delkontrakt ${slot}`] = agreement?.postTitle ?? ''
-        row[`Delkontraktnr ${slot}`] = agreement?.postNr ?? ''
-        row[`Anbudsnr ${slot}`] = agreement?.reference ?? ''
-        row[`Avtaletittel ${slot}`] = agreement?.title ?? ''
-      }
-      return row
-    })
-  }
 
   const fetchAllMatchingSeries = async (): Promise<SeriesSearchDTO[]> => {
     const size = 100
@@ -237,8 +217,11 @@ const ProductListWrapper = () => {
     const batchSize = 20
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize)
-      const seriesInBatch = await Promise.all(batch.map((id) => getSeriesBySeriesId(id)))
-      results.push(...seriesInBatch)
+      // allSettled so a single failing series does not abort the whole export.
+      const settled = await Promise.allSettled(batch.map((id) => getSeriesBySeriesId(id)))
+      settled.forEach((result) => {
+        if (result.status === 'fulfilled') results.push(result.value)
+      })
     }
     return results
   }
@@ -253,14 +236,12 @@ const ProductListWrapper = () => {
           : await fetchAllMatchingSeries()
         : currentPageSeries
 
-    const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
-
     if (level === 'variant') {
-      return widenVariantRowsWithAgreementSlots(details.flatMap(seriesDetailToVariantRows))
+      const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
+      return details.flatMap(seriesDetailToVariantRows)
     }
 
-    const supplierNameBySeriesId = new Map(details.map((series) => [series.id, series.supplierName ?? '']))
-    return seriesInScope.map((series) => seriesToProductRow(series, supplierNameBySeriesId.get(series.id) ?? ''))
+    return seriesInScope.map(seriesToProductRow)
   }
 
   // Instant magnitude estimate (no extra fetch): product count from totalSize, variants via current-page average.
@@ -279,19 +260,28 @@ const ProductListWrapper = () => {
     const variants = Math.round(products * avgVariantsPerProduct)
     const rows = level === 'variant' ? variants : products
     const summaryPages = scope === 'all' && !seriesByVariantIdentifier ? Math.ceil(products / 100) : 0
-    const detailBatches = Math.ceil(products / 20)
+    const detailBatches = level === 'variant' ? Math.ceil(products / 20) : 0
     return { rows, products, requests: summaryPages + detailBatches, approximate: level === 'variant' }
   }
 
+  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
   const exportStatusFilters = statusFilters.filter(Boolean)
-  const productExportFileName = buildDefaultFileName('produkter', [
-    searchTerm,
-    exportSupplierName,
-    exportStatusFilters.length ? exportStatusFilters.join('-') : undefined,
-  ])
+  const agreementFileNamePart =
+    agreementFilter === 'true' ? 'med-avtale' : agreementFilter === 'false' ? 'uten-avtale' : undefined
+  const missingMediaFileNamePart =
+    missingMediaType === 'IMAGE' ? 'mangler-bilde' : missingMediaType === 'VIDEO' ? 'mangler-video' : undefined
+  const productExportFileName = (scope: ExportScope, level?: string) =>
+    buildDefaultFileName(level === 'variant' ? 'varianter' : 'produkter', [
+      searchTerm,
+      exportSupplierName,
+      exportStatusFilters.length ? exportStatusFilters.join('-') : undefined,
+      agreementFileNamePart,
+      missingMediaFileNamePart,
+      scope === 'all' ? 'alle-treff' : `side-${pageState}`,
+    ])
 
   const isUnfilteredExport =
-    exportStatusFilters.length === 0 &&
+    statusFilters.length === 0 &&
     !supplierFilter &&
     searchTerm === '' &&
     !missingMediaType &&

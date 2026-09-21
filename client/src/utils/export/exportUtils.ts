@@ -77,7 +77,7 @@ export const buildDefaultFileName = (
     value
       .replace(/[\\/:*?"<>|]/g, '')
       .replace(/[\s_]+/g, '-')
-      .trim()
+      .replace(/^-+|-+$/g, '')
   const segments = [base, ...parts.filter((p): p is string => !!p && p.trim() !== '').map(clean), todayIso(date)]
   return segments.filter((seg) => seg.length > 0).join('_')
 }

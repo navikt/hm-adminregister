@@ -110,6 +110,11 @@ describe('buildDefaultFileName', () => {
   it('includes non-empty context parts, hyphenating spaces', () => {
     expect(buildDefaultFileName('produkter', ['Rulle stol', 'LevX'], d)).toBe('produkter_Rulle-stol_LevX_2026-09-04')
   })
+  it('removes separators from the start and end of context parts', () => {
+    expect(buildDefaultFileName('varianter', [' Cross 6 (ledsagerbrems)_ '], d)).toBe(
+      'varianter_Cross-6-(ledsagerbrems)_2026-09-04'
+    )
+  })
   it('drops empty/nullish parts', () => {
     expect(buildDefaultFileName('varianter', ['', undefined, null, '  '], d)).toBe('varianter_2026-09-04')
   })

@@ -144,8 +144,6 @@ const VariantsTab = ({
     { key: 'articleName', label: 'Variantnavn' },
     { key: 'hmsArtNr', label: 'HMS-nr.' },
     { key: 'supplierRef', label: 'Lev-artnr' },
-    { key: 'accessory', label: 'Tilbehør' },
-    { key: 'sparePart', label: 'Reservedel' },
     { key: 'isPublished', label: 'Publisert' },
     { key: 'isExpired', label: 'Utgått' },
   ]
@@ -162,9 +160,7 @@ const VariantsTab = ({
     const row: Record<string, unknown> = {
       articleName: product.articleName,
       hmsArtNr: product.hmsArtNr ?? '',
-      supplierRef: product.supplierRef && isUUID(product.supplierRef) ? '' : product.supplierRef,
-      accessory: product.accessory ? 'Ja' : 'Nei',
-      sparePart: product.sparePart ? 'Ja' : 'Nei',
+      supplierRef: isUUID(product.supplierRef) ? '' : product.supplierRef,
       isPublished: product.isPublished ? 'Ja' : 'Nei',
       isExpired: product.isExpired ? 'Ja' : 'Nei',
     }
@@ -184,7 +180,12 @@ const VariantsTab = ({
     return { rows, requests: 0, approximate: false }
   }
 
-  const variantExportFileName = buildDefaultFileName('varianter', [series.title, variantFilterString])
+  const variantExportFileName = (scope: ExportScope) =>
+    buildDefaultFileName('varianter', [
+      series.title,
+      variantFilterString,
+      scope === 'all' ? 'alle-treff' : `side-${pageState}`,
+    ])
 
   const anyExpired = series.variants.some((variant) => variant.isExpired)
 
