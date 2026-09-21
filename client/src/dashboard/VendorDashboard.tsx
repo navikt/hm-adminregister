@@ -124,10 +124,6 @@ const VendorDashboard = () => {
                 Oppdater
               </Button>
             </VStack>
-            <SkyraSurveyBox
-              buttonText={'Gi tilbakemelding!'}
-              skyraSlug={'arbeids-og-velferdsetaten-nav/digihot-lev-dashboard'}
-            />
           </HStack>
           <Heading level="2" size="medium" style={{ marginTop: '2rem' }}>
             Produkter til godkjenning
