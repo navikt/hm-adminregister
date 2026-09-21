@@ -603,6 +603,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                                   onChange={(value) => techDataChanges.setValue(product.id!, key, value)}
                                   label={`${key} for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
                                 />
+                                <BodyShort>{field.unit}</BodyShort>
                                 <Button
                                   variant="tertiary"
                                   size="small"
