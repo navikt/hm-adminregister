@@ -241,7 +241,11 @@ const ProductListWrapper = () => {
     return results
   }
 
-  const getExportRows = async (scope: ExportScope, level?: string): Promise<Record<string, unknown>[]> => {
+  const getExportRows = async (
+    scope: ExportScope,
+    level?: string,
+    selectedKeys?: string[]
+  ): Promise<Record<string, unknown>[]> => {
     const currentPageSeries = seriesByVariantIdentifier ? [seriesByVariantIdentifier] : pagedData?.content || []
 
     const seriesInScope: SeriesSearchDTO[] =
@@ -251,13 +255,26 @@ const ProductListWrapper = () => {
           : await fetchAllMatchingSeries()
         : currentPageSeries
 
-    const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
-
     if (level === 'variant') {
+      // Variant rows are built from SeriesDTO (variants + agreements), which SeriesSearchDTO doesn't
+      // carry — the detail fetch is unconditionally required here regardless of field selection.
+      const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
       return widenVariantRowsWithAgreementSlots(details.flatMap(seriesDetailToVariantRows))
     }
 
-    const supplierNameBySeriesId = new Map(details.map((series) => [series.id, series.supplierName ?? '']))
+    // For product-level export, supplierName is the only field that requires a per-series detail
+    // fetch (SeriesSearchDTO doesn't include it). Skip the expensive fetch entirely unless the user
+    // actually selected that field — otherwise a full-catalogue export sends thousands of GETs for
+    // data nobody asked for.
+    const needsSupplierName = selectedKeys?.includes('supplierName') ?? false
+    const supplierNameBySeriesId = needsSupplierName
+      ? new Map(
+          (await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))).map((series) => [
+            series.id,
+            series.supplierName ?? '',
+          ])
+        )
+      : new Map<string, string>()
     return seriesInScope.map((series) => seriesToProductRow(series, supplierNameBySeriesId.get(series.id) ?? ''))
   }
 
@@ -268,7 +285,7 @@ const ProductListWrapper = () => {
       ? currentPageContent.reduce((sum, series) => sum + (series.variantCount ?? 0), 0) / currentPageContent.length
       : 1
 
-  const estimateExport = (scope: ExportScope, level?: string) => {
+  const estimateExport = (scope: ExportScope, level?: string, selectedKeys?: string[]) => {
     const products = seriesByVariantIdentifier
       ? 1
       : scope === 'all'
@@ -277,7 +294,10 @@ const ProductListWrapper = () => {
     const variants = Math.round(products * avgVariantsPerProduct)
     const rows = level === 'variant' ? variants : products
     const summaryPages = scope === 'all' && !seriesByVariantIdentifier ? Math.ceil(products / 100) : 0
-    const detailBatches = Math.ceil(products / 20)
+    // Detail batches are only fetched for variant-level export (always) or product-level export when
+    // supplierName was selected — mirrors the conditional fetch in getExportRows.
+    const needsDetailFetch = level === 'variant' || (selectedKeys?.includes('supplierName') ?? false)
+    const detailBatches = needsDetailFetch ? Math.ceil(products / 20) : 0
     return { rows, products, requests: summaryPages + detailBatches, approximate: level === 'variant' }
   }
 

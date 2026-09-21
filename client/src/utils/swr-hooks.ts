@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR, { Fetcher } from 'swr'
+import { buildSeriesSearchPath, statusFilterProductsURL } from 'utils/export/seriesSearchPath'
 
 import { useAuthStore } from './store/useAuthStore'
 import { useErrorStore } from './store/useErrorStore'
@@ -159,61 +160,22 @@ export function usePagedProducts({
   agreementFilter?: string | null
   missingMediaType?: string | null
 }) {
-  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : ''
-
-  const filterUrl = statusFilterProductsURL(filters)
-
-  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : ''
-
-  const mainProductParam: string = `&mainProduct=true`
-
-  const sortBy = sortUrl?.split(',')[0] || 'updated'
-  const sortDirection = sortUrl?.split(',')[1] || 'DESC'
-  const sortParam = `&sort=${sortBy},${sortDirection}`
-
-  const agreementParam = agreementFilter ? `&inAgreement=${agreementFilter}` : ''
-
-  const missingMediaParam = missingMediaType ? `&missingMediaType=${missingMediaType}` : ''
-
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}${agreementParam}${missingMediaParam}`
+  const path = buildSeriesSearchPath({
+    page,
+    pageSize,
+    titleSearchTerm,
+    filters,
+    supplierFilter,
+    sortUrl,
+    agreementFilter,
+    missingMediaType,
+  })
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET)
 }
 
-export const statusFilterProductsURL = (statusFilters: string[]) => {
-  // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
-  // const otherStatuses = ["includeInactive", "onlyUnpublished"];
-  const editStatus: string[] = []
-  let excludeExpired = true
-
-  const uri = new URLSearchParams()
-
-  statusFilters.forEach((status) => {
-    if (status === 'Under endring') {
-      editStatus.push('EDITABLE')
-    } else if (status === 'Venter på godkjenning') {
-      editStatus.push('PENDING_APPROVAL')
-    } else if (status === 'Avslått') {
-      editStatus.push('REJECTED')
-    } else if (status === 'Publisert') {
-      editStatus.push('DONE')
-      // } else if (status === "Ikke publisert") {
-      //   otherStatuses.push("unpublished");
-    } else if (status === 'Vis utgåtte') {
-      excludeExpired = false
-    }
-  })
-
-  if (excludeExpired) {
-    uri.append('excludeExpired', 'true')
-  }
-
-  if (editStatus.length > 0) {
-    uri.append('editStatus', editStatus.join(','))
-  }
-
-  return uri
-}
+// Re-exported for backwards compatibility with existing imports from this module.
+export { statusFilterProductsURL }
 
 export function usePagedSeriesToApprove({
   page,

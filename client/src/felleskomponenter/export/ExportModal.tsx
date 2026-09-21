@@ -47,10 +47,14 @@ interface Props {
   levels?: ExportLevel[]
   showScope?: boolean
   scopeLabels?: { page: string; all: string }
-  /** Returns one record per item, keyed by field.key, containing every available field for the level. */
-  getRows: (scope: ExportScope, level?: string) => Promise<Record<string, unknown>[]>
+  /**
+   * Returns one record per item, keyed by field.key, containing every available field for the level.
+   * `selectedKeys` is passed through so callers can skip expensive per-item data fetches for fields
+   * the user hasn't selected (e.g. supplierName requiring a per-series detail fetch).
+   */
+  getRows: (scope: ExportScope, level?: string, selectedKeys?: string[]) => Promise<Record<string, unknown>[]>
   /** Optional instant magnitude estimate shown before exporting. */
-  estimate?: (scope: ExportScope, level?: string) => ExportEstimate
+  estimate?: (scope: ExportScope, level?: string, selectedKeys?: string[]) => ExportEstimate
   /** True when no filters/supplier/search are set (full-catalogue export) — triggers a stronger warning. */
   isUnfiltered?: boolean
   /** Row count above which a warning (instead of info) is shown. Default 2000. */
@@ -103,7 +107,7 @@ export const ExportModal = ({
     }
   }, [open])
 
-  const est = estimate ? estimate(scope, hasLevels ? levelKey : undefined) : null
+  const est = estimate ? estimate(scope, hasLevels ? levelKey : undefined, selectedKeys) : null
 
   const rowNounResolved = hasLevels
     ? levelKey === 'variant'
@@ -133,7 +137,7 @@ export const ExportModal = ({
     setLoading(true)
     setError(null)
     try {
-      const rows = await getRows(scope, hasLevels ? levelKey : undefined)
+      const rows = await getRows(scope, hasLevels ? levelKey : undefined, selectedKeys)
       const selectedFields = fields.filter((field) => selectedKeys.includes(field.key))
       const knownFieldKeys = new Set(fields.map((field) => field.key))
       const projected = rows.map((row) => {

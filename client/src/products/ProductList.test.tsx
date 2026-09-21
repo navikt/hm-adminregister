@@ -197,6 +197,45 @@ test('henter leverandørnavn på produktnivå fra batchet detaljkall (SeriesDTO)
   expect(rows[0]['Leverandørnavn']).toBe('Leverandør fra detaljkall AS')
 })
 
+test('hopper over detaljkall på produktnivå når leverandørnavn ikke er valgt', async () => {
+  useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
+  const productId = uuidv4()
+  mockProductSearch([dummyProduct('p1', 'EDITABLE', productId)])
+  const detailCallSpy = vi.fn()
+  server.use(
+    http.get(`http://localhost:8080/admreg/api/v1/series/${productId}`, () => {
+      detailCallSpy()
+      return HttpResponse.json({
+        id: productId,
+        title: 'p1',
+        supplierName: 'Leverandør fra detaljkall AS',
+        updated: '2024-05-24T09:54:25.595163',
+        updatedByUser: 'system',
+        variants: [],
+      })
+    })
+  )
+
+  render(
+    <MemoryRouter initialEntries={['/produkter?supplier=cache-key-uten-leverandornavn']}>
+      <ProductListWrapper />
+    </MemoryRouter>
+  )
+
+  await screen.findByText('p1')
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Eksporter' }))
+  const dialog = within(await screen.findByRole('dialog'))
+  // Leverandørnavn is not part of the product-level default field selection, so leave it unchecked.
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+
+  await waitFor(() => expect(exportRows).toHaveBeenCalledTimes(1))
+  const [rows] = vi.mocked(exportRows).mock.calls[0]
+  expect(rows[0]['Produktnavn']).toBe('p1')
+  expect(Object.keys(rows[0])).not.toContain('Leverandørnavn')
+  expect(detailCallSpy).not.toHaveBeenCalled()
+})
+
 test('stopper eksporten og viser feil hvis et detaljkall for produkter feiler', async () => {
   useAuthStore.setState({ loggedInUser: supplierLoggedInUser })
   const productId = uuidv4()
@@ -215,6 +254,8 @@ test('stopper eksporten og viser feil hvis et detaljkall for produkter feiler', 
 
   fireEvent.click(await screen.findByRole('button', { name: 'Eksporter' }))
   const dialog = within(await screen.findByRole('dialog'))
+  // Select Leverandørnavn so the (now conditional) detail fetch is exercised at product level.
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandørnavn' }))
   fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
 
   expect(await dialog.findByText('Eksport feilet')).toBeInTheDocument()
