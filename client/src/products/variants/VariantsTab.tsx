@@ -239,17 +239,19 @@ const VariantsTab = ({
         onClose={() => setMoveProductVariantModalIsOpen(false)}
         isModalOpen={moveProductVariantModalIsOpen}
       />
-      <ExportModal
-        open={exportOpen && !!loggedInUser?.isAdmin}
-        onClose={() => setExportOpen(false)}
-        fileBaseName={variantExportFileName}
-        availableFields={exportFields}
-        defaultFieldKeys={defaultExportFieldKeys}
-        scopeLabels={{ page: 'Denne siden', all: 'Alle (etter filter)' }}
-        getRows={getExportRows}
-        estimate={estimateExport}
-        rowNoun="varianter"
-      />
+      {exportOpen && loggedInUser?.isAdmin && (
+        <ExportModal
+          open
+          onClose={() => setExportOpen(false)}
+          fileBaseName={variantExportFileName}
+          availableFields={exportFields}
+          defaultFieldKeys={defaultExportFieldKeys}
+          scopeLabels={{ page: 'Denne siden', all: 'Alle (etter filter)' }}
+          getRows={getExportRows}
+          estimate={estimateExport}
+          rowNoun="varianter"
+        />
+      )}
       <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
           <Alert variant={showInputError ? 'error' : 'info'}>
