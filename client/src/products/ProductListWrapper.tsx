@@ -2,19 +2,26 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
+import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
+import { buildSeriesSearchPath } from 'utils/export/seriesSearchPath'
+import { getSeriesBySeriesId } from 'api/SeriesApi'
+import { toReadableDateTimeString } from 'utils/date-util'
+import { isUUID } from 'utils/string-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
-import { usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
+import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers, } from 'utils/swr-hooks'
+import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/response-types'
 
-import { PlusIcon } from '@navikt/aksel-icons'
+import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
   Box,
   Button,
   Chips,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
   Pagination,
   Search,
@@ -90,11 +97,7 @@ const ProductListWrapper = () => {
     setSearchParams(searchParams)
   }, [missingMediaType])
 
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedProducts({
+  const productQueryParams = {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
@@ -103,11 +106,222 @@ const ProductListWrapper = () => {
     sortUrl,
     agreementFilter,
     missingMediaType,
-  })
+  }
+
+  const {
+    data: pagedData,
+    isLoading: isLoadingPagedData,
+    error: errorPaged,
+  } = usePagedProducts(productQueryParams)
 
   const navigate = useNavigate()
 
   const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm)
+
+  const [exportOpen, setExportOpen] = useState(false)
+
+  const exportSupplierName = suppliers?.find((supplier) => supplier.id === supplierFilter)?.name
+
+  const productLevelFields: ExportField[] = [
+    { key: 'title', label: 'Produktnavn' },
+    { key: 'supplierName', label: 'Leverandørnavn' },
+    { key: 'status', label: 'Status' },
+    { key: 'variantCount', label: 'Antall varianter' },
+    { key: 'updated', label: 'Sist endret' },
+    { key: 'updatedByUser', label: 'Endret av' },
+    { key: 'isPublished', label: 'Publisert' },
+    { key: 'isExpired', label: 'Utgått' },
+    { key: 'id', label: 'Id' },
+  ]
+  const productLevelDefaults = ['title', 'status', 'variantCount', 'updated', 'updatedByUser']
+
+  const variantLevelFields: ExportField[] = [
+    { key: 'productTitle', label: 'Produktnavn' },
+    { key: 'supplierName', label: 'Leverandørnavn' },
+    { key: 'articleName', label: 'Variantnavn' },
+    { key: 'hmsArtNr', label: 'HMS-nr.' },
+    { key: 'supplierRef', label: 'Lev-artnr' },
+    { key: 'isPublished', label: 'Publisert' },
+    { key: 'isExpired', label: 'Utgått' },
+    { key: 'avtale', label: 'Avtale' },
+  ]
+  const variantLevelDefaults = [
+    'productTitle',
+    'articleName',
+    'hmsArtNr',
+    'supplierRef',
+    'isPublished',
+    'isExpired',
+    'avtale',
+  ]
+
+  const exportLevels = [
+    { key: 'product', label: 'Produkt', availableFields: productLevelFields, defaultFieldKeys: productLevelDefaults },
+    { key: 'variant', label: 'Variant', availableFields: variantLevelFields, defaultFieldKeys: variantLevelDefaults },
+  ]
+
+  const seriesToProductRow = (series: SeriesSearchDTO, supplierName: string): Record<string, unknown> => ({
+    title: series.title,
+    supplierName,
+    status: series.status,
+    variantCount: series.variantCount,
+    updated: toReadableDateTimeString(series.updated).replace(',', ''),
+    updatedByUser: series.updatedByUser,
+    isPublished: series.isPublished ? 'Ja' : 'Nei',
+    isExpired: series.isExpired ? 'Ja' : 'Nei',
+    id: series.id,
+  })
+
+  type VariantExportRow = { base: Record<string, unknown>; activeAgreements: SeriesDTO['variants'][number]['agreements'] }
+
+  const seriesDetailToVariantRows = (series: SeriesDTO): VariantExportRow[] =>
+    (series.variants || []).map((variant) => {
+      const activeAgreements = (variant.agreements ?? [])
+        .filter((agreement) => agreement.status === 'ACTIVE')
+        .sort((a, b) => a.rank - b.rank)
+      return {
+        base: {
+          productTitle: series.title,
+          supplierName: series.supplierName,
+          articleName: variant.articleName,
+          hmsArtNr: variant.hmsArtNr ?? '',
+          supplierRef: isUUID(variant.supplierRef) ? '' : variant.supplierRef,
+          isPublished: variant.isPublished ? 'Ja' : 'Nei',
+          isExpired: variant.isExpired ? 'Ja' : 'Nei',
+          avtale: activeAgreements.length > 0 ? 'Ja' : 'Nei',
+        },
+        activeAgreements,
+      }
+    })
+
+  // Widens variant rows with one column set per agreement "slot" (1-indexed), e.g. "Rangering 1",
+  // "Delkontrakt 1", ... up to the highest number of active agreements found on any variant in the
+  // batch. Agreements are already sorted by rank, so slot order is stable and meaningful. Variants
+  // with fewer active agreements than the batch max get blank values in the unused higher slots.
+  const widenVariantRowsWithAgreementSlots = (variantRows: VariantExportRow[]): Record<string, unknown>[] => {
+    const maxAgreementCount = variantRows.reduce((max, row) => Math.max(max, row.activeAgreements.length), 0)
+    return variantRows.map(({ base, activeAgreements }) => {
+      const row: Record<string, unknown> = { ...base }
+      for (let slot = 1; slot <= maxAgreementCount; slot++) {
+        const agreement = activeAgreements[slot - 1]
+        row[`Rangering ${slot}`] = agreement?.rank ?? ''
+        row[`Delkontrakt ${slot}`] = agreement?.postTitle ?? ''
+        row[`Delkontraktnr ${slot}`] = agreement?.postNr ?? ''
+        row[`Anbudsnr ${slot}`] = agreement?.reference ?? ''
+        row[`Avtaletittel ${slot}`] = agreement?.title ?? ''
+      }
+      return row
+    })
+  }
+
+  const fetchAllMatchingSeries = async (): Promise<SeriesSearchDTO[]> => {
+    const size = 100
+    const first = (await fetcherGET(
+      buildSeriesSearchPath({ ...productQueryParams, page: 0, pageSize: size })
+    )) as SeriesSearchChunk
+    const totalPages = first.totalPages ?? 1
+    const all = [...(first.content || [])]
+    for (let page = 1; page < totalPages; page++) {
+      const chunk = (await fetcherGET(
+        buildSeriesSearchPath({ ...productQueryParams, page, pageSize: size })
+      )) as SeriesSearchChunk
+      all.push(...(chunk.content || []))
+    }
+    return all
+  }
+
+  const fetchSeriesDetailsBatched = async (ids: string[]): Promise<SeriesDTO[]> => {
+    const results: SeriesDTO[] = []
+    const batchSize = 20
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize)
+      const seriesInBatch = await Promise.all(batch.map((id) => getSeriesBySeriesId(id)))
+      results.push(...seriesInBatch)
+    }
+    return results
+  }
+
+  const getExportRows = async (
+    scope: ExportScope,
+    level?: string,
+    selectedKeys?: string[]
+  ): Promise<Record<string, unknown>[]> => {
+    const currentPageSeries = seriesByVariantIdentifier ? [seriesByVariantIdentifier] : pagedData?.content || []
+
+    const seriesInScope: SeriesSearchDTO[] =
+      scope === 'all'
+        ? seriesByVariantIdentifier
+          ? [seriesByVariantIdentifier]
+          : await fetchAllMatchingSeries()
+        : currentPageSeries
+
+    if (level === 'variant') {
+      // Variant rows are built from SeriesDTO (variants + agreements), which SeriesSearchDTO doesn't
+      // carry — the detail fetch is unconditionally required here regardless of field selection.
+      const details = await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))
+      return widenVariantRowsWithAgreementSlots(details.flatMap(seriesDetailToVariantRows))
+    }
+
+    // For product-level export, supplierName is the only field that requires a per-series detail
+    // fetch (SeriesSearchDTO doesn't include it). Skip the expensive fetch entirely unless the user
+    // actually selected that field — otherwise a full-catalogue export sends thousands of GETs for
+    // data nobody asked for.
+    const needsSupplierName = selectedKeys?.includes('supplierName') ?? false
+    const supplierNameBySeriesId = needsSupplierName
+      ? new Map(
+          (await fetchSeriesDetailsBatched(seriesInScope.map((series) => series.id))).map((series) => [
+            series.id,
+            series.supplierName ?? '',
+          ])
+        )
+      : new Map<string, string>()
+    return seriesInScope.map((series) => seriesToProductRow(series, supplierNameBySeriesId.get(series.id) ?? ''))
+  }
+
+  // Instant magnitude estimate (no extra fetch): product count from totalSize, variants via current-page average.
+  const currentPageContent = pagedData?.content || []
+  const avgVariantsPerProduct =
+    currentPageContent.length > 0
+      ? currentPageContent.reduce((sum, series) => sum + (series.variantCount ?? 0), 0) / currentPageContent.length
+      : 1
+
+  const estimateExport = (scope: ExportScope, level?: string, selectedKeys?: string[]) => {
+    const products = seriesByVariantIdentifier
+      ? 1
+      : scope === 'all'
+        ? pagedData?.totalSize ?? 0
+        : currentPageContent.length
+    const variants = Math.round(products * avgVariantsPerProduct)
+    const rows = level === 'variant' ? variants : products
+    const summaryPages = scope === 'all' && !seriesByVariantIdentifier ? Math.ceil(products / 100) : 0
+    // Detail batches are only fetched for variant-level export (always) or product-level export when
+    // supplierName was selected — mirrors the conditional fetch in getExportRows.
+    const needsDetailFetch = level === 'variant' || (selectedKeys?.includes('supplierName') ?? false)
+    const detailBatches = needsDetailFetch ? Math.ceil(products / 20) : 0
+    return { rows, products, requests: summaryPages + detailBatches, approximate: level === 'variant' }
+  }
+
+  const agreementFileNamePart =
+    agreementFilter === 'true' ? 'med-avtale' : agreementFilter === 'false' ? 'uten-avtale' : undefined
+  const missingMediaFileNamePart =
+    missingMediaType === 'IMAGE' ? 'mangler-bilde' : missingMediaType === 'VIDEO' ? 'mangler-video' : undefined
+  const exportStatusFilters = statusFilters.filter(Boolean)
+  const productExportFileName = (scope: ExportScope, level?: string) =>
+    buildDefaultFileName(level === 'variant' ? 'varianter' : 'produkter', [
+      searchTerm,
+      exportSupplierName,
+      exportStatusFilters.length ? exportStatusFilters.join('-') : undefined,
+      agreementFileNamePart,
+      missingMediaFileNamePart,
+      scope === 'all' ? 'alle-treff' : `side-${pageState}`,
+    ])
+
+  const isUnfilteredExport =
+    exportStatusFilters.length === 0 &&
+    !supplierFilter &&
+    searchTerm === '' &&
+    !missingMediaType &&
+    !agreementFilter
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -229,17 +443,28 @@ const ProductListWrapper = () => {
             </HGrid>
 
             {loggedInUser && (
-              <Box>
+              <HStack gap="space-8" align="center">
                 <Button
                   variant="secondary"
                   icon={<PlusIcon aria-hidden />}
                   iconPosition="left"
                   onClick={() => navigate('/produkter/opprett')}
-                  style={{ maxHeight: '3rem' }}
+                  style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
                 >
                   Opprett nytt produkt
                 </Button>
-              </Box>
+                {loggedInUser.isAdmin && (
+                  <Button
+                    variant="secondary"
+                    icon={<FileExportIcon aria-hidden />}
+                    iconPosition="left"
+                    onClick={() => setExportOpen(true)}
+                    style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
+                  >
+                    Eksporter
+                  </Button>
+                )}
+              </HStack>
             )}
           </HGrid>
           <VStack gap="space-16">
@@ -386,6 +611,16 @@ const ProductListWrapper = () => {
           </HStack>
         </VStack>
       </VStack>
+
+      <ExportModal
+        open={exportOpen && !!loggedInUser?.isAdmin}
+        onClose={() => setExportOpen(false)}
+        fileBaseName={productExportFileName}
+        levels={exportLevels}
+        getRows={getExportRows}
+        estimate={estimateExport}
+        isUnfiltered={isUnfilteredExport}
+      />
     </main>
   )
 }
