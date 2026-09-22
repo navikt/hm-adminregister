@@ -6,7 +6,7 @@ import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { afterEach, describe, expect, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
 import { fireEvent, render, renderHook, screen } from '@testing-library/react'
 
@@ -76,6 +76,13 @@ const addVariantButton = 'Legg til ny variant'
 const addImagesButton = 'Legg til bilder'
 const addDocumentsButton = 'Legg til dokumenter'
 const addVideoButton = 'Legg til videolenke'
+
+beforeEach(() => {
+  server.use(
+    http.get(apiPath('api/v1/isocategories'), () => HttpResponse.json([])),
+    http.get(apiPath('vendor/api/v1/product/registrations/series/*'), () => HttpResponse.json([]))
+  )
+})
 
 describe('Produktside', () => {
   test('Redigerbart produkt', async () => {
