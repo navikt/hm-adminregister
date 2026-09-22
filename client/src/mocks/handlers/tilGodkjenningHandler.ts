@@ -19,8 +19,10 @@ export const tilGodkjenningHandlers = [
         totalPages: Math.ceil(tilGodkjenningLangListe.content.length / size),
         pageable: {
           number: page,
-          sort: 'title',
           size: products.length,
+          mode: 'OFFSET',
+          sort: { orderBy: [] },
+          orderBy: [],
         },
       })
     } else {

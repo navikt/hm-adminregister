@@ -14,6 +14,7 @@ import {
   PackageFillIcon,
   PencilLineIcon,
   PersonGroupIcon,
+  TagIcon,
   WrenchIcon,
   XMarkIcon,
 } from '@navikt/aksel-icons'
@@ -168,6 +169,18 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
               <FileExcelIcon fontSize={'1.5rem'} aria-hidden />
               <span>Katalog</span>
+            </HStack>
+          </NavLink>
+        </>
+      )}
+      {loggedInUser && loggedInUser.isAdmin && (
+        <>
+          <NavLink to="/iso-oversikt" className="page-link">
+            {pathname.startsWith('/iso-oversikt') && <div className="active-indicator" />}
+            <div className="line" />
+            <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
+              <TagIcon fontSize={'1.5rem'} aria-hidden />
+              <span>ISO oversikt</span>
             </HStack>
           </NavLink>
         </>

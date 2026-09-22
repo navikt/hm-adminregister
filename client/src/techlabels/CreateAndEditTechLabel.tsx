@@ -24,6 +24,7 @@ type FormData = {
   isoCode: string
   options: string
   definition: string
+  guide: string
   section: string
 }
 
@@ -92,6 +93,7 @@ const CreateAndEditTechLabel = () => {
       isoCode: editData?.isoCode || '',
       options: editData?.options?.join('; ') || '',
       definition: editData?.definition || '',
+      guide: editData?.guide || '',
       section: editData ? (editData.section ?? DIVERSE_VALUE) : '',
     },
   })
@@ -217,6 +219,13 @@ const CreateAndEditTechLabel = () => {
             {...register('definition', { required: false })}
             label="Beskrivelse "
             id="definition"
+            autoComplete="on"
+          />
+          <TextField
+            {...register('guide', { required: true })}
+            label="Veiledningstekst *"
+            error={errors.guide && 'Veiledningstekst er påkrevd'}
+            id="guide"
             autoComplete="on"
           />
           <HStack gap="space-4" align="center">

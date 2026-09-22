@@ -21,6 +21,7 @@ import CreatePart from 'parts/CreatePart'
 import Part from 'parts/Part'
 import Parts from 'parts/Parts'
 import CreateProduct from 'products/CreateProduct'
+import IsoOversikt from 'products/IsoOversikt'
 import Product from 'products/Product'
 import ProductListWrapper from 'products/ProductListWrapper'
 import { ImporterOgValiderProdukter } from 'products/import/ImporterOgValiderProdukter'
@@ -88,6 +89,7 @@ export function App() {
           <Route element={<LoginWrapper />}>
             <Route element={<Navbar />}>
               <Route path="/produkter" element={<ProductListWrapper />} />
+              <Route path="/iso-oversikt" element={<IsoOversikt />} />
 
               <Route path="/produkter/:seriesId" element={<Product />} />
 
