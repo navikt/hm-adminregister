@@ -29,6 +29,10 @@
     color: #b7bfd8;
   }
 
+  &__iso-icon {
+    filter: brightness(0) invert(1);
+  }
+
   @include mixins.for-size(phone-up) {
     margin: 0;
     width: 123px;

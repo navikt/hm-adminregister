@@ -444,8 +444,8 @@ export function useIsoCategories22() {
   }
 }
 
-export function useIsoMappings() {
-  const path = `${HM_REGISTER_URL()}/admreg/api/v22/isomap`
+export function useIsoMappings(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap' : null
   const { data, error, isLoading } = useSWR<IsoMapDTO[]>(path, fetcherGET)
   const isoMappings = data && data
 

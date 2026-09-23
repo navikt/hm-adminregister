@@ -3,10 +3,11 @@ import { HM_REGISTER_URL } from 'environments'
 export const getPath = (isAdmin: boolean, path: string): string =>
   `${HM_REGISTER_URL()}${isAdmin ? '/admreg/admin' : '/admreg/vendor'}${path}`
 
-export const fetchAPI = async (url: string, method: string, body?: any): Promise<any> => {
+export const fetchAPI = async (url: string, method: string, body?: any, signal?: AbortSignal): Promise<any> => {
   const response = await fetch(url, {
     method,
     credentials: 'include',
+    signal,
     headers: {
       'Content-Type': 'application/json',
     },

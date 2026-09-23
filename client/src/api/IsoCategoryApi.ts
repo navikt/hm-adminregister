@@ -9,4 +9,4 @@ export const getAllIsoCategories22 = (): Promise<IsoCategory22DTO[]> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v22/isocategories`, 'GET')
 
 export const getAllIsoMappings = (): Promise<IsoMapDTO[]> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/api/v22/isomap`, 'GET')
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v22/isomap`, 'GET')
