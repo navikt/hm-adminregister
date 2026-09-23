@@ -474,3 +474,74 @@ test('viser alle v16-kategorier når mappinglisten er tom', async () => {
   expect(screen.getAllByText('Mangler kobling')).toHaveLength(6)
   expect(screen.getByLabelText('Rader per side')).toBeInTheDocument()
 })
+
+test('skiller mellom manglende mapping og feil ved henting av mappinger', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json({ message: 'boom' }, { status: 500 })
+    )
+  )
+
+  renderPage()
+
+  await mutate('http://localhost:8080/admreg/admin/api/v22/isomap', undefined, false)
+  await waitFor(() => expect(screen.getByText('04010101')).toBeInTheDocument())
+
+  const table = screen.getByRole('table')
+  const row = within(table).getByText('04010101').closest('tr') as HTMLElement
+  expect(within(row).getByText('Ikke tilgjengelig')).toBeInTheDocument()
+})
+
+test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvisning', async () => {
+  const supplierRefUuid = '11111111-2222-3333-4444-555555555555'
+  const agreements = [
+    { id: 'agr-2', reference: 'A2', rank: 2, postNr: 20, status: 'ACTIVE' },
+    { id: 'agr-1', reference: 'A1', rank: 1, postNr: 10, status: 'ACTIVE' },
+    { id: 'agr-3', reference: 'A3', rank: 3, postNr: 30, status: 'INACTIVE' },
+  ]
+
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', () =>
+      HttpResponse.json({
+        content: [
+          {
+            id: 's-special',
+            title: 'Spesiell serie',
+            isoCategory: '18090301',
+            isoCategory22: null,
+            variants: [
+              {
+                id: 'v-special',
+                articleName: 'Spesiell variant',
+                supplierRef: supplierRefUuid,
+                hmsArtNr: '333333',
+                agreements,
+              },
+            ],
+          },
+        ],
+        totalPages: 1,
+        totalSize: 1,
+      })
+    )
+  )
+
+  renderPage()
+  openExtractView()
+
+  const loadButton = screen.getByRole('button', { name: 'Hent liste' })
+  await waitFor(() => expect(loadButton).toBeEnabled())
+  fireEvent.click(loadButton)
+
+  await waitFor(() => expect(screen.getByText('18090301')).toBeInTheDocument())
+
+  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Avtaleinfo' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Varianter' }))
+
+  await waitFor(() => expect(screen.getByText('Spesiell variant')).toBeInTheDocument())
+  expect(screen.getByText('A1, A2')).toBeInTheDocument()
+  expect(screen.queryByText('A3')).not.toBeInTheDocument()
+  expect(screen.queryByText(supplierRefUuid)).not.toBeInTheDocument()
+})

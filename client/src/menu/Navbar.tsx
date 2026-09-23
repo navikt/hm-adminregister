@@ -9,6 +9,7 @@ import {
   DatabaseIcon,
   FileCheckmarkFillIcon,
   FileExcelIcon,
+  GlobeIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
@@ -178,7 +179,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             {pathname.startsWith('/iso-oversikt') && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="space-8" align="center" style={{ paddingLeft: '16px' }}>
-              <img className="menu__iso-icon" src="/ISO9999-01.png" alt="" aria-hidden width={24} height={24} />
+              <GlobeIcon aria-hidden fontSize="1.5rem" />
               <span>ISO Admin</span>
             </HStack>
           </NavLink>

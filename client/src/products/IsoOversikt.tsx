@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
 import { useAuthStore } from 'utils/store/useAuthStore'
+import { isUUID } from 'utils/string-util'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
 import {
   IsoCategory22DTO,
@@ -32,6 +33,8 @@ import {
   ToggleGroup,
   VStack,
 } from '@navikt/ds-react'
+
+import iso9999Icon from './ISO9999-01.svg'
 
 const SERIES_PAGE_SIZE = 200
 const SERIES_WARN_THRESHOLD = 200
@@ -113,10 +116,13 @@ type ExtractedProductVariant = {
   iso22Lvl4Title: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
+  mappingAvailable: boolean
   // Agreement
   agreementRef: string
-  agreementRank: number | null
-  agreementPostNr: number | null
+  agreementRank: string
+  agreementPostNr: string
+  agreementRankSort: number | null
+  agreementPostNrSort: number | null
 }
 
 type IsoPath = {
@@ -155,10 +161,13 @@ type ProductSummaryRow = {
   iso22Lvl4Title: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
+  mappingAvailable: boolean
   variantCount: number
   agreementRef: string
-  agreementRank: number | null
-  agreementPostNr: number | null
+  agreementRank: string
+  agreementPostNr: string
+  agreementRankSort: number | null
+  agreementPostNrSort: number | null
 }
 
 type MappingRow = {
@@ -182,6 +191,7 @@ type MappingRow = {
   iso22Lvl4Title: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
+  mappingAvailable: boolean
 }
 
 const OPTIONAL_COLUMNS_V1 = [
@@ -260,21 +270,7 @@ const getParentCategory = (
   const prefix = childCode.slice(0, parentLevel * 2)
   const category = categories.find((it) => it.isoLevel === parentLevel && it.isoCode.replace(/\s/g, '') === prefix)
 
-  // The category endpoint can contain a level-2/3/4 entry without its parent
-  // entry. Keep the hierarchy usable by deriving the parent code; its title
-  // remains empty until the backend provides the parent category.
-  return (
-    category ??
-    (prefix
-      ? {
-          ...child,
-          isoCode: prefix,
-          isoLevel: parentLevel,
-          isoTitle: '',
-          isoTitleShort: '',
-        }
-      : undefined)
-  )
+  return category
 }
 
 const buildIsoPath = (isoCode: string, categories: IsoCategoryDTO[]): IsoPath => {
@@ -306,17 +302,7 @@ const getParentCategory22 = (
   const category = categories
     .filter((it) => it.isoLevel === parentLevel && childCode.startsWith(it.isoCode.replace(/\s/g, '')))
     .sort((a, b) => b.isoCode.length - a.isoCode.length)[0]
-  return (
-    category ??
-    (childCode
-      ? {
-          ...child,
-          isoCode: childCode,
-          isoLevel: parentLevel,
-          isoTitle: '',
-        }
-      : undefined)
-  )
+  return category
 }
 
 // Mirrors buildIsoPath, but for the ISO 2022 category tree. Categories without a
@@ -374,12 +360,13 @@ const mapToExtractedRows = (
   seriesDetails: (SeriesDTO | IsoOverviewSeries)[],
   categories: IsoCategoryDTO[],
   categories22: IsoCategory22DTO[],
-  mappingsByCode16: Map<string, IsoMapDTO[]>
+  mappingsByCode16: Map<string, IsoMapDTO[]>,
+  mappingAvailable: boolean
 ): ExtractedProductVariant[] => {
   return seriesDetails.flatMap((series) => {
     const isoCode = typeof series.isoCategory === 'string' ? series.isoCategory : (series.isoCategory?.isoCode ?? '')
     const path = buildIsoPath(isoCode, categories)
-    const matchingMappings = findMappingsForCode(isoCode, mappingsByCode16)
+    const matchingMappings = mappingAvailable ? findMappingsForCode(isoCode, mappingsByCode16) : []
     const mappedIsoCodes22 = matchingMappings
       .map((mapping) => (mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')))
       .filter(Boolean)
@@ -394,13 +381,25 @@ const mapToExtractedRows = (
     const mappingTypes = Array.from(new Set(matchingMappings.flatMap((mapping) => mapping.mapEnum)))
     const mappingVerified = matchingMappings.length === 0 ? null : matchingMappings.every((mapping) => mapping.verified)
     return (series.variants || []).map((variant) => {
-      const firstAgreement = variant.agreements?.[0] ?? null
+      const activeAgreements = (variant.agreements || [])
+        .filter((agreement) => ('status' in agreement ? agreement.status === 'ACTIVE' : true))
+        .sort((a, b) => a.rank - b.rank || a.postNr - b.postNr)
+      const agreementRefs = Array.from(
+        new Set(activeAgreements.map((agreement) => agreement.reference).filter(Boolean))
+      ).join(', ')
+      const agreementRanks = Array.from(new Set(activeAgreements.map((agreement) => agreement.rank)))
+        .sort((a, b) => a - b)
+        .join(', ')
+      const agreementPostNrs = Array.from(new Set(activeAgreements.map((agreement) => agreement.postNr)))
+        .sort((a, b) => a - b)
+        .join(', ')
+      const firstAgreement = activeAgreements[0] ?? null
       return {
         productId: variant.id,
         seriesId: series.id,
         productTitle: series.title,
         variantName: variant.articleName,
-        supplierRef: variant.supplierRef,
+        supplierRef: isUUID(variant.supplierRef) ? '' : variant.supplierRef,
         hmsArtNr: variant.hmsArtNr || '',
         isoCode,
         iso1: path.level1?.isoCode ?? '',
@@ -421,9 +420,12 @@ const mapToExtractedRows = (
         iso22Lvl4Title: path22Value('level4', 'isoTitle'),
         mappingTypes,
         mappingVerified,
-        agreementRef: firstAgreement?.reference ?? '',
-        agreementRank: firstAgreement?.rank ?? null,
-        agreementPostNr: firstAgreement?.postNr ?? null,
+        mappingAvailable,
+        agreementRef: agreementRefs,
+        agreementRank: agreementRanks,
+        agreementPostNr: agreementPostNrs,
+        agreementRankSort: firstAgreement?.rank ?? null,
+        agreementPostNrSort: firstAgreement?.postNr ?? null,
       }
     })
   })
@@ -432,12 +434,13 @@ const mapToExtractedRows = (
 const buildMappingRows = (
   categories: IsoCategoryDTO[],
   categories22: IsoCategory22DTO[],
-  mappings: IsoMapDTO[]
+  mappings: IsoMapDTO[],
+  mappingAvailable: boolean
 ): MappingRow[] => {
   const mappingsByCode16 = buildMappingsByCode16(mappings)
 
   const toRow = (mapping: IsoMapDTO | undefined, code16: string, key: string): MappingRow => {
-    const mappingTypes = mapping?.mapEnum ?? []
+    const mappingTypes = mappingAvailable ? (mapping?.mapEnum ?? []) : []
     const code22 = mappingTypes.includes('SAME') ? code16 : (mapping?.code22?.replace(/\s/g, '') ?? '')
     const path = code16 ? buildIsoPath(code16, categories) : {}
     const path22 = code22 ? buildIso22Path(code22, categories22) : {}
@@ -461,7 +464,8 @@ const buildMappingRows = (
       iso22Lvl3Title: path22.level3?.isoTitle ?? '',
       iso22Lvl4Title: path22.level4?.isoTitle ?? '',
       mappingTypes,
-      mappingVerified: mapping?.verified ?? null,
+      mappingVerified: mappingAvailable ? (mapping?.verified ?? null) : null,
+      mappingAvailable,
     }
   }
 
@@ -506,9 +510,13 @@ const sortRows = (rows: ExtractedProductVariant[], key: SortKey, dir: SortDir): 
   return [...rows].sort((a, b) => {
     let av: number
     let bv: number
-    if (key === 'agreementRank' || key === 'agreementPostNr') {
-      av = numericValue(a[key])
-      bv = numericValue(b[key])
+    if (key === 'variantCount') return 0
+    if (key === 'agreementRank') {
+      av = numericValue(a.agreementRankSort)
+      bv = numericValue(b.agreementRankSort)
+    } else if (key === 'agreementPostNr') {
+      av = numericValue(a.agreementPostNrSort)
+      bv = numericValue(b.agreementPostNrSort)
     } else {
       return compareIsoCodes(
         a[key as 'iso1' | 'iso2' | 'iso3' | 'iso4'],
@@ -527,9 +535,12 @@ const sortProductRows = (rows: ProductSummaryRow[], key: SortKey, dir: SortDir):
     if (key === 'variantCount') {
       av = a.variantCount
       bv = b.variantCount
-    } else if (key === 'agreementRank' || key === 'agreementPostNr') {
-      av = numericValue(a[key])
-      bv = numericValue(b[key])
+    } else if (key === 'agreementRank') {
+      av = numericValue(a.agreementRankSort)
+      bv = numericValue(b.agreementRankSort)
+    } else if (key === 'agreementPostNr') {
+      av = numericValue(a.agreementPostNrSort)
+      bv = numericValue(b.agreementPostNrSort)
     } else {
       return compareIsoCodes(
         a[key as 'iso1' | 'iso2' | 'iso3' | 'iso4'],
@@ -554,12 +565,40 @@ const sortByIsoLevel = <T extends { iso1: string; iso2: string; iso3: string; is
   })
 }
 
+const mergeCsv = (a: string, b: string): string =>
+  Array.from(
+    new Set([
+      ...a
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean),
+      ...b
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean),
+    ])
+  ).join(', ')
+
 const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductSummaryRow[] => {
   const map = new Map<string, ProductSummaryRow>()
   for (const row of variantRows) {
     const existing = map.get(row.seriesId)
     if (existing) {
       existing.variantCount++
+      existing.agreementRef = mergeCsv(existing.agreementRef, row.agreementRef)
+      existing.agreementRank = mergeCsv(existing.agreementRank, row.agreementRank)
+      existing.agreementPostNr = mergeCsv(existing.agreementPostNr, row.agreementPostNr)
+      existing.agreementRankSort = Math.min(
+        numericValue(existing.agreementRankSort),
+        numericValue(row.agreementRankSort)
+      )
+      existing.agreementPostNrSort = Math.min(
+        numericValue(existing.agreementPostNrSort),
+        numericValue(row.agreementPostNrSort)
+      )
+      if (existing.agreementRankSort === Number.MAX_SAFE_INTEGER) existing.agreementRankSort = null
+      if (existing.agreementPostNrSort === Number.MAX_SAFE_INTEGER) existing.agreementPostNrSort = null
+      existing.mappingAvailable = existing.mappingAvailable && row.mappingAvailable
     } else {
       map.set(row.seriesId, {
         seriesId: row.seriesId,
@@ -583,10 +622,13 @@ const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductSummaryR
         iso22Lvl4Title: row.iso22Lvl4Title,
         mappingTypes: row.mappingTypes,
         mappingVerified: row.mappingVerified,
+        mappingAvailable: row.mappingAvailable,
         variantCount: 1,
         agreementRef: row.agreementRef,
         agreementRank: row.agreementRank,
         agreementPostNr: row.agreementPostNr,
+        agreementRankSort: row.agreementRankSort,
+        agreementPostNrSort: row.agreementPostNrSort,
       })
     }
   }
@@ -693,9 +735,13 @@ const Iso22LevelHeaders = () => (
   </>
 )
 
-const MappingTypes = ({ types }: { types: IsoMapEnum[] }) => (
+const MappingTypes = ({ types, mappingAvailable }: { types: IsoMapEnum[]; mappingAvailable: boolean }) => (
   <HStack gap="space-4" wrap>
-    {types.length > 0 ? (
+    {!mappingAvailable ? (
+      <Tag variant="neutral" size="small">
+        Ikke tilgjengelig
+      </Tag>
+    ) : types.length > 0 ? (
       types.map((type) => (
         <Tag key={type} variant={type === 'SAME' ? 'success' : 'neutral'} size="small">
           {ISO_MAP_LABELS[type]}
@@ -776,13 +822,14 @@ const IsoOversikt = () => {
     [isoCategories22]
   )
 
+  const mappingDataAvailable = !isoMappingsError
   const mappingsByCode16 = useMemo(() => buildMappingsByCode16(isoMappings || []), [isoMappings])
 
   const selectedIsoCode = selectedLevel4 || selectedLevel3 || selectedLevel2 || selectedLevel1
 
   const mappingRows = useMemo(
-    () => buildMappingRows(sortedIsoCategories, sortedIsoCategories22, isoMappings || []),
-    [sortedIsoCategories, sortedIsoCategories22, isoMappings]
+    () => buildMappingRows(sortedIsoCategories, sortedIsoCategories22, isoMappings || [], mappingDataAvailable),
+    [sortedIsoCategories, sortedIsoCategories22, isoMappings, mappingDataAvailable]
   )
 
   const filteredMappingRows = useMemo(() => {
@@ -844,7 +891,15 @@ const IsoOversikt = () => {
               abortController.signal
             )
         abortController.signal.throwIfAborted()
-        setRows(mapToExtractedRows(details, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16))
+        setRows(
+          mapToExtractedRows(
+            details,
+            sortedIsoCategories,
+            sortedIsoCategories22,
+            mappingsByCode16,
+            mappingDataAvailable
+          )
+        )
         setVariantPage(1)
       } catch (error: unknown) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
@@ -858,7 +913,14 @@ const IsoOversikt = () => {
         }
       }
     },
-    [loggedInUser?.isAdmin, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, selectedIsoCode]
+    [
+      loggedInUser?.isAdmin,
+      sortedIsoCategories,
+      sortedIsoCategories22,
+      mappingsByCode16,
+      selectedIsoCode,
+      mappingDataAvailable,
+    ]
   )
 
   const level1Options = useMemo(() => sortedIsoCategories.filter((it) => it.isoLevel === 1), [sortedIsoCategories])
@@ -1013,7 +1075,7 @@ const IsoOversikt = () => {
     <main className="show-menu">
       <VStack gap="space-12" maxWidth="100rem">
         <HStack gap="space-12" align="center">
-          <img src="/ISO9999-01.png" alt="" aria-hidden width={48} height={48} />
+          <img src={iso9999Icon} alt="" aria-hidden width={48} height={48} />
           <Heading level="1" size="large">
             ISO Admin
           </Heading>
@@ -1304,7 +1366,7 @@ const IsoOversikt = () => {
                             <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             <Table.DataCell>
-                              <MappingTypes types={row.mappingTypes} />
+                              <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
                             </Table.DataCell>
                             <Table.DataCell>
                               <MappingVerification verified={row.mappingVerified} />
@@ -1463,7 +1525,7 @@ const IsoOversikt = () => {
                             {showMappingTypes && (
                               <>
                                 <Table.DataCell>
-                                  <MappingTypes types={row.mappingTypes} />
+                                  <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
                                 </Table.DataCell>
                                 <Table.DataCell>
                                   <MappingVerification verified={row.mappingVerified} />
@@ -1544,7 +1606,7 @@ const IsoOversikt = () => {
                             {showMappingTypes && (
                               <>
                                 <Table.DataCell>
-                                  <MappingTypes types={row.mappingTypes} />
+                                  <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
                                 </Table.DataCell>
                                 <Table.DataCell>
                                   <MappingVerification verified={row.mappingVerified} />
