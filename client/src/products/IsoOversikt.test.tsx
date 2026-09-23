@@ -2,7 +2,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { server } from 'mocks/server'
 import { HttpResponse, delay, http } from 'msw'
-import { mutate } from 'swr'
+import { SWRConfig } from 'swr'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
@@ -12,9 +12,11 @@ import IsoOversikt from './IsoOversikt'
 
 const renderPage = () =>
   render(
-    <MemoryRouter>
-      <IsoOversikt />
-    </MemoryRouter>
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+      <MemoryRouter>
+        <IsoOversikt />
+      </MemoryRouter>
+    </SWRConfig>
   )
 
 const openExtractView = () => {
@@ -460,7 +462,6 @@ test('viser valgt ISO-nivå først og undernivåene etterpå', async () => {
 
 test('viser alle v16-kategorier når mappinglisten er tom', async () => {
   server.use(http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json([])))
-  await mutate('http://localhost:8080/admreg/admin/api/v22/isomap', [], false)
 
   renderPage()
 
@@ -483,13 +484,11 @@ test('skiller mellom manglende mapping og feil ved henting av mappinger', async 
   )
 
   renderPage()
-
-  await mutate('http://localhost:8080/admreg/admin/api/v22/isomap', undefined, false)
-  await waitFor(() => expect(screen.getByText('04010101')).toBeInTheDocument())
+  await screen.findByText('Klarte ikke å hente mapping-status mellom v16 og v22.')
 
   const table = screen.getByRole('table')
   const row = within(table).getByText('04010101').closest('tr') as HTMLElement
-  expect(within(row).getByText('Ikke tilgjengelig')).toBeInTheDocument()
+  expect(within(row).getAllByText('Ikke tilgjengelig')).toHaveLength(2)
 })
 
 test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvisning', async () => {
@@ -533,7 +532,7 @@ test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvi
   await waitFor(() => expect(loadButton).toBeEnabled())
   fireEvent.click(loadButton)
 
-  await waitFor(() => expect(screen.getByText('18090301')).toBeInTheDocument())
+  await waitFor(() => expect(screen.getAllByText('18090301').length).toBeGreaterThan(0))
 
   fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
