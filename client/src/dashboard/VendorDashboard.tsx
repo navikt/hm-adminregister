@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 
 import { usePagedParts } from 'api/PartApi'
-import { SkyraSurveyBox } from 'skyra/SkyraSurveyBox'
 import { usePagedProducts } from 'utils/swr-hooks'
 
 import { ArrowsCirclepathIcon } from '@navikt/aksel-icons'
@@ -67,8 +66,28 @@ const VendorDashboard = () => {
     isAccessory: true,
   })
 
+  const { data: sparePartsOnAgreementData, mutate: mutateSparePartsOnAgreement } = usePagedParts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: '',
+    agreementFilter: 'true',
+    missingMediaType: 'IMAGE',
+    isAccessory: false,
+  })
+
+  const { data: sparePartsNotOnAgreementData, mutate: mutateSparePartsNotOnAgreement } = usePagedParts({
+    page: 0,
+    pageSize: 1,
+    titleSearchTerm: '',
+    agreementFilter: 'false',
+    missingMediaType: 'IMAGE',
+    isAccessory: false,
+  })
+
   const partsOnAgreementCount = partsOnAgreementData?.totalSize ?? 0
   const partsNotOnAgreementCount = partsNotOnAgreementData?.totalSize ?? 0
+  const sparePartsOnAgreementCount = sparePartsOnAgreementData?.totalSize ?? 0
+  const sparePartsNotOnAgreementCount = sparePartsNotOnAgreementData?.totalSize ?? 0
 
   const { data: mainProductsWithoutVideoOnAgreementData, mutate: mutateMainProductsVideoOnAgreement } =
     usePagedProducts({
@@ -94,6 +113,7 @@ const VendorDashboard = () => {
   const mainProductsWithoutVideoNotOnAgreementCount = mainProductsWithoutVideoNotOnAgreementData?.totalSize ?? 0
 
   const isLoading = !mainProductsOnAgreementData || !mainProductsNotOnAgreementData
+  const isSparePartsLoading = !sparePartsOnAgreementData || !sparePartsNotOnAgreementData
 
   const refreshDashboard = () => {
     mutateProductsToApprove()
@@ -102,6 +122,8 @@ const VendorDashboard = () => {
     mutateMainProductsNotOnAgreement()
     mutatePartsOnAgreement()
     mutatePartsNotOnAgreement()
+    mutateSparePartsOnAgreement()
+    mutateSparePartsNotOnAgreement()
     mutateMainProductsVideoOnAgreement()
     mutateMainProductsVideoNotOnAgreement()
   }
@@ -300,6 +322,51 @@ const VendorDashboard = () => {
                 </Heading>
               )}
               <BodyShort size="small">Antall tilbehør som ikke er på rammeavtale og mangler bilde.</BodyShort>
+            </Box>
+          </HStack>
+
+          <Heading level="2" size="medium" style={{ marginTop: '2rem' }}>
+            Reservedeler uten bilde
+          </Heading>
+          <HStack gap="space-16" wrap>
+            <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
+              <Heading level="3" size="small">
+                På rammeavtale
+              </Heading>
+              {isSparePartsLoading ? (
+                <Loader size="medium" />
+              ) : sparePartsOnAgreementCount > 0 ? (
+                <Link to="/deler?missingMediaType=IMAGE&inAgreement=true&isSparePart=true">
+                  <Heading level="3" size="large" spacing>
+                    {sparePartsOnAgreementCount}
+                  </Heading>
+                </Link>
+              ) : (
+                <Heading level="3" size="large" spacing>
+                  {sparePartsOnAgreementCount}
+                </Heading>
+              )}
+              <BodyShort size="small">Antall reservedeler som er på en rammeavtale og mangler bilde.</BodyShort>
+            </Box>
+
+            <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
+              <Heading level="3" size="small">
+                Ikke på rammeavtale
+              </Heading>
+              {isSparePartsLoading ? (
+                <Loader size="medium" />
+              ) : sparePartsNotOnAgreementCount > 0 ? (
+                <Link to="/deler?missingMediaType=IMAGE&inAgreement=false&isSparePart=true">
+                  <Heading level="3" size="large" spacing>
+                    {sparePartsNotOnAgreementCount}
+                  </Heading>
+                </Link>
+              ) : (
+                <Heading level="3" size="large" spacing>
+                  {sparePartsNotOnAgreementCount}
+                </Heading>
+              )}
+              <BodyShort size="small">Antall reservedeler som ikke er på rammeavtale og mangler bilde.</BodyShort>
             </Box>
           </HStack>
         </VStack>
