@@ -1,0 +1,11 @@
+.controlRow {
+  :global(.aksel-toggle-group__button),
+  :global(.aksel-button),
+  :global(.aksel-text-field__input) {
+    min-height: var(--ax-space-40);
+  }
+}
+
+.otherOptionsButton {
+  min-width: 9rem;
+}

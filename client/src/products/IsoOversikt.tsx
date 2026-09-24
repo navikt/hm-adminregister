@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
@@ -14,6 +15,7 @@ import {
   SeriesSearchDTO,
 } from 'utils/types/response-types'
 
+import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
   ActionMenu,
   Alert,
@@ -26,15 +28,17 @@ import {
   InfoCard,
   Loader,
   Pagination,
+  Radio,
+  RadioGroup,
   Select,
   Table,
   Tag,
   TextField,
-  ToggleGroup,
   VStack,
 } from '@navikt/ds-react'
 
 import iso9999Icon from './ISO9999-01.svg'
+import styles from './IsoOversikt.module.scss'
 
 const SERIES_PAGE_SIZE = 200
 const SERIES_WARN_THRESHOLD = 200
@@ -46,6 +50,7 @@ type ViewMode = 'product' | 'variant'
 type PageMode = 'mapping' | 'extract'
 type ExtraColumn = 'produkt' | 'variant' | 'avtale'
 type IsoMapEnum = IsoMapDTO['mapEnum'][number]
+type OptionalIsoLevel = 1 | 2 | 3
 
 type IsoOverviewVariant = {
   id: string
@@ -209,6 +214,8 @@ const OPTIONAL_COLUMNS_V22 = [
   'v22 nivå 4 tittel',
 ] as const
 type OptionalColumnV22 = (typeof OPTIONAL_COLUMNS_V22)[number]
+
+const OPTIONAL_ISO_LEVELS = [1, 2, 3] as const
 
 const fetchSeriesPage = async (
   page: number,
@@ -708,30 +715,64 @@ const IsoLevelHeaders = ({
   sortKey,
   sortDir,
   onSort,
+  visibleLevels,
 }: {
   sortKey: SortKey
   sortDir: SortDir
   onSort: (key: SortKey) => void
+  visibleLevels: Set<OptionalIsoLevel>
 }) => (
   <>
-    {(['iso1', 'iso2', 'iso3', 'iso4'] as const).map((k, i) => (
-      <SortHeader
-        key={k}
-        label={`v16 - nivå ${i + 1}`}
-        active={sortKey === k}
-        dir={sortDir}
-        onClick={() => onSort(k)}
-      />
-    ))}
+    {(['iso1', 'iso2', 'iso3', 'iso4'] as const).map((k, i) =>
+      i === 3 || visibleLevels.has((i + 1) as OptionalIsoLevel) ? (
+        <SortHeader
+          key={k}
+          label={`v16 - nivå ${i + 1}`}
+          active={sortKey === k}
+          dir={sortDir}
+          onClick={() => onSort(k)}
+        />
+      ) : null
+    )}
   </>
 )
 
-const Iso22LevelHeaders = () => (
+const IsoLevelCells = ({
+  row,
+  visibleLevels,
+}: {
+  row: Pick<ExtractedProductVariant, 'iso1' | 'iso2' | 'iso3' | 'iso4'>
+  visibleLevels: Set<OptionalIsoLevel>
+}) => (
   <>
-    <Table.HeaderCell scope="col">v22 - nivå 1</Table.HeaderCell>
-    <Table.HeaderCell scope="col">v22 - nivå 2</Table.HeaderCell>
-    <Table.HeaderCell scope="col">v22 - nivå 3</Table.HeaderCell>
+    {visibleLevels.has(1) && <Table.DataCell>{row.iso1}</Table.DataCell>}
+    {visibleLevels.has(2) && <Table.DataCell>{row.iso2}</Table.DataCell>}
+    {visibleLevels.has(3) && <Table.DataCell>{row.iso3}</Table.DataCell>}
+    <Table.DataCell>{row.iso4}</Table.DataCell>
+  </>
+)
+
+const Iso22LevelHeaders = ({ visibleLevels }: { visibleLevels: Set<OptionalIsoLevel> }) => (
+  <>
+    {visibleLevels.has(1) && <Table.HeaderCell scope="col">v22 - nivå 1</Table.HeaderCell>}
+    {visibleLevels.has(2) && <Table.HeaderCell scope="col">v22 - nivå 2</Table.HeaderCell>}
+    {visibleLevels.has(3) && <Table.HeaderCell scope="col">v22 - nivå 3</Table.HeaderCell>}
     <Table.HeaderCell scope="col">v22 - nivå 4</Table.HeaderCell>
+  </>
+)
+
+const Iso22LevelCells = ({
+  row,
+  visibleLevels,
+}: {
+  row: Pick<ExtractedProductVariant, 'iso22Lvl1' | 'iso22Lvl2' | 'iso22Lvl3' | 'iso22Lvl4'>
+  visibleLevels: Set<OptionalIsoLevel>
+}) => (
+  <>
+    {visibleLevels.has(1) && <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>}
+    {visibleLevels.has(2) && <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>}
+    {visibleLevels.has(3) && <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>}
+    <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
   </>
 )
 
@@ -800,8 +841,15 @@ const IsoOversikt = () => {
 
   const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(new Set())
   const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(new Set())
+  const [visibleIsoLevelsV1, setVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
+    () => new Set(OPTIONAL_ISO_LEVELS)
+  )
+  const [visibleIsoLevelsV22, setVisibleIsoLevelsV22] = useState<Set<OptionalIsoLevel>>(
+    () => new Set(OPTIONAL_ISO_LEVELS)
+  )
   const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(new Set())
   const [showMappingTypes, setShowMappingTypes] = useState(false)
+  const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
   const [isoInput, setIsoInput] = useState('')
@@ -1038,6 +1086,18 @@ const IsoOversikt = () => {
     })
   }
 
+  const toggleIsoLevel = (
+    level: OptionalIsoLevel,
+    setVisibleLevels: Dispatch<SetStateAction<Set<OptionalIsoLevel>>>
+  ) => {
+    setVisibleLevels((current) => {
+      const next = new Set(current)
+      if (next.has(level)) next.delete(level)
+      else next.add(level)
+      return next
+    })
+  }
+
   const resetFilters = () => {
     setIsoInput('')
     setIsoInputError(null)
@@ -1098,9 +1158,9 @@ const IsoOversikt = () => {
           </ExpansionCard.Header>
           <ExpansionCard.Content>
             <VStack gap="space-12">
-              <HStack gap="space-12" align="end" wrap>
-                <ToggleGroup
-                  label="Visningsmodus"
+              <HStack gap="space-12" align="end" wrap className={styles.controlRow}>
+                <RadioGroup
+                  legend="Visningsmodus"
                   value={pageMode}
                   onChange={(val) => {
                     setPageMode(val as PageMode)
@@ -1108,12 +1168,14 @@ const IsoOversikt = () => {
                   }}
                   size="small"
                 >
-                  <ToggleGroup.Item value="mapping">Ren ISO-mapping</ToggleGroup.Item>
-                  <ToggleGroup.Item value="extract">Produkt/variant</ToggleGroup.Item>
-                </ToggleGroup>
+                  <HStack gap="space-24" wrap={false}>
+                    <Radio value="mapping">Ren ISO-mapping</Radio>
+                    <Radio value="extract">Produkt og variant</Radio>
+                  </HStack>
+                </RadioGroup>
                 {pageMode === 'extract' && (
-                  <ToggleGroup
-                    label="Visning"
+                  <RadioGroup
+                    legend="Vis liste som"
                     value={viewMode}
                     onChange={(val) => {
                       setViewMode(val as ViewMode)
@@ -1121,17 +1183,48 @@ const IsoOversikt = () => {
                     }}
                     size="small"
                   >
-                    <ToggleGroup.Item value="product">Produkter</ToggleGroup.Item>
-                    <ToggleGroup.Item value="variant">Varianter</ToggleGroup.Item>
-                  </ToggleGroup>
+                    <HStack gap="space-24" wrap={false}>
+                      <Radio value="product">Produkter</Radio>
+                      <Radio value="variant">Varianter</Radio>
+                    </HStack>
+                  </RadioGroup>
                 )}
-                <ActionMenu>
+                <ActionMenu open={otherOptionsOpen} onOpenChange={setOtherOptionsOpen}>
                   <ActionMenu.Trigger>
-                    <Button variant="secondary" size="small">
+                    <Button
+                      variant="secondary"
+                      data-color="neutral"
+                      size="small"
+                      className={styles.otherOptionsButton}
+                      icon={otherOptionsOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
+                      iconPosition="right"
+                    >
                       Andre valg
                     </Button>
                   </ActionMenu.Trigger>
                   <ActionMenu.Content>
+                    <ActionMenu.Group label="v16-koder">
+                      {OPTIONAL_ISO_LEVELS.map((level) => (
+                        <ActionMenu.CheckboxItem
+                          key={level}
+                          checked={visibleIsoLevelsV1.has(level)}
+                          onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV1)}
+                        >
+                          v16 nivå {level} kode
+                        </ActionMenu.CheckboxItem>
+                      ))}
+                    </ActionMenu.Group>
+                    <ActionMenu.Group label="v22-koder">
+                      {OPTIONAL_ISO_LEVELS.map((level) => (
+                        <ActionMenu.CheckboxItem
+                          key={level}
+                          checked={visibleIsoLevelsV22.has(level)}
+                          onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV22)}
+                        >
+                          v22 nivå {level} kode
+                        </ActionMenu.CheckboxItem>
+                      ))}
+                    </ActionMenu.Group>
                     <ActionMenu.Group label="v16-titler">
                       {OPTIONAL_COLUMNS_V1.map((col) => (
                         <ActionMenu.CheckboxItem
@@ -1191,8 +1284,7 @@ const IsoOversikt = () => {
                 <Box marginInline="space-12 space-0">
                   <TextField
                     label="ISO-kode (v16)"
-                    description="2 til 8 siffer"
-                    placeholder="18090301"
+                    placeholder="2 til 8 siffer, for eksempel 18 el. 1809 el. 180903 el. 18090301"
                     size="small"
                     value={isoInput}
                     onChange={(e) => {
@@ -1204,7 +1296,7 @@ const IsoOversikt = () => {
                       if (e.key === 'Enter') applyIsoCodeInput(isoInput)
                     }}
                     error={isoInputError ?? undefined}
-                    style={{ width: '16.5rem' }}
+                    style={{ width: '28rem' }}
                   />
                 </Box>
                 {selectedIsoCode && <BodyShort size="small">Valgt v16-kode: {selectedIsoCode}</BodyShort>}
@@ -1344,9 +1436,14 @@ const IsoOversikt = () => {
                       </caption>
                       <Table.Header>
                         <Table.Row>
-                          <IsoLevelHeaders sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                          <IsoLevelHeaders
+                            sortKey={sortKey}
+                            sortDir={sortDir}
+                            onSort={toggleSort}
+                            visibleLevels={visibleIsoLevelsV1}
+                          />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
-                          <Iso22LevelHeaders />
+                          <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           <Table.HeaderCell scope="col">Endringstype</Table.HeaderCell>
                           <Table.HeaderCell scope="col">Status</Table.HeaderCell>
@@ -1355,15 +1452,9 @@ const IsoOversikt = () => {
                       <Table.Body>
                         {pagedMappingRows.map((row) => (
                           <Table.Row key={row.key}>
-                            <Table.DataCell>{row.iso1}</Table.DataCell>
-                            <Table.DataCell>{row.iso2}</Table.DataCell>
-                            <Table.DataCell>{row.iso3}</Table.DataCell>
-                            <Table.DataCell>{row.iso4}</Table.DataCell>
+                            <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
+                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             <Table.DataCell>
                               <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
@@ -1471,9 +1562,14 @@ const IsoOversikt = () => {
                       </caption>
                       <Table.Header>
                         <Table.Row>
-                          <IsoLevelHeaders sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                          <IsoLevelHeaders
+                            sortKey={sortKey}
+                            sortDir={sortDir}
+                            onSort={toggleSort}
+                            visibleLevels={visibleIsoLevelsV1}
+                          />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
-                          <Iso22LevelHeaders />
+                          <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           {showMappingTypes && (
                             <>
@@ -1512,15 +1608,9 @@ const IsoOversikt = () => {
                       <Table.Body>
                         {(pagedRows as ProductSummaryRow[]).map((row) => (
                           <Table.Row key={row.seriesId}>
-                            <Table.DataCell>{row.iso1}</Table.DataCell>
-                            <Table.DataCell>{row.iso2}</Table.DataCell>
-                            <Table.DataCell>{row.iso3}</Table.DataCell>
-                            <Table.DataCell>{row.iso4}</Table.DataCell>
+                            <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
+                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>
@@ -1553,9 +1643,14 @@ const IsoOversikt = () => {
                       </caption>
                       <Table.Header>
                         <Table.Row>
-                          <IsoLevelHeaders sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                          <IsoLevelHeaders
+                            sortKey={sortKey}
+                            sortDir={sortDir}
+                            onSort={toggleSort}
+                            visibleLevels={visibleIsoLevelsV1}
+                          />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
-                          <Iso22LevelHeaders />
+                          <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           {showMappingTypes && (
                             <>
@@ -1593,15 +1688,9 @@ const IsoOversikt = () => {
                       <Table.Body>
                         {(pagedRows as ExtractedProductVariant[]).map((row) => (
                           <Table.Row key={row.productId}>
-                            <Table.DataCell>{row.iso1}</Table.DataCell>
-                            <Table.DataCell>{row.iso2}</Table.DataCell>
-                            <Table.DataCell>{row.iso3}</Table.DataCell>
-                            <Table.DataCell>{row.iso4}</Table.DataCell>
+                            <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>
-                            <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
+                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>

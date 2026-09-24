@@ -20,7 +20,7 @@ const renderPage = () =>
   )
 
 const openExtractView = () => {
-  fireEvent.click(screen.getByRole('radio', { name: 'Produkt/variant' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Produkt og variant' }))
 }
 
 const loadExtractRows = async () => {
@@ -376,6 +376,33 @@ test('kan vise valgfrie v16- og v22-tittelkolonner via chips', async () => {
 
   expect(screen.getByText('Rollatorer med fire hjul')).toBeInTheDocument()
   expect(screen.getByText('Rollator med fire hjul (2022)')).toBeInTheDocument()
+})
+
+test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', async () => {
+  renderPage()
+
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+
+  for (const version of ['v16', 'v22']) {
+    for (const level of [1, 2, 3]) {
+      fireEvent.click(screen.getByRole('menuitemcheckbox', { name: `${version} nivå ${level} kode` }))
+    }
+  }
+
+  expect(screen.queryByRole('columnheader', { name: /v16 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('columnheader', { name: /v22 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: /v16 - nivå 4/ })).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: 'v22 - nivå 4' })).toBeInTheDocument()
+  expect(screen.queryByRole('menuitemcheckbox', { name: 'v16 nivå 4 kode' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitemcheckbox', { name: 'v22 nivå 4 kode' })).not.toBeInTheDocument()
+
+  await loadExtractRows()
+
+  expect(screen.queryByRole('columnheader', { name: /v16 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('columnheader', { name: /v22 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: /v16 - nivå 4/ })).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: 'v22 - nivå 4' })).toBeInTheDocument()
 })
 
 test('kan vise endringstype mellom v16 og v22', async () => {
