@@ -38,10 +38,13 @@ export const SortHeader = ({
   </Table.HeaderCell>
 )
 
-export type IsoTitlesV1 = Pick<ExtractedProductVariant, 'iso1Title' | 'iso2Title' | 'iso3Title' | 'iso4Title'>
+export type IsoTitlesV1 = Pick<
+  ExtractedProductVariant,
+  'iso1Title' | 'iso2Title' | 'iso3Title' | 'iso4Title' | 'iso4Text' | 'iso4SearchWords'
+>
 export type IsoTitlesV22 = Pick<
   ExtractedProductVariant,
-  'iso22Lvl1Title' | 'iso22Lvl2Title' | 'iso22Lvl3Title' | 'iso22Lvl4Title'
+  'iso22Lvl1Title' | 'iso22Lvl2Title' | 'iso22Lvl3Title' | 'iso22Lvl4Title' | 'iso22Lvl4Text' | 'iso22Lvl4SearchWords'
 >
 
 export const OptionalTitleHeadersV1 = ({ visible }: { visible: Set<OptionalColumnV1> }) => (
@@ -50,6 +53,8 @@ export const OptionalTitleHeadersV1 = ({ visible }: { visible: Set<OptionalColum
     {visible.has('v16 nivå 2 tittel') && <Table.HeaderCell scope="col">v16 - 2 tittel</Table.HeaderCell>}
     {visible.has('v16 nivå 3 tittel') && <Table.HeaderCell scope="col">v16 - 3 tittel</Table.HeaderCell>}
     {visible.has('v16 nivå 4 tittel') && <Table.HeaderCell scope="col">v16 - 4 tittel</Table.HeaderCell>}
+    {visible.has('v16 forklaring') && <Table.HeaderCell scope="col">v16 - forklaring</Table.HeaderCell>}
+    {visible.has('v16 søkeord') && <Table.HeaderCell scope="col">v16 - søkeord</Table.HeaderCell>}
   </>
 )
 
@@ -59,6 +64,8 @@ export const OptionalTitleCellsV1 = ({ visible, row }: { visible: Set<OptionalCo
     {visible.has('v16 nivå 2 tittel') && <Table.DataCell>{row.iso2Title}</Table.DataCell>}
     {visible.has('v16 nivå 3 tittel') && <Table.DataCell>{row.iso3Title}</Table.DataCell>}
     {visible.has('v16 nivå 4 tittel') && <Table.DataCell>{row.iso4Title}</Table.DataCell>}
+    {visible.has('v16 forklaring') && <Table.DataCell>{row.iso4Text}</Table.DataCell>}
+    {visible.has('v16 søkeord') && <Table.DataCell>{row.iso4SearchWords}</Table.DataCell>}
   </>
 )
 
@@ -68,6 +75,8 @@ export const OptionalTitleHeadersV22 = ({ visible }: { visible: Set<OptionalColu
     {visible.has('v22 nivå 2 tittel') && <Table.HeaderCell scope="col">v22 - 2 tittel</Table.HeaderCell>}
     {visible.has('v22 nivå 3 tittel') && <Table.HeaderCell scope="col">v22 - 3 tittel</Table.HeaderCell>}
     {visible.has('v22 nivå 4 tittel') && <Table.HeaderCell scope="col">v22 - 4 tittel</Table.HeaderCell>}
+    {visible.has('v22 forklaring') && <Table.HeaderCell scope="col">v22 - forklaring</Table.HeaderCell>}
+    {visible.has('v22 søkeord') && <Table.HeaderCell scope="col">v22 - søkeord</Table.HeaderCell>}
   </>
 )
 
@@ -77,6 +86,8 @@ export const OptionalTitleCellsV22 = ({ visible, row }: { visible: Set<OptionalC
     {visible.has('v22 nivå 2 tittel') && <Table.DataCell>{row.iso22Lvl2Title}</Table.DataCell>}
     {visible.has('v22 nivå 3 tittel') && <Table.DataCell>{row.iso22Lvl3Title}</Table.DataCell>}
     {visible.has('v22 nivå 4 tittel') && <Table.DataCell>{row.iso22Lvl4Title}</Table.DataCell>}
+    {visible.has('v22 forklaring') && <Table.DataCell>{row.iso22Lvl4Text}</Table.DataCell>}
+    {visible.has('v22 søkeord') && <Table.DataCell>{row.iso22Lvl4SearchWords}</Table.DataCell>}
   </>
 )
 

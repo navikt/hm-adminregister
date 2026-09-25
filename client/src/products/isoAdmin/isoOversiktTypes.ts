@@ -71,6 +71,9 @@ export type ExtractedProductVariant = {
   iso2Title: string
   iso3Title: string
   iso4Title: string
+  // ISO 2016 forklaring (isoText) og søkeord - kun nivå 4 (leaf), som er nivået knyttet til produktet/varianten
+  iso4Text: string
+  iso4SearchWords: string
   // ISO 2022 codes per level (empty string if not migrated/mapped yet or level doesn't apply)
   iso22Lvl1: string
   iso22Lvl2: string
@@ -81,6 +84,9 @@ export type ExtractedProductVariant = {
   iso22Lvl2Title: string
   iso22Lvl3Title: string
   iso22Lvl4Title: string
+  // ISO 2022 forklaring (isoText) og søkeord - kun nivå 4
+  iso22Lvl4Text: string
+  iso22Lvl4SearchWords: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
@@ -118,6 +124,8 @@ export type ProductSummaryRow = {
   iso2Title: string
   iso3Title: string
   iso4Title: string
+  iso4Text: string
+  iso4SearchWords: string
   iso22Lvl1: string
   iso22Lvl2: string
   iso22Lvl3: string
@@ -126,6 +134,8 @@ export type ProductSummaryRow = {
   iso22Lvl2Title: string
   iso22Lvl3Title: string
   iso22Lvl4Title: string
+  iso22Lvl4Text: string
+  iso22Lvl4SearchWords: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
@@ -148,6 +158,8 @@ export type MappingRow = {
   iso2Title: string
   iso3Title: string
   iso4Title: string
+  iso4Text: string
+  iso4SearchWords: string
   iso22Lvl1: string
   iso22Lvl2: string
   iso22Lvl3: string
@@ -156,25 +168,31 @@ export type MappingRow = {
   iso22Lvl2Title: string
   iso22Lvl3Title: string
   iso22Lvl4Title: string
+  iso22Lvl4Text: string
+  iso22Lvl4SearchWords: string
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
 }
 
-export const OPTIONAL_COLUMNS_V1 = [
+export const OPTIONAL_TITLE_COLUMNS_V1 = [
   'v16 nivå 1 tittel',
   'v16 nivå 2 tittel',
   'v16 nivå 3 tittel',
   'v16 nivå 4 tittel',
 ] as const
+export const OPTIONAL_TEXT_COLUMNS_V1 = ['v16 forklaring', 'v16 søkeord'] as const
+export const OPTIONAL_COLUMNS_V1 = [...OPTIONAL_TITLE_COLUMNS_V1, ...OPTIONAL_TEXT_COLUMNS_V1] as const
 export type OptionalColumnV1 = (typeof OPTIONAL_COLUMNS_V1)[number]
 
-export const OPTIONAL_COLUMNS_V22 = [
+export const OPTIONAL_TITLE_COLUMNS_V22 = [
   'v22 nivå 1 tittel',
   'v22 nivå 2 tittel',
   'v22 nivå 3 tittel',
   'v22 nivå 4 tittel',
 ] as const
+export const OPTIONAL_TEXT_COLUMNS_V22 = ['v22 forklaring', 'v22 søkeord'] as const
+export const OPTIONAL_COLUMNS_V22 = [...OPTIONAL_TITLE_COLUMNS_V22, ...OPTIONAL_TEXT_COLUMNS_V22] as const
 export type OptionalColumnV22 = (typeof OPTIONAL_COLUMNS_V22)[number]
 
 export const OPTIONAL_ISO_LEVELS = [1, 2, 3] as const

@@ -44,10 +44,12 @@ export const mapToExtractedRows = (
       typeof series.isoCategory22 === 'string' ? series.isoCategory22 : series.isoCategory22?.isoCode
     const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : Array.from(new Set(mappedIsoCodes22))
     const paths22 = isoCodes22.map((code) => buildIso22Path(code, categories22))
-    const path22Value = (level: keyof Iso22Path, field: 'isoCode' | 'isoTitle') =>
+    const path22Value = (level: keyof Iso22Path, field: 'isoCode' | 'isoTitle' | 'isoText') =>
       Array.from(
         new Set(paths22.map((path22) => path22[level]?.[field]).filter((value): value is string => !!value))
       ).join(', ')
+    const path22SearchWords = (level: keyof Iso22Path) =>
+      Array.from(new Set(paths22.flatMap((path22) => path22[level]?.searchWords ?? []))).join(', ')
     const mappingTypes = Array.from(new Set(matchingMappings.flatMap((mapping) => mapping.mapEnum)))
     const mappingVerified = matchingMappings.length === 0 ? null : matchingMappings.every((mapping) => mapping.verified)
     return (series.variants || []).map((variant) => {
@@ -80,6 +82,8 @@ export const mapToExtractedRows = (
         iso2Title: path.level2?.isoTitle ?? '',
         iso3Title: path.level3?.isoTitle ?? '',
         iso4Title: path.level4?.isoTitle ?? '',
+        iso4Text: path.level4?.isoText ?? '',
+        iso4SearchWords: (path.level4?.searchWords ?? []).join(', '),
         iso22Lvl1: path22Value('level1', 'isoCode'),
         iso22Lvl2: path22Value('level2', 'isoCode'),
         iso22Lvl3: path22Value('level3', 'isoCode'),
@@ -88,6 +92,8 @@ export const mapToExtractedRows = (
         iso22Lvl2Title: path22Value('level2', 'isoTitle'),
         iso22Lvl3Title: path22Value('level3', 'isoTitle'),
         iso22Lvl4Title: path22Value('level4', 'isoTitle'),
+        iso22Lvl4Text: path22Value('level4', 'isoText'),
+        iso22Lvl4SearchWords: path22SearchWords('level4'),
         mappingTypes,
         mappingVerified,
         mappingAvailable,
@@ -125,6 +131,8 @@ export const buildMappingRows = (
       iso2Title: path.level2?.isoTitle ?? '',
       iso3Title: path.level3?.isoTitle ?? '',
       iso4Title: path.level4?.isoTitle ?? '',
+      iso4Text: path.level4?.isoText ?? '',
+      iso4SearchWords: (path.level4?.searchWords ?? []).join(', '),
       iso22Lvl1: path22.level1?.isoCode ?? '',
       iso22Lvl2: path22.level2?.isoCode ?? '',
       iso22Lvl3: path22.level3?.isoCode ?? '',
@@ -133,6 +141,8 @@ export const buildMappingRows = (
       iso22Lvl2Title: path22.level2?.isoTitle ?? '',
       iso22Lvl3Title: path22.level3?.isoTitle ?? '',
       iso22Lvl4Title: path22.level4?.isoTitle ?? '',
+      iso22Lvl4Text: path22.level4?.isoText ?? '',
+      iso22Lvl4SearchWords: (path22.level4?.searchWords ?? []).join(', '),
       mappingTypes,
       mappingVerified: mappingAvailable ? (mapping?.verified ?? null) : null,
       mappingAvailable,

@@ -9,3 +9,19 @@
 .otherOptionsButton {
   min-width: 9rem;
 }
+
+.optionColumns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ax-space-16);
+}
+
+.optionColumn {
+  display: flex;
+  flex-direction: column;
+
+  &:not(:first-child) {
+    border-left: 1px solid var(--ax-border-subtle);
+    padding-left: var(--ax-space-16);
+  }
+}

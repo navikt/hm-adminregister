@@ -31,18 +31,23 @@ const loadExtractRows = async () => {
   await waitFor(() => expect(screen.getAllByText('18090301')).toHaveLength(2))
 }
 
-const isoCategoryV1 = (isoCode: string, isoLevel: number, isoTitle: string) => ({
+const isoCategoryV1 = (
+  isoCode: string,
+  isoLevel: number,
+  isoTitle: string,
+  extra: { isoText?: string; searchWords?: string[] } = {}
+) => ({
   isoCode,
   isoLevel,
   isoTitle,
   isoTitleShort: null,
-  isoText: '',
+  isoText: extra.isoText ?? '',
   isoTextShort: '',
   isoTranslations: {},
   isActive: true,
   showTech: false,
   allowMulti: false,
-  searchWords: [],
+  searchWords: extra.searchWords ?? [],
   created: '2026-01-01T00:00:00',
   updated: '2026-01-01T00:00:00',
 })
@@ -61,7 +66,10 @@ const isoCategoriesV1 = [
   isoCategoryV1('18', 1, 'Utstyr for bevegelse'),
   isoCategoryV1('1809', 2, 'Ganghjelpemidler'),
   isoCategoryV1('180903', 3, 'Rollatorer'),
-  isoCategoryV1('18090301', 4, 'Rollatorer med fire hjul'),
+  isoCategoryV1('18090301', 4, 'Rollatorer med fire hjul', {
+    isoText: 'Rollator med fire hjul og bremser',
+    searchWords: ['rollator', 'gange'],
+  }),
   isoCategoryV1('22030301', 4, 'Annen kategori'),
   isoCategoryV1('24', 1, 'Hjelpemidler for håndtering'),
   isoCategoryV1('2406', 2, 'Hjelpemidler for håndtering av gjenstander'),
@@ -69,13 +77,18 @@ const isoCategoriesV1 = [
   isoCategoryV1('24060301', 4, 'Gripehjelpemiddel'),
 ]
 
-const isoCategoryV22 = (isoCode: string, isoLevel: number, isoTitle: string) => ({
+const isoCategoryV22 = (
+  isoCode: string,
+  isoLevel: number,
+  isoTitle: string,
+  extra: { isoText?: string; searchWords?: string[] } = {}
+) => ({
   isoCode,
   isoLevel,
   isoTitle,
-  isoText: '',
+  isoText: extra.isoText ?? '',
   isoTranslations: null,
-  searchWords: [],
+  searchWords: extra.searchWords ?? [],
   created: '2026-01-01T00:00:00',
   updated: '2026-01-01T00:00:00',
 })
@@ -88,7 +101,10 @@ const isoCategoriesV22 = [
   isoCategoryV22('04010201', 4, 'Oksygenutstyr (2022)'),
   isoCategoryV22('1809', 2, 'Ganghjelpemidler (2022)'),
   isoCategoryV22('180903', 3, 'Rollatorer (2022)'),
-  isoCategoryV22('18090301', 4, 'Rollator med fire hjul (2022)'),
+  isoCategoryV22('18090301', 4, 'Rollator med fire hjul (2022)', {
+    isoText: 'Rullator med fire hjul, oppdatert forklaring',
+    searchWords: ['rullator', 'gange', 'ny'],
+  }),
   isoCategoryV22('22', 1, 'Kommunikasjon og informasjon (2022)'),
   isoCategoryV22('2209', 2, 'Kommunikasjon (2022)'),
   isoCategoryV22('220912', 3, 'Kommunikasjonshjelpemidler (2022)'),
@@ -388,6 +404,25 @@ test('kan vise valgfrie v16- og v22-tittelkolonner via chips', async () => {
 
   expect(screen.getByText('Rollatorer med fire hjul')).toBeInTheDocument()
   expect(screen.getByText('Rollator med fire hjul (2022)')).toBeInTheDocument()
+})
+
+test('kan vise valgfri v16- og v22-forklaring og søkeord', async () => {
+  renderPage()
+  await loadExtractRows()
+
+  expect(screen.queryByText('Rollator med fire hjul og bremser')).not.toBeInTheDocument()
+  expect(screen.queryByText('Rullator med fire hjul, oppdatert forklaring')).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 forklaring' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 søkeord' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 forklaring' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 søkeord' }))
+
+  expect(screen.getByText('Rollator med fire hjul og bremser')).toBeInTheDocument()
+  expect(screen.getByText('rollator, gange')).toBeInTheDocument()
+  expect(screen.getByText('Rullator med fire hjul, oppdatert forklaring')).toBeInTheDocument()
+  expect(screen.getByText('rullator, gange, ny')).toBeInTheDocument()
 })
 
 test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', async () => {

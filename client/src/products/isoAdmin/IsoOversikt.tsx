@@ -50,9 +50,11 @@ import {
 import {
   ExtraColumn,
   ExtractedProductVariant,
-  OPTIONAL_COLUMNS_V1,
-  OPTIONAL_COLUMNS_V22,
   OPTIONAL_ISO_LEVELS,
+  OPTIONAL_TEXT_COLUMNS_V1,
+  OPTIONAL_TEXT_COLUMNS_V22,
+  OPTIONAL_TITLE_COLUMNS_V1,
+  OPTIONAL_TITLE_COLUMNS_V22,
   OptionalColumnV1,
   OptionalColumnV22,
   OptionalIsoLevel,
@@ -458,50 +460,78 @@ const IsoOversikt = () => {
                     </Button>
                   </ActionMenu.Trigger>
                   <ActionMenu.Content>
-                    <ActionMenu.Group label="v16-koder">
-                      {OPTIONAL_ISO_LEVELS.map((level) => (
-                        <ActionMenu.CheckboxItem
-                          key={level}
-                          checked={visibleIsoLevelsV1.has(level)}
-                          onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV1)}
-                        >
-                          v16 nivå {level} kode
-                        </ActionMenu.CheckboxItem>
-                      ))}
-                    </ActionMenu.Group>
-                    <ActionMenu.Group label="v22-koder">
-                      {OPTIONAL_ISO_LEVELS.map((level) => (
-                        <ActionMenu.CheckboxItem
-                          key={level}
-                          checked={visibleIsoLevelsV22.has(level)}
-                          onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV22)}
-                        >
-                          v22 nivå {level} kode
-                        </ActionMenu.CheckboxItem>
-                      ))}
-                    </ActionMenu.Group>
-                    <ActionMenu.Group label="v16-titler">
-                      {OPTIONAL_COLUMNS_V1.map((col) => (
-                        <ActionMenu.CheckboxItem
-                          key={col}
-                          checked={visibleOptionalsV1.has(col)}
-                          onCheckedChange={() => toggleOptionalV1(col)}
-                        >
-                          {col}
-                        </ActionMenu.CheckboxItem>
-                      ))}
-                    </ActionMenu.Group>
-                    <ActionMenu.Group label="v22-titler">
-                      {OPTIONAL_COLUMNS_V22.map((col) => (
-                        <ActionMenu.CheckboxItem
-                          key={col}
-                          checked={visibleOptionalsV22.has(col)}
-                          onCheckedChange={() => toggleOptionalV22(col)}
-                        >
-                          {col}
-                        </ActionMenu.CheckboxItem>
-                      ))}
-                    </ActionMenu.Group>
+                    <div className={styles.optionColumns}>
+                      <div className={styles.optionColumn}>
+                        <ActionMenu.Group label="v16-koder">
+                          {OPTIONAL_ISO_LEVELS.map((level) => (
+                            <ActionMenu.CheckboxItem
+                              key={level}
+                              checked={visibleIsoLevelsV1.has(level)}
+                              onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV1)}
+                            >
+                              v16 nivå {level} kode
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                        <ActionMenu.Group label="v16-titler">
+                          {OPTIONAL_TITLE_COLUMNS_V1.map((col) => (
+                            <ActionMenu.CheckboxItem
+                              key={col}
+                              checked={visibleOptionalsV1.has(col)}
+                              onCheckedChange={() => toggleOptionalV1(col)}
+                            >
+                              {col}
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                        <ActionMenu.Group label="v16-annet">
+                          {OPTIONAL_TEXT_COLUMNS_V1.map((col) => (
+                            <ActionMenu.CheckboxItem
+                              key={col}
+                              checked={visibleOptionalsV1.has(col)}
+                              onCheckedChange={() => toggleOptionalV1(col)}
+                            >
+                              {col}
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                      </div>
+                      <div className={styles.optionColumn}>
+                        <ActionMenu.Group label="v22-koder">
+                          {OPTIONAL_ISO_LEVELS.map((level) => (
+                            <ActionMenu.CheckboxItem
+                              key={level}
+                              checked={visibleIsoLevelsV22.has(level)}
+                              onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV22)}
+                            >
+                              v22 nivå {level} kode
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                        <ActionMenu.Group label="v22-titler">
+                          {OPTIONAL_TITLE_COLUMNS_V22.map((col) => (
+                            <ActionMenu.CheckboxItem
+                              key={col}
+                              checked={visibleOptionalsV22.has(col)}
+                              onCheckedChange={() => toggleOptionalV22(col)}
+                            >
+                              {col}
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                        <ActionMenu.Group label="v22-annet">
+                          {OPTIONAL_TEXT_COLUMNS_V22.map((col) => (
+                            <ActionMenu.CheckboxItem
+                              key={col}
+                              checked={visibleOptionalsV22.has(col)}
+                              onCheckedChange={() => toggleOptionalV22(col)}
+                            >
+                              {col}
+                            </ActionMenu.CheckboxItem>
+                          ))}
+                        </ActionMenu.Group>
+                      </div>
+                    </div>
                     {pageMode === 'extract' && (
                       <>
                         <ActionMenu.Group label="Mapping">
