@@ -20,7 +20,7 @@ const renderPage = () =>
   )
 
 const openExtractView = () => {
-  fireEvent.click(screen.getByRole('radio', { name: 'Produkt og variant' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
 }
 
 const loadExtractRows = async () => {
@@ -341,7 +341,10 @@ test('viser mappet v22-kode når serien bare har v16-kode, og tom celle når kob
   const rowAnnen = within(table).getByText('22030301').closest('tr') as HTMLElement
   expect(within(rowAnnen).getByText('22030301')).toBeInTheDocument()
   expect(within(rowAnnen).queryByText('18090301')).not.toBeInTheDocument()
-  expect(seriesListRequests).toBe(1)
+  // 2 kall til liste-endepunktet er forventet: ett fra bakgrunns-prefetchen som starter automatisk
+  // når admin-siden lastes (se IsoOversikt.tsx), og ett fra det eksplisitte "Hent liste"-klikket i
+  // loadExtractRows() - ingen ekstra per-serie-detaljkall skal likevel utløses (includeIsoOverview).
+  expect(seriesListRequests).toBe(2)
   expect(seriesDetailRequests).toBe(0)
 })
 
@@ -349,9 +352,9 @@ test('kan veksle til variant-visning', async () => {
   renderPage()
   await loadExtractRows()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
-  fireEvent.click(screen.getByRole('radio', { name: 'Varianter' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Rollator Alfa variant')).toBeInTheDocument())
   expect(screen.getByText('Annen serie variant')).toBeInTheDocument()
@@ -362,9 +365,9 @@ test('sortering på antall varianter krasjer ikke ved bytte til variantvisning',
   await loadExtractRows()
 
   fireEvent.click(screen.getByRole('button', { name: /Ant\. varianter, sorter stigende/ }))
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
-  fireEvent.click(screen.getByRole('radio', { name: 'Varianter' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Rollator Alfa variant')).toBeInTheDocument())
 })
@@ -398,7 +401,7 @@ test('kan vise valgfrie v16- og v22-tittelkolonner via chips', async () => {
   expect(screen.queryByText('Rollatorer med fire hjul')).not.toBeInTheDocument()
   expect(screen.queryByText('Rollator med fire hjul (2022)')).not.toBeInTheDocument()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 nivå 4 tittel' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 nivå 4 tittel' }))
 
@@ -413,7 +416,7 @@ test('kan vise valgfri v16- og v22-forklaring og søkeord', async () => {
   expect(screen.queryByText('Rollator med fire hjul og bremser')).not.toBeInTheDocument()
   expect(screen.queryByText('Rullator med fire hjul, oppdatert forklaring')).not.toBeInTheDocument()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 forklaring' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 søkeord' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 forklaring' }))
@@ -429,7 +432,7 @@ test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', a
   renderPage()
 
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
 
   for (const version of ['v16', 'v22']) {
     for (const level of [1, 2, 3]) {
@@ -458,7 +461,7 @@ test('kan vise endringstype mellom v16 og v22', async () => {
 
   expect(screen.queryByText('= Ingenting er endret')).not.toBeInTheDocument()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Endringstype og verifisering' }))
 
   const table = screen.getByRole('table')
@@ -608,13 +611,71 @@ test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvi
 
   await waitFor(() => expect(screen.getAllByText('18090301').length).toBeGreaterThan(0))
 
-  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Avtaleinfo' }))
-  fireEvent.click(screen.getByRole('radio', { name: 'Varianter' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Spesiell variant')).toBeInTheDocument())
   expect(screen.getByText('A1, A2')).toBeInTheDocument()
   expect(screen.queryByText('A3')).not.toBeInTheDocument()
   expect(screen.queryByText(supplierRefUuid)).not.toBeInTheDocument()
+})
+
+// Regression-test for backend-cachen i Iso22Service.retrieveAll() (hm-grunndata-register), som kun
+// lastes inn på nytt ved appstart - GET /admreg/api/v22/isocategories vil derfor IKKE inneholde den
+// nyopprettede nivå 4-kategorien rett etter opprettelse. Testen simulerer nettopp dette ved å la
+// mocken for det endepunktet fortsatt returnere den GAMLE listen (uten den nye kategorien) etter at
+// opprettelses-kallet er utført, og verifiserer at hovedtabellen likevel viser den nye v22-koden med
+// en gang - dvs. at IsoOversikt.tsx sin lokale cache-sammenslåing (mutateIsoCategories22 med
+// revalidate: false) fungerer som forventet.
+test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse, selv om backend-cachen er utdatert', async () => {
+  let createdCategoryPayload: { isoCode: string; isoTitle: string } | null = null
+  let updatedMapPayload: { code22?: string; level22?: number } | null = null
+
+  server.use(
+    http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', async ({ request }) => {
+      const body = (await request.json()) as { isoCode: string; isoTitle: string }
+      createdCategoryPayload = body
+      return HttpResponse.json(body, { status: 201 })
+    }),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/map-7', async ({ request }) => {
+      const body = (await request.json()) as { isoMap: { code22?: string; level22?: number } }
+      updatedMapPayload = body.isoMap
+      return HttpResponse.json({ ...isoMappings[7], ...body.isoMap })
+    })
+  )
+
+  renderPage()
+
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+
+  // Bytt til "Endre"-modus for å få frem Aksjon-kolonnen.
+  fireEvent.click(screen.getByRole('checkbox'))
+
+  // Mapping-raden for v16-kode 050303 -> v22-kode 220912 (nivå 3, ikke verifisert) mangler nivå
+  // 4 under v22 og kvalifiserer derfor for "Opprett ny ISO v22-kategori".
+  const targetRow = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
+  fireEvent.click(within(targetRow).getByRole('button', { name: 'Rad-meny' }))
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
+
+  const suffixField = screen.getByLabelText('Siste 2 siffer')
+  fireEvent.change(suffixField, { target: { value: '01' } })
+  fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny nasjonal kategori' } })
+
+  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+
+  await waitFor(() =>
+    expect(screen.queryByRole('button', { name: 'Opprett kategori og koble til mapping' })).not.toBeInTheDocument()
+  )
+
+  expect(createdCategoryPayload).toEqual(
+    expect.objectContaining({ isoCode: '22091201', isoTitle: 'Ny nasjonal kategori' })
+  )
+  expect(updatedMapPayload).toEqual(expect.objectContaining({ code22: '22091201', level22: 4 }))
+
+  // Selv om GET /admreg/api/v22/isocategories fortsatt (via beforeEach-mocken) returnerer den GAMLE
+  // listen uten "22091201", skal hovedtabellen likevel vise den nye koden - bevis på at
+  // handleCreateIso22Category sin lokale SWR-cache-sammenslåing (revalidate: false) fungerer.
+  expect(screen.getAllByText('22091201').length).toBeGreaterThan(0)
 })

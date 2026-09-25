@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 
+import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
+import { getSeriesBySeriesId, updateProductIso22Category } from 'api/SeriesApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
+import { IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -16,18 +19,25 @@ import {
   Heading,
   InfoCard,
   Loader,
+  Modal,
   Pagination,
   Radio,
   RadioGroup,
   Select,
+  Switch,
   Table,
   TextField,
   VStack,
 } from '@navikt/ds-react'
 
+import AttachIso22CategoryModal from './AttachIso22CategoryModal'
+import CreateIso22CategoryModal, { CreateIso22CategoryContext } from './CreateIso22CategoryModal'
 import iso9999Icon from './ISO9999-01.svg'
+import IsoBulkMoveModal from './IsoBulkMoveModal'
 import styles from './IsoOversikt.module.scss'
 import {
+  AksjonCell,
+  AksjonHeader,
   Iso22LevelCells,
   Iso22LevelHeaders,
   IsoLevelCells,
@@ -68,11 +78,31 @@ import { buildIsoPath } from './isoPathUtils'
 import { groupByProduct } from './isoRowUtils'
 import { compareIsoCodes, sortByIsoLevel, sortProductRows, sortRows } from './isoSortUtils'
 
+type EditMode = 'les' | 'endre'
+
+const extractErrorMessage = (error: unknown): string => {
+  if (
+    typeof error === 'object' &&
+    error &&
+    'errorDetail' in error &&
+    typeof error.errorDetail === 'string' &&
+    error.errorDetail
+  ) {
+    return error.errorDetail
+  }
+  if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
+    return error.message
+  }
+  return 'Noe gikk galt. Prøv igjen.'
+}
+
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
-  const { isoCategories22, isoLoading22, isoError22 } = useIsoCategories22()
-  const { isoMappings, isoMappingsLoading, isoMappingsError } = useIsoMappings(loggedInUser?.isAdmin === true)
+  const { isoCategories22, isoLoading22, isoError22, mutateIsoCategories22 } = useIsoCategories22()
+  const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(
+    loggedInUser?.isAdmin === true
+  )
 
   const [rows, setRows] = useState<ExtractedProductVariant[] | null>(null)
   const [totalSeriesCount, setTotalSeriesCount] = useState<number | undefined>(undefined)
@@ -109,8 +139,41 @@ const IsoOversikt = () => {
   const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
+  // Ett samlet visningsvalg for admin (radioknapper) - internt styrer det fortsatt de to separate
+  // tilstandene pageMode/viewMode, siden resten av komponenten (paginering, filtrering, rendering)
+  // allerede forgrener seg på disse.
+  const displayMode: 'mapping' | ViewMode = pageMode === 'mapping' ? 'mapping' : viewMode
+  const handleDisplayModeChange = (mode: 'mapping' | ViewMode) => {
+    if (mode === 'mapping') {
+      setPageMode('mapping')
+    } else {
+      setPageMode('extract')
+      setViewMode(mode)
+    }
+    resetPaging()
+  }
   const [isoInput, setIsoInput] = useState('')
   const [isoInputError, setIsoInputError] = useState<string | null>(null)
+
+  const [editMode, setEditMode] = useState<EditMode>('les')
+  const [verifyingMappingIds, setVerifyingMappingIds] = useState<Set<string>>(new Set())
+  const [verificationError, setVerificationError] = useState<string | null>(null)
+  const [moveModal, setMoveModal] = useState<{ open: boolean; seriesId: string | null }>({
+    open: false,
+    seriesId: null,
+  })
+  const [moveError, setMoveError] = useState<string | null>(null)
+  const [bulkMoveModal, setBulkMoveModal] = useState<{ open: boolean; isoCode: string | null }>({
+    open: false,
+    isoCode: null,
+  })
+  const [verifyConfirm, setVerifyConfirm] = useState<{
+    mappingIds: string[]
+    verified: boolean
+    seriesId?: string
+    isoCode?: string
+  } | null>(null)
+  const [createCategoryContext, setCreateCategoryContext] = useState<CreateIso22CategoryContext | null>(null)
 
   const resetPaging = () => {
     setVariantPage(1)
@@ -129,12 +192,264 @@ const IsoOversikt = () => {
 
   const mappingDataAvailable = !isoMappingsError
   const mappingsByCode16 = useMemo(() => buildMappingsByCode16(isoMappings || []), [isoMappings])
+  const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
+
+  // Ekte tilknytningsstatus per v16 isoCode - true kun når ALLE produkter/varianter med denne
+  // v16-koden faktisk er koblet til den anbefalte v22-kategorien (rows[].iso22Attached er ekte
+  // tilknytning, ikke visningsfallback). Mangler produkter for koden helt, regnes den som komplett
+  // (ingenting å koble til). Brukes til å sperre "Verifiser" til reell tilknytning er gjort - se
+  // AksjonCell og IsoBulkMoveModal.
+  const attachmentCompleteByIsoCode = useMemo(() => {
+    const map = new Map<string, boolean>()
+    ;(rows || []).forEach((row) => {
+      const prev = map.get(row.isoCode)
+      map.set(row.isoCode, prev === undefined ? row.iso22Attached : prev && row.iso22Attached)
+    })
+    return map
+  }, [rows])
+
+  const handleToggleVerification = useCallback(
+    async (mappingIds: string[], verified: boolean) => {
+      const targets = mappingIds
+        .map((id) => isoMappingsById.get(id))
+        .filter((mapping): mapping is IsoMapDTO => !!mapping)
+      if (!targets.length) return
+      setVerificationError(null)
+      setVerifyingMappingIds((prev) => new Set([...prev, ...mappingIds]))
+      try {
+        const updated = await Promise.all(targets.map((mapping) => updateIsoMapping({ ...mapping, verified })))
+        const updatedById = new Map(updated.map((mapping) => [mapping.id, mapping]))
+        mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
+          revalidate: false,
+        })
+        setRows(
+          (prev) =>
+            prev?.map((row) =>
+              row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
+            ) ?? null
+        )
+      } catch (error) {
+        setVerificationError(extractErrorMessage(error))
+      } finally {
+        setVerifyingMappingIds((prev) => {
+          const next = new Set(prev)
+          mappingIds.forEach((id) => next.delete(id))
+          return next
+        })
+      }
+    },
+    [isoMappingsById, mutateIsoMappings]
+  )
+
+  const handleOpenMoveModal = useCallback((seriesId: string) => {
+    setMoveError(null)
+    setMoveModal({ open: true, seriesId })
+  }, [])
+
+  const handleConfirmMove = useCallback(
+    async (isoCategory22: string) => {
+      const seriesId = moveModal.seriesId
+      if (!seriesId) return
+      setMoveModal({ open: false, seriesId: null })
+      try {
+        await updateProductIso22Category(seriesId, isoCategory22)
+        const updatedSeries = await getSeriesBySeriesId(seriesId)
+        const newRows = mapToExtractedRows(
+          [updatedSeries],
+          sortedIsoCategories,
+          sortedIsoCategories22,
+          mappingsByCode16,
+          mappingDataAvailable
+        )
+        setRows((prev) => {
+          const withoutSeries = (prev || []).filter((row) => row.seriesId !== seriesId)
+          return [...withoutSeries, ...newRows]
+        })
+      } catch (error) {
+        setMoveError(extractErrorMessage(error))
+      }
+    },
+    [moveModal.seriesId, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
+
+  const movePreviewRows = useMemo(
+    () => (moveModal.seriesId ? (rows || []).filter((row) => row.seriesId === moveModal.seriesId) : []),
+    [rows, moveModal.seriesId]
+  )
+
+  const moveModalMappingIds = useMemo(
+    () => Array.from(new Set(movePreviewRows.flatMap((row) => row.mappingIds))),
+    [movePreviewRows]
+  )
+  const moveModalLocked = movePreviewRows.some((row) => row.mappingVerified === true)
+  const moveModalUnlocking = moveModalMappingIds.some((id) => verifyingMappingIds.has(id))
+
+  const handleOpenBulkMove = useCallback((isoCode: string) => {
+    setBulkMoveModal({ open: true, isoCode })
+  }, [])
+
+  const handleOpenCreateCategoryModal = useCallback((context: CreateIso22CategoryContext) => {
+    setCreateCategoryContext(context)
+  }, [])
+
+  // Sperrer verifisering (ikke fjerning av verifisering) dersom ikke alle produkter/varianter under
+  // konteksten (enkeltprodukt eller hele v16-koden) faktisk er koblet til riktig v22-kategori enda.
+  const isAttachmentComplete = useCallback(
+    (context: { seriesId?: string; isoCode?: string }): boolean => {
+      if (context.seriesId) {
+        const seriesRows = (rows || []).filter((row) => row.seriesId === context.seriesId)
+        return seriesRows.length === 0 || seriesRows.every((row) => row.iso22Attached)
+      }
+      if (context.isoCode) {
+        return attachmentCompleteByIsoCode.get(context.isoCode) ?? true
+      }
+      return true
+    },
+    [rows, attachmentCompleteByIsoCode]
+  )
+
+  const handleRequestVerify = useCallback(
+    (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => {
+      if (verified && !isAttachmentComplete(context)) return
+      setVerifyConfirm({ mappingIds, verified, seriesId: context.seriesId, isoCode: context.isoCode })
+    },
+    [isAttachmentComplete]
+  )
+
+  const handleShowOverviewFromVerifyConfirm = useCallback(() => {
+    if (!verifyConfirm) return
+    const { seriesId, isoCode } = verifyConfirm
+    setVerifyConfirm(null)
+    if (seriesId) {
+      handleOpenMoveModal(seriesId)
+    } else if (isoCode) {
+      handleOpenBulkMove(isoCode)
+    }
+  }, [verifyConfirm, handleOpenMoveModal, handleOpenBulkMove])
+
+  const handleConfirmVerify = useCallback(() => {
+    if (!verifyConfirm) return
+    const { mappingIds, verified } = verifyConfirm
+    setVerifyConfirm(null)
+    handleToggleVerification(mappingIds, verified)
+  }, [verifyConfirm, handleToggleVerification])
+
+  const handleCreateIso22Category = useCallback(
+    async ({
+      isoCode,
+      isoTitle,
+      isoText,
+      searchWords,
+      mappingIds,
+    }: {
+      parentIsoCode: string
+      isoCode: string
+      isoTitle: string
+      isoText: string
+      searchWords: string[]
+      mappingIds: string[]
+    }) => {
+      const userName = loggedInUser?.userName || 'admin'
+      const now = new Date().toISOString()
+      await createIso22Category({
+        id: crypto.randomUUID(),
+        isoCode,
+        isoTitle,
+        isoText,
+        level: 4,
+        isoTranslations: { titleEn: null, textEn: null },
+        searchWords,
+        // Nyopprettede nivå 4-kategorier finnes ikke i offisiell ISO 9999-standard og skal derfor
+        // ha type NAT (norsk tilleggskode), ikke ISO - se Iso16ToIso22UtilController i backend.
+        isoType: 'NAT',
+        createdByUser: userName,
+        updatedByUser: userName,
+        createdBy: 'REGISTER',
+        updatedBy: 'REGISTER',
+        created: now,
+        updated: now,
+      })
+      // NB: `GET /admreg/api/v22/isocategories` (Iso22Service.retrieveAll) er cachet i minnet i
+      // backend og lastes kun inn på nytt ved appstart - en revalidering her ville derfor IKKE
+      // vist den nye kategorien før backend restartes. Vi slår i stedet den nye kategorien inn i
+      // SWR-cachen lokalt (revalidate: false), slik at hovedtabellen viser den med en gang.
+      const newCategory22 = {
+        isoCode,
+        isoTitle,
+        isoText,
+        isoTranslations: { titleEn: null, textEn: null },
+        isoLevel: 4,
+        created: now,
+        updated: now,
+        searchWords,
+      }
+      mutateIsoCategories22(
+        (current) => {
+          const withoutDuplicate = (current || []).filter((category) => category.isoCode !== isoCode)
+          return [...withoutDuplicate, newCategory22]
+        },
+        { revalidate: false }
+      )
+      const targets = mappingIds
+        .map((id) => isoMappingsById.get(id))
+        .filter((mapping): mapping is IsoMapDTO => !!mapping)
+      if (targets.length) {
+        const updated = await Promise.all(
+          targets.map((mapping) => updateIsoMapping({ ...mapping, code22: isoCode, level22: 4 }))
+        )
+        const updatedById = new Map(updated.map((mapping) => [mapping.id, mapping]))
+        mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
+          revalidate: false,
+        })
+      }
+    },
+    [loggedInUser?.userName, mutateIsoCategories22, isoMappingsById, mutateIsoMappings]
+  )
+
+  const handleBulkMoveCompleted = useCallback(
+    async (movedSeriesIds: string[]) => {
+      setBulkMoveModal({ open: false, isoCode: null })
+      if (rows === null || !movedSeriesIds.length) return
+      try {
+        const abortController = new AbortController()
+        const updatedSeries = await fetchSeriesDetailsConcurrent(movedSeriesIds, () => {}, abortController.signal)
+        const newRows = mapToExtractedRows(
+          updatedSeries,
+          sortedIsoCategories,
+          sortedIsoCategories22,
+          mappingsByCode16,
+          mappingDataAvailable
+        )
+        setRows((prev) => {
+          const withoutMoved = (prev || []).filter((row) => !movedSeriesIds.includes(row.seriesId))
+          return [...withoutMoved, ...newRows]
+        })
+      } catch {
+        // Rows kunne ikke oppdateres automatisk. Bruk "Hent liste" for å laste inn siste data.
+      }
+    },
+    [rows, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
 
   const selectedIsoCode = selectedLevel4 || selectedLevel3 || selectedLevel2 || selectedLevel1
 
   const mappingRows = useMemo(
     () => buildMappingRows(sortedIsoCategories, sortedIsoCategories22, isoMappings || [], mappingDataAvailable),
     [sortedIsoCategories, sortedIsoCategories22, isoMappings, mappingDataAvailable]
+  )
+
+  const bulkMoveContext = useMemo(
+    () => (bulkMoveModal.isoCode ? (mappingRows.find((row) => row.isoCode === bulkMoveModal.isoCode) ?? null) : null),
+    [mappingRows, bulkMoveModal.isoCode]
+  )
+  // Kilden til sannhet for hvilke produkter/varianter som faktisk har v16-koden - hentet fra samme
+  // `rows`-tilstand som resten av oversikten (Produkt/Variant-visningen), IKKE et separat
+  // backend-kall filtrert på isoCode. Tidligere gjorde IsoBulkMoveModal et eget kall til
+  // /admreg/api/v1/series?isoCode=X, som i praksis kunne gi 0 treff selv når produkter fantes (viste
+  // seg å ikke stemme overens med tabellens telling) - se bruker-rapportert avvik for 18090401.
+  const bulkMoveSourceRows = useMemo(
+    () => (bulkMoveModal.isoCode ? (rows || []).filter((row) => row.isoCode === bulkMoveModal.isoCode) : []),
+    [rows, bulkMoveModal.isoCode]
   )
 
   const filteredMappingRows = useMemo(() => {
@@ -227,6 +542,26 @@ const IsoOversikt = () => {
       mappingDataAvailable,
     ]
   )
+
+  // Forhåndshenter produkt-/variantdata i bakgrunnen mens admin fortsatt ser "Ren ISO-mapping" -
+  // slik unngås en eksplisitt "Hent liste"-klikk når man bytter til Produkt- eller Variant-visning.
+  // Kjøres kun én gang, og kun når datasettet er innenfor SERIES_WARN_THRESHOLD (loadAllRows setter
+  // da pendingLargeLoad i stedet for å laste alt) - store, ufiltrerte uttrekk krever fortsatt et
+  // eksplisitt admin-samtykke via "Fortsett likevel".
+  const backgroundPrefetchAttemptedRef = useRef(false)
+  useEffect(() => {
+    if (
+      backgroundPrefetchAttemptedRef.current ||
+      !loggedInUser?.isAdmin ||
+      categoriesLoading ||
+      rows !== null ||
+      pageLoading
+    ) {
+      return
+    }
+    backgroundPrefetchAttemptedRef.current = true
+    void loadAllRows(false)
+  }, [loggedInUser?.isAdmin, categoriesLoading, rows, pageLoading, loadAllRows])
 
   const level1Options = useMemo(() => sortedIsoCategories.filter((it) => it.isoLevel === 1), [sortedIsoCategories])
   const level2Options = useMemo(
@@ -391,12 +726,130 @@ const IsoOversikt = () => {
   return (
     <main className="show-menu">
       <VStack gap="space-12" maxWidth="100rem">
-        <HStack gap="space-12" align="center">
+        <HStack gap="space-12" align="center" wrap>
           <img src={iso9999Icon} alt="" aria-hidden width={48} height={48} />
           <Heading level="1" size="large">
             ISO Admin
           </Heading>
         </HStack>
+        <AttachIso22CategoryModal
+          isOpen={moveModal.open}
+          setIsOpen={(open) => setMoveModal((prev) => ({ ...prev, open }))}
+          onClick={handleConfirmMove}
+          targetIso22Code={movePreviewRows[0]?.iso22Lvl4 || undefined}
+          targetIso22Title={movePreviewRows[0]?.iso22Lvl4Title || undefined}
+          missingLevel4={!!movePreviewRows[0] && !movePreviewRows[0].iso22Lvl4 && !!movePreviewRows[0].iso22Lvl3}
+          iso22Lvl3={movePreviewRows[0]?.iso22Lvl3 || undefined}
+          iso22Lvl3Title={movePreviewRows[0]?.iso22Lvl3Title || undefined}
+          mappingIds={moveModalMappingIds}
+          onRequestCreateCategory={handleOpenCreateCategoryModal}
+          heading={
+            movePreviewRows[0]?.productTitle
+              ? `Koble "${movePreviewRows[0].productTitle}" til ISO v22-kategori`
+              : 'Koble til ISO v22-kategori'
+          }
+          confirmButtonText="Koble til"
+          lockedMessage={
+            moveModalLocked ? (
+              <BodyShort size="small">
+                Denne ISO-mappingen er verifisert og må fjernes fra verifisering før produktet kan kobles til en annen
+                v22-kategori.
+              </BodyShort>
+            ) : undefined
+          }
+          onRequestUnlock={moveModalLocked ? () => handleToggleVerification(moveModalMappingIds, false) : undefined}
+          unlocking={moveModalUnlocking}
+          previewContent={
+            movePreviewRows.length > 0 ? (
+              <VStack gap="space-8">
+                <BodyShort>
+                  Produktet har for øyeblikket v16-kode <strong>{movePreviewRows[0].isoCode}</strong> og v22-kode{' '}
+                  <strong>{movePreviewRows[0].iso22Lvl4 || movePreviewRows[0].iso22Lvl3 || 'Ingen kategori'}</strong>.
+                  v16-koden beholdes uendret. {movePreviewRows.length} variant
+                  {movePreviewRows.length === 1 ? '' : 'er'} vil bli koblet til den valgte v22-kategorien:
+                </BodyShort>
+                <Table size="small" zebraStripes>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell scope="col">Variant</Table.HeaderCell>
+                      <Table.HeaderCell scope="col">HMS-nr.</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {movePreviewRows.map((row) => (
+                      <Table.Row key={row.productId}>
+                        <Table.DataCell>{row.variantName}</Table.DataCell>
+                        <Table.DataCell>{row.hmsArtNr}</Table.DataCell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </VStack>
+            ) : undefined
+          }
+        />
+        <IsoBulkMoveModal
+          isOpen={bulkMoveModal.open}
+          sourceIsoCode={bulkMoveModal.isoCode}
+          context={bulkMoveContext}
+          preloadedRows={bulkMoveSourceRows}
+          rowsLoaded={rows !== null}
+          rowsLoading={pageLoading}
+          onRequestLoadRows={() => loadAllRows(true)}
+          onClose={() => setBulkMoveModal({ open: false, isoCode: null })}
+          onCompleted={handleBulkMoveCompleted}
+          onRequestVerify={handleRequestVerify}
+          verifying={bulkMoveContext ? bulkMoveContext.mappingIds.some((id) => verifyingMappingIds.has(id)) : false}
+          onRequestCreateCategory={handleOpenCreateCategoryModal}
+        />
+        <CreateIso22CategoryModal
+          context={createCategoryContext}
+          onClose={() => setCreateCategoryContext(null)}
+          onCreate={handleCreateIso22Category}
+        />
+        {verifyConfirm && (
+          <Modal
+            open
+            header={{ heading: verifyConfirm.verified ? 'Bekreft verifisering' : 'Bekreft fjerning av verifisering' }}
+            onClose={() => setVerifyConfirm(null)}
+          >
+            <Modal.Body>
+              <BodyShort>
+                {verifyConfirm.verified
+                  ? 'Vil du markere denne ISO-mappingen som verifisert? Dette betyr at endringen/migreringen er ferdig kontrollert.'
+                  : 'Vil du fjerne verifiseringen for denne ISO-mappingen? Den vil da vises som ikke verifisert igjen.'}
+              </BodyShort>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setVerifyConfirm(null)}>
+                Avbryt
+              </Button>
+              <Button variant="primary" onClick={handleConfirmVerify}>
+                {verifyConfirm.verified ? 'Verifiser' : 'Fjern verifisering'}
+              </Button>
+              {/* "Vis oversikt" er overflødig når dialogen ble åpnet fra innsiden av oversiktsmodalen selv */}
+              {!(
+                (verifyConfirm.seriesId && moveModal.open && moveModal.seriesId === verifyConfirm.seriesId) ||
+                (verifyConfirm.isoCode && bulkMoveModal.open && bulkMoveModal.isoCode === verifyConfirm.isoCode)
+              ) &&
+                (verifyConfirm.seriesId || verifyConfirm.isoCode) && (
+                  <Button variant="tertiary" onClick={handleShowOverviewFromVerifyConfirm}>
+                    Vis oversikt
+                  </Button>
+                )}
+            </Modal.Footer>
+          </Modal>
+        )}
+        {moveError && (
+          <Alert variant="error" closeButton onClose={() => setMoveError(null)}>
+            {moveError}
+          </Alert>
+        )}
+        {verificationError && (
+          <Alert variant="error" closeButton onClose={() => setVerificationError(null)}>
+            {verificationError}
+          </Alert>
+        )}
         <InfoCard data-color="warning">
           <InfoCard.Header>
             <InfoCard.Title>Obs!</InfoCard.Title>
@@ -418,34 +871,16 @@ const IsoOversikt = () => {
               <HStack gap="space-12" align="end" wrap className={styles.controlRow}>
                 <RadioGroup
                   legend="Visningsmodus"
-                  value={pageMode}
-                  onChange={(val) => {
-                    setPageMode(val as PageMode)
-                    resetPaging()
-                  }}
+                  value={displayMode}
+                  onChange={(val) => handleDisplayModeChange(val as 'mapping' | ViewMode)}
                   size="small"
                 >
                   <HStack gap="space-24" wrap={false}>
                     <Radio value="mapping">Ren ISO-mapping</Radio>
-                    <Radio value="extract">Produkt og variant</Radio>
+                    <Radio value="product">Produkt</Radio>
+                    <Radio value="variant">Variant</Radio>
                   </HStack>
                 </RadioGroup>
-                {pageMode === 'extract' && (
-                  <RadioGroup
-                    legend="Vis liste som"
-                    value={viewMode}
-                    onChange={(val) => {
-                      setViewMode(val as ViewMode)
-                      resetPaging()
-                    }}
-                    size="small"
-                  >
-                    <HStack gap="space-24" wrap={false}>
-                      <Radio value="product">Produkter</Radio>
-                      <Radio value="variant">Varianter</Radio>
-                    </HStack>
-                  </RadioGroup>
-                )}
                 <ActionMenu open={otherOptionsOpen} onOpenChange={setOtherOptionsOpen}>
                   <ActionMenu.Trigger>
                     <Button
@@ -456,7 +891,7 @@ const IsoOversikt = () => {
                       icon={otherOptionsOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
                       iconPosition="right"
                     >
-                      Andre valg
+                      Vise/skjule kolonner
                     </Button>
                   </ActionMenu.Trigger>
                   <ActionMenu.Content>
@@ -688,6 +1123,14 @@ const IsoOversikt = () => {
                     )}
                   </>
                 )}
+                <Box style={{ marginInlineStart: 'auto' }}>
+                  <Switch
+                    checked={editMode === 'endre'}
+                    onChange={(e) => setEditMode(e.target.checked ? 'endre' : 'les')}
+                  >
+                    {editMode === 'endre' ? 'Endre' : 'Lese'}
+                  </Switch>
+                </Box>
               </HStack>
             </VStack>
           </ExpansionCard.Content>
@@ -732,6 +1175,7 @@ const IsoOversikt = () => {
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           <Table.HeaderCell scope="col">Endringstype</Table.HeaderCell>
                           <Table.HeaderCell scope="col">Status</Table.HeaderCell>
+                          {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
@@ -747,6 +1191,24 @@ const IsoOversikt = () => {
                             <Table.DataCell>
                               <MappingVerification verified={row.mappingVerified} />
                             </Table.DataCell>
+                            {editMode === 'endre' && (
+                              <AksjonCell
+                                mappingIds={row.mappingIds}
+                                mappingVerified={row.mappingVerified}
+                                mappingAvailable={row.mappingAvailable}
+                                isoCode={row.isoCode || undefined}
+                                iso22Lvl3={row.iso22Lvl3 || undefined}
+                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
+                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                attachmentComplete={
+                                  row.isoCode ? (attachmentCompleteByIsoCode.get(row.isoCode) ?? true) : true
+                                }
+                                busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
+                                onRequestVerify={handleRequestVerify}
+                                onMoveIsoCode={handleOpenBulkMove}
+                                onCreateCategory={handleOpenCreateCategoryModal}
+                              />
+                            )}
                           </Table.Row>
                         ))}
                       </Table.Body>
@@ -888,6 +1350,7 @@ const IsoOversikt = () => {
                               />
                             </>
                           )}
+                          {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
@@ -915,6 +1378,24 @@ const IsoOversikt = () => {
                                 <Table.DataCell>{row.agreementRank ?? ''}</Table.DataCell>
                                 <Table.DataCell>{row.agreementPostNr ?? ''}</Table.DataCell>
                               </>
+                            )}
+                            {editMode === 'endre' && (
+                              <AksjonCell
+                                mappingIds={row.mappingIds}
+                                mappingVerified={row.mappingVerified}
+                                mappingAvailable={row.mappingAvailable}
+                                seriesId={row.seriesId}
+                                isoCode={row.isoCode || undefined}
+                                iso22Lvl3={row.iso22Lvl3 || undefined}
+                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
+                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                attachmentComplete={row.iso22Attached}
+                                busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
+                                onRequestVerify={handleRequestVerify}
+                                onMove={handleOpenMoveModal}
+                                onMoveIsoCode={handleOpenBulkMove}
+                                onCreateCategory={handleOpenCreateCategoryModal}
+                              />
                             )}
                           </Table.Row>
                         ))}
@@ -968,6 +1449,7 @@ const IsoOversikt = () => {
                               />
                             </>
                           )}
+                          {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
@@ -997,6 +1479,24 @@ const IsoOversikt = () => {
                                 <Table.DataCell>{row.agreementRank ?? ''}</Table.DataCell>
                                 <Table.DataCell>{row.agreementPostNr ?? ''}</Table.DataCell>
                               </>
+                            )}
+                            {editMode === 'endre' && (
+                              <AksjonCell
+                                mappingIds={row.mappingIds}
+                                mappingVerified={row.mappingVerified}
+                                mappingAvailable={row.mappingAvailable}
+                                seriesId={row.seriesId}
+                                isoCode={row.isoCode || undefined}
+                                iso22Lvl3={row.iso22Lvl3 || undefined}
+                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
+                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                attachmentComplete={row.iso22Attached}
+                                busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
+                                onRequestVerify={handleRequestVerify}
+                                onMove={handleOpenMoveModal}
+                                onMoveIsoCode={handleOpenBulkMove}
+                                onCreateCategory={handleOpenCreateCategoryModal}
+                              />
                             )}
                           </Table.Row>
                         ))}

@@ -434,25 +434,27 @@ export function useIsoCategories() {
 
 export function useIsoCategories22() {
   const path = `${HM_REGISTER_URL()}/admreg/api/v22/isocategories`
-  const { data, error, isLoading } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
   const isoCategories22 = data && data
 
   return {
     isoCategories22,
     isoLoading22: isLoading,
     isoError22: error,
+    mutateIsoCategories22: mutate,
   }
 }
 
 export function useIsoMappings(isAdmin: boolean) {
   const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap' : null
-  const { data, error, isLoading } = useSWR<IsoMapDTO[]>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<IsoMapDTO[]>(path, fetcherGET)
   const isoMappings = data && data
 
   return {
     isoMappings,
     isoMappingsLoading: isLoading,
     isoMappingsError: error,
+    mutateIsoMappings: mutate,
   }
 }
 

@@ -159,6 +159,11 @@ export const updateProductIsoCategory = async (
   resetTechnicalData: boolean
 ): Promise<void> => updateSeries(seriesUUID, { isoCategory: isoCategory, resetTechnicalData: resetTechnicalData })
 
+// Kobler produktet til en ISO v22-kategori uten å endre v16-kategorien (isoCategory) - de to
+// klassifiseringene sameksisterer gjennom hele migreringsperioden, se ISO Admin-verktøyet.
+export const updateProductIso22Category = async (seriesUUID: string, isoCategory22: string): Promise<void> =>
+  updateSeries(seriesUUID, { isoCategory22 })
+
 export const updateProductDescription = async (seriesUUID: string, productDescription: string): Promise<void> =>
   updateSeries(seriesUUID, { text: productDescription })
 

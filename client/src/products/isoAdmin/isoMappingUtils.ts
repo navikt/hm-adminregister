@@ -43,6 +43,12 @@ export const mapToExtractedRows = (
     const storedIsoCode22 =
       typeof series.isoCategory22 === 'string' ? series.isoCategory22 : series.isoCategory22?.isoCode
     const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : Array.from(new Set(mappedIsoCodes22))
+    // Ekte tilknytningsstatus: viser om produktet faktisk HAR en lagret isoCategory22 som stemmer med
+    // v22-koden(e) mappingtabellen sier v16-koden skal migreres til - i motsetning til iso22Lvl3/4
+    // under, som faller tilbake til den *anbefalte* v22-koden når ingen reell tilknytning finnes (kun
+    // for visning). Brukes til å sperre verifisering før reell tilknytning er gjort (se AksjonCell).
+    const iso22Attached =
+      !!storedIsoCode22 && (mappedIsoCodes22.length === 0 || mappedIsoCodes22.includes(storedIsoCode22))
     const paths22 = isoCodes22.map((code) => buildIso22Path(code, categories22))
     const path22Value = (level: keyof Iso22Path, field: 'isoCode' | 'isoTitle' | 'isoText') =>
       Array.from(
@@ -52,6 +58,7 @@ export const mapToExtractedRows = (
       Array.from(new Set(paths22.flatMap((path22) => path22[level]?.searchWords ?? []))).join(', ')
     const mappingTypes = Array.from(new Set(matchingMappings.flatMap((mapping) => mapping.mapEnum)))
     const mappingVerified = matchingMappings.length === 0 ? null : matchingMappings.every((mapping) => mapping.verified)
+    const mappingIds = matchingMappings.map((mapping) => mapping.id)
     return (series.variants || []).map((variant) => {
       const activeAgreements = (variant.agreements || [])
         .filter((agreement) => ('status' in agreement ? agreement.status === 'ACTIVE' : true))
@@ -97,6 +104,9 @@ export const mapToExtractedRows = (
         mappingTypes,
         mappingVerified,
         mappingAvailable,
+        mappingIds,
+        iso22Attached,
+        iso22Stored: storedIsoCode22 ?? '',
         agreementRef: agreementRefs,
         agreementRank: agreementRanks,
         agreementPostNr: agreementPostNrs,
@@ -146,6 +156,7 @@ export const buildMappingRows = (
       mappingTypes,
       mappingVerified: mappingAvailable ? (mapping?.verified ?? null) : null,
       mappingAvailable,
+      mappingIds: mapping ? [mapping.id] : [],
     }
   }
 
