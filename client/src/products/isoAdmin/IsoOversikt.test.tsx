@@ -341,6 +341,18 @@ test('kan veksle til variant-visning', async () => {
   expect(screen.getByText('Annen serie variant')).toBeInTheDocument()
 })
 
+test('sortering på antall varianter krasjer ikke ved bytte til variantvisning', async () => {
+  renderPage()
+  await loadExtractRows()
+
+  fireEvent.click(screen.getByRole('button', { name: /Ant\. varianter, sorter stigende/ }))
+  fireEvent.click(screen.getByRole('button', { name: 'Andre valg' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Varianter' }))
+
+  await waitFor(() => expect(screen.getByText('Rollator Alfa variant')).toBeInTheDocument())
+})
+
 test('kan avbryte henting av produkt- og variantlisten', async () => {
   server.use(
     http.get('http://localhost:8080/admreg/api/v1/series', async () => {

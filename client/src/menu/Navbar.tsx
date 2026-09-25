@@ -175,8 +175,8 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
       )}
       {loggedInUser && loggedInUser.isAdmin && (
         <>
-          <NavLink to="/iso-oversikt" className="page-link">
-            {pathname.startsWith('/iso-oversikt') && <div className="active-indicator" />}
+          <NavLink to="/iso-admin" className="page-link">
+            {pathname.startsWith('/iso-admin') && <div className="active-indicator" />}
             <div className="line" />
             <HStack gap="space-8" align="center" style={{ paddingLeft: '16px' }}>
               <GlobeIcon aria-hidden fontSize="1.5rem" />
