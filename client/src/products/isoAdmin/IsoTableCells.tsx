@@ -1,4 +1,5 @@
-import { HStack, Table, Tag } from '@navikt/ds-react'
+import { MenuElipsisVerticalCircleIcon } from '@navikt/aksel-icons'
+import { ActionMenu, Button, HStack, Table, Tag } from '@navikt/ds-react'
 
 import {
   ExtractedProductVariant,
@@ -188,5 +189,130 @@ export const MappingVerification = ({ verified }: { verified: boolean | null }) 
     <Tag variant={verified ? 'success' : 'warning'} size="small">
       {verified ? 'Verifisert' : 'Ikke verifisert'}
     </Tag>
+  )
+}
+
+export const AksjonHeader = () => <Table.HeaderCell scope="col">Aksjon</Table.HeaderCell>
+
+export const AksjonCell = ({
+  menuLabel,
+  mappingIds,
+  mappingVerified,
+  mappingAvailable,
+  seriesId,
+  isoCode,
+  iso22Lvl3,
+  iso22Lvl3Title,
+  iso22Lvl4,
+  attachmentComplete,
+  attachmentUnknown,
+  busy,
+  onRequestVerify,
+  onMove,
+  onMoveIsoCode,
+  onCreateCategory,
+}: {
+  // Skiller radmenyene fra hverandre for skjermleser, f.eks. "Rad-meny for ISO 18090301".
+  menuLabel?: string
+  mappingIds: string[]
+  mappingVerified: boolean | null
+  mappingAvailable: boolean
+  seriesId?: string
+  isoCode?: string
+  iso22Lvl3?: string
+  iso22Lvl3Title?: string
+  iso22Lvl4?: string
+  // Om alle produkter/varianter i denne konteksten faktisk er koblet til riktig v22-kategori. Sperrer
+  // kun "Verifiser" (ikke "Fjern verifisering") - man skal alltid kunne trekke tilbake en verifisering.
+  // Udefinert (f.eks. i eldre kall) tolkes som "komplett" for bakoverkompatibilitet.
+  attachmentComplete?: boolean
+  // Produktlisten er ikke lastet inn, så tilknytningsstatus er ukjent - "Verifiser" sperres da også.
+  attachmentUnknown?: boolean
+  busy?: boolean
+  onRequestVerify?: (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => void
+  onMove?: (seriesId: string) => void
+  // mappingId er satt når raden gjelder én bestemt mapping, slik at oversikten vet hvilket mål som gjelder.
+  onMoveIsoCode?: (isoCode: string, mappingId?: string) => void
+  onCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
+}) => {
+  // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
+  // krever code16 og feiler med 500 når den er null.
+  const canVerify = mappingAvailable && mappingIds.length > 0 && !!isoCode && !!onRequestVerify
+  // "Verifiser" (ikke "Fjern verifisering") er sperret til alle produkter/varianter faktisk er
+  // koblet til riktig v22-kategori - man skal ikke kunne bekrefte en migrering som ikke er utført.
+  const verifyBlocked = !mappingVerified && (attachmentComplete === false || attachmentUnknown === true)
+  // Flytting er sperret mens raden er verifisert - man må fjerne verifiseringen først for å unngå
+  // at en godkjent v16->v22-migrering blir endret "under" en verifisert status.
+  const isLockedByVerification = mappingVerified === true
+  const canMove = !!seriesId && !!onMove
+  const canMoveIsoCode = !!isoCode && !!onMoveIsoCode
+  const openOverview = () => onMoveIsoCode?.(isoCode as string, mappingIds.length === 1 ? mappingIds[0] : undefined)
+  // Ny ISO v22-kategori (nivå 4, nasjonal tilleggskode) kan kun opprettes under en eksisterende
+  // nivå 3-forelder, og kun mens mappingen ikke er verifisert.
+  const canCreateCategory =
+    mappingAvailable && mappingVerified === false && !!iso22Lvl3 && !iso22Lvl4 && !!onCreateCategory
+
+  if (!canVerify && !canMove && !canMoveIsoCode && !canCreateCategory) return <Table.DataCell />
+
+  return (
+    <Table.DataCell>
+      <ActionMenu>
+        <ActionMenu.Trigger>
+          <Button
+            variant="tertiary"
+            icon={<MenuElipsisVerticalCircleIcon aria-hidden />}
+            size="small"
+            aria-label={menuLabel ? `Rad-meny for ${menuLabel}` : 'Rad-meny'}
+            loading={busy}
+          />
+        </ActionMenu.Trigger>
+        <ActionMenu.Content>
+          {canVerify && (
+            <ActionMenu.Item
+              disabled={verifyBlocked}
+              onSelect={() => onRequestVerify?.(mappingIds, !mappingVerified, { seriesId, isoCode })}
+            >
+              {mappingVerified
+                ? 'Fjern verifisering'
+                : attachmentUnknown && !mappingVerified
+                  ? 'Verifiser (last inn produkter først)'
+                  : verifyBlocked
+                    ? 'Verifiser (koble produkter til v22 først)'
+                    : 'Verifiser'}
+            </ActionMenu.Item>
+          )}
+          {canMove && (
+            <ActionMenu.Item disabled={isLockedByVerification} onSelect={() => onMove?.(seriesId as string)}>
+              {isLockedByVerification
+                ? 'Koble til ISO v22-kategori (fjern verifisering først)'
+                : 'Koble til ISO v22-kategori'}
+            </ActionMenu.Item>
+          )}
+          {canMoveIsoCode && (
+            <>
+              <ActionMenu.Item onSelect={openOverview}>Vis oversikt</ActionMenu.Item>
+              <ActionMenu.Item disabled={isLockedByVerification} onSelect={openOverview}>
+                {isLockedByVerification
+                  ? 'Koble alle produkter til ISO v22-kategori (fjern verifisering først)'
+                  : 'Koble alle produkter til ISO v22-kategori'}
+              </ActionMenu.Item>
+            </>
+          )}
+          {canCreateCategory && (
+            <ActionMenu.Item
+              onSelect={() =>
+                onCreateCategory?.({
+                  parentIsoCode: iso22Lvl3 as string,
+                  parentIsoTitle: iso22Lvl3Title,
+                  mappingIds,
+                })
+              }
+            >
+              Opprett ny ISO v22-kategori (nivå 4)
+            </ActionMenu.Item>
+          )}
+        </ActionMenu.Content>
+      </ActionMenu>
+    </Table.DataCell>
   )
 }

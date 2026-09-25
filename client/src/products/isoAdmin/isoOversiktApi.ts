@@ -1,7 +1,8 @@
-import { getSeriesBySeriesId } from 'api/SeriesApi'
+import { getSeriesBySeriesId, updateProductIso22Category } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
 import { SeriesDTO } from 'utils/types/response-types'
 
+import { extractErrorMessage } from './errorUtils'
 import { IsoOverviewSeriesChunk } from './isoOversiktTypes'
 
 export const SERIES_PAGE_SIZE = 200
@@ -57,4 +58,43 @@ export const fetchSeriesDetailsConcurrent = async (
   const workerCount = Math.min(concurrency, total)
   await Promise.all(Array.from({ length: workerCount }, () => worker()))
   return results
+}
+
+export type BulkMoveResult = {
+  succeeded: string[]
+  failed: { id: string; error: string }[]
+}
+
+// Kobler et sett med produkter til en ISO v22-kategori uten å endre v16-koden - v16 og v22 sameksisterer
+// gjennom hele migreringsperioden (se ISO Admin), så dette er en "tilknytning", ikke en "flytting".
+export const bulkUpdateIso22Category = async (
+  seriesIds: string[],
+  newIso22Code: string,
+  onProgress: (done: number, total: number) => void,
+  concurrency = DETAIL_FETCH_CONCURRENCY
+): Promise<BulkMoveResult> => {
+  const total = seriesIds.length
+  let nextIndex = 0
+  let done = 0
+  const succeeded: string[] = []
+  const failed: { id: string; error: string }[] = []
+
+  const worker = async () => {
+    while (nextIndex < total) {
+      const current = nextIndex++
+      const id = seriesIds[current]
+      try {
+        await updateProductIso22Category(id, newIso22Code)
+        succeeded.push(id)
+      } catch (error) {
+        failed.push({ id, error: extractErrorMessage(error, 'Ukjent feil oppstod') })
+      }
+      done++
+      onProgress(done, total)
+    }
+  }
+
+  const workerCount = Math.min(concurrency, total)
+  await Promise.all(Array.from({ length: workerCount }, () => worker()))
+  return { succeeded, failed }
 }

@@ -90,6 +90,15 @@ export type ExtractedProductVariant = {
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
+  mappingIds: string[]
+  // Ekte tilknytningsstatus (i motsetning til iso22Lvl3/4, som faller tilbake til anbefalt v22-kode
+  // når ingen reell tilknytning finnes) - true kun når produktet faktisk har en lagret isoCategory22
+  // som stemmer med mappingtabellens anbefalte v22-kode(r). Brukes til å sperre verifisering.
+  iso22Attached: boolean
+  // Rå lagret v22-kode (kan være tom, eller en kode som IKKE stemmer med mappingens anbefaling) -
+  // i motsetning til iso22Lvl3/4, som alltid har en verdi når mappingen har en anbefaling (selv om
+  // produktet ikke er koblet ennå). Brukes til å skille "koblet til feil kode" fra "ikke koblet".
+  iso22Stored: string
   // Agreement
   agreementRef: string
   agreementRank: string
@@ -139,6 +148,8 @@ export type ProductSummaryRow = {
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
+  mappingIds: string[]
+  iso22Attached: boolean
   variantCount: number
   agreementRef: string
   agreementRank: string
@@ -173,6 +184,7 @@ export type MappingRow = {
   mappingTypes: IsoMapEnum[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
+  mappingIds: string[]
 }
 
 export const OPTIONAL_TITLE_COLUMNS_V1 = [
