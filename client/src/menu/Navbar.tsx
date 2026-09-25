@@ -9,6 +9,7 @@ import {
   DatabaseIcon,
   FileCheckmarkFillIcon,
   FileExcelIcon,
+  GlobeIcon,
   MenuHamburgerIcon,
   NewspaperIcon,
   PackageFillIcon,
@@ -168,6 +169,18 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
               <FileExcelIcon fontSize={'1.5rem'} aria-hidden />
               <span>Katalog</span>
+            </HStack>
+          </NavLink>
+        </>
+      )}
+      {loggedInUser && loggedInUser.isAdmin && (
+        <>
+          <NavLink to="/iso-admin" className="page-link">
+            {pathname.startsWith('/iso-admin') && <div className="active-indicator" />}
+            <div className="line" />
+            <HStack gap="space-8" align="center" style={{ paddingLeft: '16px' }}>
+              <GlobeIcon aria-hidden fontSize="1.5rem" />
+              <span>ISO Admin</span>
             </HStack>
           </NavLink>
         </>

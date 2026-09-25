@@ -32,8 +32,10 @@ export const tilGodkjenningLangListe: ProdukterTilGodkjenningChunk = {
   ],
   pageable: {
     number: 0,
-    sort: 'title',
     size: 1000,
+    mode: 'OFFSET',
+    sort: { orderBy: [] },
+    orderBy: [],
   },
   empty: false,
   size: 1000,

@@ -23,9 +23,9 @@ export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), 'PUT')
 }
 
-export const getSeriesBySeriesId = async (seriesUUID: string): Promise<SeriesDTO> => {
+export const getSeriesBySeriesId = async (seriesUUID: string, signal?: AbortSignal): Promise<SeriesDTO> => {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`
-  return await fetchAPI(seriesIdPath, 'GET')
+  return await fetchAPI(seriesIdPath, 'GET', undefined, signal)
 }
 
 export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {

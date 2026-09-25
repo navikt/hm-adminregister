@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR, { Fetcher } from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { buildSeriesSearchPath, statusFilterProductsURL } from 'utils/export/seriesSearchPath'
 
 import { useAuthStore } from './store/useAuthStore'
@@ -11,7 +12,9 @@ import {
   AdminUserChunk,
   AgreementsChunk,
   DelkontraktRegistrationDTO,
+  IsoCategory22DTO,
   IsoCategoryDTO,
+  IsoMapDTO,
   ProductRegistrationDTO,
   ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
@@ -26,7 +29,6 @@ import {
 
 import { mapSuppliers } from './supplier-util'
 import { LoggedInUser } from './user-util'
-import useSWRImmutable from 'swr/immutable'
 
 export function baseUrl(url: string = '') {
   if (process.env.NODE_ENV === 'production') {
@@ -427,6 +429,30 @@ export function useIsoCategories() {
     isoCategories,
     isoLoading: isLoading,
     isoError: error,
+  }
+}
+
+export function useIsoCategories22() {
+  const path = `${HM_REGISTER_URL()}/admreg/api/v22/isocategories`
+  const { data, error, isLoading } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
+  const isoCategories22 = data && data
+
+  return {
+    isoCategories22,
+    isoLoading22: isLoading,
+    isoError22: error,
+  }
+}
+
+export function useIsoMappings(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap' : null
+  const { data, error, isLoading } = useSWR<IsoMapDTO[]>(path, fetcherGET)
+  const isoMappings = data && data
+
+  return {
+    isoMappings,
+    isoMappingsLoading: isLoading,
+    isoMappingsError: error,
   }
 }
 

@@ -12,7 +12,7 @@ export type SupplierChunk = components['schemas']['Page_SupplierRegistrationDTO_
 
 export type AgreementsChunk = {
   content: components['schemas']['AgreementBasicInformationDto'][]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
@@ -27,7 +27,7 @@ export type AgreementsChunk = {
 
 export type NewsChunk = {
   content: NewsRegistrationDTO[]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
@@ -48,6 +48,9 @@ export type ProductAgreementRegistrationDTO = components['schemas']['ProductAgre
 export type ProductAgreementRegistrationDTOList = components['schemas']['ProductAgreementRegistrationDTO'][]
 export type AgreementRegistrationDTO = components['schemas']['AgreementRegistrationDTO']
 export type IsoCategoryDTO = components['schemas']['IsoCategoryDTO']
+export type IsoCategory22DTO = components['schemas']['IsoCategory22DTO']
+export type IsoMapDTO = components['schemas']['IsoMapDTO']
+export type IsoMapEnum = components['schemas']['IsoMapEnum']
 export type AgreementGroupDto = components['schemas']['AgreementBasicInformationDto'][]
 export type AgreementGroup = components['schemas']['AgreementBasicInformationDto']
 export type AgreementAttachment = components['schemas']['AgreementAttachment']
@@ -105,7 +108,7 @@ export type DuplicateConflict = components['schemas']['DuplicateConflict']
 
 export type ProdukterTilGodkjenningChunk = {
   content: SeriesToApproveDto[]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
@@ -120,7 +123,7 @@ export type ProdukterTilGodkjenningChunk = {
 
 export type ProductChunk = {
   content: ProductRegistrationDTOV2[]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
@@ -137,7 +140,7 @@ export type ProductChunk = {
 
 export type SeriesSearchChunk = {
   content: SeriesSearchDTO[]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
@@ -197,7 +200,7 @@ export type CatalogFileCriteria = {
 
 export type CatalogFileChunk = {
   content: CatalogFile[]
-  pageable: components['schemas']['OpenApiPageable']
+  pageable: components['schemas']['Pageable']
   /** Format: int32 */
   pageNumber?: number
   /** Format: int64 */
