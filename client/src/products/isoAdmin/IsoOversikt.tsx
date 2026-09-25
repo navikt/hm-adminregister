@@ -51,7 +51,14 @@ import {
   SortHeader,
 } from './IsoTableCells'
 import { extractErrorMessage } from './errorUtils'
-import { buildMappingRows, buildMappingsByCode16, mapToExtractedRows } from './isoMappingUtils'
+import {
+  buildMappingRows,
+  buildMappingsByCode16,
+  findMappingsForCode,
+  getMappedIso22Codes,
+  mapToExtractedRows,
+  resolveIso22Targets,
+} from './isoMappingUtils'
 import {
   SERIES_PAGE_SIZE,
   SERIES_WARN_THRESHOLD,
@@ -90,6 +97,9 @@ const IsoOversikt = () => {
   )
 
   const [rows, setRows] = useState<ExtractedProductVariant[] | null>(null)
+  // ISO-prefikset `rows` ble lastet for ('' = alle). `rows` kan være lastet for et annet filter enn det
+  // som vises nå, så tilknytningsstatus for koder utenfor prefikset er ukjent.
+  const [rowsScope, setRowsScope] = useState<string | null>(null)
   const [totalSeriesCount, setTotalSeriesCount] = useState<number | undefined>(undefined)
   const [pageLoading, setPageLoading] = useState(false)
   const [loadProgress, setLoadProgress] = useState<{ loaded: number; total: number } | null>(null)
@@ -149,7 +159,7 @@ const IsoOversikt = () => {
   })
   const [moveError, setMoveError] = useState<string | null>(null)
   const [moveSubmitting, setMoveSubmitting] = useState(false)
-  const [bulkMoveModal, setBulkMoveModal] = useState<{ open: boolean; isoCode: string | null }>({
+  const [bulkMoveModal, setBulkMoveModal] = useState<{ open: boolean; isoCode: string | null; mappingId?: string }>({
     open: false,
     isoCode: null,
   })
@@ -189,6 +199,36 @@ const IsoOversikt = () => {
   // tilknytning, ikke visningsfallback). Mangler produkter for koden helt, regnes den som komplett
   // (ingenting å koble til). Brukes til å sperre "Verifiser" til reell tilknytning er gjort - se
   // AksjonCell og IsoBulkMoveModal.
+  const isIsoCodeLoaded = useCallback(
+    (isoCode: string) => rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope),
+    [rows, rowsScope]
+  )
+
+  // Tilkoblingsmål per v16-kode, hentet fra mappingene (se resolveIso22Targets).
+  const getIso22Targets = useCallback(
+    (isoCode: string, mappingIds: string[]) =>
+      resolveIso22Targets(
+        isoCode,
+        mappingIds.map((id) => isoMappingsById.get(id)).filter((mapping): mapping is IsoMapDTO => !!mapping),
+        sortedIsoCategories22
+      ),
+    [isoMappingsById, sortedIsoCategories22]
+  )
+
+  // Nivå 3/4 for Aksjon-menyen. Mangler et mål nivå 4, tilbys oppretting under det målets nivå 3.
+  const getAksjonTargetProps = useCallback(
+    (isoCode: string, mappingIds: string[]) => {
+      const targets = getIso22Targets(isoCode, mappingIds)
+      const target = targets.find((it) => !it.level4Code && it.level3Code) ?? targets[0]
+      return {
+        iso22Lvl3: target?.level3Code || undefined,
+        iso22Lvl3Title: target?.level3Title || undefined,
+        iso22Lvl4: target?.level4Code || undefined,
+      }
+    },
+    [getIso22Targets]
+  )
+
   const attachmentCompleteByIsoCode = useMemo(() => {
     const map = new Map<string, boolean>()
     ;(rows || []).forEach((row) => {
@@ -279,10 +319,22 @@ const IsoOversikt = () => {
     [movePreviewRows]
   )
   const moveModalLocked = movePreviewRows.some((row) => row.mappingVerified === true)
+  const moveModalTargets = useMemo(
+    () => (movePreviewRows[0] ? getIso22Targets(movePreviewRows[0].isoCode, movePreviewRows[0].mappingIds) : []),
+    [movePreviewRows, getIso22Targets]
+  )
+  const moveModalTargetOptions = useMemo(() => {
+    const byCode = new Map<string, { code: string; title: string }>()
+    moveModalTargets.forEach((target) => {
+      if (target.level4Code) byCode.set(target.level4Code, { code: target.level4Code, title: target.level4Title })
+    })
+    return Array.from(byCode.values())
+  }, [moveModalTargets])
+  const moveModalMissingTarget = moveModalTargets.find((target) => !target.level4Code && target.level3Code)
   const moveModalUnlocking = moveModalMappingIds.some((id) => verifyingMappingIds.has(id))
 
-  const handleOpenBulkMove = useCallback((isoCode: string) => {
-    setBulkMoveModal({ open: true, isoCode })
+  const handleOpenBulkMove = useCallback((isoCode: string, mappingId?: string) => {
+    setBulkMoveModal({ open: true, isoCode, mappingId })
   }, [])
 
   const handleOpenCreateCategoryModal = useCallback((context: CreateIso22CategoryContext) => {
@@ -297,15 +349,16 @@ const IsoOversikt = () => {
       if (rows === null) return false
       const isoCode = context.isoCode ?? rows.find((row) => row.seriesId === context.seriesId)?.isoCode
       if (!isoCode) return true
+      if (!isIsoCodeLoaded(isoCode)) return false
       return attachmentCompleteByIsoCode.get(isoCode) ?? true
     },
-    [rows, attachmentCompleteByIsoCode]
+    [rows, attachmentCompleteByIsoCode, isIsoCodeLoaded]
   )
 
   const verifyConfirmProductCount = useMemo(() => {
-    if (!verifyConfirm?.isoCode || rows === null) return null
+    if (!verifyConfirm?.isoCode || rows === null || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
     return new Set(rows.filter((row) => row.isoCode === verifyConfirm.isoCode).map((row) => row.seriesId)).size
-  }, [verifyConfirm, rows])
+  }, [verifyConfirm, rows, isIsoCodeLoaded])
 
   const handleRequestVerify = useCallback(
     (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => {
@@ -323,7 +376,7 @@ const IsoOversikt = () => {
     if (seriesId) {
       handleOpenMoveModal(seriesId)
     } else if (isoCode) {
-      handleOpenBulkMove(isoCode)
+      handleOpenBulkMove(isoCode, verifyConfirm.mappingIds.length === 1 ? verifyConfirm.mappingIds[0] : undefined)
     }
   }, [verifyConfirm, handleOpenMoveModal, handleOpenBulkMove])
 
@@ -335,8 +388,13 @@ const IsoOversikt = () => {
 
   const verifyConfirmBusy = !!verifyConfirm?.mappingIds.some((id) => verifyingMappingIds.has(id))
 
+  // Koder opprettet i denne økten der mappingoppdateringen ennå ikke er fullført. Et nytt forsøk skal
+  // da hoppe over opprettingen og bare oppdatere mappingene, i stedet for å bli stoppet som duplikat.
+  const [pendingIso22Links, setPendingIso22Links] = useState<ReadonlySet<string>>(new Set())
+
   const handleCreateIso22Category = useCallback(
     async ({
+      parentIsoCode,
       isoCode,
       isoTitle,
       isoText,
@@ -352,59 +410,86 @@ const IsoOversikt = () => {
     }) => {
       const userName = loggedInUser?.userName || 'admin'
       const now = new Date().toISOString()
-      await createIso22Category({
-        id: crypto.randomUUID(),
-        isoCode,
-        isoTitle,
-        isoText,
-        level: 4,
-        isoTranslations: { titleEn: null, textEn: null },
-        searchWords,
-        // Nyopprettede nivå 4-kategorier finnes ikke i offisiell ISO 9999-standard og skal derfor
-        // ha type NAT (norsk tilleggskode), ikke ISO - se Iso16ToIso22UtilController i backend.
-        isoType: 'NAT',
-        createdByUser: userName,
-        updatedByUser: userName,
-        createdBy: 'REGISTER',
-        updatedBy: 'REGISTER',
-        created: now,
-        updated: now,
-      })
-      // NB: `GET /admreg/api/v22/isocategories` (Iso22Service.retrieveAll) er cachet i minnet i
-      // backend og lastes kun inn på nytt ved appstart - en revalidering her ville derfor IKKE
-      // vist den nye kategorien før backend restartes. Vi slår i stedet den nye kategorien inn i
-      // SWR-cachen lokalt (revalidate: false), slik at hovedtabellen viser den med en gang.
-      const newCategory22 = {
-        isoCode,
-        isoTitle,
-        isoText,
-        isoTranslations: { titleEn: null, textEn: null },
-        isoLevel: 4,
-        created: now,
-        updated: now,
-        searchWords,
+      const alreadyCreated = pendingIso22Links.has(isoCode)
+      if (!alreadyCreated) {
+        await createIso22Category({
+          id: crypto.randomUUID(),
+          isoCode,
+          isoTitle,
+          isoText,
+          level: 4,
+          isoTranslations: { titleEn: null, textEn: null },
+          searchWords,
+          // Nyopprettede nivå 4-kategorier finnes ikke i offisiell ISO 9999-standard og skal derfor
+          // ha type NAT (norsk tilleggskode), ikke ISO - se Iso16ToIso22UtilController i backend.
+          isoType: 'NAT',
+          createdByUser: userName,
+          updatedByUser: userName,
+          createdBy: 'REGISTER',
+          updatedBy: 'REGISTER',
+          created: now,
+          updated: now,
+        })
+        // NB: `GET /admreg/api/v22/isocategories` (Iso22Service.retrieveAll) er cachet i minnet i
+        // backend og lastes kun inn på nytt ved appstart - en revalidering her ville derfor IKKE
+        // vist den nye kategorien før backend restartes. Vi slår i stedet den nye kategorien inn i
+        // SWR-cachen lokalt (revalidate: false), slik at hovedtabellen viser den med en gang.
+        const newCategory22 = {
+          isoCode,
+          isoTitle,
+          isoText,
+          isoTranslations: { titleEn: null, textEn: null },
+          isoLevel: 4,
+          created: now,
+          updated: now,
+          searchWords,
+        }
+        mutateIsoCategories22(
+          (current) => {
+            const withoutDuplicate = (current || []).filter((category) => category.isoCode !== isoCode)
+            return [...withoutDuplicate, newCategory22]
+          },
+          { revalidate: false }
+        )
+        setPendingIso22Links((prev) => new Set([...prev, isoCode]))
       }
-      mutateIsoCategories22(
-        (current) => {
-          const withoutDuplicate = (current || []).filter((category) => category.isoCode !== isoCode)
-          return [...withoutDuplicate, newCategory22]
-        },
-        { revalidate: false }
-      )
+      // Bare mappinger som peker på nivå 3-forelderen flyttes til den nye koden. Ved splitt skal de
+      // andre målene for samme v16-kode stå urørt. Mappinger som allerede peker på koden (fra et
+      // tidligere forsøk) hoppes over.
       const targets = mappingIds
         .map((id) => isoMappingsById.get(id))
         .filter((mapping): mapping is IsoMapDTO => !!mapping)
-      if (targets.length) {
-        const updated = await Promise.all(
-          targets.map((mapping) => updateIsoMapping({ ...mapping, code22: isoCode, level22: 4 }))
-        )
+        .filter((mapping) => mapping.code22?.replace(/\s/g, '') === parentIsoCode)
+      const results = await Promise.allSettled(
+        targets.map((mapping) => updateIsoMapping({ ...mapping, code22: isoCode, level22: 4 }))
+      )
+      const updated = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []))
+      if (updated.length) {
         const updatedById = new Map(updated.map((mapping) => [mapping.id, mapping]))
         mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
           revalidate: false,
         })
       }
+      const failures = results.flatMap((result) => (result.status === 'rejected' ? [result.reason] : []))
+      if (failures.length) {
+        throw new Error(
+          `ISO ${isoCode} er opprettet, men ${failures.length} av ${targets.length} mapping${
+            targets.length === 1 ? '' : 'er'
+          } ble ikke koblet til: ${extractErrorMessage(failures[0])}. Prøv igjen for å fullføre koblingen.`
+        )
+      }
+      setPendingIso22Links((prev) => {
+        const next = new Set(prev)
+        next.delete(isoCode)
+        return next
+      })
     },
-    [loggedInUser?.userName, mutateIsoCategories22, isoMappingsById, mutateIsoMappings]
+    [loggedInUser?.userName, mutateIsoCategories22, isoMappingsById, mutateIsoMappings, pendingIso22Links]
+  )
+
+  const createFormExistingIso22Codes = useMemo(
+    () => new Set([...existingIso22Codes].filter((code) => !pendingIso22Links.has(code))),
+    [existingIso22Codes, pendingIso22Links]
   )
 
   const handleBulkMoveCompleted = useCallback(
@@ -440,9 +525,30 @@ const IsoOversikt = () => {
     [sortedIsoCategories, sortedIsoCategories22, isoMappings, mappingDataAvailable]
   )
 
-  const bulkMoveContext = useMemo(
-    () => (bulkMoveModal.isoCode ? (mappingRows.find((row) => row.isoCode === bulkMoveModal.isoCode) ?? null) : null),
+  // Ved splitt finnes flere mappingrader for samme v16-kode. Oversikten gjelder da raden den ble åpnet
+  // fra (mappingId). Uten mappingId er målet tvetydig, og tilkobling sperres.
+  const bulkMoveCandidates = useMemo(
+    () => (bulkMoveModal.isoCode ? mappingRows.filter((row) => row.isoCode === bulkMoveModal.isoCode) : []),
     [mappingRows, bulkMoveModal.isoCode]
+  )
+  const bulkMoveContext = useMemo(() => {
+    const { mappingId } = bulkMoveModal
+    if (mappingId) return bulkMoveCandidates.find((row) => row.mappingIds.includes(mappingId)) ?? null
+    return bulkMoveCandidates.length === 1 ? bulkMoveCandidates[0] : null
+  }, [bulkMoveCandidates, bulkMoveModal])
+  const bulkMoveAmbiguous = !bulkMoveModal.mappingId && bulkMoveCandidates.length > 1
+  const bulkMoveTargetCode = useMemo(() => {
+    if (!bulkMoveModal.isoCode || !bulkMoveContext) return ''
+    return getIso22Targets(bulkMoveModal.isoCode, bulkMoveContext.mappingIds)[0]?.level4Code ?? ''
+  }, [bulkMoveModal.isoCode, bulkMoveContext, getIso22Targets])
+  const bulkMoveValidIso22Codes = useMemo(
+    () =>
+      new Set(
+        bulkMoveModal.isoCode
+          ? getMappedIso22Codes(bulkMoveModal.isoCode, findMappingsForCode(bulkMoveModal.isoCode, mappingsByCode16))
+          : []
+      ),
+    [bulkMoveModal.isoCode, mappingsByCode16]
   )
   // Kilden til sannhet for hvilke produkter/varianter som faktisk har v16-koden - hentet fra samme
   // `rows`-tilstand som resten av oversikten (Produkt/Variant-visningen), IKKE et separat
@@ -522,6 +628,7 @@ const IsoOversikt = () => {
             mappingDataAvailable
           )
         )
+        setRowsScope(selectedIsoCode || '')
         setVariantPage(1)
       } catch (error: unknown) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
@@ -738,12 +845,11 @@ const IsoOversikt = () => {
           isOpen={moveModal.open}
           setIsOpen={(open) => setMoveModal((prev) => ({ ...prev, open }))}
           onClick={handleConfirmMove}
-          targetIso22Code={movePreviewRows[0]?.iso22Lvl4 || undefined}
-          targetIso22Title={movePreviewRows[0]?.iso22Lvl4Title || undefined}
-          missingLevel4={!!movePreviewRows[0] && !movePreviewRows[0].iso22Lvl4 && !!movePreviewRows[0].iso22Lvl3}
-          iso22Lvl3={movePreviewRows[0]?.iso22Lvl3 || undefined}
-          iso22Lvl3Title={movePreviewRows[0]?.iso22Lvl3Title || undefined}
-          mappingIds={moveModalMappingIds}
+          targetOptions={moveModalTargetOptions}
+          missingLevel4={moveModalTargetOptions.length === 0 && !!moveModalMissingTarget}
+          iso22Lvl3={moveModalMissingTarget?.level3Code || undefined}
+          iso22Lvl3Title={moveModalMissingTarget?.level3Title || undefined}
+          mappingIds={moveModalMissingTarget ? [moveModalMissingTarget.mappingId] : moveModalMappingIds}
           onRequestCreateCategory={handleOpenCreateCategoryModal}
           heading={
             moveModalLocked
@@ -773,9 +879,11 @@ const IsoOversikt = () => {
                   <strong>{movePreviewRows[0].iso22Lvl4 || movePreviewRows[0].iso22Lvl3 || 'Ingen kategori'}</strong>.
                   v16-koden beholdes uendret. {movePreviewRows.length} variant
                   {movePreviewRows.length === 1 ? '' : 'er'}
-                  {!moveModalLocked && movePreviewRows[0].iso22Lvl4
-                    ? ` blir koblet til ${movePreviewRows[0].iso22Lvl4}:`
-                    : ' er registrert på produktet:'}
+                  {!moveModalLocked && moveModalTargetOptions.length === 1
+                    ? ` blir koblet til ${moveModalTargetOptions[0].code}:`
+                    : !moveModalLocked && moveModalTargetOptions.length > 1
+                      ? ' blir koblet til v22-kategorien du velger:'
+                      : ' er registrert på produktet:'}
                 </BodyShort>
                 <Table size="small" zebraStripes>
                   <Table.Header>
@@ -801,8 +909,11 @@ const IsoOversikt = () => {
           isOpen={bulkMoveModal.open}
           sourceIsoCode={bulkMoveModal.isoCode}
           context={bulkMoveContext}
+          targetIso22Code={bulkMoveTargetCode}
+          validIso22Codes={bulkMoveValidIso22Codes}
+          ambiguousTarget={bulkMoveAmbiguous}
           preloadedRows={bulkMoveSourceRows}
-          rowsLoaded={rows !== null}
+          rowsLoaded={!!bulkMoveModal.isoCode && isIsoCodeLoaded(bulkMoveModal.isoCode)}
           rowsLoading={pageLoading}
           onRequestLoadRows={() => loadAllRows(true)}
           onClose={() => setBulkMoveModal({ open: false, isoCode: null })}
@@ -815,7 +926,7 @@ const IsoOversikt = () => {
           context={createCategoryContext}
           onClose={() => setCreateCategoryContext(null)}
           onCreate={handleCreateIso22Category}
-          existingIsoCodes={existingIso22Codes}
+          existingIsoCodes={createFormExistingIso22Codes}
         />
         {verifyConfirm && (
           <Modal
@@ -1212,13 +1323,11 @@ const IsoOversikt = () => {
                                 mappingVerified={row.mappingVerified}
                                 mappingAvailable={row.mappingAvailable}
                                 isoCode={row.isoCode || undefined}
-                                iso22Lvl3={row.iso22Lvl3 || undefined}
-                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
-                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                {...getAksjonTargetProps(row.isoCode, row.mappingIds)}
                                 attachmentComplete={
                                   row.isoCode ? (attachmentCompleteByIsoCode.get(row.isoCode) ?? true) : true
                                 }
-                                attachmentUnknown={rows === null}
+                                attachmentUnknown={!row.isoCode || !isIsoCodeLoaded(row.isoCode)}
                                 busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
                                 onRequestVerify={handleRequestVerify}
                                 onMoveIsoCode={handleOpenBulkMove}
@@ -1305,6 +1414,7 @@ const IsoOversikt = () => {
                       variant="tertiary"
                       onClick={() => {
                         setRows(null)
+                        setRowsScope(null)
                         setPendingLargeLoad(false)
                       }}
                     >
@@ -1403,9 +1513,7 @@ const IsoOversikt = () => {
                                 mappingAvailable={row.mappingAvailable}
                                 seriesId={row.seriesId}
                                 isoCode={row.isoCode || undefined}
-                                iso22Lvl3={row.iso22Lvl3 || undefined}
-                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
-                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                {...getAksjonTargetProps(row.isoCode, row.mappingIds)}
                                 attachmentComplete={attachmentCompleteByIsoCode.get(row.isoCode) ?? true}
                                 busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
                                 onRequestVerify={handleRequestVerify}
@@ -1505,9 +1613,7 @@ const IsoOversikt = () => {
                                 mappingAvailable={row.mappingAvailable}
                                 seriesId={row.seriesId}
                                 isoCode={row.isoCode || undefined}
-                                iso22Lvl3={row.iso22Lvl3 || undefined}
-                                iso22Lvl3Title={row.iso22Lvl3Title || undefined}
-                                iso22Lvl4={row.iso22Lvl4 || undefined}
+                                {...getAksjonTargetProps(row.isoCode, row.mappingIds)}
                                 attachmentComplete={attachmentCompleteByIsoCode.get(row.isoCode) ?? true}
                                 busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
                                 onRequestVerify={handleRequestVerify}

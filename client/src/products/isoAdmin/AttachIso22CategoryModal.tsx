@@ -1,18 +1,17 @@
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import Content from 'felleskomponenter/styledcomponents/Content'
 
-import { Alert, BodyShort, Button, Modal, VStack } from '@navikt/ds-react'
+import { Alert, BodyShort, Button, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
 
 interface Props {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   onClick: (isoCategory22: string) => void
-  // Målkategorien er låst til den anbefalte v22 nivå 4-koden for v16-kategorien produktet ligger i
-  // (se isoMappingUtils) - admin skal ikke kunne søke opp og velge en vilkårlig v22-kategori, siden
-  // det ville frikoblet v16<->v22-migreringen fra selve mappingtabellen.
-  targetIso22Code?: string
-  targetIso22Title?: string
+  // Målene kommer fra mappingene for produktets v16-kode (se resolveIso22Targets), aldri fra fritt søk.
+  // Ett mål låses. Ved splitt (flere mål) må admin velge eksplisitt.
+  targetOptions: { code: string; title: string }[]
   // Vises når det ikke finnes noen nivå 4-kategori under nivå 3-forelderen enda - tilkobling er da
   // ikke mulig før en slik kategori er opprettet (se CreateIso22CategoryModal, åpnet av parent).
   missingLevel4?: boolean
@@ -40,8 +39,7 @@ const AttachIso22CategoryModal = ({
   isOpen,
   setIsOpen,
   onClick,
-  targetIso22Code,
-  targetIso22Title,
+  targetOptions,
   missingLevel4,
   iso22Lvl3,
   iso22Lvl3Title,
@@ -56,9 +54,16 @@ const AttachIso22CategoryModal = ({
   submitting,
   error,
 }: Props) => {
-  const canAttach = !!targetIso22Code && !lockedMessage
+  const [chosenCode, setChosenCode] = useState('')
+  useEffect(() => {
+    if (isOpen) setChosenCode('')
+  }, [isOpen])
+
+  const selectedCode = targetOptions.length === 1 ? targetOptions[0].code : chosenCode
+  const selectedOption = targetOptions.find((option) => option.code === selectedCode)
+  const canAttach = !!selectedOption && !lockedMessage
   const onSubmit = () => {
-    if (targetIso22Code) onClick(targetIso22Code)
+    if (selectedOption && !lockedMessage) onClick(selectedOption.code)
   }
 
   return (
@@ -88,11 +93,26 @@ const AttachIso22CategoryModal = ({
                 </VStack>
               </Alert>
             )}
-            {targetIso22Code ? (
+            {targetOptions.length > 1 ? (
+              <RadioGroup
+                legend="Velg ISO v22-kategori"
+                description="v16-koden er splittet i flere v22-kategorier. Velg den som passer dette produktet."
+                value={selectedCode}
+                onChange={(value: string) => setChosenCode(value)}
+                disabled={!!lockedMessage}
+              >
+                {targetOptions.map((option) => (
+                  <Radio key={option.code} value={option.code}>
+                    {option.code}
+                    {option.title ? ` - ${option.title}` : ''}
+                  </Radio>
+                ))}
+              </RadioGroup>
+            ) : targetOptions.length === 1 ? (
               <Alert variant="info" size="small">
                 {lockedMessage ? 'Anbefalt ISO v22-kategori: ' : 'Produktet vil bli koblet til ISO v22-kategori '}
-                <strong>{targetIso22Code}</strong>
-                {targetIso22Title ? ` - ${targetIso22Title}` : ''}.
+                <strong>{targetOptions[0].code}</strong>
+                {targetOptions[0].title ? ` - ${targetOptions[0].title}` : ''}.
               </Alert>
             ) : missingLevel4 && iso22Lvl3 ? (
               <Box22MissingLevel4

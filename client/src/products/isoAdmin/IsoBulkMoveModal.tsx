@@ -36,6 +36,14 @@ interface Props {
   isOpen: boolean
   sourceIsoCode: string | null
   context: MappingRow | null
+  // Validert mål for mappingen modalen ble åpnet fra: en nivå 4-kategori som finnes (se
+  // resolveIso22Targets). Tom når nivå 4 mangler eller mappingen ikke er entydig.
+  targetIso22Code: string
+  // Alle v22-koder mappingene for v16-koden peker på. Et produkt regnes som koblet når den lagrede
+  // v22-koden er én av disse, samme regel som verifiseringssperren i IsoOversikt.
+  validIso22Codes: ReadonlySet<string>
+  // v16-koden er splittet, og modalen ble åpnet uten at en bestemt mapping var valgt.
+  ambiguousTarget?: boolean
   // Kilden til produkt-/variantdata for denne v16-koden - kommer fra IsoOversikt sin allerede
   // innlastede `rows`-tilstand (samme data som driver Produkt/Variant-visningen og tellingene der),
   // IKKE et eget backend-kall filtrert på isoCode. Se IsoOversikt.tsx for begrunnelse.
@@ -77,6 +85,9 @@ const IsoBulkMoveModal = ({
   isOpen,
   sourceIsoCode,
   context,
+  targetIso22Code,
+  validIso22Codes,
+  ambiguousTarget,
   preloadedRows,
   rowsLoaded,
   rowsLoading,
@@ -87,11 +98,9 @@ const IsoBulkMoveModal = ({
   verifying,
   onRequestCreateCategory,
 }: Props) => {
-  // Målkategorien er låst til mappingens anbefalte v22 nivå 4-kode - admin skal ikke kunne søke opp
-  // og velge en vilkårlig v22-kategori. Mangler nivå 4 enda, shortcuttes admin til den frittstående
+  // Målkategorien er låst til mappingens v22 nivå 4-kode - admin skal ikke kunne søke opp og velge en
+  // vilkårlig v22-kategori. Mangler nivå 4 enda, shortcuttes admin til den frittstående
   // CreateIso22CategoryModal (se onRequestCreateCategory) i stedet for en inline-oppretting her.
-  const targetIso22Code = context?.iso22Lvl4 || ''
-  const currentIso22Code = targetIso22Code || context?.iso22Lvl3 || ''
 
   const [previewPage, setPreviewPage] = useState(1)
   // Lokal, optimistisk overstyring av lagret v22-kode rett etter en vellykket tilknytning - slik at
@@ -114,7 +123,7 @@ const IsoBulkMoveModal = ({
   const missingV22Level4 =
     !!context &&
     context.mappingAvailable &&
-    !context.iso22Lvl4 &&
+    !targetIso22Code &&
     !!context.iso22Lvl3 &&
     context.mappingVerified === false
   // Tilknytning til v22 er sperret mens raden er verifisert - man må fjerne verifiseringen først
@@ -144,9 +153,11 @@ const IsoBulkMoveModal = ({
   }
 
   const totalCount = previewSeries.length
-  const remainingSeries = targetIso22Code
-    ? previewSeries.filter((series) => series.isoCode22 !== targetIso22Code)
-    : previewSeries
+  // Produkter som allerede er koblet til et gyldig mål (også et annet mål ved splitt) hoppes over.
+  // Produkter med en feil eller utdatert v22-kode tas med og kobles til målet.
+  const isCorrectlyAttached = (series: PreviewSeriesRow) =>
+    !!series.isoCode22 && (validIso22Codes.size === 0 || validIso22Codes.has(series.isoCode22))
+  const remainingSeries = previewSeries.filter((series) => !isCorrectlyAttached(series))
   const remainingCount = remainingSeries.length
   // Tekstene lover bare tilkobling når den faktisk er mulig: ikke for verifiserte mappinger og ikke
   // når nivå 4-kategorien mangler.
@@ -197,11 +208,7 @@ const IsoBulkMoveModal = ({
   }
 
   const attachedCount = previewSeries.filter((series) => !!series.isoCode22).length
-  // "Riktig" tilknytning: produktet har en lagret v22-kode som stemmer med mappingens anbefalte
-  // kode for denne v16-kategorien - brukes til å sperre "Verifiser" (se AksjonCell for samme regel).
-  const correctlyAttachedCount = currentIso22Code
-    ? previewSeries.filter((series) => series.isoCode22 === currentIso22Code).length
-    : attachedCount
+  const correctlyAttachedCount = totalCount - remainingCount
   // Uten innlastet produktliste er status ukjent - verifisering sperres da (fail closed).
   const verifyAttachmentComplete = rowsLoaded && (totalCount === 0 || correctlyAttachedCount === totalCount)
   const previewTotalPages = Math.max(1, Math.ceil(totalCount / PREVIEW_PAGE_SIZE))
@@ -436,6 +443,13 @@ const IsoBulkMoveModal = ({
                   </VStack>
                 )}
               </>
+            )}
+
+            {ambiguousTarget && (
+              <Alert variant="warning">
+                v16-kode {sourceIsoCode} er splittet i flere v22-kategorier. Åpne oversikten fra riktig rad i Ren
+                ISO-mapping, eller koble produktene ett og ett.
+              </Alert>
             )}
 
             {totalCount > 0 && attachLocked && (

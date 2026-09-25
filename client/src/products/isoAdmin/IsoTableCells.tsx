@@ -231,7 +231,8 @@ export const AksjonCell = ({
   busy?: boolean
   onRequestVerify?: (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => void
   onMove?: (seriesId: string) => void
-  onMoveIsoCode?: (isoCode: string) => void
+  // mappingId er satt når raden gjelder én bestemt mapping, slik at oversikten vet hvilket mål som gjelder.
+  onMoveIsoCode?: (isoCode: string, mappingId?: string) => void
   onCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
 }) => {
   // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
@@ -245,6 +246,7 @@ export const AksjonCell = ({
   const isLockedByVerification = mappingVerified === true
   const canMove = !!seriesId && !!onMove
   const canMoveIsoCode = !!isoCode && !!onMoveIsoCode
+  const openOverview = () => onMoveIsoCode?.(isoCode as string, mappingIds.length === 1 ? mappingIds[0] : undefined)
   // Ny ISO v22-kategori (nivå 4, nasjonal tilleggskode) kan kun opprettes under en eksisterende
   // nivå 3-forelder, og kun mens mappingen ikke er verifisert.
   const canCreateCategory =
@@ -288,8 +290,8 @@ export const AksjonCell = ({
           )}
           {canMoveIsoCode && (
             <>
-              <ActionMenu.Item onSelect={() => onMoveIsoCode?.(isoCode as string)}>Vis oversikt</ActionMenu.Item>
-              <ActionMenu.Item disabled={isLockedByVerification} onSelect={() => onMoveIsoCode?.(isoCode as string)}>
+              <ActionMenu.Item onSelect={openOverview}>Vis oversikt</ActionMenu.Item>
+              <ActionMenu.Item disabled={isLockedByVerification} onSelect={openOverview}>
                 {isLockedByVerification
                   ? 'Koble alle produkter til ISO v22-kategori (fjern verifisering først)'
                   : 'Koble alle produkter til ISO v22-kategori'}

@@ -891,3 +891,148 @@ test('F10: oversikten for en verifisert mapping lover ikke tilkobling', async ()
   expect(within(overview).queryByText(/blir koblet til/)).not.toBeInTheDocument()
   expect(within(overview).queryByText(/vil bli koblet/)).not.toBeInTheDocument()
 })
+
+// Copilot-review: tilkoblingsmål, lastet ISO-omfang og nytt forsøk etter delvis feil.
+const useRollatorSeries = (isoCategory22: string | null, extraMappings: typeof isoMappings = []) => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json([
+        ...isoMappings.map((mapping) => (mapping.id === 'map-1' ? { ...mapping, verified: false } : mapping)),
+        ...extraMappings,
+      ])
+    ),
+    http.get('http://localhost:8080/admreg/api/v1/series', () =>
+      HttpResponse.json({
+        content: [overviewSeries('s1', 'Rollator Alfa', isoCategory22)],
+        totalPages: 1,
+        totalSize: 1,
+      })
+    )
+  )
+}
+
+const capturePatchedIso22 = () => {
+  const patched: { id: string; isoCategory22: unknown }[] = []
+  server.use(
+    http.patch('http://localhost:8080/admreg/api/v1/series/:id', async ({ params, request }) => {
+      const body = (await request.json()) as { isoCategory22?: unknown }
+      patched.push({ id: params.id as string, isoCategory22: body.isoCategory22 })
+      return new HttpResponse(null, { status: 200 })
+    })
+  )
+  return patched
+}
+
+const openProductAttachModal = async () => {
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  openExtractView()
+  const loadButton = screen.queryByRole('button', { name: 'Hent liste' })
+  if (loadButton) {
+    await waitFor(() => expect(loadButton).toBeEnabled())
+    fireEvent.click(loadButton)
+  }
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBeGreaterThan(1))
+  enableEditMode()
+  fireEvent.click(await screen.findByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble til ISO v22-kategori' }))
+  return screen.findByRole('dialog', { name: /Koble "Rollator Alfa" til ISO v22-kategori/ })
+}
+
+test('kobler til mappingens mål, ikke til en feil v22-kode produktet allerede har', async () => {
+  useRollatorSeries('24060302')
+  const patched = capturePatchedIso22()
+  const dialog = await openProductAttachModal()
+
+  expect(within(dialog).getByText(/Produktet vil bli koblet til ISO v22-kategori/)).toHaveTextContent('18090301')
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
+
+  await waitFor(() => expect(patched).toEqual([{ id: 's1', isoCategory22: '18090301' }]))
+})
+
+test('ved splitt må admin velge v22-mål eksplisitt før tilkobling', async () => {
+  useRollatorSeries(null, [
+    {
+      ...isoMappings.find((mapping) => mapping.id === 'map-2')!,
+      id: 'map-split',
+      code16: '18090301',
+      code22: '24060302',
+      verified: false,
+    },
+  ])
+  const patched = capturePatchedIso22()
+  const dialog = await openProductAttachModal()
+
+  const attachButton = within(dialog).getByRole('button', { name: 'Koble til' })
+  expect(attachButton).toBeDisabled()
+  fireEvent.click(within(dialog).getByRole('radio', { name: /24060302/ }))
+  expect(attachButton).toBeEnabled()
+  fireEvent.click(attachButton)
+
+  await waitFor(() => expect(patched).toEqual([{ id: 's1', isoCategory22: '24060302' }]))
+})
+
+test('verifisering sperres for koder utenfor ISO-filteret produktlisten ble lastet med', async () => {
+  useUnverifiedRollatorMapping()
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      const content = isoCode === '04' ? [] : [overviewSeries('s1', 'Rollator Alfa', '18090301')]
+      return HttpResponse.json({ content, totalPages: 1, totalSize: content.length })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+
+  // Last produktlisten kun for 04, og bytt så filter til 18 uten å laste på nytt.
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '04' } })
+  openExtractView()
+  const loadButton = screen.getByRole('button', { name: 'Hent liste' })
+  await waitFor(() => expect(loadButton).toBeEnabled())
+  fireEvent.click(loadButton)
+  await waitFor(() => expect(loadButton).toBeEnabled())
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
+  fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (last inn produkter først)' })
+  expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('nytt forsøk etter feilet mappingoppdatering hopper over opprettingen og fullfører koblingen', async () => {
+  let createCalls = 0
+  let mappingUpdates = 0
+  server.use(
+    http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', () => {
+      createCalls++
+      return HttpResponse.json({}, { status: 201 })
+    }),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) => {
+      mappingUpdates++
+      if (mappingUpdates === 1) return HttpResponse.json({ message: 'Midlertidig feil' }, { status: 500 })
+      const body = (await request.json()) as { isoMap: Record<string, string | number | boolean | null | string[]> }
+      return HttpResponse.json(body.isoMap)
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
+  fireEvent.change(screen.getByLabelText('Siste 2 siffer'), { target: { value: '01' } })
+  fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny kommunikasjon' } })
+  const submit = screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' })
+  fireEvent.click(submit)
+
+  expect(
+    await screen.findByText(/ISO 22091201 er opprettet, men 1 av 1 mapping ble ikke koblet til/)
+  ).toBeInTheDocument()
+  expect(createCalls).toBe(1)
+
+  fireEvent.click(submit)
+  await waitFor(() => expect(mappingUpdates).toBe(2))
+  expect(createCalls).toBe(1)
+  expect(screen.queryByText(/finnes allerede/)).not.toBeInTheDocument()
+})
