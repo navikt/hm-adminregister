@@ -2,7 +2,8 @@ import { getSeriesBySeriesId, updateProductIso22Category } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
 import { SeriesDTO } from 'utils/types/response-types'
 
-import { IsoOverviewSeries, IsoOverviewSeriesChunk } from './isoOversiktTypes'
+import { extractErrorMessage } from './errorUtils'
+import { IsoOverviewSeriesChunk } from './isoOversiktTypes'
 
 export const SERIES_PAGE_SIZE = 200
 export const SERIES_WARN_THRESHOLD = 200
@@ -59,17 +60,6 @@ export const fetchSeriesDetailsConcurrent = async (
   return results
 }
 
-export const fetchAllSeriesForIsoCode = async (isoCode: string, signal?: AbortSignal): Promise<IsoOverviewSeries[]> => {
-  const first = await fetchSeriesPage(0, SERIES_PAGE_SIZE, isoCode, signal)
-  const totalPages = first.totalPages || 1
-  const all = [...(first.content || [])]
-  for (let p = 1; p < totalPages; p++) {
-    const chunk = await fetchSeriesPage(p, SERIES_PAGE_SIZE, isoCode, signal)
-    all.push(...(chunk.content || []))
-  }
-  return all
-}
-
 export type BulkMoveResult = {
   succeeded: string[]
   failed: { id: string; error: string }[]
@@ -97,7 +87,7 @@ export const bulkUpdateIso22Category = async (
         await updateProductIso22Category(id, newIso22Code)
         succeeded.push(id)
       } catch (error) {
-        failed.push({ id, error: error instanceof Error ? error.message : 'Ukjent feil oppstod' })
+        failed.push({ id, error: extractErrorMessage(error, 'Ukjent feil oppstod') })
       }
       done++
       onProgress(done, total)

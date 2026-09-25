@@ -195,6 +195,7 @@ export const MappingVerification = ({ verified }: { verified: boolean | null }) 
 export const AksjonHeader = () => <Table.HeaderCell scope="col">Aksjon</Table.HeaderCell>
 
 export const AksjonCell = ({
+  menuLabel,
   mappingIds,
   mappingVerified,
   mappingAvailable,
@@ -204,12 +205,15 @@ export const AksjonCell = ({
   iso22Lvl3Title,
   iso22Lvl4,
   attachmentComplete,
+  attachmentUnknown,
   busy,
   onRequestVerify,
   onMove,
   onMoveIsoCode,
   onCreateCategory,
 }: {
+  // Skiller radmenyene fra hverandre for skjermleser, f.eks. "Rad-meny for ISO 18090301".
+  menuLabel?: string
   mappingIds: string[]
   mappingVerified: boolean | null
   mappingAvailable: boolean
@@ -222,16 +226,20 @@ export const AksjonCell = ({
   // kun "Verifiser" (ikke "Fjern verifisering") - man skal alltid kunne trekke tilbake en verifisering.
   // Udefinert (f.eks. i eldre kall) tolkes som "komplett" for bakoverkompatibilitet.
   attachmentComplete?: boolean
+  // Produktlisten er ikke lastet inn, så tilknytningsstatus er ukjent - "Verifiser" sperres da også.
+  attachmentUnknown?: boolean
   busy?: boolean
   onRequestVerify?: (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => void
   onMove?: (seriesId: string) => void
   onMoveIsoCode?: (isoCode: string) => void
   onCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
 }) => {
-  const canVerify = mappingAvailable && mappingIds.length > 0 && !!onRequestVerify
+  // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
+  // krever code16 og feiler med 500 når den er null.
+  const canVerify = mappingAvailable && mappingIds.length > 0 && !!isoCode && !!onRequestVerify
   // "Verifiser" (ikke "Fjern verifisering") er sperret til alle produkter/varianter faktisk er
   // koblet til riktig v22-kategori - man skal ikke kunne bekrefte en migrering som ikke er utført.
-  const verifyBlocked = !mappingVerified && attachmentComplete === false
+  const verifyBlocked = !mappingVerified && (attachmentComplete === false || attachmentUnknown === true)
   // Flytting er sperret mens raden er verifisert - man må fjerne verifiseringen først for å unngå
   // at en godkjent v16->v22-migrering blir endret "under" en verifisert status.
   const isLockedByVerification = mappingVerified === true
@@ -252,7 +260,7 @@ export const AksjonCell = ({
             variant="tertiary"
             icon={<MenuElipsisVerticalCircleIcon aria-hidden />}
             size="small"
-            aria-label="Rad-meny"
+            aria-label={menuLabel ? `Rad-meny for ${menuLabel}` : 'Rad-meny'}
             loading={busy}
           />
         </ActionMenu.Trigger>
@@ -264,9 +272,11 @@ export const AksjonCell = ({
             >
               {mappingVerified
                 ? 'Fjern verifisering'
-                : verifyBlocked
-                  ? 'Verifiser (koble produkter til v22 først)'
-                  : 'Verifiser'}
+                : attachmentUnknown && !mappingVerified
+                  ? 'Verifiser (last inn produkter først)'
+                  : verifyBlocked
+                    ? 'Verifiser (koble produkter til v22 først)'
+                    : 'Verifiser'}
             </ActionMenu.Item>
           )}
           {canMove && (

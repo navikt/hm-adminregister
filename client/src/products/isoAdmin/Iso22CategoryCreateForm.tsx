@@ -2,17 +2,7 @@ import { useState } from 'react'
 
 import { Alert, BodyShort, Button, HStack, TextField, VStack } from '@navikt/ds-react'
 
-const errorMessage = (error: unknown): string => {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    typeof (error as { message: unknown }).message === 'string'
-  ) {
-    return (error as { message: string }).message
-  }
-  return 'Ukjent feil oppstod'
-}
+import { extractErrorMessage } from './errorUtils'
 
 // ISO 9999 tillater at nasjonale (NAT) kategorier opprettes på nivå 4 under en eksisterende
 // nivå 3-forelder. Koden er derfor alltid forelderens 6-sifrede kode + 2 ekstra sifre - nivå
@@ -30,8 +20,12 @@ const Iso22CategoryCreateForm = ({
   onCreate,
   onCancel,
   submitLabel = 'Opprett kategori',
+  existingIsoCodes,
 }: {
   parentIsoCode: string
+  // Koder som allerede finnes (fra klientens v22-kategoriliste) - gir en tydelig feilmelding før
+  // kallet sendes, i stedet for backendens generiske 400 "already exists".
+  existingIsoCodes?: ReadonlySet<string>
   onCreate: (payload: Iso22CategoryCreatePayload) => Promise<void>
   onCancel?: () => void
   submitLabel?: string
@@ -60,6 +54,10 @@ const Iso22CategoryCreateForm = ({
       setError(`ISO-koden må bestå av 8 siffer og starte med ${parentIsoCode}, f.eks. ${parentIsoCode}01`)
       return
     }
+    if (existingIsoCodes?.has(code)) {
+      setError(`ISO ${code} finnes allerede. Velg andre sifre.`)
+      return
+    }
     if (!isoTitle.trim()) {
       setError('Du må angi en tittel for den nye kategorien')
       return
@@ -78,7 +76,7 @@ const Iso22CategoryCreateForm = ({
         searchWords: words,
       })
     } catch (err) {
-      setError(errorMessage(err))
+      setError(extractErrorMessage(err, 'Ukjent feil oppstod'))
     } finally {
       setSubmitting(false)
     }

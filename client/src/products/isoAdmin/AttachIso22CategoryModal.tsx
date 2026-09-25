@@ -28,12 +28,14 @@ interface Props {
   lockedMessage?: ReactNode
   onRequestUnlock?: () => void
   unlocking?: boolean
+  submitting?: boolean
+  error?: string | null
 }
 
 // Kobler et enkeltprodukt til en ISO v22-kategori uten å endre v16-kategorien - v16 og v22
 // sameksisterer gjennom hele migreringsperioden (se IsoBulkMoveModal for samme resonnement på
-// tvers av flere produkter). Brukes kun av ISO Admin - Product.tsx sin generelle v16-korrigering
-// (ChangeISOCategoryModal) er upåvirket.
+// tvers av flere produkter). Brukes kun av ISO Admin. Product.tsx bruker fortsatt
+// ChangeISOCategoryModal til å endre v16-kategorien.
 const AttachIso22CategoryModal = ({
   isOpen,
   setIsOpen,
@@ -51,6 +53,8 @@ const AttachIso22CategoryModal = ({
   lockedMessage,
   onRequestUnlock,
   unlocking,
+  submitting,
+  error,
 }: Props) => {
   const canAttach = !!targetIso22Code && !lockedMessage
   const onSubmit = () => {
@@ -64,7 +68,9 @@ const AttachIso22CategoryModal = ({
         heading,
         closeButton: false,
       }}
-      onClose={() => setIsOpen(false)}
+      onClose={() => {
+        if (!submitting) setIsOpen(false)
+      }}
     >
       <Modal.Body>
         <Content>
@@ -84,7 +90,8 @@ const AttachIso22CategoryModal = ({
             )}
             {targetIso22Code ? (
               <Alert variant="info" size="small">
-                Produktet vil bli koblet til ISO v22-kategori <strong>{targetIso22Code}</strong>
+                {lockedMessage ? 'Anbefalt ISO v22-kategori: ' : 'Produktet vil bli koblet til ISO v22-kategori '}
+                <strong>{targetIso22Code}</strong>
                 {targetIso22Title ? ` - ${targetIso22Title}` : ''}.
               </Alert>
             ) : missingLevel4 && iso22Lvl3 ? (
@@ -99,15 +106,20 @@ const AttachIso22CategoryModal = ({
                 Fant ingen tilhørende v22-kategori for dette produktet. Kontroller ISO-mappingen.
               </Alert>
             )}
+            {error && (
+              <Alert variant="error" size="small" role="alert">
+                {error}
+              </Alert>
+            )}
           </VStack>
         </Content>
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setIsOpen(false)}>
+        <Button variant="secondary" onClick={() => setIsOpen(false)} disabled={submitting}>
           Avbryt
         </Button>
-        <Button onClick={onSubmit} variant="primary" disabled={!canAttach}>
+        <Button onClick={onSubmit} variant="primary" disabled={!canAttach} loading={submitting}>
           {confirmButtonText}
         </Button>
       </Modal.Footer>

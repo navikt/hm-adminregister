@@ -14,8 +14,10 @@ const CreateIso22CategoryModal = ({
   context,
   onClose,
   onCreate,
+  existingIsoCodes,
 }: {
   context: CreateIso22CategoryContext | null
+  existingIsoCodes?: ReadonlySet<string>
   onClose: () => void
   onCreate: (payload: Iso22CategoryCreatePayload & { parentIsoCode: string; mappingIds: string[] }) => Promise<void>
 }) => {
@@ -33,6 +35,7 @@ const CreateIso22CategoryModal = ({
             </BodyShort>
             <Iso22CategoryCreateForm
               parentIsoCode={context.parentIsoCode}
+              existingIsoCodes={existingIsoCodes}
               onCancel={onClose}
               submitLabel="Opprett kategori og koble til mapping"
               onCreate={async (payload) => {

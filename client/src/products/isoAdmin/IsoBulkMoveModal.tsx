@@ -17,6 +17,7 @@ import {
   VStack,
 } from '@navikt/ds-react'
 
+import { extractErrorMessage } from './errorUtils'
 import { bulkUpdateIso22Category } from './isoOversiktApi'
 import { ExtractedProductVariant, MappingRow } from './isoOversiktTypes'
 
@@ -49,22 +50,6 @@ interface Props {
   // Åpner den frittstående CreateIso22CategoryModal som en 2. modal over denne - selve opprettelsen
   // (og tilkoblingen av mappingen til den nye kategorien) skjer der, ikke inline i denne modalen.
   onRequestCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
-}
-
-const errorMessage = (error: unknown): string => {
-  if (
-    typeof error === 'object' &&
-    error &&
-    'errorDetail' in error &&
-    typeof error.errorDetail === 'string' &&
-    error.errorDetail
-  ) {
-    return error.errorDetail
-  }
-  if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
-    return error.message
-  }
-  return 'Noe gikk galt. Prøv igjen.'
 }
 
 const buildPreviewSeries = (rows: ExtractedProductVariant[]): PreviewSeriesRow[] => {
@@ -158,12 +143,22 @@ const IsoBulkMoveModal = ({
     onClose()
   }
 
+  const totalCount = previewSeries.length
+  const remainingSeries = targetIso22Code
+    ? previewSeries.filter((series) => series.isoCode22 !== targetIso22Code)
+    : previewSeries
+  const remainingCount = remainingSeries.length
+  // Tekstene lover bare tilkobling når den faktisk er mulig: ikke for verifiserte mappinger og ikke
+  // når nivå 4-kategorien mangler.
+  const canAttach = !attachLocked && !!targetIso22Code
+
   const handleAttach = async () => {
     if (attachLocked) return
     if (!targetIso22Code) return
-    if (!previewSeries.length) return
     const newIso22Code = targetIso22Code
-    const seriesIds = previewSeries.map((series) => series.seriesId)
+    // Produkter som allerede er koblet til målkoden hoppes over - unngår unødvendige PUT-kall.
+    const seriesIds = remainingSeries.map((series) => series.seriesId)
+    if (!seriesIds.length) return
     setAttaching(true)
     setAttachError(null)
     setAttachProgress({ done: 0, total: seriesIds.length })
@@ -172,11 +167,11 @@ const IsoBulkMoveModal = ({
         setAttachProgress({ done, total })
       )
       if (result.failed.length > 0) {
+        const titleById = new Map(previewSeries.map((series) => [series.seriesId, series.productTitle]))
         setAttachError(
-          `${result.succeeded.length} av ${seriesIds.length} produkter ble koblet til. ${result.failed.length} feilet: ${result.failed
-            .map((f) => f.error)
-            .filter((v, i, a) => a.indexOf(v) === i)
-            .join(', ')}`
+          `${result.succeeded.length} av ${seriesIds.length} produkter ble koblet til. ${result.failed.length} feilet:\n${result.failed
+            .map((f) => `${titleById.get(f.id) || f.id}: ${f.error}`)
+            .join('\n')}`
         )
       }
       if (result.succeeded.length > 0) {
@@ -194,21 +189,21 @@ const IsoBulkMoveModal = ({
         onClose()
       }
     } catch (error) {
-      setAttachError(errorMessage(error))
+      setAttachError(extractErrorMessage(error))
     } finally {
       setAttaching(false)
       setAttachProgress(null)
     }
   }
 
-  const totalCount = previewSeries.length
   const attachedCount = previewSeries.filter((series) => !!series.isoCode22).length
   // "Riktig" tilknytning: produktet har en lagret v22-kode som stemmer med mappingens anbefalte
   // kode for denne v16-kategorien - brukes til å sperre "Verifiser" (se AksjonCell for samme regel).
   const correctlyAttachedCount = currentIso22Code
     ? previewSeries.filter((series) => series.isoCode22 === currentIso22Code).length
     : attachedCount
-  const verifyAttachmentComplete = totalCount === 0 || correctlyAttachedCount === totalCount
+  // Uten innlastet produktliste er status ukjent - verifisering sperres da (fail closed).
+  const verifyAttachmentComplete = rowsLoaded && (totalCount === 0 || correctlyAttachedCount === totalCount)
   const previewTotalPages = Math.max(1, Math.ceil(totalCount / PREVIEW_PAGE_SIZE))
   const visibleSeries = previewSeries.slice((previewPage - 1) * PREVIEW_PAGE_SIZE, previewPage * PREVIEW_PAGE_SIZE)
 
@@ -216,7 +211,9 @@ const IsoBulkMoveModal = ({
     <Modal
       open={isOpen}
       header={{
-        heading: `Koble produkter fra ISO ${sourceIsoCode ?? ''} til en ISO v22-kategori`,
+        heading: canAttach
+          ? `Koble produkter fra ISO ${sourceIsoCode ?? ''} til en ISO v22-kategori`
+          : `Oversikt over ISO ${sourceIsoCode ?? ''}`,
         closeButton: !attaching,
       }}
       onClose={handleClose}
@@ -262,9 +259,11 @@ const IsoBulkMoveModal = ({
                             >
                               {context.mappingVerified
                                 ? 'Fjern verifisering'
-                                : verifyAttachmentComplete
-                                  ? 'Verifiser'
-                                  : 'Verifiser (koble produkter til v22 først)'}
+                                : !rowsLoaded
+                                  ? 'Verifiser (last inn produkter først)'
+                                  : verifyAttachmentComplete
+                                    ? 'Verifiser'
+                                    : 'Verifiser (koble produkter til v22 først)'}
                             </Button>
                           )}
                         </>
@@ -374,8 +373,11 @@ const IsoBulkMoveModal = ({
               <>
                 <BodyShort>
                   <strong>{totalCount.toLocaleString('nb-NO')}</strong> produkt{totalCount === 1 ? '' : 'er'} er
-                  registrert med ISO {sourceIsoCode} og vil bli koblet til valgt v22-kategori. v16-koden beholdes
-                  uendret.
+                  registrert med ISO {sourceIsoCode}.
+                  {canAttach && remainingCount > 0
+                    ? ` ${remainingCount.toLocaleString('nb-NO')} av dem blir koblet til ${targetIso22Code} når du velger "Koble til".`
+                    : ''}{' '}
+                  v16-koden beholdes uendret.
                 </BodyShort>
                 {totalCount > 0 && (
                   <BodyShort size="small" textColor="subtle">
@@ -450,7 +452,7 @@ const IsoBulkMoveModal = ({
               </Alert>
             )}
 
-            {totalCount > 0 && targetIso22Code && !attachLocked && (
+            {totalCount > 0 && canAttach && remainingCount > 0 && (
               <Alert variant="info" size="small">
                 Produktene vil bli koblet til ISO v22-kategori <strong>{targetIso22Code}</strong>
                 {context?.iso22Lvl4Title ? ` - ${context.iso22Lvl4Title}` : ''}.
@@ -465,7 +467,11 @@ const IsoBulkMoveModal = ({
                 </BodyShort>
               </HStack>
             )}
-            {attachError && <Alert variant="error">{attachError}</Alert>}
+            {attachError && (
+              <Alert variant="error">
+                <span style={{ whiteSpace: 'pre-line' }}>{attachError}</span>
+              </Alert>
+            )}
           </VStack>
         </Content>
       </Modal.Body>
@@ -478,9 +484,11 @@ const IsoBulkMoveModal = ({
           onClick={handleAttach}
           variant="primary"
           loading={attaching}
-          disabled={!totalCount || !rowsLoaded || attachLocked || !targetIso22Code}
+          disabled={!remainingCount || !rowsLoaded || attachLocked || !targetIso22Code}
         >
-          Koble til {totalCount > 0 ? totalCount.toLocaleString('nb-NO') : ''} produkter
+          {totalCount > 0 && remainingCount === 0
+            ? 'Alle produkter er koblet'
+            : `Koble til ${remainingCount.toLocaleString('nb-NO')} gjenstående produkt${remainingCount === 1 ? '' : 'er'}`}
         </Button>
       </Modal.Footer>
     </Modal>

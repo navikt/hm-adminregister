@@ -1,40 +1,23 @@
 import { useState } from 'react'
-import type { ReactNode } from 'react'
 
 import Content from 'felleskomponenter/styledcomponents/Content'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { labelRequired } from 'utils/string-util'
 import { useIsoCategories } from 'utils/swr-hooks'
 
-import { Alert, Button, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
+import { Button, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
 
 interface Props {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   onClick: (isoCategory: string, resetTechnicalData: boolean) => void
-  heading?: string
-  previewContent?: ReactNode
-  confirmButtonText?: string
-  lockedMessage?: ReactNode
-  onRequestUnlock?: () => void
-  unlocking?: boolean
 }
 
 type Error = {
   isoCodeErrorMessage?: string
 }
 
-const ChangeISOCategoryModal = ({
-  isOpen,
-  setIsOpen,
-  onClick,
-  heading = 'Endre ISO-kategori',
-  previewContent,
-  confirmButtonText = 'OK',
-  lockedMessage,
-  onRequestUnlock,
-  unlocking,
-}: Props) => {
+const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick }: Props) => {
   const { isoCategories } = useIsoCategories()
   const [isoCategory, setIsoCategory] = useState<string>('')
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
@@ -78,7 +61,7 @@ const ChangeISOCategoryModal = ({
     <Modal
       open={isOpen}
       header={{
-        heading,
+        heading: 'Endre ISO-kategori',
         closeButton: false,
       }}
       onClose={() => setIsOpen(false)}
@@ -86,19 +69,6 @@ const ChangeISOCategoryModal = ({
       <Modal.Body>
         <Content>
           <VStack gap="space-16">
-            {previewContent}
-            {lockedMessage && (
-              <Alert variant="warning">
-                <VStack gap="space-8">
-                  {lockedMessage}
-                  {onRequestUnlock && (
-                    <Button variant="secondary" size="small" loading={unlocking} onClick={onRequestUnlock}>
-                      Fjern verifisering
-                    </Button>
-                  )}
-                </VStack>
-              </Alert>
-            )}
             <IsoComboboxProvider
               label={labelRequired('Iso-kategori (kode)')}
               description={'Søk etter isokategori delen passer best inn i'}
@@ -109,13 +79,11 @@ const ChangeISOCategoryModal = ({
               onFocus={() => setFieldError({ ...fieldError, isoCodeErrorMessage: undefined })}
               error={fieldError?.isoCodeErrorMessage ?? ''}
               maxSelected={{ limit: 1 }}
-              disabled={!!lockedMessage}
             />
             <RadioGroup
               legend="Velg om du vil nullstille alle felter eller beholde teknisk data som har samme navn i ny og gammel ISO"
               value={resetTechnicalData}
               onChange={(v) => setResetTechnicalData(v as 'Ja' | 'Nei')}
-              disabled={!!lockedMessage}
             >
               <Radio value="Nei">Behold teknisk data som passer ny ISO</Radio>
               <Radio value="Ja">Nullstill alle felter</Radio>
@@ -128,8 +96,8 @@ const ChangeISOCategoryModal = ({
         <Button variant="secondary" onClick={() => setIsOpen(false)}>
           Avbryt
         </Button>
-        <Button onClick={onSubmit} variant="primary" disabled={!!lockedMessage}>
-          {confirmButtonText}
+        <Button onClick={onSubmit} variant="primary">
+          OK
         </Button>
       </Modal.Footer>
     </Modal>
