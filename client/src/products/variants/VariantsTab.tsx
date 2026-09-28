@@ -66,6 +66,7 @@ const helpTextWorksWith = (
 // bredde, slik at flere varianter vises samtidig på store skjermer i stedet for tomrom.
 const MIN_COLUMNS_PER_PAGE = 5
 const LABEL_COLUMN_WIDTH_PX = 250
+const TECH_DATA_EDIT_LABEL_COLUMN_WIDTH_PX = 180
 const VARIANT_COLUMN_WIDTH_PX = 220
 
 export interface VariantsTabHandle {
@@ -95,11 +96,12 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const [tableContainerRef, tableContainerWidth] = useElementWidth<HTMLDivElement>()
 
   const [techDataEditMode, setTechDataEditMode] = useState<boolean>(false)
+  const labelColumnWidth = techDataEditMode ? TECH_DATA_EDIT_LABEL_COLUMN_WIDTH_PX : LABEL_COLUMN_WIDTH_PX
   const columnsPerPage =
     isWideMode || techDataEditMode
       ? Math.max(
           isWideMode ? MIN_COLUMNS_PER_PAGE : 1,
-          Math.floor((tableContainerWidth - LABEL_COLUMN_WIDTH_PX) / VARIANT_COLUMN_WIDTH_PX)
+          Math.floor((tableContainerWidth - labelColumnWidth) / VARIANT_COLUMN_WIDTH_PX)
         )
       : MIN_COLUMNS_PER_PAGE
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
@@ -509,7 +511,10 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                   )}
                 </HStack>
               )}
-              <div className={styles.variantTable} ref={tableContainerRef}>
+              <div
+                className={`${styles.variantTable} ${techDataEditMode ? styles.variantTableEditMode : ''}`}
+                ref={tableContainerRef}
+              >
                 <Table>
                   <Table.Header>
                     <Table.Row>
@@ -684,36 +689,52 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                         <Table.HeaderCell scope="row">{key}</Table.HeaderCell>
                         {paginatedVariants.map((product, i) => {
                           const field = techDataFieldFor(product, key)
-                          if (!techDataEditMode || !field) {
+                          if (!techDataEditMode) {
                             return (
                               <Table.DataCell key={`${key}-${i}`}>{techValue(product, key) || '-'}</Table.DataCell>
+                            )
+                          }
+                          if (!field) {
+                            return (
+                              <Table.DataCell key={`${key}-${i}`}>
+                                <VStack gap="space-2">
+                                  <BodyShort>-</BodyShort>
+                                  <BodyShort size="small">{key}</BodyShort>
+                                </VStack>
+                              </Table.DataCell>
                             )
                           }
                           const currentValue = techDataChanges.getValue(product.id!, key, field.value)
                           return (
                             <Table.DataCell key={`${key}-${i}`}>
-                              <HStack align="end" gap="space-4" wrap={false}>
-                                <TechDataFieldControl
-                                  techData={field}
-                                  value={currentValue}
-                                  onChange={(value) => techDataChanges.setValue(product.id!, key, value)}
-                                  label={`${key} for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
-                                />
-                                <BodyShort>{field.unit}</BodyShort>
-                                <Button
-                                  variant="tertiary"
-                                  size="small"
-                                  title="Kopier verdi til andre varianter"
-                                  icon={<FilesIcon aria-hidden />}
-                                  onClick={() =>
-                                    setCopyTechDataSource({
-                                      product,
-                                      key,
-                                      value: currentValue,
-                                    })
-                                  }
-                                />
-                              </HStack>
+                              <VStack gap="space-2">
+                                <div className={styles.techDataEditControl}>
+                                  <TechDataFieldControl
+                                    techData={field}
+                                    value={currentValue}
+                                    onChange={(value) => techDataChanges.setValue(product.id!, key, value)}
+                                    label={`${key} for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
+                                  />
+                                </div>
+                                <HStack align="center" justify="space-between" gap="space-4">
+                                  <HStack align="center" gap="space-2">
+                                    <BodyShort>{field.unit}</BodyShort>
+                                    <Button
+                                      variant="tertiary"
+                                      size="small"
+                                      title="Kopier verdi til andre varianter"
+                                      icon={<FilesIcon aria-hidden />}
+                                      onClick={() =>
+                                        setCopyTechDataSource({
+                                          product,
+                                          key,
+                                          value: currentValue,
+                                        })
+                                      }
+                                    />
+                                  </HStack>
+                                </HStack>
+                              </VStack>
                             </Table.DataCell>
                           )
                         })}
