@@ -425,34 +425,6 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                   </Button>
                 )}
               </HStack>
-              {series.status === 'EDITABLE' && loggedInUser?.isAdmin && techKeys.length > 0 && (
-                <HStack justify="end">
-                  {!techDataEditMode ? (
-                    <Button
-                      className="fit-content"
-                      variant="secondary"
-                      size="small"
-                      icon={<PencilIcon aria-hidden />}
-                      onClick={() => {
-                        setTechDataSnapshot(new Map(series.variants.map((v) => [v.id!, v])))
-                        setTechDataEditMode(true)
-                      }}
-                    >
-                      Rediger egenskaper på flere varianter
-                    </Button>
-                  ) : (
-                    <Button
-                      className="fit-content"
-                      variant="tertiary"
-                      size="small"
-                      icon={<XMarkIcon aria-hidden />}
-                      onClick={onCancelTechDataEdit}
-                    >
-                      Avbryt redigering
-                    </Button>
-                  )}
-                </HStack>
-              )}
               {(series.variants.length > columnsPerPage || totalPages > 1) && (
                 <HStack justify="space-between" align="center" gap="space-16" wrap>
                   {series.variants.length > columnsPerPage ? (
@@ -523,7 +495,35 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                 <Table>
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell scope="row"></Table.HeaderCell>
+                      <Table.HeaderCell scope="row">
+                        {series.status === 'EDITABLE' &&
+                          loggedInUser?.isAdmin &&
+                          techKeys.length > 0 &&
+                          (!techDataEditMode ? (
+                            <Button
+                              className="fit-content"
+                              variant="secondary"
+                              size="small"
+                              icon={<PencilIcon aria-hidden />}
+                              onClick={() => {
+                                setTechDataSnapshot(new Map(series.variants.map((v) => [v.id!, v])))
+                                setTechDataEditMode(true)
+                              }}
+                            >
+                              Rediger egenskaper på flere varianter
+                            </Button>
+                          ) : (
+                            <Button
+                              className="fit-content"
+                              variant="tertiary"
+                              size="small"
+                              icon={<XMarkIcon aria-hidden />}
+                              onClick={onCancelTechDataEdit}
+                            >
+                              Avbryt redigering
+                            </Button>
+                          ))}
+                      </Table.HeaderCell>
                       {paginatedVariants.map((product) => (
                         <Table.HeaderCell scope="row" key={`edit-${product.id}-i`}>
                           {series.status === 'EDITABLE' && (
