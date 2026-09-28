@@ -65,6 +65,15 @@
       background-color: white;
     }
   }
+
+  &.variantTableEditMode table tr > th:first-child {
+    width: 180px;
+  }
+}
+
+.techDataEditControl {
+  width: 100%;
+  max-width: 14rem;
 }
 
 .errorText {
