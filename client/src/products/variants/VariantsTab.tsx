@@ -258,6 +258,23 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   }
 
   const paginatedVariants = variantsToShow.slice((pageState - 1) * columnsPerPage, pageState * columnsPerPage)
+  const copyTechDataTargetVariants = copyTechDataSource
+    ? series.variants.filter(
+        (variant) =>
+          variant.id !== copyTechDataSource.product.id &&
+          variant.productData.techData.some((field) => field.key === copyTechDataSource.key)
+      )
+    : []
+  const copyTechDataCurrentValuesByVariantId: Record<string, string> = copyTechDataSource
+    ? copyTechDataTargetVariants.reduce(
+        (acc, variant) => {
+          const techField = variant.productData.techData.find((field) => field.key === copyTechDataSource.key)
+          acc[variant.id!] = techDataChanges.getValue(variant.id!, copyTechDataSource.key, techField?.value ?? '')
+          return acc
+        },
+        {} as Record<string, string>
+      )
+    : {}
 
   const [exportOpen, setExportOpen] = useState(false)
 
@@ -398,11 +415,8 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
           techKey={copyTechDataSource.key}
           value={copyTechDataSource.value}
           sourceProduct={copyTechDataSource.product}
-          otherVariants={series.variants.filter(
-            (variant) =>
-              variant.id !== copyTechDataSource.product.id &&
-              variant.productData.techData.some((field) => field.key === copyTechDataSource.key)
-          )}
+          otherVariants={copyTechDataTargetVariants}
+          currentValuesByVariantId={copyTechDataCurrentValuesByVariantId}
         />
       )}
       <Tabs.Panel value="variants" className={styles.tabPanel}>

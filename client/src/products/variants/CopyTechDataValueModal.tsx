@@ -13,9 +13,19 @@ interface Props {
   value: string
   sourceProduct: ProductRegistrationDTOV2
   otherVariants: ProductRegistrationDTOV2[]
+  currentValuesByVariantId: Record<string, string>
 }
 
-const CopyTechDataValueModal = ({ isModalOpen, onClose, onConfirm, techKey, value, sourceProduct, otherVariants }: Props) => {
+const CopyTechDataValueModal = ({
+  isModalOpen,
+  onClose,
+  onConfirm,
+  techKey,
+  value,
+  sourceProduct,
+  otherVariants,
+  currentValuesByVariantId,
+}: Props) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
 
   useEffect(() => {
@@ -23,12 +33,12 @@ const CopyTechDataValueModal = ({ isModalOpen, onClose, onConfirm, techKey, valu
     setSelectedRows(
       otherVariants
         .filter((variant) => {
-          const existing = variant.productData.techData.find((field) => field.key === techKey)
-          return (existing?.value ?? '') !== value
+          const currentValue = currentValuesByVariantId[variant.id!] ?? ''
+          return currentValue !== value
         })
         .map((variant) => variant.id!)
     )
-  }, [isModalOpen, otherVariants, techKey, value])
+  }, [isModalOpen, otherVariants, currentValuesByVariantId, value])
 
   const toggleSelectedRow = (id: string) =>
     setSelectedRows((list) => (list.includes(id) ? list.filter((rowId) => rowId !== id) : [...list, id]))
@@ -76,11 +86,11 @@ const CopyTechDataValueModal = ({ isModalOpen, onClose, onConfirm, techKey, valu
                 </Table.Header>
                 <Table.Body>
                   {otherVariants.map((variant) => {
-                    const existing = variant.productData.techData.find((field) => field.key === techKey)
+                    const currentValue = currentValuesByVariantId[variant.id!] ?? ''
                     return (
                       <Table.Row key={variant.id}>
                         <Table.DataCell>{variant.articleName || variant.hmsArtNr || variant.supplierRef}</Table.DataCell>
-                        <Table.DataCell>{existing?.value || '-'}</Table.DataCell>
+                        <Table.DataCell>{currentValue || '-'}</Table.DataCell>
                         <Table.DataCell>
                           <Checkbox
                             hideLabel
