@@ -96,9 +96,8 @@ const CopyTechDataValueModal = ({
                             hideLabel
                             checked={selectedRows.includes(variant.id!)}
                             onChange={() => toggleSelectedRow(variant.id!)}
-                            aria-labelledby={`copy-tech-data-${variant.id}`}
                           >
-                            {' '}
+                            {`Velg ${variant.articleName || variant.hmsArtNr || variant.supplierRef}`}
                           </Checkbox>
                         </Table.DataCell>
                       </Table.Row>
