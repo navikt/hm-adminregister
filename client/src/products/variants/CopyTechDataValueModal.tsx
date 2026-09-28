@@ -63,7 +63,7 @@ const CopyTechDataValueModal = ({ isModalOpen, onClose, onConfirm, techKey, valu
                       <Checkbox
                         checked={selectedRows.length === otherVariants.length}
                         onChange={() => {
-                          selectedRows.length
+                          selectedRows.length === otherVariants.length
                             ? setSelectedRows([])
                             : setSelectedRows(otherVariants.map((variant) => variant.id!))
                         }}
