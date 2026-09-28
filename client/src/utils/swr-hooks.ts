@@ -3,6 +3,8 @@ import { useEffect } from 'react'
 import { getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR, { Fetcher } from 'swr'
+import useSWRImmutable from 'swr/immutable'
+import { buildSeriesSearchPath, statusFilterProductsURL } from 'utils/export/seriesSearchPath'
 
 import { useAuthStore } from './store/useAuthStore'
 import { useErrorStore } from './store/useErrorStore'
@@ -10,7 +12,9 @@ import {
   AdminUserChunk,
   AgreementsChunk,
   DelkontraktRegistrationDTO,
+  IsoCategory22DTO,
   IsoCategoryDTO,
+  IsoMapDTO,
   ProductRegistrationDTO,
   ProductRegistrationDTOV2,
   ProductVariantsForDelkontraktDto,
@@ -25,7 +29,6 @@ import {
 
 import { mapSuppliers } from './supplier-util'
 import { LoggedInUser } from './user-util'
-import useSWRImmutable from 'swr/immutable'
 
 export function baseUrl(url: string = '') {
   if (process.env.NODE_ENV === 'production') {
@@ -159,61 +162,22 @@ export function usePagedProducts({
   agreementFilter?: string | null
   missingMediaType?: string | null
 }) {
-  const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : ''
-
-  const filterUrl = statusFilterProductsURL(filters)
-
-  const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : ''
-
-  const mainProductParam: string = `&mainProduct=true`
-
-  const sortBy = sortUrl?.split(',')[0] || 'updated'
-  const sortDirection = sortUrl?.split(',')[1] || 'DESC'
-  const sortParam = `&sort=${sortBy},${sortDirection}`
-
-  const agreementParam = agreementFilter ? `&inAgreement=${agreementFilter}` : ''
-
-  const missingMediaParam = missingMediaType ? `&missingMediaType=${missingMediaType}` : ''
-
-  const path = `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}${sortParam}&${filterUrl.toString()}&excludedStatus=DELETED${titleSearchParam}${supplierParam}${mainProductParam}${agreementParam}${missingMediaParam}`
+  const path = buildSeriesSearchPath({
+    page,
+    pageSize,
+    titleSearchTerm,
+    filters,
+    supplierFilter,
+    sortUrl,
+    agreementFilter,
+    missingMediaType,
+  })
 
   return useSWR<SeriesSearchChunk>(path, fetcherGET)
 }
 
-const statusFilterProductsURL = (statusFilters: string[]) => {
-  // const editStatus = ["EDITABLE", "PENDING_APPROVAL", "REJECTED", "DONE"];
-  // const otherStatuses = ["includeInactive", "onlyUnpublished"];
-  const editStatus: string[] = []
-  let excludeExpired = true
-
-  const uri = new URLSearchParams()
-
-  statusFilters.forEach((status) => {
-    if (status === 'Under endring') {
-      editStatus.push('EDITABLE')
-    } else if (status === 'Venter på godkjenning') {
-      editStatus.push('PENDING_APPROVAL')
-    } else if (status === 'Avslått') {
-      editStatus.push('REJECTED')
-    } else if (status === 'Publisert') {
-      editStatus.push('DONE')
-      // } else if (status === "Ikke publisert") {
-      //   otherStatuses.push("unpublished");
-    } else if (status === 'Vis utgåtte') {
-      excludeExpired = false
-    }
-  })
-
-  if (excludeExpired) {
-    uri.append('excludeExpired', 'true')
-  }
-
-  if (editStatus.length > 0) {
-    uri.append('editStatus', editStatus.join(','))
-  }
-
-  return uri
-}
+// Re-exported for backwards compatibility with existing imports from this module.
+export { statusFilterProductsURL }
 
 export function usePagedSeriesToApprove({
   page,
@@ -465,6 +429,30 @@ export function useIsoCategories() {
     isoCategories,
     isoLoading: isLoading,
     isoError: error,
+  }
+}
+
+export function useIsoCategories22() {
+  const path = `${HM_REGISTER_URL()}/admreg/api/v22/isocategories`
+  const { data, error, isLoading } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
+  const isoCategories22 = data && data
+
+  return {
+    isoCategories22,
+    isoLoading22: isLoading,
+    isoError22: error,
+  }
+}
+
+export function useIsoMappings(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap' : null
+  const { data, error, isLoading } = useSWR<IsoMapDTO[]>(path, fetcherGET)
+  const isoMappings = data && data
+
+  return {
+    isoMappings,
+    isoMappingsLoading: isLoading,
+    isoMappingsError: error,
   }
 }
 

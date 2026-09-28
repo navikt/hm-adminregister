@@ -14,7 +14,7 @@
   "faro_url": "https://telemetry.nav.no/collect",
   "image_proxy_external_url": "not_used",
   "replicas": {
-    "min": 1,
+    "min": 2,
     "max": 2
   },
   "app_name": "hm-adminregister",

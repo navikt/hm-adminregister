@@ -24,6 +24,7 @@ import CreateProduct from 'products/CreateProduct'
 import Product from 'products/Product'
 import ProductListWrapper from 'products/ProductListWrapper'
 import { ImporterOgValiderProdukter } from 'products/import/ImporterOgValiderProdukter'
+import IsoOversikt from 'products/isoAdmin/IsoOversikt'
 import CreateProductVariant from 'products/variants/CreateProductVariant'
 import EditProductVariant from 'products/variants/EditProductVariant'
 import EditWorksWith from 'products/variants/EditWorksWith'
@@ -88,6 +89,7 @@ export function App() {
           <Route element={<LoginWrapper />}>
             <Route element={<Navbar />}>
               <Route path="/produkter" element={<ProductListWrapper />} />
+              <Route path="/iso-admin" element={<IsoOversikt />} />
 
               <Route path="/produkter/:seriesId" element={<Product />} />
 

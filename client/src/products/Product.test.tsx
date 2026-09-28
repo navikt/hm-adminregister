@@ -8,7 +8,7 @@ import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach,beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react'
 
@@ -93,6 +93,13 @@ const addVariantButton = 'Legg til ny variant'
 const addImagesButton = 'Legg til bilder'
 const addDocumentsButton = 'Legg til dokumenter'
 const addVideoButton = 'Legg til videolenke'
+
+beforeEach(() => {
+  server.use(
+    http.get(apiPath('api/v1/isocategories'), () => HttpResponse.json([])),
+    http.get(apiPath('vendor/api/v1/product/registrations/series/*'), () => HttpResponse.json([]))
+  )
+})
 
 describe('Produktside', () => {
   test('Redigerbart produkt', async () => {
