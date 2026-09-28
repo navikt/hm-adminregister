@@ -398,7 +398,11 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
           techKey={copyTechDataSource.key}
           value={copyTechDataSource.value}
           sourceProduct={copyTechDataSource.product}
-          otherVariants={series.variants.filter((variant) => variant.id !== copyTechDataSource.product.id)}
+          otherVariants={series.variants.filter(
+            (variant) =>
+              variant.id !== copyTechDataSource.product.id &&
+              variant.productData.techData.some((field) => field.key === copyTechDataSource.key)
+          )}
         />
       )}
       <Tabs.Panel value="variants" className={styles.tabPanel}>
