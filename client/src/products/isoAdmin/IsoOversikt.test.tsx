@@ -520,6 +520,51 @@ test('viser ren ISO-mapping som standardvisning', async () => {
   expect(screen.queryByRole('button', { name: 'Hent liste' })).not.toBeInTheDocument()
 })
 
+test('kan skjule og vise verifiserte ISO-koder', async () => {
+  renderPage()
+
+  expect(await screen.findByText('C Endret kode, samme overskrift')).toBeInTheDocument()
+  const verifiedIsoCodesSwitch = screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })
+  expect(verifiedIsoCodesSwitch).toBeChecked()
+
+  fireEvent.click(verifiedIsoCodesSwitch)
+
+  expect(screen.queryByText('C Endret kode, samme overskrift')).not.toBeInTheDocument()
+  expect(screen.getAllByText('Ikke verifisert').length).toBeGreaterThan(0)
+  expect(screen.getByText('05030301')).toBeInTheDocument()
+
+  fireEvent.click(verifiedIsoCodesSwitch)
+
+  expect(screen.getByText('C Endret kode, samme overskrift')).toBeInTheDocument()
+})
+
+test('kan filtrere på én eller flere endringstyper og vise alle igjen', async () => {
+  renderPage()
+
+  await screen.findByText('C Endret kode, samme overskrift')
+  const endringstypeFilter = screen.getByRole('combobox', { name: 'Endringstype' })
+
+  fireEvent.focus(endringstypeFilter)
+  fireEvent.input(endringstypeFilter, { target: { value: 'C Endret kode, samme overskrift' } })
+  fireEvent.pointerUp(await screen.findByRole('option', { name: 'C Endret kode, samme overskrift' }))
+
+  expect(within(screen.getByRole('table')).getByText('24060301')).toBeInTheDocument()
+  expect(within(screen.getByRole('table')).queryByText('04010101')).not.toBeInTheDocument()
+
+  fireEvent.input(endringstypeFilter, { target: { value: 'X Slettet klasse' } })
+  fireEvent.pointerUp(await screen.findByRole('option', { name: 'X Slettet klasse, underklasse eller inndeling' }))
+
+  expect(within(screen.getByRole('table')).getByText('24060301')).toBeInTheDocument()
+  expect(within(screen.getByRole('table')).getByText('04010101')).toBeInTheDocument()
+  expect(within(screen.getByRole('table')).queryByText('22030301')).not.toBeInTheDocument()
+
+  fireEvent.input(endringstypeFilter, { target: { value: 'Alle endringstyper' } })
+  fireEvent.pointerUp(await screen.findByRole('option', { name: 'Alle endringstyper' }))
+
+  expect(within(screen.getByRole('table')).getAllByText('18090301').length).toBeGreaterThan(0)
+  expect(within(screen.getByRole('table')).getByText('04010101')).toBeInTheDocument()
+})
+
 test('viser valgt ISO-nivå først og undernivåene etterpå', async () => {
   renderPage()
 
@@ -651,7 +696,7 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
 
   // Bytt til "Endre"-modus for å få frem Aksjon-kolonnen.
-  fireEvent.click(screen.getByRole('checkbox'))
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
 
   // Mapping-raden for v16-kode 050303 -> v22-kode 220912 (nivå 3, ikke verifisert) mangler nivå
   // 4 under v22 og kvalifiserer derfor for "Opprett ny ISO v22-kategori".
@@ -728,7 +773,7 @@ const useUnverifiedRollatorMapping = () => {
   )
 }
 
-const enableEditMode = () => fireEvent.click(screen.getByRole('checkbox'))
+const enableEditMode = () => fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
 
 const openRowMenu = (row: HTMLElement) => fireEvent.click(within(row).getByRole('button', { name: /^Rad-meny/ }))
 

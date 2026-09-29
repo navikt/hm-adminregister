@@ -27,6 +27,7 @@ import {
   Switch,
   Table,
   TextField,
+  UNSAFE_Combobox,
   VStack,
 } from '@navikt/ds-react'
 
@@ -68,6 +69,7 @@ import {
 import {
   ExtraColumn,
   ExtractedProductVariant,
+  ISO_MAP_LABELS,
   OPTIONAL_ISO_LEVELS,
   OPTIONAL_TEXT_COLUMNS_V1,
   OPTIONAL_TEXT_COLUMNS_V22,
@@ -87,6 +89,8 @@ import { groupByProduct } from './isoRowUtils'
 import { compareIsoCodes, sortByIsoLevel, sortProductRows, sortRows } from './isoSortUtils'
 
 type EditMode = 'les' | 'endre'
+const ALL_MAPPING_TYPES = 'Alle endringstyper'
+const mappingTypeOptions = [ALL_MAPPING_TYPES, ...Object.values(ISO_MAP_LABELS)]
 
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
@@ -120,6 +124,9 @@ const IsoOversikt = () => {
 
   const [mappingPage, setMappingPage] = useState(1)
   const [mappingPageSize, setMappingPageSize] = useState(25)
+  const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(true)
+  const [selectedMappingTypes, setSelectedMappingTypes] = useState<string[]>([ALL_MAPPING_TYPES])
+  const [mappingTypeSearch, setMappingTypeSearch] = useState('')
 
   const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(new Set())
   const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(new Set())
@@ -561,10 +568,18 @@ const IsoOversikt = () => {
   )
 
   const filteredMappingRows = useMemo(() => {
-    const base = selectedIsoCode ? mappingRows.filter((row) => row.isoCode.startsWith(selectedIsoCode)) : mappingRows
-    if (selectedIsoCode) return [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
-    return sortByIsoLevel(base, sortKey, sortDir)
-  }, [mappingRows, selectedIsoCode, sortKey, sortDir])
+    const scopedRows = selectedIsoCode
+      ? mappingRows.filter((row) => row.isoCode.startsWith(selectedIsoCode))
+      : mappingRows
+    const visibleRows = showVerifiedIsoCodes ? scopedRows : scopedRows.filter((row) => row.mappingVerified !== true)
+    const typedRows = selectedMappingTypes.includes(ALL_MAPPING_TYPES)
+      ? visibleRows
+      : visibleRows.filter((row) =>
+          row.mappingTypes.some((type) => selectedMappingTypes.includes(ISO_MAP_LABELS[type]))
+        )
+    if (selectedIsoCode) return [...typedRows].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
+    return sortByIsoLevel(typedRows, sortKey, sortDir)
+  }, [mappingRows, selectedIsoCode, selectedMappingTypes, showVerifiedIsoCodes, sortKey, sortDir])
 
   const mappingTotalPages = Math.max(1, Math.ceil(filteredMappingRows.length / mappingPageSize))
   const pagedMappingRows = useMemo(() => {
@@ -806,7 +821,21 @@ const IsoOversikt = () => {
     setSelectedLevel2('')
     setSelectedLevel3('')
     setSelectedLevel4('')
+    setSelectedMappingTypes([ALL_MAPPING_TYPES])
+    setMappingTypeSearch('')
     resetPaging()
+  }
+
+  const toggleMappingType = (option: string, isSelected: boolean) => {
+    setSelectedMappingTypes((current) => {
+      if (option === ALL_MAPPING_TYPES) return isSelected ? [ALL_MAPPING_TYPES] : []
+      const next = new Set(current.filter((type) => type !== ALL_MAPPING_TYPES))
+      if (isSelected) next.add(option)
+      else next.delete(option)
+      return [...next]
+    })
+    setMappingTypeSearch('')
+    setMappingPage(1)
   }
 
   const cancelLoad = () => {
@@ -1229,6 +1258,27 @@ const IsoOversikt = () => {
                   ))}
                 </Select>
 
+                {pageMode === 'mapping' && (
+                  <UNSAFE_Combobox
+                    label="Endringstype"
+                    size="small"
+                    placeholder="Søk etter endringstype"
+                    options={mappingTypeOptions}
+                    filteredOptions={
+                      mappingTypeSearch
+                        ? mappingTypeOptions.filter((option) =>
+                            option.toLocaleLowerCase().includes(mappingTypeSearch.toLocaleLowerCase())
+                          )
+                        : []
+                    }
+                    value={mappingTypeSearch}
+                    onChange={setMappingTypeSearch}
+                    isMultiSelect
+                    selectedOptions={selectedMappingTypes}
+                    onToggleSelected={toggleMappingType}
+                  />
+                )}
+
                 <Button variant="secondary" size="small" onClick={resetFilters}>
                   Nullstill
                 </Button>
@@ -1249,6 +1299,17 @@ const IsoOversikt = () => {
                   </>
                 )}
                 <Box style={{ marginInlineStart: 'auto' }}>
+                  {pageMode === 'mapping' && (
+                    <Switch
+                      checked={showVerifiedIsoCodes}
+                      onChange={(e) => {
+                        setShowVerifiedIsoCodes(e.target.checked)
+                        setMappingPage(1)
+                      }}
+                    >
+                      Vis verifiserte ISO-koder
+                    </Switch>
+                  )}
                   <Switch
                     checked={editMode === 'endre'}
                     onChange={(e) => setEditMode(e.target.checked ? 'endre' : 'les')}
