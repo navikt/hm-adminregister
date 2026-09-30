@@ -3,8 +3,8 @@ import type { Dispatch, SetStateAction } from 'react'
 
 import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
-import { Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
+import { useAdminIsoCategories22, useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
+import { Iso22, Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -84,13 +84,44 @@ type EditMode = 'les' | 'endre'
 const ALL_MAPPING_TYPES = 'Alle endringstyper'
 const mappingTypeLabels = Object.values(ISO_MAP_LABELS)
 
+// Admin-endepunktet returnerer databaseraden uten nivå, så nivået utledes av kodelengden slik backend gjør.
+const toIsoCategory22 = (category: Iso22): IsoCategory22DTO => {
+  const isoCode = category.isoCode.replace(/\s/g, '')
+  return {
+    isoCode,
+    isoTitle: category.isoTitle,
+    isoText: category.isoText ?? '',
+    isoTranslations: category.isoTranslations,
+    isoLevel: [2, 4, 6, 8].indexOf(isoCode.length) + 1,
+    created: category.created,
+    updated: category.updated,
+    searchWords: category.searchWords,
+  }
+}
+
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
-  const { isoCategories22, isoLoading22, isoError22, mutateIsoCategories22 } = useIsoCategories22()
-  const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(
-    loggedInUser?.isAdmin === true
+  const isAdmin = loggedInUser?.isAdmin === true
+  const {
+    isoCategories22: publicIsoCategories22,
+    isoLoading22: publicIsoLoading22,
+    isoError22: publicIsoError22,
+    mutateIsoCategories22,
+  } = useIsoCategories22()
+  const { adminIsoCategories22, adminIsoLoading22, adminIsoError22, mutateAdminIsoCategories22 } =
+    useAdminIsoCategories22(isAdmin)
+  const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(isAdmin)
+
+  // Admin får v22-kategoriene fra databasen, slik at kategorier opprettet tidligere alltid finnes selv om
+  // den åpne listen er utdatert. Den åpne listen brukes for andre brukere og hvis admin-kallet feiler.
+  const preferAdminIso22List = isAdmin && !adminIsoError22
+  const isoCategories22 = useMemo(
+    () => (preferAdminIso22List ? adminIsoCategories22?.map(toIsoCategory22) : publicIsoCategories22),
+    [preferAdminIso22List, adminIsoCategories22, publicIsoCategories22]
   )
+  const isoLoading22 = preferAdminIso22List ? adminIsoLoading22 : publicIsoLoading22
+  const isoError22 = preferAdminIso22List ? undefined : publicIsoError22
 
   const [rows, setRows] = useState<ExtractedProductVariant[] | null>(null)
   // ISO-prefikset `rows` ble lastet for ('' = alle). `rows` kan være lastet for et annet filter enn det
@@ -194,7 +225,7 @@ const IsoOversikt = () => {
   const mappingDataAvailable = !isoMappingsError
   const mappingsByCode16 = useMemo(() => buildMappingsByCode16(isoMappings || []), [isoMappings])
   const existingIso22Codes = useMemo(
-    () => new Set(sortedIsoCategories22.map((category) => category.isoCode)),
+    () => new Set(sortedIsoCategories22.map((category) => category.isoCode.replace(/\s/g, ''))),
     [sortedIsoCategories22]
   )
   const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
@@ -449,10 +480,13 @@ const IsoOversikt = () => {
               updated: updated.updated,
             }
           : category
+      const applyAdminUpdate = (category: Iso22): Iso22 =>
+        category.isoCode.replace(/\s/g, '') === updated.isoCode ? { ...category, ...updated } : category
       mutateIsoCategories22((current) => current?.map(applyUpdate), { revalidate: false })
+      mutateAdminIsoCategories22((current) => current?.map(applyAdminUpdate), { revalidate: false })
       setCreatedIso22Categories((prev) => prev.map(applyUpdate))
     },
-    [mutateIsoCategories22]
+    [mutateIsoCategories22, mutateAdminIsoCategories22]
   )
 
   const createFormExistingIso22Codes = useMemo(
@@ -1305,7 +1339,11 @@ const IsoOversikt = () => {
                           <Table.Row key={row.key}>
                             <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             <Table.DataCell>
                               <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
@@ -1479,7 +1517,11 @@ const IsoOversikt = () => {
                           <Table.Row key={row.seriesId}>
                             <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>
@@ -1577,7 +1619,11 @@ const IsoOversikt = () => {
                           <Table.Row key={row.productId}>
                             <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>

@@ -12,6 +12,7 @@ import {
   AdminUserChunk,
   AgreementsChunk,
   DelkontraktRegistrationDTO,
+  Iso22,
   IsoCategory22DTO,
   IsoCategoryDTO,
   IsoMapDTO,
@@ -442,6 +443,20 @@ export function useIsoCategories22() {
     isoLoading22: isLoading,
     isoError22: error,
     mutateIsoCategories22: mutate,
+  }
+}
+
+// Admin-endepunktet leser v22-kategoriene rett fra databasen. Den åpne listen (useIsoCategories22) kan
+// være utdatert i backend-versjoner som cacher den i minnet frem til restart.
+export function useAdminIsoCategories22(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isocategory' : null
+  const { data, error, isLoading, mutate } = useSWR<Iso22[]>(path, fetcherGET)
+
+  return {
+    adminIsoCategories22: data,
+    adminIsoLoading22: isLoading,
+    adminIsoError22: error,
+    mutateAdminIsoCategories22: mutate,
   }
 }
 

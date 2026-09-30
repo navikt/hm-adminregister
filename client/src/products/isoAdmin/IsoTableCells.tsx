@@ -142,20 +142,57 @@ export const Iso22LevelHeaders = ({ visibleLevels }: { visibleLevels: Set<Option
   </>
 )
 
+// Varsler når en v16 nivå 4-kategori ikke har en v22 nivå 4-kategori som finnes. Det gjelder både når
+// mappingen bare går til nivå 3 eller lavere (tom celle), og når SAME på et foreldernivå gir en utledet
+// nivå 4-kode som ikke finnes i v22.
 export const Iso22LevelCells = ({
   row,
   visibleLevels,
+  existingIso22Codes,
 }: {
-  row: Pick<ExtractedProductVariant, 'iso22Lvl1' | 'iso22Lvl2' | 'iso22Lvl3' | 'iso22Lvl4'>
+  row: Pick<ExtractedProductVariant, 'iso4' | 'iso22Lvl1' | 'iso22Lvl2' | 'iso22Lvl3' | 'iso22Lvl4'>
   visibleLevels: Set<OptionalIsoLevel>
-}) => (
-  <>
-    {visibleLevels.has(1) && <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>}
-    {visibleLevels.has(2) && <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>}
-    {visibleLevels.has(3) && <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>}
-    <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
-  </>
-)
+  existingIso22Codes?: ReadonlySet<string>
+}) => {
+  const level4Codes = row.iso22Lvl4 ? row.iso22Lvl4.split(', ') : []
+  const hasV16Level4 = !!row.iso4
+  const missingCategory =
+    !!existingIso22Codes && hasV16Level4 && !level4Codes.some((code) => existingIso22Codes.has(code))
+  const hasUnknownCode = !!existingIso22Codes && level4Codes.some((code) => !existingIso22Codes.has(code))
+
+  const renderLevel4 = () => {
+    if (!existingIso22Codes || (!missingCategory && !hasUnknownCode)) return row.iso22Lvl4
+    if (level4Codes.length === 0) {
+      return (
+        <Tag variant="warning" size="xsmall" title={`Det finnes ingen ISO v22-kategori på nivå 4 for ISO ${row.iso4}`}>
+          Kategori mangler
+        </Tag>
+      )
+    }
+    return (
+      <HStack gap="space-4" align="center" wrap>
+        {level4Codes.map((code) =>
+          existingIso22Codes.has(code) ? (
+            <span key={code}>{code}</span>
+          ) : (
+            <Tag key={code} variant="warning" size="xsmall" title={`ISO ${code} finnes ikke i v22`}>
+              {code}: kategori mangler
+            </Tag>
+          )
+        )}
+      </HStack>
+    )
+  }
+
+  return (
+    <>
+      {visibleLevels.has(1) && <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>}
+      {visibleLevels.has(2) && <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>}
+      {visibleLevels.has(3) && <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>}
+      <Table.DataCell>{renderLevel4()}</Table.DataCell>
+    </>
+  )
+}
 
 export const MappingTypes = ({ types, mappingAvailable }: { types: IsoMapEnum[]; mappingAvailable: boolean }) => (
   <HStack gap="space-4" wrap>
@@ -243,12 +280,9 @@ export const AksjonCell = ({
   // nivå 3-forelder, og kun mens mappingen ikke er verifisert.
   const canCreateCategory =
     mappingAvailable && mappingVerified === false && !!iso22Lvl3 && !iso22Lvl4 && !!onCreateCategory
-  // Skjules når v16-koden allerede har en v22-kategori på nivå 4 - da er det ingenting å kopiere til.
-  const canCopyV16ToV22 = !!isoCode && isoCode.length === 8 && !iso22Lvl4 && !!onCopyV16ToV22
   const editableCodes = onEditCategory ? iso22Lvl4Codes : []
 
-  if (!canVerify && !canShowOverview && !canCreateCategory && !canCopyV16ToV22 && !editableCodes.length)
-    return <Table.DataCell />
+  if (!canVerify && !canShowOverview && !canCreateCategory && !editableCodes.length) return <Table.DataCell />
 
   return (
     <Table.DataCell>
@@ -282,12 +316,9 @@ export const AksjonCell = ({
               Opprett ny ISO v22-kategori (nivå 4)
             </ActionMenu.Item>
           )}
-          {canCopyV16ToV22 && (
-            <ActionMenu.Item
-              disabled={isLockedByVerification}
-              onSelect={() => onCopyV16ToV22?.({ isoCode: isoCode as string, mappingIds, iso22Lvl3 })}
-            >
-              {isLockedByVerification ? 'Kopier v16 til v22 (fjern verifisering først)' : 'Kopier v16 til v22'}
+          {canCreateCategory && (
+            <ActionMenu.Item onSelect={() => onCopyV16ToV22?.({ isoCode: isoCode as string, mappingIds, iso22Lvl3 })}>
+              Kopier v16 til v22
             </ActionMenu.Item>
           )}
           {editableCodes.map((code) => {
