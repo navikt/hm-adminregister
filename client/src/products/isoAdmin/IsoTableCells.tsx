@@ -318,7 +318,7 @@ export const AksjonCell = ({
           )}
           {canCreateCategory && (
             <ActionMenu.Item onSelect={() => onCopyV16ToV22?.({ isoCode: isoCode as string, mappingIds, iso22Lvl3 })}>
-              Kopier v16 til v22
+              Kopier v16 til v22 (nivå 4)
             </ActionMenu.Item>
           )}
           {editableCodes.map((code) => {

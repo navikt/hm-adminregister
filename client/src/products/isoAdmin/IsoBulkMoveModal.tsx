@@ -246,7 +246,7 @@ const IsoBulkMoveModal = ({
                                   })
                                 }
                               >
-                                Kopier v16 til v22
+                                Kopier v16 til v22 (nivå 4)
                               </Button>
                             )}
                           </HStack>
