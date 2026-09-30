@@ -204,11 +204,13 @@ export const AksjonCell = ({
   iso22Lvl3,
   iso22Lvl3Title,
   iso22Lvl4,
+  iso22Lvl4Codes = [],
   busy,
   onRequestVerify,
   onShowOverview,
   onCreateCategory,
   onCopyV16ToV22,
+  onEditCategory,
 }: {
   // Skiller radmenyene fra hverandre for skjermleser, f.eks. "Rad-meny for ISO 18090301".
   menuLabel?: string
@@ -220,12 +222,15 @@ export const AksjonCell = ({
   iso22Lvl3?: string
   iso22Lvl3Title?: string
   iso22Lvl4?: string
+  // Alle v22 nivå 4-mål for raden (flere ved splitt). Hver av dem kan endres.
+  iso22Lvl4Codes?: string[]
   busy?: boolean
   onRequestVerify?: (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => void
   // mappingId er satt når raden gjelder én bestemt mapping, slik at oversikten vet hvilket mål som gjelder.
   onShowOverview?: (isoCode: string, mappingId?: string) => void
   onCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
   onCopyV16ToV22?: (context: { isoCode: string; mappingIds: string[]; iso22Lvl3?: string }) => void
+  onEditCategory?: (iso22Code: string) => void
 }) => {
   // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
   // krever code16 og feiler med 500 når den er null.
@@ -240,8 +245,10 @@ export const AksjonCell = ({
     mappingAvailable && mappingVerified === false && !!iso22Lvl3 && !iso22Lvl4 && !!onCreateCategory
   // Skjules når v16-koden allerede har en v22-kategori på nivå 4 - da er det ingenting å kopiere til.
   const canCopyV16ToV22 = !!isoCode && isoCode.length === 8 && !iso22Lvl4 && !!onCopyV16ToV22
+  const editableCodes = onEditCategory ? iso22Lvl4Codes : []
 
-  if (!canVerify && !canShowOverview && !canCreateCategory && !canCopyV16ToV22) return <Table.DataCell />
+  if (!canVerify && !canShowOverview && !canCreateCategory && !canCopyV16ToV22 && !editableCodes.length)
+    return <Table.DataCell />
 
   return (
     <Table.DataCell>
@@ -283,6 +290,15 @@ export const AksjonCell = ({
               {isLockedByVerification ? 'Kopier v16 til v22 (fjern verifisering først)' : 'Kopier v16 til v22'}
             </ActionMenu.Item>
           )}
+          {editableCodes.map((code) => {
+            const label =
+              editableCodes.length > 1 ? `Endre ISO v22-kategori ${code}` : 'Endre ISO v22-kategori (nivå 4)'
+            return (
+              <ActionMenu.Item key={code} disabled={isLockedByVerification} onSelect={() => onEditCategory?.(code)}>
+                {isLockedByVerification ? `${label} (fjern verifisering først)` : label}
+              </ActionMenu.Item>
+            )
+          })}
         </ActionMenu.Content>
       </ActionMenu>
     </Table.DataCell>

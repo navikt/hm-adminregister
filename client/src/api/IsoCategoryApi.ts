@@ -19,3 +19,11 @@ export const updateIsoMapping = (isoMap: IsoMapDTO): Promise<IsoMapDTO> =>
 // men id/createdBy/updatedBy må sendes fra klienten (se Iso22AdminController.createIso).
 export const createIso22Category = (iso: Iso22DTO): Promise<Iso22DTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v22/isocategory`, 'POST', iso)
+
+// Henter hele ISO 22-kategorien (med id, isoType, oversettelser osv.). Backend sin PUT erstatter hele
+// raden, så en endring må bygge på denne og ikke på det reduserte IsoCategory22DTO fra den åpne listen.
+export const getIso22Category = (isoCode: string): Promise<Iso22DTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v22/isocategory/${isoCode}`, 'GET')
+
+export const updateIso22Category = (iso: Iso22DTO): Promise<Iso22DTO> =>
+  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v22/isocategory/${iso.isoCode}`, 'PUT', iso)

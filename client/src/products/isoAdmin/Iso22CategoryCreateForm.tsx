@@ -29,6 +29,7 @@ const Iso22CategoryCreateForm = ({
   submitLabel = 'Opprett kategori',
   existingIsoCodes,
   initialValues,
+  lockedIsoCode,
 }: {
   parentIsoCode: string
   // Koder som allerede finnes (fra klientens v22-kategoriliste) - gir en tydelig feilmelding før
@@ -38,6 +39,8 @@ const Iso22CategoryCreateForm = ({
   onCancel?: () => void
   submitLabel?: string
   initialValues?: Iso22CategoryCreateInitialValues
+  // Satt ved endring av en eksisterende kategori: koden vises, men kan ikke endres.
+  lockedIsoCode?: string
 }) => {
   const [suffix, setSuffix] = useState(initialValues?.suffix ?? '')
   const [isoTitle, setIsoTitle] = useState(initialValues?.isoTitle ?? '')
@@ -51,24 +54,31 @@ const Iso22CategoryCreateForm = ({
     setSuffix(value.replace(/\D/g, '').slice(0, 2))
   }
 
-  const handleSubmit = async () => {
+  const resolveIsoCode = (): string | null => {
+    if (lockedIsoCode) return lockedIsoCode
     const trimmedSuffix = suffix.trim()
     const paddedSuffix = trimmedSuffix.length === 1 ? `0${trimmedSuffix}` : trimmedSuffix
     if (!/^\d{2}$/.test(paddedSuffix) || paddedSuffix === '00') {
       setError('De 2 siste sifrene må være et tall mellom 01 og 99, f.eks. 01, 02 ... 09, 10 ... 99')
-      return
+      return null
     }
     const code = `${parentIsoCode}${paddedSuffix}`
     if (code.length !== 8) {
       setError(`ISO-koden må bestå av 8 siffer og starte med ${parentIsoCode}, f.eks. ${parentIsoCode}01`)
-      return
+      return null
     }
     if (existingIsoCodes?.has(code)) {
       setError(`ISO ${code} finnes allerede. Velg andre sifre.`)
-      return
+      return null
     }
+    return code
+  }
+
+  const handleSubmit = async () => {
+    const code = resolveIsoCode()
+    if (!code) return
     if (!isoTitle.trim()) {
-      setError('Du må angi en tittel for den nye kategorien')
+      setError(lockedIsoCode ? 'Kategorien må ha en tittel' : 'Du må angi en tittel for den nye kategorien')
       return
     }
     setSubmitting(true)
@@ -93,28 +103,41 @@ const Iso22CategoryCreateForm = ({
 
   return (
     <VStack gap="space-8">
-      <VStack gap="space-2">
-        <BodyShort size="small" weight="semibold">
-          Ny ISO-kode (nivå 4, 8 siffer)
-        </BodyShort>
-        <HStack gap="space-4" align="center">
-          <BodyShort size="small">{parentIsoCode}</BodyShort>
-          <TextField
-            label="Siste 2 siffer"
-            hideLabel
-            size="small"
-            style={{ width: '4.5rem' }}
-            inputMode="numeric"
-            maxLength={2}
-            value={suffix}
-            onChange={(e) => handleSuffixChange(e.target.value)}
-            placeholder="01"
-          />
-        </HStack>
-        <BodyShort size="small" textColor="subtle">
-          Nivå 1-3 ({parentIsoCode}) kan ikke endres. Fyll kun inn de 2 siste sifrene, f.eks. 01, 02 ... 09, 10 ... 99.
-        </BodyShort>
-      </VStack>
+      {lockedIsoCode ? (
+        <VStack gap="space-2">
+          <BodyShort size="small" weight="semibold">
+            ISO-kode (nivå 4)
+          </BodyShort>
+          <BodyShort size="small">{lockedIsoCode}</BodyShort>
+          <BodyShort size="small" textColor="subtle">
+            Koden kan ikke endres.
+          </BodyShort>
+        </VStack>
+      ) : (
+        <VStack gap="space-2">
+          <BodyShort size="small" weight="semibold">
+            Ny ISO-kode (nivå 4, 8 siffer)
+          </BodyShort>
+          <HStack gap="space-4" align="center">
+            <BodyShort size="small">{parentIsoCode}</BodyShort>
+            <TextField
+              label="Siste 2 siffer"
+              hideLabel
+              size="small"
+              style={{ width: '4.5rem' }}
+              inputMode="numeric"
+              maxLength={2}
+              value={suffix}
+              onChange={(e) => handleSuffixChange(e.target.value)}
+              placeholder="01"
+            />
+          </HStack>
+          <BodyShort size="small" textColor="subtle">
+            Nivå 1-3 ({parentIsoCode}) kan ikke endres. Fyll kun inn de 2 siste sifrene, f.eks. 01, 02 ... 09, 10 ...
+            99.
+          </BodyShort>
+        </VStack>
+      )}
       <TextField label="Tittel" size="small" value={isoTitle} onChange={(e) => setIsoTitle(e.target.value)} />
       <Textarea
         label="Forklaring (valgfritt)"

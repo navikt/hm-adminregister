@@ -822,6 +822,88 @@ test('«Kopier v16 til v22» vises ikke når v16-koden allerede har en v22-kateg
   expect(screen.queryByRole('menuitem', { name: /Kopier v16 til v22/ })).not.toBeInTheDocument()
 })
 
+const storedRollator22 = {
+  id: '5b0c7c4e-0000-4000-8000-000000000001',
+  isoCode: '18090301',
+  isoTitle: 'Rollator med fire hjul (lagret)',
+  isoText: 'Lagret forklaring',
+  level: 4,
+  isoTranslations: { titleEn: 'Rollator', textEn: 'Four wheels' },
+  searchWords: ['rullator'],
+  isoType: 'NAT',
+  createdByUser: 'opprinnelig',
+  updatedByUser: 'opprinnelig',
+  createdBy: 'REGISTER',
+  updatedBy: 'REGISTER',
+  created: '2026-01-01T00:00:00',
+  updated: '2026-01-01T00:00:00',
+}
+
+test('«Endre ISO v22-kategori» henter lagret kategori og sender hele kategorien med endrede felt', async () => {
+  useUnverifiedRollatorMapping()
+  let putBody: Record<string, unknown> | null = null
+  let putCode: string | undefined
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isocategory/:isoCode', ({ params }) =>
+      params.isoCode === '18090301' ? HttpResponse.json(storedRollator22) : new HttpResponse(null, { status: 404 })
+    ),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isocategory/:isoCode', async ({ request, params }) => {
+      putCode = params.isoCode as string
+      putBody = (await request.json()) as Record<string, unknown>
+      return HttpResponse.json({ ...putBody, updated: '2026-09-30T12:00:00' })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Endre ISO v22-kategori (nivå 4)' }))
+
+  const dialog = await screen.findByRole('dialog', { name: 'Endre ISO v22-kategori (nivå 4)' })
+  expect(await within(dialog).findByLabelText('Tittel')).toHaveValue('Rollator med fire hjul (lagret)')
+  expect(within(dialog).getByLabelText('Forklaring (valgfritt)')).toHaveValue('Lagret forklaring')
+  expect(within(dialog).getByLabelText(/^Søkeord/)).toHaveValue('rullator')
+  expect(within(dialog).queryByLabelText('Siste 2 siffer')).not.toBeInTheDocument()
+  expect(within(dialog).getByText('18090301')).toBeInTheDocument()
+
+  fireEvent.change(within(dialog).getByLabelText('Tittel'), { target: { value: 'Rollator, fire hjul' } })
+  fireEvent.change(within(dialog).getByLabelText(/^Søkeord/), { target: { value: 'rullator, gåstol' } })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Lagre endringer' }))
+
+  await waitFor(() => expect(putBody).not.toBeNull())
+  expect(putCode).toBe('18090301')
+  expect(putBody).toEqual({
+    ...storedRollator22,
+    isoTitle: 'Rollator, fire hjul',
+    searchWords: ['rullator', 'gåstol'],
+  })
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog', { name: 'Endre ISO v22-kategori (nivå 4)' })).not.toBeInTheDocument()
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 nivå 4 tittel' }))
+  expect(screen.getAllByText('Rollator, fire hjul').length).toBeGreaterThan(0)
+  expect(screen.queryByText('Rollator med fire hjul (2022)')).not.toBeInTheDocument()
+})
+
+test('«Endre ISO v22-kategori» er sperret for verifiserte mappinger og vises bare når nivå 4 finnes', async () => {
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 24060301' }))
+  expect(
+    await screen.findByRole('menuitem', { name: 'Endre ISO v22-kategori (nivå 4) (fjern verifisering først)' })
+  ).toHaveAttribute('aria-disabled', 'true')
+  fireEvent.keyDown(screen.getByRole('menuitem', { name: /Endre ISO v22-kategori/ }), { key: 'Escape' })
+  await waitFor(() => expect(screen.queryByRole('menuitem', { name: /Endre ISO v22/ })).not.toBeInTheDocument())
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
+  expect(screen.queryByRole('menuitem', { name: /Endre ISO v22-kategori/ })).not.toBeInTheDocument()
+})
+
 test('«Kopier v16 til v22» i ISO-oversikten åpner opprettingsskjemaet utfylt med v16-data', async () => {
   server.use(
     http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
@@ -1020,8 +1102,10 @@ test('F5: rader uten v16-kode (Ny klasse) har ingen verifiseringshandling', asyn
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
   enableEditMode()
 
-  const newRow = screen.getByText('! Ny klasse, underklasse eller inndeling').closest('tr') as HTMLElement
-  expect(within(newRow).queryByRole('button', { name: /^Rad-meny/ })).not.toBeInTheDocument()
+  // Menyen finnes bare fordi v22 nivå 4-kategorien kan endres.
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 30010101' }))
+  await screen.findByRole('menuitem', { name: /Endre ISO v22-kategori/ })
+  expect(screen.queryByRole('menuitem', { name: /Verifiser|Fjern verifisering/ })).not.toBeInTheDocument()
 })
 
 test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet sendes', async () => {

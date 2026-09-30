@@ -4,7 +4,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
-import { IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
+import { Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -30,6 +30,7 @@ import {
 } from '@navikt/ds-react'
 
 import CreateIso22CategoryModal, { CreateIso22CategoryContext } from './CreateIso22CategoryModal'
+import EditIso22CategoryModal from './EditIso22CategoryModal'
 import iso9999Icon from './ISO9999-01.svg'
 import IsoBulkMoveModal from './IsoBulkMoveModal'
 import styles from './IsoOversikt.module.scss'
@@ -86,7 +87,7 @@ const mappingTypeLabels = Object.values(ISO_MAP_LABELS)
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
-  const { isoCategories22, isoLoading22, isoError22 } = useIsoCategories22()
+  const { isoCategories22, isoLoading22, isoError22, mutateIsoCategories22 } = useIsoCategories22()
   const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(
     loggedInUser?.isAdmin === true
   )
@@ -166,6 +167,7 @@ const IsoOversikt = () => {
     isoCode?: string
   } | null>(null)
   const [createCategoryContext, setCreateCategoryContext] = useState<CreateIso22CategoryContext | null>(null)
+  const [editIso22Code, setEditIso22Code] = useState<string | null>(null)
 
   const resetPaging = () => {
     setVariantPage(1)
@@ -237,6 +239,7 @@ const IsoOversikt = () => {
         iso22Lvl3: target?.level3Code || undefined,
         iso22Lvl3Title: target?.level3Title || undefined,
         iso22Lvl4: target?.level4Code || undefined,
+        iso22Lvl4Codes: [...new Set(targets.flatMap((it) => (it.level4Code ? [it.level4Code] : [])))],
       }
     },
     [getIso22Targets]
@@ -430,6 +433,26 @@ const IsoOversikt = () => {
       })
     },
     [loggedInUser?.userName, isoMappingsById, mutateIsoMappings, pendingIso22Links]
+  )
+
+  // Oppdaterer listen lokalt uten ny henting, slik at endringen vises med en gang uavhengig av
+  // backend-cachen. Kategorier opprettet i denne økten ligger i createdIso22Categories og oppdateres der.
+  const handleIso22CategoryUpdated = useCallback(
+    (updated: Iso22DTO) => {
+      const applyUpdate = (category: IsoCategory22DTO): IsoCategory22DTO =>
+        category.isoCode.replace(/\s/g, '') === updated.isoCode
+          ? {
+              ...category,
+              isoTitle: updated.isoTitle,
+              isoText: updated.isoText ?? '',
+              searchWords: updated.searchWords,
+              updated: updated.updated,
+            }
+          : category
+      mutateIsoCategories22((current) => current?.map(applyUpdate), { revalidate: false })
+      setCreatedIso22Categories((prev) => prev.map(applyUpdate))
+    },
+    [mutateIsoCategories22]
   )
 
   const createFormExistingIso22Codes = useMemo(
@@ -837,6 +860,11 @@ const IsoOversikt = () => {
           onClose={() => setCreateCategoryContext(null)}
           onCreate={handleCreateIso22Category}
           existingIsoCodes={createFormExistingIso22Codes}
+        />
+        <EditIso22CategoryModal
+          isoCode={editIso22Code}
+          onClose={() => setEditIso22Code(null)}
+          onUpdated={handleIso22CategoryUpdated}
         />
         {verifyConfirm && (
           <Modal
@@ -1287,6 +1315,7 @@ const IsoOversikt = () => {
                                 onShowOverview={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
                                 onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
@@ -1474,6 +1503,7 @@ const IsoOversikt = () => {
                                 onShowOverview={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
                                 onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
@@ -1573,6 +1603,7 @@ const IsoOversikt = () => {
                                 onShowOverview={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
                                 onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
