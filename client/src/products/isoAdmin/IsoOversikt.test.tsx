@@ -12,7 +12,7 @@ import IsoOversikt from './IsoOversikt'
 
 const renderPage = () =>
   render(
-    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0, focusThrottleInterval: 0 }}>
       <MemoryRouter>
         <IsoOversikt />
       </MemoryRouter>
@@ -745,6 +745,168 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   // listen uten "22091201", skal hovedtabellen likevel vise den nye koden - bevis på at
   // handleCreateIso22Category sin lokale SWR-cache-sammenslåing (revalidate: false) fungerer.
   expect(screen.getAllByText('22091201').length).toBeGreaterThan(0)
+})
+
+// Fjerner v22 nivå 4-kategorien 18090301, slik at v16-koden 18090301 mangler et nivå 4-mål og kan kopieres.
+const withoutV22Rollator = () =>
+  http.get('http://localhost:8080/admreg/api/v22/isocategories', () =>
+    HttpResponse.json(isoCategoriesV22.filter((category) => category.isoCode !== '18090301'))
+  )
+
+test('«Kopier v16 til v22» åpner opprettingsskjemaet utfylt med data fra v16 nivå 4', async () => {
+  useUnverifiedRollatorMapping()
+  let createdCategoryPayload: { isoCode: string; isoTitle: string; isoText: string; searchWords: string[] } | null =
+    null
+  server.use(
+    withoutV22Rollator(),
+    http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', async ({ request }) => {
+      const body = (await request.json()) as typeof createdCategoryPayload
+      createdCategoryPayload = body
+      return HttpResponse.json(body, { status: 201 })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Kopier v16 til v22' }))
+
+  const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
+  expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('18090301')
+  expect(within(dialog).getByLabelText('Siste 2 siffer')).toHaveValue('01')
+  expect(within(dialog).getByLabelText('Tittel')).toHaveValue('Rollatorer med fire hjul')
+  expect(within(dialog).getByLabelText('Forklaring (valgfritt)')).toHaveValue('Rollator med fire hjul og bremser')
+  expect(within(dialog).getByLabelText(/^Søkeord/)).toHaveValue('rollator, gange')
+
+  fireEvent.change(within(dialog).getByLabelText('Siste 2 siffer'), { target: { value: '55' } })
+  fireEvent.click(within(dialog).getByRole('button', { name: /^Opprett kategori/ }))
+
+  await waitFor(() => expect(createdCategoryPayload).not.toBeNull())
+  expect(createdCategoryPayload).toEqual(
+    expect.objectContaining({
+      isoCode: expect.stringMatching(/^\d{6}55$/),
+      isoTitle: 'Rollatorer med fire hjul',
+      isoText: 'Rollator med fire hjul og bremser',
+      searchWords: ['rollator', 'gange'],
+    })
+  )
+})
+
+test('«Kopier v16 til v22» er sperret for verifiserte mappinger og vises bare for v16 nivå 4', async () => {
+  server.use(withoutV22Rollator())
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  expect(
+    await screen.findByRole('menuitem', { name: 'Kopier v16 til v22 (fjern verifisering først)' })
+  ).toHaveAttribute('aria-disabled', 'true')
+  fireEvent.keyDown(screen.getByRole('menuitem', { name: /Kopier v16 til v22/ }), { key: 'Escape' })
+  await waitFor(() => expect(screen.queryByRole('menuitem', { name: /Kopier v16/ })).not.toBeInTheDocument())
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
+  expect(screen.queryByRole('menuitem', { name: /Kopier v16 til v22/ })).not.toBeInTheDocument()
+})
+
+test('«Kopier v16 til v22» vises ikke når v16-koden allerede har en v22-kategori på nivå 4', async () => {
+  useUnverifiedRollatorMapping()
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  await screen.findByRole('menuitem', { name: 'Vis oversikt' })
+  expect(screen.queryByRole('menuitem', { name: /Kopier v16 til v22/ })).not.toBeInTheDocument()
+})
+
+test('«Kopier v16 til v22» i ISO-oversikten åpner opprettingsskjemaet utfylt med v16-data', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json([
+        ...isoMappings,
+        {
+          id: 'map-8',
+          code16: '05030301',
+          code22: '220912',
+          mapEnum: ['CHANGED_CODE_CHANGED_HEADER'],
+          created: '2026-01-01T00:00:00',
+          verified: false,
+          level22: 3,
+        },
+      ])
+    )
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 05030301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: /ISO 05030301/ })
+  expect(within(overview).getByRole('button', { name: 'Opprett ny ISO v22-kategori...' })).toBeInTheDocument()
+  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22' }))
+
+  const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
+  expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('05030301')
+  expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('220912')
+  expect(within(dialog).getByLabelText('Siste 2 siffer')).toHaveValue('01')
+  expect(within(dialog).getByLabelText('Tittel')).toHaveValue('Kommunikasjonshjelpemiddel')
+  expect(within(dialog).getByRole('button', { name: 'Opprett kategori og koble til mapping' })).toBeInTheDocument()
+})
+
+test('ISO-oversikten slutter å advare om manglende v22 nivå 4 etter at kategorien er opprettet', async () => {
+  let iso22ListRequests = 0
+  let map8: Record<string, unknown> = {
+    id: 'map-8',
+    code16: '05030301',
+    code22: '220912',
+    mapEnum: ['CHANGED_CODE_CHANGED_HEADER'],
+    created: '2026-01-01T00:00:00',
+    verified: false,
+    level22: 3,
+  }
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v22/isocategories', () => {
+      iso22ListRequests++
+      return HttpResponse.json(isoCategoriesV22)
+    }),
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json([...isoMappings, map8])),
+    http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', async ({ request }) =>
+      HttpResponse.json(await request.json(), { status: 201 })
+    ),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/map-8', async ({ request }) => {
+      const body = (await request.json()) as { isoMap: Record<string, unknown> }
+      map8 = { ...map8, ...body.isoMap }
+      return HttpResponse.json(map8)
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 05030301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: /ISO 05030301/ })
+  expect(within(overview).getByText(/Det finnes ingen ISO v22-kategori på nivå 4/)).toBeInTheDocument()
+  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22' }))
+
+  const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })).not.toBeInTheDocument()
+  )
+
+  // Backendens v22-liste er cachet og mangler fortsatt den nye kategorien når SWR henter på nytt.
+  const requestsBeforeFocus = iso22ListRequests
+  window.dispatchEvent(new Event('focus'))
+  await waitFor(() => expect(iso22ListRequests).toBeGreaterThan(requestsBeforeFocus))
+
+  await waitFor(() =>
+    expect(within(overview).queryByText(/Det finnes ingen ISO v22-kategori på nivå 4/)).not.toBeInTheDocument()
+  )
 })
 
 // Felles oppsett for QA-fiksene F1-F6: mappingen 18090301 er IKKE verifisert, og tre produkter har

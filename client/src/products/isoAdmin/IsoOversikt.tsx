@@ -5,7 +5,7 @@ import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
 import { getSeriesBySeriesId, updateProductIso22Category } from 'api/SeriesApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
-import { IsoMapDTO } from 'utils/types/response-types'
+import { IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -107,7 +107,7 @@ const replaceScopedSeriesRows = (
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
-  const { isoCategories22, isoLoading22, isoError22, mutateIsoCategories22 } = useIsoCategories22()
+  const { isoCategories22, isoLoading22, isoError22 } = useIsoCategories22()
   const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(
     loggedInUser?.isAdmin === true
   )
@@ -204,16 +204,23 @@ const IsoOversikt = () => {
     [isoCategories]
   )
 
-  const sortedIsoCategories22 = useMemo(
-    () => (isoCategories22 || []).slice().sort((a, b) => a.isoCode.localeCompare(b.isoCode)),
-    [isoCategories22]
-  )
+  // Backend cacher v22-kategoriene i minnet frem til restart, så en ny henting fra SWR (f.eks. ved
+  // fokus) mister kategorier opprettet i denne økten. De holdes derfor her og flettes alltid inn.
+  const [createdIso22Categories, setCreatedIso22Categories] = useState<IsoCategory22DTO[]>([])
+  const sortedIsoCategories22 = useMemo(() => {
+    const serverCategories = isoCategories22 || []
+    const serverCodes = new Set(serverCategories.map((category) => category.isoCode.replace(/\s/g, '')))
+    return [
+      ...serverCategories,
+      ...createdIso22Categories.filter((category) => !serverCodes.has(category.isoCode.replace(/\s/g, ''))),
+    ].sort((a, b) => a.isoCode.localeCompare(b.isoCode))
+  }, [isoCategories22, createdIso22Categories])
 
   const mappingDataAvailable = !isoMappingsError
   const mappingsByCode16 = useMemo(() => buildMappingsByCode16(isoMappings || []), [isoMappings])
   const existingIso22Codes = useMemo(
-    () => new Set((isoCategories22 || []).map((category) => category.isoCode)),
-    [isoCategories22]
+    () => new Set(sortedIsoCategories22.map((category) => category.isoCode)),
+    [sortedIsoCategories22]
   )
   const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
 
@@ -382,6 +389,33 @@ const IsoOversikt = () => {
     setCreateCategoryContext(context)
   }, [])
 
+  // Forelder på nivå 3 er mappingens v22-mål når det finnes, ellers v16-kodens egen nivå 3-del.
+  const handleCopyV16ToV22 = useCallback(
+    ({ isoCode, mappingIds, iso22Lvl3 }: { isoCode: string; mappingIds: string[]; iso22Lvl3?: string }) => {
+      const source = sortedIsoCategories.find((category) => category.isoCode === isoCode)
+      const parentIsoCode = iso22Lvl3 || isoCode.slice(0, 6)
+      const linksMapping = mappingIds.some(
+        (id) => isoMappingsById.get(id)?.code22?.replace(/\s/g, '') === parentIsoCode
+      )
+      setCreateCategoryContext({
+        parentIsoCode,
+        parentIsoTitle: sortedIsoCategories22.find((category) => category.isoCode === parentIsoCode)?.isoTitle,
+        mappingIds,
+        copyFrom: {
+          isoCode,
+          linksMapping,
+          initialValues: {
+            suffix: isoCode.slice(6, 8),
+            isoTitle: source?.isoTitle ?? '',
+            isoText: source?.isoText ?? '',
+            searchWords: source?.searchWords ?? [],
+          },
+        },
+      })
+    },
+    [sortedIsoCategories, sortedIsoCategories22, isoMappingsById]
+  )
+
   // Verifisering gjelder hele mappingen (v16-koden), ikke ett enkelt produkt - derfor sjekkes ALLTID
   // alle produkter under v16-koden, også når handlingen startes fra en produkt-/variantrad. Er
   // produktlisten ikke lastet inn, er status ukjent og verifisering sperres (fail closed).
@@ -479,10 +513,9 @@ const IsoOversikt = () => {
           updated: now,
         })
         // NB: `GET /admreg/api/v22/isocategories` (Iso22Service.retrieveAll) er cachet i minnet i
-        // backend og lastes kun inn på nytt ved appstart - en revalidering her ville derfor IKKE
-        // vist den nye kategorien før backend restartes. Vi slår i stedet den nye kategorien inn i
-        // SWR-cachen lokalt (revalidate: false), slik at hovedtabellen viser den med en gang.
-        const newCategory22 = {
+        // backend og lastes kun inn på nytt ved appstart. Den nye kategorien holdes derfor i
+        // createdIso22Categories, som flettes inn i sortedIsoCategories22 også etter revalidering.
+        const newCategory22: IsoCategory22DTO = {
           isoCode,
           isoTitle,
           isoText,
@@ -492,13 +525,7 @@ const IsoOversikt = () => {
           updated: now,
           searchWords,
         }
-        mutateIsoCategories22(
-          (current) => {
-            const withoutDuplicate = (current || []).filter((category) => category.isoCode !== isoCode)
-            return [...withoutDuplicate, newCategory22]
-          },
-          { revalidate: false }
-        )
+        setCreatedIso22Categories((prev) => [...prev.filter((category) => category.isoCode !== isoCode), newCategory22])
         setPendingIso22Links((prev) => new Set([...prev, isoCode]))
       }
       // Bare mappinger som peker på nivå 3-forelderen flyttes til den nye koden. Ved splitt skal de
@@ -532,7 +559,7 @@ const IsoOversikt = () => {
         return next
       })
     },
-    [loggedInUser?.userName, mutateIsoCategories22, isoMappingsById, mutateIsoMappings, pendingIso22Links]
+    [loggedInUser?.userName, isoMappingsById, mutateIsoMappings, pendingIso22Links]
   )
 
   const createFormExistingIso22Codes = useMemo(
@@ -1038,6 +1065,7 @@ const IsoOversikt = () => {
           onRequestVerify={handleRequestVerify}
           verifying={bulkMoveContext ? bulkMoveContext.mappingIds.some((id) => verifyingMappingIds.has(id)) : false}
           onRequestCreateCategory={handleOpenCreateCategoryModal}
+          onRequestCopyV16ToV22={handleCopyV16ToV22}
         />
         <CreateIso22CategoryModal
           context={createCategoryContext}
@@ -1501,6 +1529,7 @@ const IsoOversikt = () => {
                                 onRequestVerify={handleRequestVerify}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
                               />
                             )}
                           </Table.Row>
@@ -1689,6 +1718,7 @@ const IsoOversikt = () => {
                                 onMove={handleOpenMoveModal}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
                               />
                             )}
                           </Table.Row>
@@ -1789,6 +1819,7 @@ const IsoOversikt = () => {
                                 onMove={handleOpenMoveModal}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
                               />
                             )}
                           </Table.Row>

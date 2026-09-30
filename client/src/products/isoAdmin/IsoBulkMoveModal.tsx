@@ -58,6 +58,7 @@ interface Props {
   // Åpner den frittstående CreateIso22CategoryModal som en 2. modal over denne - selve opprettelsen
   // (og tilkoblingen av mappingen til den nye kategorien) skjer der, ikke inline i denne modalen.
   onRequestCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
+  onRequestCopyV16ToV22?: (context: { isoCode: string; mappingIds: string[]; iso22Lvl3?: string }) => void
 }
 
 const buildPreviewSeries = (rows: ExtractedProductVariant[]): PreviewSeriesRow[] => {
@@ -98,6 +99,7 @@ const IsoBulkMoveModal = ({
   onRequestVerify,
   verifying,
   onRequestCreateCategory,
+  onRequestCopyV16ToV22,
 }: Props) => {
   // Målkategorien er låst til mappingens v22 nivå 4-kode - admin skal ikke kunne søke opp og velge en
   // vilkårlig v22-kategori. Mangler nivå 4 enda, shortcuttes admin til den frittstående
@@ -331,7 +333,7 @@ const IsoBulkMoveModal = ({
                             {context.iso22Lvl3Title}). En nivå 4-kategori må opprettes før produktene kan kobles til
                             v22.
                           </BodyShort>
-                          <Box>
+                          <HStack gap="space-8" wrap>
                             <Button
                               size="small"
                               variant="secondary"
@@ -345,7 +347,22 @@ const IsoBulkMoveModal = ({
                             >
                               Opprett ny ISO v22-kategori...
                             </Button>
-                          </Box>
+                            {onRequestCopyV16ToV22 && sourceIsoCode?.length === 8 && (
+                              <Button
+                                size="small"
+                                variant="secondary"
+                                onClick={() =>
+                                  onRequestCopyV16ToV22({
+                                    isoCode: sourceIsoCode,
+                                    mappingIds: context.mappingIds,
+                                    iso22Lvl3: context.iso22Lvl3,
+                                  })
+                                }
+                              >
+                                Kopier v16 til v22
+                              </Button>
+                            )}
+                          </HStack>
                         </VStack>
                       </Alert>
                     </Box>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Alert, BodyShort, Button, HStack, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyShort, Button, HStack, Textarea, TextField, VStack } from '@navikt/ds-react'
 
 import { extractErrorMessage } from './errorUtils'
 
@@ -15,12 +15,20 @@ export type Iso22CategoryCreatePayload = {
   searchWords: string[]
 }
 
+export type Iso22CategoryCreateInitialValues = {
+  suffix: string
+  isoTitle: string
+  isoText: string
+  searchWords: string[]
+}
+
 const Iso22CategoryCreateForm = ({
   parentIsoCode,
   onCreate,
   onCancel,
   submitLabel = 'Opprett kategori',
   existingIsoCodes,
+  initialValues,
 }: {
   parentIsoCode: string
   // Koder som allerede finnes (fra klientens v22-kategoriliste) - gir en tydelig feilmelding før
@@ -29,11 +37,12 @@ const Iso22CategoryCreateForm = ({
   onCreate: (payload: Iso22CategoryCreatePayload) => Promise<void>
   onCancel?: () => void
   submitLabel?: string
+  initialValues?: Iso22CategoryCreateInitialValues
 }) => {
-  const [suffix, setSuffix] = useState('')
-  const [isoTitle, setIsoTitle] = useState('')
-  const [isoText, setIsoText] = useState('')
-  const [searchWords, setSearchWords] = useState('')
+  const [suffix, setSuffix] = useState(initialValues?.suffix ?? '')
+  const [isoTitle, setIsoTitle] = useState(initialValues?.isoTitle ?? '')
+  const [isoText, setIsoText] = useState(initialValues?.isoText ?? '')
+  const [searchWords, setSearchWords] = useState(initialValues?.searchWords.join(', ') ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -107,11 +116,12 @@ const Iso22CategoryCreateForm = ({
         </BodyShort>
       </VStack>
       <TextField label="Tittel" size="small" value={isoTitle} onChange={(e) => setIsoTitle(e.target.value)} />
-      <TextField
+      <Textarea
         label="Forklaring (valgfritt)"
         size="small"
         value={isoText}
         onChange={(e) => setIsoText(e.target.value)}
+
       />
       <TextField
         label="Søkeord (kommaseparert, valgfritt)"

@@ -211,6 +211,7 @@ export const AksjonCell = ({
   onMove,
   onMoveIsoCode,
   onCreateCategory,
+  onCopyV16ToV22,
 }: {
   // Skiller radmenyene fra hverandre for skjermleser, f.eks. "Rad-meny for ISO 18090301".
   menuLabel?: string
@@ -234,6 +235,7 @@ export const AksjonCell = ({
   // mappingId er satt når raden gjelder én bestemt mapping, slik at oversikten vet hvilket mål som gjelder.
   onMoveIsoCode?: (isoCode: string, mappingId?: string) => void
   onCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
+  onCopyV16ToV22?: (context: { isoCode: string; mappingIds: string[]; iso22Lvl3?: string }) => void
 }) => {
   // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
   // krever code16 og feiler med 500 når den er null.
@@ -251,8 +253,10 @@ export const AksjonCell = ({
   // nivå 3-forelder, og kun mens mappingen ikke er verifisert.
   const canCreateCategory =
     mappingAvailable && mappingVerified === false && !!iso22Lvl3 && !iso22Lvl4 && !!onCreateCategory
+  // Skjules når v16-koden allerede har en v22-kategori på nivå 4 - da er det ingenting å kopiere til.
+  const canCopyV16ToV22 = !!isoCode && isoCode.length === 8 && !iso22Lvl4 && !!onCopyV16ToV22
 
-  if (!canVerify && !canMove && !canMoveIsoCode && !canCreateCategory) return <Table.DataCell />
+  if (!canVerify && !canMove && !canMoveIsoCode && !canCreateCategory && !canCopyV16ToV22) return <Table.DataCell />
 
   return (
     <Table.DataCell>
@@ -309,6 +313,14 @@ export const AksjonCell = ({
               }
             >
               Opprett ny ISO v22-kategori (nivå 4)
+            </ActionMenu.Item>
+          )}
+          {canCopyV16ToV22 && (
+            <ActionMenu.Item
+              disabled={isLockedByVerification}
+              onSelect={() => onCopyV16ToV22?.({ isoCode: isoCode as string, mappingIds, iso22Lvl3 })}
+            >
+              {isLockedByVerification ? 'Kopier v16 til v22 (fjern verifisering først)' : 'Kopier v16 til v22'}
             </ActionMenu.Item>
           )}
         </ActionMenu.Content>
