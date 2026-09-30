@@ -626,6 +626,28 @@ test('valg lagres per bruker, og «Nullstill» setter filtrene tilbake', async (
   expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
 })
 
+test('kan skjule verifiserte ISO-koder i produkt- og variantvisning', async () => {
+  renderPage()
+  await loadExtractRows()
+
+  const table = () => screen.getByRole('table')
+  expect(within(table()).getAllByText('18090301').length).toBeGreaterThan(0)
+  expect(within(table()).getByText('22030301')).toBeInTheDocument()
+
+  const verifiedSwitch = screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })
+  fireEvent.click(verifiedSwitch)
+  expect(within(table()).queryByText('18090301')).not.toBeInTheDocument()
+  expect(within(table()).getByText('22030301')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
+  expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).not.toBeChecked()
+  expect(within(table()).queryByText('18090301')).not.toBeInTheDocument()
+  expect(within(table()).getByText('22030301')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  expect(within(table()).getAllByText('18090301').length).toBeGreaterThan(0)
+})
+
 test('endringstypen «Ingenting er endret» deaktiveres når verifiserte ISO-koder skjules', async () => {
   renderPage()
   await screen.findByText('C Endret kode, samme overskrift')

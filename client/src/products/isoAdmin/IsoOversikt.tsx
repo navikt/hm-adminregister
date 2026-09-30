@@ -785,9 +785,10 @@ const IsoOversikt = () => {
 
   const filteredRows = useMemo(() => {
     if (!rows) return []
-    const base = selectedIsoCode ? rows.filter((row) => row.isoCode.startsWith(selectedIsoCode)) : rows
+    const scoped = selectedIsoCode ? rows.filter((row) => row.isoCode.startsWith(selectedIsoCode)) : rows
+    const base = showVerifiedIsoCodes ? scoped : scoped.filter((row) => row.mappingVerified !== true)
     return sortRows(base, sortKey, sortDir)
-  }, [rows, selectedIsoCode, sortKey, sortDir])
+  }, [rows, selectedIsoCode, showVerifiedIsoCodes, sortKey, sortDir])
 
   const productRows = useMemo(
     () => sortProductRows(groupByProduct(filteredRows), sortKey, sortDir),
@@ -1208,86 +1209,86 @@ const IsoOversikt = () => {
 
               <HStack gap="space-8" align="end" wrap>
                 <HStack gap="space-8" align="center" wrap>
-                <Select
-                  label="v16 nivå 1"
-                  size="small"
-                  value={selectedLevel1}
-                  onChange={(e) => {
-                    setSelectedLevel1(e.target.value)
-                    setSelectedLevel2('')
-                    setSelectedLevel3('')
-                    setSelectedLevel4('')
-                    resetPaging()
-                    syncDropdownsToInput(e.target.value, '', '', '')
-                  }}
-                >
-                  <option value="">Alle</option>
-                  {level1Options.map((o) => (
-                    <option key={o.isoCode} value={o.isoCode}>
-                      {o.isoCode} {o.isoTitle}
-                    </option>
-                  ))}
-                </Select>
+                  <Select
+                    label="v16 nivå 1"
+                    size="small"
+                    value={selectedLevel1}
+                    onChange={(e) => {
+                      setSelectedLevel1(e.target.value)
+                      setSelectedLevel2('')
+                      setSelectedLevel3('')
+                      setSelectedLevel4('')
+                      resetPaging()
+                      syncDropdownsToInput(e.target.value, '', '', '')
+                    }}
+                  >
+                    <option value="">Alle</option>
+                    {level1Options.map((o) => (
+                      <option key={o.isoCode} value={o.isoCode}>
+                        {o.isoCode} {o.isoTitle}
+                      </option>
+                    ))}
+                  </Select>
 
-                <Select
-                  label="v16 nivå 2"
-                  size="small"
-                  value={selectedLevel2}
-                  disabled={!selectedLevel1}
-                  onChange={(e) => {
-                    setSelectedLevel2(e.target.value)
-                    setSelectedLevel3('')
-                    setSelectedLevel4('')
-                    resetPaging()
-                    syncDropdownsToInput(selectedLevel1, e.target.value, '', '')
-                  }}
-                >
-                  <option value="">Alle</option>
-                  {level2Options.map((o) => (
-                    <option key={o.isoCode} value={o.isoCode}>
-                      {o.isoCode} {o.isoTitle}
-                    </option>
-                  ))}
-                </Select>
+                  <Select
+                    label="v16 nivå 2"
+                    size="small"
+                    value={selectedLevel2}
+                    disabled={!selectedLevel1}
+                    onChange={(e) => {
+                      setSelectedLevel2(e.target.value)
+                      setSelectedLevel3('')
+                      setSelectedLevel4('')
+                      resetPaging()
+                      syncDropdownsToInput(selectedLevel1, e.target.value, '', '')
+                    }}
+                  >
+                    <option value="">Alle</option>
+                    {level2Options.map((o) => (
+                      <option key={o.isoCode} value={o.isoCode}>
+                        {o.isoCode} {o.isoTitle}
+                      </option>
+                    ))}
+                  </Select>
 
-                <Select
-                  label="v16 nivå 3"
-                  size="small"
-                  value={selectedLevel3}
-                  disabled={!selectedLevel2}
-                  onChange={(e) => {
-                    setSelectedLevel3(e.target.value)
-                    setSelectedLevel4('')
-                    resetPaging()
-                    syncDropdownsToInput(selectedLevel1, selectedLevel2, e.target.value, '')
-                  }}
-                >
-                  <option value="">Alle</option>
-                  {level3Options.map((o) => (
-                    <option key={o.isoCode} value={o.isoCode}>
-                      {o.isoCode} {o.isoTitle}
-                    </option>
-                  ))}
-                </Select>
+                  <Select
+                    label="v16 nivå 3"
+                    size="small"
+                    value={selectedLevel3}
+                    disabled={!selectedLevel2}
+                    onChange={(e) => {
+                      setSelectedLevel3(e.target.value)
+                      setSelectedLevel4('')
+                      resetPaging()
+                      syncDropdownsToInput(selectedLevel1, selectedLevel2, e.target.value, '')
+                    }}
+                  >
+                    <option value="">Alle</option>
+                    {level3Options.map((o) => (
+                      <option key={o.isoCode} value={o.isoCode}>
+                        {o.isoCode} {o.isoTitle}
+                      </option>
+                    ))}
+                  </Select>
 
-                <Select
-                  label="v16 nivå 4"
-                  size="small"
-                  value={selectedLevel4}
-                  disabled={!selectedLevel3}
-                  onChange={(e) => {
-                    setSelectedLevel4(e.target.value)
-                    resetPaging()
-                    syncDropdownsToInput(selectedLevel1, selectedLevel2, selectedLevel3, e.target.value)
-                  }}
-                >
-                  <option value="">Alle</option>
-                  {level4Options.map((o) => (
-                    <option key={o.isoCode} value={o.isoCode}>
-                      {o.isoCode} {o.isoTitle}
-                    </option>
-                  ))}
-                </Select>
+                  <Select
+                    label="v16 nivå 4"
+                    size="small"
+                    value={selectedLevel4}
+                    disabled={!selectedLevel3}
+                    onChange={(e) => {
+                      setSelectedLevel4(e.target.value)
+                      resetPaging()
+                      syncDropdownsToInput(selectedLevel1, selectedLevel2, selectedLevel3, e.target.value)
+                    }}
+                  >
+                    <option value="">Alle</option>
+                    {level4Options.map((o) => (
+                      <option key={o.isoCode} value={o.isoCode}>
+                        {o.isoCode} {o.isoTitle}
+                      </option>
+                    ))}
+                  </Select>
                 </HStack>
                 {pageMode === 'mapping' && (
                   <ActionMenu open={mappingTypeMenuOpen} onOpenChange={setMappingTypeMenuOpen}>
@@ -1349,18 +1350,16 @@ const IsoOversikt = () => {
                   </>
                 )}
                 <Box style={{ marginInlineStart: 'auto' }}>
-                  {pageMode === 'mapping' && (
-                    <Switch
-                      checked={showVerifiedIsoCodes}
-                      onChange={(e) => {
-                        setShowVerifiedIsoCodes(e.target.checked)
-                        if (!e.target.checked) toggleMappingType(ISO_MAP_LABELS.SAME, false)
-                        setMappingPage(1)
-                      }}
-                    >
-                      Vis verifiserte ISO-koder
-                    </Switch>
-                  )}
+                  <Switch
+                    checked={showVerifiedIsoCodes}
+                    onChange={(e) => {
+                      setShowVerifiedIsoCodes(e.target.checked)
+                      if (!e.target.checked) toggleMappingType(ISO_MAP_LABELS.SAME, false)
+                      resetPaging()
+                    }}
+                  >
+                    Vis verifiserte ISO-koder
+                  </Switch>
                   <Switch
                     checked={editMode === 'endre'}
                     onChange={(e) => setEditMode(e.target.checked ? 'endre' : 'les')}
