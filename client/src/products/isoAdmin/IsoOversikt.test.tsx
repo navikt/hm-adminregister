@@ -305,6 +305,7 @@ let seriesDetailRequests = 0
 let seriesListRequests = 0
 
 beforeEach(() => {
+  window.localStorage.clear()
   seriesDetailRequests = 0
   seriesListRequests = 0
   useAuthStore.getState().setLoggedInUser({
@@ -566,6 +567,64 @@ test('kan skjule og vise verifiserte ISO-koder', async () => {
   expect(screen.getByText('C Endret kode, samme overskrift')).toBeInTheDocument()
 })
 
+test('husker filter- og visningsvalg etter ny lasting, men ikke visningsvalg, søk eller endremodus', async () => {
+  const { unmount } = renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Endringstype: Alle' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'X Slettet klasse, underklasse eller inndeling' }))
+  fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'X Slettet klasse, underklasse eller inndeling' }), {
+    key: 'Escape',
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 søkeord' }))
+  fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'v16 søkeord' }), { key: 'Escape' })
+  enableEditMode()
+  fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
+  unmount()
+
+  renderPage()
+  await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).not.toBeChecked())
+  expect(screen.getByRole('button', { name: 'Endringstype: 1 valgt' })).toBeInTheDocument()
+  expect(screen.getByRole('radio', { name: 'Ren ISO-mapping' })).toBeChecked()
+  expect(screen.getByRole('checkbox', { name: 'Endremodus' })).not.toBeChecked()
+
+  expect(screen.getByRole('columnheader', { name: 'v16 - søkeord' })).toBeInTheDocument()
+  expect(screen.queryByRole('menuitemcheckbox', { name: 'v16 søkeord' })).not.toBeInTheDocument()
+})
+
+test('husker om filterkortet er lukket', async () => {
+  const { unmount } = renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+  fireEvent.click(screen.getByRole('button', { name: 'Vis mer', expanded: true }))
+  expect(screen.queryByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).not.toBeInTheDocument()
+  unmount()
+
+  renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+  expect(screen.queryByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).not.toBeInTheDocument()
+})
+
+test('valg lagres per bruker, og «Nullstill» setter filtrene tilbake', async () => {
+  const { unmount } = renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  unmount()
+
+  useAuthStore.getState().setLoggedInUser({ ...useAuthStore.getState().loggedInUser!, userId: 'annen-admin' })
+  const other = renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+  expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
+  other.unmount()
+
+  useAuthStore.getState().setLoggedInUser({ ...useAuthStore.getState().loggedInUser!, userId: 'admin' })
+  renderPage()
+  await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).not.toBeChecked())
+  fireEvent.click(screen.getByRole('button', { name: 'Nullstill' }))
+  expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
+})
+
 test('endringstypen «Ingenting er endret» deaktiveres når verifiserte ISO-koder skjules', async () => {
   renderPage()
   await screen.findByText('C Endret kode, samme overskrift')
@@ -796,7 +855,7 @@ test('«Kopier v16 til v22» åpner opprettingsskjemaet utfylt med data fra v16 
   enableEditMode()
 
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Kopier v16 til v22' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Kopier v16 til v22 (nivå 4)' }))
 
   const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
   expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('18090301')
@@ -1038,7 +1097,7 @@ test('«Kopier v16 til v22» i ISO-oversikten åpner opprettingsskjemaet utfylt 
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: /ISO 05030301/ })
   expect(within(overview).getByRole('button', { name: 'Opprett ny ISO v22-kategori...' })).toBeInTheDocument()
-  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22' }))
+  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22 (nivå 4)' }))
 
   const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
   expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('05030301')
@@ -1079,7 +1138,7 @@ test('ISO-oversikten slutter å advare om manglende v22 nivå 4 etter at kategor
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: /ISO 05030301/ })
   expect(within(overview).getByText(/Det finnes ingen ISO v22-kategori på nivå 4/)).toBeInTheDocument()
-  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22' }))
+  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22 (nivå 4)' }))
 
   const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
   fireEvent.click(within(dialog).getByRole('button', { name: 'Opprett kategori og koble til mapping' }))

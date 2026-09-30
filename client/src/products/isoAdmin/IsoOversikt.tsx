@@ -50,6 +50,7 @@ import {
   SortHeader,
 } from './IsoTableCells'
 import { extractErrorMessage } from './errorUtils'
+import { ALL_MAPPING_TYPES, loadIsoAdminPreferences, saveIsoAdminPreferences } from './isoAdminPreferences'
 import { buildMappingRows, buildMappingsByCode16, mapToExtractedRows, resolveIso22Targets } from './isoMappingUtils'
 import {
   SERIES_PAGE_SIZE,
@@ -81,7 +82,6 @@ import { groupByProduct } from './isoRowUtils'
 import { compareIsoCodes, sortByIsoLevel, sortProductRows, sortRows } from './isoSortUtils'
 
 type EditMode = 'les' | 'endre'
-const ALL_MAPPING_TYPES = 'Alle endringstyper'
 const mappingTypeLabels = Object.values(ISO_MAP_LABELS)
 
 // Admin-endepunktet returnerer databaseraden uten nivå, så nivået utledes av kodelengden slik backend gjør.
@@ -103,6 +103,9 @@ const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
   const isAdmin = loggedInUser?.isAdmin === true
+  const preferencesUserId = loggedInUser?.userId
+  // Leses bare ved første render, slik at lagrede valg er på plass uten at standardverdiene blinker forbi.
+  const [initialPreferences] = useState(() => loadIsoAdminPreferences(preferencesUserId))
   const {
     isoCategories22: publicIsoCategories22,
     isoLoading22: publicIsoLoading22,
@@ -143,29 +146,75 @@ const IsoOversikt = () => {
   const [selectedLevel3, setSelectedLevel3] = useState('')
   const [selectedLevel4, setSelectedLevel4] = useState('')
 
-  const [sortKey, setSortKey] = useState<SortKey>('iso1')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [sortKey, setSortKey] = useState<SortKey>(initialPreferences.sortKey)
+  const [sortDir, setSortDir] = useState<SortDir>(initialPreferences.sortDir)
 
   const [variantPage, setVariantPage] = useState(1)
-  const [variantPageSize, setVariantPageSize] = useState(25)
+  const [variantPageSize, setVariantPageSize] = useState(initialPreferences.variantPageSize)
 
   const [mappingPage, setMappingPage] = useState(1)
-  const [mappingPageSize, setMappingPageSize] = useState(25)
-  const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(true)
-  const [selectedMappingTypes, setSelectedMappingTypes] = useState<string[]>([ALL_MAPPING_TYPES])
+  const [mappingPageSize, setMappingPageSize] = useState(initialPreferences.mappingPageSize)
+  const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(initialPreferences.showVerifiedIsoCodes)
+  const [selectedMappingTypes, setSelectedMappingTypes] = useState<string[]>(() => {
+    const known = initialPreferences.selectedMappingTypes.filter(
+      (type) => type === ALL_MAPPING_TYPES || mappingTypeLabels.includes(type)
+    )
+    return known.length ? known : [ALL_MAPPING_TYPES]
+  })
   const [mappingTypeMenuOpen, setMappingTypeMenuOpen] = useState(false)
 
-  const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(new Set())
-  const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(new Set())
+  const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(
+    () => new Set(initialPreferences.visibleOptionalsV1)
+  )
+  const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(
+    () => new Set(initialPreferences.visibleOptionalsV22)
+  )
   const [visibleIsoLevelsV1, setVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
-    () => new Set(OPTIONAL_ISO_LEVELS)
+    () => new Set(initialPreferences.visibleIsoLevelsV1)
   )
   const [visibleIsoLevelsV22, setVisibleIsoLevelsV22] = useState<Set<OptionalIsoLevel>>(
-    () => new Set(OPTIONAL_ISO_LEVELS)
+    () => new Set(initialPreferences.visibleIsoLevelsV22)
   )
-  const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(new Set())
-  const [showMappingTypes, setShowMappingTypes] = useState(false)
+  const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(
+    () => new Set(initialPreferences.visibleExtraColumns)
+  )
+  const [showMappingTypes, setShowMappingTypes] = useState(initialPreferences.showMappingTypes)
   const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(initialPreferences.filtersOpen)
+
+  useEffect(() => {
+    saveIsoAdminPreferences(preferencesUserId, {
+      showVerifiedIsoCodes,
+      selectedMappingTypes,
+      sortKey,
+      sortDir,
+      mappingPageSize,
+      variantPageSize,
+      visibleOptionalsV1: [...visibleOptionalsV1],
+      visibleOptionalsV22: [...visibleOptionalsV22],
+      visibleIsoLevelsV1: [...visibleIsoLevelsV1],
+      visibleIsoLevelsV22: [...visibleIsoLevelsV22],
+      visibleExtraColumns: [...visibleExtraColumns],
+      showMappingTypes,
+      filtersOpen,
+    })
+  }, [
+    preferencesUserId,
+    showVerifiedIsoCodes,
+    selectedMappingTypes,
+    sortKey,
+    sortDir,
+    mappingPageSize,
+    variantPageSize,
+    visibleOptionalsV1,
+    visibleOptionalsV22,
+    visibleIsoLevelsV1,
+    visibleIsoLevelsV22,
+    visibleExtraColumns,
+    showMappingTypes,
+    filtersOpen,
+  ])
+
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
   // Ett samlet visningsvalg for admin (radioknapper) - internt styrer det fortsatt de to separate
@@ -836,6 +885,7 @@ const IsoOversikt = () => {
     setSelectedLevel3('')
     setSelectedLevel4('')
     setSelectedMappingTypes([ALL_MAPPING_TYPES])
+    setShowVerifiedIsoCodes(true)
     resetPaging()
   }
 
@@ -966,7 +1016,7 @@ const IsoOversikt = () => {
         {isoError22 && <Alert variant="warning">Klarte ikke å hente v22-kategorier.</Alert>}
         {isoMappingsError && <Alert variant="warning">Klarte ikke å hente mapping-status mellom v16 og v22.</Alert>}
 
-        <ExpansionCard defaultOpen size="small" aria-label="Filtre og visningsvalg">
+        <ExpansionCard open={filtersOpen} onToggle={setFiltersOpen} size="small" aria-label="Filtre og visningsvalg">
           <ExpansionCard.Header>
             <ExpansionCard.Title size="small">Filtre og visningsvalg</ExpansionCard.Title>
           </ExpansionCard.Header>
