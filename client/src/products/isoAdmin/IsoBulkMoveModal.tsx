@@ -96,9 +96,12 @@ const IsoBulkMoveModal = ({
   const [showDetails, setShowDetails] = useState(false)
 
   // Nye ISO v22-kategorier kan kun opprettes mens mappingen ikke er verifisert (se AksjonCell) -
-  // dette hindrer at taxonomien endres "under" en godkjent v16->v22-migrering.
+  // dette hindrer at taxonomien endres "under" en godkjent v16->v22-migrering. Bare v16-koder på
+  // nivå 4 skal ha en v22-kategori på nivå 4, så andre nivåer varsles ikke.
+  const isV16Level4 = sourceIsoCode?.replace(/\s/g, '').length === 8
   const missingV22Level4 =
     !!context &&
+    isV16Level4 &&
     context.mappingAvailable &&
     !targetIso22Code &&
     !!context.iso22Lvl3 &&
@@ -203,10 +206,12 @@ const IsoBulkMoveModal = ({
                               </BodyShort>
                             </>
                           ) : (
-                            <BodyShort size="small" textColor="subtle">
-                              Ingen nivå 4-kategori under {context.iso22Lvl3 || '(ukjent nivå 3)'} enda. Forklaring og
-                              søkeord finnes først når en nivå 4-kategori opprettes.
-                            </BodyShort>
+                            isV16Level4 && (
+                              <BodyShort size="small" textColor="subtle">
+                                Ingen nivå 4-kategori under {context.iso22Lvl3 || '(ukjent nivå 3)'} enda. Forklaring og
+                                søkeord finnes først når en nivå 4-kategori opprettes.
+                              </BodyShort>
+                            )
                           )}
                         </VStack>
                       </HGrid>
@@ -234,7 +239,7 @@ const IsoBulkMoveModal = ({
                             >
                               Opprett ny ISO v22-kategori...
                             </Button>
-                            {onRequestCopyV16ToV22 && sourceIsoCode?.length === 8 && (
+                            {onRequestCopyV16ToV22 && (
                               <Button
                                 size="small"
                                 variant="secondary"

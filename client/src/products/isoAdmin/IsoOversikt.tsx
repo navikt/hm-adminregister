@@ -1207,6 +1207,7 @@ const IsoOversikt = () => {
               </HStack>
 
               <HStack gap="space-8" align="end" wrap>
+                <HStack gap="space-8" align="center" wrap>
                 <Select
                   label="v16 nivå 1"
                   size="small"
@@ -1287,7 +1288,7 @@ const IsoOversikt = () => {
                     </option>
                   ))}
                 </Select>
-
+                </HStack>
                 {pageMode === 'mapping' && (
                   <ActionMenu open={mappingTypeMenuOpen} onOpenChange={setMappingTypeMenuOpen}>
                     <ActionMenu.Trigger>

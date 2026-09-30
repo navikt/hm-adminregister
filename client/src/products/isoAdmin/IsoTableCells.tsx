@@ -158,7 +158,8 @@ export const Iso22LevelCells = ({
   const hasV16Level4 = !!row.iso4
   const missingCategory =
     !!existingIso22Codes && hasV16Level4 && !level4Codes.some((code) => existingIso22Codes.has(code))
-  const hasUnknownCode = !!existingIso22Codes && level4Codes.some((code) => !existingIso22Codes.has(code))
+  const hasUnknownCode =
+    !!existingIso22Codes && hasV16Level4 && level4Codes.some((code) => !existingIso22Codes.has(code))
 
   const renderLevel4 = () => {
     if (!existingIso22Codes || (!missingCategory && !hasUnknownCode)) return row.iso22Lvl4
@@ -229,6 +230,8 @@ export const MappingVerification = ({ verified }: { verified: boolean | null }) 
   )
 }
 
+const isV16Level4Code = (isoCode?: string | null) => isoCode?.replace(/\s/g, '').length === 8
+
 export const AksjonHeader = () => <Table.HeaderCell scope="col">Aksjon</Table.HeaderCell>
 
 export const AksjonCell = ({
@@ -276,10 +279,15 @@ export const AksjonCell = ({
   const isLockedByVerification = mappingVerified === true
   const canShowOverview = !!isoCode && !!onShowOverview
   const openOverview = () => onShowOverview?.(isoCode as string, mappingIds.length === 1 ? mappingIds[0] : undefined)
-  // Ny ISO v22-kategori (nivå 4, nasjonal tilleggskode) kan kun opprettes under en eksisterende
-  // nivå 3-forelder, og kun mens mappingen ikke er verifisert.
+  // Ny ISO v22-kategori (nivå 4, nasjonal tilleggskode) kan kun opprettes for v16-koder på nivå 4, under en
+  // eksisterende nivå 3-forelder, og kun mens mappingen ikke er verifisert.
   const canCreateCategory =
-    mappingAvailable && mappingVerified === false && !!iso22Lvl3 && !iso22Lvl4 && !!onCreateCategory
+    mappingAvailable &&
+    mappingVerified === false &&
+    isV16Level4Code(isoCode) &&
+    !!iso22Lvl3 &&
+    !iso22Lvl4 &&
+    !!onCreateCategory
   const editableCodes = onEditCategory ? iso22Lvl4Codes : []
 
   if (!canVerify && !canShowOverview && !canCreateCategory && !editableCodes.length) return <Table.DataCell />

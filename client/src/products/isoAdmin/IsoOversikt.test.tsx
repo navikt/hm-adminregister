@@ -808,8 +808,8 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   // Bytt til "Endre"-modus for å få frem Aksjon-kolonnen.
   fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
 
-  // Mapping-raden for v16-kode 050303 -> v22-kode 220912 (nivå 3, ikke verifisert) mangler nivå
-  // 4 under v22 og kvalifiserer derfor for "Opprett ny ISO v22-kategori".
+  // v16-kode 05030301 arver mappingen 050303 -> 220912 (nivå 3, ikke verifisert), mangler nivå 4
+  // under v22 og kvalifiserer derfor for "Opprett ny ISO v22-kategori".
   const targetRow = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
   fireEvent.click(within(targetRow).getByRole('button', { name: /^Rad-meny/ }))
   fireEvent.click(screen.getByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
@@ -980,9 +980,30 @@ test('«Endre ISO v22-kategori» er sperret for verifiserte mappinger og vises b
   fireEvent.keyDown(screen.getByRole('menuitem', { name: /Endre ISO v22-kategori/ }), { key: 'Escape' })
   await waitFor(() => expect(screen.queryByRole('menuitem', { name: /Endre ISO v22/ })).not.toBeInTheDocument())
 
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 05030301' }))
   await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
   expect(screen.queryByRole('menuitem', { name: /Endre ISO v22-kategori/ })).not.toBeInTheDocument()
+})
+
+test('rader uten v16-kode på nivå 4 får verken varsel, «Opprett» eller «Kopier»', async () => {
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  const row = screen.getByRole('button', { name: 'Rad-meny for ISO 050303' }).closest('tr') as HTMLElement
+  expect(within(row).queryByText(/kategori mangler/i)).not.toBeInTheDocument()
+
+  fireEvent.click(within(row).getByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  await screen.findByRole('menuitem', { name: 'Vis oversikt' })
+  expect(screen.queryByRole('menuitem', { name: /Opprett ny ISO v22-kategori/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: /Kopier v16 til v22/ })).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Vis oversikt' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 050303' })
+  expect(within(dialog).queryByText(/Det finnes ingen ISO v22-kategori på nivå 4/)).not.toBeInTheDocument()
+  expect(within(dialog).queryByText(/Ingen nivå 4-kategori under/)).not.toBeInTheDocument()
+  expect(within(dialog).queryByRole('button', { name: /Opprett ny ISO v22-kategori/ })).not.toBeInTheDocument()
+  expect(within(dialog).queryByRole('button', { name: /Kopier v16 til v22/ })).not.toBeInTheDocument()
 })
 
 // Backend på main cacher den åpne v22-listen i minnet til restart. Admin-endepunktet leser fra databasen,
@@ -1541,7 +1562,7 @@ test('nytt forsøk etter feilet mappingoppdatering hopper over opprettingen og f
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
   enableEditMode()
 
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 05030301' }))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
   fireEvent.change(screen.getByLabelText('Siste 2 siffer'), { target: { value: '01' } })
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny kommunikasjon' } })
