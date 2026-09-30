@@ -27,7 +27,6 @@ import {
   Switch,
   Table,
   TextField,
-  UNSAFE_Combobox,
   VStack,
 } from '@navikt/ds-react'
 
@@ -64,6 +63,7 @@ import {
   SERIES_PAGE_SIZE,
   SERIES_WARN_THRESHOLD,
   fetchSeriesDetailsConcurrent,
+  fetchSeriesForIsoCode,
   fetchSeriesPage,
 } from './isoOversiktApi'
 import {
@@ -90,7 +90,19 @@ import { compareIsoCodes, sortByIsoLevel, sortProductRows, sortRows } from './is
 
 type EditMode = 'les' | 'endre'
 const ALL_MAPPING_TYPES = 'Alle endringstyper'
-const mappingTypeOptions = [ALL_MAPPING_TYPES, ...Object.values(ISO_MAP_LABELS)]
+const mappingTypeLabels = Object.values(ISO_MAP_LABELS)
+
+const replaceScopedSeriesRows = (
+  scoped: { isoCode: string; rows: ExtractedProductVariant[] },
+  seriesIds: string[],
+  newRows: ExtractedProductVariant[]
+) => ({
+  ...scoped,
+  rows: [
+    ...scoped.rows.filter((row) => !seriesIds.includes(row.seriesId)),
+    ...newRows.filter((row) => row.isoCode.startsWith(scoped.isoCode)),
+  ],
+})
 
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
@@ -110,6 +122,10 @@ const IsoOversikt = () => {
   const [pendingLargeLoad, setPendingLargeLoad] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const loadAbortControllerRef = useRef<AbortController | null>(null)
+  const [scopedRows, setScopedRows] = useState<{ isoCode: string; rows: ExtractedProductVariant[] } | null>(null)
+  const [scopedLoading, setScopedLoading] = useState(false)
+  const [scopedLoadError, setScopedLoadError] = useState<string | null>(null)
+  const scopedLoadAbortControllerRef = useRef<AbortController | null>(null)
 
   const [selectedLevel1, setSelectedLevel1] = useState('')
   const [selectedLevel2, setSelectedLevel2] = useState('')
@@ -126,7 +142,7 @@ const IsoOversikt = () => {
   const [mappingPageSize, setMappingPageSize] = useState(25)
   const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(true)
   const [selectedMappingTypes, setSelectedMappingTypes] = useState<string[]>([ALL_MAPPING_TYPES])
-  const [mappingTypeSearch, setMappingTypeSearch] = useState('')
+  const [mappingTypeMenuOpen, setMappingTypeMenuOpen] = useState(false)
 
   const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(new Set())
   const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(new Set())
@@ -207,8 +223,23 @@ const IsoOversikt = () => {
   // (ingenting å koble til). Brukes til å sperre "Verifiser" til reell tilknytning er gjort - se
   // AksjonCell og IsoBulkMoveModal.
   const isIsoCodeLoaded = useCallback(
-    (isoCode: string) => rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope),
-    [rows, rowsScope]
+    (isoCode: string) =>
+      (rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)) ||
+      (scopedRows !== null && isoCode.startsWith(scopedRows.isoCode)),
+    [rows, rowsScope, scopedRows]
+  )
+
+  const getLoadedRowsForIsoCode = useCallback(
+    (isoCode: string): ExtractedProductVariant[] | null => {
+      if (rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)) {
+        return rows.filter((row) => row.isoCode === isoCode)
+      }
+      if (scopedRows !== null && isoCode.startsWith(scopedRows.isoCode)) {
+        return scopedRows.rows.filter((row) => row.isoCode === isoCode)
+      }
+      return null
+    },
+    [rows, rowsScope, scopedRows]
   )
 
   // Tilkoblingsmål per v16-kode, hentet fra mappingene (se resolveIso22Targets).
@@ -238,12 +269,16 @@ const IsoOversikt = () => {
 
   const attachmentCompleteByIsoCode = useMemo(() => {
     const map = new Map<string, boolean>()
-    ;(rows || []).forEach((row) => {
+    const addRow = (row: ExtractedProductVariant) => {
       const prev = map.get(row.isoCode)
       map.set(row.isoCode, prev === undefined ? row.iso22Attached : prev && row.iso22Attached)
+    }
+    ;(rows || []).forEach(addRow)
+    scopedRows?.rows.forEach((row) => {
+      if (rows === null || rowsScope === null || !row.isoCode.startsWith(rowsScope)) addRow(row)
     })
     return map
-  }, [rows])
+  }, [rows, rowsScope, scopedRows])
 
   const handleToggleVerification = useCallback(
     async (mappingIds: string[], verified: boolean): Promise<boolean> => {
@@ -259,12 +294,10 @@ const IsoOversikt = () => {
         mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
           revalidate: false,
         })
-        setRows(
-          (prev) =>
-            prev?.map((row) =>
-              row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
-            ) ?? null
-        )
+        const markVerified = (row: ExtractedProductVariant) =>
+          row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
+        setRows((prev) => prev?.map(markVerified) ?? null)
+        setScopedRows((prev) => (prev ? { ...prev, rows: prev.rows.map(markVerified) } : null))
         return true
       } catch (error) {
         setVerificationError(extractErrorMessage(error))
@@ -306,6 +339,7 @@ const IsoOversikt = () => {
           const withoutSeries = (prev || []).filter((row) => row.seriesId !== seriesId)
           return [...withoutSeries, ...newRows]
         })
+        setScopedRows((prev) => (prev ? replaceScopedSeriesRows(prev, [seriesId], newRows) : null))
         setMoveModal({ open: false, seriesId: null })
       } catch (error) {
         setMoveError(extractErrorMessage(error))
@@ -353,19 +387,26 @@ const IsoOversikt = () => {
   // produktlisten ikke lastet inn, er status ukjent og verifisering sperres (fail closed).
   const isAttachmentComplete = useCallback(
     (context: { seriesId?: string; isoCode?: string }): boolean => {
-      if (rows === null) return false
-      const isoCode = context.isoCode ?? rows.find((row) => row.seriesId === context.seriesId)?.isoCode
+      if (rows === null && scopedRows === null) return false
+      const isoCode =
+        context.isoCode ??
+        (
+          rows?.find((row) => row.seriesId === context.seriesId) ??
+          scopedRows?.rows.find((row) => row.seriesId === context.seriesId)
+        )?.isoCode
       if (!isoCode) return true
       if (!isIsoCodeLoaded(isoCode)) return false
       return attachmentCompleteByIsoCode.get(isoCode) ?? true
     },
-    [rows, attachmentCompleteByIsoCode, isIsoCodeLoaded]
+    [rows, scopedRows, attachmentCompleteByIsoCode, isIsoCodeLoaded]
   )
 
   const verifyConfirmProductCount = useMemo(() => {
-    if (!verifyConfirm?.isoCode || rows === null || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
-    return new Set(rows.filter((row) => row.isoCode === verifyConfirm.isoCode).map((row) => row.seriesId)).size
-  }, [verifyConfirm, rows, isIsoCodeLoaded])
+    if (!verifyConfirm?.isoCode) return null
+    const loadedRows = getLoadedRowsForIsoCode(verifyConfirm.isoCode)
+    if (loadedRows === null) return null
+    return new Set(loadedRows.map((row) => row.seriesId)).size
+  }, [verifyConfirm, getLoadedRowsForIsoCode])
 
   const handleRequestVerify = useCallback(
     (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => {
@@ -503,7 +544,7 @@ const IsoOversikt = () => {
     async (movedSeriesIds: string[]) => {
       // Modalen lukker seg selv kun når alle lyktes - ved delvis feil skal den forbli åpen slik at
       // admin ser hvilke produkter som feilet. Her oppdateres bare radene som faktisk ble endret.
-      if (rows === null || !movedSeriesIds.length) return
+      if ((rows === null && scopedRows === null) || !movedSeriesIds.length) return
       try {
         const abortController = new AbortController()
         const updatedSeries = await fetchSeriesDetailsConcurrent(movedSeriesIds, () => {}, abortController.signal)
@@ -515,14 +556,16 @@ const IsoOversikt = () => {
           mappingDataAvailable
         )
         setRows((prev) => {
-          const withoutMoved = (prev || []).filter((row) => !movedSeriesIds.includes(row.seriesId))
+          if (prev === null) return null
+          const withoutMoved = prev.filter((row) => !movedSeriesIds.includes(row.seriesId))
           return [...withoutMoved, ...newRows]
         })
+        setScopedRows((prev) => (prev ? replaceScopedSeriesRows(prev, movedSeriesIds, newRows) : null))
       } catch {
         // Rows kunne ikke oppdateres automatisk. Bruk "Hent liste" for å laste inn siste data.
       }
     },
-    [rows, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+    [rows, scopedRows, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
   )
 
   const selectedIsoCode = selectedLevel4 || selectedLevel3 || selectedLevel2 || selectedLevel1
@@ -557,14 +600,11 @@ const IsoOversikt = () => {
       ),
     [bulkMoveModal.isoCode, mappingsByCode16]
   )
-  // Kilden til sannhet for hvilke produkter/varianter som faktisk har v16-koden - hentet fra samme
-  // `rows`-tilstand som resten av oversikten (Produkt/Variant-visningen), IKKE et separat
-  // backend-kall filtrert på isoCode. Tidligere gjorde IsoBulkMoveModal et eget kall til
-  // /admreg/api/v1/series?isoCode=X, som i praksis kunne gi 0 treff selv når produkter fantes (viste
-  // seg å ikke stemme overens med tabellens telling) - se bruker-rapportert avvik for 18090401.
+  // Hentes fra oversiktens `rows` når de dekker koden, ellers fra modalens avgrensede innlasting
+  // (`scopedRows`). Tilknytning gjelder bare produkter med nøyaktig denne v16-koden.
   const bulkMoveSourceRows = useMemo(
-    () => (bulkMoveModal.isoCode ? (rows || []).filter((row) => row.isoCode === bulkMoveModal.isoCode) : []),
-    [rows, bulkMoveModal.isoCode]
+    () => (bulkMoveModal.isoCode ? (getLoadedRowsForIsoCode(bulkMoveModal.isoCode) ?? []) : []),
+    [getLoadedRowsForIsoCode, bulkMoveModal.isoCode]
   )
 
   const filteredMappingRows = useMemo(() => {
@@ -591,9 +631,56 @@ const IsoOversikt = () => {
     if (mappingPage > mappingTotalPages) setMappingPage(mappingTotalPages)
   }, [mappingPage, mappingTotalPages])
 
-  useEffect(() => () => loadAbortControllerRef.current?.abort(), [])
+  useEffect(
+    () => () => {
+      loadAbortControllerRef.current?.abort()
+      scopedLoadAbortControllerRef.current?.abort()
+    },
+    []
+  )
 
   const categoriesLoading = isoLoading || isoLoading22 || isoMappingsLoading
+
+  const loadRowsForIsoCode = useCallback(
+    async (isoCode: string) => {
+      if (!loggedInUser?.isAdmin) return
+      scopedLoadAbortControllerRef.current?.abort()
+      const abortController = new AbortController()
+      scopedLoadAbortControllerRef.current = abortController
+      setScopedLoading(true)
+      setScopedLoadError(null)
+      try {
+        const series = await fetchSeriesForIsoCode(isoCode, () => {}, abortController.signal)
+        abortController.signal.throwIfAborted()
+        const loadedRows = mapToExtractedRows(
+          series,
+          sortedIsoCategories,
+          sortedIsoCategories22,
+          mappingsByCode16,
+          mappingDataAvailable
+        ).filter((row) => row.isoCode.startsWith(isoCode))
+        setScopedRows({ isoCode, rows: loadedRows })
+      } catch (error: unknown) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          setScopedLoadError(error instanceof Error ? error.message : 'Klarte ikke å hente produkter og varianter')
+        }
+      } finally {
+        if (scopedLoadAbortControllerRef.current === abortController) {
+          scopedLoadAbortControllerRef.current = null
+          setScopedLoading(false)
+        }
+      }
+    },
+    [loggedInUser?.isAdmin, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
+
+  const closeBulkMoveModal = useCallback(() => {
+    scopedLoadAbortControllerRef.current?.abort()
+    scopedLoadAbortControllerRef.current = null
+    setScopedLoading(false)
+    setScopedLoadError(null)
+    setBulkMoveModal({ open: false, isoCode: null })
+  }, [])
 
   const loadAllRows = useCallback(
     async (skipWarning = false) => {
@@ -822,19 +909,17 @@ const IsoOversikt = () => {
     setSelectedLevel3('')
     setSelectedLevel4('')
     setSelectedMappingTypes([ALL_MAPPING_TYPES])
-    setMappingTypeSearch('')
     resetPaging()
   }
 
   const toggleMappingType = (option: string, isSelected: boolean) => {
     setSelectedMappingTypes((current) => {
-      if (option === ALL_MAPPING_TYPES) return isSelected ? [ALL_MAPPING_TYPES] : []
+      if (option === ALL_MAPPING_TYPES) return [ALL_MAPPING_TYPES]
       const next = new Set(current.filter((type) => type !== ALL_MAPPING_TYPES))
       if (isSelected) next.add(option)
       else next.delete(option)
-      return [...next]
+      return next.size ? [...next] : [ALL_MAPPING_TYPES]
     })
-    setMappingTypeSearch('')
     setMappingPage(1)
   }
 
@@ -943,9 +1028,12 @@ const IsoOversikt = () => {
           ambiguousTarget={bulkMoveAmbiguous}
           preloadedRows={bulkMoveSourceRows}
           rowsLoaded={!!bulkMoveModal.isoCode && isIsoCodeLoaded(bulkMoveModal.isoCode)}
-          rowsLoading={pageLoading}
-          onRequestLoadRows={() => loadAllRows(true)}
-          onClose={() => setBulkMoveModal({ open: false, isoCode: null })}
+          rowsLoading={scopedLoading}
+          rowsLoadError={scopedLoadError}
+          onRequestLoadRows={() => {
+            if (bulkMoveModal.isoCode) void loadRowsForIsoCode(bulkMoveModal.isoCode)
+          }}
+          onClose={closeBulkMoveModal}
           onCompleted={handleBulkMoveCompleted}
           onRequestVerify={handleRequestVerify}
           verifying={bulkMoveContext ? bulkMoveContext.mappingIds.some((id) => verifyingMappingIds.has(id)) : false}
@@ -1259,24 +1347,43 @@ const IsoOversikt = () => {
                 </Select>
 
                 {pageMode === 'mapping' && (
-                  <UNSAFE_Combobox
-                    label="Endringstype"
-                    size="small"
-                    placeholder="Søk etter endringstype"
-                    options={mappingTypeOptions}
-                    filteredOptions={
-                      mappingTypeSearch
-                        ? mappingTypeOptions.filter((option) =>
-                            option.toLocaleLowerCase().includes(mappingTypeSearch.toLocaleLowerCase())
-                          )
-                        : []
-                    }
-                    value={mappingTypeSearch}
-                    onChange={setMappingTypeSearch}
-                    isMultiSelect
-                    selectedOptions={selectedMappingTypes}
-                    onToggleSelected={toggleMappingType}
-                  />
+                  <ActionMenu open={mappingTypeMenuOpen} onOpenChange={setMappingTypeMenuOpen}>
+                    <ActionMenu.Trigger>
+                      <Button
+                        variant="secondary"
+                        data-color="neutral"
+                        size="small"
+                        className={styles.otherOptionsButton}
+                        icon={mappingTypeMenuOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
+                        iconPosition="right"
+                      >
+                        {selectedMappingTypes.includes(ALL_MAPPING_TYPES)
+                          ? 'Endringstype: Alle'
+                          : `Endringstype: ${selectedMappingTypes.length} valgt`}
+                      </Button>
+                    </ActionMenu.Trigger>
+                    <ActionMenu.Content>
+                      <ActionMenu.CheckboxItem
+                        checked={selectedMappingTypes.includes(ALL_MAPPING_TYPES)}
+                        onCheckedChange={(checked) => toggleMappingType(ALL_MAPPING_TYPES, checked)}
+                      >
+                        {ALL_MAPPING_TYPES}
+                      </ActionMenu.CheckboxItem>
+                      <ActionMenu.Divider />
+                      <ActionMenu.Group label="Endringstyper">
+                        {mappingTypeLabels.map((label) => (
+                          <ActionMenu.CheckboxItem
+                            key={label}
+                            disabled={!showVerifiedIsoCodes && label === ISO_MAP_LABELS.SAME}
+                            checked={selectedMappingTypes.includes(label)}
+                            onCheckedChange={(checked) => toggleMappingType(label, checked)}
+                          >
+                            {label}
+                          </ActionMenu.CheckboxItem>
+                        ))}
+                      </ActionMenu.Group>
+                    </ActionMenu.Content>
+                  </ActionMenu>
                 )}
 
                 <Button variant="secondary" size="small" onClick={resetFilters}>
@@ -1304,6 +1411,7 @@ const IsoOversikt = () => {
                       checked={showVerifiedIsoCodes}
                       onChange={(e) => {
                         setShowVerifiedIsoCodes(e.target.checked)
+                        if (!e.target.checked) toggleMappingType(ISO_MAP_LABELS.SAME, false)
                         setMappingPage(1)
                       }}
                     >

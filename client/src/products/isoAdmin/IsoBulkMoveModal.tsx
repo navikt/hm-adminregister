@@ -44,12 +44,12 @@ interface Props {
   validIso22Codes: ReadonlySet<string>
   // v16-koden er splittet, og modalen ble åpnet uten at en bestemt mapping var valgt.
   ambiguousTarget?: boolean
-  // Kilden til produkt-/variantdata for denne v16-koden - kommer fra IsoOversikt sin allerede
-  // innlastede `rows`-tilstand (samme data som driver Produkt/Variant-visningen og tellingene der),
-  // IKKE et eget backend-kall filtrert på isoCode. Se IsoOversikt.tsx for begrunnelse.
+  // Produkt-/variantdata for denne v16-koden, fra oversiktens innlastede rader eller fra en
+  // avgrenset innlasting for koden (se IsoOversikt.tsx).
   preloadedRows: ExtractedProductVariant[]
   rowsLoaded: boolean
   rowsLoading?: boolean
+  rowsLoadError?: string | null
   onRequestLoadRows?: () => void
   onClose: () => void
   onCompleted: (attachedSeriesIds: string[], newIso22Code: string) => void
@@ -91,6 +91,7 @@ const IsoBulkMoveModal = ({
   preloadedRows,
   rowsLoaded,
   rowsLoading,
+  rowsLoadError,
   onRequestLoadRows,
   onClose,
   onCompleted,
@@ -360,15 +361,16 @@ const IsoBulkMoveModal = ({
                     <BodyShort>Henter produkter og varianter...</BodyShort>
                   </>
                 ) : (
-                  <Alert variant="info" size="small">
+                  <Alert variant={rowsLoadError ? 'error' : 'info'} size="small">
                     <VStack gap="space-8">
                       <BodyShort size="small">
-                        Produktlisten er ikke lastet inn ennå. Last inn produkter og varianter for å se en korrekt
-                        oversikt over hva som er tilknyttet ISO {sourceIsoCode}.
+                        {rowsLoadError
+                          ? `Klarte ikke å laste inn produkter for ISO ${sourceIsoCode}: ${rowsLoadError}`
+                          : `Produktlisten er ikke lastet inn ennå. Last inn produkter og varianter for å se en korrekt oversikt over hva som er tilknyttet ISO ${sourceIsoCode}.`}
                       </BodyShort>
                       {onRequestLoadRows && (
                         <Button size="small" variant="secondary" onClick={onRequestLoadRows}>
-                          Last inn produkter
+                          {rowsLoadError ? 'Prøv igjen' : 'Last inn produkter'}
                         </Button>
                       )}
                     </VStack>

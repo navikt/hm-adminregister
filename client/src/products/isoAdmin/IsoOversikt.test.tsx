@@ -538,29 +538,51 @@ test('kan skjule og vise verifiserte ISO-koder', async () => {
   expect(screen.getByText('C Endret kode, samme overskrift')).toBeInTheDocument()
 })
 
+test('endringstypen «Ingenting er endret» deaktiveres når verifiserte ISO-koder skjules', async () => {
+  renderPage()
+  await screen.findByText('C Endret kode, samme overskrift')
+
+  fireEvent.click(screen.getByRole('button', { name: 'Endringstype: Alle' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: '= Ingenting er endret' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'C Endret kode, samme overskrift' }))
+  expect(screen.getByRole('button', { name: 'Endringstype: 2 valgt' })).toBeInTheDocument()
+  fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'C Endret kode, samme overskrift' }), {
+    key: 'Escape',
+  })
+
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Endringstype: 1 valgt' }))
+
+  const sameOption = screen.getByRole('menuitemcheckbox', { name: '= Ingenting er endret' })
+  expect(sameOption).toHaveAttribute('aria-disabled', 'true')
+  expect(sameOption).not.toBeChecked()
+  expect(screen.getByRole('menuitemcheckbox', { name: 'C Endret kode, samme overskrift' })).toBeChecked()
+})
+
 test('kan filtrere på én eller flere endringstyper og vise alle igjen', async () => {
   renderPage()
 
   await screen.findByText('C Endret kode, samme overskrift')
-  const endringstypeFilter = screen.getByRole('combobox', { name: 'Endringstype' })
+  const endringstypeButton = screen.getByRole('button', { name: 'Endringstype: Alle' })
+  fireEvent.click(endringstypeButton)
+  expect(screen.getByRole('menuitemcheckbox', { name: 'Alle endringstyper' })).toBeChecked()
 
-  fireEvent.focus(endringstypeFilter)
-  fireEvent.input(endringstypeFilter, { target: { value: 'C Endret kode, samme overskrift' } })
-  fireEvent.pointerUp(await screen.findByRole('option', { name: 'C Endret kode, samme overskrift' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'C Endret kode, samme overskrift' }))
 
+  expect(screen.getByRole('menuitemcheckbox', { name: 'Alle endringstyper' })).not.toBeChecked()
   expect(within(screen.getByRole('table')).getByText('24060301')).toBeInTheDocument()
   expect(within(screen.getByRole('table')).queryByText('04010101')).not.toBeInTheDocument()
 
-  fireEvent.input(endringstypeFilter, { target: { value: 'X Slettet klasse' } })
-  fireEvent.pointerUp(await screen.findByRole('option', { name: 'X Slettet klasse, underklasse eller inndeling' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'X Slettet klasse, underklasse eller inndeling' }))
 
+  expect(screen.getByRole('button', { name: 'Endringstype: 2 valgt' })).toBeInTheDocument()
   expect(within(screen.getByRole('table')).getByText('24060301')).toBeInTheDocument()
   expect(within(screen.getByRole('table')).getByText('04010101')).toBeInTheDocument()
   expect(within(screen.getByRole('table')).queryByText('22030301')).not.toBeInTheDocument()
 
-  fireEvent.input(endringstypeFilter, { target: { value: 'Alle endringstyper' } })
-  fireEvent.pointerUp(await screen.findByRole('option', { name: 'Alle endringstyper' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Alle endringstyper' }))
 
+  expect(screen.getByRole('button', { name: 'Endringstype: Alle' })).toBeInTheDocument()
   expect(within(screen.getByRole('table')).getAllByText('18090301').length).toBeGreaterThan(0)
   expect(within(screen.getByRole('table')).getByText('04010101')).toBeInTheDocument()
 })
@@ -1043,6 +1065,113 @@ test('verifisering sperres for koder utenfor ISO-filteret produktlisten ble last
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
   const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (last inn produkter først)' })
   expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
+})
+
+const useScopedSeriesLoading = (
+  scopedContent: ReturnType<typeof overviewSeries>[],
+  overviewContent = scopedContent
+) => {
+  const requestedIsoCodes: (string | null)[] = []
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      requestedIsoCodes.push(isoCode)
+      if (!isoCode) return HttpResponse.json({ content: [], totalPages: 3, totalSize: 500 })
+      const content = isoCode === '18090301' ? scopedContent : overviewContent
+      return HttpResponse.json({ content, totalPages: 1, totalSize: content.length })
+    })
+  )
+  return requestedIsoCodes
+}
+
+const openBulkMoveAndLoadRows = async () => {
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
+  const dialog = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
+  await waitFor(() => expect(within(dialog).getByText(/er registrert med ISO 18090301/)).toBeInTheDocument())
+  return dialog
+}
+
+test('«Last inn produkter» i modalen henter bare produkter for modalens ISO-kode', async () => {
+  useUnverifiedRollatorMapping()
+  const requestedIsoCodes = useScopedSeriesLoading([
+    overviewSeries('s1', 'Rollator Alfa', '18090301'),
+    overviewSeries('s3', 'Rollator Beta', null),
+    { ...overviewSeries('s9', 'Rollator Utenfor', null), isoCategory: '18090302' },
+  ])
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  const dialog = await openBulkMoveAndLoadRows()
+
+  expect(requestedIsoCodes.filter((isoCode) => isoCode !== null)).toEqual(['18090301'])
+  expect(within(dialog).getByText('Rollator Alfa')).toBeInTheDocument()
+  expect(within(dialog).getByText('Rollator Beta')).toBeInTheDocument()
+  expect(within(dialog).queryByText('Rollator Utenfor')).not.toBeInTheDocument()
+  expect(within(dialog).queryByRole('button', { name: 'Last inn produkter' })).not.toBeInTheDocument()
+  expect(seriesDetailRequests).toBe(0)
+
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Avbryt' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (koble produkter til v22 først)' })
+  expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('avgrenset innlasting fra modalen overskriver ikke produktlisten i oversikten', async () => {
+  useUnverifiedRollatorMapping()
+  useScopedSeriesLoading(
+    [overviewSeries('s1', 'Rollator Alfa', '18090301')],
+    [{ ...overviewSeries('s5', 'Kommunikator', null), isoCategory: '05030301' }]
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '05' } })
+  openExtractView()
+  const loadButton = screen.getByRole('button', { name: 'Hent liste' })
+  await waitFor(() => expect(loadButton).toBeEnabled())
+  fireEvent.click(loadButton)
+  expect(await screen.findByRole('button', { name: /^Rad-meny for Kommunikator/ })).toBeInTheDocument()
+
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
+  fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
+  const dialog = await openBulkMoveAndLoadRows()
+  expect(within(dialog).getByText('Rollator Alfa')).toBeInTheDocument()
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Avbryt' }))
+
+  fireEvent.click(screen.getByRole('button', { name: 'Nullstill' }))
+  openExtractView()
+  expect(await screen.findByRole('button', { name: /^Rad-meny for Kommunikator/ })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Rad-meny for Rollator Alfa/ })).not.toBeInTheDocument()
+})
+
+test('viser feil og lar admin prøve igjen når avgrenset innlasting feiler', async () => {
+  useUnverifiedRollatorMapping()
+  let failScopedLoad = true
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      if (!isoCode) return HttpResponse.json({ content: [], totalPages: 3, totalSize: 500 })
+      if (failScopedLoad) return new HttpResponse(null, { status: 500, statusText: 'Serverfeil' })
+      const content = [overviewSeries('s1', 'Rollator Alfa', '18090301')]
+      return HttpResponse.json({ content, totalPages: 1, totalSize: content.length })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
+  const dialog = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
+
+  expect(await within(dialog).findByText(/Klarte ikke å laste inn produkter for ISO 18090301/)).toBeInTheDocument()
+  failScopedLoad = false
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Prøv igjen' }))
+  expect(await within(dialog).findByText('Rollator Alfa')).toBeInTheDocument()
 })
 
 test('nytt forsøk etter feilet mappingoppdatering hopper over opprettingen og fullfører koblingen', async () => {
