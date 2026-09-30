@@ -961,33 +961,7 @@ const enableEditMode = () => fireEvent.click(screen.getByRole('checkbox', { name
 
 const openRowMenu = (row: HTMLElement) => fireEvent.click(within(row).getByRole('button', { name: /^Rad-meny/ }))
 
-test('F1: verifisering fra en produktrad sperres når andre produkter med samme v16-kode ikke er koblet', async () => {
-  useUnverifiedRollatorMapping()
-  renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
-  openExtractView()
-  const loadButton = screen.queryByRole('button', { name: 'Hent liste' })
-  if (loadButton) {
-    await waitFor(() => expect(loadButton).toBeEnabled())
-    fireEvent.click(loadButton)
-  }
-  await waitFor(() => expect(screen.getAllByText('18090301')).toHaveLength(6))
-  enableEditMode()
-
-  // s1 er selv koblet, men s3/s4 under samme v16-kode er det ikke. Verifisering gjelder hele mappingen,
-  // så den skal være sperret fra alle tre produktradene, også fra raden til det koblede produktet.
-  const productRows = [...new Set(screen.getAllByText('18090301').map((cell) => cell.closest('tr') as HTMLElement))]
-  expect(productRows).toHaveLength(3)
-  for (const row of productRows) {
-    openRowMenu(row)
-    const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (koble produkter til v22 først)' })
-    expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
-    fireEvent.keyDown(verifyItem, { key: 'Escape' })
-    await waitFor(() => expect(screen.queryByRole('menuitem', { name: /Verifiser/ })).not.toBeInTheDocument())
-  }
-})
-
-test('F4: verifisering sperres mens produktlisten ikke er lastet inn', async () => {
+test('verifisering krever verken innlastet produktliste eller koblede produkter', async () => {
   server.use(
     http.get('http://localhost:8080/admreg/api/v1/series', async () => {
       await delay('infinite')
@@ -1000,8 +974,45 @@ test('F4: verifisering sperres mens produktlisten ikke er lastet inn', async () 
 
   const row = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
   openRowMenu(row)
-  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (last inn produkter først)' })
-  expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
+  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser' })
+  expect(verifyItem).not.toHaveAttribute('aria-disabled', 'true')
+  fireEvent.click(verifyItem)
+  expect(await screen.findByRole('dialog', { name: 'Bekreft verifisering' })).toBeInTheDocument()
+})
+
+test('ISO-admin tilbyr ikke kobling av produkter til v22, men viser produktene i oversikten', async () => {
+  useUnverifiedRollatorMapping()
+  let patchCalls = 0
+  server.use(
+    http.patch('http://localhost:8080/admreg/api/v1/series/:id', () => {
+      patchCalls++
+      return new HttpResponse(null, { status: 200 })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  openExtractView()
+  const loadButton = screen.queryByRole('button', { name: 'Hent liste' })
+  if (loadButton) {
+    await waitFor(() => expect(loadButton).toBeEnabled())
+    fireEvent.click(loadButton)
+  }
+  await waitFor(() => expect(screen.getAllByText('18090301')).toHaveLength(6))
+  enableEditMode()
+
+  // s3 og s4 er ikke koblet til v22, men verifisering er likevel tilgjengelig fra produktradene.
+  openRowMenu(screen.getByRole('button', { name: /^Rad-meny for Rollator Beta/ }).closest('tr') as HTMLElement)
+  expect(await screen.findByRole('menuitem', { name: 'Verifiser' })).not.toHaveAttribute('aria-disabled', 'true')
+  expect(screen.queryByRole('menuitem', { name: /Koble/ })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Vis oversikt' }))
+
+  const overview = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
+  expect(within(overview).getByText('Rollator Alfa')).toBeInTheDocument()
+  expect(within(overview).getByText('Rollator Beta')).toBeInTheDocument()
+  expect(within(overview).getByRole('button', { name: 'Verifiser' })).toBeEnabled()
+  expect(within(overview).queryByRole('button', { name: /Koble/ })).not.toBeInTheDocument()
+  expect(within(overview).queryByText(/koblet til riktig/)).not.toBeInTheDocument()
+  expect(patchCalls).toBe(0)
 })
 
 test('F5: rader uten v16-kode (Ny klasse) har ingen verifiseringshandling', async () => {
@@ -1011,39 +1022,6 @@ test('F5: rader uten v16-kode (Ny klasse) har ingen verifiseringshandling', asyn
 
   const newRow = screen.getByText('! Ny klasse, underklasse eller inndeling').closest('tr') as HTMLElement
   expect(within(newRow).queryByRole('button', { name: /^Rad-meny/ })).not.toBeInTheDocument()
-})
-
-test('F2/F3/F6: bulk-tilkobling hopper over koblede produkter og viser feil per produkt uten å lukke modalen', async () => {
-  useUnverifiedRollatorMapping()
-  const patchedSeriesIds: string[] = []
-  server.use(
-    http.patch('http://localhost:8080/admreg/api/v1/series/:id', ({ params }) => {
-      const id = params.id as string
-      patchedSeriesIds.push(id)
-      if (id === 's4') return HttpResponse.json({ message: 'Serien er låst for endring' }, { status: 400 })
-      return new HttpResponse(null, { status: 200 })
-    }),
-    http.get('http://localhost:8080/admreg/api/v1/series/s3', () =>
-      HttpResponse.json({ ...seriesWithBothIsoVersions, id: 's3', title: 'Rollator Beta', isoCategory22: '18090301' })
-    )
-  )
-  renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
-  enableEditMode()
-
-  const mappingRow = screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
-  openRowMenu(mappingRow)
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
-
-  // F3: s1 er allerede koblet, så kun de 2 gjenstående skal kobles.
-  const attachButton = await screen.findByRole('button', { name: 'Koble til 2 gjenstående produkter' })
-  fireEvent.click(attachButton)
-
-  await waitFor(() => expect(screen.getByText(/1 av 2 produkter ble koblet til/)).toBeInTheDocument())
-  expect(patchedSeriesIds.sort()).toEqual(['s3', 's4'])
-  // F2 + F6: modalen er fortsatt åpen og viser hvilket produkt som feilet, med backendens feiltekst.
-  expect(screen.getByText(/Rollator Gamma: Serien er låst for endring/)).toBeInTheDocument()
-  expect(screen.getByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })).toBeInTheDocument()
 })
 
 test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet sendes', async () => {
@@ -1121,114 +1099,6 @@ test('F10: oversikten for en verifisert mapping lover ikke tilkobling', async ()
   expect(within(overview).queryByText(/vil bli koblet/)).not.toBeInTheDocument()
 })
 
-// Copilot-review: tilkoblingsmål, lastet ISO-omfang og nytt forsøk etter delvis feil.
-const useRollatorSeries = (isoCategory22: string | null, extraMappings: typeof isoMappings = []) => {
-  server.use(
-    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
-      HttpResponse.json([
-        ...isoMappings.map((mapping) => (mapping.id === 'map-1' ? { ...mapping, verified: false } : mapping)),
-        ...extraMappings,
-      ])
-    ),
-    http.get('http://localhost:8080/admreg/api/v1/series', () =>
-      HttpResponse.json({
-        content: [overviewSeries('s1', 'Rollator Alfa', isoCategory22)],
-        totalPages: 1,
-        totalSize: 1,
-      })
-    )
-  )
-}
-
-const capturePatchedIso22 = () => {
-  const patched: { id: string; isoCategory22: unknown }[] = []
-  server.use(
-    http.patch('http://localhost:8080/admreg/api/v1/series/:id', async ({ params, request }) => {
-      const body = (await request.json()) as { isoCategory22?: unknown }
-      patched.push({ id: params.id as string, isoCategory22: body.isoCategory22 })
-      return new HttpResponse(null, { status: 200 })
-    })
-  )
-  return patched
-}
-
-const openProductAttachModal = async () => {
-  renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
-  openExtractView()
-  const loadButton = screen.queryByRole('button', { name: 'Hent liste' })
-  if (loadButton) {
-    await waitFor(() => expect(loadButton).toBeEnabled())
-    fireEvent.click(loadButton)
-  }
-  await waitFor(() => expect(screen.getAllByRole('row').length).toBeGreaterThan(1))
-  enableEditMode()
-  fireEvent.click(await screen.findByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble til ISO v22-kategori' }))
-  return screen.findByRole('dialog', { name: /Koble "Rollator Alfa" til ISO v22-kategori/ })
-}
-
-test('kobler til mappingens mål, ikke til en feil v22-kode produktet allerede har', async () => {
-  useRollatorSeries('24060302')
-  const patched = capturePatchedIso22()
-  const dialog = await openProductAttachModal()
-
-  expect(within(dialog).getByText(/Produktet vil bli koblet til ISO v22-kategori/)).toHaveTextContent('18090301')
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
-
-  await waitFor(() => expect(patched).toEqual([{ id: 's1', isoCategory22: '18090301' }]))
-})
-
-test('ved splitt må admin velge v22-mål eksplisitt før tilkobling', async () => {
-  useRollatorSeries(null, [
-    {
-      ...isoMappings.find((mapping) => mapping.id === 'map-2')!,
-      id: 'map-split',
-      code16: '18090301',
-      code22: '24060302',
-      verified: false,
-    },
-  ])
-  const patched = capturePatchedIso22()
-  const dialog = await openProductAttachModal()
-
-  const attachButton = within(dialog).getByRole('button', { name: 'Koble til' })
-  expect(attachButton).toBeDisabled()
-  fireEvent.click(within(dialog).getByRole('radio', { name: /24060302/ }))
-  expect(attachButton).toBeEnabled()
-  fireEvent.click(attachButton)
-
-  await waitFor(() => expect(patched).toEqual([{ id: 's1', isoCategory22: '24060302' }]))
-})
-
-test('verifisering sperres for koder utenfor ISO-filteret produktlisten ble lastet med', async () => {
-  useUnverifiedRollatorMapping()
-  server.use(
-    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
-      const isoCode = new URL(request.url).searchParams.get('isoCode')
-      const content = isoCode === '04' ? [] : [overviewSeries('s1', 'Rollator Alfa', '18090301')]
-      return HttpResponse.json({ content, totalPages: 1, totalSize: content.length })
-    })
-  )
-  renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
-
-  // Last produktlisten kun for 04, og bytt så filter til 18 uten å laste på nytt.
-  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '04' } })
-  openExtractView()
-  const loadButton = screen.getByRole('button', { name: 'Hent liste' })
-  await waitFor(() => expect(loadButton).toBeEnabled())
-  fireEvent.click(loadButton)
-  await waitFor(() => expect(loadButton).toBeEnabled())
-  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
-  fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
-  enableEditMode()
-
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
-  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (last inn produkter først)' })
-  expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
-})
-
 const useScopedSeriesLoading = (
   scopedContent: ReturnType<typeof overviewSeries>[],
   overviewContent = scopedContent
@@ -1246,10 +1116,10 @@ const useScopedSeriesLoading = (
   return requestedIsoCodes
 }
 
-const openBulkMoveAndLoadRows = async () => {
+const openOverviewAndLoadRows = async () => {
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
-  const dialog = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
   fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
   await waitFor(() => expect(within(dialog).getByText(/er registrert med ISO 18090301/)).toBeInTheDocument())
   return dialog
@@ -1266,7 +1136,7 @@ test('«Last inn produkter» i modalen henter bare produkter for modalens ISO-ko
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
   enableEditMode()
 
-  const dialog = await openBulkMoveAndLoadRows()
+  const dialog = await openOverviewAndLoadRows()
 
   expect(requestedIsoCodes.filter((isoCode) => isoCode !== null)).toEqual(['18090301'])
   expect(within(dialog).getByText('Rollator Alfa')).toBeInTheDocument()
@@ -1274,11 +1144,6 @@ test('«Last inn produkter» i modalen henter bare produkter for modalens ISO-ko
   expect(within(dialog).queryByText('Rollator Utenfor')).not.toBeInTheDocument()
   expect(within(dialog).queryByRole('button', { name: 'Last inn produkter' })).not.toBeInTheDocument()
   expect(seriesDetailRequests).toBe(0)
-
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Avbryt' }))
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
-  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (koble produkter til v22 først)' })
-  expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
 })
 
 test('avgrenset innlasting fra modalen overskriver ikke produktlisten i oversikten', async () => {
@@ -1300,9 +1165,9 @@ test('avgrenset innlasting fra modalen overskriver ikke produktlisten i oversikt
 
   fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
   fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
-  const dialog = await openBulkMoveAndLoadRows()
+  const dialog = await openOverviewAndLoadRows()
   expect(within(dialog).getByText('Rollator Alfa')).toBeInTheDocument()
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Avbryt' }))
+  fireEvent.click(within(dialog).getAllByRole('button', { name: 'Lukk' })[0])
 
   fireEvent.click(screen.getByRole('button', { name: 'Nullstill' }))
   openExtractView()
@@ -1326,8 +1191,8 @@ test('viser feil og lar admin prøve igjen når avgrenset innlasting feiler', as
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
   enableEditMode()
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
-  const dialog = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
   fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
 
   expect(await within(dialog).findByText(/Klarte ikke å laste inn produkter for ISO 18090301/)).toBeInTheDocument()

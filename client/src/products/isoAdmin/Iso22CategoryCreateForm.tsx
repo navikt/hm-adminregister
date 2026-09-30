@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Alert, BodyShort, Button, HStack, Textarea, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyShort, Button, HStack, TextField, Textarea, VStack } from '@navikt/ds-react'
 
 import { extractErrorMessage } from './errorUtils'
 
@@ -121,7 +121,6 @@ const Iso22CategoryCreateForm = ({
         size="small"
         value={isoText}
         onChange={(e) => setIsoText(e.target.value)}
-
       />
       <TextField
         label="Søkeord (kommaseparert, valgfritt)"
