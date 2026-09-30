@@ -259,26 +259,24 @@ const IsoBulkMoveModal = ({
             )}
             {!rowsLoaded && (
               <HStack gap="space-8" align="center" role="status">
-                {rowsLoading ? (
-                  <>
-                    <Loader size="small" title="Henter produkter" />
-                    <BodyShort>Henter produkter og varianter...</BodyShort>
-                  </>
-                ) : (
-                  <Alert variant={rowsLoadError ? 'error' : 'info'} size="small">
+                {rowsLoadError && !rowsLoading ? (
+                  <Alert variant="error" size="small">
                     <VStack gap="space-8">
                       <BodyShort size="small">
-                        {rowsLoadError
-                          ? `Klarte ikke å laste inn produkter for ISO ${sourceIsoCode}: ${rowsLoadError}`
-                          : `Produktlisten er ikke lastet inn ennå. Last inn produkter og varianter for å se en korrekt oversikt over hva som er tilknyttet ISO ${sourceIsoCode}.`}
+                        Klarte ikke å laste inn produkter for ISO {sourceIsoCode}: {rowsLoadError}
                       </BodyShort>
                       {onRequestLoadRows && (
                         <Button size="small" variant="secondary" onClick={onRequestLoadRows}>
-                          {rowsLoadError ? 'Prøv igjen' : 'Last inn produkter'}
+                          Prøv igjen
                         </Button>
                       )}
                     </VStack>
                   </Alert>
+                ) : (
+                  <>
+                    <Loader size="small" title="Henter produkter" />
+                    <BodyShort>Henter produkter og varianter...</BodyShort>
+                  </>
                 )}
               </HStack>
             )}

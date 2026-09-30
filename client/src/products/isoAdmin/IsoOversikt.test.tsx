@@ -1204,12 +1204,11 @@ const openOverviewAndLoadRows = async () => {
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
   await waitFor(() => expect(within(dialog).getByText(/er registrert med ISO 18090301/)).toBeInTheDocument())
   return dialog
 }
 
-test('«Last inn produkter» i modalen henter bare produkter for modalens ISO-kode', async () => {
+test('oversikten henter produktene automatisk ved åpning, og bare for modalens ISO-kode', async () => {
   useUnverifiedRollatorMapping()
   const requestedIsoCodes = useScopedSeriesLoading([
     overviewSeries('s1', 'Rollator Alfa', '18090301'),
@@ -1227,7 +1226,36 @@ test('«Last inn produkter» i modalen henter bare produkter for modalens ISO-ko
   expect(within(dialog).getByText('Rollator Beta')).toBeInTheDocument()
   expect(within(dialog).queryByText('Rollator Utenfor')).not.toBeInTheDocument()
   expect(within(dialog).queryByRole('button', { name: 'Last inn produkter' })).not.toBeInTheDocument()
+  expect(within(dialog).queryByRole('status')).not.toBeInTheDocument()
   expect(seriesDetailRequests).toBe(0)
+})
+
+test('oversikten viser spinner mens produktene hentes', async () => {
+  useUnverifiedRollatorMapping()
+  let releaseScopedLoad: () => void = () => {}
+  const scopedLoadReleased = new Promise<void>((resolve) => {
+    releaseScopedLoad = resolve
+  })
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', async ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      if (!isoCode) return HttpResponse.json({ content: [], totalPages: 3, totalSize: 500 })
+      await scopedLoadReleased
+      const content = [overviewSeries('s1', 'Rollator Alfa', '18090301')]
+      return HttpResponse.json({ content, totalPages: 1, totalSize: content.length })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
+
+  expect(within(dialog).getByRole('status')).toHaveTextContent('Henter produkter og varianter')
+  releaseScopedLoad()
+  expect(await within(dialog).findByText('Rollator Alfa')).toBeInTheDocument()
+  expect(within(dialog).queryByRole('status')).not.toBeInTheDocument()
 })
 
 test('avgrenset innlasting fra modalen overskriver ikke produktlisten i oversikten', async () => {
@@ -1277,7 +1305,6 @@ test('viser feil og lar admin prøve igjen når avgrenset innlasting feiler', as
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const dialog = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Last inn produkter' }))
 
   expect(await within(dialog).findByText(/Klarte ikke å laste inn produkter for ISO 18090301/)).toBeInTheDocument()
   failScopedLoad = false

@@ -556,6 +556,17 @@ const IsoOversikt = () => {
     [loggedInUser?.isAdmin, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
   )
 
+  // Produktene hentes automatisk når oversikten åpnes, med mindre de allerede er lastet inn.
+  // Effekten skal bare kjøre ved åpning eller ny ISO-kode, så de siste funksjonene leses via ref.
+  const autoLoadRef = useRef({ isIsoCodeLoaded, loadRowsForIsoCode })
+  autoLoadRef.current = { isIsoCodeLoaded, loadRowsForIsoCode }
+  useEffect(() => {
+    const { open, isoCode } = bulkMoveModal
+    if (!open || !isoCode) return
+    const { isIsoCodeLoaded: isLoaded, loadRowsForIsoCode: load } = autoLoadRef.current
+    if (!isLoaded(isoCode)) void load(isoCode)
+  }, [bulkMoveModal.open, bulkMoveModal.isoCode])
+
   const closeBulkMoveModal = useCallback(() => {
     scopedLoadAbortControllerRef.current?.abort()
     scopedLoadAbortControllerRef.current = null
