@@ -3,7 +3,13 @@ import type { Dispatch, SetStateAction } from 'react'
 
 import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { useAdminIsoCategories22, useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
+import {
+  useAdminIsoCategories22,
+  useIsoCategories,
+  useIsoCategories22,
+  useIsoMappingVerifiedPercentage,
+  useIsoMappings,
+} from 'utils/swr-hooks'
 import { Iso22, Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
@@ -20,6 +26,7 @@ import {
   Loader,
   Modal,
   Pagination,
+  ProgressBar,
   Radio,
   RadioGroup,
   Select,
@@ -115,6 +122,8 @@ const IsoOversikt = () => {
   const { adminIsoCategories22, adminIsoLoading22, adminIsoError22, mutateAdminIsoCategories22 } =
     useAdminIsoCategories22(isAdmin)
   const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(isAdmin)
+  const { verifiedPercentage, verifiedPercentageError, mutateVerifiedPercentage } =
+    useIsoMappingVerifiedPercentage(isAdmin)
 
   // Admin får v22-kategoriene fra databasen, slik at kategorier opprettet tidligere alltid finnes selv om
   // den åpne listen er utdatert. Den åpne listen brukes for andre brukere og hvis admin-kallet feiler.
@@ -343,6 +352,7 @@ const IsoOversikt = () => {
           row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
         setRows((prev) => prev?.map(markVerified) ?? null)
         setScopedRows((prev) => (prev ? { ...prev, rows: prev.rows.map(markVerified) } : null))
+        mutateVerifiedPercentage()
         return true
       } catch (error) {
         setVerificationError(extractErrorMessage(error))
@@ -355,7 +365,7 @@ const IsoOversikt = () => {
         })
       }
     },
-    [isoMappingsById, mutateIsoMappings]
+    [isoMappingsById, mutateIsoMappings, mutateVerifiedPercentage]
   )
 
   const handleOpenBulkMove = useCallback((isoCode: string, mappingId?: string) => {
@@ -926,11 +936,31 @@ const IsoOversikt = () => {
   return (
     <main className="show-menu">
       <VStack gap="space-12" maxWidth="100rem">
-        <HStack gap="space-12" align="center" wrap>
-          <img src={iso9999Icon} alt="" aria-hidden width={48} height={48} />
-          <Heading level="1" size="large">
-            ISO Admin
-          </Heading>
+        <HStack gap="space-12" align="center" justify="space-between" wrap>
+          <HStack gap="space-12" align="center">
+            <img src={iso9999Icon} alt="" aria-hidden width={48} height={48} />
+            <Heading level="1" size="large">
+              ISO Admin
+            </Heading>
+          </HStack>
+          {verifiedPercentage !== undefined && (
+            <VStack gap="space-4" className={styles.verifiedProgress}>
+              <BodyShort size="small" id="iso-verified-percentage-label">
+                Verifiserte ISO-mappinger: {verifiedPercentage} %
+              </BodyShort>
+              <ProgressBar
+                size="small"
+                value={verifiedPercentage}
+                valueMax={100}
+                aria-labelledby="iso-verified-percentage-label"
+              />
+            </VStack>
+          )}
+          {verifiedPercentageError && (
+            <BodyShort size="small" textColor="subtle">
+              Klarte ikke å hente andel verifiserte mappinger.
+            </BodyShort>
+          )}
         </HStack>
         <IsoBulkMoveModal
           isOpen={bulkMoveModal.open}

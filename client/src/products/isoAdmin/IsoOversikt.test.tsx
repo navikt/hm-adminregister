@@ -324,6 +324,7 @@ beforeEach(() => {
     http.get('http://localhost:8080/admreg/api/v1/isocategories', () => HttpResponse.json(isoCategoriesV1)),
     ...v22CategoryHandlers(isoCategoriesV22),
     http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json(isoMappings)),
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap/verified-percentage', () => HttpResponse.json(42)),
     http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
       seriesListRequests++
       const requestUrl = new URL(request.url)
@@ -1309,6 +1310,52 @@ test('F7: endremodus-bryteren har fast navn og hver radmeny har sitt eget navn',
     .getAllByRole('button', { name: /^Rad-meny/ })
     .map((button) => button.getAttribute('aria-label'))
   expect(new Set(menuNames).size).toBe(menuNames.length)
+})
+
+test('viser andel verifiserte ISO-mappinger som ProgressBar ved overskriften', async () => {
+  renderPage()
+
+  const progress = await screen.findByRole('progressbar', { name: 'Verifiserte ISO-mappinger: 42 %' })
+  expect(progress).toHaveAttribute('aria-valuenow', '42')
+  expect(progress).toHaveAttribute('aria-valuemax', '100')
+})
+
+test('andelen verifiserte hentes på nytt etter verifisering', async () => {
+  let percentage = 42
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap/verified-percentage', () =>
+      HttpResponse.json(percentage)
+    ),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) => {
+      percentage = 40
+      return HttpResponse.json(await request.json())
+    })
+  )
+  renderPage()
+  await screen.findByRole('progressbar', { name: 'Verifiserte ISO-mappinger: 42 %' })
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Fjern verifisering' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Bekreft fjerning av verifisering' })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Fjern verifisering' }))
+
+  expect(await screen.findByRole('progressbar', { name: 'Verifiserte ISO-mappinger: 40 %' })).toHaveAttribute(
+    'aria-valuenow',
+    '40'
+  )
+})
+
+test('viser melding når andel verifiserte ikke kan hentes', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap/verified-percentage', () =>
+      HttpResponse.json({ errorMessage: 'feil' }, { status: 500 })
+    )
+  )
+  renderPage()
+
+  expect(await screen.findByText('Klarte ikke å hente andel verifiserte mappinger.')).toBeInTheDocument()
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
 })
 
 test('F9: feil ved verifisering vises i dialogen, som holdes åpen', async () => {

@@ -473,6 +473,18 @@ export function useIsoMappings(isAdmin: boolean) {
   }
 }
 
+export function useIsoMappingVerifiedPercentage(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap/verified-percentage' : null
+  const { data, error, isLoading, mutate } = useSWR<number>(path, fetcherGET)
+
+  return {
+    verifiedPercentage: typeof data === 'number' ? data : undefined,
+    verifiedPercentageLoading: isLoading,
+    verifiedPercentageError: error,
+    mutateVerifiedPercentage: mutate,
+  }
+}
+
 export function useAdminUsers() {
   const { setGlobalError } = useErrorStore()
 
