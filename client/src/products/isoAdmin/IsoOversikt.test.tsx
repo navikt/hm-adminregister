@@ -840,10 +840,10 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   fireEvent.change(suffixField, { target: { value: '01' } })
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny nasjonal kategori' } })
 
-  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori' }))
 
   await waitFor(() =>
-    expect(screen.queryByRole('button', { name: 'Opprett kategori og koble til mapping' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Opprett kategori' })).not.toBeInTheDocument()
   )
 
   expect(createdCategoryPayload).toEqual(
@@ -1148,7 +1148,7 @@ test('«Kopier v16 til v22» i ISO-oversikten åpner opprettingsskjemaet utfylt 
   expect(within(dialog).getByText(/fylt ut med data fra v16-kategorien/)).toHaveTextContent('220912')
   expect(within(dialog).getByLabelText('Siste 2 siffer')).toHaveValue('01')
   expect(within(dialog).getByLabelText('Tittel')).toHaveValue('Kommunikasjonshjelpemiddel')
-  expect(within(dialog).getByRole('button', { name: 'Opprett kategori og koble til mapping' })).toBeInTheDocument()
+  expect(within(dialog).getByRole('button', { name: 'Opprett kategori' })).toBeInTheDocument()
 })
 
 test('ISO-oversikten slutter å advare om manglende v22 nivå 4 etter at kategorien er opprettet', async () => {
@@ -1185,7 +1185,7 @@ test('ISO-oversikten slutter å advare om manglende v22 nivå 4 etter at kategor
   fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22 (nivå 4)' }))
 
   const dialog = await screen.findByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Opprett kategori' }))
   await waitFor(() =>
     expect(screen.queryByRole('dialog', { name: 'Opprett ny ISO v22-kategori (nivå 4)' })).not.toBeInTheDocument()
   )
@@ -1334,7 +1334,7 @@ test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet send
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
   fireEvent.change(screen.getByLabelText('Siste 2 siffer'), { target: { value: '99' } })
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Duplikat' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori' }))
 
   expect(await screen.findByText('ISO 22091299 finnes allerede. Velg andre sifre.')).toBeInTheDocument()
   expect(createCalls).toBe(0)
@@ -1588,7 +1588,7 @@ test('nytt forsøk etter feilet mappingoppdatering hopper over opprettingen og f
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
   fireEvent.change(screen.getByLabelText('Siste 2 siffer'), { target: { value: '01' } })
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny kommunikasjon' } })
-  const submit = screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' })
+  const submit = screen.getByRole('button', { name: 'Opprett kategori' })
   fireEvent.click(submit)
 
   expect(

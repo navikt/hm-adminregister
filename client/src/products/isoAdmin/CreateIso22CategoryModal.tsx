@@ -65,7 +65,7 @@ const CreateIso22CategoryModal = ({
               initialValues={copyFrom?.initialValues}
               onCancel={onClose}
               submitLabel={
-                copyFrom && !copyFrom.linksMapping ? 'Opprett kategori' : 'Opprett kategori og koble til mapping'
+                copyFrom && !copyFrom.linksMapping ? 'Opprett kategori' : 'Opprett kategori'
               }
               onCreate={async (payload) => {
                 await onCreate({ ...payload, parentIsoCode: context.parentIsoCode, mappingIds: context.mappingIds })
