@@ -35,6 +35,12 @@ export const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductS
       if (existing.agreementRankSort === Number.MAX_SAFE_INTEGER) existing.agreementRankSort = null
       if (existing.agreementPostNrSort === Number.MAX_SAFE_INTEGER) existing.agreementPostNrSort = null
       existing.mappingAvailable = existing.mappingAvailable && row.mappingAvailable
+      existing.mappingIds = Array.from(new Set([...existing.mappingIds, ...row.mappingIds]))
+      existing.mappingVerified =
+        existing.mappingVerified === null && row.mappingVerified === null
+          ? null
+          : (existing.mappingVerified ?? true) && (row.mappingVerified ?? true)
+      existing.iso22Attached = existing.iso22Attached && row.iso22Attached
     } else {
       map.set(row.seriesId, {
         seriesId: row.seriesId,
@@ -63,6 +69,8 @@ export const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductS
         mappingTypes: row.mappingTypes,
         mappingVerified: row.mappingVerified,
         mappingAvailable: row.mappingAvailable,
+        mappingIds: [...row.mappingIds],
+        iso22Attached: row.iso22Attached,
         variantCount: 1,
         agreementRef: row.agreementRef,
         agreementRank: row.agreementRank,

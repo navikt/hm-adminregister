@@ -26,6 +26,49 @@ export const buildMappingsByCode16 = (mappings: IsoMapDTO[]): Map<string, IsoMap
   return mappingsByCode16
 }
 
+// v22-kodene mappingtabellen sier v16-koden skal migreres til. SAME betyr at v22-koden er lik v16-koden.
+export const getMappedIso22Codes = (isoCode: string, mappings: IsoMapDTO[]): string[] =>
+  Array.from(
+    new Set(
+      mappings
+        .map((mapping) => (mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')))
+        .filter(Boolean)
+    )
+  )
+
+export type Iso22Target = {
+  mappingId: string
+  // Tom når mappingen ikke peker på en nivå 4-kategori som faktisk finnes.
+  level4Code: string
+  level4Title: string
+  level3Code: string
+  level3Title: string
+}
+
+// Tilkoblingsmål hentes fra mappingene, aldri fra radens visningsfelt (iso22Lvl4), som foretrekker
+// produktets lagrede v22-kode og slår sammen flere mål ved splitt. buildIso22Path lager en
+// plassholder for koder som ikke finnes, så nivå 4 godtas bare når kategorien finnes i categories22.
+export const resolveIso22Targets = (
+  isoCode: string,
+  mappings: IsoMapDTO[],
+  categories22: IsoCategory22DTO[]
+): Iso22Target[] =>
+  mappings.map((mapping) => {
+    const code22 = mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')
+    const level4 = categories22.find(
+      (category) => category.isoLevel === 4 && category.isoCode.replace(/\s/g, '') === code22
+    )
+    const path = code22 ? buildIso22Path(code22, categories22) : {}
+    const level3 = path.level3 && categories22.includes(path.level3) ? path.level3 : undefined
+    return {
+      mappingId: mapping.id,
+      level4Code: level4?.isoCode.replace(/\s/g, '') ?? '',
+      level4Title: level4?.isoTitle ?? '',
+      level3Code: level3?.isoCode.replace(/\s/g, '') ?? '',
+      level3Title: level3?.isoTitle ?? '',
+    }
+  })
+
 export const mapToExtractedRows = (
   seriesDetails: (SeriesDTO | IsoOverviewSeries)[],
   categories: IsoCategoryDTO[],
@@ -37,12 +80,16 @@ export const mapToExtractedRows = (
     const isoCode = typeof series.isoCategory === 'string' ? series.isoCategory : (series.isoCategory?.isoCode ?? '')
     const path = buildIsoPath(isoCode, categories)
     const matchingMappings = mappingAvailable ? findMappingsForCode(isoCode, mappingsByCode16) : []
-    const mappedIsoCodes22 = matchingMappings
-      .map((mapping) => (mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')))
-      .filter(Boolean)
+    const mappedIsoCodes22 = getMappedIso22Codes(isoCode, matchingMappings)
     const storedIsoCode22 =
       typeof series.isoCategory22 === 'string' ? series.isoCategory22 : series.isoCategory22?.isoCode
-    const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : Array.from(new Set(mappedIsoCodes22))
+    const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : mappedIsoCodes22
+    // Ekte tilknytningsstatus: viser om produktet faktisk HAR en lagret isoCategory22 som stemmer med
+    // v22-koden(e) mappingtabellen sier v16-koden skal migreres til - i motsetning til iso22Lvl3/4
+    // under, som faller tilbake til den *anbefalte* v22-koden når ingen reell tilknytning finnes (kun
+    // for visning). Brukes til å sperre verifisering før reell tilknytning er gjort (se AksjonCell).
+    const iso22Attached =
+      !!storedIsoCode22 && (mappedIsoCodes22.length === 0 || mappedIsoCodes22.includes(storedIsoCode22))
     const paths22 = isoCodes22.map((code) => buildIso22Path(code, categories22))
     const path22Value = (level: keyof Iso22Path, field: 'isoCode' | 'isoTitle' | 'isoText') =>
       Array.from(
@@ -52,6 +99,7 @@ export const mapToExtractedRows = (
       Array.from(new Set(paths22.flatMap((path22) => path22[level]?.searchWords ?? []))).join(', ')
     const mappingTypes = Array.from(new Set(matchingMappings.flatMap((mapping) => mapping.mapEnum)))
     const mappingVerified = matchingMappings.length === 0 ? null : matchingMappings.every((mapping) => mapping.verified)
+    const mappingIds = matchingMappings.map((mapping) => mapping.id)
     return (series.variants || []).map((variant) => {
       const activeAgreements = (variant.agreements || [])
         .filter((agreement) => ('status' in agreement ? agreement.status === 'ACTIVE' : true))
@@ -97,6 +145,9 @@ export const mapToExtractedRows = (
         mappingTypes,
         mappingVerified,
         mappingAvailable,
+        mappingIds,
+        iso22Attached,
+        iso22Stored: storedIsoCode22 ?? '',
         agreementRef: agreementRefs,
         agreementRank: agreementRanks,
         agreementPostNr: agreementPostNrs,
@@ -146,6 +197,7 @@ export const buildMappingRows = (
       mappingTypes,
       mappingVerified: mappingAvailable ? (mapping?.verified ?? null) : null,
       mappingAvailable,
+      mappingIds: mapping ? [mapping.id] : [],
     }
   }
 

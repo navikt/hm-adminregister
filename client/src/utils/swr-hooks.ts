@@ -12,6 +12,7 @@ import {
   AdminUserChunk,
   AgreementsChunk,
   DelkontraktRegistrationDTO,
+  Iso22,
   IsoCategory22DTO,
   IsoCategoryDTO,
   IsoMapDTO,
@@ -434,25 +435,53 @@ export function useIsoCategories() {
 
 export function useIsoCategories22() {
   const path = `${HM_REGISTER_URL()}/admreg/api/v22/isocategories`
-  const { data, error, isLoading } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<IsoCategory22DTO[]>(path, fetcherGET)
   const isoCategories22 = data && data
 
   return {
     isoCategories22,
     isoLoading22: isLoading,
     isoError22: error,
+    mutateIsoCategories22: mutate,
+  }
+}
+
+// Admin-endepunktet leser v22-kategoriene rett fra databasen. Den åpne listen (useIsoCategories22) kan
+// være utdatert i backend-versjoner som cacher den i minnet frem til restart.
+export function useAdminIsoCategories22(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isocategory' : null
+  const { data, error, isLoading, mutate } = useSWR<Iso22[]>(path, fetcherGET)
+
+  return {
+    adminIsoCategories22: data,
+    adminIsoLoading22: isLoading,
+    adminIsoError22: error,
+    mutateAdminIsoCategories22: mutate,
   }
 }
 
 export function useIsoMappings(isAdmin: boolean) {
   const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap' : null
-  const { data, error, isLoading } = useSWR<IsoMapDTO[]>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<IsoMapDTO[]>(path, fetcherGET)
   const isoMappings = data && data
 
   return {
     isoMappings,
     isoMappingsLoading: isLoading,
     isoMappingsError: error,
+    mutateIsoMappings: mutate,
+  }
+}
+
+export function useIsoMappingVerifiedPercentage(isAdmin: boolean) {
+  const path = isAdmin ? HM_REGISTER_URL() + '/admreg/admin/api/v22/isomap/verified-percentage' : null
+  const { data, error, isLoading, mutate } = useSWR<number>(path, fetcherGET)
+
+  return {
+    verifiedPercentage: typeof data === 'number' ? data : undefined,
+    verifiedPercentageLoading: isLoading,
+    verifiedPercentageError: error,
+    mutateVerifiedPercentage: mutate,
   }
 }
 
