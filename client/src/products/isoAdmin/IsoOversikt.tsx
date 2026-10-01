@@ -10,7 +10,7 @@ import {
   useIsoMappingVerifiedPercentage,
   useIsoMappings,
 } from 'utils/swr-hooks'
-import { Iso22, Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
+import { Iso22, Iso22DTO, IsoCategory22DTO, IsoMapDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -70,6 +70,7 @@ import {
   ExtraColumn,
   ExtractedProductVariant,
   ISO_MAP_LABELS,
+  IsoOverviewSeries,
   OPTIONAL_ISO_LEVELS,
   OPTIONAL_TEXT_COLUMNS_V1,
   OPTIONAL_TEXT_COLUMNS_V22,
@@ -135,7 +136,7 @@ const IsoOversikt = () => {
   const isoLoading22 = preferAdminIso22List ? adminIsoLoading22 : publicIsoLoading22
   const isoError22 = preferAdminIso22List ? undefined : publicIsoError22
 
-  const [rows, setRows] = useState<ExtractedProductVariant[] | null>(null)
+  const [loadedSeries, setLoadedSeries] = useState<(SeriesDTO | IsoOverviewSeries)[] | null>(null)
   // ISO-prefikset `rows` ble lastet for ('' = alle). `rows` kan være lastet for et annet filter enn det
   // som vises nå, så tilknytningsstatus for koder utenfor prefikset er ukjent.
   const [rowsScope, setRowsScope] = useState<string | null>(null)
@@ -145,7 +146,10 @@ const IsoOversikt = () => {
   const [pendingLargeLoad, setPendingLargeLoad] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const loadAbortControllerRef = useRef<AbortController | null>(null)
-  const [scopedRows, setScopedRows] = useState<{ isoCode: string; rows: ExtractedProductVariant[] } | null>(null)
+  const [scopedSeries, setScopedSeries] = useState<{
+    isoCode: string
+    series: (SeriesDTO | IsoOverviewSeries)[]
+  } | null>(null)
   const [scopedLoading, setScopedLoading] = useState(false)
   const [scopedLoadError, setScopedLoadError] = useState<string | null>(null)
   const scopedLoadAbortControllerRef = useRef<AbortController | null>(null)
@@ -288,6 +292,34 @@ const IsoOversikt = () => {
   )
   const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
 
+  // Radene avledes fra rådataene, slik at nye kategorier og endrede mappinger vises uten ny henting.
+  const rows = useMemo(
+    () =>
+      loadedSeries &&
+      mapToExtractedRows(
+        loadedSeries,
+        sortedIsoCategories,
+        sortedIsoCategories22,
+        mappingsByCode16,
+        mappingDataAvailable
+      ),
+    [loadedSeries, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
+  const scopedRows = useMemo(
+    () =>
+      scopedSeries && {
+        isoCode: scopedSeries.isoCode,
+        rows: mapToExtractedRows(
+          scopedSeries.series,
+          sortedIsoCategories,
+          sortedIsoCategories22,
+          mappingsByCode16,
+          mappingDataAvailable
+        ).filter((row) => row.isoCode.startsWith(scopedSeries.isoCode)),
+      },
+    [scopedSeries, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
+
   const isIsoCodeLoaded = useCallback(
     (isoCode: string) =>
       (rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)) ||
@@ -348,10 +380,6 @@ const IsoOversikt = () => {
         mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
           revalidate: false,
         })
-        const markVerified = (row: ExtractedProductVariant) =>
-          row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
-        setRows((prev) => prev?.map(markVerified) ?? null)
-        setScopedRows((prev) => (prev ? { ...prev, rows: prev.rows.map(markVerified) } : null))
         mutateVerifiedPercentage()
         return true
       } catch (error) {
@@ -627,14 +655,7 @@ const IsoOversikt = () => {
       try {
         const series = await fetchSeriesForIsoCode(isoCode, () => {}, abortController.signal)
         abortController.signal.throwIfAborted()
-        const loadedRows = mapToExtractedRows(
-          series,
-          sortedIsoCategories,
-          sortedIsoCategories22,
-          mappingsByCode16,
-          mappingDataAvailable
-        ).filter((row) => row.isoCode.startsWith(isoCode))
-        setScopedRows({ isoCode, rows: loadedRows })
+        setScopedSeries({ isoCode, series })
       } catch (error: unknown) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
           setScopedLoadError(error instanceof Error ? error.message : 'Klarte ikke å hente produkter og varianter')
@@ -646,7 +667,7 @@ const IsoOversikt = () => {
         }
       }
     },
-    [loggedInUser?.isAdmin, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+    [loggedInUser?.isAdmin]
   )
 
   // Produktene hentes automatisk når oversikten åpnes, med mindre de allerede er lastet inn.
@@ -707,15 +728,7 @@ const IsoOversikt = () => {
               abortController.signal
             )
         abortController.signal.throwIfAborted()
-        setRows(
-          mapToExtractedRows(
-            details,
-            sortedIsoCategories,
-            sortedIsoCategories22,
-            mappingsByCode16,
-            mappingDataAvailable
-          )
-        )
+        setLoadedSeries(details)
         setRowsScope(selectedIsoCode || '')
         setVariantPage(1)
       } catch (error: unknown) {
@@ -730,14 +743,7 @@ const IsoOversikt = () => {
         }
       }
     },
-    [
-      loggedInUser?.isAdmin,
-      sortedIsoCategories,
-      sortedIsoCategories22,
-      mappingsByCode16,
-      selectedIsoCode,
-      mappingDataAvailable,
-    ]
+    [loggedInUser?.isAdmin, selectedIsoCode]
   )
 
   // Forhåndshenter produkt-/variantdata i bakgrunnen mens admin fortsatt ser "Ren ISO-mapping" -
@@ -1526,7 +1532,7 @@ const IsoOversikt = () => {
                       size="small"
                       variant="tertiary"
                       onClick={() => {
-                        setRows(null)
+                        setLoadedSeries(null)
                         setRowsScope(null)
                         setPendingLargeLoad(false)
                       }}
