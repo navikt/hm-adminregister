@@ -3,10 +3,16 @@ import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { usePagedParts, usePartByVariantIdentifier } from 'api/PartApi'
 import ErrorAlert from 'error/ErrorAlert'
+import ExportModal, { ExportScope } from 'felleskomponenter/export/ExportModal'
 import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import { estimatePartExport, getPartExportRows, partExportDefaultKeys, partExportFields } from 'parts/export/partExport'
+import { PartSearchParams, buildPartSearchPath } from 'parts/export/partExportApi'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
+import { fetchAllPages } from 'utils/export/fetchAllPages'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { useSuppliers } from 'utils/swr-hooks'
+import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
 
 import {
   Alert,
@@ -26,7 +32,12 @@ import {
 
 import { PartList } from './PartList'
 
-const PartsListTab = () => {
+type Props = {
+  exportOpen: boolean
+  onExportClose: () => void
+}
+
+const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const { loggedInUser } = useAuthStore()
@@ -117,11 +128,7 @@ const PartsListTab = () => {
     }
   }
 
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedParts({
+  const partQueryParams: PartSearchParams = {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
@@ -129,9 +136,54 @@ const PartsListTab = () => {
     agreementFilter,
     missingMediaType,
     isAccessory: getIsAccessoryValue(),
-  })
+  }
+
+  const { data: pagedData, isLoading: isLoadingPagedData, error: errorPaged } = usePagedParts(partQueryParams)
 
   const { data: partByVariantIdentifier } = usePartByVariantIdentifier(searchTerm)
+
+  const currentPageParts: ProductRegistrationDTOV2[] = partByVariantIdentifier
+    ? [partByVariantIdentifier]
+    : pagedData?.content || []
+
+  const getExportRows = async (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {
+    const parts =
+      scope === 'all' && !partByVariantIdentifier
+        ? await fetchAllPages<ProductRegistrationDTOV2>((page, pageSize) =>
+            buildPartSearchPath({ ...partQueryParams, page, pageSize })
+          )
+        : currentPageParts
+    return getPartExportRows(parts, selectedKeys)
+  }
+
+  const estimateExport = (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {
+    const fetchesAllPages = scope === 'all' && !partByVariantIdentifier
+    return estimatePartExport({
+      rows: fetchesAllPages ? pagedData?.totalSize ?? 0 : currentPageParts.length,
+      fetchesAllPages,
+      currentPage: currentPageParts,
+      selectedKeys,
+    })
+  }
+
+  const exportFileName = (scope: ExportScope) =>
+    buildDefaultFileName('deler', [
+      searchTerm,
+      suppliers?.find((supplier) => supplier.id === supplierFilter)?.name,
+      isAccessoryFilter ? 'tilbehor' : undefined,
+      isSparePartFilter ? 'reservedel' : undefined,
+      agreementFilter === 'true' ? 'med-avtale' : agreementFilter === 'false' ? 'uten-avtale' : undefined,
+      missingMediaType === 'IMAGE' ? 'mangler-bilde' : missingMediaType === 'VIDEO' ? 'mangler-video' : undefined,
+      scope === 'all' ? 'alle-treff' : `side-${pageState}`,
+    ])
+
+  const isUnfilteredExport =
+    searchTerm === '' &&
+    !supplierFilter &&
+    agreementFilter === null &&
+    missingMediaType === null &&
+    !isAccessoryFilter &&
+    !isSparePartFilter
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {
@@ -334,6 +386,18 @@ const PartsListTab = () => {
           </HStack>
         </VStack>
       </VStack>
+      <ExportModal
+        open={exportOpen && !!loggedInUser?.isAdmin}
+        onClose={onExportClose}
+        fileBaseName={exportFileName}
+        availableFields={partExportFields}
+        defaultFieldKeys={partExportDefaultKeys}
+        getRows={getExportRows}
+        estimate={estimateExport}
+        isUnfiltered={isUnfilteredExport}
+        rowNoun="deler"
+        compact
+      />
     </TabPanel>
   )
 }

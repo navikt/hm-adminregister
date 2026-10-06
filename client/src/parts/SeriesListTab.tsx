@@ -2,10 +2,25 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import ErrorAlert from 'error/ErrorAlert'
+import ExportModal, { ExportScope } from 'felleskomponenter/export/ExportModal'
 import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
+import {
+  estimatePartsPerSeriesExport,
+  getPartsPerSeriesExportRows,
+  partsPerSeriesDefaultKeys,
+  partsPerSeriesExportFields,
+} from 'parts/export/partExport'
+import { TechnicianSeriesSearchParams, buildTechnicianSeriesSearchPath } from 'parts/export/partExportApi'
 import { SeriesList } from 'parts/series/SeriesList'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
+import { fetchAllPages } from 'utils/export/fetchAllPages'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { usePagedProductsForTechnician, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
+import {
+  usePagedProductsForTechnician,
+  useSeriesByVariantIdentifier,
+  useSuppliers,
+} from 'utils/swr-hooks'
+import { SeriesSearchDTO } from 'utils/types/response-types'
 
 import {
   Alert,
@@ -21,7 +36,12 @@ import {
   VStack,
 } from '@navikt/ds-react'
 
-const SeriesListTab = () => {
+type Props = {
+  exportOpen: boolean
+  onExportClose: () => void
+}
+
+const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const { loggedInUser } = useAuthStore()
@@ -48,22 +68,51 @@ const SeriesListTab = () => {
 
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | undefined>()
 
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedProductsForTechnician({
+  const seriesQueryParams: TechnicianSeriesSearchParams = {
     page: pageState - 1,
     pageSize: pageSizeState,
     titleSearchTerm: searchTerm,
     supplierFilter: supplierFilter,
-  })
+  }
+
+  const {
+    data: pagedData,
+    isLoading: isLoadingPagedData,
+    error: errorPaged,
+  } = usePagedProductsForTechnician(seriesQueryParams)
 
   useEffect(() => {
     localStorage.setItem('pageSizeState', pageSizeState.toString())
   }, [pageSizeState])
 
   const { data: seriesByVariantIdentifier } = useSeriesByVariantIdentifier(searchTerm)
+
+  const currentPageSeries: SeriesSearchDTO[] = seriesByVariantIdentifier
+    ? [seriesByVariantIdentifier]
+    : pagedData?.content || []
+  const fetchesAllPages = (scope: ExportScope) => scope === 'all' && !seriesByVariantIdentifier
+
+  const getExportRows = async (scope: ExportScope) => {
+    const series = fetchesAllPages(scope)
+      ? await fetchAllPages<SeriesSearchDTO>((page, pageSize) =>
+          buildTechnicianSeriesSearchPath({ ...seriesQueryParams, page, pageSize })
+        )
+      : currentPageSeries
+    return getPartsPerSeriesExportRows(series)
+  }
+
+  const estimateExport = (scope: ExportScope) =>
+    estimatePartsPerSeriesExport({
+      seriesCount: fetchesAllPages(scope) ? pagedData?.totalSize ?? 0 : currentPageSeries.length,
+      fetchesAllPages: fetchesAllPages(scope),
+    })
+
+  const exportFileName = (scope: ExportScope) =>
+    buildDefaultFileName('deler-per-serie', [
+      searchTerm,
+      suppliers?.find((supplier) => supplier.id === supplierFilter)?.name,
+      scope === 'all' ? 'alle-treff' : `side-${pageState}`,
+    ])
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
@@ -225,6 +274,18 @@ const SeriesListTab = () => {
           </HStack>
         </VStack>
       </VStack>
+      <ExportModal
+        open={exportOpen && !!loggedInUser?.isAdmin}
+        onClose={onExportClose}
+        fileBaseName={exportFileName}
+        availableFields={partsPerSeriesExportFields}
+        defaultFieldKeys={partsPerSeriesDefaultKeys}
+        getRows={getExportRows}
+        estimate={estimateExport}
+        isUnfiltered={searchTerm === '' && !supplierFilter}
+        rowNoun="produktserier"
+        compact
+      />
     </TabPanel>
   )
 }
