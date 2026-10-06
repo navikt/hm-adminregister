@@ -93,6 +93,22 @@ const ISO_LEVEL_4_LENGTH = 8
 const isoLevel4CodeOf = (isoCode: string | undefined) => (isoCode ?? '').replace(/\s/g, '').slice(0, ISO_LEVEL_4_LENGTH)
 const compatibleWithOf = (part: ProductRegistrationDTOV2) => part.productData?.attributes?.compatibleWith
 
+const rounds = (requests: number, batchSize: number) => Math.ceil(requests / batchSize)
+
+const blockedReasonFor = (requests: number, advice: string) =>
+  requests > MAX_EXPORT_REQUESTS
+    ? `For stor eksport: ca. ${formatNumber(requests)} kall mot baksystemet (maks ${formatNumber(MAX_EXPORT_REQUESTS)}). ${advice}`
+    : undefined
+
+const PART_EXPORT_ADVICE =
+  'Bruk filter eller fjern felter som krever detaljer (leverandør, ISO, status, datoer, bilder og video, koblede serier og produkter).'
+const SERIES_EXPORT_ADVICE = 'Bruk søk eller leverandørfilter for å få færre produktserier.'
+
+const assertWithinRequestLimit = (requests: number, advice: string) => {
+  const reason = blockedReasonFor(requests, advice)
+  if (reason) throw new Error(reason)
+}
+
 const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Promise<Map<string, string>> => {
   const labels = new Map<string, string>()
   for (const idChunk of chunk(ids, LINKED_PRODUCTS_BATCH_SIZE)) {
@@ -105,16 +121,19 @@ const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Pr
   return labels
 }
 
-// A linked series may have been deleted since the link was made; fall back to the id instead of failing the export.
+// A linked series may have been deleted since the link was made (404); fall back to the id for those only.
 const fetchSeriesTitles = async (
-  ids: string[],
+  missing: string[],
   known: Map<string, SeriesDTO>,
   signal?: AbortSignal
 ): Promise<Map<string, string>> => {
-  const missing = ids.filter((id) => !known.has(id))
   const fetched = await fetchInBatches(
     missing,
-    (id) => getSeriesBySeriesId(id, signal).catch((): SeriesDTO | undefined => undefined),
+    (id) =>
+      getSeriesBySeriesId(id, signal).catch((error: unknown): SeriesDTO | undefined => {
+        if ((error as { status?: number } | null)?.status === 404) return undefined
+        return rethrowAsError(error)
+      }),
     EXPORT_DETAIL_BATCH_SIZE,
     signal
   )
@@ -130,9 +149,25 @@ export const getPartExportRows = async (
   selectedKeys: string[] = [],
   signal?: AbortSignal
 ): Promise<Record<string, unknown>[]> => {
+  const seriesIds = needsSource('seriesDetail', selectedKeys) ? uniqueIds(parts.map((part) => part.seriesUUID)) : []
+  const fetchedSeriesIds = new Set(seriesIds)
+  const linkedSeriesIds = needsSource('linkedSeries', selectedKeys)
+    ? uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.seriesIds ?? [])).filter(
+        (id) => !fetchedSeriesIds.has(id)
+      )
+    : []
+  const linkedProductIds = needsSource('linkedProducts', selectedKeys)
+    ? uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.productIds ?? []))
+    : []
+
+  // The modal's estimate is extrapolated from one page; check the exact count before any detail request.
+  assertWithinRequestLimit(
+    seriesIds.length + linkedSeriesIds.length + rounds(linkedProductIds.length, LINKED_PRODUCTS_BATCH_SIZE),
+    PART_EXPORT_ADVICE
+  )
+
   const seriesById = new Map<string, SeriesDTO>()
-  if (needsSource('seriesDetail', selectedKeys)) {
-    const seriesIds = uniqueIds(parts.map((part) => part.seriesUUID))
+  if (seriesIds.length > 0) {
     const details = await fetchInBatches(
       seriesIds,
       (id) => getSeriesBySeriesId(id, signal),
@@ -143,18 +178,11 @@ export const getPartExportRows = async (
   }
 
   const linkedSeriesTitles = needsSource('linkedSeries', selectedKeys)
-    ? await fetchSeriesTitles(
-        uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.seriesIds ?? [])),
-        seriesById,
-        signal
-      )
+    ? await fetchSeriesTitles(linkedSeriesIds, seriesById, signal)
     : new Map<string, string>()
 
   const linkedProductLabels = needsSource('linkedProducts', selectedKeys)
-    ? await fetchLinkedProductLabels(
-        uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.productIds ?? [])),
-        signal
-      )
+    ? await fetchLinkedProductLabels(linkedProductIds, signal)
     : new Map<string, string>()
 
   const rows: RowWithAgreements[] = parts.map((part) => {
@@ -202,19 +230,12 @@ export const getPartExportRows = async (
     }
   })
 
-  // "Avtaledetaljer" is a toggle, not a column: when selected, rows are widened with per-slot agreement columns.
+  // "Avtaledetaljer" gives a summary column (all active agreements in one cell) plus per-slot agreement columns.
   return selectedKeys.includes('agreementDetails') ? widenRowsWithAgreementSlots(rows) : rows.map((row) => row.base)
 }
 
-const rounds = (requests: number, batchSize: number) => Math.ceil(requests / batchSize)
-
-const blockedReasonFor = (requests: number, advice: string) =>
-  requests > MAX_EXPORT_REQUESTS
-    ? `For stor eksport: ca. ${formatNumber(requests)} kall mot baksystemet (maks ${formatNumber(MAX_EXPORT_REQUESTS)}). ${advice}`
-    : undefined
-
-// Unique linked ids on the current page, scaled to all rows. The share of unique ids only falls as more
-// parts are included, so for "Alle treff" this is an upper bound, which is the safe side for the limit.
+// Unique linked ids on the current page, scaled to all rows. Only an approximation for "Alle treff";
+// getPartExportRows enforces the limit from the exact ids once all pages are fetched.
 const estimateUniqueLinks = (
   rows: number,
   currentPage: ProductRegistrationDTOV2[],
@@ -268,10 +289,7 @@ export const estimatePartExport = ({
     rows,
     requests,
     seconds: sequentialRounds * SECONDS_PER_ROUND,
-    blockedReason: blockedReasonFor(
-      requests,
-      'Bruk filter eller fjern felter som krever detaljer (leverandør, ISO, status, datoer, bilder og video, koblede serier og produkter).'
-    ),
+    blockedReason: blockedReasonFor(requests, PART_EXPORT_ADVICE),
   }
 }
 
@@ -295,6 +313,7 @@ export const getPartsPerSeriesExportRows = async (
   series: SeriesSearchDTO[],
   signal?: AbortSignal
 ): Promise<Record<string, unknown>[]> => {
+  assertWithinRequestLimit(series.length, SERIES_EXPORT_ADVICE)
   const partsPerSeries = await fetchInBatches(
     series,
     (s) => getPartsBySeriesId(s.id, signal),
@@ -332,6 +351,6 @@ export const estimatePartsPerSeriesExport = ({
     rows: seriesCount,
     requests,
     seconds: (pageRequests + rounds(seriesCount, EXPORT_DETAIL_BATCH_SIZE)) * SECONDS_PER_ROUND,
-    blockedReason: blockedReasonFor(requests, 'Bruk søk eller leverandørfilter for å få færre produktserier.'),
+    blockedReason: blockedReasonFor(requests, SERIES_EXPORT_ADVICE),
   }
 }

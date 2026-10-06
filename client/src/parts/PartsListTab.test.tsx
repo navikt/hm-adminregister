@@ -366,3 +366,99 @@ test('viser feilmeldingen fra baksystemet når henting av sider feiler', async (
   expect(await dialog.findByText('Tjenesten er utilgjengelig')).toBeInTheDocument()
   expect(exportRows).not.toHaveBeenCalled()
 })
+
+test('stopper «Alle treff» før detaljkall når de hentede sidene gir over 2 000 kall', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  const manyLinks = Array.from({ length: 2001 }, (_, index) => `linked-${index}`)
+  const pageWithoutLinks = dummyPart({
+    productData: { techData: [], attributes: { compatibleWith: { seriesIds: [], productIds: [] } } },
+  })
+  const pageWithLinks = dummyPart({
+    id: 'part-2',
+    productData: { techData: [], attributes: { compatibleWith: { seriesIds: manyLinks, productIds: [] } } },
+  })
+  server.use(
+    http.get(PARTS_URL, ({ request }) => {
+      const page = new URL(request.url).searchParams.get('page')
+      return HttpResponse.json({
+        content: [page === '1' ? pageWithLinks : pageWithoutLinks],
+        totalSize: 2,
+        totalPages: 2,
+      })
+    })
+  )
+  const detailSpy = vi.fn()
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/:id', () => {
+      detailSpy()
+      return HttpResponse.json(seriesDetail('x'))
+    })
+  )
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Koblede produktserier' }))
+  fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+
+  expect(await dialog.findByText(/For stor eksport: ca\. 2[\s\u00a0]001 kall/)).toBeInTheDocument()
+  expect(detailSpy).not.toHaveBeenCalled()
+  expect(exportRows).not.toHaveBeenCalled()
+})
+
+test('viser feil i stedet for id når en koblet serie ikke kan hentes av andre grunner enn 404', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  mockParts([dummyPart()])
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/linked-series-1', () =>
+      HttpResponse.json({ message: 'Ingen tilgang' }, { status: 403 })
+    )
+  )
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Koblede produktserier' }))
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+
+  expect(await dialog.findByText('Ingen tilgang')).toBeInTheDocument()
+  expect(exportRows).not.toHaveBeenCalled()
+})
+
+test('sperrer «Denne siden» mens lista lastes', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  server.use(http.get(PARTS_URL, () => new Promise<never>(() => {})))
+
+  renderTab()
+  const dialog = await openExportDialog()
+
+  expect(await dialog.findByText('Venter på søkeresultatet før eksporten kan starte.')).toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeDisabled()
+})
+
+test('bruker id for koblet serie som er slettet (404)', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  mockParts([dummyPart()])
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/linked-series-1', () =>
+      HttpResponse.json({ message: 'Ikke funnet' }, { status: 404 })
+    )
+  )
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Koblede produktserier' }))
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+
+  await waitFor(() => expect(exportRows).toHaveBeenCalledTimes(1))
+  const [rows] = vi.mocked(exportRows).mock.calls[0]
+  expect(rows[0]['Koblede produktserier']).toBe('linked-series-1')
+})
