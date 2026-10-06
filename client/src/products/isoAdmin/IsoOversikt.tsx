@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
-import { getSeriesBySeriesId, updateProductIso22Category } from 'api/SeriesApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
 import { IsoMapDTO } from 'utils/types/response-types'
@@ -33,7 +32,7 @@ import {
 import AttachIso22CategoryModal from './AttachIso22CategoryModal'
 import CreateIso22CategoryModal, { CreateIso22CategoryContext } from './CreateIso22CategoryModal'
 import iso9999Icon from './ISO9999-01.svg'
-import IsoBulkMoveModal from './IsoBulkMoveModal'
+import IsoBulkMoveModal, { IsoCategoryDetails } from './IsoBulkMoveModal'
 import styles from './IsoOversikt.module.scss'
 import {
   AksjonCell,
@@ -64,6 +63,7 @@ import {
   SERIES_WARN_THRESHOLD,
   fetchSeriesDetailsConcurrent,
   fetchSeriesPage,
+  updateAndConfirmIso22Category,
 } from './isoOversiktApi'
 import {
   ExtraColumn,
@@ -82,11 +82,23 @@ import {
   SortKey,
   ViewMode,
 } from './isoOversiktTypes'
-import { buildIsoPath } from './isoPathUtils'
-import { groupByProduct } from './isoRowUtils'
+import { buildIso22Path, buildIsoPath } from './isoPathUtils'
+import { groupByProduct, replaceSeriesRows } from './isoRowUtils'
 import { compareIsoCodes, sortByIsoLevel, sortProductRows, sortRows } from './isoSortUtils'
 
 type EditMode = 'les' | 'endre'
+
+const toCategoryDetails = (
+  category?: { isoCode: string; isoTitle: string; isoText?: string | null; searchWords?: string[] | null } | null
+): IsoCategoryDetails | undefined =>
+  category
+    ? {
+        code: category.isoCode,
+        title: category.isoTitle,
+        text: category.isoText ?? '',
+        searchWords: (category.searchWords ?? []).join(', '),
+      }
+    : undefined
 
 const IsoOversikt = () => {
   const { loggedInUser } = useAuthStore()
@@ -100,6 +112,12 @@ const IsoOversikt = () => {
   // ISO-prefikset `rows` ble lastet for ('' = alle). `rows` kan være lastet for et annet filter enn det
   // som vises nå, så tilknytningsstatus for koder utenfor prefikset er ukjent.
   const [rowsScope, setRowsScope] = useState<string | null>(null)
+  // Produkter hentet fra "Vis oversikt" for én bestemt v16-kode, uavhengig av sidefilteret. Holdes
+  // utenfor `rows` slik at Produkt-/Variant-listen ikke viser et delvis uttrekk som om det var hele lista.
+  const [scopedRows, setScopedRows] = useState<ExtractedProductVariant[]>([])
+  const [loadedScopes, setLoadedScopes] = useState<string[]>([])
+  const [scopeLoading, setScopeLoading] = useState(false)
+  const [scopeLoadError, setScopeLoadError] = useState<string | null>(null)
   const [totalSeriesCount, setTotalSeriesCount] = useState<number | undefined>(undefined)
   const [pageLoading, setPageLoading] = useState(false)
   const [loadProgress, setLoadProgress] = useState<{ loaded: number; total: number } | null>(null)
@@ -158,6 +176,7 @@ const IsoOversikt = () => {
     seriesId: null,
   })
   const [moveError, setMoveError] = useState<string | null>(null)
+  const [attachmentNotice, setAttachmentNotice] = useState<string | null>(null)
   const [moveSubmitting, setMoveSubmitting] = useState(false)
   const [bulkMoveModal, setBulkMoveModal] = useState<{ open: boolean; isoCode: string | null; mappingId?: string }>({
     open: false,
@@ -200,9 +219,22 @@ const IsoOversikt = () => {
   // (ingenting å koble til). Brukes til å sperre "Verifiser" til reell tilknytning er gjort - se
   // AksjonCell og IsoBulkMoveModal.
   const isIsoCodeLoaded = useCallback(
-    (isoCode: string) => rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope),
-    [rows, rowsScope]
+    (isoCode: string) =>
+      (rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)) ||
+      loadedScopes.some((scope) => isoCode.startsWith(scope)),
+    [rows, rowsScope, loadedScopes]
   )
+
+  // Alle kjente produktrader: sidelista pluss rader hentet for enkeltkoder i oversikten.
+  const knownRows = useMemo(() => {
+    const coveredByRows = (isoCode: string) => rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)
+    return [...(rows || []), ...scopedRows.filter((row) => !coveredByRows(row.isoCode))]
+  }, [rows, rowsScope, scopedRows])
+
+  const updateKnownRows = useCallback((update: (current: ExtractedProductVariant[]) => ExtractedProductVariant[]) => {
+    setRows((prev) => (prev ? update(prev) : null))
+    setScopedRows((prev) => update(prev))
+  }, [])
 
   // Tilkoblingsmål per v16-kode, hentet fra mappingene (se resolveIso22Targets).
   const getIso22Targets = useCallback(
@@ -231,12 +263,12 @@ const IsoOversikt = () => {
 
   const attachmentCompleteByIsoCode = useMemo(() => {
     const map = new Map<string, boolean>()
-    ;(rows || []).forEach((row) => {
+    knownRows.forEach((row) => {
       const prev = map.get(row.isoCode)
       map.set(row.isoCode, prev === undefined ? row.iso22Attached : prev && row.iso22Attached)
     })
     return map
-  }, [rows])
+  }, [knownRows])
 
   const handleToggleVerification = useCallback(
     async (mappingIds: string[], verified: boolean): Promise<boolean> => {
@@ -252,11 +284,10 @@ const IsoOversikt = () => {
         mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
           revalidate: false,
         })
-        setRows(
-          (prev) =>
-            prev?.map((row) =>
-              row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
-            ) ?? null
+        updateKnownRows((current) =>
+          current.map((row) =>
+            row.mappingIds.some((id) => mappingIds.includes(id)) ? { ...row, mappingVerified: verified } : row
+          )
         )
         return true
       } catch (error) {
@@ -270,10 +301,11 @@ const IsoOversikt = () => {
         })
       }
     },
-    [isoMappingsById, mutateIsoMappings]
+    [isoMappingsById, mutateIsoMappings, updateKnownRows]
   )
 
   const handleOpenMoveModal = useCallback((seriesId: string) => {
+    setAttachmentNotice(null)
     setMoveError(null)
     setVerificationError(null)
     setMoveModal({ open: true, seriesId })
@@ -286,8 +318,10 @@ const IsoOversikt = () => {
       setMoveError(null)
       setMoveSubmitting(true)
       try {
-        await updateProductIso22Category(seriesId, isoCategory22)
-        const updatedSeries = await getSeriesBySeriesId(seriesId)
+        const updatedSeries = await updateAndConfirmIso22Category(seriesId, isoCategory22)
+        setAttachmentNotice(
+          `Produktet ble koblet til ISO v22-kode ${isoCategory22}. Mappingen er fortsatt ikke verifisert.`
+        )
         const newRows = mapToExtractedRows(
           [updatedSeries],
           sortedIsoCategories,
@@ -295,10 +329,7 @@ const IsoOversikt = () => {
           mappingsByCode16,
           mappingDataAvailable
         )
-        setRows((prev) => {
-          const withoutSeries = (prev || []).filter((row) => row.seriesId !== seriesId)
-          return [...withoutSeries, ...newRows]
-        })
+        updateKnownRows((current) => replaceSeriesRows(current, newRows))
         setMoveModal({ open: false, seriesId: null })
       } catch (error) {
         setMoveError(extractErrorMessage(error))
@@ -310,8 +341,8 @@ const IsoOversikt = () => {
   )
 
   const movePreviewRows = useMemo(
-    () => (moveModal.seriesId ? (rows || []).filter((row) => row.seriesId === moveModal.seriesId) : []),
-    [rows, moveModal.seriesId]
+    () => (moveModal.seriesId ? knownRows.filter((row) => row.seriesId === moveModal.seriesId) : []),
+    [knownRows, moveModal.seriesId]
   )
 
   const moveModalMappingIds = useMemo(
@@ -334,6 +365,7 @@ const IsoOversikt = () => {
   const moveModalUnlocking = moveModalMappingIds.some((id) => verifyingMappingIds.has(id))
 
   const handleOpenBulkMove = useCallback((isoCode: string, mappingId?: string) => {
+    setAttachmentNotice(null)
     setBulkMoveModal({ open: true, isoCode, mappingId })
   }, [])
 
@@ -346,19 +378,18 @@ const IsoOversikt = () => {
   // produktlisten ikke lastet inn, er status ukjent og verifisering sperres (fail closed).
   const isAttachmentComplete = useCallback(
     (context: { seriesId?: string; isoCode?: string }): boolean => {
-      if (rows === null) return false
-      const isoCode = context.isoCode ?? rows.find((row) => row.seriesId === context.seriesId)?.isoCode
-      if (!isoCode) return true
+      const isoCode = context.isoCode ?? knownRows.find((row) => row.seriesId === context.seriesId)?.isoCode
+      if (!isoCode) return knownRows.length > 0
       if (!isIsoCodeLoaded(isoCode)) return false
       return attachmentCompleteByIsoCode.get(isoCode) ?? true
     },
-    [rows, attachmentCompleteByIsoCode, isIsoCodeLoaded]
+    [knownRows, attachmentCompleteByIsoCode, isIsoCodeLoaded]
   )
 
   const verifyConfirmProductCount = useMemo(() => {
-    if (!verifyConfirm?.isoCode || rows === null || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
-    return new Set(rows.filter((row) => row.isoCode === verifyConfirm.isoCode).map((row) => row.seriesId)).size
-  }, [verifyConfirm, rows, isIsoCodeLoaded])
+    if (!verifyConfirm?.isoCode || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
+    return new Set(knownRows.filter((row) => row.isoCode === verifyConfirm.isoCode).map((row) => row.seriesId)).size
+  }, [verifyConfirm, knownRows, isIsoCodeLoaded])
 
   const handleRequestVerify = useCallback(
     (mappingIds: string[], verified: boolean, context: { seriesId?: string; isoCode?: string }) => {
@@ -383,7 +414,10 @@ const IsoOversikt = () => {
   const handleConfirmVerify = useCallback(async () => {
     if (!verifyConfirm) return
     const { mappingIds, verified } = verifyConfirm
-    if (await handleToggleVerification(mappingIds, verified)) setVerifyConfirm(null)
+    if (await handleToggleVerification(mappingIds, verified)) {
+      setAttachmentNotice(null)
+      setVerifyConfirm(null)
+    }
   }, [verifyConfirm, handleToggleVerification])
 
   const verifyConfirmBusy = !!verifyConfirm?.mappingIds.some((id) => verifyingMappingIds.has(id))
@@ -493,29 +527,41 @@ const IsoOversikt = () => {
   )
 
   const handleBulkMoveCompleted = useCallback(
-    async (movedSeriesIds: string[]) => {
-      // Modalen lukker seg selv kun når alle lyktes - ved delvis feil skal den forbli åpen slik at
-      // admin ser hvilke produkter som feilet. Her oppdateres bare radene som faktisk ble endret.
-      if (rows === null || !movedSeriesIds.length) return
-      try {
-        const abortController = new AbortController()
-        const updatedSeries = await fetchSeriesDetailsConcurrent(movedSeriesIds, () => {}, abortController.signal)
-        const newRows = mapToExtractedRows(
-          updatedSeries,
-          sortedIsoCategories,
-          sortedIsoCategories22,
-          mappingsByCode16,
-          mappingDataAvailable
+    (movedSeriesIds: string[], newIso22Code: string) => {
+      if (!movedSeriesIds.length) return
+      const count = movedSeriesIds.length
+      setAttachmentNotice(
+        `${count} ${count === 1 ? 'produkt ble' : 'produkter ble'} koblet til ISO v22-kode ${newIso22Code}.`
+      )
+      const movedIds = new Set(movedSeriesIds)
+      const path = buildIso22Path(newIso22Code, sortedIsoCategories22)
+      const category = sortedIsoCategories22.find((item) => item.isoCode === newIso22Code)
+      updateKnownRows((current) =>
+        current.map((row) =>
+          movedIds.has(row.seriesId)
+            ? {
+                ...row,
+                iso22Stored: newIso22Code,
+                iso22Attached: getMappedIso22Codes(
+                  row.isoCode,
+                  findMappingsForCode(row.isoCode, mappingsByCode16)
+                ).includes(newIso22Code),
+                iso22Lvl1: path.level1?.isoCode ?? '',
+                iso22Lvl2: path.level2?.isoCode ?? '',
+                iso22Lvl3: path.level3?.isoCode ?? '',
+                iso22Lvl1Title: path.level1?.isoTitle ?? '',
+                iso22Lvl2Title: path.level2?.isoTitle ?? '',
+                iso22Lvl3Title: path.level3?.isoTitle ?? '',
+                iso22Lvl4: newIso22Code,
+                iso22Lvl4Title: category?.isoTitle ?? '',
+                iso22Lvl4Text: category?.isoText ?? '',
+                iso22Lvl4SearchWords: (category?.searchWords ?? []).join(', '),
+              }
+            : row
         )
-        setRows((prev) => {
-          const withoutMoved = (prev || []).filter((row) => !movedSeriesIds.includes(row.seriesId))
-          return [...withoutMoved, ...newRows]
-        })
-      } catch {
-        // Rows kunne ikke oppdateres automatisk. Bruk "Hent liste" for å laste inn siste data.
-      }
+      )
     },
-    [rows, sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+    [sortedIsoCategories22, mappingsByCode16, updateKnownRows]
   )
 
   const selectedIsoCode = selectedLevel4 || selectedLevel3 || selectedLevel2 || selectedLevel1
@@ -541,6 +587,14 @@ const IsoOversikt = () => {
     if (!bulkMoveModal.isoCode || !bulkMoveContext) return ''
     return getIso22Targets(bulkMoveModal.isoCode, bulkMoveContext.mappingIds)[0]?.level4Code ?? ''
   }, [bulkMoveModal.isoCode, bulkMoveContext, getIso22Targets])
+  const bulkMoveV16Details = useMemo(
+    () => toCategoryDetails(sortedIsoCategories.find((category) => category.isoCode === bulkMoveModal.isoCode)),
+    [sortedIsoCategories, bulkMoveModal.isoCode]
+  )
+  const bulkMoveV22Details = useMemo(() => {
+    const code = bulkMoveTargetCode || bulkMoveContext?.iso22Lvl4 || bulkMoveContext?.iso22Lvl3
+    return toCategoryDetails(sortedIsoCategories22.find((category) => category.isoCode === code))
+  }, [sortedIsoCategories22, bulkMoveTargetCode, bulkMoveContext])
   const bulkMoveValidIso22Codes = useMemo(
     () =>
       new Set(
@@ -556,8 +610,8 @@ const IsoOversikt = () => {
   // /admreg/api/v1/series?isoCode=X, som i praksis kunne gi 0 treff selv når produkter fantes (viste
   // seg å ikke stemme overens med tabellens telling) - se bruker-rapportert avvik for 18090401.
   const bulkMoveSourceRows = useMemo(
-    () => (bulkMoveModal.isoCode ? (rows || []).filter((row) => row.isoCode === bulkMoveModal.isoCode) : []),
-    [rows, bulkMoveModal.isoCode]
+    () => (bulkMoveModal.isoCode ? knownRows.filter((row) => row.isoCode === bulkMoveModal.isoCode) : []),
+    [knownRows, bulkMoveModal.isoCode]
   )
 
   const filteredMappingRows = useMemo(() => {
@@ -651,6 +705,53 @@ const IsoOversikt = () => {
       mappingDataAvailable,
     ]
   )
+
+  // "Last inn produkter" i oversikten: henter kun produktene for oversiktens egen v16-kode
+  // (isoCode-filter i backend), uavhengig av sidefilteret og uten å røre Produkt-/Variant-lista.
+  const loadRowsForIsoCode = useCallback(
+    async (isoCode: string) => {
+      setScopeLoading(true)
+      setScopeLoadError(null)
+      const abortController = new AbortController()
+      try {
+        const firstChunk = await fetchSeriesPage(0, SERIES_PAGE_SIZE, isoCode, abortController.signal)
+        const series = [...(firstChunk.content || [])]
+        for (let page = 1; page < (firstChunk.totalPages || 1); page++) {
+          const chunk = await fetchSeriesPage(page, SERIES_PAGE_SIZE, isoCode, abortController.signal)
+          series.push(...(chunk.content || []))
+        }
+        const hasIsoOverview = series.every(
+          (seriesItem) => typeof seriesItem.isoCategory === 'string' && Array.isArray(seriesItem.variants)
+        )
+        const details = hasIsoOverview
+          ? series
+          : await fetchSeriesDetailsConcurrent(
+              series.map((seriesItem) => seriesItem.id),
+              () => {},
+              abortController.signal
+            )
+        const newRows = mapToExtractedRows(
+          details,
+          sortedIsoCategories,
+          sortedIsoCategories22,
+          mappingsByCode16,
+          mappingDataAvailable
+        )
+        setScopedRows((prev) => [...prev.filter((row) => !row.isoCode.startsWith(isoCode)), ...newRows])
+        setLoadedScopes((prev) => (prev.includes(isoCode) ? prev : [...prev, isoCode]))
+      } catch (error) {
+        setScopeLoadError(extractErrorMessage(error, 'Klarte ikke å hente produkter'))
+      } finally {
+        setScopeLoading(false)
+      }
+    },
+    [sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
+  )
+
+  useEffect(() => {
+    if (pageMode !== 'extract' || !selectedIsoCode || !pendingLargeLoad || pageLoading) return
+    void loadAllRows(true)
+  }, [pageMode, selectedIsoCode, pendingLargeLoad, pageLoading, loadAllRows])
 
   // Forhåndshenter produkt-/variantdata i bakgrunnen mens admin fortsatt ser "Ren ISO-mapping" -
   // slik unngås en eksplisitt "Hent liste"-klikk når man bytter til Produkt- eller Variant-visning.
@@ -914,13 +1015,18 @@ const IsoOversikt = () => {
           ambiguousTarget={bulkMoveAmbiguous}
           preloadedRows={bulkMoveSourceRows}
           rowsLoaded={!!bulkMoveModal.isoCode && isIsoCodeLoaded(bulkMoveModal.isoCode)}
-          rowsLoading={pageLoading}
-          onRequestLoadRows={() => loadAllRows(true)}
+          rowsLoading={pageLoading || scopeLoading}
+          rowsLoadError={scopeLoadError}
+          onRequestLoadRows={() => {
+            if (bulkMoveModal.isoCode) void loadRowsForIsoCode(bulkMoveModal.isoCode)
+          }}
           onClose={() => setBulkMoveModal({ open: false, isoCode: null })}
           onCompleted={handleBulkMoveCompleted}
           onRequestVerify={handleRequestVerify}
           verifying={bulkMoveContext ? bulkMoveContext.mappingIds.some((id) => verifyingMappingIds.has(id)) : false}
           onRequestCreateCategory={handleOpenCreateCategoryModal}
+          v16Details={bulkMoveV16Details}
+          v22Details={bulkMoveV22Details}
         />
         <CreateIso22CategoryModal
           context={createCategoryContext}
@@ -937,7 +1043,7 @@ const IsoOversikt = () => {
             <Modal.Body>
               <BodyShort>
                 {verifyConfirm.verified
-                  ? 'Vil du markere denne ISO-mappingen som verifisert? Dette betyr at endringen/migreringen er ferdig kontrollert.'
+                  ? 'Vil du verifisere mappingen mellom v16 og v22? Du bekrefter at koblingen er gjennomført, kontrollert og klar til bruk.'
                   : 'Vil du fjerne verifiseringen for denne ISO-mappingen? Den vil da vises som ikke verifisert igjen.'}
               </BodyShort>
               {verifyConfirm.isoCode && (
@@ -980,10 +1086,13 @@ const IsoOversikt = () => {
             <InfoCard.Title>Obs!</InfoCard.Title>
           </InfoCard.Header>
           <InfoCard.Content>
-            Dette er fase 1 av ISO Admin. Den viser produkter og varianter med både v16- og v22-kategorisering. Uttrekk
-            til fil, revisjonshistorikk og redigering av ISO-kategorier kommer i senere faser.
+            Fase 2 testes: Du kan se produkter o.l. med v16- og v22-koder, opprette v22-kategorier, koble produkter til
+            v22 og verifisere mappinger. Forbedringer kan komme.
           </InfoCard.Content>
         </InfoCard>
+        {attachmentNotice && !moveModal.open && !bulkMoveModal.open && (
+          <Alert variant="success">{attachmentNotice}</Alert>
+        )}
         {isoError22 && <Alert variant="warning">Klarte ikke å hente v22-kategorier.</Alert>}
         {isoMappingsError && <Alert variant="warning">Klarte ikke å hente mapping-status mellom v16 og v22.</Alert>}
 
@@ -1365,7 +1474,7 @@ const IsoOversikt = () => {
         {pageMode === 'extract' && (
           <>
             {/* Fetch trigger + summary */}
-            {pendingLargeLoad && (
+            {pendingLargeLoad && !selectedIsoCode && (
               <Alert variant="warning">
                 Systemet inneholder <strong>{totalSeriesCount}</strong> aktive produktserier på tvers av alle
                 ISO-kategorier. Uten ISO-filter vil alle hentes, noe som kan ta lang tid eller feile. Velg ISO-filter
@@ -1380,7 +1489,6 @@ const IsoOversikt = () => {
                 </HStack>
               </Alert>
             )}
-
             {loadError && <Alert variant="error">{loadError}</Alert>}
 
             {pageLoading && (

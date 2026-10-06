@@ -60,6 +60,26 @@ export const fetchSeriesDetailsConcurrent = async (
   return results
 }
 
+export const storedIso22Code = (series: { isoCategory22?: unknown }): string => {
+  const value = series.isoCategory22
+  if (typeof value === 'string') return value
+  if (value && typeof value === 'object' && 'isoCode' in value) return String(value.isoCode ?? '')
+  return ''
+}
+
+// Backend svarer 200 på PATCH selv om feltet ikke lagres. Les serien på nytt og kontroller at v22-koden
+// faktisk er lagret før tilkoblingen regnes som vellykket.
+export const updateAndConfirmIso22Category = async (seriesId: string, newIso22Code: string): Promise<SeriesDTO> => {
+  await updateProductIso22Category(seriesId, newIso22Code)
+  const saved = await getSeriesBySeriesId(seriesId)
+  if (storedIso22Code(saved) !== newIso22Code) {
+    throw new Error(
+      `Backend lagret ikke v22-koden ${newIso22Code}. Lagret verdi: ${storedIso22Code(saved) || 'ingen'}.`
+    )
+  }
+  return saved
+}
+
 export type BulkMoveResult = {
   succeeded: string[]
   failed: { id: string; error: string }[]
@@ -84,7 +104,7 @@ export const bulkUpdateIso22Category = async (
       const current = nextIndex++
       const id = seriesIds[current]
       try {
-        await updateProductIso22Category(id, newIso22Code)
+        await updateAndConfirmIso22Category(id, newIso22Code)
         succeeded.push(id)
       } catch (error) {
         failed.push({ id, error: extractErrorMessage(error, 'Ukjent feil oppstod') })

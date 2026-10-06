@@ -61,7 +61,10 @@ const isoCategoriesV1 = [
   isoCategoryV1('04010201', 4, 'Oksygenutstyr'),
   isoCategoryV1('05', 1, 'Hjelpemidler for trening'),
   isoCategoryV1('0503', 2, 'Kommunikasjon'),
-  isoCategoryV1('050303', 3, 'Kommunikasjonshjelpemidler'),
+  isoCategoryV1('050303', 3, 'Kommunikasjonshjelpemidler', {
+    isoText: 'Hjelpemidler for kommunikasjon',
+    searchWords: ['tale', 'skrift'],
+  }),
   isoCategoryV1('05030301', 4, 'Kommunikasjonshjelpemiddel'),
   isoCategoryV1('18', 1, 'Utstyr for bevegelse'),
   isoCategoryV1('1809', 2, 'Ganghjelpemidler'),
@@ -392,6 +395,44 @@ test('kan avbryte henting av produkt- og variantlisten', async () => {
   await waitFor(() => expect(screen.queryByRole('button', { name: 'Avbryt' })).not.toBeInTheDocument())
   expect(loadButton).toBeEnabled()
   expect(screen.queryByText('Klarte ikke å hente produkter og varianter')).not.toBeInTheDocument()
+})
+
+test('henter og viser antall for valgt ISO-filter i stedet for totalen for hele systemet', async () => {
+  const filteredSeries = Array.from({ length: 117 }, (_, index) => ({
+    id: `s-05-${index}`,
+    title: `Produkt ${index}`,
+    isoCategory: '05030301',
+    isoCategory22: null,
+    variants: Array.from({ length: index < 61 ? 2 : 1 }, (_, variantIndex) => ({
+      id: `v-05-${index}-${variantIndex}`,
+      articleName: `Variant ${index}-${variantIndex}`,
+      supplierRef: `REF-${index}-${variantIndex}`,
+      hmsArtNr: `${index}${variantIndex}`,
+      agreements: [],
+    })),
+  }))
+  const requestedIsoCodes: string[] = []
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      requestedIsoCodes.push(isoCode ?? '')
+      return HttpResponse.json(
+        isoCode
+          ? { content: filteredSeries, totalPages: 1, totalSize: 117 }
+          : { content: [], totalPages: 1, totalSize: 4758 }
+      )
+    })
+  )
+
+  renderPage()
+  openExtractView()
+  await screen.findByText(/Systemet inneholder/)
+
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '05' } })
+
+  expect(await screen.findByText('117 produkter (178 varianter) for ISO 05')).toBeInTheDocument()
+  expect(requestedIsoCodes).toContain('05')
+  expect(screen.queryByText(/Systemet inneholder/)).not.toBeInTheDocument()
 })
 
 test('kan vise valgfrie v16- og v22-tittelkolonner via chips', async () => {
@@ -817,6 +858,185 @@ test('F2/F3/F6: bulk-tilkobling hopper over koblede produkter og viser feil per 
   expect(screen.getByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })).toBeInTheDocument()
 })
 
+// Stateful backend: PATCH lagrer v22-koden (eller ignorerer den, slik backend gjør i dag når
+// patchSeries ikke tar med isoCategory22), GET /series/:id returnerer lagret verdi, og PUT isomap
+// lagrer verifiseringen. Gjør at testene fanger opp om tilkoblingen faktisk ble lagret.
+const useStatefulRollatorBackend = ({ persistIso22 }: { persistIso22: boolean }) => {
+  useUnverifiedRollatorMapping()
+  const titles: Record<string, string> = { s1: 'Rollator Alfa', s3: 'Rollator Beta', s4: 'Rollator Gamma' }
+  const stored: Record<string, string | null> = { s1: '18090301', s3: null, s4: null }
+  const state = { patched: [] as string[], verifiedUpdates: [] as boolean[] }
+  server.use(
+    http.patch('http://localhost:8080/admreg/api/v1/series/:id', async ({ params, request }) => {
+      const id = params.id as string
+      const body = (await request.json()) as { isoCategory22?: string | null }
+      state.patched.push(id)
+      if (persistIso22 && body.isoCategory22) stored[id] = body.isoCategory22
+      return new HttpResponse(null, { status: 200 })
+    }),
+    http.get('http://localhost:8080/admreg/api/v1/series/:id', ({ params }) => {
+      const id = params.id as string
+      const code22 = stored[id]
+      return HttpResponse.json({
+        ...seriesWithBothIsoVersions,
+        id,
+        title: titles[id],
+        isoCategory22: code22 ? isoCategoriesV22.find((category) => category.isoCode === code22) : null,
+        variants: seriesWithBothIsoVersions.variants.map((variant) => ({
+          ...variant,
+          id: `${id}-v`,
+          articleName: `${titles[id]} variant`,
+        })),
+      })
+    }),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) => {
+      const body = (await request.json()) as { isoMap: { verified: boolean } }
+      state.verifiedUpdates.push(body.isoMap.verified)
+      return HttpResponse.json({ ...isoMappings.find((mapping) => mapping.id === 'map-1'), ...body.isoMap })
+    })
+  )
+  return state
+}
+
+const confirmVerification = async () => {
+  const dialog = await screen.findByRole('dialog', { name: 'Bekreft verifisering' })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Verifiser' }))
+}
+
+test('arbeidsflyt: koble til produkt for produkt og verifiser fra Aksjon-menyen', async () => {
+  const backend = useStatefulRollatorBackend({ persistIso22: true })
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  openExtractView()
+  const loadButton = screen.queryByRole('button', { name: 'Hent liste' })
+  if (loadButton) {
+    await waitFor(() => expect(loadButton).toBeEnabled())
+    fireEvent.click(loadButton)
+  }
+  await waitFor(() => expect(screen.getAllByText('18090301').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  for (const title of ['Rollator Beta', 'Rollator Gamma']) {
+    fireEvent.click(await screen.findByRole('button', { name: new RegExp(`^Rad-meny for ${title}`) }))
+    const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser (koble produkter til v22 først)' })
+    expect(verifyItem).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Koble til ISO v22-kategori' }))
+    const dialog = await screen.findByRole('dialog', { name: new RegExp(`Koble "${title}" til ISO v22-kategori`) })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
+    await screen.findByText('Produktet ble koblet til ISO v22-kode 18090301. Mappingen er fortsatt ikke verifisert.')
+  }
+  expect(backend.patched.sort()).toEqual(['s3', 's4'])
+
+  fireEvent.click(await screen.findByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
+  const verifyItem = await screen.findByRole('menuitem', { name: 'Verifiser' })
+  expect(verifyItem).not.toHaveAttribute('aria-disabled', 'true')
+  fireEvent.click(verifyItem)
+  await confirmVerification()
+
+  await waitFor(() => expect(backend.verifiedUpdates).toEqual([true]))
+  await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Bekreft verifisering' })).not.toBeInTheDocument())
+})
+
+test('arbeidsflyt: koble til alle i oversikten og verifiser mappingen samme sted', async () => {
+  const backend = useStatefulRollatorBackend({ persistIso22: true })
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  openRowMenu(screen.getAllByText('18090301')[0].closest('tr') as HTMLElement)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
+  const overview = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  expect(within(overview).getByRole('button', { name: 'Verifiser mappinger' })).toBeDisabled()
+  fireEvent.click(within(overview).getByRole('button', { name: 'Koble til 2 gjenstående produkter' }))
+
+  await within(overview).findByText('2 produkter ble koblet til ISO v22-kode 18090301.')
+  expect(backend.patched.sort()).toEqual(['s3', 's4'])
+  expect(within(overview).getByText('Ikke verifisert')).toBeInTheDocument()
+  expect(within(overview).getByRole('button', { name: 'Alle produkter er koblet' })).toBeDisabled()
+
+  const verifyButton = within(overview).getByRole('button', { name: 'Verifiser mappinger' })
+  expect(verifyButton).toBeEnabled()
+  expect(verifyButton.parentElement).toBe(within(overview).getByRole('button', { name: 'Avbryt' }).parentElement)
+  fireEvent.click(verifyButton)
+  await confirmVerification()
+
+  await waitFor(() => expect(backend.verifiedUpdates).toEqual([true]))
+  expect(within(overview).getByText('Verifisert')).toBeInTheDocument()
+  expect(within(overview).getByRole('button', { name: 'Fjern verifisering' })).toBeEnabled()
+})
+
+test('tilkobling som backend ikke lagrer vises som feil, og verifisering forblir sperret', async () => {
+  const backend = useStatefulRollatorBackend({ persistIso22: false })
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  openRowMenu(screen.getAllByText('18090301')[0].closest('tr') as HTMLElement)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Koble alle produkter til ISO v22-kategori' }))
+  const overview = await screen.findByRole('dialog', { name: /Koble produkter fra ISO 18090301/ })
+  fireEvent.click(within(overview).getByRole('button', { name: 'Koble til 2 gjenstående produkter' }))
+
+  expect(await within(overview).findByText(/0 av 2 produkter ble koblet til/)).toBeInTheDocument()
+  expect(within(overview).getAllByText(/Backend lagret ikke v22-koden 18090301/).length).toBeGreaterThan(0)
+  expect(backend.patched.sort()).toEqual(['s3', 's4'])
+  expect(within(overview).queryByText(/produkter ble koblet til ISO v22-kode/)).not.toBeInTheDocument()
+  expect(within(overview).getByRole('button', { name: 'Verifiser mappinger' })).toBeDisabled()
+  expect(backend.verifiedUpdates).toEqual([])
+})
+
+test('Vis detaljer viser tittel, forklaring og søkeord for en v16-kode på nivå 3', async () => {
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: /ISO 050303/ })
+  fireEvent.click(within(overview).getByRole('button', { name: 'Vis detaljer' }))
+
+  expect(within(overview).getAllByText('Kommunikasjonshjelpemidler').length).toBeGreaterThan(0)
+  expect(within(overview).getByText('Hjelpemidler for kommunikasjon')).toBeInTheDocument()
+  expect(within(overview).getByText('tale, skrift')).toBeInTheDocument()
+  expect(within(overview).getAllByText('Kommunikasjonshjelpemidler (2022)').length).toBeGreaterThan(0)
+  expect(within(overview).queryByText('Ingen tittel')).not.toBeInTheDocument()
+  expect(within(overview).getAllByText('Tittel')).toHaveLength(2)
+})
+
+test('Last inn produkter i oversikten henter kun oversiktens egen v16-kode, ikke hele sidefilteret', async () => {
+  useUnverifiedRollatorMapping()
+  const requestedIsoCodes: (string | null)[] = []
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      requestedIsoCodes.push(isoCode)
+      if (!isoCode) return HttpResponse.json({ content: [], totalPages: 1, totalSize: 4758 })
+      return HttpResponse.json({
+        content: [overviewSeries('s1', 'Rollator Alfa', '18090301'), overviewSeries('s3', 'Rollator Beta', null)],
+        totalPages: 1,
+        totalSize: 2,
+      })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
+  enableEditMode()
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: /ISO 18090301/ })
+  fireEvent.click(within(overview).getByRole('button', { name: 'Last inn produkter' }))
+
+  expect(await within(overview).findByText('Rollator Beta')).toBeInTheDocument()
+  expect(requestedIsoCodes).toEqual([null, '18090301'])
+  expect(within(overview).getByRole('button', { name: 'Koble til 1 gjenstående produkt' })).toBeEnabled()
+
+  fireEvent.click(within(overview).getByRole('button', { name: 'Avbryt' }))
+  openExtractView()
+  expect(screen.queryByText('Rollator Beta')).not.toBeInTheDocument()
+  expect(screen.getByText(/Systemet inneholder/)).toBeInTheDocument()
+})
+
 test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet sendes', async () => {
   let createCalls = 0
   server.use(
@@ -948,6 +1168,39 @@ test('kobler til mappingens mål, ikke til en feil v22-kode produktet allerede h
   fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
 
   await waitFor(() => expect(patched).toEqual([{ id: 's1', isoCategory22: '18090301' }]))
+})
+
+test('viser bekreftelse etter direkte tilkobling uten å verifisere mappingen', async () => {
+  useRollatorSeries('24060302')
+  const patched = capturePatchedIso22()
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/s1', () =>
+      HttpResponse.json({
+        ...seriesWithBothIsoVersions,
+        isoCategory22: isoCategoriesV22.find((category) => category.isoCode === '18090301'),
+      })
+    )
+  )
+  const dialog = await openProductAttachModal()
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
+
+  expect(
+    await screen.findByText('Produktet ble koblet til ISO v22-kode 18090301. Mappingen er fortsatt ikke verifisert.')
+  ).toBeInTheDocument()
+  expect(patched).toEqual([{ id: 's1', isoCategory22: '18090301' }])
+})
+
+test('beholder produktenes rekkefølge etter tilkobling når ISO-sorteringen er lik', async () => {
+  useUnverifiedRollatorMapping()
+  capturePatchedIso22()
+  const dialog = await openProductAttachModal()
+  const menuOrder = () =>
+    screen.getAllByRole('button', { name: /^Rad-meny for Rollator/ }).map((button) => button.getAttribute('aria-label'))
+  const before = menuOrder()
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Koble til' }))
+
+  await screen.findByText('Produktet ble koblet til ISO v22-kode 18090301. Mappingen er fortsatt ikke verifisert.')
+  expect(menuOrder()).toEqual(before)
 })
 
 test('ved splitt må admin velge v22-mål eksplisitt før tilkobling', async () => {

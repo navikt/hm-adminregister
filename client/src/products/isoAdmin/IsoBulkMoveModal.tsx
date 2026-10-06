@@ -23,6 +23,34 @@ import { ExtractedProductVariant, MappingRow } from './isoOversiktTypes'
 
 const PREVIEW_PAGE_SIZE = 8
 
+export type IsoCategoryDetails = {
+  code: string
+  title: string
+  text: string
+  searchWords: string
+}
+
+const DetailField = ({ label, value, emptyText }: { label: string; value?: string; emptyText: string }) => (
+  <Box background="neutral-soft" padding="space-8" borderRadius="4">
+    <BodyShort size="small" weight="semibold" textColor="subtle">
+      {label}
+    </BodyShort>
+    <BodyShort size="small">{value || emptyText}</BodyShort>
+  </Box>
+)
+
+const CategoryDetails = ({ heading, details }: { heading: string; details?: IsoCategoryDetails }) => (
+  <VStack gap="space-8">
+    <BodyShort size="small" weight="semibold">
+      {heading}
+    </BodyShort>
+    <DetailField label="Kode" value={details?.code} emptyText="Ingen kategori" />
+    <DetailField label="Tittel" value={details?.title} emptyText="Ingen tittel" />
+    <DetailField label="Forklaring" value={details?.text} emptyText="Ingen forklaring" />
+    <DetailField label="Søkeord" value={details?.searchWords} emptyText="Ingen søkeord" />
+  </VStack>
+)
+
 type PreviewSeriesRow = {
   seriesId: string
   productTitle: string
@@ -50,6 +78,7 @@ interface Props {
   preloadedRows: ExtractedProductVariant[]
   rowsLoaded: boolean
   rowsLoading?: boolean
+  rowsLoadError?: string | null
   onRequestLoadRows?: () => void
   onClose: () => void
   onCompleted: (attachedSeriesIds: string[], newIso22Code: string) => void
@@ -58,6 +87,9 @@ interface Props {
   // Åpner den frittstående CreateIso22CategoryModal som en 2. modal over denne - selve opprettelsen
   // (og tilkoblingen av mappingen til den nye kategorien) skjer der, ikke inline i denne modalen.
   onRequestCreateCategory?: (context: { parentIsoCode: string; parentIsoTitle?: string; mappingIds: string[] }) => void
+  // Kategorien for valgt kode på sitt eget nivå (ikke bare nivå 4), f.eks. 050303 på nivå 3.
+  v16Details?: IsoCategoryDetails
+  v22Details?: IsoCategoryDetails
 }
 
 const buildPreviewSeries = (rows: ExtractedProductVariant[]): PreviewSeriesRow[] => {
@@ -91,12 +123,15 @@ const IsoBulkMoveModal = ({
   preloadedRows,
   rowsLoaded,
   rowsLoading,
+  rowsLoadError,
   onRequestLoadRows,
   onClose,
   onCompleted,
   onRequestVerify,
   verifying,
   onRequestCreateCategory,
+  v16Details,
+  v22Details,
 }: Props) => {
   // Målkategorien er låst til mappingens v22 nivå 4-kode - admin skal ikke kunne søke opp og velge en
   // vilkårlig v22-kategori. Mangler nivå 4 enda, shortcuttes admin til den frittstående
@@ -111,6 +146,7 @@ const IsoBulkMoveModal = ({
   const [attaching, setAttaching] = useState(false)
   const [attachProgress, setAttachProgress] = useState<{ done: number; total: number } | null>(null)
   const [attachError, setAttachError] = useState<string | null>(null)
+  const [attachSuccess, setAttachSuccess] = useState<string | null>(null)
 
   // "Vis detaljer" gir full innsikt i v16- og v22-kategorien (tittel, forklaring, søkeord) side om
   // side, slik at man visuelt kan verifisere at riktig v22-kategori korresponderer med v16-koden
@@ -133,6 +169,7 @@ const IsoBulkMoveModal = ({
   useEffect(() => {
     if (!isOpen) return
     setAttachError(null)
+    setAttachSuccess(null)
     setAttachProgress(null)
     setPreviewPage(1)
     setShowDetails(false)
@@ -172,6 +209,7 @@ const IsoBulkMoveModal = ({
     if (!seriesIds.length) return
     setAttaching(true)
     setAttachError(null)
+    setAttachSuccess(null)
     setAttachProgress({ done: 0, total: seriesIds.length })
     try {
       const result = await bulkUpdateIso22Category(seriesIds, newIso22Code, (done, total) =>
@@ -187,6 +225,9 @@ const IsoBulkMoveModal = ({
       }
       if (result.succeeded.length > 0) {
         onCompleted(result.succeeded, newIso22Code)
+        setAttachSuccess(
+          `${result.succeeded.length} ${result.succeeded.length === 1 ? 'produkt ble' : 'produkter ble'} koblet til ISO v22-kode ${newIso22Code}.`
+        )
         // Oppdater forhåndsvisningen lokalt slik at admin kan verifisere tilknytningen visuelt
         // med en gang - uten dette ville tabellen fortsatt vist den gamle/manglende v22-koden
         // helt til `rows` i parent er rekomputert.
@@ -195,9 +236,6 @@ const IsoBulkMoveModal = ({
           for (const id of result.succeeded) next[id] = newIso22Code
           return next
         })
-      }
-      if (result.failed.length === 0) {
-        onClose()
       }
     } catch (error) {
       setAttachError(extractErrorMessage(error))
@@ -236,46 +274,28 @@ const IsoBulkMoveModal = ({
                       <BodyShort size="small" weight="semibold">
                         v16: {context.isoCode}
                       </BodyShort>
-                      <BodyShort size="small">{context.iso4Title}</BodyShort>
+                      <BodyShort size="small">{v16Details?.title || context.iso4Title}</BodyShort>
                     </VStack>
                     <VStack gap="space-2">
                       <BodyShort size="small" weight="semibold">
                         v22: {context.iso22Lvl4 || context.iso22Lvl3 || 'Ingen kategori'}
                       </BodyShort>
-                      <BodyShort size="small">{context.iso22Lvl4Title || context.iso22Lvl3Title}</BodyShort>
+                      <BodyShort size="small">
+                        {v22Details?.title || context.iso22Lvl4Title || context.iso22Lvl3Title}
+                      </BodyShort>
                     </VStack>
                   </HGrid>
-                  <HStack gap="space-8" align="center" justify="space-between">
+                  {context.mappingAvailable && context.mappingIds.length > 0 && (
                     <HStack gap="space-8" align="center">
-                      {context.mappingAvailable && context.mappingIds.length > 0 && (
-                        <>
-                          <Tag variant={context.mappingVerified ? 'success' : 'warning'} size="small">
-                            {context.mappingVerified ? 'Verifisert' : 'Ikke verifisert'}
-                          </Tag>
-                          {onRequestVerify && (
-                            <Button
-                              variant="tertiary"
-                              size="small"
-                              loading={verifying}
-                              disabled={!context.mappingVerified && !verifyAttachmentComplete}
-                              onClick={() =>
-                                onRequestVerify(context.mappingIds, !context.mappingVerified, {
-                                  isoCode: sourceIsoCode ?? undefined,
-                                })
-                              }
-                            >
-                              {context.mappingVerified
-                                ? 'Fjern verifisering'
-                                : !rowsLoaded
-                                  ? 'Verifiser (last inn produkter først)'
-                                  : verifyAttachmentComplete
-                                    ? 'Verifiser'
-                                    : 'Verifiser (koble produkter til v22 først)'}
-                            </Button>
-                          )}
-                        </>
-                      )}
+                      <BodyShort size="small" weight="semibold">
+                        Mapping mellom v16 og v22
+                      </BodyShort>
+                      <Tag variant={context.mappingVerified ? 'success' : 'warning'} size="small">
+                        {context.mappingVerified ? 'Verifisert' : 'Ikke verifisert'}
+                      </Tag>
                     </HStack>
+                  )}
+                  <HStack justify="end">
                     <Button variant="tertiary" size="small" onClick={() => setShowDetails((prev) => !prev)}>
                       {showDetails ? 'Skjul detaljer' : 'Vis detaljer'}
                     </Button>
@@ -283,38 +303,12 @@ const IsoBulkMoveModal = ({
                   {showDetails && (
                     <Box background="default" padding="space-12" borderRadius="8">
                       <HGrid columns={2} gap="space-16">
-                        <VStack gap="space-4">
-                          <BodyShort size="small" weight="semibold">
-                            v16-kategori
-                          </BodyShort>
-                          <BodyShort size="small">Kode: {context.isoCode}</BodyShort>
-                          <BodyShort size="small">Tittel: {context.iso4Title || 'Ingen tittel'}</BodyShort>
-                          <BodyShort size="small">Forklaring: {context.iso4Text || 'Ingen forklaring'}</BodyShort>
-                          <BodyShort size="small">Søkeord: {context.iso4SearchWords || 'Ingen søkeord'}</BodyShort>
-                        </VStack>
-                        <VStack gap="space-4">
-                          <BodyShort size="small" weight="semibold">
-                            v22-kategori
-                          </BodyShort>
-                          <BodyShort size="small">
-                            Kode: {context.iso22Lvl4 || context.iso22Lvl3 || 'Ingen kategori'}
-                          </BodyShort>
-                          <BodyShort size="small">
-                            Tittel: {context.iso22Lvl4Title || context.iso22Lvl3Title || 'Ingen tittel'}
-                          </BodyShort>
-                          {context.iso22Lvl4 ? (
-                            <>
-                              <BodyShort size="small">
-                                Forklaring: {context.iso22Lvl4Text || 'Ingen forklaring'}
-                              </BodyShort>
-                              <BodyShort size="small">
-                                Søkeord: {context.iso22Lvl4SearchWords || 'Ingen søkeord'}
-                              </BodyShort>
-                            </>
-                          ) : (
+                        <CategoryDetails heading="v16-kategori" details={v16Details} />
+                        <VStack gap="space-8">
+                          <CategoryDetails heading="v22-kategori" details={v22Details} />
+                          {!context.iso22Lvl4 && (
                             <BodyShort size="small" textColor="subtle">
-                              Ingen nivå 4-kategori under {context.iso22Lvl3 || '(ukjent nivå 3)'} enda. Forklaring og
-                              søkeord finnes først når en nivå 4-kategori opprettes.
+                              Ingen nivå 4-kategori under {context.iso22Lvl3 || '(ukjent nivå 3)'} ennå.
                             </BodyShort>
                           )}
                         </VStack>
@@ -363,9 +357,10 @@ const IsoBulkMoveModal = ({
                   <Alert variant="info" size="small">
                     <VStack gap="space-8">
                       <BodyShort size="small">
-                        Produktlisten er ikke lastet inn ennå. Last inn produkter og varianter for å se en korrekt
-                        oversikt over hva som er tilknyttet ISO {sourceIsoCode}.
+                        Produktlisten er ikke lastet inn ennå. Last inn produktene som har ISO {sourceIsoCode} for å se
+                        hva som er tilknyttet.
                       </BodyShort>
+                      {rowsLoadError && <BodyShort size="small">{rowsLoadError}</BodyShort>}
                       {onRequestLoadRows && (
                         <Button size="small" variant="secondary" onClick={onRequestLoadRows}>
                           Last inn produkter
@@ -486,6 +481,16 @@ const IsoBulkMoveModal = ({
                 <span style={{ whiteSpace: 'pre-line' }}>{attachError}</span>
               </Alert>
             )}
+            {attachSuccess && (
+              <Alert variant="success">
+                <VStack gap="space-8">
+                  <BodyShort>{attachSuccess}</BodyShort>
+                  <BodyShort size="small">
+                    {context?.mappingVerified ? 'Mappingen er verifisert.' : 'Mappingen er ikke verifisert ennå.'}
+                  </BodyShort>
+                </VStack>
+              </Alert>
+            )}
           </VStack>
         </Content>
       </Modal.Body>
@@ -504,6 +509,20 @@ const IsoBulkMoveModal = ({
             ? 'Alle produkter er koblet'
             : `Koble til ${remainingCount.toLocaleString('nb-NO')} gjenstående produkt${remainingCount === 1 ? '' : 'er'}`}
         </Button>
+        {context?.mappingAvailable && context.mappingIds.length > 0 && onRequestVerify && (
+          <Button
+            variant="secondary"
+            loading={verifying}
+            disabled={attaching || (!context.mappingVerified && !verifyAttachmentComplete)}
+            onClick={() =>
+              onRequestVerify(context.mappingIds, !context.mappingVerified, {
+                isoCode: sourceIsoCode ?? undefined,
+              })
+            }
+          >
+            {context.mappingVerified ? 'Fjern verifisering' : 'Verifiser mappinger'}
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   )
