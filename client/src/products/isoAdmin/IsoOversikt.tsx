@@ -16,6 +16,7 @@ import {
   ExpansionCard,
   HStack,
   Heading,
+  HelpText,
   InfoCard,
   Loader,
   Modal,
@@ -149,6 +150,7 @@ const IsoOversikt = () => {
   )
   const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(new Set())
   const [showMappingTypes, setShowMappingTypes] = useState(false)
+  const [showCounts, setShowCounts] = useState(false)
   const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
@@ -260,6 +262,25 @@ const IsoOversikt = () => {
     },
     [getIso22Targets]
   )
+
+  // Antall produkter og varianter per v16-kode (eksakt kode, samme regel som i Vis oversikt), fra
+  // allerede lastede rader. Ingen ekstra backend-kall.
+  const countsByIsoCode = useMemo(() => {
+    const seriesByCode = new Map<string, Set<string>>()
+    const variantsByCode = new Map<string, number>()
+    knownRows.forEach((row) => {
+      const series = seriesByCode.get(row.isoCode) ?? new Set<string>()
+      series.add(row.seriesId)
+      seriesByCode.set(row.isoCode, series)
+      variantsByCode.set(row.isoCode, (variantsByCode.get(row.isoCode) ?? 0) + 1)
+    })
+    return new Map(
+      [...seriesByCode].map(([code, series]) => [
+        code,
+        { products: series.size, variants: variantsByCode.get(code) ?? 0 },
+      ])
+    )
+  }, [knownRows])
 
   const attachmentCompleteByIsoCode = useMemo(() => {
     const map = new Map<string, boolean>()
@@ -758,6 +779,37 @@ const IsoOversikt = () => {
   // Kjøres kun én gang, og kun når datasettet er innenfor SERIES_WARN_THRESHOLD (loadAllRows setter
   // da pendingLargeLoad i stedet for å laste alt) - store, ufiltrerte uttrekk krever fortsatt et
   // eksplisitt admin-samtykke via "Fortsett likevel".
+  // Når antall-kolonnen slås på i Ren ISO-mapping, kjøres samme henting som "Hent liste" (den knappen
+  // finnes bare i Produkt/Variant). Med ISO-filter hentes bare filteret. Uten filter vises vanlig
+  // advarsel ved store uttrekk. Hvert omfang forsøkes én gang, så "Avbryt" ikke trigger ny henting.
+  const countLoadAttemptedScopeRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!showCounts) {
+      countLoadAttemptedScopeRef.current = null
+      return
+    }
+    if (pageMode !== 'mapping' || categoriesLoading || pageLoading) return
+    if (pendingLargeLoad && !selectedIsoCode) {
+      countLoadAttemptedScopeRef.current = ''
+      return
+    }
+    const scope = selectedIsoCode || ''
+    const covered = rows !== null && rowsScope !== null && scope.startsWith(rowsScope)
+    if (covered || countLoadAttemptedScopeRef.current === scope) return
+    countLoadAttemptedScopeRef.current = scope
+    void loadAllRows(false)
+  }, [
+    showCounts,
+    pageMode,
+    categoriesLoading,
+    pageLoading,
+    pendingLargeLoad,
+    selectedIsoCode,
+    rows,
+    rowsScope,
+    loadAllRows,
+  ])
+
   const backgroundPrefetchAttemptedRef = useRef(false)
   useEffect(() => {
     if (
@@ -916,6 +968,22 @@ const IsoOversikt = () => {
     setPageLoading(false)
     setLoadProgress(null)
   }
+
+  const largeLoadWarning = pendingLargeLoad && !selectedIsoCode && (
+    <Alert variant="warning">
+      Systemet inneholder <strong>{totalSeriesCount}</strong> aktive produktserier på tvers av alle ISO-kategorier. Uten
+      ISO-filter vil alle hentes, noe som kan ta lang tid eller feile. Velg ISO-filter ovenfor for å begrense uttrekket,
+      eller fortsett likevel.
+      <HStack gap="space-8" style={{ marginTop: '0.75rem' }}>
+        <Button size="small" variant="secondary" onClick={() => loadAllRows(true)}>
+          Fortsett likevel
+        </Button>
+        <Button size="small" variant="tertiary" onClick={() => setPendingLargeLoad(false)}>
+          Avbryt
+        </Button>
+      </HStack>
+    </Alert>
+  )
 
   if (isoError) {
     return (
@@ -1201,6 +1269,16 @@ const IsoOversikt = () => {
                         </ActionMenu.Group>
                       </div>
                     </div>
+                    {pageMode === 'mapping' && (
+                      <ActionMenu.Group label="Flere kolonner">
+                        <ActionMenu.CheckboxItem
+                          checked={showCounts}
+                          onCheckedChange={() => setShowCounts((current) => !current)}
+                        >
+                          Antall produkter / varianter
+                        </ActionMenu.CheckboxItem>
+                      </ActionMenu.Group>
+                    )}
                     {pageMode === 'extract' && (
                       <>
                         <ActionMenu.Group label="Mapping">
@@ -1381,6 +1459,18 @@ const IsoOversikt = () => {
 
             {!categoriesLoading && (
               <>
+                {showCounts && largeLoadWarning}
+                {showCounts && loadError && <Alert variant="error">{loadError}</Alert>}
+                {showCounts && pageLoading && (
+                  <HStack gap="space-8" align="center" role="status">
+                    <Loader size="small" title="Henter produkter" />
+                    <BodyShort>
+                      {loadProgress && loadProgress.total > 0
+                        ? `Henter ${loadProgress.loaded} av ${loadProgress.total} produkter for antall...`
+                        : 'Henter produkter for antall...'}
+                    </BodyShort>
+                  </HStack>
+                )}
                 <HStack justify="space-between" align="end" style={{ flexWrap: 'wrap' }} gap="space-16">
                   <BodyShort role="status" aria-live="polite">
                     {filteredMappingRows.length} mapping-rader{selectedIsoCode ? ` for ISO ${selectedIsoCode}` : ''}
@@ -1408,6 +1498,17 @@ const IsoOversikt = () => {
                           <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           <Table.HeaderCell scope="col">Endringstype</Table.HeaderCell>
+                          {showCounts && (
+                            <Table.HeaderCell scope="col" style={{ width: '1%', whiteSpace: 'nowrap' }}>
+                              <HStack gap="space-4" align="center" wrap={false}>
+                                Antall
+                                <HelpText title="Hva betyr Antall?" placement="top">
+                                  Antall produkter / varianter registrert med denne v16-koden. «–» betyr at produktene
+                                  ikke er lastet ennå.
+                                </HelpText>
+                              </HStack>
+                            </Table.HeaderCell>
+                          )}
                           <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                           {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
@@ -1422,6 +1523,17 @@ const IsoOversikt = () => {
                             <Table.DataCell>
                               <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
                             </Table.DataCell>
+                            {showCounts && (
+                              <Table.DataCell style={{ whiteSpace: 'nowrap' }}>
+                                {row.isoCode && isIsoCodeLoaded(row.isoCode) ? (
+                                  `${countsByIsoCode.get(row.isoCode)?.products ?? 0} / ${countsByIsoCode.get(row.isoCode)?.variants ?? 0}`
+                                ) : (
+                                  <span title="Ikke lastet. Bruk Hent liste eller Last inn produkter i Vis oversikt.">
+                                    –
+                                  </span>
+                                )}
+                              </Table.DataCell>
+                            )}
                             <Table.DataCell>
                               <MappingVerification verified={row.mappingVerified} />
                             </Table.DataCell>
@@ -1474,21 +1586,7 @@ const IsoOversikt = () => {
         {pageMode === 'extract' && (
           <>
             {/* Fetch trigger + summary */}
-            {pendingLargeLoad && !selectedIsoCode && (
-              <Alert variant="warning">
-                Systemet inneholder <strong>{totalSeriesCount}</strong> aktive produktserier på tvers av alle
-                ISO-kategorier. Uten ISO-filter vil alle hentes, noe som kan ta lang tid eller feile. Velg ISO-filter
-                ovenfor for å begrense uttrekket, eller fortsett likevel.
-                <HStack gap="space-8" style={{ marginTop: '0.75rem' }}>
-                  <Button size="small" variant="secondary" onClick={() => loadAllRows(true)}>
-                    Fortsett likevel
-                  </Button>
-                  <Button size="small" variant="tertiary" onClick={() => setPendingLargeLoad(false)}>
-                    Avbryt
-                  </Button>
-                </HStack>
-              </Alert>
-            )}
+            {largeLoadWarning}
             {loadError && <Alert variant="error">{loadError}</Alert>}
 
             {pageLoading && (

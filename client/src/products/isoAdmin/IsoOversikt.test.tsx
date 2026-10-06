@@ -1037,6 +1037,103 @@ test('Last inn produkter i oversikten henter kun oversiktens egen v16-kode, ikke
   expect(screen.getByText(/Systemet inneholder/)).toBeInTheDocument()
 })
 
+const showCountColumn = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Antall produkter / varianter' }))
+}
+
+test('Ren ISO-mapping viser antall produkter / varianter fra lastede rader, og – når koden ikke er lastet', async () => {
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  expect(screen.queryByRole('columnheader', { name: /^Antall/ })).not.toBeInTheDocument()
+  showCountColumn()
+  expect(screen.getByRole('columnheader', { name: /^Antall/ })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Hva betyr Antall?' })).toBeInTheDocument()
+
+  const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
+  await waitFor(() => expect(within(row18()).getByText('1 / 1')).toBeInTheDocument())
+  const row05 = screen.getAllByText('050303')[0].closest('tr') as HTMLElement
+  expect(within(row05).getByText('0 / 0')).toBeInTheDocument()
+})
+
+test('antall vises som – til oversikten har lastet koden, og oppdateres etterpå', async () => {
+  useUnverifiedRollatorMapping()
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      if (!isoCode) return HttpResponse.json({ content: [], totalPages: 1, totalSize: 4758 })
+      return HttpResponse.json({
+        content: [overviewSeries('s1', 'Rollator Alfa', '18090301'), overviewSeries('s3', 'Rollator Beta', null)],
+        totalPages: 1,
+        totalSize: 2,
+      })
+    })
+  )
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  showCountColumn()
+  const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
+  expect(within(row18()).getByText('–')).toBeInTheDocument()
+
+  enableEditMode()
+  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: /ISO 18090301/ })
+  fireEvent.click(within(overview).getByRole('button', { name: 'Last inn produkter' }))
+  await within(overview).findByText('Rollator Beta')
+  fireEvent.click(within(overview).getByRole('button', { name: 'Avbryt' }))
+
+  await waitFor(() => expect(within(row18()).getByText('2 / 2')).toBeInTheDocument())
+})
+
+const useLargeSystemWithRollators = () => {
+  useUnverifiedRollatorMapping()
+  const requestedIsoCodes: (string | null)[] = []
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const isoCode = new URL(request.url).searchParams.get('isoCode')
+      requestedIsoCodes.push(isoCode)
+      return HttpResponse.json({
+        content: [overviewSeries('s1', 'Rollator Alfa', '18090301'), overviewSeries('s3', 'Rollator Beta', null)],
+        totalPages: 1,
+        totalSize: isoCode ? 2 : 4758,
+      })
+    })
+  )
+  return requestedIsoCodes
+}
+
+test('antall-kolonnen henter produktene automatisk for valgt ISO-filter i Ren ISO-mapping', async () => {
+  const requestedIsoCodes = useLargeSystemWithRollators()
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
+  fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
+
+  showCountColumn()
+
+  const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
+  await waitFor(() => expect(within(row18()).getByText('2 / 2')).toBeInTheDocument())
+  expect(requestedIsoCodes).toEqual([null, '18'])
+  expect(screen.queryByRole('button', { name: 'Hent liste' })).not.toBeInTheDocument()
+})
+
+test('antall-kolonnen uten ISO-filter viser advarsel om stort uttrekk før alt hentes', async () => {
+  const requestedIsoCodes = useLargeSystemWithRollators()
+  renderPage()
+  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
+
+  showCountColumn()
+  expect(await screen.findByText(/Systemet inneholder/)).toBeInTheDocument()
+  const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
+  expect(within(row18()).getByText('–')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Fortsett likevel' }))
+  await waitFor(() => expect(within(row18()).getByText('2 / 2')).toBeInTheDocument())
+  expect(screen.queryByText(/Systemet inneholder/)).not.toBeInTheDocument()
+})
+
 test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet sendes', async () => {
   let createCalls = 0
   server.use(
