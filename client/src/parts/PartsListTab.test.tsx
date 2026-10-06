@@ -289,16 +289,16 @@ test('viser fullkatalogvarsel for «Alle treff» uten filtre', async () => {
   expect(await dialog.findByText('Ingen filtre er satt – hele katalogen eksporteres.')).toBeInTheDocument()
 })
 
-test('sperrer «Alle treff» over 2 000 kall og åpner igjen når detaljfelter fjernes', async () => {
+test('sperrer «Alle treff» over 3 000 kall og åpner igjen når detaljfelter fjernes', async () => {
   useAuthStore.setState({ loggedInUser: adminUser })
-  mockParts([dummyPart()], undefined, 2500)
+  mockParts([dummyPart()], undefined, 3500)
 
   renderTab()
   await screen.findByText('Hjul 10 tommer')
   const dialog = await openExportDialog()
   fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
 
-  expect(await dialog.findByText(/For stor eksport: ca\. 2[\s\u00a0]525 kall/)).toBeInTheDocument()
+  expect(await dialog.findByText(/For stor eksport: ca\. 3[\s\u00a0]535 kall/)).toBeInTheDocument()
   expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeDisabled()
 
   fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
@@ -367,24 +367,27 @@ test('viser feilmeldingen fra baksystemet når henting av sider feiler', async (
   expect(exportRows).not.toHaveBeenCalled()
 })
 
-test('stopper «Alle treff» før detaljkall når de hentede sidene gir over 2 000 kall', async () => {
+test('stopper «Alle treff» før detaljkall når sidekall og detaljkall til sammen gir over 3 000', async () => {
   useAuthStore.setState({ loggedInUser: adminUser })
-  const manyLinks = Array.from({ length: 2001 }, (_, index) => `linked-${index}`)
-  const pageWithoutLinks = dummyPart({
-    productData: { techData: [], attributes: { compatibleWith: { seriesIds: [], productIds: [] } } },
-  })
-  const pageWithLinks = dummyPart({
-    id: 'part-2',
-    productData: { techData: [], attributes: { compatibleWith: { seriesIds: manyLinks, productIds: [] } } },
-  })
+  // 101 parts over 2 pages: 2 page requests + 2 999 linked series = 3 001. The first page has no links,
+  // so the modal's estimate (2 requests) lets the export start.
+  const manyLinks = Array.from({ length: 2999 }, (_, index) => `linked-${index}`)
+  const firstPage = Array.from({ length: 100 }, (_, index) =>
+    dummyPart({
+      id: `part-${index}`,
+      productData: { techData: [], attributes: { compatibleWith: { seriesIds: [], productIds: [] } } },
+    })
+  )
+  const secondPage = [
+    dummyPart({
+      id: 'part-with-links',
+      productData: { techData: [], attributes: { compatibleWith: { seriesIds: manyLinks, productIds: [] } } },
+    }),
+  ]
   server.use(
     http.get(PARTS_URL, ({ request }) => {
       const page = new URL(request.url).searchParams.get('page')
-      return HttpResponse.json({
-        content: [page === '1' ? pageWithLinks : pageWithoutLinks],
-        totalSize: 2,
-        totalPages: 2,
-      })
+      return HttpResponse.json({ content: page === '1' ? secondPage : firstPage, totalSize: 101, totalPages: 2 })
     })
   )
   const detailSpy = vi.fn()
@@ -396,7 +399,7 @@ test('stopper «Alle treff» før detaljkall når de hentede sidene gir over 2 0
   )
 
   renderTab()
-  await screen.findByText('Hjul 10 tommer')
+  await screen.findAllByText('Hjul 10 tommer')
   const dialog = await openExportDialog()
   fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
   fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
@@ -404,7 +407,7 @@ test('stopper «Alle treff» før detaljkall når de hentede sidene gir over 2 0
   fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
   fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
 
-  expect(await dialog.findByText(/For stor eksport: ca\. 2[\s\u00a0]001 kall/)).toBeInTheDocument()
+  expect(await dialog.findByText(/For stor eksport: ca\. 3[\s\u00a0]001 kall/)).toBeInTheDocument()
   expect(detailSpy).not.toHaveBeenCalled()
   expect(exportRows).not.toHaveBeenCalled()
 })

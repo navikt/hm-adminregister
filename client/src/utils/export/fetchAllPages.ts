@@ -2,10 +2,14 @@ import { fetchAPI } from 'api/fetch'
 
 export const EXPORT_PAGE_SIZE = 100
 export const EXPORT_DETAIL_BATCH_SIZE = 20
-/** Above this many HTTP requests (~5 min) an export is blocked to protect the backend. */
-export const MAX_EXPORT_REQUESTS = 2000
+/** Above this many HTTP requests (page and detail requests together) an export is blocked to protect the backend. */
+export const MAX_EXPORT_REQUESTS = 3000
 /** Observed time per sequential round trip (one page, or one batch of parallel detail requests). */
 export const SECONDS_PER_ROUND = 0.5
+
+/** Page requests fetchAllPages made for `itemCount` items (at least one, even for an empty result). */
+export const pageRequestsFor = (itemCount: number, pageSize = EXPORT_PAGE_SIZE) =>
+  Math.max(1, Math.ceil(itemCount / pageSize))
 
 type PagedResponse<T> = { content?: T[]; totalPages?: number }
 

@@ -13,7 +13,7 @@ import {
 import { TechnicianSeriesSearchParams, buildTechnicianSeriesSearchPath } from 'parts/export/partExportApi'
 import { SeriesList } from 'parts/series/SeriesList'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
-import { fetchAllPages } from 'utils/export/fetchAllPages'
+import { fetchAllPages, pageRequestsFor } from 'utils/export/fetchAllPages'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import {
   usePagedProductsForTechnician,
@@ -100,7 +100,8 @@ const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
           signal
         )
       : currentPageSeries
-    return getPartsPerSeriesExportRows(series, signal)
+    const pageRequests = fetchesAllPages(scope) ? pageRequestsFor(series.length) : 0
+    return getPartsPerSeriesExportRows(series, signal, pageRequests)
   }
 
   const estimateExport = (scope: ExportScope) =>

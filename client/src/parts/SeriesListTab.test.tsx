@@ -121,11 +121,11 @@ test('eksporterer én rad per produktserie og del', async () => {
   ])
 })
 
-test('sperrer «Alle treff» når antall produktserier gir over 2 000 kall', async () => {
+test('sperrer «Alle treff» når antall produktserier gir over 3 000 kall', async () => {
   useAuthStore.setState({ loggedInUser: adminUser })
   server.use(
     http.get('http://localhost:8080/admreg/api/v1/series', () =>
-      HttpResponse.json({ content: [series('s1', 'Rullestol A')], totalSize: 2500, totalPages: 2500 })
+      HttpResponse.json({ content: [series('s1', 'Rullestol A')], totalSize: 3500, totalPages: 3500 })
     )
   )
 

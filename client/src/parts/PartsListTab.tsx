@@ -8,7 +8,7 @@ import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
 import { estimatePartExport, getPartExportRows, partExportDefaultKeys, partExportFields } from 'parts/export/partExport'
 import { PartSearchParams, buildPartSearchPath } from 'parts/export/partExportApi'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
-import { fetchAllPages } from 'utils/export/fetchAllPages'
+import { fetchAllPages, pageRequestsFor } from 'utils/export/fetchAllPages'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { useSuppliers } from 'utils/swr-hooks'
@@ -152,15 +152,15 @@ const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
     selectedKeys?: string[],
     signal?: AbortSignal
   ) => {
-    const parts =
-      scope === 'all' && !partByVariantIdentifier
-        ? await fetchAllPages<ProductRegistrationDTOV2>(
-            (page, pageSize) => buildPartSearchPath({ ...partQueryParams, page, pageSize }),
-            undefined,
-            signal
-          )
-        : currentPageParts
-    return getPartExportRows(parts, selectedKeys, signal)
+    const fetchesAllPages = scope === 'all' && !partByVariantIdentifier
+    const parts = fetchesAllPages
+      ? await fetchAllPages<ProductRegistrationDTOV2>(
+          (page, pageSize) => buildPartSearchPath({ ...partQueryParams, page, pageSize }),
+          undefined,
+          signal
+        )
+      : currentPageParts
+    return getPartExportRows(parts, selectedKeys, signal, fetchesAllPages ? pageRequestsFor(parts.length) : 0)
   }
 
   const estimateExport = (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {

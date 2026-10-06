@@ -147,7 +147,8 @@ const fetchSeriesTitles = async (
 export const getPartExportRows = async (
   parts: ProductRegistrationDTOV2[],
   selectedKeys: string[] = [],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  requestsAlreadyMade = 0
 ): Promise<Record<string, unknown>[]> => {
   const seriesIds = needsSource('seriesDetail', selectedKeys) ? uniqueIds(parts.map((part) => part.seriesUUID)) : []
   const fetchedSeriesIds = new Set(seriesIds)
@@ -162,7 +163,10 @@ export const getPartExportRows = async (
 
   // The modal's estimate is extrapolated from one page; check the exact count before any detail request.
   assertWithinRequestLimit(
-    seriesIds.length + linkedSeriesIds.length + rounds(linkedProductIds.length, LINKED_PRODUCTS_BATCH_SIZE),
+    requestsAlreadyMade +
+      seriesIds.length +
+      linkedSeriesIds.length +
+      rounds(linkedProductIds.length, LINKED_PRODUCTS_BATCH_SIZE),
     PART_EXPORT_ADVICE
   )
 
@@ -311,9 +315,10 @@ export const partsPerSeriesDefaultKeys = ['seriesTitle', 'articleName', 'supplie
 
 export const getPartsPerSeriesExportRows = async (
   series: SeriesSearchDTO[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  requestsAlreadyMade = 0
 ): Promise<Record<string, unknown>[]> => {
-  assertWithinRequestLimit(series.length, SERIES_EXPORT_ADVICE)
+  assertWithinRequestLimit(requestsAlreadyMade + series.length, SERIES_EXPORT_ADVICE)
   const partsPerSeries = await fetchInBatches(
     series,
     (s) => getPartsBySeriesId(s.id, signal),
