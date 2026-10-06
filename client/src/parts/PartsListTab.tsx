@@ -166,7 +166,7 @@ const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
   const estimateExport = (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {
     const fetchesAllPages = scope === 'all' && !partByVariantIdentifier
     return estimatePartExport({
-      rows: fetchesAllPages ? pagedData?.totalSize ?? 0 : currentPageParts.length,
+      rows: fetchesAllPages ? pagedData?.totalSize : currentPageParts.length,
       fetchesAllPages,
       currentPage: currentPageParts,
       selectedKeys,

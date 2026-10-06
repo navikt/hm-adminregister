@@ -105,7 +105,7 @@ const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
 
   const estimateExport = (scope: ExportScope) =>
     estimatePartsPerSeriesExport({
-      seriesCount: fetchesAllPages(scope) ? pagedData?.totalSize ?? 0 : currentPageSeries.length,
+      seriesCount: fetchesAllPages(scope) ? pagedData?.totalSize : currentPageSeries.length,
       fetchesAllPages: fetchesAllPages(scope),
     })
 

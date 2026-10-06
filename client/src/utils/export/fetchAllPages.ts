@@ -9,16 +9,26 @@ export const SECONDS_PER_ROUND = 0.5
 
 type PagedResponse<T> = { content?: T[]; totalPages?: number }
 
+// fetchAPI rejects with a plain { message } object; ExportModal only shows the message of an Error.
+export const rethrowAsError = (error: unknown): never => {
+  if (error instanceof Error) throw error
+  const message = (error as { message?: unknown } | null)?.message
+  throw new Error(typeof message === 'string' && message ? message : 'Eksport feilet')
+}
+
+const fetchPage = <T>(path: string, signal?: AbortSignal) =>
+  (fetchAPI(path, 'GET', undefined, signal) as Promise<PagedResponse<T>>).catch(rethrowAsError)
+
 export const fetchAllPages = async <T>(
   buildPath: (page: number, pageSize: number) => string,
   pageSize = EXPORT_PAGE_SIZE,
   signal?: AbortSignal
 ): Promise<T[]> => {
-  const first = (await fetchAPI(buildPath(0, pageSize), 'GET', undefined, signal)) as PagedResponse<T>
+  const first = await fetchPage<T>(buildPath(0, pageSize), signal)
   const totalPages = first.totalPages ?? 1
   const all = [...(first.content || [])]
   for (let page = 1; page < totalPages; page++) {
-    const chunk = (await fetchAPI(buildPath(page, pageSize), 'GET', undefined, signal)) as PagedResponse<T>
+    const chunk = await fetchPage<T>(buildPath(page, pageSize), signal)
     all.push(...(chunk.content || []))
   }
   return all
@@ -34,7 +44,7 @@ export const fetchInBatches = async <I, R>(
   for (let i = 0; i < items.length; i += batchSize) {
     signal?.throwIfAborted()
     const batch = items.slice(i, i + batchSize)
-    results.push(...(await Promise.all(batch.map(fetchOne))))
+    results.push(...(await Promise.all(batch.map(fetchOne)).catch(rethrowAsError)))
   }
   return results
 }

@@ -16,6 +16,7 @@ import {
   SECONDS_PER_ROUND,
   chunk,
   fetchInBatches,
+  rethrowAsError,
   uniqueIds,
 } from 'utils/export/fetchAllPages'
 import { isUUID } from 'utils/string-util'
@@ -96,7 +97,7 @@ const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Pr
   const labels = new Map<string, string>()
   for (const idChunk of chunk(ids, LINKED_PRODUCTS_BATCH_SIZE)) {
     signal?.throwIfAborted()
-    const products = await getProductsByIds(idChunk, signal)
+    const products = await getProductsByIds(idChunk, signal).catch(rethrowAsError)
     products.forEach((product) =>
       labels.set(product.id, [product.hmsArtNr, product.articleName].filter(Boolean).join(' – '))
     )
@@ -224,6 +225,12 @@ const estimateUniqueLinks = (
   return Math.round((uniqueOnPage / currentPage.length) * rows)
 }
 
+// Without the hit count the limit can't be checked, so "Alle treff" waits for the list to load.
+const waitingForResult: ExportEstimate = {
+  rows: 0,
+  blockedReason: 'Venter på søkeresultatet før eksporten kan starte.',
+}
+
 /** Counts HTTP requests (not batches), since that is the load on the backend. */
 export const estimatePartExport = ({
   rows,
@@ -231,11 +238,12 @@ export const estimatePartExport = ({
   currentPage,
   selectedKeys = [],
 }: {
-  rows: number
+  rows: number | undefined
   fetchesAllPages: boolean
   currentPage: ProductRegistrationDTOV2[]
   selectedKeys?: string[]
 }): ExportEstimate => {
+  if (rows === undefined) return waitingForResult
   const pageRequests = fetchesAllPages ? Math.ceil(rows / EXPORT_PAGE_SIZE) : 0
   // Each part has its own series, so one detail request per part.
   const seriesDetailRequests = needsSource('seriesDetail', selectedKeys) ? rows : 0
@@ -314,9 +322,10 @@ export const estimatePartsPerSeriesExport = ({
   seriesCount,
   fetchesAllPages,
 }: {
-  seriesCount: number
+  seriesCount: number | undefined
   fetchesAllPages: boolean
 }): ExportEstimate => {
+  if (seriesCount === undefined) return waitingForResult
   const pageRequests = fetchesAllPages ? Math.ceil(seriesCount / EXPORT_PAGE_SIZE) : 0
   const requests = pageRequests + seriesCount
   return {

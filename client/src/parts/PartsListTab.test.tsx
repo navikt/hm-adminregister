@@ -332,3 +332,37 @@ test('avbryter eksporten og laster ikke ned når modalen lukkes', async () => {
   await new Promise((resolve) => setTimeout(resolve, 50))
   expect(exportRows).not.toHaveBeenCalled()
 })
+
+test('sperrer «Alle treff» til søkeresultatet er lastet', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  server.use(http.get(PARTS_URL, () => new Promise<never>(() => {})))
+
+  renderTab()
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
+
+  expect(await dialog.findByText('Venter på søkeresultatet før eksporten kan starte.')).toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeDisabled()
+})
+
+test('viser feilmeldingen fra baksystemet når henting av sider feiler', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  server.use(
+    http.get(PARTS_URL, ({ request }) =>
+      new URL(request.url).searchParams.get('size') === '100'
+        ? HttpResponse.json({ message: 'Tjenesten er utilgjengelig' }, { status: 503 })
+        : HttpResponse.json({ content: [dummyPart()], totalSize: 1, totalPages: 1 })
+    )
+  )
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
+  fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+
+  expect(await dialog.findByText('Tjenesten er utilgjengelig')).toBeInTheDocument()
+  expect(exportRows).not.toHaveBeenCalled()
+})
