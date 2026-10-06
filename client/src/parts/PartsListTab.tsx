@@ -146,14 +146,21 @@ const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
     ? [partByVariantIdentifier]
     : pagedData?.content || []
 
-  const getExportRows = async (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {
+  const getExportRows = async (
+    scope: ExportScope,
+    _level?: string,
+    selectedKeys?: string[],
+    signal?: AbortSignal
+  ) => {
     const parts =
       scope === 'all' && !partByVariantIdentifier
-        ? await fetchAllPages<ProductRegistrationDTOV2>((page, pageSize) =>
-            buildPartSearchPath({ ...partQueryParams, page, pageSize })
+        ? await fetchAllPages<ProductRegistrationDTOV2>(
+            (page, pageSize) => buildPartSearchPath({ ...partQueryParams, page, pageSize }),
+            undefined,
+            signal
           )
         : currentPageParts
-    return getPartExportRows(parts, selectedKeys)
+    return getPartExportRows(parts, selectedKeys, signal)
   }
 
   const estimateExport = (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {
@@ -397,6 +404,7 @@ const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
         isUnfiltered={isUnfilteredExport}
         rowNoun="deler"
         compact
+        cancelOnClose
       />
     </TabPanel>
   )

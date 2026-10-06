@@ -92,13 +92,15 @@ const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
     : pagedData?.content || []
   const fetchesAllPages = (scope: ExportScope) => scope === 'all' && !seriesByVariantIdentifier
 
-  const getExportRows = async (scope: ExportScope) => {
+  const getExportRows = async (scope: ExportScope, _level?: string, _selectedKeys?: string[], signal?: AbortSignal) => {
     const series = fetchesAllPages(scope)
-      ? await fetchAllPages<SeriesSearchDTO>((page, pageSize) =>
-          buildTechnicianSeriesSearchPath({ ...seriesQueryParams, page, pageSize })
+      ? await fetchAllPages<SeriesSearchDTO>(
+          (page, pageSize) => buildTechnicianSeriesSearchPath({ ...seriesQueryParams, page, pageSize }),
+          undefined,
+          signal
         )
       : currentPageSeries
-    return getPartsPerSeriesExportRows(series)
+    return getPartsPerSeriesExportRows(series, signal)
   }
 
   const estimateExport = (scope: ExportScope) =>
@@ -285,6 +287,7 @@ const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
         isUnfiltered={searchTerm === '' && !supplierFilter}
         rowNoun="produktserier"
         compact
+        cancelOnClose
       />
     </TabPanel>
   )

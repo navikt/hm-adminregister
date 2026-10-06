@@ -288,3 +288,47 @@ test('viser fullkatalogvarsel for «Alle treff» uten filtre', async () => {
 
   expect(await dialog.findByText('Ingen filtre er satt – hele katalogen eksporteres.')).toBeInTheDocument()
 })
+
+test('sperrer «Alle treff» over 2 000 kall og åpner igjen når detaljfelter fjernes', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  mockParts([dummyPart()], undefined, 2500)
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
+
+  expect(await dialog.findByText(/For stor eksport: ca\. 2[\s\u00a0]525 kall/)).toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeDisabled()
+
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'Leverandør' }))
+  fireEvent.click(dialog.getByRole('checkbox', { name: 'ISO-kode' }))
+
+  expect(dialog.queryByText(/For stor eksport/)).not.toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeEnabled()
+})
+
+test('avbryter eksporten og laster ikke ned når modalen lukkes', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  mockParts([dummyPart()])
+  let releaseDetail: () => void = () => {}
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/series-1', async () => {
+      await new Promise<void>((resolve) => (releaseDetail = resolve))
+      return HttpResponse.json(seriesDetail('series-1'))
+    })
+  )
+
+  renderTab()
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+  const cancelButton = dialog.getByRole('button', { name: 'Avbryt' })
+  await waitFor(() => expect(cancelButton).toBeEnabled())
+  fireEvent.click(cancelButton)
+  releaseDetail()
+
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  await new Promise((resolve) => setTimeout(resolve, 50))
+  expect(exportRows).not.toHaveBeenCalled()
+})

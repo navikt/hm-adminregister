@@ -8,9 +8,12 @@ import {
   activeAgreementsSortedByRank,
   widenRowsWithAgreementSlots,
 } from 'utils/export/agreementSlots'
+import { formatNumber } from 'utils/export/exportUtils'
 import {
   EXPORT_DETAIL_BATCH_SIZE,
   EXPORT_PAGE_SIZE,
+  MAX_EXPORT_REQUESTS,
+  SECONDS_PER_ROUND,
   chunk,
   fetchInBatches,
   uniqueIds,
@@ -89,10 +92,11 @@ const ISO_LEVEL_4_LENGTH = 8
 const isoLevel4CodeOf = (isoCode: string | undefined) => (isoCode ?? '').replace(/\s/g, '').slice(0, ISO_LEVEL_4_LENGTH)
 const compatibleWithOf = (part: ProductRegistrationDTOV2) => part.productData?.attributes?.compatibleWith
 
-const fetchLinkedProductLabels = async (ids: string[]): Promise<Map<string, string>> => {
+const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Promise<Map<string, string>> => {
   const labels = new Map<string, string>()
   for (const idChunk of chunk(ids, LINKED_PRODUCTS_BATCH_SIZE)) {
-    const products = await getProductsByIds(idChunk)
+    signal?.throwIfAborted()
+    const products = await getProductsByIds(idChunk, signal)
     products.forEach((product) =>
       labels.set(product.id, [product.hmsArtNr, product.articleName].filter(Boolean).join(' – '))
     )
@@ -101,11 +105,19 @@ const fetchLinkedProductLabels = async (ids: string[]): Promise<Map<string, stri
 }
 
 // A linked series may have been deleted since the link was made; fall back to the id instead of failing the export.
-const fetchSeriesTitles = async (ids: string[], known: Map<string, SeriesDTO>): Promise<Map<string, string>> => {
+const fetchSeriesTitles = async (
+  ids: string[],
+  known: Map<string, SeriesDTO>,
+  signal?: AbortSignal
+): Promise<Map<string, string>> => {
   const missing = ids.filter((id) => !known.has(id))
-  const fetched = await fetchInBatches(missing, (id) =>
-    getSeriesBySeriesId(id).catch((): SeriesDTO | undefined => undefined)
+  const fetched = await fetchInBatches(
+    missing,
+    (id) => getSeriesBySeriesId(id, signal).catch((): SeriesDTO | undefined => undefined),
+    EXPORT_DETAIL_BATCH_SIZE,
+    signal
   )
+  signal?.throwIfAborted()
   const titles = new Map<string, string>()
   known.forEach((series, id) => titles.set(id, series.title))
   fetched.forEach((series) => series && titles.set(series.id, series.title))
@@ -114,21 +126,34 @@ const fetchSeriesTitles = async (ids: string[], known: Map<string, SeriesDTO>): 
 
 export const getPartExportRows = async (
   parts: ProductRegistrationDTOV2[],
-  selectedKeys: string[] = []
+  selectedKeys: string[] = [],
+  signal?: AbortSignal
 ): Promise<Record<string, unknown>[]> => {
   const seriesById = new Map<string, SeriesDTO>()
   if (needsSource('seriesDetail', selectedKeys)) {
     const seriesIds = uniqueIds(parts.map((part) => part.seriesUUID))
-    const details = await fetchInBatches(seriesIds, (id) => getSeriesBySeriesId(id))
+    const details = await fetchInBatches(
+      seriesIds,
+      (id) => getSeriesBySeriesId(id, signal),
+      EXPORT_DETAIL_BATCH_SIZE,
+      signal
+    )
     details.forEach((series) => seriesById.set(series.id, series))
   }
 
   const linkedSeriesTitles = needsSource('linkedSeries', selectedKeys)
-    ? await fetchSeriesTitles(uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.seriesIds ?? [])), seriesById)
+    ? await fetchSeriesTitles(
+        uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.seriesIds ?? [])),
+        seriesById,
+        signal
+      )
     : new Map<string, string>()
 
   const linkedProductLabels = needsSource('linkedProducts', selectedKeys)
-    ? await fetchLinkedProductLabels(uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.productIds ?? [])))
+    ? await fetchLinkedProductLabels(
+        uniqueIds(parts.flatMap((part) => compatibleWithOf(part)?.productIds ?? [])),
+        signal
+      )
     : new Map<string, string>()
 
   const rows: RowWithAgreements[] = parts.map((part) => {
@@ -180,6 +205,26 @@ export const getPartExportRows = async (
   return selectedKeys.includes('agreementDetails') ? widenRowsWithAgreementSlots(rows) : rows.map((row) => row.base)
 }
 
+const rounds = (requests: number, batchSize: number) => Math.ceil(requests / batchSize)
+
+const blockedReasonFor = (requests: number, advice: string) =>
+  requests > MAX_EXPORT_REQUESTS
+    ? `For stor eksport: ca. ${formatNumber(requests)} kall mot baksystemet (maks ${formatNumber(MAX_EXPORT_REQUESTS)}). ${advice}`
+    : undefined
+
+// Unique linked ids on the current page, scaled to all rows. The share of unique ids only falls as more
+// parts are included, so for "Alle treff" this is an upper bound, which is the safe side for the limit.
+const estimateUniqueLinks = (
+  rows: number,
+  currentPage: ProductRegistrationDTOV2[],
+  idsOf: (part: ProductRegistrationDTOV2) => string[]
+) => {
+  if (currentPage.length === 0) return 0
+  const uniqueOnPage = uniqueIds(currentPage.flatMap(idsOf)).length
+  return Math.round((uniqueOnPage / currentPage.length) * rows)
+}
+
+/** Counts HTTP requests (not batches), since that is the load on the backend. */
 export const estimatePartExport = ({
   rows,
   fetchesAllPages,
@@ -191,20 +236,35 @@ export const estimatePartExport = ({
   currentPage: ProductRegistrationDTOV2[]
   selectedKeys?: string[]
 }): ExportEstimate => {
-  const average = (count: (part: ProductRegistrationDTOV2) => number) =>
-    currentPage.length > 0 ? currentPage.reduce((sum, part) => sum + count(part), 0) / currentPage.length : 0
-  const linkedSeries = needsSource('linkedSeries', selectedKeys)
-  const linkedProducts = needsSource('linkedProducts', selectedKeys)
-  const estimatedLinkedSeries = Math.round(rows * average((part) => compatibleWithOf(part)?.seriesIds?.length ?? 0))
-  const estimatedLinkedProducts = Math.round(rows * average((part) => compatibleWithOf(part)?.productIds?.length ?? 0))
+  const pageRequests = fetchesAllPages ? Math.ceil(rows / EXPORT_PAGE_SIZE) : 0
+  // Each part has its own series, so one detail request per part.
+  const seriesDetailRequests = needsSource('seriesDetail', selectedKeys) ? rows : 0
+  const linkedSeriesRequests = needsSource('linkedSeries', selectedKeys)
+    ? estimateUniqueLinks(rows, currentPage, (part) => compatibleWithOf(part)?.seriesIds ?? [])
+    : 0
+  const linkedProductRequests = needsSource('linkedProducts', selectedKeys)
+    ? Math.ceil(
+        estimateUniqueLinks(rows, currentPage, (part) => compatibleWithOf(part)?.productIds ?? []) /
+          LINKED_PRODUCTS_BATCH_SIZE
+      )
+    : 0
 
-  const requests =
-    (fetchesAllPages ? Math.ceil(rows / EXPORT_PAGE_SIZE) : 0) +
-    (needsSource('seriesDetail', selectedKeys) ? Math.ceil(rows / EXPORT_DETAIL_BATCH_SIZE) : 0) +
-    (linkedSeries ? Math.ceil(estimatedLinkedSeries / EXPORT_DETAIL_BATCH_SIZE) : 0) +
-    (linkedProducts ? Math.ceil(estimatedLinkedProducts / LINKED_PRODUCTS_BATCH_SIZE) : 0)
+  const requests = pageRequests + seriesDetailRequests + linkedSeriesRequests + linkedProductRequests
+  const sequentialRounds =
+    pageRequests +
+    rounds(seriesDetailRequests, EXPORT_DETAIL_BATCH_SIZE) +
+    rounds(linkedSeriesRequests, EXPORT_DETAIL_BATCH_SIZE) +
+    linkedProductRequests
 
-  return { rows, requests }
+  return {
+    rows,
+    requests,
+    seconds: sequentialRounds * SECONDS_PER_ROUND,
+    blockedReason: blockedReasonFor(
+      requests,
+      'Bruk filter eller fjern felter som krever detaljer (leverandør, ISO, status, datoer, bilder og video, koblede serier og produkter).'
+    ),
+  }
 }
 
 export const partsPerSeriesExportFields: ExportField[] = [
@@ -223,8 +283,16 @@ export const partsPerSeriesExportFields: ExportField[] = [
 
 export const partsPerSeriesDefaultKeys = ['seriesTitle', 'articleName', 'supplierRef', 'hmsArtNr', 'type']
 
-export const getPartsPerSeriesExportRows = async (series: SeriesSearchDTO[]): Promise<Record<string, unknown>[]> => {
-  const partsPerSeries = await fetchInBatches(series, (s) => getPartsBySeriesId(s.id))
+export const getPartsPerSeriesExportRows = async (
+  series: SeriesSearchDTO[],
+  signal?: AbortSignal
+): Promise<Record<string, unknown>[]> => {
+  const partsPerSeries = await fetchInBatches(
+    series,
+    (s) => getPartsBySeriesId(s.id, signal),
+    EXPORT_DETAIL_BATCH_SIZE,
+    signal
+  )
   return series.flatMap((s, index) =>
     (partsPerSeries[index] ?? []).map((part) => ({
       seriesTitle: s.title,
@@ -248,9 +316,13 @@ export const estimatePartsPerSeriesExport = ({
 }: {
   seriesCount: number
   fetchesAllPages: boolean
-}): ExportEstimate => ({
-  rows: seriesCount,
-  requests:
-    (fetchesAllPages ? Math.ceil(seriesCount / EXPORT_PAGE_SIZE) : 0) +
-    Math.ceil(seriesCount / EXPORT_DETAIL_BATCH_SIZE),
-})
+}): ExportEstimate => {
+  const pageRequests = fetchesAllPages ? Math.ceil(seriesCount / EXPORT_PAGE_SIZE) : 0
+  const requests = pageRequests + seriesCount
+  return {
+    rows: seriesCount,
+    requests,
+    seconds: (pageRequests + rounds(seriesCount, EXPORT_DETAIL_BATCH_SIZE)) * SECONDS_PER_ROUND,
+    blockedReason: blockedReasonFor(requests, 'Bruk søk eller leverandørfilter for å få færre produktserier.'),
+  }
+}

@@ -120,3 +120,22 @@ test('eksporterer én rad per produktserie og del', async () => {
     { Produktserie: 'Rullestol B', Del: 'Brems', 'Lev-artnr': 'lev-p3', 'HMS-nr.': 'hms-p3', Type: 'Reservedel' },
   ])
 })
+
+test('sperrer «Alle treff» når antall produktserier gir over 2 000 kall', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', () =>
+      HttpResponse.json({ content: [series('s1', 'Rullestol A')], totalSize: 2500, totalPages: 2500 })
+    )
+  )
+
+  renderTab()
+  await screen.findByText('Rullestol A')
+  fireEvent.click(await screen.findByRole('button', { name: 'Eksporter' }))
+  const dialog = within(await screen.findByRole('dialog'))
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeEnabled()
+  fireEvent.click(dialog.getByRole('radio', { name: 'Alle treff' }))
+
+  expect(await dialog.findByText(/For stor eksport/)).toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: 'Eksporter' })).toBeDisabled()
+})
