@@ -136,6 +136,7 @@ const IsoOversikt = () => {
 
   const [sortKey, setSortKey] = useState<SortKey>('iso1')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [manualSort, setManualSort] = useState(false)
 
   const [variantPage, setVariantPage] = useState(1)
   const [variantPageSize, setVariantPageSize] = useState(25)
@@ -576,13 +577,14 @@ const IsoOversikt = () => {
             : row.isoCode.startsWith(selectedIsoCode)
         )
       : visible
-    const sorted = selectedIsoCode
-      ? [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
-      : sortByIsoLevel(base, sortKey, sortDir)
+    const sorted =
+      selectedIsoCode || !manualSort
+        ? [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
+        : sortByIsoLevel(base, sortKey, sortDir)
     return unverifiedFirst
       ? [...sorted].sort((a, b) => Number(a.mappingVerified === true) - Number(b.mappingVerified === true))
       : sorted
-  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir, onlyUnverified, unverifiedFirst])
+  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir, onlyUnverified, unverifiedFirst, manualSort])
 
   const mappingTotalPages = Math.max(1, Math.ceil(filteredMappingRows.length / mappingPageSize))
   const pagedMappingRows = useMemo(() => {
@@ -863,6 +865,7 @@ const IsoOversikt = () => {
   }
 
   const toggleSort = (key: SortKey) => {
+    setManualSort(true)
     if (sortKey === key) {
       setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {

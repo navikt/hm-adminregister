@@ -695,7 +695,7 @@ test('viser ren ISO-mapping som standardvisning', async () => {
 
   const table = screen.getByRole('table')
   const firstRow = table.querySelector('tbody tr') as HTMLElement
-  expect(within(firstRow).getByText('04')).toBeInTheDocument()
+  expect(firstRow.querySelector('td')).toHaveTextContent('04')
 
   const sameRow = within(table).getAllByText('18090301')[0].closest('tr') as HTMLElement
   expect(within(sameRow).getAllByText('18090301')).toHaveLength(2)
@@ -750,6 +750,27 @@ test('viser valgt ISO-nivå først og undernivåene etterpå', async () => {
   expect(within(rows[2] as HTMLElement).getByText('220912')).toBeInTheDocument()
   expect(within(rows[3] as HTMLElement).getByText('05030301')).toBeInTheDocument()
   expect(within(rows[3] as HTMLElement).getByText('220912')).toBeInTheDocument()
+})
+
+test('standardrekkefølgen viser foreldre før barn og ISO-grener stigende uten filter', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json([...isoMappings].reverse()))
+  )
+  renderPage()
+  await screen.findByText('5 av 8 verifisert (62 %)')
+  const codes = Array.from(screen.getByRole('table').querySelectorAll('tbody tr')).map(
+    (row) =>
+      Array.from(row.querySelectorAll('td'))
+        .slice(0, 4)
+        .map((cell) => cell.textContent ?? '')
+        .reverse()
+        .find(Boolean) ?? ''
+  )
+  const branch05 = codes.filter((code) => code.startsWith('05'))
+  expect(branch05).toEqual(['05', '0503', '050303', '05030301'])
+  const nonEmpty = codes.filter(Boolean)
+  expect(nonEmpty).toEqual([...nonEmpty].sort((a, b) => a.localeCompare(b)))
+  expect(codes.at(-1)).toBe('')
 })
 
 test('viser alle v16-kategorier når mappinglisten er tom', async () => {
