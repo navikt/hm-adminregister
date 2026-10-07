@@ -1,11 +1,18 @@
 import { useState } from 'react'
 
-import { Alert, BodyShort, Button, HStack, TextField, VStack } from '@navikt/ds-react'
+import { Alert, BodyShort, Button, HStack, TextField, Textarea, VStack } from '@navikt/ds-react'
 
 import { extractErrorMessage } from './errorUtils'
 
 export type Iso22CategoryCreatePayload = {
   isoCode: string
+  isoTitle: string
+  isoText: string
+  searchWords: string[]
+}
+
+export type Iso22CategoryCreateInitialValues = {
+  suffix: string
   isoTitle: string
   isoText: string
   searchWords: string[]
@@ -18,9 +25,13 @@ const Iso22CategoryCreateForm = ({
   submitLabel = 'Opprett kategori',
   existingIsoCodes,
   targetIsoCode,
+  initialValues,
+  lockedIsoCode,
 }: {
   parentIsoCode: string
   targetIsoCode?: string
+  lockedIsoCode?: string
+  initialValues?: Iso22CategoryCreateInitialValues
   // Koder som allerede finnes (fra klientens v22-kategoriliste) - gir en tydelig feilmelding før
   // kallet sendes, i stedet for backendens generiske 400 "already exists".
   existingIsoCodes?: ReadonlySet<string>
@@ -29,10 +40,10 @@ const Iso22CategoryCreateForm = ({
   submitLabel?: string
 }) => {
   const level = parentIsoCode.length / 2 + 1
-  const [suffix, setSuffix] = useState(targetIsoCode?.slice(-2) ?? '')
-  const [isoTitle, setIsoTitle] = useState('')
-  const [isoText, setIsoText] = useState('')
-  const [searchWords, setSearchWords] = useState('')
+  const [suffix, setSuffix] = useState(targetIsoCode?.slice(-2) ?? initialValues?.suffix ?? '')
+  const [isoTitle, setIsoTitle] = useState(initialValues?.isoTitle ?? '')
+  const [isoText, setIsoText] = useState(initialValues?.isoText ?? '')
+  const [searchWords, setSearchWords] = useState(initialValues?.searchWords.join(', ') ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,11 +54,11 @@ const Iso22CategoryCreateForm = ({
   const handleSubmit = async () => {
     const trimmedSuffix = suffix.trim()
     const paddedSuffix = trimmedSuffix.length === 1 ? `0${trimmedSuffix}` : trimmedSuffix
-    if (!/^\d{2}$/.test(paddedSuffix) || paddedSuffix === '00') {
+    if (!lockedIsoCode && (!/^\d{2}$/.test(paddedSuffix) || paddedSuffix === '00')) {
       setError('De 2 siste sifrene må være et tall mellom 01 og 99, f.eks. 01, 02 ... 09, 10 ... 99')
       return
     }
-    const code = `${parentIsoCode}${paddedSuffix}`
+    const code = lockedIsoCode ?? `${parentIsoCode}${paddedSuffix}`
     if (!/^\d{4}(\d{2})?$/.test(parentIsoCode) || code.length !== level * 2) {
       setError('Velg en eksisterende forelder på nivå 2 eller 3.')
       return
@@ -56,7 +67,7 @@ const Iso22CategoryCreateForm = ({
       setError(`Koden må være ${targetIsoCode}, som mappingen peker på.`)
       return
     }
-    if (existingIsoCodes?.has(code)) {
+    if (!lockedIsoCode && existingIsoCodes?.has(code)) {
       setError(`ISO ${code} finnes allerede. Velg andre sifre.`)
       return
     }
@@ -88,7 +99,7 @@ const Iso22CategoryCreateForm = ({
     <VStack gap="space-8">
       <VStack gap="space-2">
         <BodyShort size="small" weight="semibold">
-          Ny ISO-kode (nivå {level}, {level * 2} siffer)
+          {lockedIsoCode ? 'ISO-kode' : 'Ny ISO-kode'} (nivå {level}, {level * 2} siffer)
         </BodyShort>
         <HStack gap="space-4" align="center">
           <BodyShort size="small">{parentIsoCode}</BodyShort>
@@ -100,19 +111,21 @@ const Iso22CategoryCreateForm = ({
             inputMode="numeric"
             maxLength={2}
             value={suffix}
-            readOnly={!!targetIsoCode}
+            readOnly={!!targetIsoCode || !!lockedIsoCode}
             onChange={(e) => handleSuffixChange(e.target.value)}
             placeholder="01"
           />
         </HStack>
         <BodyShort size="small" textColor="subtle">
-          {targetIsoCode
-            ? `Koden ${targetIsoCode} er fastsatt av mappingen.`
-            : `Forelderen ${parentIsoCode} kan ikke endres. Fyll inn de 2 siste sifrene.`}
+          {lockedIsoCode
+            ? 'Koden kan ikke endres.'
+            : targetIsoCode
+              ? `Koden ${targetIsoCode} er fastsatt av mappingen.`
+              : `Forelderen ${parentIsoCode} kan ikke endres. Fyll inn de 2 siste sifrene.`}
         </BodyShort>
       </VStack>
       <TextField label="Tittel" size="small" value={isoTitle} onChange={(e) => setIsoTitle(e.target.value)} />
-      <TextField
+      <Textarea
         label="Forklaring (valgfritt)"
         size="small"
         value={isoText}

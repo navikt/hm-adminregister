@@ -80,6 +80,8 @@ interface Props {
   v16Details?: IsoCategoryDetails
   v22Details?: IsoCategoryDetails
   verificationReady: boolean
+  missingLevel4?: boolean
+  onRequestCopyV16ToV22?: (context: CategoryCreationContext) => void
   creationContext?: CategoryCreationContext
   onRequestCreateCategory: (context: CategoryCreationContext) => void
 }
@@ -120,6 +122,8 @@ const IsoBulkMoveModal = ({
   v16Details,
   v22Details,
   verificationReady,
+  missingLevel4,
+  onRequestCopyV16ToV22,
   creationContext,
   onRequestCreateCategory,
 }: Props) => {
@@ -191,17 +195,6 @@ const IsoBulkMoveModal = ({
                                 Nivå 3-kategorien er et gyldig mål for mappingen. En nivå 4-kategori er ikke nødvendig
                                 for verifisering.
                               </BodyShort>
-                              {creationContext &&
-                                !creationContext.targetIsoCode &&
-                                creationContext.parentIsoCode === context.iso22Lvl3 && (
-                                  <Button
-                                    size="small"
-                                    variant="secondary"
-                                    onClick={() => onRequestCreateCategory(creationContext)}
-                                  >
-                                    Opprett nivå 4-kategori
-                                  </Button>
-                                )}
                             </VStack>
                           )}
                         </VStack>
@@ -212,6 +205,29 @@ const IsoBulkMoveModal = ({
               </Box>
             )}
 
+            {missingLevel4 && (
+              <Alert variant="warning" size="small">
+                <VStack gap="space-8">
+                  <BodyShort size="small">
+                    V16-koden er på nivå 4, men tilsvarende v22-kategori på nivå 4 mangler.
+                    {verificationReady ? ' Mappingens nivå 3-kategori er fortsatt gyldig for verifisering.' : ''}
+                  </BodyShort>
+                  {creationContext?.parentIsoCode.length === 6 && !mappingVerified && (
+                    <HStack gap="space-8">
+                      <Button size="small" variant="secondary" onClick={() => onRequestCreateCategory(creationContext)}>
+                        Opprett nivå 4-kategori
+                      </Button>
+                      {onRequestCopyV16ToV22 && (
+                        <Button size="small" variant="secondary" onClick={() => onRequestCopyV16ToV22(creationContext)}>
+                          Kopier v16 til v22 (nivå 4)
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
+                </VStack>
+              </Alert>
+            )}
+
             {showMissingCategoryWarning && (
               <Alert variant="warning" size="small">
                 <VStack gap="space-8">
@@ -220,14 +236,25 @@ const IsoBulkMoveModal = ({
                       ? `Mappingen peker på ISO v22-kode ${creationContext.targetIsoCode}, som mangler. Opprett kategorien før du verifiserer mappingen.`
                       : 'ISO v22-kategorien mappingen peker på, mangler på nivå 3 eller 4. Opprett kategorien før du verifiserer mappingen.'}
                   </BodyShort>
-                  {creationContext && (
-                    <Box>
+                  {creationContext && !(missingLevel4 && creationContext.parentIsoCode.length === 6) && (
+                    <HStack gap="space-8">
                       <Button size="small" variant="secondary" onClick={() => onRequestCreateCategory(creationContext)}>
                         {creationContext.targetIsoCode
                           ? `Opprett ISO v22-kategori ${creationContext.targetIsoCode}`
                           : 'Opprett manglende kategori'}
                       </Button>
-                    </Box>
+                      {onRequestCopyV16ToV22 &&
+                        sourceIsoCode &&
+                        sourceIsoCode.length >= creationContext.parentIsoCode.length + 2 && (
+                          <Button
+                            size="small"
+                            variant="secondary"
+                            onClick={() => onRequestCopyV16ToV22(creationContext)}
+                          >
+                            Kopier v16 til v22 (nivå {creationContext.parentIsoCode.length / 2 + 1})
+                          </Button>
+                        )}
+                    </HStack>
                   )}
                 </VStack>
               </Alert>

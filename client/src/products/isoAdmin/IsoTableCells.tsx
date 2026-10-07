@@ -145,17 +145,57 @@ export const Iso22LevelHeaders = ({ visibleLevels }: { visibleLevels: Set<Option
 export const Iso22LevelCells = ({
   row,
   visibleLevels,
+  existingIso22Codes,
 }: {
-  row: Pick<ExtractedProductVariant, 'iso22Lvl1' | 'iso22Lvl2' | 'iso22Lvl3' | 'iso22Lvl4'>
+  row: Pick<ExtractedProductVariant, 'iso4' | 'iso22Lvl1' | 'iso22Lvl2' | 'iso22Lvl3' | 'iso22Lvl4'>
   visibleLevels: Set<OptionalIsoLevel>
-}) => (
-  <>
-    {visibleLevels.has(1) && <Table.DataCell>{row.iso22Lvl1}</Table.DataCell>}
-    {visibleLevels.has(2) && <Table.DataCell>{row.iso22Lvl2}</Table.DataCell>}
-    {visibleLevels.has(3) && <Table.DataCell>{row.iso22Lvl3}</Table.DataCell>}
-    <Table.DataCell>{row.iso22Lvl4}</Table.DataCell>
-  </>
-)
+  existingIso22Codes?: ReadonlySet<string>
+}) => {
+  const renderCode = (value: string) => {
+    if (!existingIso22Codes || !value) return value
+    return (
+      <HStack gap="space-4">
+        {value.split(',').map((item) => {
+          const code = item.replace(/\s/g, '')
+          return existingIso22Codes.has(code) ? (
+            <span key={code}>{code}</span>
+          ) : (
+            <HStack key={code} gap="space-4" align="center">
+              <span>{code}</span>
+              <Tag
+                variant="warning"
+                size="small"
+                title={`ISO ${code} finnes ikke som v22-kategori og må opprettes.`}
+              >
+                Kategori mangler
+              </Tag>
+            </HStack>
+          )
+        })}
+      </HStack>
+    )
+  }
+  return (
+    <>
+      {visibleLevels.has(1) && <Table.DataCell>{renderCode(row.iso22Lvl1)}</Table.DataCell>}
+      {visibleLevels.has(2) && <Table.DataCell>{renderCode(row.iso22Lvl2)}</Table.DataCell>}
+      {visibleLevels.has(3) && <Table.DataCell>{renderCode(row.iso22Lvl3)}</Table.DataCell>}
+      <Table.DataCell>
+        {existingIso22Codes && row.iso4.replace(/\s/g, '').length === 8 ? (
+          row.iso22Lvl4 ? (
+            renderCode(row.iso22Lvl4)
+          ) : (
+            <Tag variant="warning" size="small">
+              Kategori mangler
+            </Tag>
+          )
+        ) : (
+          renderCode(row.iso22Lvl4)
+        )}
+      </Table.DataCell>
+    </>
+  )
+}
 
 export const MappingTypes = ({ types, mappingAvailable }: { types: IsoMapEnum[]; mappingAvailable: boolean }) => (
   <HStack gap="space-4" wrap>
@@ -207,6 +247,9 @@ export const AksjonCell = ({
   onRequestVerify,
   onMoveIsoCode,
   onCreateCategory,
+  onCopyV16ToV22,
+  editTargets = [],
+  onEditCategory,
 }: {
   // Skiller radmenyene fra hverandre for skjermleser, f.eks. "Rad-meny for ISO 18090301".
   menuLabel?: string
@@ -227,6 +270,17 @@ export const AksjonCell = ({
     mappingIds: string[]
     targetIsoCode?: string
   }) => void
+  onCopyV16ToV22?: (
+    context: {
+      parentIsoCode: string
+      parentIsoTitle?: string
+      mappingIds: string[]
+      targetIsoCode?: string
+    },
+    isoCode: string
+  ) => void
+  editTargets?: { code: string; locked: boolean }[]
+  onEditCategory?: (code: string) => void
 }) => {
   // Rader uten v16-kode ("Ny klasse") kan ikke verifiseres: backend (IsoMapAdminController.updateIsoMap)
   // krever code16 og feiler med 500 når den er null.
@@ -236,7 +290,7 @@ export const AksjonCell = ({
   const openOverview = () => onMoveIsoCode?.(isoCode as string, mappingIds.length === 1 ? mappingIds[0] : undefined)
   const canCreateCategory = mappingAvailable && mappingVerified === false && !!creationContext && !!onCreateCategory
 
-  if (!canVerify && !canMoveIsoCode && !canCreateCategory) return <Table.DataCell />
+  if (!canVerify && !canMoveIsoCode && !canCreateCategory && !editTargets.length) return <Table.DataCell />
 
   return (
     <Table.DataCell>
@@ -269,6 +323,21 @@ export const AksjonCell = ({
               Opprett ny ISO v22-kategori (nivå {creationContext!.parentIsoCode.length / 2 + 1})
             </ActionMenu.Item>
           )}
+          {canCreateCategory &&
+            creationContext &&
+            !!isoCode &&
+            isoCode.length >= creationContext.parentIsoCode.length + 2 &&
+            onCopyV16ToV22 && (
+              <ActionMenu.Item onSelect={() => onCopyV16ToV22(creationContext, isoCode)}>
+                Kopier v16 til v22 (nivå {creationContext.parentIsoCode.length / 2 + 1})
+              </ActionMenu.Item>
+            )}
+          {onEditCategory &&
+            editTargets.map(({ code, locked }) => (
+              <ActionMenu.Item key={code} disabled={locked} onSelect={() => onEditCategory(code)}>
+                {`Endre ISO v22-kategori ${code}${locked ? ' (fjern verifisering først)' : ''}`}
+              </ActionMenu.Item>
+            ))}
         </ActionMenu.Content>
       </ActionMenu>
     </Table.DataCell>

@@ -2,7 +2,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { server } from 'mocks/server'
 import { HttpResponse, delay, http } from 'msw'
-import { SWRConfig } from 'swr'
+import { SWRConfig, useSWRConfig } from 'swr'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
@@ -10,11 +10,21 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 
 import IsoOversikt from './IsoOversikt'
 
+const RevalidateCategories = () => {
+  const { mutate } = useSWRConfig()
+  return (
+    <button onClick={() => void mutate('http://localhost:8080/admreg/api/v22/isocategories')}>
+      Refresh categories
+    </button>
+  )
+}
+
 const renderPage = () =>
   render(
     <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
       <MemoryRouter>
         <IsoOversikt />
+        <RevalidateCategories />
       </MemoryRouter>
     </SWRConfig>
   )
@@ -22,6 +32,267 @@ const renderPage = () =>
 const openExtractView = () => {
   fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
 }
+
+const showMappingParentColumns = () => {
+  const toggle = screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }) as HTMLInputElement
+  if (!toggle.checked) fireEvent.click(toggle)
+}
+
+const findIsoRowMenu = async (code: string) => {
+  if (code.length < 8) {
+    const toggle = screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }) as HTMLInputElement
+    if (!toggle.checked) fireEvent.click(toggle)
+  }
+  return screen.findByRole('button', { name: `Rad-meny for ISO ${code}` })
+}
+test('alle visningsmoduser beholder restore-branchens kolonner og valgfrie tittelkolonner', async () => {
+  renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  const isoHeaders = [
+    'v16 - nivå 1',
+    'v16 - nivå 2',
+    'v16 - nivå 3',
+    'v16 - nivå 4',
+    'v22 - nivå 1',
+    'v22 - nivå 2',
+    'v22 - nivå 3',
+    'v22 - nivå 4',
+  ]
+  const headers = () =>
+    screen.getAllByRole('columnheader').map((header) => (header.textContent ?? '').replace(/[↑↓]/g, '').trim())
+  const mappingHeaders = isoHeaders.slice(3)
+  expect(headers()).toEqual([...mappingHeaders, 'Endringstype', 'Status'])
+  expect(screen.getByRole('button', { name: /v16 - nivå 4, sortert stigende/ })).toBeInTheDocument()
+  await loadExtractRows()
+  expect(headers()).toEqual([...isoHeaders, 'Ant. varianter'])
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 nivå 4 tittel' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 nivå 4 tittel' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
+  const withTitles = [...isoHeaders.slice(0, 4), 'v16 - 4 tittel', ...isoHeaders.slice(4), 'v22 - 4 tittel']
+  expect(headers()).toEqual([...withTitles, 'HMS-nr.', 'Leverandørref.'])
+  fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
+  expect(headers()).toEqual([...withTitles, 'Ant. varianter'])
+  fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
+  expect(headers()).toEqual([
+    'v16 - nivå 4',
+    'v16 - 4 tittel',
+    ...isoHeaders.slice(4),
+    'v22 - 4 tittel',
+    'Endringstype',
+    'Status',
+  ])
+})
+
+test('endringstype filtrerer mappinger og Nullstill gjenoppretter alle filtre', async () => {
+  renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  const originalCount = screen.getByText(/^\d+ mapping-rader$/).textContent
+  fireEvent.click(screen.getByRole('button', { name: 'Endringstype: Alle' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: '* Endret forklaring' }))
+  fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: '* Endret forklaring' }), { key: 'Escape' })
+  expect(screen.getByText('1 mapping-rader')).toBeInTheDocument()
+  expect(screen.getByText('24060301')).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  expect(screen.getByText('0 mapping-rader')).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Nullstill' }))
+  expect(screen.getByRole('button', { name: 'Endringstype: Alle' })).toBeInTheDocument()
+  expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
+  expect(screen.getByText(originalCount!)).toBeInTheDocument()
+})
+
+test('statusdetaljer vises ved toppen etter valg og verified-filter virker i produktvisningen', async () => {
+  renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  expect(screen.queryByRole('region', { name: 'Verifiseringsstatus' })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
+  expect(screen.getByRole('region', { name: 'Verifiseringsstatus' })).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
+  expect(screen.queryByRole('region', { name: 'Verifiseringsstatus' })).not.toBeInTheDocument()
+  await loadExtractRows()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  expect(screen.getByText('1 produkter (1 varianter) (2 aktive produktserier i systemet)')).toBeInTheDocument()
+})
+
+test('kopieringshandlingen i Aksjon åpner forhåndsutfylt skjema uten å åpne oversikten', async () => {
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  enableEditMode()
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 05030301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Kopier v16 til v22 (nivå 4)' }))
+  expect(screen.getByText(/Feltene er fylt ut med data fra v16-kategorien/)).toHaveTextContent('05030301')
+  expect(screen.getByText(/Mappingen oppdateres til den nye kategorien/)).toBeInTheDocument()
+  expect(screen.getByLabelText('Tittel')).toHaveValue('Kommunikasjonshjelpemiddel')
+  expect(screen.getByLabelText('Forklaring (valgfritt)')).toHaveValue('Kommunikasjon via tale og skrift')
+  expect(screen.queryByRole('dialog', { name: 'Oversikt over ISO 05030301' })).not.toBeInTheDocument()
+})
+
+test('endrer nivå 4-kategori med full DTO og viser lagringsfeil før vellykket nytt forsøk', async () => {
+  const stored = {
+    id: 'category-id',
+    isoCode: '18090301',
+    level: 4,
+    isoType: 'NAT',
+    isoTitle: 'Lagret tittel',
+    isoText: 'Lagret forklaring',
+    searchWords: ['hjul'],
+    isoTranslations: { titleEn: 'Walker', textEn: 'Four wheels' },
+    created: '2026-01-01T00:00:00',
+    updated: '2026-01-01T00:00:00',
+    createdBy: 'REGISTER',
+    updatedBy: 'REGISTER',
+    createdByUser: 'admin',
+    updatedByUser: 'admin',
+  }
+  let saved: typeof stored | null = null
+  let fail = true
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json(
+        isoMappings.map((mapping) => (mapping.id === 'map-1' ? { ...mapping, verified: false } : mapping))
+      )
+    ),
+    http.get('http://localhost:8080/admreg/admin/api/v22/isocategory/18090301', () => HttpResponse.json(stored)),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isocategory/18090301', async ({ request }) => {
+      if (fail) return HttpResponse.json({ message: 'Kategorien er låst' }, { status: 409 })
+      saved = (await request.json()) as typeof stored
+      return HttpResponse.json(saved)
+    })
+  )
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  enableEditMode()
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Endre ISO v22-kategori 18090301' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Endre ISO v22-kategori 18090301' })
+  const title = await within(dialog).findByLabelText('Tittel')
+  expect(title).toHaveValue('Lagret tittel')
+  expect(within(dialog).getByLabelText('Siste 2 siffer')).toHaveAttribute('readonly')
+  fireEvent.change(title, { target: { value: 'Ny tittel' } })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Lagre endringer' }))
+  await within(dialog).findByText('Kategorien er låst')
+  expect(saved).toBeNull()
+  fail = false
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Lagre endringer' }))
+  await waitFor(() => expect(saved).toEqual({ ...stored, isoTitle: 'Ny tittel' }))
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog', { name: 'Endre ISO v22-kategori 18090301' })).not.toBeInTheDocument()
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  expect(await screen.findByText('Ny tittel')).toBeInTheDocument()
+})
+
+test('redigering sperres når en annen verifisert mapping bruker samme kategori', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json([
+        ...isoMappings.map((mapping) => (mapping.id === 'map-1' ? { ...mapping, verified: false } : mapping)),
+        { ...isoMappings[2], id: 'shared-map', code16: '24060301', code22: '18090301', verified: true },
+      ])
+    )
+  )
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  enableEditMode()
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 18090301' }))
+  expect(
+    await screen.findByRole('menuitem', { name: 'Endre ISO v22-kategori 18090301 (fjern verifisering først)' })
+  ).toHaveAttribute('aria-disabled', 'true')
+})
+
+test('splittmapping viser en redigeringshandling for hvert eksisterende nivå 4-mål', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json([
+        ...isoMappings.map((mapping) =>
+          mapping.id === 'map-1' || mapping.id === 'map-2' ? { ...mapping, verified: false } : mapping
+        ),
+        { ...isoMappings[2], id: 'split-edit', code16: '18090301', verified: false },
+      ])
+    )
+  )
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  await loadExtractRows()
+  enableEditMode()
+  fireEvent.click(screen.getByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
+  expect(await screen.findByRole('menuitem', { name: 'Endre ISO v22-kategori 18090301' })).toBeInTheDocument()
+  expect(screen.getByRole('menuitem', { name: 'Endre ISO v22-kategori 24060302' })).toBeInTheDocument()
+})
+
+test('viser manglende nivå 4 og kopierer v16-verdier uten å åpne detaljer', async () => {
+  let created: { isoCode: string; isoTitle: string; isoText: string; searchWords: string[] } | null = null
+  server.use(
+    http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', async ({ request }) => {
+      created = (await request.json()) as typeof created
+      return HttpResponse.json(created, { status: 201 })
+    }),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) =>
+      HttpResponse.json(((await request.json()) as { isoMap: (typeof isoMappings)[number] }).isoMap)
+    )
+  )
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  const row = screen.getAllByText('05030301')[0].closest('tr') as HTMLElement
+  expect(within(row).getByText('Kategori mangler')).toBeInTheDocument()
+  enableEditMode()
+  const level3 = (await findIsoRowMenu('050303')).closest('tr') as HTMLElement
+  expect(within(level3).queryByText('Kategori mangler')).not.toBeInTheDocument()
+  openRowMenu(row)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: 'Oversikt over ISO 05030301' })
+  expect(within(overview).getByRole('button', { name: 'Vis detaljer' })).toBeInTheDocument()
+  expect(within(overview).getByText(/tilsvarende v22-kategori på nivå 4 mangler/)).toBeInTheDocument()
+  expect(within(overview).getByRole('button', { name: 'Verifiser mappinger' })).toBeEnabled()
+  fireEvent.click(within(overview).getByRole('button', { name: 'Kopier v16 til v22 (nivå 4)' }))
+  expect(screen.getByLabelText('Siste 2 siffer')).toHaveValue('01')
+  expect(screen.getByLabelText('Tittel')).toHaveValue('Kommunikasjonshjelpemiddel')
+  expect(screen.getByLabelText('Forklaring (valgfritt)')).toHaveValue('Kommunikasjon via tale og skrift')
+  expect(screen.getByLabelText('Søkeord (kommaseparert, valgfritt)')).toHaveValue('tale, skrift')
+  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  await waitFor(() =>
+    expect(created).toEqual(
+      expect.objectContaining({
+        isoCode: '22091201',
+        isoTitle: 'Kommunikasjonshjelpemiddel',
+        isoText: 'Kommunikasjon via tale og skrift',
+        searchWords: ['tale', 'skrift'],
+      })
+    )
+  )
+})
+
+test('automatisk oversiktslasting viser feil og lar brukeren prøve igjen', async () => {
+  let requests = 0
+  let fail = true
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const code = new URL(request.url).searchParams.get('isoCode')
+      if (!code) return HttpResponse.json({ content: [], totalPages: 1, totalSize: 4758 })
+      requests++
+      if (fail) return new HttpResponse(null, { status: 503, statusText: 'Tjenesten er utilgjengelig' })
+      return HttpResponse.json({ content: [], totalPages: 1, totalSize: 0 })
+    })
+  )
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  enableEditMode()
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 05030301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  const overview = await screen.findByRole('dialog', { name: 'Oversikt over ISO 05030301' })
+  await within(overview).findByText('Tjenesten er utilgjengelig')
+  expect(requests).toBe(1)
+  fail = false
+  fireEvent.click(within(overview).getByRole('button', { name: 'Last inn produkter' }))
+  await within(overview).findByText('Ingen produkter er registrert med denne ISO-kategorien.')
+  expect(requests).toBe(2)
+  fireEvent.click(within(overview).getAllByRole('button', { name: 'Lukk' })[0])
+  fireEvent.click(screen.getByRole('button', { name: 'Rad-meny for ISO 05030301' }))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
+  await screen.findByRole('dialog', { name: 'Oversikt over ISO 05030301' })
+  expect(requests).toBe(2)
+})
 
 test('viser avrundet andel fra mappinglisten og oppdaterer etter verifisering uten prosentkall', async () => {
   let percentageRequests = 0
@@ -37,14 +308,12 @@ test('viser avrundet andel fra mappinglisten og oppdaterer etter verifisering ut
     })
   )
   renderPage()
-  await screen.findByText('5 av 8 verifisert (62 %)')
-  expect(screen.queryByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).not.toBeInTheDocument()
-  fireEvent.click(
-    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
-  )
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  expect(screen.getByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).toHaveAttribute('aria-valuenow', '62')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
   expect(screen.getByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).toHaveAttribute('aria-valuenow', '62')
   enableEditMode()
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
   await confirmVerification()
   await screen.findByText('6 av 8 verifisert (75 %)')
@@ -72,10 +341,9 @@ test('viser ikke 100 prosent før alle mappinger er verifisert', async () => {
     )
   )
   renderPage()
-  await screen.findByText('499 av 500 verifisert (99 %)')
-  fireEvent.click(
-    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
-  )
+  await screen.findByText('Verifiserte ISO-mappinger: 99 %')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
+  expect(screen.getByText('499 av 500 verifisert (99 %)')).toBeInTheDocument()
   expect(screen.getByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).toHaveAttribute('aria-valuenow', '99')
 })
 
@@ -88,7 +356,8 @@ test('fjerning av verifisering oppdaterer andelen og feil endrer ikke andelen', 
     })
   )
   renderPage()
-  await screen.findByText('5 av 8 verifisert (62 %)')
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
   enableEditMode()
   openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' })).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Fjern verifisering' }))
@@ -101,22 +370,16 @@ test('fjerning av verifisering oppdaterer andelen og feil endrer ikke andelen', 
   await screen.findByText('4 av 8 verifisert (50 %)')
 })
 
-test('statusfilter og sortering er valgfrie og endrer ikke samlet prosent', async () => {
+test('statusfilter endrer ikke samlet prosent og gjenoppretter verifiserte rader', async () => {
   renderPage()
-  await screen.findByText('5 av 8 verifisert (62 %)')
-  expect(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' })).not.toBeChecked()
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' }))
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
   expect(screen.queryByText('Verifisert')).not.toBeInTheDocument()
-  expect(screen.getByText('5 av 8 verifisert (62 %)')).toBeInTheDocument()
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' }))
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Ikke verifiserte først' }))
-  const statuses = screen
-    .getAllByRole('row')
-    .slice(1)
-    .map((row) => within(row).queryByText('Verifisert') !== null)
-  const firstVerified = statuses.indexOf(true)
-  expect(firstVerified).toBeGreaterThan(0)
-  expect(statuses.slice(firstVerified).every(Boolean)).toBe(true)
+  expect(screen.getByText('Verifiserte ISO-mappinger: 62 %')).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' }))
+  expect(screen.getAllByText('Verifisert').length).toBeGreaterThan(0)
+  expect(screen.queryByRole('checkbox', { name: 'Ikke verifiserte først' })).not.toBeInTheDocument()
 })
 
 test('viser verifisering per nivå 1 og fremhever flere mappinger med samme v16-kode', async () => {
@@ -126,10 +389,8 @@ test('viser verifisering per nivå 1 og fremhever flere mappinger med samme v16-
     )
   )
   renderPage()
-  await screen.findByText('5 av 9 verifisert (55 %)')
-  fireEvent.click(
-    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
-  )
+  await screen.findByText('Verifiserte ISO-mappinger: 55 %')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
   expect(screen.getAllByText('Splitt: krever manuell kontroll')).toHaveLength(2)
   fireEvent.click(
     within(screen.getByRole('region', { name: 'Verifisering per v16 nivå 1' })).getByRole('button', { name: 'Vis mer' })
@@ -144,7 +405,7 @@ test('viser verifisering per nivå 1 og fremhever flere mappinger med samme v16-
 
 test('Ren ISO-mapping søker mappingens v22-mål når Søk v22-koder er valgt', async () => {
   renderPage()
-  await screen.findAllByText('05')
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
   const input = screen.getByLabelText('ISO-kode (v22)')
   fireEvent.change(input, { target: { value: '24060302' } })
@@ -170,7 +431,7 @@ test('v22-søk sender isoCode22 og viser lagret v22-kode uten å begrense til sa
     })
   )
   renderPage()
-  await screen.findAllByText('05')
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   openExtractView()
   fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
   const input = screen.getByLabelText('ISO-kode (v22)')
@@ -204,6 +465,49 @@ const loadExtractRows = async () => {
   fireEvent.click(loadButton)
   await waitFor(() => expect(screen.getAllByText('18090301')).toHaveLength(2))
 }
+
+test('ISO-søk på 05 beholder nivå 4 til Vis ISO-struktur aktiveres', async () => {
+  renderPage()
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  const input = screen.getByLabelText('ISO-kode (v16)')
+  fireEvent.change(input, { target: { value: '05' } })
+  fireEvent.blur(input)
+  expect(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' })).not.toBeChecked()
+  expect(screen.getByText('1 mapping-rader for ISO 05')).toBeInTheDocument()
+  expect(screen.getByRole('table').querySelector('tbody tr td')).toHaveTextContent('05030301')
+  expect(screen.queryByRole('columnheader', { name: /v16 - nivå 1/ })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }))
+  expect(screen.getByText('4 mapping-rader for ISO 05')).toBeInTheDocument()
+  expect(screen.getByRole('table').querySelector('tbody tr td')).toHaveTextContent('05')
+})
+
+test('husker ISO-struktur, kolonner og filterpanel uten å lagre ISO-søk eller endremodus', async () => {
+  const first = renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }))
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 nivå 4 tittel' }))
+  fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'v16 nivå 4 tittel' }), { key: 'Escape' })
+  enableEditMode()
+  const input = screen.getByLabelText('ISO-kode (v16)')
+  fireEvent.change(input, { target: { value: '05' } })
+  fireEvent.blur(input)
+  const filters = screen.getByRole('region', { name: 'Filtre og visningsvalg' })
+  fireEvent.click(within(filters).getByRole('button', { name: 'Vis mer' }))
+  first.unmount()
+  renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  expect(screen.getByRole('checkbox', { name: 'Vis detaljer' })).toBeChecked()
+  expect(screen.getByRole('columnheader', { name: 'v16 - 4 tittel' })).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: /v16 - nivå 1/ })).toBeInTheDocument()
+  const reopened = screen.getByRole('region', { name: 'Filtre og visningsvalg' })
+  expect(within(reopened).getByRole('button', { name: 'Vis mer' })).toHaveAttribute('aria-expanded', 'false')
+  fireEvent.click(within(reopened).getByRole('button', { name: 'Vis mer' }))
+  expect(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' })).toBeChecked()
+  expect(screen.getByLabelText('ISO-kode (v16)')).toHaveValue('')
+  expect(screen.getByRole('checkbox', { name: 'Endremodus' })).not.toBeChecked()
+})
 
 const isoCategoryV1 = (
   isoCode: string,
@@ -239,7 +543,10 @@ const isoCategoriesV1 = [
     isoText: 'Hjelpemidler for kommunikasjon',
     searchWords: ['tale', 'skrift'],
   }),
-  isoCategoryV1('05030301', 4, 'Kommunikasjonshjelpemiddel'),
+  isoCategoryV1('05030301', 4, 'Kommunikasjonshjelpemiddel', {
+    isoText: 'Kommunikasjon via tale og skrift',
+    searchWords: ['tale', 'skrift'],
+  }),
   isoCategoryV1('18', 1, 'Utstyr for bevegelse'),
   isoCategoryV1('1809', 2, 'Ganghjelpemidler'),
   isoCategoryV1('180903', 3, 'Rollatorer'),
@@ -454,6 +761,7 @@ let seriesDetailRequests = 0
 let seriesListRequests = 0
 
 beforeEach(() => {
+  window.localStorage.clear()
   seriesDetailRequests = 0
   seriesListRequests = 0
   useAuthStore.getState().setLoggedInUser({
@@ -494,6 +802,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  window.localStorage.clear()
   useAuthStore.getState().clearLoggedInState()
 })
 
@@ -645,8 +954,9 @@ test('kan vise valgfri v16- og v22-forklaring og søkeord', async () => {
 
 test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', async () => {
   renderPage()
+  openExtractView()
 
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
 
   for (const version of ['v16', 'v22']) {
@@ -691,11 +1001,11 @@ test('kan vise endringstype mellom v16 og v22', async () => {
 test('viser ren ISO-mapping som standardvisning', async () => {
   renderPage()
 
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
 
   const table = screen.getByRole('table')
   const firstRow = table.querySelector('tbody tr') as HTMLElement
-  expect(firstRow.querySelector('td')).toHaveTextContent('04')
+  expect(firstRow.querySelector('td')).toHaveTextContent('04010101')
 
   const sameRow = within(table).getAllByText('18090301')[0].closest('tr') as HTMLElement
   expect(within(sameRow).getAllByText('18090301')).toHaveLength(2)
@@ -722,12 +1032,11 @@ test('viser ren ISO-mapping som standardvisning', async () => {
   const newRow = screen.getByText('! Ny klasse, underklasse eller inndeling').closest('tr') as HTMLElement
   expect(within(newRow).getByText('30010101')).toBeInTheDocument()
 
+  showMappingParentColumns()
   const deleted05Row = Array.from(table.querySelectorAll('tbody tr')).find(
     (row) =>
       row.querySelector('td')?.textContent === '05' &&
-      Array.from(row.querySelectorAll('td'))
-        .slice(1, 4)
-        .every((cell) => cell.textContent === '')
+      row.textContent?.includes('X Slettet klasse, underklasse eller inndeling')
   ) as HTMLElement
   expect(within(deleted05Row).getByText('X Slettet klasse, underklasse eller inndeling')).toBeInTheDocument()
   expect(within(deleted05Row).getByText('Ikke verifisert')).toBeInTheDocument()
@@ -738,7 +1047,8 @@ test('viser ren ISO-mapping som standardvisning', async () => {
 test('viser valgt ISO-nivå først og undernivåene etterpå', async () => {
   renderPage()
 
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  showMappingParentColumns()
   fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '05' } })
 
   const table = screen.getByRole('table')
@@ -752,12 +1062,14 @@ test('viser valgt ISO-nivå først og undernivåene etterpå', async () => {
   expect(within(rows[3] as HTMLElement).getByText('220912')).toBeInTheDocument()
 })
 
-test('standardrekkefølgen viser foreldre før barn og ISO-grener stigende uten filter', async () => {
+test('Vis ISO-struktur viser foreldre før barn og kan slås av for restore-standard', async () => {
   server.use(
     http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json([...isoMappings].reverse()))
   )
   renderPage()
-  await screen.findByText('5 av 8 verifisert (62 %)')
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  expect(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' })).not.toBeChecked()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }))
   const codes = Array.from(screen.getByRole('table').querySelectorAll('tbody tr')).map(
     (row) =>
       Array.from(row.querySelectorAll('td'))
@@ -771,6 +1083,9 @@ test('standardrekkefølgen viser foreldre før barn og ISO-grener stigende uten 
   const nonEmpty = codes.filter(Boolean)
   expect(nonEmpty).toEqual([...nonEmpty].sort((a, b) => a.localeCompare(b)))
   expect(codes.at(-1)).toBe('')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }))
+  expect(screen.queryByRole('columnheader', { name: /v16 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.getByRole('table').querySelector('tbody tr td')).toHaveTextContent('04010101')
 })
 
 test('viser alle v16-kategorier når mappinglisten er tom', async () => {
@@ -869,8 +1184,13 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   let createdCategoryPayload: { isoCode: string; isoTitle: string } | null = null
   let updatedMapPayload: { code22?: string; level22?: number; verified?: boolean } | null = null
   const patchedSeriesIds: string[] = []
+  let categoryReads = 0
 
   server.use(
+    http.get('http://localhost:8080/admreg/api/v22/isocategories', () => {
+      categoryReads++
+      return HttpResponse.json(isoCategoriesV22)
+    }),
     http.post('http://localhost:8080/admreg/admin/api/v22/isocategory', async ({ request }) => {
       const body = (await request.json()) as { isoCode: string; isoTitle: string }
       createdCategoryPayload = body
@@ -889,7 +1209,7 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
 
   renderPage()
 
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
 
   // Bytt til "Endre"-modus for å få frem Aksjon-kolonnen.
   fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
@@ -919,8 +1239,13 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   // listen uten "22091201", skal hovedtabellen likevel vise den nye koden - bevis på at
   // handleCreateIso22Category sin lokale SWR-cache-sammenslåing (revalidate: false) fungerer.
   expect(screen.getAllByText('22091201').length).toBeGreaterThan(0)
+  const readsBefore = categoryReads
+  fireEvent.click(screen.getByRole('button', { name: 'Refresh categories' }))
+  await waitFor(() => expect(categoryReads).toBeGreaterThan(readsBefore))
+  await waitFor(() => expect(screen.getAllByText('22091201').length).toBeGreaterThan(0))
+  expect(screen.queryByTitle('ISO 22091201 finnes ikke som v22-kategori og må opprettes.')).not.toBeInTheDocument()
 
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
   await confirmVerification()
 
@@ -960,25 +1285,34 @@ test('oppretter manglende v22-nivå 3 med målkoden fra mappingen og verifiserer
   )
 
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
-  openRowMenu(screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement)
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 3)' }))
+  const missingRow = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
+  expect(within(missingRow).getByText('220913')).toBeInTheDocument()
+  expect(within(missingRow).getByTitle('ISO 220913 finnes ikke som v22-kategori og må opprettes.')).toHaveTextContent(
+    'Kategori mangler'
+  )
+  expect(within(missingRow).getByText('2209')).toBeInTheDocument()
+  openRowMenu(missingRow)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Kopier v16 til v22 (nivå 3)' }))
 
   const suffixField = screen.getByLabelText('Siste 2 siffer')
   expect(suffixField).toHaveValue('13')
   expect(suffixField).toHaveAttribute('readonly')
+  expect(screen.getByLabelText('Tittel')).toHaveValue('Kommunikasjonshjelpemidler')
+  expect(screen.getByLabelText('Forklaring (valgfritt)')).toHaveValue('Hjelpemidler for kommunikasjon')
+  expect(screen.getByLabelText('Søkeord (kommaseparert, valgfritt)')).toHaveValue('tale, skrift')
+  expect(screen.getByText(/Kontroller og juster feltene/)).toHaveTextContent('050303')
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny underklasse' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori og koble til mapping' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Opprett kategori' }))
 
-  await waitFor(() =>
-    expect(screen.queryByRole('button', { name: 'Opprett kategori og koble til mapping' })).not.toBeInTheDocument()
-  )
+  await waitFor(() => expect(screen.queryByRole('button', { name: 'Opprett kategori' })).not.toBeInTheDocument())
   expect(createdCategoryPayload).toEqual(expect.objectContaining({ isoCode: '220913', isoTitle: 'Ny underklasse' }))
+  expect(screen.queryByTitle('ISO 220913 finnes ikke som v22-kategori og må opprettes.')).not.toBeInTheDocument()
   expect(mappingUpdates).toEqual([])
 
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
   await confirmVerification()
 
@@ -1026,7 +1360,7 @@ test('oppretter manglende nivå 3 før nivå 4 uten å endre mappingmålet', asy
   )
 
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   const mappingRow = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
@@ -1043,7 +1377,7 @@ test('oppretter manglende nivå 3 før nivå 4 uten å endre mappingmålet', asy
   expect(createdCategories).toEqual([{ isoCode: '220912', level: 3, isoType: 'ISO' }])
   expect(mappingUpdates).toEqual([])
 
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   expect(await screen.findByRole('menuitem', { name: 'Verifiser (opprett v22-kategori først)' })).toHaveAttribute(
     'aria-disabled',
     'true'
@@ -1051,7 +1385,7 @@ test('oppretter manglende nivå 3 før nivå 4 uten å endre mappingmålet', asy
   fireEvent.keyDown(screen.getByRole('menuitem', { name: 'Verifiser (opprett v22-kategori først)' }), {
     key: 'Escape',
   })
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
   expect(screen.getByLabelText('Siste 2 siffer')).toHaveValue('01')
   expect(screen.getByLabelText('Siste 2 siffer')).toHaveAttribute('readonly')
@@ -1067,7 +1401,7 @@ test('oppretter manglende nivå 3 før nivå 4 uten å endre mappingmålet', asy
   ])
   expect(mappingUpdates).toEqual([])
 
-  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  openRowMenu((await findIsoRowMenu('050303')).closest('tr') as HTMLElement)
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
   await confirmVerification()
 
@@ -1145,10 +1479,10 @@ test('verifiserer eksisterende v22-nivå 3-mål uten å laste produktlisten', as
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await findIsoRowMenu('050303'))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
   await confirmVerification()
 
@@ -1170,7 +1504,7 @@ test('verifiserer eksisterende v22-nivå 4 selv om et produkt ikke er koblet', a
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   openExtractView()
   const loadButton = screen.getByRole('button', { name: 'Hent liste' })
   await waitFor(() => expect(loadButton).toBeEnabled())
@@ -1212,7 +1546,7 @@ test('blokkerer verifisering når det eksakte v22-nivå 4-målet mangler, selv o
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
@@ -1245,7 +1579,7 @@ test('krever at alle mål i en splittmapping finnes før verifisering', async ()
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   openExtractView()
   const loadButton = screen.getByRole('button', { name: 'Hent liste' })
   await waitFor(() => expect(loadButton).toBeEnabled())
@@ -1260,19 +1594,24 @@ test('krever at alle mål i en splittmapping finnes før verifisering', async ()
 
 test('rader uten v16-kode har ingen verifiseringshandling', async () => {
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   const newRow = screen.getByText('! Ny klasse, underklasse eller inndeling').closest('tr') as HTMLElement
-  expect(within(newRow).queryByRole('button', { name: /^Rad-meny/ })).not.toBeInTheDocument()
+  openRowMenu(newRow)
+  expect(screen.queryByRole('menuitem', { name: /^Verifiser|^Fjern verifisering/ })).not.toBeInTheDocument()
+  expect(screen.getByRole('menuitem', { name: /Endre ISO v22-kategori 30010101/ })).toHaveAttribute(
+    'aria-disabled',
+    'true'
+  )
 })
 
 test('Vis detaljer viser tittel, forklaring og søkeord for en v16-kode på nivå 3', async () => {
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await findIsoRowMenu('050303'))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: /ISO 050303/ })
   fireEvent.click(within(overview).getByRole('button', { name: 'Vis detaljer' }))
@@ -1285,7 +1624,7 @@ test('Vis detaljer viser tittel, forklaring og søkeord for en v16-kode på niv�
   expect(within(overview).getAllByText('Tittel')).toHaveLength(2)
 })
 
-test('Last inn produkter i oversikten henter kun oversiktens egen v16-kode, ikke hele sidefilteret', async () => {
+test('oversikten laster automatisk kun sin egen v16-kode, ikke hele sidefilteret', async () => {
   useUnverifiedRollatorMapping()
   const requestedIsoCodes: (string | null)[] = []
   server.use(
@@ -1301,14 +1640,13 @@ test('Last inn produkter i oversikten henter kun oversiktens egen v16-kode, ikke
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
   enableEditMode()
 
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: /ISO 18090301/ })
-  fireEvent.click(within(overview).getByRole('button', { name: 'Last inn produkter' }))
 
   expect(await within(overview).findByText('Rollator Beta')).toBeInTheDocument()
   expect(requestedIsoCodes).toEqual([null, '18090301'])
@@ -1327,7 +1665,7 @@ const showCountColumn = () => {
 
 test('Ren ISO-mapping viser antall produkter / varianter fra lastede rader, og – når koden ikke er lastet', async () => {
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   expect(screen.queryByRole('columnheader', { name: /^Antall/ })).not.toBeInTheDocument()
   showCountColumn()
   expect(screen.getByRole('columnheader', { name: /^Antall/ })).toBeInTheDocument()
@@ -1335,7 +1673,7 @@ test('Ren ISO-mapping viser antall produkter / varianter fra lastede rader, og �
 
   const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
   await waitFor(() => expect(within(row18()).getByText('1 / 1')).toBeInTheDocument())
-  const row05 = screen.getAllByText('050303')[0].closest('tr') as HTMLElement
+  const row05 = screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement
   expect(within(row05).getByText('0 / 0')).toBeInTheDocument()
 })
 
@@ -1353,7 +1691,7 @@ test('antall vises som – til oversikten har lastet koden, og oppdateres etterp
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   showCountColumn()
   const row18 = () => screen.getAllByText('18090301')[0].closest('tr') as HTMLElement
   expect(within(row18()).getByText('–')).toBeInTheDocument()
@@ -1362,7 +1700,6 @@ test('antall vises som – til oversikten har lastet koden, og oppdateres etterp
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: /ISO 18090301/ })
-  fireEvent.click(within(overview).getByRole('button', { name: 'Last inn produkter' }))
   await within(overview).findByText('Rollator Beta')
   fireEvent.click(within(overview).getAllByRole('button', { name: 'Lukk' }).at(-1)!)
 
@@ -1389,7 +1726,7 @@ const useLargeSystemWithRollators = () => {
 test('antall-kolonnen henter produktene automatisk for valgt ISO-filter i Ren ISO-mapping', async () => {
   const requestedIsoCodes = useLargeSystemWithRollators()
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
   fireEvent.change(screen.getByLabelText('v16 nivå 1'), { target: { value: '18' } })
 
@@ -1404,7 +1741,7 @@ test('antall-kolonnen henter produktene automatisk for valgt ISO-filter i Ren IS
 test('antall-kolonnen uten ISO-filter viser advarsel om stort uttrekk før alt hentes', async () => {
   const requestedIsoCodes = useLargeSystemWithRollators()
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   await waitFor(() => expect(requestedIsoCodes).toEqual([null]))
 
   showCountColumn()
@@ -1429,7 +1766,7 @@ test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet send
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   openRowMenu(screen.getAllByText('~ Endret kode og overskrift')[0].closest('tr') as HTMLElement)
@@ -1444,7 +1781,7 @@ test('F6: oppretting av en v22-kode som allerede finnes stoppes før kallet send
 
 test('F7: endremodus-bryteren har fast navn og hver radmeny har sitt eget navn', async () => {
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
 
   const toggle = screen.getByRole('checkbox', { name: 'Endremodus' })
   fireEvent.click(toggle)
@@ -1464,7 +1801,7 @@ test('F9: feil ved verifisering vises i dialogen, som holdes åpen', async () =>
     )
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
@@ -1478,7 +1815,7 @@ test('F9: feil ved verifisering vises i dialogen, som holdes åpen', async () =>
 
 test('F10: oversikten for en verifisert mapping lover ikke tilkobling', async () => {
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
   fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' }))
@@ -1508,10 +1845,10 @@ test('nytt forsøk etter feilet mappingoppdatering hopper over opprettingen og f
     })
   )
   renderPage()
-  await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
+  await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   enableEditMode()
 
-  fireEvent.click(await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' }))
+  fireEvent.click(await findIsoRowMenu('050303'))
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Opprett ny ISO v22-kategori (nivå 4)' }))
   fireEvent.change(screen.getByLabelText('Siste 2 siffer'), { target: { value: '01' } })
   fireEvent.change(screen.getByLabelText('Tittel'), { target: { value: 'Ny kommunikasjon' } })

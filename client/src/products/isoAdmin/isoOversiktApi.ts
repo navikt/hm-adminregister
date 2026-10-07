@@ -2,7 +2,7 @@ import { getSeriesBySeriesId } from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
 import { SeriesDTO } from 'utils/types/response-types'
 
-import { IsoOverviewSeriesChunk } from './isoOversiktTypes'
+import { IsoOverviewSeries, IsoOverviewSeriesChunk } from './isoOversiktTypes'
 
 export const SERIES_PAGE_SIZE = 200
 export const SERIES_WARN_THRESHOLD = 200
@@ -58,4 +58,40 @@ export const fetchSeriesDetailsConcurrent = async (
   const workerCount = Math.min(concurrency, total)
   await Promise.all(Array.from({ length: workerCount }, () => worker()))
   return results
+}
+
+export const fetchSeriesForIsoCode = async (
+  isoCode: string,
+  onProgress: (loaded: number, total: number) => void,
+  signal: AbortSignal,
+  isoVersion: 'v16' | 'v22' = 'v16',
+  firstChunk?: IsoOverviewSeriesChunk
+): Promise<(SeriesDTO | IsoOverviewSeries)[]> => {
+  const first = firstChunk ?? (await fetchSeriesPage(0, SERIES_PAGE_SIZE, isoCode, signal, isoVersion))
+  const series = [...(first.content ?? [])]
+  for (let page = 1; page < (first.totalPages || 1); page++) {
+    signal.throwIfAborted()
+    const chunk = await fetchSeriesPage(page, SERIES_PAGE_SIZE, isoCode, signal, isoVersion)
+    series.push(...(chunk.content ?? []))
+  }
+  const complete = series.every(
+    (item) =>
+      typeof item.isoCategory === 'string' &&
+      Array.isArray(item.variants) &&
+      (isoVersion === 'v16' || item.isoCategory22 !== undefined)
+  )
+  const details = complete
+    ? series
+    : await fetchSeriesDetailsConcurrent(
+        series.map((item) => item.id),
+        onProgress,
+        signal
+      )
+  signal.throwIfAborted()
+  const normalized = isoCode.replace(/\s/g, '')
+  return details.filter((item) => {
+    const category = isoVersion === 'v22' ? item.isoCategory22 : item.isoCategory
+    const code = typeof category === 'string' ? category : (category?.isoCode ?? '')
+    return code.replace(/\s/g, '').startsWith(normalized)
+  })
 }

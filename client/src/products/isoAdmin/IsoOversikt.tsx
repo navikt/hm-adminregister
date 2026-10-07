@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createIso22Category, updateIsoMapping } from 'api/IsoCategoryApi'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useIsoCategories, useIsoCategories22, useIsoMappings } from 'utils/swr-hooks'
-import { IsoMapDTO } from 'utils/types/response-types'
+import { Iso22DTO, IsoCategory22DTO, IsoMapDTO } from 'utils/types/response-types'
 
 import { ChevronDownIcon, ChevronUpIcon } from '@navikt/aksel-icons'
 import {
@@ -22,7 +22,6 @@ import {
   Loader,
   Modal,
   Pagination,
-  ProgressBar,
   Radio,
   RadioGroup,
   Select,
@@ -34,6 +33,7 @@ import {
 } from '@navikt/ds-react'
 
 import CreateIso22CategoryModal, { CreateIso22CategoryContext } from './CreateIso22CategoryModal'
+import EditIso22CategoryModal from './EditIso22CategoryModal'
 import iso9999Icon from './ISO9999-01.svg'
 import IsoBulkMoveModal, { IsoCategoryDetails } from './IsoBulkMoveModal'
 import styles from './IsoOversikt.module.scss'
@@ -52,7 +52,9 @@ import {
   OptionalTitleHeadersV22,
   SortHeader,
 } from './IsoTableCells'
+import VerificationStatus from './VerificationStatus'
 import { extractErrorMessage } from './errorUtils'
+import { loadIsoAdminPreferences, saveIsoAdminPreferences } from './isoAdminPreferences'
 import {
   buildMappingRows,
   buildMappingsByCode16,
@@ -61,15 +63,12 @@ import {
   getMappedIso22Codes,
   mapToExtractedRows,
 } from './isoMappingUtils'
-import {
-  SERIES_PAGE_SIZE,
-  SERIES_WARN_THRESHOLD,
-  fetchSeriesDetailsConcurrent,
-  fetchSeriesPage,
-} from './isoOversiktApi'
+import { SERIES_PAGE_SIZE, SERIES_WARN_THRESHOLD, fetchSeriesForIsoCode, fetchSeriesPage } from './isoOversiktApi'
 import {
   ExtraColumn,
   ExtractedProductVariant,
+  ISO_MAP_LABELS,
+  IsoMapEnum,
   OPTIONAL_ISO_LEVELS,
   OPTIONAL_TEXT_COLUMNS_V1,
   OPTIONAL_TEXT_COLUMNS_V22,
@@ -102,8 +101,9 @@ const toCategoryDetails = (
       }
     : undefined
 
-const IsoOversikt = () => {
+const IsoOversiktContent = () => {
   const { loggedInUser } = useAuthStore()
+  const [initialPreferences] = useState(() => loadIsoAdminPreferences(loggedInUser?.userId))
   const { isoCategories, isoLoading, isoError } = useIsoCategories()
   const { isoCategories22, isoLoading22, isoError22, mutateIsoCategories22 } = useIsoCategories22()
   const { isoMappings, isoMappingsLoading, isoMappingsError, mutateIsoMappings } = useIsoMappings(
@@ -128,35 +128,51 @@ const IsoOversikt = () => {
   const [pendingLargeLoad, setPendingLargeLoad] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const loadAbortControllerRef = useRef<AbortController | null>(null)
+  const scopeAbortControllerRef = useRef<AbortController | null>(null)
 
   const [selectedLevel1, setSelectedLevel1] = useState('')
   const [selectedLevel2, setSelectedLevel2] = useState('')
   const [selectedLevel3, setSelectedLevel3] = useState('')
   const [selectedLevel4, setSelectedLevel4] = useState('')
 
-  const [sortKey, setSortKey] = useState<SortKey>('iso1')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const [manualSort, setManualSort] = useState(false)
+  const [sortKey, setSortKey] = useState<SortKey>(initialPreferences.sortKey)
+  const [sortDir, setSortDir] = useState<SortDir>(initialPreferences.sortDir)
+  const [manualSort, setManualSort] = useState(initialPreferences.manualSort)
+  const [showHierarchy, setShowHierarchy] = useState(initialPreferences.showHierarchy)
 
   const [variantPage, setVariantPage] = useState(1)
-  const [variantPageSize, setVariantPageSize] = useState(25)
+  const [variantPageSize, setVariantPageSize] = useState(initialPreferences.variantPageSize)
 
   const [mappingPage, setMappingPage] = useState(1)
-  const [mappingPageSize, setMappingPageSize] = useState(25)
+  const [mappingPageSize, setMappingPageSize] = useState(initialPreferences.mappingPageSize)
 
-  const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(new Set())
-  const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(new Set())
+  const [visibleOptionalsV1, setVisibleOptionalsV1] = useState<Set<OptionalColumnV1>>(
+    () => new Set(initialPreferences.visibleOptionalsV1)
+  )
+  const [visibleOptionalsV22, setVisibleOptionalsV22] = useState<Set<OptionalColumnV22>>(
+    () => new Set(initialPreferences.visibleOptionalsV22)
+  )
   const [visibleIsoLevelsV1, setVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
-    () => new Set(OPTIONAL_ISO_LEVELS)
+    () => new Set(initialPreferences.visibleIsoLevelsV1)
+  )
+  const [mappingVisibleIsoLevelsV1, setMappingVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
+    () => new Set(initialPreferences.mappingVisibleIsoLevelsV1)
   )
   const [visibleIsoLevelsV22, setVisibleIsoLevelsV22] = useState<Set<OptionalIsoLevel>>(
-    () => new Set(OPTIONAL_ISO_LEVELS)
+    () => new Set(initialPreferences.visibleIsoLevelsV22)
   )
-  const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(new Set())
-  const [showMappingTypes, setShowMappingTypes] = useState(false)
-  const [showCounts, setShowCounts] = useState(false)
-  const [onlyUnverified, setOnlyUnverified] = useState(false)
-  const [unverifiedFirst, setUnverifiedFirst] = useState(false)
+  const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(
+    () => new Set(initialPreferences.visibleExtraColumns)
+  )
+  const [showMappingTypes, setShowMappingTypes] = useState(initialPreferences.showMappingTypes)
+  const [showCounts, setShowCounts] = useState(initialPreferences.showCounts)
+  const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(initialPreferences.showVerifiedIsoCodes)
+  const [selectedMappingTypes, setSelectedMappingTypes] = useState<IsoMapEnum[]>(
+    initialPreferences.selectedMappingTypes
+  )
+  const [mappingTypeMenuOpen, setMappingTypeMenuOpen] = useState(false)
+  const [showVerificationStatus, setShowVerificationStatus] = useState(initialPreferences.showVerificationStatus)
+  const [filtersOpen, setFiltersOpen] = useState(initialPreferences.filtersOpen)
   const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
@@ -190,6 +206,51 @@ const IsoOversikt = () => {
     isoCode?: string
   } | null>(null)
   const [createCategoryContext, setCreateCategoryContext] = useState<CreateIso22CategoryContext | null>(null)
+  const [editIso22Code, setEditIso22Code] = useState<string | null>(null)
+  useEffect(() => {
+    if (!loggedInUser?.isAdmin) return
+    saveIsoAdminPreferences(loggedInUser.userId, {
+      sortKey,
+      sortDir,
+      manualSort,
+      showHierarchy,
+      variantPageSize,
+      mappingPageSize,
+      visibleOptionalsV1: [...visibleOptionalsV1],
+      visibleOptionalsV22: [...visibleOptionalsV22],
+      visibleIsoLevelsV1: [...visibleIsoLevelsV1],
+      mappingVisibleIsoLevelsV1: [...mappingVisibleIsoLevelsV1],
+      visibleIsoLevelsV22: [...visibleIsoLevelsV22],
+      visibleExtraColumns: [...visibleExtraColumns],
+      showMappingTypes,
+      showCounts,
+      showVerifiedIsoCodes,
+      selectedMappingTypes,
+      showVerificationStatus,
+      filtersOpen,
+    })
+  }, [
+    loggedInUser?.isAdmin,
+    loggedInUser?.userId,
+    sortKey,
+    sortDir,
+    manualSort,
+    showHierarchy,
+    variantPageSize,
+    mappingPageSize,
+    visibleOptionalsV1,
+    visibleOptionalsV22,
+    visibleIsoLevelsV1,
+    mappingVisibleIsoLevelsV1,
+    visibleIsoLevelsV22,
+    visibleExtraColumns,
+    showMappingTypes,
+    showCounts,
+    showVerifiedIsoCodes,
+    selectedMappingTypes,
+    showVerificationStatus,
+    filtersOpen,
+  ])
 
   const resetPaging = () => {
     setVariantPage(1)
@@ -201,16 +262,27 @@ const IsoOversikt = () => {
     [isoCategories]
   )
 
-  const sortedIsoCategories22 = useMemo(
-    () => (isoCategories22 || []).slice().sort((a, b) => a.isoCode.localeCompare(b.isoCode)),
-    [isoCategories22]
-  )
+  const [localIso22Categories, setLocalIso22Categories] = useState<IsoCategory22DTO[]>([])
+  const sortedIsoCategories22 = useMemo(() => {
+    const serverCategories = isoCategories22 ?? []
+    const localCategories = localIso22Categories.filter((local) => {
+      const server = serverCategories.find(
+        (category) => category.isoCode.replace(/\s/g, '') === local.isoCode.replace(/\s/g, '')
+      )
+      return !server || Date.parse(server.updated) <= Date.parse(local.updated)
+    })
+    const localCodes = new Set(localCategories.map((category) => category.isoCode.replace(/\s/g, '')))
+    return [
+      ...serverCategories.filter((category) => !localCodes.has(category.isoCode.replace(/\s/g, ''))),
+      ...localCategories,
+    ].sort((a, b) => a.isoCode.localeCompare(b.isoCode))
+  }, [isoCategories22, localIso22Categories])
 
   const mappingDataAvailable = !isoMappingsError
   const mappingsByCode16 = useMemo(() => buildMappingsByCode16(isoMappings || []), [isoMappings])
   const existingIso22Codes = useMemo(
-    () => new Set((isoCategories22 || []).map((category) => category.isoCode)),
-    [isoCategories22]
+    () => new Set(sortedIsoCategories22.map((category) => category.isoCode.replace(/\s/g, ''))),
+    [sortedIsoCategories22]
   )
   const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
   const verificationProgress = useMemo(() => {
@@ -274,9 +346,28 @@ const IsoOversikt = () => {
       return {
         verificationReady: mappings.length === mappingIds.length && canVerifyMappings(mappings, sortedIsoCategories22),
         creationContext: getCategoryCreationContext(mappings, sortedIsoCategories22),
+        editTargets: getMappedIso22Codes(_isoCode, mappings).flatMap((code) =>
+          sortedIsoCategories22.some(
+            (category) => category.isoCode.replace(/\s/g, '') === code && category.isoLevel === 4
+          )
+            ? [
+                {
+                  code,
+                  locked:
+                    mappings.some((mapping) => mapping.verified) ||
+                    !mappingDataAvailable ||
+                    !isoMappings ||
+                    isoMappings.some(
+                      (mapping) =>
+                        mapping.verified && getMappedIso22Codes(mapping.code16 ?? '', [mapping]).includes(code)
+                    ),
+                },
+              ]
+            : []
+        ),
       }
     },
-    [isoMappingsById, sortedIsoCategories22]
+    [isoMappingsById, sortedIsoCategories22, isoMappings, mappingDataAvailable]
   )
 
   // Antall produkter og varianter per v16-kode (eksakt kode, samme regel som i Vis oversikt), fra
@@ -356,6 +447,85 @@ const IsoOversikt = () => {
     setCreateCategoryContext(context)
   }, [])
 
+  const handleCopyV16ToV22 = useCallback(
+    (context: CreateIso22CategoryContext, isoCode = bulkMoveModal.isoCode) => {
+      const level = context.parentIsoCode.length / 2 + 1
+      const sourceCode = isoCode?.replace(/\s/g, '').slice(0, level * 2)
+      const source = sortedIsoCategories.find((category) => category.isoCode.replace(/\s/g, '') === sourceCode)
+
+      if (!source || source.isoLevel !== level || (level !== 3 && level !== 4)) return
+      setCreateCategoryContext({
+        ...context,
+        copyFrom: {
+          isoCode: source.isoCode.replace(/\s/g, ''),
+          linksMapping: context.mappingIds.some(
+            (id) => isoMappingsById.get(id)?.code22?.replace(/\s/g, '') === context.parentIsoCode
+          ),
+        },
+        initialValues: {
+          suffix: source.isoCode.replace(/\s/g, '').slice(-2),
+          isoTitle: source.isoTitle,
+          isoText: source.isoText ?? '',
+          searchWords: source.searchWords ?? [],
+        },
+      })
+    },
+    [sortedIsoCategories, bulkMoveModal.isoCode, isoMappingsById]
+  )
+
+  const closeBulkMoveModal = useCallback(() => {
+    scopeAbortControllerRef.current?.abort()
+    scopeAbortControllerRef.current = null
+    setScopeLoading(false)
+    setScopeLoadError(null)
+    setBulkMoveModal({ open: false, isoCode: null })
+  }, [])
+  const handleIso22CategoryUpdated = useCallback(
+    (updated: Iso22DTO) => {
+      const code = updated.isoCode.replace(/\s/g, '')
+      setLocalIso22Categories((current) => [
+        ...current.filter((category) => category.isoCode.replace(/\s/g, '') !== code),
+        {
+          isoCode: code,
+          isoTitle: updated.isoTitle,
+          isoText: updated.isoText ?? '',
+          searchWords: updated.searchWords ?? [],
+          isoTranslations: updated.isoTranslations,
+          isoLevel: updated.level,
+          created: updated.created,
+          updated: updated.updated,
+        },
+      ])
+      mutateIsoCategories22(
+        (current) =>
+          (current ?? []).map((category) =>
+            category.isoCode.replace(/\s/g, '') === code
+              ? {
+                  ...category,
+                  isoTitle: updated.isoTitle,
+                  isoText: updated.isoText ?? '',
+                  searchWords: updated.searchWords ?? [],
+                  updated: updated.updated,
+                }
+              : category
+          ),
+        { revalidate: false }
+      )
+      updateKnownRows((current) =>
+        current.map((row) =>
+          row.iso22Lvl4.replace(/\s/g, '') === code
+            ? {
+                ...row,
+                iso22Lvl4Title: updated.isoTitle,
+                iso22Lvl4Text: updated.isoText ?? '',
+                iso22Lvl4SearchWords: (updated.searchWords ?? []).join(', '),
+              }
+            : row
+        )
+      )
+    },
+    [mutateIsoCategories22, updateKnownRows]
+  )
   const verifyConfirmProductCount = useMemo(() => {
     if (!verifyConfirm?.isoCode || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
     return new Set(knownRows.filter((row) => row.isoCode === verifyConfirm.isoCode).map((row) => row.seriesId)).size
@@ -457,6 +627,10 @@ const IsoOversikt = () => {
           updated: now,
           searchWords,
         }
+        setLocalIso22Categories((current) => [
+          ...current.filter((category) => category.isoCode.replace(/\s/g, '') !== isoCode),
+          newCategory22,
+        ])
         mutateIsoCategories22(
           (current) => {
             const withoutDuplicate = (current || []).filter((category) => category.isoCode !== isoCode)
@@ -567,7 +741,12 @@ const IsoOversikt = () => {
   )
 
   const filteredMappingRows = useMemo(() => {
-    const visible = onlyUnverified ? mappingRows.filter((row) => row.mappingVerified !== true) : mappingRows
+    const visible = mappingRows.filter(
+      (row) =>
+        (showHierarchy || row.isoCode.replace(/\s/g, '').length === 8 || (!row.isoCode && !!row.iso22Lvl4)) &&
+        (showVerifiedIsoCodes || row.mappingVerified !== true) &&
+        (!selectedMappingTypes.length || row.mappingTypes.some((type) => selectedMappingTypes.includes(type)))
+    )
     const base = selectedIsoCode
       ? visible.filter((row) =>
           searchIso22
@@ -578,13 +757,21 @@ const IsoOversikt = () => {
         )
       : visible
     const sorted =
-      selectedIsoCode || !manualSort
+      showHierarchy && !manualSort
         ? [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
         : sortByIsoLevel(base, sortKey, sortDir)
-    return unverifiedFirst
-      ? [...sorted].sort((a, b) => Number(a.mappingVerified === true) - Number(b.mappingVerified === true))
-      : sorted
-  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir, onlyUnverified, unverifiedFirst, manualSort])
+    return sorted
+  }, [
+    mappingRows,
+    selectedIsoCode,
+    searchIso22,
+    sortKey,
+    sortDir,
+    showVerifiedIsoCodes,
+    selectedMappingTypes,
+    manualSort,
+    showHierarchy,
+  ])
 
   const mappingTotalPages = Math.max(1, Math.ceil(filteredMappingRows.length / mappingPageSize))
   const pagedMappingRows = useMemo(() => {
@@ -596,7 +783,13 @@ const IsoOversikt = () => {
     if (mappingPage > mappingTotalPages) setMappingPage(mappingTotalPages)
   }, [mappingPage, mappingTotalPages])
 
-  useEffect(() => () => loadAbortControllerRef.current?.abort(), [])
+  useEffect(
+    () => () => {
+      loadAbortControllerRef.current?.abort()
+      scopeAbortControllerRef.current?.abort()
+    },
+    []
+  )
 
   const categoriesLoading = isoLoading || isoLoading22 || isoMappingsLoading
 
@@ -618,7 +811,6 @@ const IsoOversikt = () => {
           abortController.signal,
           searchVersion
         )
-        const totalPages = firstChunk.totalPages || 1
         const totalSeries = firstChunk.totalSize ?? 0
         setTotalSeriesCount(totalSeries)
 
@@ -628,28 +820,13 @@ const IsoOversikt = () => {
           return
         }
 
-        const series = [...(firstChunk.content || [])]
-        for (let p = 1; p < totalPages; p++) {
-          const chunk = await fetchSeriesPage(
-            p,
-            SERIES_PAGE_SIZE,
-            selectedIsoCode,
-            abortController.signal,
-            searchVersion
-          )
-          series.push(...(chunk.content || []))
-        }
-        const hasIsoOverview = series.every(
-          (seriesItem) => typeof seriesItem.isoCategory === 'string' && Array.isArray(seriesItem.variants)
+        const details = await fetchSeriesForIsoCode(
+          selectedIsoCode,
+          (loaded, total) => setLoadProgress({ loaded, total }),
+          abortController.signal,
+          searchVersion,
+          firstChunk
         )
-        if (!hasIsoOverview) setLoadProgress({ loaded: 0, total: series.length })
-        const details = hasIsoOverview
-          ? series
-          : await fetchSeriesDetailsConcurrent(
-              series.map((seriesItem) => seriesItem.id),
-              (loaded, total) => setLoadProgress({ loaded, total }),
-              abortController.signal
-            )
         abortController.signal.throwIfAborted()
         setRows(
           mapToExtractedRows(
@@ -690,26 +867,13 @@ const IsoOversikt = () => {
   // (isoCode-filter i backend), uavhengig av sidefilteret og uten å røre Produkt-/Variant-lista.
   const loadRowsForIsoCode = useCallback(
     async (isoCode: string) => {
+      scopeAbortControllerRef.current?.abort()
+      const abortController = new AbortController()
+      scopeAbortControllerRef.current = abortController
       setScopeLoading(true)
       setScopeLoadError(null)
-      const abortController = new AbortController()
       try {
-        const firstChunk = await fetchSeriesPage(0, SERIES_PAGE_SIZE, isoCode, abortController.signal)
-        const series = [...(firstChunk.content || [])]
-        for (let page = 1; page < (firstChunk.totalPages || 1); page++) {
-          const chunk = await fetchSeriesPage(page, SERIES_PAGE_SIZE, isoCode, abortController.signal)
-          series.push(...(chunk.content || []))
-        }
-        const hasIsoOverview = series.every(
-          (seriesItem) => typeof seriesItem.isoCategory === 'string' && Array.isArray(seriesItem.variants)
-        )
-        const details = hasIsoOverview
-          ? series
-          : await fetchSeriesDetailsConcurrent(
-              series.map((seriesItem) => seriesItem.id),
-              () => {},
-              abortController.signal
-            )
+        const details = await fetchSeriesForIsoCode(isoCode, () => {}, abortController.signal)
         const newRows = mapToExtractedRows(
           details,
           sortedIsoCategories,
@@ -717,16 +881,29 @@ const IsoOversikt = () => {
           mappingsByCode16,
           mappingDataAvailable
         )
+        abortController.signal.throwIfAborted()
         setScopedRows((prev) => [...prev.filter((row) => !row.isoCode.startsWith(isoCode)), ...newRows])
         setLoadedScopes((prev) => (prev.includes(isoCode) ? prev : [...prev, isoCode]))
       } catch (error) {
-        setScopeLoadError(extractErrorMessage(error, 'Klarte ikke å hente produkter'))
+        if (!abortController.signal.aborted)
+          setScopeLoadError(extractErrorMessage(error, 'Klarte ikke å hente produkter'))
       } finally {
-        setScopeLoading(false)
+        if (scopeAbortControllerRef.current === abortController) {
+          scopeAbortControllerRef.current = null
+          setScopeLoading(false)
+        }
       }
     },
     [sortedIsoCategories, sortedIsoCategories22, mappingsByCode16, mappingDataAvailable]
   )
+
+  const autoOverviewLoadRef = useRef({ isIsoCodeLoaded, loadRowsForIsoCode })
+  autoOverviewLoadRef.current = { isIsoCodeLoaded, loadRowsForIsoCode }
+  useEffect(() => {
+    if (!bulkMoveModal.open || !bulkMoveModal.isoCode) return
+    const { isIsoCodeLoaded: isLoaded, loadRowsForIsoCode: load } = autoOverviewLoadRef.current
+    if (!isLoaded(bulkMoveModal.isoCode)) void load(bulkMoveModal.isoCode)
+  }, [bulkMoveModal.open, bulkMoveModal.isoCode])
 
   useEffect(() => {
     if (pageMode !== 'extract' || !selectedIsoCode || !pendingLargeLoad || pageLoading) return
@@ -810,8 +987,8 @@ const IsoOversikt = () => {
     const base = selectedIsoCode
       ? rows.filter((row) => (searchIso22 ? row.iso22Stored : row.isoCode).startsWith(selectedIsoCode))
       : rows
-    return sortRows(base, sortKey, sortDir)
-  }, [rows, selectedIsoCode, searchIso22, rowsVersion, searchVersion, sortKey, sortDir])
+    return sortRows(showVerifiedIsoCodes ? base : base.filter((row) => row.mappingVerified !== true), sortKey, sortDir)
+  }, [rows, selectedIsoCode, searchIso22, rowsVersion, searchVersion, sortKey, sortDir, showVerifiedIsoCodes])
 
   const productRows = useMemo(
     () => sortProductRows(groupByProduct(filteredRows), sortKey, sortDir),
@@ -921,7 +1098,16 @@ const IsoOversikt = () => {
     setSelectedLevel2('')
     setSelectedLevel3('')
     setSelectedLevel4('')
+    setSelectedMappingTypes([])
+    setShowVerifiedIsoCodes(true)
     resetPaging()
+  }
+
+  const toggleMappingType = (type: IsoMapEnum, selected: boolean) => {
+    setSelectedMappingTypes((current) =>
+      selected ? [...new Set([...current, type])] : current.filter((item) => item !== type)
+    )
+    setMappingPage(1)
   }
 
   const cancelLoad = () => {
@@ -972,6 +1158,13 @@ const IsoOversikt = () => {
             ISO Admin
           </Heading>
         </HStack>
+        {!isoMappingsLoading && !isoMappingsError && isoMappings && (
+          <VerificationStatus
+            progress={verificationProgress}
+            open={showVerificationStatus}
+            onToggle={setShowVerificationStatus}
+          />
+        )}
         <IsoBulkMoveModal
           isOpen={bulkMoveModal.open}
           sourceIsoCode={bulkMoveModal.isoCode}
@@ -993,10 +1186,17 @@ const IsoOversikt = () => {
           onRequestLoadRows={() => {
             if (bulkMoveModal.isoCode) void loadRowsForIsoCode(bulkMoveModal.isoCode)
           }}
-          onClose={() => setBulkMoveModal({ open: false, isoCode: null })}
+          onClose={closeBulkMoveModal}
           onRequestVerify={handleRequestVerify}
           verifying={bulkMoveContext ? bulkMoveContext.mappingIds.some((id) => verifyingMappingIds.has(id)) : false}
           onRequestCreateCategory={handleOpenCreateCategoryModal}
+          onRequestCopyV16ToV22={handleCopyV16ToV22}
+          missingLevel4={
+            bulkMoveModal.isoCode?.length === 8 &&
+            !!bulkMoveContext &&
+            (!bulkMoveContext.iso22Lvl4 ||
+              bulkMoveContext.iso22Lvl4.split(',').some((code) => !existingIso22Codes.has(code.replace(/\s/g, ''))))
+          }
           v16Details={bulkMoveV16Details}
           v22Details={bulkMoveV22Details}
         />
@@ -1005,6 +1205,19 @@ const IsoOversikt = () => {
           onClose={() => setCreateCategoryContext(null)}
           onCreate={handleCreateIso22Category}
           existingIsoCodes={createFormExistingIso22Codes}
+        />
+        <EditIso22CategoryModal
+          isoCode={editIso22Code}
+          locked={
+            !mappingDataAvailable ||
+            !isoMappings ||
+            isoMappings.some(
+              (mapping) =>
+                mapping.verified && getMappedIso22Codes(mapping.code16 ?? '', [mapping]).includes(editIso22Code ?? '')
+            )
+          }
+          onClose={() => setEditIso22Code(null)}
+          onUpdated={handleIso22CategoryUpdated}
         />
         {verifyConfirm && (
           <Modal
@@ -1062,7 +1275,7 @@ const IsoOversikt = () => {
         {isoError22 && <Alert variant="warning">Klarte ikke å hente v22-kategorier.</Alert>}
         {isoMappingsError && <Alert variant="warning">Klarte ikke å hente mapping-status mellom v16 og v22.</Alert>}
 
-        <ExpansionCard defaultOpen size="small" aria-label="Filtre og visningsvalg">
+        <ExpansionCard open={filtersOpen} onToggle={setFiltersOpen} size="small" aria-label="Filtre og visningsvalg">
           <ExpansionCard.Header>
             <ExpansionCard.Title size="small">Filtre og visningsvalg</ExpansionCard.Title>
           </ExpansionCard.Header>
@@ -1101,8 +1314,15 @@ const IsoOversikt = () => {
                           {OPTIONAL_ISO_LEVELS.map((level) => (
                             <ActionMenu.CheckboxItem
                               key={level}
-                              checked={visibleIsoLevelsV1.has(level)}
-                              onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV1)}
+                              checked={(pageMode === 'mapping' ? mappingVisibleIsoLevelsV1 : visibleIsoLevelsV1).has(
+                                level
+                              )}
+                              onCheckedChange={() =>
+                                toggleIsoLevel(
+                                  level,
+                                  pageMode === 'mapping' ? setMappingVisibleIsoLevelsV1 : setVisibleIsoLevelsV1
+                                )
+                              }
                             >
                               v16 nivå {level} kode
                             </ActionMenu.CheckboxItem>
@@ -1329,7 +1549,65 @@ const IsoOversikt = () => {
                     </option>
                   ))}
                 </Select>
-
+              </HStack>
+              <HStack gap="space-8" align="center" wrap paddingBlock="space-8 space-0">
+                {pageMode === 'mapping' && (
+                  <ActionMenu open={mappingTypeMenuOpen} onOpenChange={setMappingTypeMenuOpen}>
+                    <ActionMenu.Trigger>
+                      <Button
+                        variant="secondary"
+                        data-color="neutral"
+                        size="small"
+                        icon={mappingTypeMenuOpen ? <ChevronUpIcon aria-hidden /> : <ChevronDownIcon aria-hidden />}
+                        iconPosition="right"
+                      >
+                        {selectedMappingTypes.length
+                          ? `Endringstype: ${selectedMappingTypes.length} valgt`
+                          : 'Endringstype: Alle'}
+                      </Button>
+                    </ActionMenu.Trigger>
+                    <ActionMenu.Content>
+                      <ActionMenu.CheckboxItem
+                        checked={!selectedMappingTypes.length}
+                        onCheckedChange={() => {
+                          setSelectedMappingTypes([])
+                          setMappingPage(1)
+                        }}
+                      >
+                        Alle endringstyper
+                      </ActionMenu.CheckboxItem>
+                      <ActionMenu.Divider />
+                      <ActionMenu.Group label="Endringstyper">
+                        {(Object.entries(ISO_MAP_LABELS) as [IsoMapEnum, string][]).map(([type, label]) => (
+                          <ActionMenu.CheckboxItem
+                            key={type}
+                            checked={selectedMappingTypes.includes(type)}
+                            disabled={!showVerifiedIsoCodes && type === 'SAME'}
+                            onCheckedChange={(checked) => toggleMappingType(type, checked)}
+                          >
+                            {label}
+                          </ActionMenu.CheckboxItem>
+                        ))}
+                      </ActionMenu.Group>
+                    </ActionMenu.Content>
+                  </ActionMenu>
+                )}
+                {pageMode === 'mapping' && (
+                  <Switch
+                    size="small"
+                    checked={showHierarchy}
+                    onChange={(event) => {
+                      setShowHierarchy(event.target.checked)
+                      setMappingVisibleIsoLevelsV1(new Set(event.target.checked ? OPTIONAL_ISO_LEVELS : []))
+                      setManualSort(false)
+                      setSortKey('iso4')
+                      setSortDir('asc')
+                      setMappingPage(1)
+                    }}
+                  >
+                    Vis ISO-struktur
+                  </Switch>
+                )}
                 <Button variant="secondary" size="small" onClick={resetFilters}>
                   Nullstill
                 </Button>
@@ -1349,14 +1627,26 @@ const IsoOversikt = () => {
                     )}
                   </>
                 )}
-                <Box style={{ marginInlineStart: 'auto' }}>
+                <HStack gap="space-12" align="center" style={{ marginInlineStart: 'auto' }}>
                   <Switch
+                    size="small"
+                    checked={showVerifiedIsoCodes}
+                    onChange={(event) => {
+                      setShowVerifiedIsoCodes(event.target.checked)
+                      if (!event.target.checked) toggleMappingType('SAME', false)
+                      resetPaging()
+                    }}
+                  >
+                    Vis verifiserte ISO-koder
+                  </Switch>
+                  <Switch
+                    size="small"
                     checked={editMode === 'endre'}
                     onChange={(e) => setEditMode(e.target.checked ? 'endre' : 'les')}
                   >
                     Endremodus
                   </Switch>
-                </Box>
+                </HStack>
               </HStack>
             </VStack>
           </ExpansionCard.Content>
@@ -1373,89 +1663,6 @@ const IsoOversikt = () => {
 
             {!categoriesLoading && (
               <>
-                {!isoMappingsError && isoMappings && (
-                  <ExpansionCard size="small" aria-label="Verifiseringsstatus">
-                    <ExpansionCard.Header>
-                      <HStack gap="space-12" align="center">
-                        <ExpansionCard.Title size="small">Verifiseringsstatus</ExpansionCard.Title>
-                        {verificationProgress.total === 0 ? (
-                          <BodyShort size="small">Ingen mappinger</BodyShort>
-                        ) : (
-                          <BodyShort size="small" role="status" aria-live="polite">
-                            {verificationProgress.verified.toLocaleString('nb-NO')} av{' '}
-                            {verificationProgress.total.toLocaleString('nb-NO')} verifisert (
-                            {verificationProgress.percentage} %)
-                          </BodyShort>
-                        )}
-                      </HStack>
-                    </ExpansionCard.Header>
-                    <ExpansionCard.Content>
-                      <VStack gap="space-8">
-                        {verificationProgress.total > 0 && (
-                          <>
-                            <ProgressBar
-                              size="small"
-                              value={verificationProgress.percentage}
-                              aria-label="Verifiserte ISO-mappinger"
-                            />
-                            <BodyShort size="small" textColor="subtle">
-                              Gjelder alle mappinger, uavhengig av filter. Verifisering kobler ikke produkter til v22.
-                            </BodyShort>
-                            <ExpansionCard size="small" aria-label="Verifisering per v16 nivå 1">
-                              <ExpansionCard.Header>
-                                <ExpansionCard.Title size="small">Verifisering per v16 nivå 1</ExpansionCard.Title>
-                              </ExpansionCard.Header>
-                              <ExpansionCard.Content>
-                                <VStack gap="space-12">
-                                  {verificationProgress.groups.map((group) => (
-                                    <VStack key={group.prefix} gap="space-4">
-                                      <BodyShort size="small">
-                                        {group.prefix ? `ISO ${group.prefix}` : 'Uten v16-kode'}:{' '}
-                                        {group.verified.toLocaleString('nb-NO')} av{' '}
-                                        {group.total.toLocaleString('nb-NO')} verifisert ({group.percentage} %)
-                                      </BodyShort>
-                                      <ProgressBar
-                                        size="small"
-                                        value={group.percentage}
-                                        aria-label={
-                                          group.prefix
-                                            ? `Verifiserte mappinger for ISO ${group.prefix}`
-                                            : 'Verifiserte mappinger uten v16-kode'
-                                        }
-                                      />
-                                    </VStack>
-                                  ))}
-                                </VStack>
-                              </ExpansionCard.Content>
-                            </ExpansionCard>
-                          </>
-                        )}
-                      </VStack>
-                    </ExpansionCard.Content>
-                  </ExpansionCard>
-                )}
-                <HStack gap="space-16">
-                  <Checkbox
-                    size="small"
-                    checked={onlyUnverified}
-                    onChange={(event) => {
-                      setOnlyUnverified(event.target.checked)
-                      setMappingPage(1)
-                    }}
-                  >
-                    Vis bare ikke verifiserte
-                  </Checkbox>
-                  <Checkbox
-                    size="small"
-                    checked={unverifiedFirst}
-                    onChange={(event) => {
-                      setUnverifiedFirst(event.target.checked)
-                      setMappingPage(1)
-                    }}
-                  >
-                    Ikke verifiserte først
-                  </Checkbox>
-                </HStack>
                 {showCounts && largeLoadWarning}
                 {showCounts && loadError && <Alert variant="error">{loadError}</Alert>}
                 {showCounts && pageLoading && (
@@ -1489,7 +1696,7 @@ const IsoOversikt = () => {
                             sortKey={sortKey}
                             sortDir={sortDir}
                             onSort={toggleSort}
-                            visibleLevels={visibleIsoLevelsV1}
+                            visibleLevels={mappingVisibleIsoLevelsV1}
                           />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
                           <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
@@ -1513,13 +1720,20 @@ const IsoOversikt = () => {
                       <Table.Body>
                         {pagedMappingRows.map((row) => (
                           <Table.Row key={row.key}>
-                            <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
+                            <IsoLevelCells row={row} visibleLevels={mappingVisibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={isoLoading22 || isoError22 ? undefined : existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             <Table.DataCell>
                               <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
-                              {splitCodes.has(row.isoCode.replace(/\s/g, '')) && (
+                              {(splitCodes.has(row.isoCode.replace(/\s/g, '')) ||
+                                row.mappingIds.some((id) =>
+                                  splitCodes.has((isoMappingsById.get(id)?.code16 ?? '').replace(/\s/g, ''))
+                                )) && (
                                 <Tag variant="warning" size="small">
                                   Splitt: krever manuell kontroll
                                 </Tag>
@@ -1551,6 +1765,8 @@ const IsoOversikt = () => {
                                 onRequestVerify={handleRequestVerify}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
@@ -1688,7 +1904,11 @@ const IsoOversikt = () => {
                           <Table.Row key={row.seriesId}>
                             <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={isoLoading22 || isoError22 ? undefined : existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>
@@ -1722,6 +1942,8 @@ const IsoOversikt = () => {
                                 onRequestVerify={handleRequestVerify}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
@@ -1784,7 +2006,11 @@ const IsoOversikt = () => {
                           <Table.Row key={row.productId}>
                             <IsoLevelCells row={row} visibleLevels={visibleIsoLevelsV1} />
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
-                            <Iso22LevelCells row={row} visibleLevels={visibleIsoLevelsV22} />
+                            <Iso22LevelCells
+                              row={row}
+                              visibleLevels={visibleIsoLevelsV22}
+                              existingIso22Codes={isoLoading22 || isoError22 ? undefined : existingIso22Codes}
+                            />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             {showMappingTypes && (
                               <>
@@ -1820,6 +2046,8 @@ const IsoOversikt = () => {
                                 onRequestVerify={handleRequestVerify}
                                 onMoveIsoCode={handleOpenBulkMove}
                                 onCreateCategory={handleOpenCreateCategoryModal}
+                                onCopyV16ToV22={handleCopyV16ToV22}
+                                onEditCategory={setEditIso22Code}
                               />
                             )}
                           </Table.Row>
@@ -1853,6 +2081,11 @@ const IsoOversikt = () => {
       </VStack>
     </main>
   )
+}
+
+const IsoOversikt = () => {
+  const { loggedInUser } = useAuthStore()
+  return <IsoOversiktContent key={loggedInUser?.userId ?? 'anonymous'} />
 }
 
 export default IsoOversikt
