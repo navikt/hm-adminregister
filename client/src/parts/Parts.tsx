@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { AlertWithCloseButton } from 'felleskomponenter/AlertWithCloseButton'
@@ -5,8 +6,8 @@ import PartsListTab from 'parts/PartsListTab'
 import SeriesListTab from 'parts/SeriesListTab'
 import { useAuthStore } from 'utils/store/useAuthStore'
 
-import { PlusIcon } from '@navikt/aksel-icons'
-import { BodyLong, Box, Button, Heading, Tabs, VStack } from '@navikt/ds-react'
+import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
+import { BodyLong, Button, HStack, Heading, Tabs, VStack } from '@navikt/ds-react'
 
 const Parts = () => {
   const { loggedInUser } = useAuthStore()
@@ -15,6 +16,8 @@ const Parts = () => {
 
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'deler'
+  const [exportOpen, setExportOpen] = useState(false)
+  const closeExport = () => setExportOpen(false)
 
   const updateUrlOnTabChange = (value: string) => {
     navigate(`${pathname}?tab=${value}`)
@@ -37,25 +40,36 @@ const Parts = () => {
           </BodyLong>
         </AlertWithCloseButton>
         {loggedInUser && (
-          <Box>
+          <HStack gap="space-8" align="center">
             <Button
               variant="secondary"
               icon={<PlusIcon aria-hidden />}
               iconPosition="left"
               onClick={() => navigate('/del/opprett')}
-              style={{ maxHeight: '3rem' }}
+              style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
             >
               Opprett ny del
             </Button>
-          </Box>
+            {loggedInUser.isAdmin && (
+              <Button
+                variant="secondary"
+                icon={<FileExportIcon aria-hidden />}
+                iconPosition="left"
+                onClick={() => setExportOpen(true)}
+                style={{ maxHeight: '3rem', whiteSpace: 'nowrap' }}
+              >
+                Eksporter
+              </Button>
+            )}
+          </HStack>
         )}
         <Tabs defaultValue={activeTab || 'about'} onChange={updateUrlOnTabChange}>
           <Tabs.List>
             <Tabs.Tab value="deler" label="Søk på del" />
             <Tabs.Tab value="serier" label="Deler på serie" />
           </Tabs.List>
-          <PartsListTab />
-          <SeriesListTab />
+          <PartsListTab exportOpen={exportOpen && activeTab === 'deler'} onExportClose={closeExport} />
+          <SeriesListTab exportOpen={exportOpen && activeTab === 'serier'} onExportClose={closeExport} />
         </Tabs>
       </VStack>
     </main>

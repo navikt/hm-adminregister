@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   Alert,
   BodyShort,
+  Box,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -17,7 +18,12 @@ import {
 
 import { ExportFormat, exportRows, formatBytes, formatNumber, sanitizeFileName } from 'utils/export/exportUtils'
 
-export type ExportField = { key: string; label: string }
+export type ExportField = {
+  key: string
+  label: string
+  /** Heading the field is listed under in compact mode. */
+  group?: string
+}
 export type ExportScope = 'page' | 'all'
 export type ExportLevel = {
   key: string
@@ -34,6 +40,10 @@ export type ExportEstimate = {
   requests?: number
   /** Whether the row count is an approximation. */
   approximate?: boolean
+  /** Estimated generation time; overrides the default of 0.5 s per request. */
+  seconds?: number
+  /** When set, export is disabled and this message is shown as an error. */
+  blockedReason?: string
 }
 
 interface Props {
@@ -52,7 +62,12 @@ interface Props {
    * `selectedKeys` is passed through so callers can skip expensive per-item data fetches for fields
    * the user hasn't selected (e.g. supplierName requiring a per-series detail fetch).
    */
-  getRows: (scope: ExportScope, level?: string, selectedKeys?: string[]) => Promise<Record<string, unknown>[]>
+  getRows: (
+    scope: ExportScope,
+    level?: string,
+    selectedKeys?: string[],
+    signal?: AbortSignal
+  ) => Promise<Record<string, unknown>[]>
   /** Optional instant magnitude estimate shown before exporting. */
   estimate?: (scope: ExportScope, level?: string, selectedKeys?: string[]) => ExportEstimate
   /** True when no filters/supplier/search are set (full-catalogue export) — triggers a stronger warning. */
@@ -61,6 +76,10 @@ interface Props {
   warnRowThreshold?: number
   /** Noun for a row in single-level mode (e.g. "varianter"). Multi-level derives from the level key. */
   rowNoun?: string
+  /** Smaller controls, wider modal and fields grouped in balanced columns, so long field lists fit without scrolling. */
+  compact?: boolean
+  /** Abort an ongoing export (and skip the download) when the modal is closed. Enables «Avbryt» while exporting. */
+  cancelOnClose?: boolean
 }
 
 const keysOf = (fields: ExportField[], defaults?: string[]) => defaults ?? fields.map((field) => field.key)
@@ -79,6 +98,8 @@ export const ExportModal = ({
   isUnfiltered = false,
   warnRowThreshold = 2000,
   rowNoun,
+  compact = false,
+  cancelOnClose = false,
 }: Props) => {
   const hasLevels = !!levels && levels.length > 0
   const [levelKey, setLevelKey] = useState<string>(hasLevels ? levels![0].key : '')
@@ -94,6 +115,7 @@ export const ExportModal = ({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [customFileName, setCustomFileName] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
   const generatedFileName =
     typeof fileBaseName === 'function' ? fileBaseName(scope, hasLevels ? levelKey : undefined) : fileBaseName
   const fileName = customFileName ?? generatedFileName
@@ -117,9 +139,9 @@ export const ExportModal = ({
 
   const estimatedBytes = est ? est.rows * (selectedKeys.length * 16 + 24) + 64 : 0
   const estimatedRequests = est?.requests ?? 0
-  const estimatedSeconds = Math.max(1, Math.round(estimatedRequests * 0.5))
+  const estimatedSeconds = Math.max(1, Math.round(est?.seconds ?? estimatedRequests * 0.5))
   const timeText =
-    estimatedRequests <= 1
+    estimatedRequests <= 1 && est?.seconds === undefined
       ? 'noen sekunder'
       : estimatedSeconds < 60
         ? `~${estimatedSeconds} sekunder`
@@ -133,11 +155,21 @@ export const ExportModal = ({
     if (level) setSelectedKeys(keysOf(level.availableFields, level.defaultFieldKeys))
   }
 
+  useEffect(() => () => abortControllerRef.current?.abort(), [])
+
+  const handleClose = () => {
+    if (cancelOnClose) abortControllerRef.current?.abort()
+    onClose()
+  }
+
   const handleExport = async () => {
+    const controller = new AbortController()
+    abortControllerRef.current = controller
     setLoading(true)
     setError(null)
     try {
-      const rows = await getRows(scope, hasLevels ? levelKey : undefined, selectedKeys)
+      const rows = await getRows(scope, hasLevels ? levelKey : undefined, selectedKeys, controller.signal)
+      if (cancelOnClose && controller.signal.aborted) return
       const selectedFields = fields.filter((field) => selectedKeys.includes(field.key))
       const knownFieldKeys = new Set(fields.map((field) => field.key))
       const projected = rows.map((row) => {
@@ -161,6 +193,7 @@ export const ExportModal = ({
       exportRows(projected, format, sanitizeFileName(fileName, generatedFileName))
       onClose()
     } catch (e) {
+      if (cancelOnClose && controller.signal.aborted) return
       setError(e instanceof Error ? e.message : 'Eksport feilet')
     } finally {
       setLoading(false)
@@ -168,19 +201,33 @@ export const ExportModal = ({
   }
 
   const radioColumns = 1 + (hasLevels ? 1 : 0) + (showScope ? 1 : 0)
+  const controlSize = compact ? 'small' : 'medium'
+
+  const fieldGroups = fields.reduce<{ name: string; fields: ExportField[] }[]>((groups, field) => {
+    const name = field.group ?? ''
+    const existing = groups.find((group) => group.name === name)
+    if (existing) existing.fields.push(field)
+    else groups.push({ name, fields: [field] })
+    return groups
+  }, [])
 
   return (
-    <Modal open={open} onClose={onClose} header={{ heading: 'Eksporter', closeButton: true }} width="medium">
+    <Modal
+      open={open}
+      onClose={handleClose}
+      header={{ heading: 'Eksporter', closeButton: true }}
+      width={compact ? '64rem' : 'medium'}
+    >
       <Modal.Body>
-        <VStack gap="space-24">
-          <HGrid columns={{ xs: 1, sm: radioColumns }} gap="space-24" align="start">
-            <RadioGroup legend="Format" value={format} onChange={(value: ExportFormat) => setFormat(value)}>
+        <VStack gap={compact ? 'space-16' : 'space-24'}>
+          <HGrid columns={{ xs: 1, sm: radioColumns }} gap={compact ? 'space-16' : 'space-24'} align="start">
+            <RadioGroup size={controlSize} legend="Format" value={format} onChange={(value: ExportFormat) => setFormat(value)}>
               <Radio value="excel">Excel (.xls)</Radio>
               <Radio value="json">JSON</Radio>
             </RadioGroup>
 
             {hasLevels && (
-              <RadioGroup legend="Nivå" value={levelKey} onChange={onLevelChange}>
+              <RadioGroup size={controlSize} legend="Nivå" value={levelKey} onChange={onLevelChange}>
                 {levels!.map((level) => (
                   <Radio key={level.key} value={level.key}>
                     {level.label}
@@ -190,7 +237,7 @@ export const ExportModal = ({
             )}
 
             {showScope && (
-              <RadioGroup legend="Omfang" value={scope} onChange={(value: ExportScope) => setScope(value)}>
+              <RadioGroup size={controlSize} legend="Omfang" value={scope} onChange={(value: ExportScope) => setScope(value)}>
                 <Radio value="page">{scopeLabels?.page ?? 'Denne siden'}</Radio>
                 <Radio value="all">{scopeLabels?.all ?? 'Alle treff'}</Radio>
               </RadioGroup>
@@ -198,21 +245,43 @@ export const ExportModal = ({
           </HGrid>
 
           <TextField
+            size={controlSize}
             label="Filnavn"
             value={fileName}
             onChange={(e) => setCustomFileName(e.target.value)}
             description={`Lagres som ${fileName || generatedFileName}.${format === 'json' ? 'json' : 'xls'}`}
           />
 
-          <CheckboxGroup legend="Felter" value={selectedKeys} onChange={setSelectedKeys}>
-            <HGrid columns={{ xs: 1, sm: 2, md: 3 }} gap="space-8 space-24">
-              {fields.map((field) => (
-                <Checkbox key={field.key} value={field.key}>
-                  {field.label}
-                </Checkbox>
-              ))}
-            </HGrid>
-          </CheckboxGroup>
+          {compact ? (
+            <CheckboxGroup size="small" legend="Felter" value={selectedKeys} onChange={setSelectedKeys}>
+              <div style={{ columns: '3 15rem', columnGap: 'var(--ax-space-24)' }}>
+                {fieldGroups.map((group) => (
+                  <Box key={group.name} paddingBlock="space-0 space-12" style={{ breakInside: 'avoid' }}>
+                    {group.name && (
+                      <BodyShort size="small" weight="semibold">
+                        {group.name}
+                      </BodyShort>
+                    )}
+                    {group.fields.map((field) => (
+                      <Checkbox key={field.key} value={field.key}>
+                        {field.label}
+                      </Checkbox>
+                    ))}
+                  </Box>
+                ))}
+              </div>
+            </CheckboxGroup>
+          ) : (
+            <CheckboxGroup legend="Felter" value={selectedKeys} onChange={setSelectedKeys}>
+              <HGrid columns={{ xs: 1, sm: 2, md: 3 }} gap="space-8 space-24">
+                {fields.map((field) => (
+                  <Checkbox key={field.key} value={field.key}>
+                    {field.label}
+                  </Checkbox>
+                ))}
+              </HGrid>
+            </CheckboxGroup>
+          )}
 
           {error && <Alert variant="error">{error}</Alert>}
         </VStack>
@@ -220,14 +289,23 @@ export const ExportModal = ({
       <Modal.Footer>
         <VStack gap="space-16" width="100%" style={{ width: '100%' }}>
           <HStack gap="space-8">
-            <Button variant="secondary" onClick={onClose} disabled={loading}>
+            <Button variant="secondary" onClick={handleClose} disabled={loading && !cancelOnClose}>
               Avbryt
             </Button>
-            <Button onClick={handleExport} loading={loading} disabled={selectedKeys.length === 0}>
+            <Button
+              onClick={handleExport}
+              loading={loading}
+              disabled={selectedKeys.length === 0 || !!est?.blockedReason}
+            >
               Eksporter
             </Button>
           </HStack>
-          {est && (
+          {est?.blockedReason && (
+            <Alert variant="error" size="small" style={{ width: '100%' }}>
+              {est.blockedReason}
+            </Alert>
+          )}
+          {est && !est.blockedReason && (
             <Alert variant={isLargeExport ? 'warning' : 'info'} size="small" style={{ width: '100%' }}>
               <VStack gap="space-2">
                 {isFullCatalogueExport && (
