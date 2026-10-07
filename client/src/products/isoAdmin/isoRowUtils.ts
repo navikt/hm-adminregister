@@ -1,26 +1,6 @@
 import { ExtractedProductVariant, ProductSummaryRow } from './isoOversiktTypes'
 import { numericValue } from './isoSortUtils'
 
-export const replaceSeriesRows = (
-  rows: ExtractedProductVariant[],
-  updatedRows: ExtractedProductVariant[]
-): ExtractedProductVariant[] => {
-  const replacements = new Map<string, ExtractedProductVariant[]>()
-  for (const row of updatedRows) {
-    const seriesRows = replacements.get(row.seriesId) ?? []
-    seriesRows.push(row)
-    replacements.set(row.seriesId, seriesRows)
-  }
-  const replaced = new Set<string>()
-  return rows.flatMap((row) => {
-    const replacement = replacements.get(row.seriesId)
-    if (!replacement) return [row]
-    if (replaced.has(row.seriesId)) return []
-    replaced.add(row.seriesId)
-    return replacement
-  })
-}
-
 export const mergeCsv = (a: string, b: string): string =>
   Array.from(
     new Set([

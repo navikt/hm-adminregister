@@ -36,38 +36,54 @@ export const getMappedIso22Codes = (isoCode: string, mappings: IsoMapDTO[]): str
     )
   )
 
-export type Iso22Target = {
-  mappingId: string
-  // Tom når mappingen ikke peker på en nivå 4-kategori som faktisk finnes.
-  level4Code: string
-  level4Title: string
-  level3Code: string
-  level3Title: string
-}
-
-// Tilkoblingsmål hentes fra mappingene, aldri fra radens visningsfelt (iso22Lvl4), som foretrekker
-// produktets lagrede v22-kode og slår sammen flere mål ved splitt. buildIso22Path lager en
-// plassholder for koder som ikke finnes, så nivå 4 godtas bare når kategorien finnes i categories22.
-export const resolveIso22Targets = (
-  isoCode: string,
-  mappings: IsoMapDTO[],
-  categories22: IsoCategory22DTO[]
-): Iso22Target[] =>
-  mappings.map((mapping) => {
-    const code22 = mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')
-    const level4 = categories22.find(
-      (category) => category.isoLevel === 4 && category.isoCode.replace(/\s/g, '') === code22
+export const canVerifyMappings = (mappings: IsoMapDTO[], categories22: IsoCategory22DTO[]): boolean =>
+  mappings.length > 0 &&
+  mappings.every((mapping) => {
+    const code = getMappedIso22Codes(mapping.code16 ?? '', [mapping])[0]
+    return (
+      !!code &&
+      categories22.some(
+        (category) =>
+          category.isoCode.replace(/\s/g, '') === code &&
+          (category.isoLevel === 3 || category.isoLevel === 4) &&
+          category.isoLevel === code.length / 2
+      )
     )
-    const path = code22 ? buildIso22Path(code22, categories22) : {}
-    const level3 = path.level3 && categories22.includes(path.level3) ? path.level3 : undefined
-    return {
-      mappingId: mapping.id,
-      level4Code: level4?.isoCode.replace(/\s/g, '') ?? '',
-      level4Title: level4?.isoTitle ?? '',
-      level3Code: level3?.isoCode.replace(/\s/g, '') ?? '',
-      level3Title: level3?.isoTitle ?? '',
-    }
   })
+
+export const getCategoryCreationContext = (mappings: IsoMapDTO[], categories22: IsoCategory22DTO[]) => {
+  for (const mapping of mappings) {
+    if (mapping.verified) continue
+    const code = getMappedIso22Codes(mapping.code16 ?? '', [mapping])[0]
+    if (!code || !/^\d{6}(\d{2})?$/.test(code)) continue
+    const category = categories22.find((item) => item.isoCode.replace(/\s/g, '') === code)
+    if (category && mapping.mapEnum.includes('SAME')) continue
+    const parentCode = category && category.isoLevel === 3 ? code : code.slice(0, -2)
+    if (category && category.isoLevel === 4) continue
+    const parent = categories22.find((item) => item.isoCode.replace(/\s/g, '') === parentCode)
+    if (!parent && parentCode.length === 6) {
+      const level2 = categories22.find(
+        (item) => item.isoLevel === 2 && item.isoCode.replace(/\s/g, '') === parentCode.slice(0, 4)
+      )
+      if (level2) {
+        return {
+          parentIsoCode: level2.isoCode.replace(/\s/g, ''),
+          parentIsoTitle: level2.isoTitle,
+          mappingIds: [mapping.id],
+          targetIsoCode: parentCode,
+        }
+      }
+    }
+    if (!parent || (parent.isoLevel !== 2 && parent.isoLevel !== 3)) continue
+    return {
+      parentIsoCode: parentCode,
+      parentIsoTitle: parent.isoTitle,
+      mappingIds: [mapping.id],
+      targetIsoCode: category ? undefined : code,
+    }
+  }
+  return undefined
+}
 
 export const mapToExtractedRows = (
   seriesDetails: (SeriesDTO | IsoOverviewSeries)[],
@@ -84,10 +100,7 @@ export const mapToExtractedRows = (
     const storedIsoCode22 =
       typeof series.isoCategory22 === 'string' ? series.isoCategory22 : series.isoCategory22?.isoCode
     const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : mappedIsoCodes22
-    // Ekte tilknytningsstatus: viser om produktet faktisk HAR en lagret isoCategory22 som stemmer med
-    // v22-koden(e) mappingtabellen sier v16-koden skal migreres til - i motsetning til iso22Lvl3/4
-    // under, som faller tilbake til den *anbefalte* v22-koden når ingen reell tilknytning finnes (kun
-    // for visning). Brukes til å sperre verifisering før reell tilknytning er gjort (se AksjonCell).
+    // Skiller lagret v22-kode fra mappingens anbefalte kode i visningen.
     const iso22Attached =
       !!storedIsoCode22 && (mappedIsoCodes22.length === 0 || mappedIsoCodes22.includes(storedIsoCode22))
     const paths22 = isoCodes22.map((code) => buildIso22Path(code, categories22))

@@ -4,10 +4,6 @@ import { Alert, BodyShort, Button, HStack, TextField, VStack } from '@navikt/ds-
 
 import { extractErrorMessage } from './errorUtils'
 
-// ISO 9999 tillater at nasjonale (NAT) kategorier opprettes på nivå 4 under en eksisterende
-// nivå 3-forelder. Koden er derfor alltid forelderens 6-sifrede kode + 2 ekstra sifre - nivå
-// 3-delen kan ikke endres, så admin skal kun fylle inn de 2 siste sifrene (med ledende null for
-// tall 1-9, f.eks. 01, 02 ... 09, 10 ... 99).
 export type Iso22CategoryCreatePayload = {
   isoCode: string
   isoTitle: string
@@ -21,8 +17,10 @@ const Iso22CategoryCreateForm = ({
   onCancel,
   submitLabel = 'Opprett kategori',
   existingIsoCodes,
+  targetIsoCode,
 }: {
   parentIsoCode: string
+  targetIsoCode?: string
   // Koder som allerede finnes (fra klientens v22-kategoriliste) - gir en tydelig feilmelding før
   // kallet sendes, i stedet for backendens generiske 400 "already exists".
   existingIsoCodes?: ReadonlySet<string>
@@ -30,7 +28,8 @@ const Iso22CategoryCreateForm = ({
   onCancel?: () => void
   submitLabel?: string
 }) => {
-  const [suffix, setSuffix] = useState('')
+  const level = parentIsoCode.length / 2 + 1
+  const [suffix, setSuffix] = useState(targetIsoCode?.slice(-2) ?? '')
   const [isoTitle, setIsoTitle] = useState('')
   const [isoText, setIsoText] = useState('')
   const [searchWords, setSearchWords] = useState('')
@@ -38,7 +37,6 @@ const Iso22CategoryCreateForm = ({
   const [error, setError] = useState<string | null>(null)
 
   const handleSuffixChange = (value: string) => {
-    // Kun siffer, maks 2 tegn - resten av koden (nivå 1-3) er låst til forelderen.
     setSuffix(value.replace(/\D/g, '').slice(0, 2))
   }
 
@@ -50,8 +48,12 @@ const Iso22CategoryCreateForm = ({
       return
     }
     const code = `${parentIsoCode}${paddedSuffix}`
-    if (code.length !== 8) {
-      setError(`ISO-koden må bestå av 8 siffer og starte med ${parentIsoCode}, f.eks. ${parentIsoCode}01`)
+    if (!/^\d{4}(\d{2})?$/.test(parentIsoCode) || code.length !== level * 2) {
+      setError('Velg en eksisterende forelder på nivå 2 eller 3.')
+      return
+    }
+    if (targetIsoCode && code !== targetIsoCode) {
+      setError(`Koden må være ${targetIsoCode}, som mappingen peker på.`)
       return
     }
     if (existingIsoCodes?.has(code)) {
@@ -86,7 +88,7 @@ const Iso22CategoryCreateForm = ({
     <VStack gap="space-8">
       <VStack gap="space-2">
         <BodyShort size="small" weight="semibold">
-          Ny ISO-kode (nivå 4, 8 siffer)
+          Ny ISO-kode (nivå {level}, {level * 2} siffer)
         </BodyShort>
         <HStack gap="space-4" align="center">
           <BodyShort size="small">{parentIsoCode}</BodyShort>
@@ -98,12 +100,15 @@ const Iso22CategoryCreateForm = ({
             inputMode="numeric"
             maxLength={2}
             value={suffix}
+            readOnly={!!targetIsoCode}
             onChange={(e) => handleSuffixChange(e.target.value)}
             placeholder="01"
           />
         </HStack>
         <BodyShort size="small" textColor="subtle">
-          Nivå 1-3 ({parentIsoCode}) kan ikke endres. Fyll kun inn de 2 siste sifrene, f.eks. 01, 02 ... 09, 10 ... 99.
+          {targetIsoCode
+            ? `Koden ${targetIsoCode} er fastsatt av mappingen.`
+            : `Forelderen ${parentIsoCode} kan ikke endres. Fyll inn de 2 siste sifrene.`}
         </BodyShort>
       </VStack>
       <TextField label="Tittel" size="small" value={isoTitle} onChange={(e) => setIsoTitle(e.target.value)} />

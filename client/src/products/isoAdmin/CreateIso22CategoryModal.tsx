@@ -8,6 +8,7 @@ export type CreateIso22CategoryContext = {
   parentIsoCode: string
   parentIsoTitle?: string
   mappingIds: string[]
+  targetIsoCode?: string
 }
 
 const CreateIso22CategoryModal = ({
@@ -24,17 +25,21 @@ const CreateIso22CategoryModal = ({
   if (!context) return null
 
   return (
-    <Modal open header={{ heading: 'Opprett ny ISO v22-kategori (nivå 4)' }} onClose={onClose}>
+    <Modal
+      open
+      header={{ heading: `Opprett ny ISO v22-kategori (nivå ${context.parentIsoCode.length / 2 + 1})` }}
+      onClose={onClose}
+    >
       <Modal.Body>
         <Content>
           <VStack gap="space-16">
             <BodyShort>
-              Det finnes ingen ISO v22-kategori på nivå 4 under <strong>{context.parentIsoCode}</strong>
-              {context.parentIsoTitle ? ` (${context.parentIsoTitle})` : ''}. ISO 9999 tillater at nasjonale
-              tilleggskategorier opprettes på nivå 4 under en eksisterende nivå 3-kategori.
+              Opprett en v22-kategori under <strong>{context.parentIsoCode}</strong>
+              {context.parentIsoTitle ? ` (${context.parentIsoTitle})` : ''}.
             </BodyShort>
             <Iso22CategoryCreateForm
               parentIsoCode={context.parentIsoCode}
+              targetIsoCode={context.targetIsoCode}
               existingIsoCodes={existingIsoCodes}
               onCancel={onClose}
               submitLabel="Opprett kategori og koble til mapping"
