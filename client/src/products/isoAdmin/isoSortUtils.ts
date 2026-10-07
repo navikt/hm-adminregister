@@ -58,7 +58,7 @@ export const sortProductRows = (rows: ProductSummaryRow[], key: SortKey, dir: So
   })
 }
 
-// Generic ISO-level sort used by the "Ren ISO-mapping" view, which only ever sorts on the
+// Generic ISO-level sort used by the "ISO-mapping" view, which only ever sorts on the
 // iso1-4 code columns (there is no agreement/variantCount data in this view).
 export const sortByIsoLevel = <T extends { iso1: string; iso2: string; iso3: string; iso4: string }>(
   rows: T[],

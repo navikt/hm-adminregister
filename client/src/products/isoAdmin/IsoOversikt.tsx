@@ -302,8 +302,27 @@ const IsoOversiktContent = () => {
       items.push(mapping)
       groups.set(prefix, items)
     }
+    const levels = new Map<number, IsoMapDTO[]>()
+    for (const mapping of mappings) {
+      const code16 = mapping.code16?.replace(/\s/g, '') ?? ''
+      const level = code16 ? Math.ceil(code16.length / 2) : 0
+      const items = levels.get(level) ?? []
+      items.push(mapping)
+      levels.set(level, items)
+    }
+    const isVisibleWithoutStructure = (mapping: IsoMapDTO) => {
+      const code16 = mapping.code16?.replace(/\s/g, '') ?? ''
+      return code16 ? code16.length === 8 : (mapping.code22?.replace(/\s/g, '').length ?? 0) === 8
+    }
     return {
       ...summarize(mappings),
+      levels: [...levels]
+        .sort(([a], [b]) => (a === 0 ? 1 : b === 0 ? -1 : b - a))
+        .map(([level, items]) => ({
+          level,
+          ...summarize(items),
+          hiddenUnverified: items.filter((mapping) => !mapping.verified && !isVisibleWithoutStructure(mapping)).length,
+        })),
       groups: [...groups]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([prefix, items]) => ({
@@ -910,12 +929,12 @@ const IsoOversiktContent = () => {
     void loadAllRows(true)
   }, [pageMode, selectedIsoCode, pendingLargeLoad, pageLoading, loadAllRows])
 
-  // Forhåndshenter produkt-/variantdata i bakgrunnen mens admin fortsatt ser "Ren ISO-mapping" -
+  // Forhåndshenter produkt-/variantdata i bakgrunnen mens admin fortsatt ser "ISO-mapping" -
   // slik unngås en eksplisitt "Hent liste"-klikk når man bytter til Produkt- eller Variant-visning.
   // Kjøres kun én gang, og kun når datasettet er innenfor SERIES_WARN_THRESHOLD (loadAllRows setter
   // da pendingLargeLoad i stedet for å laste alt) - store, ufiltrerte uttrekk krever fortsatt et
   // eksplisitt admin-samtykke via "Fortsett likevel".
-  // Når antall-kolonnen slås på i Ren ISO-mapping, kjøres samme henting som "Hent liste" (den knappen
+  // Når antall-kolonnen slås på i ISO-mapping, kjøres samme henting som "Hent liste" (den knappen
   // finnes bare i Produkt/Variant). Med ISO-filter hentes bare filteret. Uten filter vises vanlig
   // advarsel ved store uttrekk. Hvert omfang forsøkes én gang, så "Avbryt" ikke trigger ny henting.
   const countLoadAttemptedScopeRef = useRef<string | null>(null)
@@ -1163,6 +1182,7 @@ const IsoOversiktContent = () => {
             progress={verificationProgress}
             open={showVerificationStatus}
             onToggle={setShowVerificationStatus}
+            showHierarchy={showHierarchy}
           />
         )}
         <IsoBulkMoveModal
@@ -1289,7 +1309,7 @@ const IsoOversiktContent = () => {
                   size="small"
                 >
                   <HStack gap="space-24" wrap={false}>
-                    <Radio value="mapping">Ren ISO-mapping</Radio>
+                    <Radio value="mapping">ISO-mapping</Radio>
                     <Radio value="product">Produkt</Radio>
                     <Radio value="variant">Variant</Radio>
                   </HStack>
@@ -1703,10 +1723,10 @@ const IsoOversiktContent = () => {
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           <Table.HeaderCell scope="col">Endringstype</Table.HeaderCell>
                           {showCounts && (
-                            <Table.HeaderCell scope="col" style={{ width: '1%', whiteSpace: 'nowrap' }}>
+                            <Table.HeaderCell scope="col" style={{ width: '1%' }}>
                               <HStack gap="space-4" align="center" wrap={false}>
                                 Antall
-                                <HelpText title="Hva betyr Antall?" placement="top">
+                                <HelpText title="Hva betyr Antall?" placement="top" strategy="fixed">
                                   Antall produkter / varianter registrert med denne v16-koden. «–» betyr at produktene
                                   ikke er lastet ennå.
                                 </HelpText>

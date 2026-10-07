@@ -162,11 +162,7 @@ export const Iso22LevelCells = ({
           ) : (
             <HStack key={code} gap="space-4" align="center">
               <span>{code}</span>
-              <Tag
-                variant="warning"
-                size="small"
-                title={`ISO ${code} finnes ikke som v22-kategori og må opprettes.`}
-              >
+              <Tag variant="warning" size="small" title={`ISO ${code} finnes ikke som v22-kategori og må opprettes.`}>
                 Kategori mangler
               </Tag>
             </HStack>

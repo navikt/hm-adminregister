@@ -73,7 +73,7 @@ test('alle visningsmoduser beholder restore-branchens kolonner og valgfrie titte
   expect(headers()).toEqual([...withTitles, 'HMS-nr.', 'Leverandørref.'])
   fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
   expect(headers()).toEqual([...withTitles, 'Ant. varianter'])
-  fireEvent.click(screen.getByRole('radio', { name: 'Ren ISO-mapping' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'ISO-mapping' }))
   expect(headers()).toEqual([
     'v16 - nivå 4',
     'v16 - 4 tittel',
@@ -99,6 +99,21 @@ test('endringstype filtrerer mappinger og Nullstill gjenoppretter alle filtre', 
   expect(screen.getByRole('button', { name: 'Endringstype: Alle' })).toBeInTheDocument()
   expect(screen.getByRole('checkbox', { name: 'Vis verifiserte ISO-koder' })).toBeChecked()
   expect(screen.getByText(originalCount!)).toBeInTheDocument()
+})
+
+test('Vis detaljer viser verifisering per nivå og varsler om ikke-verifiserte mappinger skjult over nivå 4', async () => {
+  renderPage()
+  await screen.findByText('Verifiserte ISO-mappinger: 62 %')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis detaljer' }))
+  const details = screen.getByRole('region', { name: 'Verifiseringsstatus' })
+  expect(within(details).getByText('v16 nivå 4: 3 av 3 verifisert (100 %)')).toBeInTheDocument()
+  expect(within(details).getByText('v16 nivå 3: 0 av 1 verifisert (0 %)')).toBeInTheDocument()
+  expect(within(details).getByText('v16 nivå 2: 0 av 1 verifisert (0 %)')).toBeInTheDocument()
+  expect(within(details).getByText('v16 nivå 1: 1 av 2 verifisert (50 %)')).toBeInTheDocument()
+  expect(within(details).getByText('Uten v16-kode (ny v22-kode): 1 av 1 verifisert (100 %)')).toBeInTheDocument()
+  expect(within(details).getByText(/3 ikke-verifiserte mappinger ligger over nivå 4/)).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis ISO-struktur' }))
+  expect(within(details).queryByText(/ikke-verifiserte mappinger ligger over nivå 4/)).not.toBeInTheDocument()
 })
 
 test('statusdetaljer vises ved toppen etter valg og verified-filter virker i produktvisningen', async () => {
@@ -403,7 +418,7 @@ test('viser verifisering per nivå 1 og fremhever flere mappinger med samme v16-
   expect(screen.getByText('Uten v16-kode: 1 av 1 verifisert (100 %)')).toBeInTheDocument()
 })
 
-test('Ren ISO-mapping søker mappingens v22-mål når Søk v22-koder er valgt', async () => {
+test('ISO-mapping søker mappingens v22-mål når Søk v22-koder er valgt', async () => {
   renderPage()
   await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
@@ -1663,7 +1678,7 @@ const showCountColumn = () => {
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Antall produkter / varianter' }))
 }
 
-test('Ren ISO-mapping viser antall produkter / varianter fra lastede rader, og – når koden ikke er lastet', async () => {
+test('ISO-mapping viser antall produkter / varianter fra lastede rader, og – når koden ikke er lastet', async () => {
   renderPage()
   await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
   expect(screen.queryByRole('columnheader', { name: /^Antall/ })).not.toBeInTheDocument()
@@ -1723,7 +1738,7 @@ const useLargeSystemWithRollators = () => {
   return requestedIsoCodes
 }
 
-test('antall-kolonnen henter produktene automatisk for valgt ISO-filter i Ren ISO-mapping', async () => {
+test('antall-kolonnen henter produktene automatisk for valgt ISO-filter i ISO-mapping', async () => {
   const requestedIsoCodes = useLargeSystemWithRollators()
   renderPage()
   await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
