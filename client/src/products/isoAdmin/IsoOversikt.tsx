@@ -13,6 +13,7 @@ import {
   BodyShort,
   Box,
   Button,
+  Checkbox,
   ExpansionCard,
   HStack,
   Heading,
@@ -113,6 +114,8 @@ const IsoOversikt = () => {
   // ISO-prefikset `rows` ble lastet for ('' = alle). `rows` kan være lastet for et annet filter enn det
   // som vises nå, så tilknytningsstatus for koder utenfor prefikset er ukjent.
   const [rowsScope, setRowsScope] = useState<string | null>(null)
+  const [searchIso22, setSearchIso22] = useState(false)
+  const [rowsVersion, setRowsVersion] = useState<'v16' | 'v22'>('v16')
   // Produkter hentet fra "Vis oversikt" for én bestemt v16-kode, uavhengig av sidefilteret. Holdes
   // utenfor `rows` slik at Produkt-/Variant-listen ikke viser et delvis uttrekk som om det var hele lista.
   const [scopedRows, setScopedRows] = useState<ExtractedProductVariant[]>([])
@@ -222,16 +225,21 @@ const IsoOversikt = () => {
   // AksjonCell og IsoBulkMoveModal.
   const isIsoCodeLoaded = useCallback(
     (isoCode: string) =>
-      (rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)) ||
+      (rows !== null && rowsVersion === 'v16' && rowsScope !== null && isoCode.startsWith(rowsScope)) ||
       loadedScopes.some((scope) => isoCode.startsWith(scope)),
-    [rows, rowsScope, loadedScopes]
+    [rows, rowsScope, rowsVersion, loadedScopes]
   )
 
   // Alle kjente produktrader: sidelista pluss rader hentet for enkeltkoder i oversikten.
   const knownRows = useMemo(() => {
-    const coveredByRows = (isoCode: string) => rows !== null && rowsScope !== null && isoCode.startsWith(rowsScope)
-    return [...(rows || []), ...scopedRows.filter((row) => !coveredByRows(row.isoCode))]
-  }, [rows, rowsScope, scopedRows])
+    const scopedIds = new Set(scopedRows.map((row) => row.productId))
+    const coveredByRows = (isoCode: string) =>
+      rows !== null && rowsVersion === 'v16' && rowsScope !== null && isoCode.startsWith(rowsScope)
+    return [
+      ...(rows || []).filter((row) => rowsVersion === 'v16' || !scopedIds.has(row.productId)),
+      ...scopedRows.filter((row) => !coveredByRows(row.isoCode)),
+    ]
+  }, [rows, rowsScope, rowsVersion, scopedRows])
 
   const updateKnownRows = useCallback((update: (current: ExtractedProductVariant[]) => ExtractedProductVariant[]) => {
     setRows((prev) => (prev ? update(prev) : null))
@@ -586,6 +594,8 @@ const IsoOversikt = () => {
   )
 
   const selectedIsoCode = selectedLevel4 || selectedLevel3 || selectedLevel2 || selectedLevel1
+  const searchCategories = searchIso22 ? sortedIsoCategories22 : sortedIsoCategories
+  const searchVersion = searchIso22 ? 'v22' : 'v16'
 
   const mappingRows = useMemo(
     () => buildMappingRows(sortedIsoCategories, sortedIsoCategories22, isoMappings || [], mappingDataAvailable),
@@ -636,10 +646,18 @@ const IsoOversikt = () => {
   )
 
   const filteredMappingRows = useMemo(() => {
-    const base = selectedIsoCode ? mappingRows.filter((row) => row.isoCode.startsWith(selectedIsoCode)) : mappingRows
+    const base = selectedIsoCode
+      ? mappingRows.filter((row) =>
+          searchIso22
+            ? [row.iso22Lvl1, row.iso22Lvl2, row.iso22Lvl3, row.iso22Lvl4].some((code) =>
+                code?.split(',').some((value) => value.trim().startsWith(selectedIsoCode))
+              )
+            : row.isoCode.startsWith(selectedIsoCode)
+        )
+      : mappingRows
     if (selectedIsoCode) return [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
     return sortByIsoLevel(base, sortKey, sortDir)
-  }, [mappingRows, selectedIsoCode, sortKey, sortDir])
+  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir])
 
   const mappingTotalPages = Math.max(1, Math.ceil(filteredMappingRows.length / mappingPageSize))
   const pagedMappingRows = useMemo(() => {
@@ -666,7 +684,13 @@ const IsoOversikt = () => {
       setPendingLargeLoad(false)
       setLoadProgress(null)
       try {
-        const firstChunk = await fetchSeriesPage(0, SERIES_PAGE_SIZE, selectedIsoCode, abortController.signal)
+        const firstChunk = await fetchSeriesPage(
+          0,
+          SERIES_PAGE_SIZE,
+          selectedIsoCode,
+          abortController.signal,
+          searchVersion
+        )
         const totalPages = firstChunk.totalPages || 1
         const totalSeries = firstChunk.totalSize ?? 0
         setTotalSeriesCount(totalSeries)
@@ -679,7 +703,13 @@ const IsoOversikt = () => {
 
         const series = [...(firstChunk.content || [])]
         for (let p = 1; p < totalPages; p++) {
-          const chunk = await fetchSeriesPage(p, SERIES_PAGE_SIZE, selectedIsoCode, abortController.signal)
+          const chunk = await fetchSeriesPage(
+            p,
+            SERIES_PAGE_SIZE,
+            selectedIsoCode,
+            abortController.signal,
+            searchVersion
+          )
           series.push(...(chunk.content || []))
         }
         const hasIsoOverview = series.every(
@@ -704,6 +734,7 @@ const IsoOversikt = () => {
           )
         )
         setRowsScope(selectedIsoCode || '')
+        setRowsVersion(searchVersion)
         setVariantPage(1)
       } catch (error: unknown) {
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
@@ -723,6 +754,7 @@ const IsoOversikt = () => {
       sortedIsoCategories22,
       mappingsByCode16,
       selectedIsoCode,
+      searchVersion,
       mappingDataAvailable,
     ]
   )
@@ -790,11 +822,12 @@ const IsoOversikt = () => {
     }
     if (pageMode !== 'mapping' || categoriesLoading || pageLoading) return
     if (pendingLargeLoad && !selectedIsoCode) {
-      countLoadAttemptedScopeRef.current = ''
+      countLoadAttemptedScopeRef.current = `${searchVersion}:`
       return
     }
-    const scope = selectedIsoCode || ''
-    const covered = rows !== null && rowsScope !== null && scope.startsWith(rowsScope)
+    const scope = `${searchVersion}:${selectedIsoCode}`
+    const covered =
+      rows !== null && rowsVersion === searchVersion && rowsScope !== null && selectedIsoCode.startsWith(rowsScope)
     if (covered || countLoadAttemptedScopeRef.current === scope) return
     countLoadAttemptedScopeRef.current = scope
     void loadAllRows(false)
@@ -807,6 +840,8 @@ const IsoOversikt = () => {
     selectedIsoCode,
     rows,
     rowsScope,
+    rowsVersion,
+    searchVersion,
     loadAllRows,
   ])
 
@@ -825,34 +860,31 @@ const IsoOversikt = () => {
     void loadAllRows(false)
   }, [loggedInUser?.isAdmin, categoriesLoading, rows, pageLoading, loadAllRows])
 
-  const level1Options = useMemo(() => sortedIsoCategories.filter((it) => it.isoLevel === 1), [sortedIsoCategories])
+  const level1Options = useMemo(() => searchCategories.filter((it) => it.isoLevel === 1), [searchCategories])
   const level2Options = useMemo(
     () =>
-      selectedLevel1
-        ? sortedIsoCategories.filter((it) => it.isoLevel === 2 && it.isoCode.startsWith(selectedLevel1))
-        : [],
-    [selectedLevel1, sortedIsoCategories]
+      selectedLevel1 ? searchCategories.filter((it) => it.isoLevel === 2 && it.isoCode.startsWith(selectedLevel1)) : [],
+    [selectedLevel1, searchCategories]
   )
   const level3Options = useMemo(
     () =>
-      selectedLevel2
-        ? sortedIsoCategories.filter((it) => it.isoLevel === 3 && it.isoCode.startsWith(selectedLevel2))
-        : [],
-    [selectedLevel2, sortedIsoCategories]
+      selectedLevel2 ? searchCategories.filter((it) => it.isoLevel === 3 && it.isoCode.startsWith(selectedLevel2)) : [],
+    [selectedLevel2, searchCategories]
   )
   const level4Options = useMemo(
     () =>
-      selectedLevel3
-        ? sortedIsoCategories.filter((it) => it.isoLevel === 4 && it.isoCode.startsWith(selectedLevel3))
-        : [],
-    [selectedLevel3, sortedIsoCategories]
+      selectedLevel3 ? searchCategories.filter((it) => it.isoLevel === 4 && it.isoCode.startsWith(selectedLevel3)) : [],
+    [selectedLevel3, searchCategories]
   )
 
   const filteredRows = useMemo(() => {
     if (!rows) return []
-    const base = selectedIsoCode ? rows.filter((row) => row.isoCode.startsWith(selectedIsoCode)) : rows
+    if (rowsVersion !== searchVersion) return []
+    const base = selectedIsoCode
+      ? rows.filter((row) => (searchIso22 ? row.iso22Stored : row.isoCode).startsWith(selectedIsoCode))
+      : rows
     return sortRows(base, sortKey, sortDir)
-  }, [rows, selectedIsoCode, sortKey, sortDir])
+  }, [rows, selectedIsoCode, searchIso22, rowsVersion, searchVersion, sortKey, sortDir])
 
   const productRows = useMemo(
     () => sortProductRows(groupByProduct(filteredRows), sortKey, sortDir),
@@ -883,10 +915,12 @@ const IsoOversikt = () => {
       return
     }
     const stripped = trimmed.replace(/\s/g, '')
-    const match = sortedIsoCategories.find((cat) => cat.isoCode.replace(/\s/g, '') === stripped)
+    const match = searchCategories.find((cat) => cat.isoCode.replace(/\s/g, '') === stripped)
     if (match) {
       setIsoInput(match.isoCode)
-      const path = buildIsoPath(match.isoCode, sortedIsoCategories)
+      const path = searchIso22
+        ? buildIso22Path(match.isoCode, sortedIsoCategories22)
+        : buildIsoPath(match.isoCode, sortedIsoCategories)
       setSelectedLevel1(path.level1?.isoCode ?? '')
       setSelectedLevel2(path.level2?.isoCode ?? '')
       setSelectedLevel3(path.level3?.isoCode ?? '')
@@ -1315,7 +1349,7 @@ const IsoOversikt = () => {
                 </ActionMenu>
                 <Box marginInline="space-12 space-0">
                   <TextField
-                    label="ISO-kode (v16)"
+                    label={`ISO-kode (${searchVersion})`}
                     placeholder="2 til 8 siffer, for eksempel 18 el. 1809 el. 180903 el. 18090301"
                     size="small"
                     value={isoInput}
@@ -1331,12 +1365,28 @@ const IsoOversikt = () => {
                     style={{ width: '28rem' }}
                   />
                 </Box>
-                {selectedIsoCode && <BodyShort size="small">Valgt v16-kode: {selectedIsoCode}</BodyShort>}
+                <Checkbox
+                  size="small"
+                  checked={searchIso22}
+                  onChange={(event) => {
+                    cancelLoad()
+                    resetFilters()
+                    setSearchIso22(event.target.checked)
+                    setPendingLargeLoad(false)
+                  }}
+                >
+                  Søk v22-koder
+                </Checkbox>
+                {selectedIsoCode && (
+                  <BodyShort size="small">
+                    Valgt {searchVersion}-kode: {selectedIsoCode}
+                  </BodyShort>
+                )}
               </HStack>
 
               <HStack gap="space-8" align="end" wrap>
                 <Select
-                  label="v16 nivå 1"
+                  label={`${searchVersion} nivå 1`}
                   size="small"
                   value={selectedLevel1}
                   onChange={(e) => {
@@ -1357,7 +1407,7 @@ const IsoOversikt = () => {
                 </Select>
 
                 <Select
-                  label="v16 nivå 2"
+                  label={`${searchVersion} nivå 2`}
                   size="small"
                   value={selectedLevel2}
                   disabled={!selectedLevel1}
@@ -1378,7 +1428,7 @@ const IsoOversikt = () => {
                 </Select>
 
                 <Select
-                  label="v16 nivå 3"
+                  label={`${searchVersion} nivå 3`}
                   size="small"
                   value={selectedLevel3}
                   disabled={!selectedLevel2}
@@ -1398,7 +1448,7 @@ const IsoOversikt = () => {
                 </Select>
 
                 <Select
-                  label="v16 nivå 4"
+                  label={`${searchVersion} nivå 4`}
                   size="small"
                   value={selectedLevel4}
                   disabled={!selectedLevel3}
@@ -1721,6 +1771,7 @@ const IsoOversikt = () => {
                                 isoCode={row.isoCode || undefined}
                                 {...getAksjonTargetProps(row.isoCode, row.mappingIds)}
                                 attachmentComplete={attachmentCompleteByIsoCode.get(row.isoCode) ?? true}
+                                attachmentUnknown={!isIsoCodeLoaded(row.isoCode)}
                                 busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
                                 onRequestVerify={handleRequestVerify}
                                 onMove={handleOpenMoveModal}
@@ -1821,6 +1872,7 @@ const IsoOversikt = () => {
                                 isoCode={row.isoCode || undefined}
                                 {...getAksjonTargetProps(row.isoCode, row.mappingIds)}
                                 attachmentComplete={attachmentCompleteByIsoCode.get(row.isoCode) ?? true}
+                                attachmentUnknown={!isIsoCodeLoaded(row.isoCode)}
                                 busy={row.mappingIds.some((id) => verifyingMappingIds.has(id))}
                                 onRequestVerify={handleRequestVerify}
                                 onMove={handleOpenMoveModal}

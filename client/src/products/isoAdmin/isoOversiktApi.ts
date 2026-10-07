@@ -13,7 +13,8 @@ export const fetchSeriesPage = async (
   page: number,
   pageSize: number,
   isoCode?: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  isoVersion: 'v16' | 'v22' = 'v16'
 ): Promise<IsoOverviewSeriesChunk> => {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -25,7 +26,7 @@ export const fetchSeriesPage = async (
     mainProduct: 'true',
     includeIsoOverview: 'true',
   })
-  if (isoCode) params.set('isoCode', isoCode)
+  if (isoCode) params.set(isoVersion === 'v22' ? 'isoCode22' : 'isoCode', isoCode)
   const response = await fetch(`${HM_REGISTER_URL()}/admreg/api/v1/series?${params}`, {
     credentials: 'include',
     signal,

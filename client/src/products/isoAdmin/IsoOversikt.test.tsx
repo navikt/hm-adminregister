@@ -23,6 +23,61 @@ const openExtractView = () => {
   fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
 }
 
+test('Ren ISO-mapping søker mappingens v22-mål når Søk v22-koder er valgt', async () => {
+  renderPage()
+  await screen.findAllByText('05')
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
+  const input = screen.getByLabelText('ISO-kode (v22)')
+  fireEvent.change(input, { target: { value: '24060302' } })
+  fireEvent.blur(input)
+  await screen.findByText('1 mapping-rader for ISO 24060302')
+  expect(screen.getByText('24060301')).toBeInTheDocument()
+})
+
+test('v22-søk sender isoCode22 og viser lagret v22-kode uten å begrense til samme v16-kode', async () => {
+  const requestedFilters: { v16: string | null; v22: string | null }[] = []
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json(isoMappings.map((mapping) => ({ ...mapping, verified: false })))
+    ),
+    http.get('http://localhost:8080/admreg/api/v1/series', ({ request }) => {
+      const params = new URL(request.url).searchParams
+      requestedFilters.push({ v16: params.get('isoCode'), v22: params.get('isoCode22') })
+      return HttpResponse.json({
+        content: [overviewSeries('s1', 'Rollator Alfa', '24060302')],
+        totalPages: 1,
+        totalSize: 1,
+      })
+    })
+  )
+  renderPage()
+  await screen.findAllByText('05')
+  openExtractView()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
+  const input = screen.getByLabelText('ISO-kode (v22)')
+  fireEvent.change(input, { target: { value: '24 06 03 02' } })
+  fireEvent.blur(input)
+  expect(screen.getByLabelText('v22 nivå 4')).toHaveValue('24060302')
+  const load = screen.getByRole('button', { name: 'Hent liste' })
+  await waitFor(() => expect(load).toBeEnabled())
+  fireEvent.click(load)
+  await screen.findByText('1 produkter (1 varianter) for ISO 24060302')
+  expect(requestedFilters.at(-1)).toEqual({ v16: null, v22: '24060302' })
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
+  fireEvent.click(await screen.findByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
+  const verify = await screen.findByRole('menuitem', { name: 'Verifiser (last inn produkter først)' })
+  expect(verify).toHaveAttribute('aria-disabled', 'true')
+  fireEvent.keyDown(verify, { key: 'Escape' })
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Søk v22-koder' }))
+  const v16Input = screen.getByLabelText('ISO-kode (v16)')
+  fireEvent.change(v16Input, { target: { value: '18' } })
+  fireEvent.blur(v16Input)
+  await waitFor(() => expect(load).toBeEnabled())
+  fireEvent.click(load)
+  await screen.findByText('1 produkter (1 varianter) for ISO 18')
+  expect(requestedFilters.at(-1)).toEqual({ v16: '18', v22: null })
+})
+
 const loadExtractRows = async () => {
   openExtractView()
   const loadButton = screen.getByRole('button', { name: 'Hent liste' })
@@ -692,7 +747,7 @@ test('viser ny ISO v22 nivå 4-kategori i tabellen umiddelbart etter opprettelse
   await waitFor(() => expect(screen.getAllByText('05').length).toBeGreaterThan(0))
 
   // Bytt til "Endre"-modus for å få frem Aksjon-kolonnen.
-  fireEvent.click(screen.getByRole('checkbox'))
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
 
   // Mapping-raden for v16-kode 050303 -> v22-kode 220912 (nivå 3, ikke verifisert) mangler nivå
   // 4 under v22 og kvalifiserer derfor for "Opprett ny ISO v22-kategori".
@@ -769,7 +824,7 @@ const useUnverifiedRollatorMapping = () => {
   )
 }
 
-const enableEditMode = () => fireEvent.click(screen.getByRole('checkbox'))
+const enableEditMode = () => fireEvent.click(screen.getByRole('checkbox', { name: 'Endremodus' }))
 
 const openRowMenu = (row: HTMLElement) => fireEvent.click(within(row).getByRole('button', { name: /^Rad-meny/ }))
 
