@@ -29,11 +29,13 @@ describe('parseIsoAdminPreferences', () => {
       variantPageSize: 25,
       visibleOptionalsV1: [],
       visibleOptionalsV22: [],
-      visibleIsoLevelsV1: [1, 2, 3],
+      extractVisibleIsoLevelsV1: [],
       mappingVisibleIsoLevelsV1: [],
       visibleIsoLevelsV22: [1, 2, 3],
-      visibleExtraColumns: [],
-      showMappingTypes: false,
+      extractVisibleIsoLevelsV22: [],
+      productExtraColumns: ['produkt', 'avtale'],
+      variantExtraColumns: ['variant', 'avtale'],
+      extractShowMappingTypes: true,
       showCounts: false,
       showVerifiedIsoCodes: true,
       selectedMappingTypes: [],
@@ -49,10 +51,12 @@ describe('parseIsoAdminPreferences', () => {
 
   it('returns independent default arrays', () => {
     const preferences = parseIsoAdminPreferences(undefined)
-    preferences.visibleIsoLevelsV1.pop()
+    preferences.visibleIsoLevelsV22.pop()
+    preferences.productExtraColumns.pop()
     preferences.selectedMappingTypes.push('SAME')
     expect(parseIsoAdminPreferences(undefined)).toEqual(DEFAULT_ISO_ADMIN_PREFERENCES)
-    expect(DEFAULT_ISO_ADMIN_PREFERENCES.visibleIsoLevelsV1).toEqual([1, 2, 3])
+    expect(DEFAULT_ISO_ADMIN_PREFERENCES.visibleIsoLevelsV22).toEqual([1, 2, 3])
+    expect(DEFAULT_ISO_ADMIN_PREFERENCES.productExtraColumns).toEqual(['produkt', 'avtale'])
     expect(DEFAULT_ISO_ADMIN_PREFERENCES.selectedMappingTypes).toEqual([])
   })
 
@@ -66,11 +70,13 @@ describe('parseIsoAdminPreferences', () => {
         variantPageSize: '25',
         visibleOptionalsV1: {},
         visibleOptionalsV22: null,
-        visibleIsoLevelsV1: '1,2,3',
+        extractVisibleIsoLevelsV1: '1,2,3',
         mappingVisibleIsoLevelsV1: true,
         visibleIsoLevelsV22: 4,
-        visibleExtraColumns: 'produkt',
-        showMappingTypes: 1,
+        extractVisibleIsoLevelsV22: 'x',
+        productExtraColumns: 'produkt',
+        variantExtraColumns: null,
+        extractShowMappingTypes: 1,
         showCounts: null,
         showVerifiedIsoCodes: 'false',
         selectedMappingTypes: 'SAME',
@@ -85,18 +91,18 @@ describe('parseIsoAdminPreferences', () => {
     const preferences = parseIsoAdminPreferences({
       visibleOptionalsV1: [OPTIONAL_COLUMNS_V1[0], OPTIONAL_COLUMNS_V1[0], 'removed', 1],
       visibleOptionalsV22: [OPTIONAL_COLUMNS_V22[1], 'removed', null],
-      visibleIsoLevelsV1: [1, 1, 2, 4, '3'],
+      extractVisibleIsoLevelsV1: [1, 1, 2, 4, '3'],
       mappingVisibleIsoLevelsV1: [3, 3, 4],
       visibleIsoLevelsV22: [2, false, 4],
-      visibleExtraColumns: ['produkt', 'produkt', 'obsolete'],
+      productExtraColumns: ['produkt', 'produkt', 'obsolete'],
       selectedMappingTypes: ['SAME', 'SAME', 'removed', ISO_MAP_LABELS.SAME, 'Alle endringstyper', {}],
     })
     expect(preferences.visibleOptionalsV1).toEqual([OPTIONAL_COLUMNS_V1[0]])
     expect(preferences.visibleOptionalsV22).toEqual([OPTIONAL_COLUMNS_V22[1]])
-    expect(preferences.visibleIsoLevelsV1).toEqual([1, 2])
+    expect(preferences.extractVisibleIsoLevelsV1).toEqual([1, 2])
     expect(preferences.mappingVisibleIsoLevelsV1).toEqual([3])
     expect(preferences.visibleIsoLevelsV22).toEqual([2])
-    expect(preferences.visibleExtraColumns).toEqual(['produkt'])
+    expect(preferences.productExtraColumns).toEqual(['produkt'])
     expect(preferences.selectedMappingTypes).toEqual(['SAME'])
     expect(parseIsoAdminPreferences({ selectedMappingTypes: ['removed'] }).selectedMappingTypes).toEqual([])
   })
@@ -113,8 +119,8 @@ describe('parseIsoAdminPreferences', () => {
   })
 
   it('preserves intentionally empty arrays', () => {
-    const preferences = parseIsoAdminPreferences({ visibleIsoLevelsV1: [], visibleIsoLevelsV22: [] })
-    expect(preferences.visibleIsoLevelsV1).toEqual([])
+    const preferences = parseIsoAdminPreferences({ productExtraColumns: [], visibleIsoLevelsV22: [] })
+    expect(preferences.productExtraColumns).toEqual([])
     expect(preferences.visibleIsoLevelsV22).toEqual([])
   })
 })
@@ -129,11 +135,13 @@ describe('preference storage', () => {
       variantPageSize: 10,
       visibleOptionalsV1: [...OPTIONAL_COLUMNS_V1],
       visibleOptionalsV22: [...OPTIONAL_COLUMNS_V22],
-      visibleIsoLevelsV1: [1],
+      extractVisibleIsoLevelsV1: [1],
       mappingVisibleIsoLevelsV1: [2],
       visibleIsoLevelsV22: [3],
-      visibleExtraColumns: ['produkt', 'variant', 'avtale'],
-      showMappingTypes: true,
+      extractVisibleIsoLevelsV22: [2],
+      productExtraColumns: ['variant'],
+      variantExtraColumns: ['produkt'],
+      extractShowMappingTypes: false,
       showCounts: true,
       showVerifiedIsoCodes: false,
       selectedMappingTypes: ['SAME', 'UNKNOWN'],

@@ -23,7 +23,7 @@ const SORT_KEYS: readonly SortKey[] = [
   'variantCount',
 ]
 const SORT_DIRS: readonly SortDir[] = ['asc', 'desc']
-const EXTRA_COLUMNS: readonly ExtraColumn[] = ['produkt', 'variant', 'avtale']
+const EXTRA_COLUMNS: readonly ExtraColumn[] = ['produkt', 'variant', 'avtale', 'avtalenavn', 'delkontraktnavn']
 const MAPPING_TYPES = Object.keys(ISO_MAP_LABELS) as IsoMapEnum[]
 const PAGE_SIZES = [10, 25, 100] as const
 
@@ -35,11 +35,13 @@ export type IsoAdminPreferences = {
   variantPageSize: number
   visibleOptionalsV1: OptionalColumnV1[]
   visibleOptionalsV22: OptionalColumnV22[]
-  visibleIsoLevelsV1: OptionalIsoLevel[]
+  extractVisibleIsoLevelsV1: OptionalIsoLevel[]
   mappingVisibleIsoLevelsV1: OptionalIsoLevel[]
   visibleIsoLevelsV22: OptionalIsoLevel[]
-  visibleExtraColumns: ExtraColumn[]
-  showMappingTypes: boolean
+  extractVisibleIsoLevelsV22: OptionalIsoLevel[]
+  productExtraColumns: ExtraColumn[]
+  variantExtraColumns: ExtraColumn[]
+  extractShowMappingTypes: boolean
   showCounts: boolean
   showVerifiedIsoCodes: boolean
   selectedMappingTypes: IsoMapEnum[]
@@ -56,11 +58,13 @@ export const DEFAULT_ISO_ADMIN_PREFERENCES: IsoAdminPreferences = {
   variantPageSize: 25,
   visibleOptionalsV1: [],
   visibleOptionalsV22: [],
-  visibleIsoLevelsV1: [...OPTIONAL_ISO_LEVELS],
+  extractVisibleIsoLevelsV1: [],
   mappingVisibleIsoLevelsV1: [],
   visibleIsoLevelsV22: [...OPTIONAL_ISO_LEVELS],
-  visibleExtraColumns: [],
-  showMappingTypes: false,
+  extractVisibleIsoLevelsV22: [],
+  productExtraColumns: ['produkt', 'avtale'],
+  variantExtraColumns: ['variant', 'avtale'],
+  extractShowMappingTypes: true,
   showCounts: false,
   showVerifiedIsoCodes: true,
   selectedMappingTypes: [],
@@ -93,15 +97,25 @@ export const parseIsoAdminPreferences = (raw: unknown): IsoAdminPreferences => {
     variantPageSize: pickOneOf<number>(p.variantPageSize, PAGE_SIZES, d.variantPageSize),
     visibleOptionalsV1: pickSubset(p.visibleOptionalsV1, OPTIONAL_COLUMNS_V1, d.visibleOptionalsV1),
     visibleOptionalsV22: pickSubset(p.visibleOptionalsV22, OPTIONAL_COLUMNS_V22, d.visibleOptionalsV22),
-    visibleIsoLevelsV1: pickSubset(p.visibleIsoLevelsV1, OPTIONAL_ISO_LEVELS, d.visibleIsoLevelsV1),
+    extractVisibleIsoLevelsV1: pickSubset(
+      p.extractVisibleIsoLevelsV1,
+      OPTIONAL_ISO_LEVELS,
+      d.extractVisibleIsoLevelsV1
+    ),
     mappingVisibleIsoLevelsV1: pickSubset(
       p.mappingVisibleIsoLevelsV1,
       OPTIONAL_ISO_LEVELS,
       d.mappingVisibleIsoLevelsV1
     ),
     visibleIsoLevelsV22: pickSubset(p.visibleIsoLevelsV22, OPTIONAL_ISO_LEVELS, d.visibleIsoLevelsV22),
-    visibleExtraColumns: pickSubset(p.visibleExtraColumns, EXTRA_COLUMNS, d.visibleExtraColumns),
-    showMappingTypes: pickBoolean(p.showMappingTypes, d.showMappingTypes),
+    extractVisibleIsoLevelsV22: pickSubset(
+      p.extractVisibleIsoLevelsV22,
+      OPTIONAL_ISO_LEVELS,
+      d.extractVisibleIsoLevelsV22
+    ),
+    productExtraColumns: pickSubset(p.productExtraColumns, EXTRA_COLUMNS, d.productExtraColumns),
+    variantExtraColumns: pickSubset(p.variantExtraColumns, EXTRA_COLUMNS, d.variantExtraColumns),
+    extractShowMappingTypes: pickBoolean(p.extractShowMappingTypes, d.extractShowMappingTypes),
     showCounts: pickBoolean(p.showCounts, d.showCounts),
     showVerifiedIsoCodes: pickBoolean(p.showVerifiedIsoCodes, d.showVerifiedIsoCodes),
     selectedMappingTypes: pickSubset(p.selectedMappingTypes, MAPPING_TYPES, d.selectedMappingTypes),

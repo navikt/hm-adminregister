@@ -10,7 +10,7 @@ export type SortDir = 'asc' | 'desc'
 export type SortKey = 'iso1' | 'iso2' | 'iso3' | 'iso4' | 'agreementRank' | 'agreementPostNr' | 'variantCount'
 export type ViewMode = 'product' | 'variant'
 export type PageMode = 'mapping' | 'extract'
-export type ExtraColumn = 'produkt' | 'variant' | 'avtale'
+export type ExtraColumn = 'produkt' | 'variant' | 'avtale' | 'avtalenavn' | 'delkontraktnavn'
 export type IsoMapEnum = IsoMapDTO['mapEnum'][number]
 export type OptionalIsoLevel = 1 | 2 | 3
 
@@ -23,6 +23,8 @@ export type IsoOverviewVariant = {
     reference: string
     rank: number
     postNr: number
+    title?: string | null
+    postTitle?: string | null
   }[]
 }
 
@@ -101,6 +103,8 @@ export type ExtractedProductVariant = {
   iso22Stored: string
   // Agreement
   agreementRef: string
+  agreementTitles: string[]
+  agreementPostTitles: string[]
   agreementRank: string
   agreementPostNr: string
   agreementRankSort: number | null
@@ -152,6 +156,8 @@ export type ProductSummaryRow = {
   iso22Attached: boolean
   variantCount: number
   agreementRef: string
+  agreementTitles: string[]
+  agreementPostTitles: string[]
   agreementRank: string
   agreementPostNr: string
   agreementRankSort: number | null

@@ -153,7 +153,7 @@ const IsoOversiktContent = () => {
     () => new Set(initialPreferences.visibleOptionalsV22)
   )
   const [visibleIsoLevelsV1, setVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
-    () => new Set(initialPreferences.visibleIsoLevelsV1)
+    () => new Set(initialPreferences.extractVisibleIsoLevelsV1)
   )
   const [mappingVisibleIsoLevelsV1, setMappingVisibleIsoLevelsV1] = useState<Set<OptionalIsoLevel>>(
     () => new Set(initialPreferences.mappingVisibleIsoLevelsV1)
@@ -161,12 +161,19 @@ const IsoOversiktContent = () => {
   const [visibleIsoLevelsV22, setVisibleIsoLevelsV22] = useState<Set<OptionalIsoLevel>>(
     () => new Set(initialPreferences.visibleIsoLevelsV22)
   )
-  const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(
-    () => new Set(initialPreferences.visibleExtraColumns)
+  const [extractVisibleIsoLevelsV22, setExtractVisibleIsoLevelsV22] = useState<Set<OptionalIsoLevel>>(
+    () => new Set(initialPreferences.extractVisibleIsoLevelsV22)
   )
-  const [showMappingTypes, setShowMappingTypes] = useState(initialPreferences.showMappingTypes)
+  const [productExtraColumns, setProductExtraColumns] = useState<Set<ExtraColumn>>(
+    () => new Set(initialPreferences.productExtraColumns)
+  )
+  const [variantExtraColumns, setVariantExtraColumns] = useState<Set<ExtraColumn>>(
+    () => new Set(initialPreferences.variantExtraColumns)
+  )
+  const [showMappingTypes, setShowMappingTypes] = useState(initialPreferences.extractShowMappingTypes)
   const [showCounts, setShowCounts] = useState(initialPreferences.showCounts)
   const [showVerifiedIsoCodes, setShowVerifiedIsoCodes] = useState(initialPreferences.showVerifiedIsoCodes)
+  const [onlyOnAgreement, setOnlyOnAgreement] = useState(false)
   const [selectedMappingTypes, setSelectedMappingTypes] = useState<IsoMapEnum[]>(
     initialPreferences.selectedMappingTypes
   )
@@ -218,11 +225,13 @@ const IsoOversiktContent = () => {
       mappingPageSize,
       visibleOptionalsV1: [...visibleOptionalsV1],
       visibleOptionalsV22: [...visibleOptionalsV22],
-      visibleIsoLevelsV1: [...visibleIsoLevelsV1],
+      extractVisibleIsoLevelsV1: [...visibleIsoLevelsV1],
       mappingVisibleIsoLevelsV1: [...mappingVisibleIsoLevelsV1],
       visibleIsoLevelsV22: [...visibleIsoLevelsV22],
-      visibleExtraColumns: [...visibleExtraColumns],
-      showMappingTypes,
+      extractVisibleIsoLevelsV22: [...extractVisibleIsoLevelsV22],
+      productExtraColumns: [...productExtraColumns],
+      variantExtraColumns: [...variantExtraColumns],
+      extractShowMappingTypes: showMappingTypes,
       showCounts,
       showVerifiedIsoCodes,
       selectedMappingTypes,
@@ -243,7 +252,9 @@ const IsoOversiktContent = () => {
     visibleIsoLevelsV1,
     mappingVisibleIsoLevelsV1,
     visibleIsoLevelsV22,
-    visibleExtraColumns,
+    extractVisibleIsoLevelsV22,
+    productExtraColumns,
+    variantExtraColumns,
     showMappingTypes,
     showCounts,
     showVerifiedIsoCodes,
@@ -1003,11 +1014,24 @@ const IsoOversiktContent = () => {
   const filteredRows = useMemo(() => {
     if (!rows) return []
     if (rowsVersion !== searchVersion) return []
-    const base = selectedIsoCode
-      ? rows.filter((row) => (searchIso22 ? row.iso22Stored : row.isoCode).startsWith(selectedIsoCode))
-      : rows
-    return sortRows(showVerifiedIsoCodes ? base : base.filter((row) => row.mappingVerified !== true), sortKey, sortDir)
-  }, [rows, selectedIsoCode, searchIso22, rowsVersion, searchVersion, sortKey, sortDir, showVerifiedIsoCodes])
+    const base = rows.filter(
+      (row) =>
+        (!selectedIsoCode || (searchIso22 ? row.iso22Stored : row.isoCode).startsWith(selectedIsoCode)) &&
+        (showVerifiedIsoCodes || row.mappingVerified !== true) &&
+        (!onlyOnAgreement || row.agreementRankSort !== null)
+    )
+    return sortRows(base, sortKey, sortDir)
+  }, [
+    rows,
+    selectedIsoCode,
+    searchIso22,
+    rowsVersion,
+    searchVersion,
+    sortKey,
+    sortDir,
+    showVerifiedIsoCodes,
+    onlyOnAgreement,
+  ])
 
   const productRows = useMemo(
     () => sortProductRows(groupByProduct(filteredRows), sortKey, sortDir),
@@ -1089,8 +1113,10 @@ const IsoOversiktContent = () => {
     })
   }
 
+  const visibleExtraColumns = viewMode === 'product' ? productExtraColumns : variantExtraColumns
   const toggleExtraColumn = (col: ExtraColumn) => {
-    setVisibleExtraColumns((prev) => {
+    const setColumns = viewMode === 'product' ? setProductExtraColumns : setVariantExtraColumns
+    setColumns((prev) => {
       const next = new Set(prev)
       if (next.has(col)) next.delete(col)
       else next.add(col)
@@ -1119,6 +1145,7 @@ const IsoOversiktContent = () => {
     setSelectedLevel4('')
     setSelectedMappingTypes([])
     setShowVerifiedIsoCodes(true)
+    setOnlyOnAgreement(false)
     resetPaging()
   }
 
@@ -1376,8 +1403,15 @@ const IsoOversiktContent = () => {
                           {OPTIONAL_ISO_LEVELS.map((level) => (
                             <ActionMenu.CheckboxItem
                               key={level}
-                              checked={visibleIsoLevelsV22.has(level)}
-                              onCheckedChange={() => toggleIsoLevel(level, setVisibleIsoLevelsV22)}
+                              checked={(pageMode === 'mapping' ? visibleIsoLevelsV22 : extractVisibleIsoLevelsV22).has(
+                                level
+                              )}
+                              onCheckedChange={() =>
+                                toggleIsoLevel(
+                                  level,
+                                  pageMode === 'mapping' ? setVisibleIsoLevelsV22 : setExtractVisibleIsoLevelsV22
+                                )
+                              }
                             >
                               v22 nivå {level} kode
                             </ActionMenu.CheckboxItem>
@@ -1434,17 +1468,31 @@ const IsoOversiktContent = () => {
                           >
                             Produktnavn
                           </ActionMenu.CheckboxItem>
-                          <ActionMenu.CheckboxItem
-                            checked={visibleExtraColumns.has('variant')}
-                            onCheckedChange={() => toggleExtraColumn('variant')}
-                          >
-                            Variantnavn
-                          </ActionMenu.CheckboxItem>
+                          {viewMode === 'variant' && (
+                            <ActionMenu.CheckboxItem
+                              checked={visibleExtraColumns.has('variant')}
+                              onCheckedChange={() => toggleExtraColumn('variant')}
+                            >
+                              Variantnavn
+                            </ActionMenu.CheckboxItem>
+                          )}
                           <ActionMenu.CheckboxItem
                             checked={visibleExtraColumns.has('avtale')}
                             onCheckedChange={() => toggleExtraColumn('avtale')}
                           >
                             Avtaleinfo
+                          </ActionMenu.CheckboxItem>
+                          <ActionMenu.CheckboxItem
+                            checked={visibleExtraColumns.has('avtalenavn')}
+                            onCheckedChange={() => toggleExtraColumn('avtalenavn')}
+                          >
+                            Avtalenavn
+                          </ActionMenu.CheckboxItem>
+                          <ActionMenu.CheckboxItem
+                            checked={visibleExtraColumns.has('delkontraktnavn')}
+                            onCheckedChange={() => toggleExtraColumn('delkontraktnavn')}
+                          >
+                            Delkontraktnavn
                           </ActionMenu.CheckboxItem>
                         </ActionMenu.Group>
                       </>
@@ -1648,6 +1696,18 @@ const IsoOversiktContent = () => {
                   </>
                 )}
                 <HStack gap="space-12" align="center" style={{ marginInlineStart: 'auto' }}>
+                  {pageMode === 'extract' && (
+                    <Switch
+                      size="small"
+                      checked={onlyOnAgreement}
+                      onChange={(event) => {
+                        setOnlyOnAgreement(event.target.checked)
+                        setVariantPage(1)
+                      }}
+                    >
+                      Bare på avtale
+                    </Switch>
+                  )}
                   <Switch
                     size="small"
                     checked={showVerifiedIsoCodes}
@@ -1882,7 +1942,7 @@ const IsoOversiktContent = () => {
                             visibleLevels={visibleIsoLevelsV1}
                           />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
-                          <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
+                          <Iso22LevelHeaders visibleLevels={extractVisibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           {showMappingTypes && (
                             <>
@@ -1916,6 +1976,12 @@ const IsoOversiktContent = () => {
                               />
                             </>
                           )}
+                          {visibleExtraColumns.has('avtalenavn') && (
+                            <Table.HeaderCell scope="col">Avtalenavn</Table.HeaderCell>
+                          )}
+                          {visibleExtraColumns.has('delkontraktnavn') && (
+                            <Table.HeaderCell scope="col">Delkontraktnavn</Table.HeaderCell>
+                          )}
                           {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
                       </Table.Header>
@@ -1926,7 +1992,7 @@ const IsoOversiktContent = () => {
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
                             <Iso22LevelCells
                               row={row}
-                              visibleLevels={visibleIsoLevelsV22}
+                              visibleLevels={extractVisibleIsoLevelsV22}
                               existingIso22Codes={isoLoading22 || isoError22 ? undefined : existingIso22Codes}
                             />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
@@ -1948,6 +2014,12 @@ const IsoOversiktContent = () => {
                                 <Table.DataCell>{row.agreementRank ?? ''}</Table.DataCell>
                                 <Table.DataCell>{row.agreementPostNr ?? ''}</Table.DataCell>
                               </>
+                            )}
+                            {visibleExtraColumns.has('avtalenavn') && (
+                              <Table.DataCell>{row.agreementTitles.join('; ')}</Table.DataCell>
+                            )}
+                            {visibleExtraColumns.has('delkontraktnavn') && (
+                              <Table.DataCell>{row.agreementPostTitles.join('; ')}</Table.DataCell>
                             )}
                             {editMode === 'endre' && (
                               <AksjonCell
@@ -1985,7 +2057,7 @@ const IsoOversiktContent = () => {
                             visibleLevels={visibleIsoLevelsV1}
                           />
                           <OptionalTitleHeadersV1 visible={visibleOptionalsV1} />
-                          <Iso22LevelHeaders visibleLevels={visibleIsoLevelsV22} />
+                          <Iso22LevelHeaders visibleLevels={extractVisibleIsoLevelsV22} />
                           <OptionalTitleHeadersV22 visible={visibleOptionalsV22} />
                           {showMappingTypes && (
                             <>
@@ -2018,6 +2090,12 @@ const IsoOversiktContent = () => {
                               />
                             </>
                           )}
+                          {visibleExtraColumns.has('avtalenavn') && (
+                            <Table.HeaderCell scope="col">Avtalenavn</Table.HeaderCell>
+                          )}
+                          {visibleExtraColumns.has('delkontraktnavn') && (
+                            <Table.HeaderCell scope="col">Delkontraktnavn</Table.HeaderCell>
+                          )}
                           {editMode === 'endre' && <AksjonHeader />}
                         </Table.Row>
                       </Table.Header>
@@ -2028,7 +2106,7 @@ const IsoOversiktContent = () => {
                             <OptionalTitleCellsV1 visible={visibleOptionalsV1} row={row} />
                             <Iso22LevelCells
                               row={row}
-                              visibleLevels={visibleIsoLevelsV22}
+                              visibleLevels={extractVisibleIsoLevelsV22}
                               existingIso22Codes={isoLoading22 || isoError22 ? undefined : existingIso22Codes}
                             />
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
@@ -2052,6 +2130,12 @@ const IsoOversiktContent = () => {
                                 <Table.DataCell>{row.agreementRank ?? ''}</Table.DataCell>
                                 <Table.DataCell>{row.agreementPostNr ?? ''}</Table.DataCell>
                               </>
+                            )}
+                            {visibleExtraColumns.has('avtalenavn') && (
+                              <Table.DataCell>{row.agreementTitles.join('; ')}</Table.DataCell>
+                            )}
+                            {visibleExtraColumns.has('delkontraktnavn') && (
+                              <Table.DataCell>{row.agreementPostTitles.join('; ')}</Table.DataCell>
                             )}
                             {editMode === 'endre' && (
                               <AksjonCell

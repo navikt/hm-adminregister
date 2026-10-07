@@ -22,6 +22,8 @@ export const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductS
     if (existing) {
       existing.variantCount++
       existing.agreementRef = mergeCsv(existing.agreementRef, row.agreementRef)
+      existing.agreementTitles = [...new Set([...existing.agreementTitles, ...row.agreementTitles])]
+      existing.agreementPostTitles = [...new Set([...existing.agreementPostTitles, ...row.agreementPostTitles])]
       existing.agreementRank = mergeCsv(existing.agreementRank, row.agreementRank)
       existing.agreementPostNr = mergeCsv(existing.agreementPostNr, row.agreementPostNr)
       existing.agreementRankSort = Math.min(
@@ -73,6 +75,8 @@ export const groupByProduct = (variantRows: ExtractedProductVariant[]): ProductS
         iso22Attached: row.iso22Attached,
         variantCount: 1,
         agreementRef: row.agreementRef,
+        agreementTitles: [...row.agreementTitles],
+        agreementPostTitles: [...row.agreementPostTitles],
         agreementRank: row.agreementRank,
         agreementPostNr: row.agreementPostNr,
         agreementRankSort: row.agreementRankSort,

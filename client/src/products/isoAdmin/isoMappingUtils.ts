@@ -120,6 +120,10 @@ export const mapToExtractedRows = (
       const agreementRefs = Array.from(
         new Set(activeAgreements.map((agreement) => agreement.reference).filter(Boolean))
       ).join(', ')
+      const uniqueText = (values: (string | null | undefined)[]) =>
+        Array.from(new Set(values.map((value) => value?.trim()).filter((value): value is string => !!value)))
+      const agreementTitles = uniqueText(activeAgreements.map((agreement) => agreement.title))
+      const agreementPostTitles = uniqueText(activeAgreements.map((agreement) => agreement.postTitle))
       const agreementRanks = Array.from(new Set(activeAgreements.map((agreement) => agreement.rank)))
         .sort((a, b) => a - b)
         .join(', ')
@@ -162,6 +166,8 @@ export const mapToExtractedRows = (
         iso22Attached,
         iso22Stored: storedIsoCode22 ?? '',
         agreementRef: agreementRefs,
+        agreementTitles,
+        agreementPostTitles,
         agreementRank: agreementRanks,
         agreementPostNr: agreementPostNrs,
         agreementRankSort: firstAgreement?.rank ?? null,

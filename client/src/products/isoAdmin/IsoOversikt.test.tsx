@@ -64,15 +64,40 @@ test('alle visningsmoduser beholder restore-branchens kolonner og valgfrie titte
   expect(headers()).toEqual([...mappingHeaders, 'Endringstype', 'Status'])
   expect(screen.getByRole('button', { name: /v16 - nivå 4, sortert stigende/ })).toBeInTheDocument()
   await loadExtractRows()
-  expect(headers()).toEqual([...isoHeaders, 'Ant. varianter'])
+  const mappingInfo = ['Endringstype', 'Verifisering']
+  const agreementInfo = ['Avtale', 'Rangering', 'Delkontraktnr.']
+  expect(headers()).toEqual([
+    'v16 - nivå 4',
+    'v22 - nivå 4',
+    ...mappingInfo,
+    'Produktnavn',
+    'Ant. varianter',
+    ...agreementInfo,
+  ])
+  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
+  expect(headers()).toEqual([
+    'v16 - nivå 4',
+    'v22 - nivå 4',
+    ...mappingInfo,
+    'Variantnavn',
+    'HMS-nr.',
+    'Leverandørref.',
+    ...agreementInfo,
+  ])
   fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v16 nivå 4 tittel' }))
   fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'v22 nivå 4 tittel' }))
-  fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
-  const withTitles = [...isoHeaders.slice(0, 4), 'v16 - 4 tittel', ...isoHeaders.slice(4), 'v22 - 4 tittel']
-  expect(headers()).toEqual([...withTitles, 'HMS-nr.', 'Leverandørref.'])
+  const withTitles = ['v16 - nivå 4', 'v16 - 4 tittel', 'v22 - nivå 4', 'v22 - 4 tittel']
+  expect(headers()).toEqual([
+    ...withTitles,
+    ...mappingInfo,
+    'Variantnavn',
+    'HMS-nr.',
+    'Leverandørref.',
+    ...agreementInfo,
+  ])
   fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
-  expect(headers()).toEqual([...withTitles, 'Ant. varianter'])
+  expect(headers()).toEqual([...withTitles, ...mappingInfo, 'Produktnavn', 'Ant. varianter', ...agreementInfo])
   fireEvent.click(screen.getByRole('radio', { name: 'ISO-mapping' }))
   expect(headers()).toEqual([
     'v16 - nivå 4',
@@ -853,8 +878,6 @@ test('kan veksle til variant-visning', async () => {
   renderPage()
   await loadExtractRows()
 
-  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
-  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
   fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Rollator Alfa variant')).toBeInTheDocument())
@@ -866,8 +889,6 @@ test('sortering på antall varianter krasjer ikke ved bytte til variantvisning',
   await loadExtractRows()
 
   fireEvent.click(screen.getByRole('button', { name: /Ant\. varianter, sorter stigende/ }))
-  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
-  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
   fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Rollator Alfa variant')).toBeInTheDocument())
@@ -967,12 +988,21 @@ test('kan vise valgfri v16- og v22-forklaring og søkeord', async () => {
   expect(screen.getByText('rullator, gange, ny')).toBeInTheDocument()
 })
 
-test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', async () => {
+test('produkt- og variantvisning viser bare nivå 4 som standard, og nivå 1 til 3 kan slås av og på', async () => {
   renderPage()
   openExtractView()
 
   await screen.findByRole('option', { name: '05 Hjelpemidler for trening' })
+  expect(screen.queryByRole('columnheader', { name: /v16 - nivå 1/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('columnheader', { name: /v22 - nivå 1/ })).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  for (const version of ['v16', 'v22']) {
+    for (const level of [1, 2, 3]) {
+      fireEvent.click(screen.getByRole('menuitemcheckbox', { name: `${version} nivå ${level} kode` }))
+    }
+  }
+  expect(screen.getByRole('columnheader', { name: /v16 - nivå 1/ })).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: 'v22 - nivå 3' })).toBeInTheDocument()
 
   for (const version of ['v16', 'v22']) {
     for (const level of [1, 2, 3]) {
@@ -995,14 +1025,9 @@ test('kan skjule ISO-kodenivå 1 til 3 og beholder nivå 4 i begge visninger', a
   expect(screen.getByRole('columnheader', { name: 'v22 - nivå 4' })).toBeInTheDocument()
 })
 
-test('kan vise endringstype mellom v16 og v22', async () => {
+test('viser endringstype mellom v16 og v22 som standard og kan skjule den', async () => {
   renderPage()
   await loadExtractRows()
-
-  expect(screen.queryByText('= Ingenting er endret')).not.toBeInTheDocument()
-
-  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
-  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Endringstype og verifisering' }))
 
   const table = screen.getByRole('table')
   const rowAlfa = within(table).getAllByText('18090301')[0].closest('tr') as HTMLElement
@@ -1011,6 +1036,10 @@ test('kan vise endringstype mellom v16 og v22', async () => {
 
   const rowAnnen = within(table).getByText('22030301').closest('tr') as HTMLElement
   expect(within(rowAnnen).getByText('Mangler kobling')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Endringstype og verifisering' }))
+  expect(screen.queryByText('= Ingenting er endret')).not.toBeInTheDocument()
 })
 
 test('viser ren ISO-mapping som standardvisning', async () => {
@@ -1134,12 +1163,36 @@ test('skiller mellom manglende mapping og feil ved henting av mappinger', async 
   expect(within(row).getAllByText('Ikke tilgjengelig')).toHaveLength(2)
 })
 
-test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvisning', async () => {
+test('skjuler UUID-leverandorreferanser, viser aktive avtaler og filtrerer på avtale', async () => {
   const supplierRefUuid = '11111111-2222-3333-4444-555555555555'
   const agreements = [
-    { id: 'agr-2', reference: 'A2', rank: 2, postNr: 20, status: 'ACTIVE' },
-    { id: 'agr-1', reference: 'A1', rank: 1, postNr: 10, status: 'ACTIVE' },
-    { id: 'agr-3', reference: 'A3', rank: 3, postNr: 30, status: 'INACTIVE' },
+    {
+      id: 'agr-2',
+      reference: 'A2',
+      rank: 2,
+      postNr: 20,
+      status: 'ACTIVE',
+      title: 'Ganghjelpemidler',
+      postTitle: 'Rullatorer, innendørs',
+    },
+    {
+      id: 'agr-1',
+      reference: 'A1',
+      rank: 1,
+      postNr: 10,
+      status: 'ACTIVE',
+      title: 'Ganghjelpemidler',
+      postTitle: 'Rullatorer, utendørs',
+    },
+    {
+      id: 'agr-3',
+      reference: 'A3',
+      rank: 3,
+      postNr: 30,
+      status: 'INACTIVE',
+      title: 'Utgått avtale',
+      postTitle: 'Utgått delkontrakt',
+    },
   ]
 
   server.use(
@@ -1161,9 +1214,24 @@ test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvi
               },
             ],
           },
+          {
+            id: 's-no-agreement',
+            title: 'Serie uten avtale',
+            isoCategory: '18090301',
+            isoCategory22: null,
+            variants: [
+              {
+                id: 'v-no-agreement',
+                articleName: 'Variant uten avtale',
+                supplierRef: 'REF-NA',
+                hmsArtNr: '444444',
+                agreements: [{ id: 'agr-old', reference: 'A9', rank: 1, postNr: 1, status: 'INACTIVE' }],
+              },
+            ],
+          },
         ],
         totalPages: 1,
-        totalSize: 1,
+        totalSize: 2,
       })
     )
   )
@@ -1177,15 +1245,36 @@ test('skjuler UUID-leverandorreferanser og viser alle aktive avtaler i variantvi
 
   await waitFor(() => expect(screen.getAllByText('18090301').length).toBeGreaterThan(0))
 
-  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
-  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Variantnavn' }))
-  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Avtaleinfo' }))
   fireEvent.click(screen.getByRole('radio', { name: 'Variant' }))
 
   await waitFor(() => expect(screen.getByText('Spesiell variant')).toBeInTheDocument())
   expect(screen.getByText('A1, A2')).toBeInTheDocument()
   expect(screen.queryByText('A3')).not.toBeInTheDocument()
   expect(screen.queryByText(supplierRefUuid)).not.toBeInTheDocument()
+
+  expect(screen.getByText('Variant uten avtale')).toBeInTheDocument()
+  expect(screen.queryByRole('columnheader', { name: 'Avtalenavn' })).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Avtalenavn' }))
+  fireEvent.click(screen.getByRole('menuitemcheckbox', { name: 'Delkontraktnavn' }))
+  expect(screen.getByRole('columnheader', { name: 'Avtalenavn' })).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: 'Delkontraktnavn' })).toBeInTheDocument()
+  expect(screen.getByText('Ganghjelpemidler')).toBeInTheDocument()
+  expect(screen.getByText('Rullatorer, utendørs; Rullatorer, innendørs')).toBeInTheDocument()
+  expect(screen.queryByText('Utgått avtale')).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Bare på avtale' }))
+  expect(screen.getByText('Spesiell variant')).toBeInTheDocument()
+  expect(screen.queryByText('Variant uten avtale')).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
+  expect(screen.getByText('Spesiell serie')).toBeInTheDocument()
+  expect(screen.queryByText('Serie uten avtale')).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Nullstill' }))
+  expect(screen.getByRole('checkbox', { name: 'Bare på avtale' })).not.toBeChecked()
+  expect(screen.getByText('Serie uten avtale')).toBeInTheDocument()
 })
 
 // Regression-test for backend-cachen i Iso22Service.retrieveAll() (hm-grunndata-register), som kun
