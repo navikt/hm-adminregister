@@ -23,6 +23,125 @@ const openExtractView = () => {
   fireEvent.click(screen.getByRole('radio', { name: 'Produkt' }))
 }
 
+test('viser avrundet andel fra mappinglisten og oppdaterer etter verifisering uten prosentkall', async () => {
+  let percentageRequests = 0
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap/verified-percentage', () => {
+      percentageRequests++
+      return HttpResponse.json(0)
+    }),
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) => {
+      const body = (await request.json()) as { isoMap: (typeof isoMappings)[number] }
+      expect(body.isoMap).toEqual({ ...isoMappings[7], verified: true })
+      return HttpResponse.json(body.isoMap)
+    })
+  )
+  renderPage()
+  await screen.findByText('5 av 8 verifisert (62 %)')
+  expect(screen.queryByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).not.toBeInTheDocument()
+  fireEvent.click(
+    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
+  )
+  expect(screen.getByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).toHaveAttribute('aria-valuenow', '62')
+  enableEditMode()
+  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 050303' })).closest('tr') as HTMLElement)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Verifiser' }))
+  await confirmVerification()
+  await screen.findByText('6 av 8 verifisert (75 %)')
+  expect(percentageRequests).toBe(0)
+  expect(screen.getByRole('button', { name: 'Rad-meny for ISO 050303' })).toBeInTheDocument()
+})
+
+test('tom mappingliste viser Ingen mappinger og ingen prosentlinje', async () => {
+  server.use(http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () => HttpResponse.json([])))
+  renderPage()
+  await screen.findByText('Ingen mappinger')
+  expect(screen.queryByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).not.toBeInTheDocument()
+})
+
+test('viser ikke 100 prosent før alle mappinger er verifisert', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json(
+        Array.from({ length: 500 }, (_, index) => ({
+          ...isoMappings[7],
+          id: `mapping-${index}`,
+          verified: index < 499,
+        }))
+      )
+    )
+  )
+  renderPage()
+  await screen.findByText('499 av 500 verifisert (99 %)')
+  fireEvent.click(
+    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
+  )
+  expect(screen.getByRole('progressbar', { name: 'Verifiserte ISO-mappinger' })).toHaveAttribute('aria-valuenow', '99')
+})
+
+test('fjerning av verifisering oppdaterer andelen og feil endrer ikke andelen', async () => {
+  let fail = true
+  server.use(
+    http.put('http://localhost:8080/admreg/admin/api/v22/isomap/:id', async ({ request }) => {
+      if (fail) return HttpResponse.json({ message: 'Lagring feilet' }, { status: 500 })
+      return HttpResponse.json(((await request.json()) as { isoMap: (typeof isoMappings)[number] }).isoMap)
+    })
+  )
+  renderPage()
+  await screen.findByText('5 av 8 verifisert (62 %)')
+  enableEditMode()
+  openRowMenu((await screen.findByRole('button', { name: 'Rad-meny for ISO 18090301' })).closest('tr') as HTMLElement)
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Fjern verifisering' }))
+  const dialog = await screen.findByRole('dialog', { name: 'Bekreft fjerning av verifisering' })
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Fjern verifisering' }))
+  await within(dialog).findByText(/Lagring feilet/)
+  expect(screen.getByText('5 av 8 verifisert (62 %)')).toBeInTheDocument()
+  fail = false
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Fjern verifisering' }))
+  await screen.findByText('4 av 8 verifisert (50 %)')
+})
+
+test('statusfilter og sortering er valgfrie og endrer ikke samlet prosent', async () => {
+  renderPage()
+  await screen.findByText('5 av 8 verifisert (62 %)')
+  expect(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' })).not.toBeChecked()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' }))
+  expect(screen.queryByText('Verifisert')).not.toBeInTheDocument()
+  expect(screen.getByText('5 av 8 verifisert (62 %)')).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Vis bare ikke verifiserte' }))
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Ikke verifiserte først' }))
+  const statuses = screen
+    .getAllByRole('row')
+    .slice(1)
+    .map((row) => within(row).queryByText('Verifisert') !== null)
+  const firstVerified = statuses.indexOf(true)
+  expect(firstVerified).toBeGreaterThan(0)
+  expect(statuses.slice(firstVerified).every(Boolean)).toBe(true)
+})
+
+test('viser verifisering per nivå 1 og fremhever flere mappinger med samme v16-kode', async () => {
+  server.use(
+    http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+      HttpResponse.json([...isoMappings, { ...isoMappings[7], id: 'split-extra', code22: '24060302' }])
+    )
+  )
+  renderPage()
+  await screen.findByText('5 av 9 verifisert (55 %)')
+  fireEvent.click(
+    within(screen.getByRole('region', { name: 'Verifiseringsstatus' })).getByRole('button', { name: 'Vis mer' })
+  )
+  expect(screen.getAllByText('Splitt: krever manuell kontroll')).toHaveLength(2)
+  fireEvent.click(
+    within(screen.getByRole('region', { name: 'Verifisering per v16 nivå 1' })).getByRole('button', { name: 'Vis mer' })
+  )
+  expect(await screen.findByText('ISO 05: 0 av 4 verifisert (0 %)')).toBeInTheDocument()
+  expect(screen.getByRole('progressbar', { name: 'Verifiserte mappinger for ISO 05' })).toHaveAttribute(
+    'aria-valuenow',
+    '0'
+  )
+  expect(screen.getByText('Uten v16-kode: 1 av 1 verifisert (100 %)')).toBeInTheDocument()
+})
+
 test('Ren ISO-mapping søker mappingens v22-mål når Søk v22-koder er valgt', async () => {
   renderPage()
   await screen.findAllByText('05')

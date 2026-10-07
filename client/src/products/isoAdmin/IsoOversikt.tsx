@@ -22,11 +22,13 @@ import {
   Loader,
   Modal,
   Pagination,
+  ProgressBar,
   Radio,
   RadioGroup,
   Select,
   Switch,
   Table,
+  Tag,
   TextField,
   VStack,
 } from '@navikt/ds-react'
@@ -152,6 +154,8 @@ const IsoOversikt = () => {
   const [visibleExtraColumns, setVisibleExtraColumns] = useState<Set<ExtraColumn>>(new Set())
   const [showMappingTypes, setShowMappingTypes] = useState(false)
   const [showCounts, setShowCounts] = useState(false)
+  const [onlyUnverified, setOnlyUnverified] = useState(false)
+  const [unverifiedFirst, setUnverifiedFirst] = useState(false)
   const [otherOptionsOpen, setOtherOptionsOpen] = useState(false)
   const [pageMode, setPageMode] = useState<PageMode>('mapping')
   const [viewMode, setViewMode] = useState<ViewMode>('product')
@@ -208,6 +212,37 @@ const IsoOversikt = () => {
     [isoCategories22]
   )
   const isoMappingsById = useMemo(() => new Map((isoMappings || []).map((m) => [m.id, m])), [isoMappings])
+  const verificationProgress = useMemo(() => {
+    const mappings = isoMappings ?? []
+    const summarize = (items: IsoMapDTO[]) => {
+      const verified = items.filter((mapping) => mapping.verified).length
+      return {
+        total: items.length,
+        verified,
+        percentage: items.length ? Math.floor((verified * 100) / items.length) : 0,
+      }
+    }
+    const groups = new Map<string, IsoMapDTO[]>()
+    for (const mapping of mappings) {
+      const prefix = mapping.code16?.replace(/\s/g, '').slice(0, 2) || ''
+      const items = groups.get(prefix) ?? []
+      items.push(mapping)
+      groups.set(prefix, items)
+    }
+    return {
+      ...summarize(mappings),
+      groups: [...groups]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([prefix, items]) => ({
+          prefix,
+          ...summarize(items),
+        })),
+    }
+  }, [isoMappings])
+  const splitCodes = useMemo(
+    () => new Set([...mappingsByCode16].filter(([, mappings]) => mappings.length > 1).map(([code]) => code)),
+    [mappingsByCode16]
+  )
 
   const isIsoCodeLoaded = useCallback(
     (isoCode: string) =>
@@ -271,7 +306,8 @@ const IsoOversikt = () => {
       setVerificationError(null)
       setVerifyingMappingIds((prev) => new Set([...prev, ...mappingIds]))
       try {
-        const updated = await Promise.all(targets.map((mapping) => updateIsoMapping({ ...mapping, verified })))
+        const results = await Promise.allSettled(targets.map((mapping) => updateIsoMapping({ ...mapping, verified })))
+        const updated = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []))
         const updatedById = new Map(updated.map((mapping) => [mapping.id, mapping]))
         mutateIsoMappings((current) => (current || []).map((mapping) => updatedById.get(mapping.id) ?? mapping), {
           revalidate: false,
@@ -288,6 +324,13 @@ const IsoOversikt = () => {
               : row
           )
         )
+        const failures = results.flatMap((result) => (result.status === 'rejected' ? [result.reason] : []))
+        if (failures.length) {
+          setVerificationError(
+            `${updated.length} av ${targets.length} mappinger ble oppdatert. ${extractErrorMessage(failures[0])}`
+          )
+          return false
+        }
         return true
       } catch (error) {
         setVerificationError(extractErrorMessage(error))
@@ -523,18 +566,23 @@ const IsoOversikt = () => {
   )
 
   const filteredMappingRows = useMemo(() => {
+    const visible = onlyUnverified ? mappingRows.filter((row) => row.mappingVerified !== true) : mappingRows
     const base = selectedIsoCode
-      ? mappingRows.filter((row) =>
+      ? visible.filter((row) =>
           searchIso22
             ? [row.iso22Lvl1, row.iso22Lvl2, row.iso22Lvl3, row.iso22Lvl4].some((code) =>
                 code?.split(',').some((value) => value.trim().startsWith(selectedIsoCode))
               )
             : row.isoCode.startsWith(selectedIsoCode)
         )
-      : mappingRows
-    if (selectedIsoCode) return [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
-    return sortByIsoLevel(base, sortKey, sortDir)
-  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir])
+      : visible
+    const sorted = selectedIsoCode
+      ? [...base].sort((a, b) => compareIsoCodes(a.isoCode, b.isoCode, 'asc'))
+      : sortByIsoLevel(base, sortKey, sortDir)
+    return unverifiedFirst
+      ? [...sorted].sort((a, b) => Number(a.mappingVerified === true) - Number(b.mappingVerified === true))
+      : sorted
+  }, [mappingRows, selectedIsoCode, searchIso22, sortKey, sortDir, onlyUnverified, unverifiedFirst])
 
   const mappingTotalPages = Math.max(1, Math.ceil(filteredMappingRows.length / mappingPageSize))
   const pagedMappingRows = useMemo(() => {
@@ -1322,6 +1370,89 @@ const IsoOversikt = () => {
 
             {!categoriesLoading && (
               <>
+                {!isoMappingsError && isoMappings && (
+                  <ExpansionCard size="small" aria-label="Verifiseringsstatus">
+                    <ExpansionCard.Header>
+                      <HStack gap="space-12" align="center">
+                        <ExpansionCard.Title size="small">Verifiseringsstatus</ExpansionCard.Title>
+                        {verificationProgress.total === 0 ? (
+                          <BodyShort size="small">Ingen mappinger</BodyShort>
+                        ) : (
+                          <BodyShort size="small" role="status" aria-live="polite">
+                            {verificationProgress.verified.toLocaleString('nb-NO')} av{' '}
+                            {verificationProgress.total.toLocaleString('nb-NO')} verifisert (
+                            {verificationProgress.percentage} %)
+                          </BodyShort>
+                        )}
+                      </HStack>
+                    </ExpansionCard.Header>
+                    <ExpansionCard.Content>
+                      <VStack gap="space-8">
+                        {verificationProgress.total > 0 && (
+                          <>
+                            <ProgressBar
+                              size="small"
+                              value={verificationProgress.percentage}
+                              aria-label="Verifiserte ISO-mappinger"
+                            />
+                            <BodyShort size="small" textColor="subtle">
+                              Gjelder alle mappinger, uavhengig av filter. Verifisering kobler ikke produkter til v22.
+                            </BodyShort>
+                            <ExpansionCard size="small" aria-label="Verifisering per v16 nivå 1">
+                              <ExpansionCard.Header>
+                                <ExpansionCard.Title size="small">Verifisering per v16 nivå 1</ExpansionCard.Title>
+                              </ExpansionCard.Header>
+                              <ExpansionCard.Content>
+                                <VStack gap="space-12">
+                                  {verificationProgress.groups.map((group) => (
+                                    <VStack key={group.prefix} gap="space-4">
+                                      <BodyShort size="small">
+                                        {group.prefix ? `ISO ${group.prefix}` : 'Uten v16-kode'}:{' '}
+                                        {group.verified.toLocaleString('nb-NO')} av{' '}
+                                        {group.total.toLocaleString('nb-NO')} verifisert ({group.percentage} %)
+                                      </BodyShort>
+                                      <ProgressBar
+                                        size="small"
+                                        value={group.percentage}
+                                        aria-label={
+                                          group.prefix
+                                            ? `Verifiserte mappinger for ISO ${group.prefix}`
+                                            : 'Verifiserte mappinger uten v16-kode'
+                                        }
+                                      />
+                                    </VStack>
+                                  ))}
+                                </VStack>
+                              </ExpansionCard.Content>
+                            </ExpansionCard>
+                          </>
+                        )}
+                      </VStack>
+                    </ExpansionCard.Content>
+                  </ExpansionCard>
+                )}
+                <HStack gap="space-16">
+                  <Checkbox
+                    size="small"
+                    checked={onlyUnverified}
+                    onChange={(event) => {
+                      setOnlyUnverified(event.target.checked)
+                      setMappingPage(1)
+                    }}
+                  >
+                    Vis bare ikke verifiserte
+                  </Checkbox>
+                  <Checkbox
+                    size="small"
+                    checked={unverifiedFirst}
+                    onChange={(event) => {
+                      setUnverifiedFirst(event.target.checked)
+                      setMappingPage(1)
+                    }}
+                  >
+                    Ikke verifiserte først
+                  </Checkbox>
+                </HStack>
                 {showCounts && largeLoadWarning}
                 {showCounts && loadError && <Alert variant="error">{loadError}</Alert>}
                 {showCounts && pageLoading && (
@@ -1385,6 +1516,11 @@ const IsoOversikt = () => {
                             <OptionalTitleCellsV22 visible={visibleOptionalsV22} row={row} />
                             <Table.DataCell>
                               <MappingTypes types={row.mappingTypes} mappingAvailable={row.mappingAvailable} />
+                              {splitCodes.has(row.isoCode.replace(/\s/g, '')) && (
+                                <Tag variant="warning" size="small">
+                                  Splitt: krever manuell kontroll
+                                </Tag>
+                              )}
                             </Table.DataCell>
                             {showCounts && (
                               <Table.DataCell style={{ whiteSpace: 'nowrap' }}>
