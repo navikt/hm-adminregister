@@ -1620,6 +1620,19 @@ test('verifiserer eksisterende v22-nivå 4 selv om et produkt ikke er koblet', a
   expect(screen.queryByRole('menuitem', { name: /Koble/ })).not.toBeInTheDocument()
   fireEvent.click(await screen.findByRole('menuitem', { name: 'Vis oversikt' }))
   const overview = await screen.findByRole('dialog', { name: 'Oversikt over ISO 18090301' })
+  const productTable = await within(overview).findByRole('table')
+  expect(within(productTable).getAllByRole('columnheader').map((header) => header.textContent)).toEqual([
+    'Produkt',
+    'Ant. varianter',
+    'HMS-nr.',
+    'v16-kode',
+  ])
+  const productRows = within(productTable).getAllByRole('row').slice(1)
+  expect(productRows).toHaveLength(3)
+  for (const row of productRows) {
+    expect(within(row).getAllByRole('cell')).toHaveLength(4)
+  }
+  expect(within(productTable).queryByText('Ikke koblet')).not.toBeInTheDocument()
   expect(within(overview).queryByRole('button', { name: /Koble/ })).not.toBeInTheDocument()
   expect(within(overview).queryByText(/Koble alle produkter/)).not.toBeInTheDocument()
   expect(within(overview).queryByRole('dialog', { name: /Koble/ })).not.toBeInTheDocument()

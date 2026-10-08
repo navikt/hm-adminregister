@@ -62,7 +62,6 @@ type PreviewSeriesRow = {
   variantCount: number
   hmsArtNr: string[]
   isoCode: string
-  isoCode22: string
 }
 
 interface Props {
@@ -100,7 +99,6 @@ const buildPreviewSeries = (rows: ExtractedProductVariant[]): PreviewSeriesRow[]
         variantCount: 1,
         hmsArtNr: row.hmsArtNr ? [row.hmsArtNr] : [],
         isoCode: row.isoCode,
-        isoCode22: row.iso22Stored,
       })
     }
   }
@@ -301,7 +299,6 @@ const IsoBulkMoveModal = ({
                           <Table.HeaderCell scope="col">Ant. varianter</Table.HeaderCell>
                           <Table.HeaderCell scope="col">HMS-nr.</Table.HeaderCell>
                           <Table.HeaderCell scope="col">v16-kode</Table.HeaderCell>
-                          <Table.HeaderCell scope="col">v22-kode</Table.HeaderCell>
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
@@ -311,17 +308,6 @@ const IsoBulkMoveModal = ({
                             <Table.DataCell>{series.variantCount}</Table.DataCell>
                             <Table.DataCell>{series.hmsArtNr.join(', ')}</Table.DataCell>
                             <Table.DataCell>{series.isoCode || sourceIsoCode}</Table.DataCell>
-                            <Table.DataCell>
-                              {series.isoCode22 ? (
-                                <Tag variant="success" size="small">
-                                  {series.isoCode22}
-                                </Tag>
-                              ) : (
-                                <Tag variant="neutral" size="small">
-                                  Ikke koblet
-                                </Tag>
-                              )}
-                            </Table.DataCell>
                           </Table.Row>
                         ))}
                       </Table.Body>
