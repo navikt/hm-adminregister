@@ -1,4 +1,4 @@
-import { BodyShort, Box, ExpansionCard, HStack, ProgressBar, Switch, VStack } from '@navikt/ds-react'
+import { BodyShort, Box, ExpansionCard, HStack, InfoCard, ProgressBar, Switch, VStack } from '@navikt/ds-react'
 
 type Progress = { total: number; verified: number; percentage: number }
 type LevelProgress = Progress & { level: number; hiddenUnverified: number }
@@ -50,42 +50,51 @@ const VerificationStatus = ({
           padding="space-12"
           borderRadius="8"
         >
-          <VStack gap="space-8">
             {progress.total > 0 && (
               <>
-                <BodyShort size="small" role="status" aria-live="polite">
-                  {progress.verified.toLocaleString('nb-NO')} av {progress.total.toLocaleString('nb-NO')} verifisert (
-                  {progress.percentage} %)
-                </BodyShort>
-                <BodyShort size="small" textColor="subtle">
-                  Gjelder alle mappinger, uavhengig av filter. Verifisering kobler ikke produkter til v22.
-                </BodyShort>
-                {hiddenUnverified > 0 && (
-                  <BodyShort size="small">
-                    {hiddenUnverified.toLocaleString('nb-NO')} ikke-verifiserte mappinger ligger over nivå 4 og vises
-                    ikke i tabellen nå. Slå på «Vis ISO-struktur» for å se dem.
-                  </BodyShort>
-                )}
-                <VStack
-                  gap="space-8"
-                  as="ul"
-                  aria-label="Verifisering per nivå"
-                  style={{ listStyle: 'none', padding: 0, margin: 0 }}
-                >
-                  {progress.levels.map((level) => (
-                    <VStack as="li" key={level.level} gap="space-4">
+                <InfoCard>
+                  <InfoCard.Content>
+                    <VStack gap="space-24">
+                    <VStack gap="space-8">
+                    <BodyShort size="small" role="status" aria-live="polite">
+                      {progress.verified.toLocaleString('nb-NO')} av {progress.total.toLocaleString('nb-NO')} verifisert (
+                      {progress.percentage} %)
+                    </BodyShort>
+                    <BodyShort size="small" textColor="subtle">
+                      Gjelder alle mappinger, uavhengig av filter. Verifisering kobler ikke produkter til v22.
+                    </BodyShort>
+                    {hiddenUnverified > 0 && (
                       <BodyShort size="small">
-                        {levelLabel(level.level)}: {level.verified.toLocaleString('nb-NO')} av{' '}
-                        {level.total.toLocaleString('nb-NO')} verifisert ({level.percentage} %)
+                        {hiddenUnverified.toLocaleString('nb-NO')} ikke-verifiserte mappinger ligger over nivå 4 og vises
+                        ikke i tabellen nå. Slå på «Vis ISO-struktur» for å se dem.
                       </BodyShort>
-                      <ProgressBar
-                        size="small"
-                        value={level.percentage}
-                        aria-label={`Verifiserte mappinger for ${levelLabel(level.level)}`}
-                      />
+                    )}
                     </VStack>
-                  ))}
-                </VStack>
+                    <VStack
+                      gap="space-8"
+                      as="ul"
+                      aria-label="Verifisering per nivå"
+                      style={{ listStyle: 'none', padding: 0, margin: 0 }}
+                    >
+                      {progress.levels.map((level) => (
+                        <VStack as="li" key={level.level} gap="space-4">
+                          <BodyShort size="small">
+                            {levelLabel(level.level)}: {level.verified.toLocaleString('nb-NO')} av{' '}
+                            {level.total.toLocaleString('nb-NO')} verifisert ({level.percentage} %)
+                          </BodyShort>
+                          <ProgressBar
+                            size="small"
+                            value={level.percentage}
+                            aria-label={`Verifiserte mappinger for ${levelLabel(level.level)}`}
+                          />
+                        </VStack>
+                      ))}
+                    </VStack>
+                    </VStack>
+                  </InfoCard.Content>
+                </InfoCard>
+
+
                 <ExpansionCard size="small" aria-label="Verifisering per v16 nivå 1">
                   <ExpansionCard.Header>
                     <ExpansionCard.Title size="small">Verifisering per v16 nivå 1</ExpansionCard.Title>
@@ -115,7 +124,6 @@ const VerificationStatus = ({
                 </ExpansionCard>
               </>
             )}
-          </VStack>
         </Box>
       )}
     </VStack>
