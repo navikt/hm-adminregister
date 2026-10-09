@@ -26,6 +26,65 @@ export const buildMappingsByCode16 = (mappings: IsoMapDTO[]): Map<string, IsoMap
   return mappingsByCode16
 }
 
+// v22-kodene mappingtabellen sier v16-koden skal migreres til. SAME betyr at v22-koden er lik v16-koden.
+export const getMappedIso22Codes = (isoCode: string, mappings: IsoMapDTO[]): string[] =>
+  Array.from(
+    new Set(
+      mappings
+        .map((mapping) => (mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')))
+        .filter(Boolean)
+    )
+  )
+
+export const canVerifyMappings = (mappings: IsoMapDTO[], categories22: IsoCategory22DTO[]): boolean =>
+  mappings.length > 0 &&
+  mappings.every((mapping) => {
+    const code = getMappedIso22Codes(mapping.code16 ?? '', [mapping])[0]
+    return (
+      !!code &&
+      categories22.some(
+        (category) =>
+          category.isoCode.replace(/\s/g, '') === code &&
+          (category.isoLevel === 3 || category.isoLevel === 4) &&
+          category.isoLevel === code.length / 2
+      )
+    )
+  })
+
+export const getCategoryCreationContext = (mappings: IsoMapDTO[], categories22: IsoCategory22DTO[]) => {
+  for (const mapping of mappings) {
+    if (mapping.verified) continue
+    const code = getMappedIso22Codes(mapping.code16 ?? '', [mapping])[0]
+    if (!code || !/^\d{6}(\d{2})?$/.test(code)) continue
+    const category = categories22.find((item) => item.isoCode.replace(/\s/g, '') === code)
+    if (category && mapping.mapEnum.includes('SAME')) continue
+    const parentCode = category && category.isoLevel === 3 ? code : code.slice(0, -2)
+    if (category && category.isoLevel === 4) continue
+    const parent = categories22.find((item) => item.isoCode.replace(/\s/g, '') === parentCode)
+    if (!parent && parentCode.length === 6) {
+      const level2 = categories22.find(
+        (item) => item.isoLevel === 2 && item.isoCode.replace(/\s/g, '') === parentCode.slice(0, 4)
+      )
+      if (level2) {
+        return {
+          parentIsoCode: level2.isoCode.replace(/\s/g, ''),
+          parentIsoTitle: level2.isoTitle,
+          mappingIds: [mapping.id],
+          targetIsoCode: parentCode,
+        }
+      }
+    }
+    if (!parent || (parent.isoLevel !== 2 && parent.isoLevel !== 3)) continue
+    return {
+      parentIsoCode: parentCode,
+      parentIsoTitle: parent.isoTitle,
+      mappingIds: [mapping.id],
+      targetIsoCode: category ? undefined : code,
+    }
+  }
+  return undefined
+}
+
 export const mapToExtractedRows = (
   seriesDetails: (SeriesDTO | IsoOverviewSeries)[],
   categories: IsoCategoryDTO[],
@@ -37,12 +96,13 @@ export const mapToExtractedRows = (
     const isoCode = typeof series.isoCategory === 'string' ? series.isoCategory : (series.isoCategory?.isoCode ?? '')
     const path = buildIsoPath(isoCode, categories)
     const matchingMappings = mappingAvailable ? findMappingsForCode(isoCode, mappingsByCode16) : []
-    const mappedIsoCodes22 = matchingMappings
-      .map((mapping) => (mapping.mapEnum.includes('SAME') ? isoCode : (mapping.code22?.replace(/\s/g, '') ?? '')))
-      .filter(Boolean)
+    const mappedIsoCodes22 = getMappedIso22Codes(isoCode, matchingMappings)
     const storedIsoCode22 =
       typeof series.isoCategory22 === 'string' ? series.isoCategory22 : series.isoCategory22?.isoCode
-    const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : Array.from(new Set(mappedIsoCodes22))
+    const isoCodes22 = storedIsoCode22 ? [storedIsoCode22] : mappedIsoCodes22
+    // Skiller lagret v22-kode fra mappingens anbefalte kode i visningen.
+    const iso22Attached =
+      !!storedIsoCode22 && (mappedIsoCodes22.length === 0 || mappedIsoCodes22.includes(storedIsoCode22))
     const paths22 = isoCodes22.map((code) => buildIso22Path(code, categories22))
     const path22Value = (level: keyof Iso22Path, field: 'isoCode' | 'isoTitle' | 'isoText') =>
       Array.from(
@@ -52,6 +112,7 @@ export const mapToExtractedRows = (
       Array.from(new Set(paths22.flatMap((path22) => path22[level]?.searchWords ?? []))).join(', ')
     const mappingTypes = Array.from(new Set(matchingMappings.flatMap((mapping) => mapping.mapEnum)))
     const mappingVerified = matchingMappings.length === 0 ? null : matchingMappings.every((mapping) => mapping.verified)
+    const mappingIds = matchingMappings.map((mapping) => mapping.id)
     return (series.variants || []).map((variant) => {
       const activeAgreements = (variant.agreements || [])
         .filter((agreement) => ('status' in agreement ? agreement.status === 'ACTIVE' : true))
@@ -59,6 +120,10 @@ export const mapToExtractedRows = (
       const agreementRefs = Array.from(
         new Set(activeAgreements.map((agreement) => agreement.reference).filter(Boolean))
       ).join(', ')
+      const uniqueText = (values: (string | null | undefined)[]) =>
+        Array.from(new Set(values.map((value) => value?.trim()).filter((value): value is string => !!value)))
+      const agreementTitles = uniqueText(activeAgreements.map((agreement) => agreement.title))
+      const agreementPostTitles = uniqueText(activeAgreements.map((agreement) => agreement.postTitle))
       const agreementRanks = Array.from(new Set(activeAgreements.map((agreement) => agreement.rank)))
         .sort((a, b) => a - b)
         .join(', ')
@@ -97,7 +162,12 @@ export const mapToExtractedRows = (
         mappingTypes,
         mappingVerified,
         mappingAvailable,
+        mappingIds,
+        iso22Attached,
+        iso22Stored: storedIsoCode22 ?? '',
         agreementRef: agreementRefs,
+        agreementTitles,
+        agreementPostTitles,
         agreementRank: agreementRanks,
         agreementPostNr: agreementPostNrs,
         agreementRankSort: firstAgreement?.rank ?? null,
@@ -146,6 +216,7 @@ export const buildMappingRows = (
       mappingTypes,
       mappingVerified: mappingAvailable ? (mapping?.verified ?? null) : null,
       mappingAvailable,
+      mappingIds: mapping ? [mapping.id] : [],
     }
   }
 
