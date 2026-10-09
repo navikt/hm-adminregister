@@ -261,6 +261,70 @@ test('splittmapping viser en redigeringshandling for hvert eksisterende nivå 4-
   expect(screen.getByRole('menuitem', { name: 'Endre ISO v22-kategori 24060302' })).toBeInTheDocument()
 })
 
+test.each(['18090301', '24060302'])(
+  'redigering av splittmål %s oppdaterer lastede produkt- og variantrader uten å miste det andre målet',
+  async (code) => {
+    const categories = isoCategoriesV22.map((category) =>
+      category.isoCode === '24060302'
+        ? { ...category, isoText: 'Gripeforklaring', searchWords: ['gange', 'grep'] }
+        : category
+    )
+    const category = categories.find((item) => item.isoCode === code)!
+    const stored = { ...category, id: `category-${code}`, level: 4, isoType: 'NAT' }
+    server.use(
+      http.get('http://localhost:8080/admreg/api/v22/isocategories', () => HttpResponse.json(categories)),
+      http.get('http://localhost:8080/admreg/admin/api/v22/isomap', () =>
+        HttpResponse.json([
+          ...isoMappings.map((mapping) =>
+            mapping.id === 'map-1' || mapping.id === 'map-2' ? { ...mapping, verified: false } : mapping
+          ),
+          { ...isoMappings[2], id: 'split-edit', code16: '18090301', verified: false },
+        ])
+      ),
+      http.get(`http://localhost:8080/admreg/admin/api/v22/isocategory/${code}`, () => HttpResponse.json(stored)),
+      http.put(`http://localhost:8080/admreg/admin/api/v22/isocategory/${code}`, async ({ request }) =>
+        HttpResponse.json(await request.json())
+      )
+    )
+    renderPage()
+    await loadExtractRows()
+    fireEvent.click(screen.getByRole('button', { name: 'Vise/skjule kolonner' }))
+    for (const name of ['v22 nivå 4 tittel', 'v22 forklaring', 'v22 søkeord']) {
+      fireEvent.click(screen.getByRole('menuitemcheckbox', { name }))
+    }
+    fireEvent.keyDown(screen.getByRole('menuitemcheckbox', { name: 'v22 søkeord' }), { key: 'Escape' })
+    enableEditMode()
+    fireEvent.click(screen.getByRole('button', { name: /^Rad-meny for Rollator Alfa/ }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: `Endre ISO v22-kategori ${code}` }))
+    const dialog = await screen.findByRole('dialog', { name: `Endre ISO v22-kategori ${code}` })
+    fireEvent.change(await within(dialog).findByLabelText('Tittel'), { target: { value: 'Ny tittel' } })
+    fireEvent.change(within(dialog).getByLabelText('Forklaring (valgfritt)'), {
+      target: { value: 'Ny forklaring' },
+    })
+    fireEvent.change(within(dialog).getByLabelText('Søkeord (kommaseparert, valgfritt)'), {
+      target: { value: 'gange, endret' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Lagre endringer' }))
+    await waitFor(() => expect(dialog).not.toBeInTheDocument())
+
+    const expected =
+      code === '18090301'
+        ? ['Ny tittel, Nytt gripehjelpemiddel', 'Ny forklaring, Gripeforklaring', 'gange, endret, grep']
+        : [
+            'Rollator med fire hjul (2022), Ny tittel',
+            'Rullator med fire hjul, oppdatert forklaring, Ny forklaring',
+            'rullator, gange, ny, endret',
+          ]
+    for (const view of ['Produkt', 'Variant']) {
+      fireEvent.click(screen.getByRole('radio', { name: view }))
+      const row = screen.getByText(view === 'Produkt' ? 'Rollator Alfa' : 'Rollator Alfa variant').closest('tr')!
+      for (const value of expected) expect(within(row).getByText(value)).toBeInTheDocument()
+      expect(within(row).getAllByText('18090301')).toHaveLength(2)
+      expect(within(row).getByText('24060302')).toBeInTheDocument()
+    }
+  }
+)
+
 test('viser manglende nivå 4 og kopierer v16-verdier uten å åpne detaljer', async () => {
   let created: { isoCode: string; isoTitle: string; isoText: string; searchWords: string[] } | null = null
   server.use(

@@ -542,19 +542,26 @@ const IsoOversiktContent = () => {
         { revalidate: false }
       )
       updateKnownRows((current) =>
-        current.map((row) =>
-          row.iso22Lvl4.replace(/\s/g, '') === code
-            ? {
-                ...row,
-                iso22Lvl4Title: updated.isoTitle,
-                iso22Lvl4Text: updated.isoText ?? '',
-                iso22Lvl4SearchWords: (updated.searchWords ?? []).join(', '),
-              }
-            : row
-        )
+        current.map((row) => {
+          const codes = row.iso22Lvl4.replace(/\s/g, '').split(',')
+          if (!codes.includes(code)) return row
+          const categories = codes.map((targetCode) =>
+            targetCode === code
+              ? updated
+              : sortedIsoCategories22.find((category) => category.isoCode.replace(/\s/g, '') === targetCode)
+          )
+          const uniqueValues = (values: (string | null | undefined)[]) =>
+            Array.from(new Set(values.filter((value): value is string => !!value))).join(', ')
+          return {
+            ...row,
+            iso22Lvl4Title: uniqueValues(categories.map((category) => category?.isoTitle)),
+            iso22Lvl4Text: uniqueValues(categories.map((category) => category?.isoText)),
+            iso22Lvl4SearchWords: uniqueValues(categories.flatMap((category) => category?.searchWords ?? [])),
+          }
+        })
       )
     },
-    [mutateIsoCategories22, updateKnownRows]
+    [mutateIsoCategories22, sortedIsoCategories22, updateKnownRows]
   )
   const verifyConfirmProductCount = useMemo(() => {
     if (!verifyConfirm?.isoCode || !isIsoCodeLoaded(verifyConfirm.isoCode)) return null
