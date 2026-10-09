@@ -18,7 +18,6 @@ import {
   HStack,
   Heading,
   HelpText,
-  InfoCard,
   Loader,
   Modal,
   Pagination,
@@ -1317,15 +1316,6 @@ const IsoOversiktContent = () => {
             </Modal.Footer>
           </Modal>
         )}
-        <InfoCard data-color="warning">
-          <InfoCard.Header>
-            <InfoCard.Title>Obs!</InfoCard.Title>
-          </InfoCard.Header>
-          <InfoCard.Content>
-            Fase 2 testes: Du kan se produkter med v16- og v22-koder, opprette v22-kategorier og verifisere mappinger.
-            Forbedringer kan komme.
-          </InfoCard.Content>
-        </InfoCard>
         {isoError22 && <Alert variant="warning">Klarte ikke å hente v22-kategorier.</Alert>}
         {isoMappingsError && <Alert variant="warning">Klarte ikke å hente mapping-status mellom v16 og v22.</Alert>}
 
