@@ -9,6 +9,7 @@ type Features = { [key: string]: boolean }
 // NOTE: Other filters may have other strategies, by setting to false.
 const defaultToggles: Features = {
   'adminreg.dummyfeature': true,
+  'finnhjelpemiddel.iso22': false,
 }
 
 const initializeUnleash = async () => {
