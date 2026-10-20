@@ -61,6 +61,11 @@ export type MediaInfo = components['schemas']['MediaInfo']
 export type MediaInfoDTO = components['schemas']['MediaInfoDTO']
 export type MediaSort = components['schemas']['MediaSort']
 export type SeriesDraftWithDTO = components['schemas']['SeriesDraftWithDTO']
+export type MainPartAccessoryDTO = {
+  main: boolean
+  part: boolean
+  accessory: boolean
+}
 export type DraftVariantDTO = components['schemas']['DraftVariantDTO']
 export type PartDraftWithDTO = components['schemas']['PartDraftWithDTO']
 export type TechData = components['schemas']['TechData']
@@ -190,7 +195,6 @@ export type BulkTechDataUpdateResultDTO = {
   updated: ProductRegistrationDTOV2[]
   failed: BulkTechDataUpdateError[]
 }
-
 
 export type OTPRequest = {
   email: string

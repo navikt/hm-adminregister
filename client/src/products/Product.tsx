@@ -9,6 +9,7 @@ import {
   setSeriesToActive,
   setSeriesToInactive,
   updateProductIsoCategory,
+  updateProductMainPartAccessory,
   updateProductTitle,
   useSeriesV2,
 } from 'api/SeriesApi'
@@ -19,6 +20,7 @@ import { TabLabel } from 'felleskomponenter/TabLabel'
 import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
 import AdminActions from 'products/AdminActions'
 import ChangeISOCategoryModal from 'products/ChangeISOCategoryModal'
+import ChangeProductToMainPartAccessory from 'products/ChangeProductToMainPartAccessory'
 import ChangeProductToPartModal from 'products/ChangeProductToPartModal'
 import { RequestApprovalModal } from 'products/RequestApprovalModal'
 import StatusPanel from 'products/StatusPanel'
@@ -34,6 +36,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { labelRequired } from 'utils/string-util'
 import { useIsoCategories } from 'utils/swr-hooks'
+import { MainPartAccessoryDTO } from 'utils/types/response-types'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
@@ -72,6 +75,8 @@ const Product = () => {
   const [approvalModalIsOpen, setApprovalModalIsOpen] = useState(false)
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false)
   const [changeToPartModalIsOpen, setChangeToPartModalIsOpen] = useState(false)
+  const [changeProductTypeModalIsOpen, setChangeProductTypeModalIsOpen] = useState(false)
+  const [isSavingProductType, setIsSavingProductType] = useState(false)
   const [changeToIsoCategoryModalIsOpen, setChangeToIsoCategoryModalIsOpen] = useState(false)
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false)
   const [expiredSeriesModalIsOpen, setExpiredSeriesModalIsOpen] = useState<{
@@ -238,8 +243,27 @@ const Product = () => {
       })
   }
 
+  async function onChangeProductType(flags: MainPartAccessoryDTO) {
+    setIsSavingProductType(true)
+    updateProductMainPartAccessory(series!.id, flags)
+      .then(() => {
+        mutateSeries()
+        setChangeProductTypeModalIsOpen(false)
+      })
+      .catch((error) => setGlobalError(error.status, error.message))
+      .finally(() => setIsSavingProductType(false))
+  }
+
   return (
     <main className="show-menu">
+      {changeProductTypeModalIsOpen && (
+        <ChangeProductToMainPartAccessory
+          isOpen={changeProductTypeModalIsOpen}
+          setIsOpen={setChangeProductTypeModalIsOpen}
+          onClick={onChangeProductType}
+          isSaving={isSavingProductType}
+        />
+      )}
       <RequestApprovalModal
         series={series}
         mutateSeries={mutateSeries}
@@ -492,12 +516,7 @@ const Product = () => {
             <ImageTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <DocumentTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
-            <VariantsTab
-              ref={variantsTabRef}
-              series={series}
-              mutateSeries={mutateSeries}
-              showInputError={!isValid}
-            />
+            <VariantsTab ref={variantsTabRef} series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
         <VStack gap={{ xs: 'space-16', md: 'space-12' }}>
@@ -511,6 +530,7 @@ const Product = () => {
               setDeleteConfirmationModalIsOpen={setDeleteConfirmationModalIsOpen}
               setExpiredSeriesModalIsOpen={setExpiredSeriesModalIsOpen}
               setSwitchToPartModalIsOpen={setChangeToPartModalIsOpen}
+              setChangeProductTypeModalIsOpen={setChangeProductTypeModalIsOpen}
             />
           )}
           {!loggedInUser?.isAdmin && (
