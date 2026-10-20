@@ -421,7 +421,7 @@ const Product = () => {
                     {isoCategoryOf(series, isoVersion)
                       ? `${isoCategoryOf(series, isoVersion)?.isoTitle} (${isoCategoryOf(series, isoVersion)?.isoCode})`
                       : 'Ingen'}
-                    {series.isoMappingWarning && <IsoMappingWarning />}
+                    {series.isoMappingWarning && <IsoMappingWarning iso16={series.isoCategory?.isoCode} />}
                   </DefinitionList.Definition>
                 </DefinitionList>
               )}

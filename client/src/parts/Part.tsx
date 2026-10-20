@@ -338,7 +338,7 @@ const Part = () => {
                       ? `${isoCategoryOf(series, isoVersion)?.isoTitle} (${isoCategoryOf(series, isoVersion)?.isoCode})`
                       : 'Ingen'}
                   </BodyShort>
-                  {series.isoMappingWarning && <IsoMappingWarning />}
+                  {series.isoMappingWarning && <IsoMappingWarning iso16={series.isoCategory?.isoCode} />}
                   {isEditable && (
                     <Button variant="tertiary" onClick={() => setChangeIsoCategoryModalIsOpen(true)}>
                       Endre ISO-kategori

@@ -15,7 +15,7 @@ import { act, render, renderHook, screen, waitFor } from '@testing-library/react
 test('mapping warning is only visible while the ISO22 flag is enabled', () => {
   const warning = (enabled: boolean) => (
     <FlagProvider toggles={[{ name: 'finnhjelpemiddel.iso22', enabled }]}>
-      <IsoMappingWarning />
+      <IsoMappingWarning iso16="09070601" />
     </FlagProvider>
   )
   const { rerender } = render(warning(false))
@@ -23,6 +23,7 @@ test('mapping warning is only visible while the ISO22 flag is enabled', () => {
 
   rerender(warning(true))
   expect(screen.getByRole('heading', { name: /Mangler mapping for ISO-v22/ })).toBeVisible()
+  expect(screen.getByText('ISO16-kategorien 09070601 på serien er ikke mappet til ISO22.')).toBeVisible()
 
   rerender(warning(false))
   expect(screen.queryByRole('heading', { name: /Mangler mapping for ISO-v22/ })).not.toBeInTheDocument()
