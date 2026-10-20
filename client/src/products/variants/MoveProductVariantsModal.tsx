@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { getSeriesBySeriesId } from 'api/SeriesApi'
 import Content from 'felleskomponenter/styledcomponents/Content'
+import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { ProductRegistrationDTOV2, SeriesDTO } from 'utils/types/response-types'
 
 import { BodyShort, Box, Button, Checkbox, Modal, Table, TextField, VStack } from '@navikt/ds-react'
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, seriesFromIso }: Props) => {
+  const isoVersion = useIsoVersion()
   const [seriesIdToMoveTo, setSeriesIdToMoveTo] = useState<string>('')
   const [variantIdsToMove, setVariantIdsToMove] = useState<string[]>()
   const [feilmelding, setFeilmelding] = useState<string | undefined>(undefined)
@@ -36,11 +38,11 @@ const MoveProductVariantsModal = ({ onClick, onClose, isModalOpen, variants, ser
       setSeriesToPreview(undefined)
       return
     }
-    getSeriesBySeriesId(seriesIdToMoveTo)
+    getSeriesBySeriesId(seriesIdToMoveTo, undefined, isoVersion)
       .then((series) => {
         setSeriesIdToMoveTo(series.id)
         setSeriesToPreview(series)
-        if (seriesFromIso !== series.isoCategory?.isoCode) {
+        if (seriesFromIso !== isoCategoryOf(series, isoVersion)?.isoCode) {
           setFeilmelding('Seriene har ulik ISO-kode')
         } else {
           setFeilmelding(undefined)

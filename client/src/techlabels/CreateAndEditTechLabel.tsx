@@ -11,6 +11,8 @@ import {
   updateTechLabel,
 } from 'api/TechLabelApi'
 import FormBox from 'felleskomponenter/FormBox'
+import { useIsoVersion } from 'utils/iso-version'
+import { useIsoMappings } from 'utils/swr-hooks'
 import { TechLabelCreateUpdateDTO, TechLabelRegistrationDTO, TechLabelType } from 'utils/types/response-types'
 
 import { Button, HStack, Select, TextField, UNSAFE_Combobox, VStack } from '@navikt/ds-react'
@@ -55,6 +57,8 @@ const mostCommonSection = (labels: TechLabelRegistrationDTO[]): string => {
 }
 
 const CreateAndEditTechLabel = () => {
+  const isoVersion = useIsoVersion()
+  const { isoMappings } = useIsoMappings(true)
   const location = useLocation()
   const editData = location.state as TechLabelRegistrationDTO | undefined
   const navigate = useNavigate()
@@ -90,7 +94,7 @@ const CreateAndEditTechLabel = () => {
       unit: editData?.unit || '',
       required: editData?.required ? 'true' : 'false',
       sort: editData?.sort || 0,
-      isoCode: editData?.isoCode || '',
+      isoCode: (isoVersion === 'v22' ? editData?.isoCode22 : editData?.isoCode) || '',
       options: editData?.options?.join('; ') || '',
       definition: editData?.definition || '',
       guide: editData?.guide || '',
@@ -101,13 +105,21 @@ const CreateAndEditTechLabel = () => {
   async function onSubmit(data: FormData) {
     const dto: TechLabelCreateUpdateDTO = {
       ...data,
+      isoCode:
+        isoVersion === 'v22'
+          ? editData?.isoCode || isoMappings?.find((mapping) => mapping.code22 === data.isoCode)?.code16 || ''
+          : data.isoCode,
+      isoCode22:
+        isoVersion === 'v22'
+          ? data.isoCode
+          : (editData?.isoCode22 ?? isoMappings?.find((mapping) => mapping.code16 === data.isoCode)?.code22),
       required: data.required === 'true',
       options: data.options ? data.options.split(';').map((opt) => opt.trim()) : [],
       section: data.section === DIVERSE_VALUE ? null : data.section,
     }
 
     if (editData) {
-      await updateTechLabel(editData.id, dto)
+      await updateTechLabel(editData.id, dto, isoVersion)
     } else {
       await createTechLabel(dto)
     }

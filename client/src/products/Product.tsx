@@ -20,6 +20,7 @@ import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
 import AdminActions from 'products/AdminActions'
 import ChangeISOCategoryModal from 'products/ChangeISOCategoryModal'
 import ChangeProductToPartModal from 'products/ChangeProductToPartModal'
+import { IsoMappingWarning } from 'products/IsoMappingWarning'
 import { RequestApprovalModal } from 'products/RequestApprovalModal'
 import StatusPanel from 'products/StatusPanel'
 import SupplierActions from 'products/SupplierActions'
@@ -28,12 +29,13 @@ import ImageTab from 'products/files/images/ImagesTab'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { numberOfDocuments, numberOfImages, numberOfVideos } from 'products/seriesUtils'
 import VideosTab from 'products/videos/VideosTab'
+import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { getMissingRequiredTechData } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { labelRequired } from 'utils/string-util'
-import { useIsoCategories } from 'utils/swr-hooks'
+import { useActiveIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
@@ -90,7 +92,8 @@ const Product = () => {
 
   const [showEditIsoCategoryMode, setShowEditIsoCategoryMode] = useState(false)
 
-  const { isoCategories } = useIsoCategories()
+  const { isoCategories } = useActiveIsoCategories()
+  const isoVersion = useIsoVersion()
   const [isoCategory, setIsoCategory] = useState<string>('')
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
@@ -173,7 +176,7 @@ const Product = () => {
 
   const handleSaveIsoCategory = (isoCategory: string, resetTechnicalData: boolean) => {
     setChangeToIsoCategoryModalIsOpen(false)
-    updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory), resetTechnicalData)
+    updateProductIsoCategory(series!.id, handleSetFormValueIso(isoCategory), resetTechnicalData, isoVersion)
       .then(() => mutateSeries())
       .catch((error) => setGlobalError(error.status, error.message))
   }
@@ -228,7 +231,7 @@ const Product = () => {
   async function onSwitchToPart(accessory: boolean, newIsoCode: string) {
     setChangeToPartModalIsOpen(false)
 
-    changeMainProductToPart(series!.id, accessory, newIsoCode, false) //todo: resetTechnicalData
+    changeMainProductToPart(series!.id, accessory, newIsoCode, false, isoVersion)
       .then(() => {
         mutateSeries()
         navigate(`/del/${series?.variants[0].id}`)
@@ -415,11 +418,14 @@ const Product = () => {
                 <DefinitionList fullWidth horizontal>
                   <DefinitionList.Term>ISO-kategori</DefinitionList.Term>
                   <DefinitionList.Definition>
-                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : 'Ingen'}
+                    {isoCategoryOf(series, isoVersion)
+                      ? `${isoCategoryOf(series, isoVersion)?.isoTitle} (${isoCategoryOf(series, isoVersion)?.isoCode})`
+                      : 'Ingen'}
+                    {series.isoMappingWarning && <IsoMappingWarning iso16={series.isoCategory?.isoCode} />}
                   </DefinitionList.Definition>
                 </DefinitionList>
               )}
-              {isEditable && loggedInUser?.isAdmin && !showEditIsoCategoryMode && (
+              {isEditable && (loggedInUser?.isAdmin || loggedInUser?.isSupplier) && !showEditIsoCategoryMode && (
                 <Button
                   className="fit-content"
                   variant="tertiary"
@@ -492,12 +498,7 @@ const Product = () => {
             <ImageTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <DocumentTab series={series} isEditable={isEditable} showInputError={!isValid} />
             <VideosTab series={series} mutateSeries={mutateSeries} isEditable={isEditable} />
-            <VariantsTab
-              ref={variantsTabRef}
-              series={series}
-              mutateSeries={mutateSeries}
-              showInputError={!isValid}
-            />
+            <VariantsTab ref={variantsTabRef} series={series} mutateSeries={mutateSeries} showInputError={!isValid} />
           </Tabs>
         </VStack>
         <VStack gap={{ xs: 'space-16', md: 'space-12' }}>

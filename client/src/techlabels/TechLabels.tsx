@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { deleteTechLabel, getTechLabels } from 'api/TechLabelApi'
 import ErrorAlert from 'error/ErrorAlert.tsx'
 import { useUrlSyncedSearchParam } from 'utils/common-hooks'
+import { useIsoVersion } from 'utils/iso-version'
 
 import { PencilWritingIcon, PlusIcon, TrashIcon } from '@navikt/aksel-icons'
 import {
@@ -30,6 +31,7 @@ const PAGE_SIZE = 15
 const MAX_VISIBLE_OPTIONS = 10
 
 export const TechLabels = () => {
+  const isoVersion = useIsoVersion()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
 
@@ -58,7 +60,7 @@ export const TechLabels = () => {
 
   const handleDelete = async (id: string, forcedDelete: boolean) => {
     setDeleteError(null)
-    await deleteTechLabel(id, forcedDelete)
+    await deleteTechLabel(id, forcedDelete, isoVersion)
       .then(() => {
         mutateTechLabels()
         setForceDeleteId(null)
@@ -99,7 +101,9 @@ export const TechLabels = () => {
   const filteredLabels = techLabels.filter(
     (label) =>
       label.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      label.isoCode?.toLowerCase().includes(searchIsoCode.toLowerCase())
+      (isoVersion === 'v22' ? (label.isoCode22 ?? '') : label.isoCode)
+        .toLowerCase()
+        .includes(searchIsoCode.toLowerCase())
   )
 
   const paginatedLabels = filteredLabels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -163,11 +167,7 @@ export const TechLabels = () => {
             </HStack>
 
             <HStack gap="space-16" wrap>
-              <Button
-                variant="secondary"
-                size="medium"
-                onClick={() => navigate('/tekniskdata/seksjoner')}
-              >
+              <Button variant="secondary" size="medium" onClick={() => navigate('/tekniskdata/seksjoner')}>
                 Rediger seksjoner
               </Button>
               <Button
@@ -200,7 +200,9 @@ export const TechLabels = () => {
               {paginatedLabels.map((label, index) => (
                 <Table.Row key={index + label.id}>
                   <Table.DataCell className={styles.mediumColumn}>{label.label}</Table.DataCell>
-                  <Table.DataCell className={styles.shortColumn}>{label.isoCode}</Table.DataCell>
+                  <Table.DataCell className={styles.shortColumn}>
+                    {isoVersion === 'v22' ? label.isoCode22 : label.isoCode}
+                  </Table.DataCell>
                   <Table.DataCell className={styles.shortColumn}>{label.type}</Table.DataCell>
                   <Table.DataCell className={styles.shortColumn}>{label.unit}</Table.DataCell>
                   <Table.DataCell className={styles.shortColumn}>{label.sort}</Table.DataCell>

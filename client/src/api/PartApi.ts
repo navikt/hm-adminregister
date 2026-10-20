@@ -2,6 +2,7 @@ import { getProductById } from 'api/ProductApi'
 import { fetchAPI, getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR from 'swr'
+import { IsoVersion, useIsoVersion, withIsoVersion } from 'utils/iso-version'
 import { fetcherGET } from 'utils/swr-hooks'
 import {
   CompatibleWithDTO,
@@ -33,6 +34,7 @@ export function usePagedParts({
   missingMediaType?: string | null
   isAccessory?: boolean | null
 }) {
+  const isoVersion = useIsoVersion()
   const titleSearchParam = titleSearchTerm ? `&title=${titleSearchTerm}` : ''
   const supplierParam = supplierFilter ? `&supplierId=${encodeURIComponent(supplierFilter)}` : ''
   const agreementParam =
@@ -42,7 +44,7 @@ export function usePagedParts({
 
   const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part?page=${page}&size=${pageSize}&excludedStatus=DELETED&sort=created,DESC${titleSearchParam}${supplierParam}${agreementParam}${missingMediaParam}${isAccessoryParam}`
 
-  return useSWR<ProductChunk>(path, fetcherGET)
+  return useSWR<ProductChunk>(withIsoVersion(path, isoVersion), fetcherGET)
 }
 
 export const draftNewPart = async (partDraftWith: PartDraftWithDTO, supplierId: string): Promise<PartDraftResponse> => {
@@ -68,32 +70,51 @@ export const approvePart = async (seriesUUID: string): Promise<void> => {
   return await fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/approve/${seriesUUID}`, 'PUT')
 }
 
-export const changePartToMainProduct = async (seriesUUID: string, newIsoCode: string): Promise<void> => {
-  return await fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/mainProduct/${seriesUUID}`, 'PUT', {
-    newIsoCode: newIsoCode,
-  })
+export const changePartToMainProduct = async (
+  seriesUUID: string,
+  newIsoCode: string,
+  isoVersion: IsoVersion = 'v16'
+): Promise<void> => {
+  return await fetchAPI(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/admin/api/v1/part/mainProduct/${seriesUUID}`, isoVersion),
+    'PUT',
+    {
+      newIsoCode: newIsoCode,
+    }
+  )
 }
 
 export function usePartByVariantIdentifier(variantIdentifier: string) {
+  const isoVersion = useIsoVersion()
   const partByVariantIdPath = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/variant-id/${variantIdentifier}`
 
-  return useSWR<ProductRegistrationDTOV2>(variantIdentifier.length > 0 ? partByVariantIdPath : null, fetcherGET)
+  return useSWR<ProductRegistrationDTOV2>(
+    variantIdentifier.length > 0 ? withIsoVersion(partByVariantIdPath, isoVersion) : null,
+    fetcherGET
+  )
 }
 
-export function getProductByHmsArtNr(hmsArtNr: string): Promise<ProductRegistrationDTOV2> {
-  return fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/hmsNr/${hmsArtNr}`, 'GET')
+export function getProductByHmsArtNr(
+  hmsArtNr: string,
+  isoVersion: IsoVersion = 'v16'
+): Promise<ProductRegistrationDTOV2> {
+  return fetchAPI(withIsoVersion(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/hmsNr/${hmsArtNr}`, isoVersion), 'GET')
 }
 
 export function getVariantsBySeriesUUID(seriesUUID?: string) {
+  const isoVersion = useIsoVersion()
   return useSWR<ProductRegistrationDTOV2[]>(
-    seriesUUID ? `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series-variants/${seriesUUID}` : null,
+    seriesUUID
+      ? withIsoVersion(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/series-variants/${seriesUUID}`, isoVersion)
+      : null,
     fetcherGET
   )
 }
 
 export const getPartsForSeriesId = (seriesId: string) => {
+  const isoVersion = useIsoVersion()
   return useSWR<ProductRegistrationDTOV2[]>(
-    `${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`,
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`, isoVersion),
     fetcherGET,
     {
       revalidateOnFocus: false,
@@ -103,9 +124,15 @@ export const getPartsForSeriesId = (seriesId: string) => {
 }
 
 export function usePartByProductId(productId: string) {
+  const isoVersion = useIsoVersion()
   const path = `${HM_REGISTER_URL()}/admreg/common/api/v1/part/${productId}`
 
-  const { data: part, error, isLoading, mutate: mutatePart } = useSWR<PartDTO>(path, fetcherGET)
+  const {
+    data: part,
+    error,
+    isLoading,
+    mutate: mutatePart,
+  } = useSWR<PartDTO>(withIsoVersion(path, isoVersion), fetcherGET)
 
   return {
     part,
@@ -116,9 +143,15 @@ export function usePartByProductId(productId: string) {
 }
 
 export function useCompatibleProductById(productId: string, isAdmin: boolean) {
+  const isoVersion = useIsoVersion()
   const path = getPath(isAdmin, `/api/v1/product/registrations/${productId}`)
 
-  const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET)
+  const {
+    data: product,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<ProductRegistrationDTOV2>(withIsoVersion(path, isoVersion), fetcherGET)
 
   return {
     product,

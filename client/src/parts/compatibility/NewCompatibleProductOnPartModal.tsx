@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { addCompatibleWithVariantList, getProductByHmsArtNr } from 'api/PartApi'
 import DefinitionList from 'felleskomponenter/definition-list/DefinitionList'
 import Content from 'felleskomponenter/styledcomponents/Content'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePart, partId }: Props) => {
+  const isoVersion = useIsoVersion()
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
   const [productIdsToAdd, setProductIdsToAdd] = useState<string[]>([])
@@ -40,7 +42,7 @@ const NewCompatibleProductOnPartModal = ({ modalIsOpen, setModalIsOpen, mutatePa
 
   async function onClickGetProduct() {
     if (productIdToAdd !== undefined && !productIdsToAdd.includes(productIdToAdd)) {
-      getProductByHmsArtNr(productIdToAdd)
+      getProductByHmsArtNr(productIdToAdd, isoVersion)
         .then((product) => {
           if (!productIdsToAdd.includes(product.hmsArtNr!)) {
             setProductIdsToAdd([...productIdsToAdd, product.hmsArtNr!])

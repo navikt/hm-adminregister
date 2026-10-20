@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { draftNewSeries } from 'api/SeriesApi'
 import FormBox from 'felleskomponenter/FormBox'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
+import { isoCategoryFields, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
-import { useIsoCategories, useSuppliers } from 'utils/swr-hooks'
+import { useActiveIsoCategories, useSuppliers } from 'utils/swr-hooks'
 import { SeriesDraftWithDTO } from 'utils/types/response-types'
 
 import { PackageIcon } from '@navikt/aksel-icons'
@@ -21,7 +22,8 @@ type Error = {
 
 export default function CreateProduct() {
   const { setGlobalError } = useErrorStore()
-  const { isoCategories } = useIsoCategories()
+  const { isoCategories } = useActiveIsoCategories()
+  const isoVersion = useIsoVersion()
   const navigate = useNavigate()
   const [title, setTitle] = useState<string>('')
   const [isoCategory, setIsoCategory] = useState<string>('')
@@ -29,6 +31,10 @@ export default function CreateProduct() {
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  useEffect(() => {
+    setIsoCategory('')
+    setSelectedOptions([])
+  }, [isoVersion])
   const [isCreatingProduct, setIsCreatingProduct] = useState<boolean>(false)
 
   const [supplier, setSupplier] = useState<string>('')
@@ -56,7 +62,7 @@ export default function CreateProduct() {
     if (validateFields()) {
       const newSeries: SeriesDraftWithDTO = {
         title: title,
-        isoCategory: handleSetFormValueIso(isoCategory),
+        ...isoCategoryFields(handleSetFormValueIso(isoCategory), isoVersion),
       }
 
       try {

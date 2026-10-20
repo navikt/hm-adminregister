@@ -40,7 +40,7 @@ export type NewsChunk = {
   numberOfElements?: number
 }
 
-export type ProductRegistrationDTO = components['schemas']['ProductRegistrationDTO']
+export type ProductRegistrationDTO = components['schemas']['ProductRegistrationDTO'] & { isoCategory22?: string | null }
 export type ProductRegistrationDTOV2 = components['schemas']['ProductRegistrationDTOV2']
 export type UpdateProductRegistrationDTO = components['schemas']['UpdateProductRegistrationDTO']
 export type ProductRegistration = components['schemas']['ProductRegistration']
@@ -60,16 +60,16 @@ export type MediaDTO = components['schemas']['MediaDTO']
 export type MediaInfo = components['schemas']['MediaInfo']
 export type MediaInfoDTO = components['schemas']['MediaInfoDTO']
 export type MediaSort = components['schemas']['MediaSort']
-export type SeriesDraftWithDTO = components['schemas']['SeriesDraftWithDTO']
+export type SeriesDraftWithDTO = components['schemas']['SeriesDraftWithDTO'] & { isoCategory22?: string }
 export type DraftVariantDTO = components['schemas']['DraftVariantDTO']
-export type PartDraftWithDTO = components['schemas']['PartDraftWithDTO']
+export type PartDraftWithDTO = components['schemas']['PartDraftWithDTO'] & { isoCategory22?: string }
 export type TechData = components['schemas']['TechData']
 export type DelkontraktRegistrationDTO = components['schemas']['DelkontraktRegistrationDTO']
 export type ProductVariantsForDelkontraktDto = components['schemas']['ProductVariantsForDelkontraktDto']
 export type SeriesToApproveDto = components['schemas']['SeriesToApproveDTO']
 export type SeriesDraftResponse = components['schemas']['SeriesDraftResponse']
 export type PartDraftResponse = components['schemas']['PartDraftResponse']
-export type SeriesDTO = components['schemas']['SeriesDTO']
+export type SeriesDTO = components['schemas']['SeriesDTO'] & { isoMappingWarning?: boolean }
 export type SeriesSearchDTO = components['schemas']['SeriesSearchDTO']
 export type RejectSeriesDTO = components['schemas']['RejectSeriesDTO']
 export type NewsRegistrationDTO = components['schemas']['NewsRegistrationDTO']
@@ -191,7 +191,6 @@ export type BulkTechDataUpdateResultDTO = {
   failed: BulkTechDataUpdateError[]
 }
 
-
 export type OTPRequest = {
   email: string
 }
@@ -212,6 +211,7 @@ export type TechLabelCriteria = {
   type?: string
   unit?: string
   isoCode?: string
+  isoCode22?: string
 }
 
 export type TechLabelSectionUpdateDTO = {
