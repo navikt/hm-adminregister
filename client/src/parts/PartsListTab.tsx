@@ -7,10 +7,11 @@ import ExportModal, { ExportScope } from 'felleskomponenter/export/ExportModal'
 import { TabPanel } from 'felleskomponenter/styledcomponents/TabPanel'
 import { estimatePartExport, getPartExportRows, partExportDefaultKeys, partExportFields } from 'parts/export/partExport'
 import { PartSearchParams, buildPartSearchPath } from 'parts/export/partExportApi'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { fetchAllPages, pageRequestsFor } from 'utils/export/fetchAllPages'
+import { useIsoVersion, withIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { useUrlSyncedSearchParam } from 'utils/common-hooks'
 import { useSuppliers } from 'utils/swr-hooks'
 import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
 
@@ -38,6 +39,7 @@ type Props = {
 }
 
 const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
+  const isoVersion = useIsoVersion()
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const { loggedInUser } = useAuthStore()
@@ -146,21 +148,22 @@ const PartsListTab = ({ exportOpen, onExportClose }: Props) => {
     ? [partByVariantIdentifier]
     : pagedData?.content || []
 
-  const getExportRows = async (
-    scope: ExportScope,
-    _level?: string,
-    selectedKeys?: string[],
-    signal?: AbortSignal
-  ) => {
+  const getExportRows = async (scope: ExportScope, _level?: string, selectedKeys?: string[], signal?: AbortSignal) => {
     const fetchesAllPages = scope === 'all' && !partByVariantIdentifier
     const parts = fetchesAllPages
       ? await fetchAllPages<ProductRegistrationDTOV2>(
-          (page, pageSize) => buildPartSearchPath({ ...partQueryParams, page, pageSize }),
+          (page, pageSize) => withIsoVersion(buildPartSearchPath({ ...partQueryParams, page, pageSize }), isoVersion),
           undefined,
           signal
         )
       : currentPageParts
-    return getPartExportRows(parts, selectedKeys, signal, fetchesAllPages ? pageRequestsFor(parts.length) : 0)
+    return getPartExportRows(
+      parts,
+      selectedKeys,
+      signal,
+      fetchesAllPages ? pageRequestsFor(parts.length) : 0,
+      isoVersion
+    )
   }
 
   const estimateExport = (scope: ExportScope, _level?: string, selectedKeys?: string[]) => {

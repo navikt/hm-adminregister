@@ -3,6 +3,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { updateProductVariant } from 'api/ProductApi'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { isUUID, labelRequired, trimValue, validateNorwegianDecimal } from 'utils/string-util'
@@ -28,6 +29,7 @@ type FormData = {
 }
 
 const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationDTOV2; mutate: () => void }) => {
+  const isoVersion = useIsoVersion()
   const navigate = useNavigate()
   const { state } = useLocation()
   const { articleName, supplierRef } = product
@@ -74,7 +76,7 @@ const ProductVariantForm = ({ product, mutate }: { product: ProductRegistrationD
         })),
       },
     }
-    updateProductVariant(loggedInUser?.isAdmin || false, product.id, productRegistrationUpdated)
+    updateProductVariant(loggedInUser?.isAdmin || false, product.id, productRegistrationUpdated, isoVersion)
       .then((product) => {
         navigate(`/produkter/${product.seriesUUID}?tab=variants&page=${page}`, { state: state })
         mutate()

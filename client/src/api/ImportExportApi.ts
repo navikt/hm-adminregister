@@ -1,11 +1,16 @@
 import { fetchAPIWithHeaders, fetchAPIWithHeadersAndArrayBufferResponse, getPath } from 'api/fetch'
 import { Upload } from 'felleskomponenter/FellesImport'
 import { MIME_TYPE_XLSX } from 'utils/file-util'
+import { IsoVersion, withIsoVersion } from 'utils/iso-version'
 import { CatalogImportResultReport, ProductRegistrationDTO } from 'utils/types/response-types'
 
-export const exportProducts = async (isAdmin: boolean, seriesId: string): Promise<any> => {
+export const exportProducts = async (
+  isAdmin: boolean,
+  seriesId: string,
+  isoVersion: IsoVersion = 'v16'
+): Promise<any> => {
   return await fetchAPIWithHeadersAndArrayBufferResponse(
-    getPath(isAdmin, `/api/v1/product/registrations/excel/export/supplier/${seriesId}`),
+    withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/excel/export/supplier/${seriesId}`), isoVersion),
     'POST',
     undefined,
     {
@@ -18,17 +23,21 @@ export const importProducts = async (
   isAdmin: boolean,
   seriesId: string,
   upload: Upload,
-  dryRun: boolean
+  dryRun: boolean,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<ProductRegistrationDTO[]> => {
   const formData = new FormData()
   formData.append('file', upload.file)
 
   return await fetchAPIWithHeaders(
-    getPath(
-      isAdmin,
-      dryRun
-        ? `/api/v1/product/registrations/excel/import-dryrun/${seriesId}`
-        : `/api/v1/product/registrations/excel/import/${seriesId}`
+    withIsoVersion(
+      getPath(
+        isAdmin,
+        dryRun
+          ? `/api/v1/product/registrations/excel/import-dryrun/${seriesId}`
+          : `/api/v1/product/registrations/excel/import/${seriesId}`
+      ),
+      isoVersion
     ),
     'POST',
     formData,

@@ -5,6 +5,7 @@ import { HM_REGISTER_URL } from 'environments'
 import useSWR, { Fetcher } from 'swr'
 import useSWRImmutable from 'swr/immutable'
 import { buildSeriesSearchPath, statusFilterProductsURL } from 'utils/export/seriesSearchPath'
+import { useIsoVersion, withIsoVersion } from 'utils/iso-version'
 
 import { useAuthStore } from './store/useAuthStore'
 import { useErrorStore } from './store/useErrorStore'
@@ -123,6 +124,7 @@ export function useSeriesToApproveByVariantIdentifier(variantIdentifier: string)
 }
 
 export function userProductVariantsBySeriesId(seriesId: string) {
+  const isoVersion = useIsoVersion()
   const { loggedInUser } = useAuthStore()
   const seriesIdPath = loggedInUser?.isAdmin
     ? `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/series/${seriesId}`
@@ -133,7 +135,7 @@ export function userProductVariantsBySeriesId(seriesId: string) {
     error: errorVariants,
     isLoading: isLoadingVariants,
     mutate: mutateVariants,
-  } = useSWR<ProductRegistrationDTOV2[]>(loggedInUser ? seriesIdPath : null, fetcherGET)
+  } = useSWR<ProductRegistrationDTOV2[]>(loggedInUser ? withIsoVersion(seriesIdPath, isoVersion) : null, fetcherGET)
 
   return {
     variants,
@@ -308,10 +310,16 @@ export function useProductAgreementsByDelkontraktId(delkontraktId: string, mainP
 }
 
 export function useProductByProductId(productId: string) {
+  const isoVersion = useIsoVersion()
   const { loggedInUser } = useAuthStore()
   const path = getPath(loggedInUser?.isAdmin || false, `/api/v1/product/registrations/${productId}`)
 
-  const { data: product, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2>(path, fetcherGET)
+  const {
+    data: product,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<ProductRegistrationDTOV2>(withIsoVersion(path, isoVersion), fetcherGET)
 
   return {
     product,
@@ -418,6 +426,13 @@ export function useSuppliers(isAdmin: boolean, vis: string = 'Alle') {
     isLoading,
     error,
   }
+}
+
+export function useActiveIsoCategories() {
+  const version = useIsoVersion()
+  const path = `${HM_REGISTER_URL()}/admreg/api/${version === 'v22' ? 'v22' : 'v1'}/isocategories`
+  const { data, error, isLoading } = useSWR<(IsoCategoryDTO | IsoCategory22DTO)[]>(path, fetcherGET)
+  return { isoCategories: data, isoLoading: isLoading, isoError: error }
 }
 
 export function useIsoCategories() {
@@ -528,8 +543,12 @@ export function useCountSeriesToApprove() {
 }
 
 export function usePartsMissingHmsArtNr(maxPageSize: number = 500) {
+  const isoVersion = useIsoVersion()
   const path = `${HM_REGISTER_URL()}/admreg/admin/api/v1/part/missing-hmsartnr/supplier-created?page=0&size=${maxPageSize}`
-  const { data, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2[]>(path, fetcherGET)
+  const { data, error, isLoading, mutate } = useSWR<ProductRegistrationDTOV2[]>(
+    withIsoVersion(path, isoVersion),
+    fetcherGET
+  )
   const count = Array.isArray(data) ? data.length : 0
   return { data, count, error, isLoading, mutate }
 }

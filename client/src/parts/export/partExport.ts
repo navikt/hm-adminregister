@@ -19,6 +19,7 @@ import {
   rethrowAsError,
   uniqueIds,
 } from 'utils/export/fetchAllPages'
+import { IsoVersion, isoCategoryOf } from 'utils/iso-version'
 import { isUUID } from 'utils/string-util'
 import { ProductRegistrationDTOV2, SeriesDTO, SeriesSearchDTO } from 'utils/types/response-types'
 
@@ -109,11 +110,15 @@ const assertWithinRequestLimit = (requests: number, advice: string) => {
   if (reason) throw new Error(reason)
 }
 
-const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Promise<Map<string, string>> => {
+const fetchLinkedProductLabels = async (
+  ids: string[],
+  signal?: AbortSignal,
+  isoVersion: IsoVersion = 'v16'
+): Promise<Map<string, string>> => {
   const labels = new Map<string, string>()
   for (const idChunk of chunk(ids, LINKED_PRODUCTS_BATCH_SIZE)) {
     signal?.throwIfAborted()
-    const products = await getProductsByIds(idChunk, signal).catch(rethrowAsError)
+    const products = await getProductsByIds(idChunk, signal, isoVersion).catch(rethrowAsError)
     products.forEach((product) =>
       labels.set(product.id, [product.hmsArtNr, product.articleName].filter(Boolean).join(' – '))
     )
@@ -125,12 +130,13 @@ const fetchLinkedProductLabels = async (ids: string[], signal?: AbortSignal): Pr
 const fetchSeriesTitles = async (
   missing: string[],
   known: Map<string, SeriesDTO>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<Map<string, string>> => {
   const fetched = await fetchInBatches(
     missing,
     (id) =>
-      getSeriesBySeriesId(id, signal).catch((error: unknown): SeriesDTO | undefined => {
+      getSeriesBySeriesId(id, signal, isoVersion).catch((error: unknown): SeriesDTO | undefined => {
         if ((error as { status?: number } | null)?.status === 404) return undefined
         return rethrowAsError(error)
       }),
@@ -148,7 +154,8 @@ export const getPartExportRows = async (
   parts: ProductRegistrationDTOV2[],
   selectedKeys: string[] = [],
   signal?: AbortSignal,
-  requestsAlreadyMade = 0
+  requestsAlreadyMade = 0,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<Record<string, unknown>[]> => {
   const seriesIds = needsSource('seriesDetail', selectedKeys) ? uniqueIds(parts.map((part) => part.seriesUUID)) : []
   const fetchedSeriesIds = new Set(seriesIds)
@@ -174,7 +181,7 @@ export const getPartExportRows = async (
   if (seriesIds.length > 0) {
     const details = await fetchInBatches(
       seriesIds,
-      (id) => getSeriesBySeriesId(id, signal),
+      (id) => getSeriesBySeriesId(id, signal, isoVersion),
       EXPORT_DETAIL_BATCH_SIZE,
       signal
     )
@@ -182,11 +189,11 @@ export const getPartExportRows = async (
   }
 
   const linkedSeriesTitles = needsSource('linkedSeries', selectedKeys)
-    ? await fetchSeriesTitles(linkedSeriesIds, seriesById, signal)
+    ? await fetchSeriesTitles(linkedSeriesIds, seriesById, signal, isoVersion)
     : new Map<string, string>()
 
   const linkedProductLabels = needsSource('linkedProducts', selectedKeys)
-    ? await fetchLinkedProductLabels(linkedProductIds, signal)
+    ? await fetchLinkedProductLabels(linkedProductIds, signal, isoVersion)
     : new Map<string, string>()
 
   const rows: RowWithAgreements[] = parts.map((part) => {
@@ -205,8 +212,8 @@ export const getPartExportRows = async (
         hmsArtNr: part.hmsArtNr ?? '',
         type: typeOf(part),
         supplierName: series?.supplierName ?? '',
-        isoCategory: series?.isoCategory?.isoTitle ?? '',
-        isoCode: isoLevel4CodeOf(series?.isoCategory?.isoCode),
+        isoCategory: isoCategoryOf(series, isoVersion)?.isoTitle ?? '',
+        isoCode: isoLevel4CodeOf(isoCategoryOf(series, isoVersion)?.isoCode),
         avtale: yesNo(activeAgreements.length > 0),
         agreementDetails: activeAgreements
           .map((agreement) => [agreement.title, agreement.postTitle].filter(Boolean).join(' – '))
@@ -316,12 +323,13 @@ export const partsPerSeriesDefaultKeys = ['seriesTitle', 'articleName', 'supplie
 export const getPartsPerSeriesExportRows = async (
   series: SeriesSearchDTO[],
   signal?: AbortSignal,
-  requestsAlreadyMade = 0
+  requestsAlreadyMade = 0,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<Record<string, unknown>[]> => {
   assertWithinRequestLimit(requestsAlreadyMade + series.length, SERIES_EXPORT_ADVICE)
   const partsPerSeries = await fetchInBatches(
     series,
-    (s) => getPartsBySeriesId(s.id, signal),
+    (s) => getPartsBySeriesId(s.id, signal, isoVersion),
     EXPORT_DETAIL_BATCH_SIZE,
     signal
   )

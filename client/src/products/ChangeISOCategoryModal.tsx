@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Content from 'felleskomponenter/styledcomponents/Content'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
+import { useIsoVersion } from 'utils/iso-version'
 import { labelRequired } from 'utils/string-util'
-import { useIsoCategories } from 'utils/swr-hooks'
+import { useActiveIsoCategories } from 'utils/swr-hooks'
 
 import { Button, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
 
@@ -11,18 +12,26 @@ interface Props {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   onClick: (isoCategory: string, resetTechnicalData: boolean) => void
+  isPart?: boolean
 }
 
 type Error = {
   isoCodeErrorMessage?: string
 }
 
-const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick }: Props) => {
-  const { isoCategories } = useIsoCategories()
+const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick, isPart = false }: Props) => {
+  const { isoCategories } = useActiveIsoCategories()
+  const isoVersion = useIsoVersion()
   const [isoCategory, setIsoCategory] = useState<string>('')
-  const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
+  const uniqueIsoCodes = isoCategories?.filter(
+    (cat) => cat.isoCode && (isPart ? cat.isoCode.length === 6 && /9[0-6]$/.test(cat.isoCode) : cat.isoCode.length >= 8)
+  )
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  useEffect(() => {
+    setIsoCategory('')
+    setSelectedOptions([])
+  }, [isoVersion])
 
   const [resetTechnicalData, setResetTechnicalData] = useState<'Ja' | 'Nei'>('Nei')
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined)

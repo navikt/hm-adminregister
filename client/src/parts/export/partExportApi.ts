@@ -1,5 +1,6 @@
 import { fetchAPI } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
+import { IsoVersion, withIsoVersion } from 'utils/iso-version'
 import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
 
 // Paths mirror usePagedParts (api/PartApi.ts) and usePagedProductsForTechnician (utils/swr-hooks.ts)
@@ -53,8 +54,26 @@ export const buildTechnicianSeriesSearchPath = ({
   return `${HM_REGISTER_URL()}/admreg/api/v1/series?page=${page}&size=${pageSize}&sort=created,DESC&excludedStatus=DELETED${titleSearchParam}&mainProduct=true${supplierParam}`
 }
 
-export const getPartsBySeriesId = (seriesId: string, signal?: AbortSignal): Promise<ProductRegistrationDTOV2[]> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`, 'GET', undefined, signal)
+export const getPartsBySeriesId = (
+  seriesId: string,
+  signal?: AbortSignal,
+  isoVersion: IsoVersion = 'v16'
+): Promise<ProductRegistrationDTOV2[]> =>
+  fetchAPI(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/common/api/v1/part/series/${seriesId}`, isoVersion),
+    'GET',
+    undefined,
+    signal
+  )
 
-export const getProductsByIds = (ids: string[], signal?: AbortSignal): Promise<ProductRegistrationDTOV2[]> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`, 'POST', ids, signal)
+export const getProductsByIds = (
+  ids: string[],
+  signal?: AbortSignal,
+  isoVersion: IsoVersion = 'v16'
+): Promise<ProductRegistrationDTOV2[]> =>
+  fetchAPI(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`, isoVersion),
+    'POST',
+    ids,
+    signal
+  )

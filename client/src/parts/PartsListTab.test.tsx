@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import { SWRConfig } from 'swr'
+import { FlagProvider } from 'toggles/context'
 import { todayIso } from 'utils/export/exportUtils'
 import { exportRows } from 'utils/export/exportUtils'
 import { useAuthStore } from 'utils/store/useAuthStore'
@@ -73,11 +74,13 @@ const mockParts = (content: ReturnType<typeof dummyPart>[], onRequest?: (url: UR
     })
   )
 
-const renderTab = (initialEntry = '/deler') =>
+const renderTab = (initialEntry = '/deler', iso22 = false) =>
   render(
     <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
       <MemoryRouter initialEntries={[initialEntry]}>
-        <Parts />
+        <FlagProvider toggles={[{ name: 'finnhjelpemiddel.iso22', enabled: iso22 }]}>
+          <Parts />
+        </FlagProvider>
       </MemoryRouter>
     </SWRConfig>
   )
@@ -90,6 +93,29 @@ const openExportDialog = async () => {
 afterEach(() => {
   useAuthStore.setState({ loggedInUser: undefined })
   vi.mocked(exportRows).mockClear()
+})
+
+test('ISO22 export uses the active category and requests the active technical DTO version', async () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  const versions: (string | null)[] = []
+  mockParts([dummyPart()], (url) => versions.push(url.searchParams.get('isoVersion')))
+  server.use(
+    http.get('http://localhost:8080/admreg/api/v1/series/series-1', ({ request }) => {
+      versions.push(new URL(request.url).searchParams.get('isoVersion'))
+      return HttpResponse.json({
+        ...seriesDetail('series-1'),
+        isoCategory22: { isoCode: '88 88 88 88', isoTitle: 'ISO22 category' },
+      })
+    })
+  )
+  renderTab('/deler', true)
+  await screen.findByText('Hjul 10 tommer')
+  const dialog = await openExportDialog()
+  fireEvent.click(dialog.getByRole('button', { name: 'Eksporter' }))
+  await waitFor(() => expect(exportRows).toHaveBeenCalledTimes(1))
+  expect(vi.mocked(exportRows).mock.calls[0][0][0]['ISO-kode']).toBe('88888888')
+  expect(versions.length).toBeGreaterThanOrEqual(2)
+  expect(versions.every((version) => version === 'v22')).toBe(true)
 })
 
 test('viser eksporterknappen kun for admin', async () => {

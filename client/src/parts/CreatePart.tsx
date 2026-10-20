@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { draftNewPart } from 'api/PartApi'
 import FormBox from 'felleskomponenter/FormBox'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
+import { isoCategoryFields, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
-import { useIsoCategories, useSuppliers } from 'utils/swr-hooks'
+import { useActiveIsoCategories, useSuppliers } from 'utils/swr-hooks'
 import { PartDraftWithDTO } from 'utils/types/response-types'
 
 import { PackageIcon } from '@navikt/aksel-icons'
@@ -23,7 +24,8 @@ type Error = {
 
 export default function CreatePart() {
   const { setGlobalError } = useErrorStore()
-  const { isoCategories } = useIsoCategories()
+  const { isoCategories } = useActiveIsoCategories()
+  const isoVersion = useIsoVersion()
   const navigate = useNavigate()
   const [title, setTitle] = useState<string>('')
   const [levArtNr, setLevArtNr] = useState<string>('')
@@ -36,6 +38,10 @@ export default function CreatePart() {
   )
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  useEffect(() => {
+    setIsoCategory('')
+    setSelectedOptions([])
+  }, [isoVersion])
 
   const [supplier, setSupplier] = useState<string>('')
 
@@ -73,7 +79,7 @@ export default function CreatePart() {
         if (supplierUUID) {
           const newPart: PartDraftWithDTO = {
             title: title,
-            isoCategory: handleSetFormValueIso(isoCategory),
+            ...isoCategoryFields(handleSetFormValueIso(isoCategory), isoVersion),
             accessory: partType === 'accessory',
             sparePart: partType === 'sparePart',
             supplierId: supplierUUID,
