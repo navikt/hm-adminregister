@@ -19,13 +19,13 @@ test('mapping warning is only visible while the ISO22 flag is enabled', () => {
     </FlagProvider>
   )
   const { rerender } = render(warning(false))
-  expect(screen.queryByText('Kunne ikke koble ISO-kategoriene')).not.toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: /Mangler mapping for ISO-v22/ })).not.toBeInTheDocument()
 
   rerender(warning(true))
-  expect(screen.getByText('Kunne ikke koble ISO-kategoriene')).toBeVisible()
+  expect(screen.getByRole('heading', { name: /Mangler mapping for ISO-v22/ })).toBeVisible()
 
   rerender(warning(false))
-  expect(screen.queryByText('Kunne ikke koble ISO-kategoriene')).not.toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: /Mangler mapping for ISO-v22/ })).not.toBeInTheDocument()
 })
 
 test('toggle changes ordinary category and series cache keys without changing fixed ISO-admin category hooks', async () => {
