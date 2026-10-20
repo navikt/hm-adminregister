@@ -25,6 +25,7 @@ const AdminActions = ({
   setApprovalModalIsOpen,
   setDeleteConfirmationModalIsOpen,
   setSwitchToPartModalIsOpen,
+  setChangeProductTypeModalIsOpen,
   setExpiredSeriesModalIsOpen,
 }: {
   series: SeriesDTO
@@ -33,6 +34,7 @@ const AdminActions = ({
   productIsValid: () => boolean
   setApprovalModalIsOpen: (newState: boolean) => void
   setSwitchToPartModalIsOpen: (newState: boolean) => void
+  setChangeProductTypeModalIsOpen: (newState: boolean) => void
   setDeleteConfirmationModalIsOpen: (newState: boolean) => void
   setExpiredSeriesModalIsOpen: ({
     open,
@@ -132,6 +134,14 @@ const AdminActions = ({
                   disabled={series?.variants.length > 1}
                 >
                   Endre til del {series?.variants.length > 1 ? `(krever at det kun er én variant)` : ''}
+                  <CogRotationIcon aria-hidden />
+                </Dropdown.Menu.List.Item>
+
+                <Dropdown.Menu.List.Item
+                    onClick={() => setChangeProductTypeModalIsOpen(true)}
+                    disabled={series?.variants.length > 1}
+                >
+                  Endre produkttype {series?.variants.length > 1 ? `(krever at det kun er én variant)` : ''}
                   <CogRotationIcon aria-hidden />
                 </Dropdown.Menu.List.Item>
 
