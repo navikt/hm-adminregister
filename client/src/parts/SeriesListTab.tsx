@@ -14,12 +14,9 @@ import { TechnicianSeriesSearchParams, buildTechnicianSeriesSearchPath } from 'p
 import { SeriesList } from 'parts/series/SeriesList'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { fetchAllPages, pageRequestsFor } from 'utils/export/fetchAllPages'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import {
-  usePagedProductsForTechnician,
-  useSeriesByVariantIdentifier,
-  useSuppliers,
-} from 'utils/swr-hooks'
+import { usePagedProductsForTechnician, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
 import { SeriesSearchDTO } from 'utils/types/response-types'
 
 import {
@@ -42,6 +39,7 @@ type Props = {
 }
 
 const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
+  const isoVersion = useIsoVersion()
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const { loggedInUser } = useAuthStore()
@@ -101,7 +99,7 @@ const SeriesListTab = ({ exportOpen, onExportClose }: Props) => {
         )
       : currentPageSeries
     const pageRequests = fetchesAllPages(scope) ? pageRequestsFor(series.length) : 0
-    return getPartsPerSeriesExportRows(series, signal, pageRequests)
+    return getPartsPerSeriesExportRows(series, signal, pageRequests, isoVersion)
   }
 
   const estimateExport = (scope: ExportScope) =>

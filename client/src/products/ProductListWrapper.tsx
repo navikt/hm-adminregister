@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { getSeriesBySeriesId } from 'api/SeriesApi'
 import ErrorAlert from 'error/ErrorAlert'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
+import { useUrlSyncedSearchParam } from 'utils/common-hooks'
+import { toReadableDateTimeString } from 'utils/date-util'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { buildSeriesSearchPath } from 'utils/export/seriesSearchPath'
-import { getSeriesBySeriesId } from 'api/SeriesApi'
-import { toReadableDateTimeString } from 'utils/date-util'
-import { isUUID } from 'utils/string-util'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
-import { useUrlSyncedSearchParam } from 'utils/common-hooks'
-import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers, } from 'utils/swr-hooks'
+import { isUUID } from 'utils/string-util'
+import { fetcherGET, usePagedProducts, useSeriesByVariantIdentifier, useSuppliers } from 'utils/swr-hooks'
 import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/response-types'
 
 import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
@@ -19,9 +20,9 @@ import {
   Box,
   Button,
   Chips,
-  Heading,
   HGrid,
   HStack,
+  Heading,
   Label,
   Pagination,
   Search,
@@ -34,6 +35,7 @@ import {
 import { ProductList } from './ProductList'
 
 const ProductListWrapper = () => {
+  const isoVersion = useIsoVersion()
   const [searchParams, setSearchParams] = useSearchParams()
   const [pageState, setPageState] = useState(Number(searchParams.get('page')) || 1)
   const [supplierFilter, setSupplierFilter] = useState<string>(searchParams.get('supplier') || '')
@@ -108,11 +110,7 @@ const ProductListWrapper = () => {
     missingMediaType,
   }
 
-  const {
-    data: pagedData,
-    isLoading: isLoadingPagedData,
-    error: errorPaged,
-  } = usePagedProducts(productQueryParams)
+  const { data: pagedData, isLoading: isLoadingPagedData, error: errorPaged } = usePagedProducts(productQueryParams)
 
   const navigate = useNavigate()
 
@@ -172,7 +170,10 @@ const ProductListWrapper = () => {
     id: series.id,
   })
 
-  type VariantExportRow = { base: Record<string, unknown>; activeAgreements: SeriesDTO['variants'][number]['agreements'] }
+  type VariantExportRow = {
+    base: Record<string, unknown>
+    activeAgreements: SeriesDTO['variants'][number]['agreements']
+  }
 
   const seriesDetailToVariantRows = (series: SeriesDTO): VariantExportRow[] =>
     (series.variants || []).map((variant) => {
@@ -235,7 +236,7 @@ const ProductListWrapper = () => {
     const batchSize = 20
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize)
-      const seriesInBatch = await Promise.all(batch.map((id) => getSeriesBySeriesId(id)))
+      const seriesInBatch = await Promise.all(batch.map((id) => getSeriesBySeriesId(id, undefined, isoVersion)))
       results.push(...seriesInBatch)
     }
     return results
@@ -289,7 +290,7 @@ const ProductListWrapper = () => {
     const products = seriesByVariantIdentifier
       ? 1
       : scope === 'all'
-        ? pagedData?.totalSize ?? 0
+        ? (pagedData?.totalSize ?? 0)
         : currentPageContent.length
     const variants = Math.round(products * avgVariantsPerProduct)
     const rows = level === 'variant' ? variants : products
@@ -317,11 +318,7 @@ const ProductListWrapper = () => {
     ])
 
   const isUnfilteredExport =
-    exportStatusFilters.length === 0 &&
-    !supplierFilter &&
-    searchTerm === '' &&
-    !missingMediaType &&
-    !agreementFilter
+    exportStatusFilters.length === 0 && !supplierFilter && searchTerm === '' && !missingMediaType && !agreementFilter
 
   useEffect(() => {
     if (pagedData?.totalPages && pagedData?.totalPages < pageState) {

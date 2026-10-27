@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { draftProductVariantV2 } from 'api/ProductApi'
 import { useSeriesV2 } from 'api/SeriesApi'
 import FormBox from 'felleskomponenter/FormBox'
+import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
@@ -18,6 +19,7 @@ import { Button, HStack, TextField, VStack } from '@navikt/ds-react'
 type FormData = z.infer<typeof newProductVariantSchema>
 
 const CreateProductVariant = () => {
+  const isoVersion = useIsoVersion()
   const { loggedInUser } = useAuthStore()
   const { setGlobalError } = useErrorStore()
   const [searchParams] = useSearchParams()
@@ -37,7 +39,7 @@ const CreateProductVariant = () => {
 
   const { data: series } = useSeriesV2(seriesId!)
 
-  const hasTechData = series?.isoCategory || false
+  const hasTechData = isoCategoryOf(series, isoVersion) || false
 
   async function onSubmit(data: FormData) {
     const newVariant: DraftVariantDTO = {
@@ -45,7 +47,7 @@ const CreateProductVariant = () => {
       supplierRef: data.supplierRef,
     }
 
-    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant)
+    draftProductVariantV2(loggedInUser?.isAdmin || false, seriesId!, newVariant, isoVersion)
       .then((product) => {
         const hasTechData = product.productData.techData.length > 0
         if (hasTechData) {

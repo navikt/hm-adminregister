@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Content from 'felleskomponenter/styledcomponents/Content'
 import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
+import { useIsoVersion } from 'utils/iso-version'
 import { labelRequired } from 'utils/string-util'
-import { useIsoCategories } from 'utils/swr-hooks'
+import { useActiveIsoCategories } from 'utils/swr-hooks'
 
 import { Button, Modal, VStack } from '@navikt/ds-react'
 
@@ -18,11 +19,16 @@ type Error = {
 }
 
 const ChangePartToProductModal = ({ isOpen, setIsOpen, onClick }: Props) => {
-  const { isoCategories } = useIsoCategories()
+  const { isoCategories } = useActiveIsoCategories()
+  const isoVersion = useIsoVersion()
   const [isoCategory, setIsoCategory] = useState<string>('')
   const uniqueIsoCodes = isoCategories?.filter((cat) => cat.isoCode && cat.isoCode.length >= 8)
   const isoCodesAndTitles = uniqueIsoCodes?.map((cat) => cat.isoTitle + ' - ' + cat.isoCode).sort()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  useEffect(() => {
+    setIsoCategory('')
+    setSelectedOptions([])
+  }, [isoVersion])
 
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined)
 

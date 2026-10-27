@@ -2,6 +2,7 @@ import { fetchAPI, fetchAPIModify, fetchPostFiles, getPath } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import { FileUpload } from 'felleskomponenter/UploadModal'
 import useSWR from 'swr'
+import { IsoVersion, useIsoVersion, withIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { fetcherGET } from 'utils/swr-hooks'
 import {
@@ -24,9 +25,13 @@ export const requestApproval = async (seriesUUID: string): Promise<void> => {
   return await fetchAPIModify(getPath(false, `/api/v1/series/request-approval/${seriesUUID}`), 'PUT')
 }
 
-export const getSeriesBySeriesId = async (seriesUUID: string, signal?: AbortSignal): Promise<SeriesDTO> => {
+export const getSeriesBySeriesId = async (
+  seriesUUID: string,
+  signal?: AbortSignal,
+  isoVersion: IsoVersion = 'v16'
+): Promise<SeriesDTO> => {
   const seriesIdPath = `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`
-  return await fetchAPI(seriesIdPath, 'GET', undefined, signal)
+  return await fetchAPI(withIsoVersion(seriesIdPath, isoVersion), 'GET', undefined, signal)
 }
 
 export const getSeriesByVariantId = async (variantId: string): Promise<SeriesSearchDTO> => {
@@ -59,9 +64,10 @@ export const changeMainProductToPart = async (
   seriesUUID: string,
   accessory: boolean,
   newIsoCode: string,
-  resetTechnicalData: boolean
+  resetTechnicalData: boolean,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<void> => {
-  return await fetchAPIModify(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), 'PUT', {
+  return await fetchAPIModify(withIsoVersion(getPath(true, `/api/v1/series/toPart/${seriesUUID}`), isoVersion), 'PUT', {
     accessory: accessory,
     newIsoCode: newIsoCode,
     resetTechnicalData: resetTechnicalData,
@@ -115,18 +121,26 @@ export const deleteSeries = async (seriesUUID: string, isPublished: boolean): Pr
 }
 
 export function useSeriesV2(seriesUUID: string) {
-  return useSWR<SeriesDTO>(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, fetcherGET)
+  const isoVersion = useIsoVersion()
+  return useSWR<SeriesDTO>(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, isoVersion),
+    fetcherGET
+  )
 }
 
 export function useSeriesV2Conditional(seriesUUID?: string) {
+  const isoVersion = useIsoVersion()
   const loggedInUser = useAuthStore().loggedInUser
   if (loggedInUser?.isHmsUser) {
     return useSWR<SeriesDTO>(
-      seriesUUID ? `${HM_REGISTER_URL()}/admreg/hms/api/v1/series/${seriesUUID}` : null,
+      seriesUUID ? withIsoVersion(`${HM_REGISTER_URL()}/admreg/hms/api/v1/series/${seriesUUID}`, isoVersion) : null,
       fetcherGET
     )
   } else {
-    return useSWR<SeriesDTO>(seriesUUID ? `${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}` : null, fetcherGET)
+    return useSWR<SeriesDTO>(
+      seriesUUID ? withIsoVersion(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, isoVersion) : null,
+      fetcherGET
+    )
   }
 }
 
@@ -148,10 +162,18 @@ const renameFiles = (uploads: FileUpload[]) =>
       : it
   )
 
-const updateSeries = async (seriesUUID: string, update: UpdateSeriesRegistrationDTO): Promise<void> => {
+const updateSeries = async (
+  seriesUUID: string,
+  update: UpdateSeriesRegistrationDTO,
+  isoVersion: IsoVersion = 'v16'
+): Promise<void> => {
   const nullUpdate: UpdateSeriesRegistrationDTO = { title: null, text: null, keywords: null, url: null }
   const toUpdate: UpdateSeriesRegistrationDTO = { ...nullUpdate, ...update }
-  return await fetchAPIModify(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, 'PATCH', toUpdate)
+  return await fetchAPIModify(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/api/v1/series/${seriesUUID}`, isoVersion),
+    'PATCH',
+    toUpdate
+  )
 }
 
 export const updateProductTitle = async (seriesUUID: string, productTitle: string): Promise<void> =>
@@ -160,8 +182,17 @@ export const updateProductTitle = async (seriesUUID: string, productTitle: strin
 export const updateProductIsoCategory = async (
   seriesUUID: string,
   isoCategory: string,
-  resetTechnicalData: boolean
-): Promise<void> => updateSeries(seriesUUID, { isoCategory: isoCategory, resetTechnicalData: resetTechnicalData })
+  resetTechnicalData: boolean,
+  isoVersion: IsoVersion = 'v16'
+): Promise<void> =>
+  updateSeries(
+    seriesUUID,
+    {
+      [isoVersion === 'v22' ? 'isoCategory22' : 'isoCategory']: isoCategory,
+      resetTechnicalData,
+    },
+    isoVersion
+  )
 
 export const updateProductDescription = async (seriesUUID: string, productDescription: string): Promise<void> =>
   updateSeries(seriesUUID, { text: productDescription })

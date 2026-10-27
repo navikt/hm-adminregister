@@ -8,7 +8,12 @@ import {
   updatePart,
   usePartByProductId,
 } from 'api/PartApi'
-import { deleteSeries, setPublishedSeriesToDraft, useSeriesV2Conditional } from 'api/SeriesApi'
+import {
+  deleteSeries,
+  setPublishedSeriesToDraft,
+  updateProductIsoCategory,
+  useSeriesV2Conditional,
+} from 'api/SeriesApi'
 import { HM_REGISTER_URL } from 'environments'
 import ErrorAlert from 'error/ErrorAlert'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
@@ -19,9 +24,12 @@ import ImagesTab from 'parts/ImagesTab'
 import { RequestApprovalModal } from 'parts/RequestApprovalModal'
 import { SeriesCompabilityTab } from 'parts/compatibility/SeriesCompabilityTab'
 import { VariantCompabilityTab } from 'parts/compatibility/VariantCompabilityTab'
+import ChangeISOCategoryModal from 'products/ChangeISOCategoryModal'
+import { IsoMappingWarning } from 'products/IsoMappingWarning'
 import styles from 'products/ProductPage.module.scss'
 import StatusPanel from 'products/StatusPanel'
 import { numberOfImages } from 'products/seriesUtils'
+import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
@@ -32,6 +40,7 @@ import {
   Link as AkselLink,
   BodyShort,
   Box,
+  Button,
   HGrid,
   Heading,
   Label,
@@ -44,6 +53,7 @@ import {
 } from '@navikt/ds-react'
 
 const Part = () => {
+  const isoVersion = useIsoVersion()
   const { productId } = useParams()
   const navigate = useNavigate()
 
@@ -67,6 +77,7 @@ const Part = () => {
   const [confirmApproveModalIsOpen, setConfirmApproveModalIsOpen] = useState<boolean>(false)
   const [deleteConfirmationModalIsOpen, setDeleteConfirmationModalIsOpen] = useState(false)
   const [switchToProductModalIsOpen, setSwitchToProductModalIsOpen] = useState(false)
+  const [changeIsoCategoryModalIsOpen, setChangeIsoCategoryModalIsOpen] = useState(false)
 
   const handleSaveName = (name: string) => {
     const updatePartDto: UpdatePartDTO = {
@@ -166,7 +177,7 @@ const Part = () => {
 
   async function onSwitchToProduct(newIsoCode: string) {
     setSwitchToProductModalIsOpen(false)
-    changePartToMainProduct(series!.id, newIsoCode)
+    changePartToMainProduct(series!.id, newIsoCode, isoVersion)
       .then(() => {
         mutateSeries()
         sessionStorage.removeItem('approvalListPath')
@@ -181,6 +192,17 @@ const Part = () => {
 
   return (
     <main className="show-menu">
+      <ChangeISOCategoryModal
+        isPart
+        isOpen={changeIsoCategoryModalIsOpen}
+        setIsOpen={setChangeIsoCategoryModalIsOpen}
+        onClick={(code, reset) => {
+          setChangeIsoCategoryModalIsOpen(false)
+          updateProductIsoCategory(series.id, code, reset, isoVersion)
+            .then(() => Promise.all([mutateSeries(), mutatePart()]))
+            .catch((error) => setGlobalError(error.status, error.message))
+        }}
+      />
       <ConfirmModal
         title={'Vil du sette delen i redigeringsmodus?'}
         confirmButtonText={'OK'}
@@ -312,8 +334,16 @@ const Part = () => {
                 <VStack>
                   <Label>ISO-kategori</Label>
                   <BodyShort>
-                    {series.isoCategory ? `${series.isoCategory?.isoTitle} (${series.isoCategory?.isoCode})` : 'Ingen'}
+                    {isoCategoryOf(series, isoVersion)
+                      ? `${isoCategoryOf(series, isoVersion)?.isoTitle} (${isoCategoryOf(series, isoVersion)?.isoCode})`
+                      : 'Ingen'}
                   </BodyShort>
+                  {series.isoMappingWarning && <IsoMappingWarning iso16={series.isoCategory?.isoCode} />}
+                  {isEditable && (
+                    <Button variant="tertiary" onClick={() => setChangeIsoCategoryModalIsOpen(true)}>
+                      Endre ISO-kategori
+                    </Button>
+                  )}
                 </VStack>
 
                 {isAdminOrHmsUser && (

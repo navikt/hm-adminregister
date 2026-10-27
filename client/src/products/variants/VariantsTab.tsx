@@ -1,15 +1,16 @@
-import React, { useEffect, useImperativeHandle, useState, forwardRef } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { bulkUpdateTechData, deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
 import { moveProductsToSeries } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
-import CopyTechDataValueModal from 'products/variants/CopyTechDataValueModal'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
-import { buildDefaultFileName } from 'utils/export/exportUtils'
+import CopyTechDataValueModal from 'products/variants/CopyTechDataValueModal'
 import MoveProductVariantsModal from 'products/variants/MoveProductVariantsModal'
 import TechDataFieldControl from 'products/variants/TechDataFieldControl'
 import { useTechDataChanges } from 'products/variants/useTechDataChanges'
+import { buildDefaultFileName } from 'utils/export/exportUtils'
+import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
@@ -23,8 +24,8 @@ import {
   ArrowsSquarepathIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  FilesIcon,
   FileExportIcon,
+  FilesIcon,
   MenuElipsisHorizontalCircleIcon,
   PencilIcon,
   PlusCircleIcon,
@@ -38,8 +39,8 @@ import {
   Box,
   Button,
   Dropdown,
-  HelpText,
   HStack,
+  HelpText,
   Pagination,
   Search,
   Table,
@@ -52,8 +53,8 @@ import styles from '../ProductPage.module.scss'
 
 const helpTextWorksWith = (
   <BodyLong>
-    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som er satt opp i samråd med leverandører og fageksperter.
-    Koblinger kan kun redigeres av Nav, ved spørsmål kontakt{' '}
+    Hjelpemiddelet virker sammen med disse opplistede hjelpemidlene som er satt opp i samråd med leverandører og
+    fageksperter. Koblinger kan kun redigeres av Nav, ved spørsmål kontakt{' '}
     <a href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</a>
     <br />
     <br />
@@ -85,6 +86,7 @@ interface VariantsTabProps {
 }
 
 const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, showInputError, mutateSeries }, ref) => {
+  const isoVersion = useIsoVersion()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -215,7 +217,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
 
     setTechDataIsSaving(true)
     setTechDataSaveError(undefined)
-    bulkUpdateTechData(bulkUpdateDTO)
+    bulkUpdateTechData(bulkUpdateDTO, isoVersion)
       .then((result) => {
         const savedProductIds = result.updated.map((product) => product.id!)
         techDataChanges.clearForProducts(savedProductIds)
@@ -362,7 +364,6 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
     setPageState(clamped)
   }
 
-
   useEffect(() => {
     if (totalPages > 0 && pageState > totalPages) {
       goToPage(totalPages)
@@ -381,7 +382,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
       <MoveProductVariantsModal
         seriesId={series.id}
         variants={series.variants}
-        seriesFromIso={series.isoCategory?.isoCode ?? ''}
+        seriesFromIso={isoCategoryOf(series, isoVersion)?.isoCode ?? ''}
         onClick={onMoveProductVariantToOtherSeries}
         onClose={() => setMoveProductVariantModalIsOpen(false)}
         isModalOpen={moveProductVariantModalIsOpen}
@@ -690,9 +691,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                         {paginatedVariants.map((product, i) => {
                           const field = techDataFieldFor(product, key)
                           if (!techDataEditMode) {
-                            return (
-                              <Table.DataCell key={`${key}-${i}`}>{techValue(product, key) || '-'}</Table.DataCell>
-                            )
+                            return <Table.DataCell key={`${key}-${i}`}>{techValue(product, key) || '-'}</Table.DataCell>
                           }
                           if (!field) {
                             return (
@@ -744,12 +743,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                 </Table>
               </div>
               {totalPages > 1 && (
-                <Pagination
-                  page={pageState}
-                  onPageChange={goToPage}
-                  count={totalPages}
-                  size="small"
-                />
+                <Pagination page={pageState} onPageChange={goToPage} count={totalPages} size="small" />
               )}
               {techDataEditMode && (
                 <HStack justify="space-between" align="center" gap="space-16" wrap>

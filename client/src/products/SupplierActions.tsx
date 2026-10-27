@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { exportProducts } from 'api/ImportExportApi'
 import { MIME_TYPE_XLSX } from 'utils/file-util'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { SeriesDTO } from 'utils/types/response-types'
 
@@ -32,6 +33,7 @@ const SupplierActions = ({
   setEditProductModalIsOpen: (newState: boolean) => void
 }) => {
   const isEditable = series.status === 'EDITABLE'
+  const isoVersion = useIsoVersion()
   const canSetExpiredStatus = series.status === 'EDITABLE' && series.isPublished
   const canSetToEditMode = series.status !== 'EDITABLE'
   const isPendingApproval = series.status === 'PENDING_APPROVAL'
@@ -39,7 +41,7 @@ const SupplierActions = ({
   const navigate = useNavigate()
 
   const exportProductsForSupplier = () => {
-    exportProducts(loggedInUser?.isAdmin || false, series.id).then((response) => {
+    exportProducts(loggedInUser?.isAdmin || false, series.id, isoVersion).then((response) => {
       const bytes = new Uint8Array(response) // pass your byte response to this constructor
       const blob = new Blob([bytes], { type: MIME_TYPE_XLSX })
       const url = window.URL.createObjectURL(blob)

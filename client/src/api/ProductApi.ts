@@ -1,6 +1,7 @@
 import { fetchAPI, fetchAPIModify, getPath, httpDelete } from 'api/fetch'
 import { HM_REGISTER_URL } from 'environments'
 import useSWR from 'swr'
+import { IsoVersion, useIsoVersion, withIsoVersion } from 'utils/iso-version'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import {
   BulkTechDataUpdateDTO,
@@ -17,28 +18,43 @@ export const getProductByHmsNr = (hmsArtNr: string): Promise<ProductRegistration
 export const getProductByVariantId = (variantId: string): Promise<ProductRegistrationDTO> =>
   fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/variant-id/${variantId}`, 'GET')
 
-export const getProductById = async (productId: string, isAdmin: boolean): Promise<ProductRegistrationDTOV2> => {
-  return fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${productId}`), 'GET')
+export const getProductById = async (
+  productId: string,
+  isAdmin: boolean,
+  isoVersion: IsoVersion = 'v16'
+): Promise<ProductRegistrationDTOV2> => {
+  return fetchAPI(withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/${productId}`), isoVersion), 'GET')
 }
 
 export const updateProductVariant = async (
   isAdmin: boolean,
   id: string,
-  updatedProduct: UpdateProductRegistrationDTO
+  updatedProduct: UpdateProductRegistrationDTO,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<ProductRegistrationDTOV2> =>
-  fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/${id}`), 'PUT', updatedProduct)
+  fetchAPI(withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/${id}`), isoVersion), 'PUT', updatedProduct)
 
 export const bulkUpdateTechData = async (
-  bulkUpdateDTO: BulkTechDataUpdateDTO
+  bulkUpdateDTO: BulkTechDataUpdateDTO,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<BulkTechDataUpdateResultDTO> =>
-  fetchAPI(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/tech-data/bulk`, 'PUT', bulkUpdateDTO)
+  fetchAPI(
+    withIsoVersion(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/tech-data/bulk`, isoVersion),
+    'PUT',
+    bulkUpdateDTO
+  )
 
 export const draftProductVariantV2 = async (
   isAdmin: boolean,
   seriesUUID: string,
-  newVariant: DraftVariantDTO
+  newVariant: DraftVariantDTO,
+  isoVersion: IsoVersion = 'v16'
 ): Promise<ProductRegistrationDTOV2> => {
-  return await fetchAPI(getPath(isAdmin, `/api/v1/product/registrations/draftWithV3/${seriesUUID}`), 'POST', newVariant)
+  return await fetchAPI(
+    withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/draftWithV3/${seriesUUID}`), isoVersion),
+    'POST',
+    newVariant
+  )
 }
 
 const deleteDraftProducts = async (isAdmin: boolean, productIds: string[]): Promise<any> => {
@@ -66,9 +82,10 @@ export const setVariantToActive = async (id: string, isAdmin: boolean): Promise<
 }
 
 export function useProductVariantsByProductIds(productIds?: string[]) {
+  const isoVersion = useIsoVersion()
   const { setGlobalError } = useErrorStore()
 
-  const url = `${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`
+  const url = withIsoVersion(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/ids`, isoVersion)
   const shouldFetch = Array.isArray(productIds) && productIds.length > 0
 
   const {

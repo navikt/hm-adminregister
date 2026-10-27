@@ -4,6 +4,7 @@ import { importProducts } from 'api/ImportExportApi'
 import { Upload } from 'felleskomponenter/FellesImport'
 import { ProductSeriesInfo } from 'products/import/valideringsside/ProductSeriesInfo'
 import { VariantsTable } from 'products/import/valideringsside/VariantsTable'
+import { useIsoVersion } from 'utils/iso-version'
 import { mapProductRegistrationDTOToProduct } from 'utils/product-util'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { baseUrl } from 'utils/swr-hooks'
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, seriesTitle }: Props) => {
+  const isoVersion = useIsoVersion()
   const { loggedInUser } = useAuthStore()
   const [productsToValidate, setProductsToValidate] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -31,9 +33,9 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
 
   const importerDryrun = () => {
     setIsLoading(true)
-    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, true)
+    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, true, isoVersion)
       .then((response) => {
-        const products = mapProductRegistrationDTOToProduct(response)
+        const products = mapProductRegistrationDTOToProduct(response, isoVersion)
         setProductsToValidate(products)
         setIsLoading(false)
       })
@@ -46,9 +48,9 @@ export const ValidateImportedProducts = ({ upload, reseetUpload, seriesId, serie
   const importer = () => {
     setIsLoading(true)
 
-    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, false)
+    importProducts(loggedInUser?.isAdmin || false, seriesId, upload, false, isoVersion)
       .then((response) => {
-        const products = mapProductRegistrationDTOToProduct(response)
+        const products = mapProductRegistrationDTOToProduct(response, isoVersion)
         setProductsToValidate(products)
         setIsLoading(false)
         setImportSuccessful(true)

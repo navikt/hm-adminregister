@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import { IsoVersion } from 'utils/iso-version'
 import { Product } from 'utils/types/types'
 
 import { MediaDTO, MediaInfo, ProductRegistrationDTO, ProductRegistrationDTOV2, TechData } from './types/response-types'
@@ -37,7 +38,10 @@ export function getAllUniqueTechDataKeys(products: ProductRegistrationDTOV2[]): 
   return Array.from(uniqueKeys)
 }
 
-export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: ProductRegistrationDTO[]): Product[] => {
+export const mapProductRegistrationDTOToProduct = (
+  productRegistrationDtos: ProductRegistrationDTO[],
+  isoVersion: IsoVersion = 'v16'
+): Product[] => {
   const groupedBySeries = _.groupBy(productRegistrationDtos, 'seriesUUID')
 
   const mappedProducts: Product[] = []
@@ -64,7 +68,7 @@ export const mapProductRegistrationDTOToProduct = (productRegistrationDtos: Prod
             : '',
         },
         compareData: { techDataRange: {}, agreementRank: null },
-        isoCategory: firstProduct.isoCategory,
+        isoCategory: isoVersion === 'v22' ? (firstProduct.isoCategory22 ?? '') : firstProduct.isoCategory,
         isoCategoryText: '',
         isoCategoryTitle: '',
         sparepart: firstProduct.sparePart,
