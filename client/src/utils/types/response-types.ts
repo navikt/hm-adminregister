@@ -60,6 +60,11 @@ export type MediaDTO = components['schemas']['MediaDTO']
 export type MediaInfo = components['schemas']['MediaInfo']
 export type MediaInfoDTO = components['schemas']['MediaInfoDTO']
 export type MediaSort = components['schemas']['MediaSort']
+export type MainPartAccessoryDTO = {
+  main: boolean
+  part: boolean
+  accessory: boolean
+}
 export type SeriesDraftWithDTO = components['schemas']['SeriesDraftWithDTO'] & { isoCategory22?: string }
 export type DraftVariantDTO = components['schemas']['DraftVariantDTO']
 export type PartDraftWithDTO = components['schemas']['PartDraftWithDTO'] & { isoCategory22?: string }

@@ -9,6 +9,7 @@ import {
   DeleteDocumentUrl,
   DocumentUrl,
   FileTitleDto,
+  MainPartAccessoryDTO,
   MediaSort,
   NewDocumentUrl,
   NewVideo,
@@ -76,6 +77,9 @@ export const changeMainProductToPart = async (
 export const rejectSeries = async (seriesUUID: string, rejectSeriesDTO: RejectSeriesDTO): Promise<void> => {
   return await fetchAPIModify(getPath(true, `/api/v1/series/reject-v2/${seriesUUID}`), 'PUT', rejectSeriesDTO)
 }
+
+export const updateProductMainPartAccessory = async (seriesUUID: string, flags: MainPartAccessoryDTO): Promise<void> =>
+  await fetchAPIModify(getPath(true, `/api/v1/series/mpa/${seriesUUID}`), 'PUT', flags)
 
 export const draftNewSeries = async (
   seriesDraftWith: SeriesDraftWithDTO,
