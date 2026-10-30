@@ -60,7 +60,7 @@ const AboutTabKeywords = ({ series, mutateSeries, isEditable }: Props) => {
         <Heading level="2" size="xsmall">
           Nøkkelord
         </Heading>
-        <BodyShort>Stikkord som kan søkes på i søket til FinnHjelpemiddel</BodyShort>
+        <BodyShort>Nøkkelord gjør det enklere å få treff i søkefunksjonen på FinnHjelpemiddel</BodyShort>
         {!showEditKeywordsMode && (
           <>
             <HStack gap="space-16">

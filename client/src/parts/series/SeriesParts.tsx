@@ -68,12 +68,12 @@ export const SeriesParts = ({ seriesId }: SeriesPartsProps) => {
               setNewCompatibleProductModalIsOpen(true)
             }}
           >
-            Legg til deler i serien
+            Koble del til produkt
           </Button>
           {seriesParts.length === 0 && (
             <Box padding="space-8">
               <Heading level="1" size="xsmall">
-                Ingen deler i serien
+                Ingen deler koblet til produkt
               </Heading>
             </Box>
           )}
