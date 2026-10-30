@@ -32,6 +32,20 @@ const Parts = () => {
         <Heading level="1" size="large" spacing>
           Deler
         </Heading>
+        <VStack gap="space-8">
+          <BodyLong>
+            Deler er ikke fullverdige hjelpemidler og løser ikke et definert behov i seg selv. Deler deles inn i
+            tilbehør eller reservedeler.
+          </BodyLong>
+          <BodyLong>
+            Tilbehør: Del som endrer produktets funksjon eller egenskaper, og som kan monteres på eller erstatte en del
+            av produktet.
+          </BodyLong>
+          <BodyLong>
+            Reservedeler: Del som ikke endrer produktets funksjon, men som erstatter en utslitt eller ødelagt del som
+            produktet opprinnelig består av.
+          </BodyLong>
+        </VStack>
         <AlertWithCloseButton variant={'warning'} alertId={'tilbReadyAlert'}>
           <Heading size={'small'}>Informasjon om deler</Heading>
           <BodyLong>

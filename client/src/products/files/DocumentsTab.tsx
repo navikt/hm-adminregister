@@ -107,8 +107,7 @@ const DocumentsTab = ({ series, isEditable, showInputError }: Props) => {
           <Heading size="small">Dokumenter</Heading>
           {allPdfsSorted.length === 0 && (
             <Alert variant={showInputError ? 'error' : 'info'}>
-              Produktet har ingen dokumenter. Her kan man for eksempel legge med brosjyre, bruksanvisning eller
-              sprengskisse til produktet.
+              Legg til nødvendige dokumenter til produktet, f.eks. brosjyre, bruksanvisning eller sprengskisse.
             </Alert>
           )}
 
@@ -204,8 +203,8 @@ const DocumentUrlRequirementBox = () => (
     <Heading spacing size="small" level="2">
       Krav til lenke
     </Heading>
-    <BodyLong>- Skal ikke benyttes til leverandørens produktside/nettbutikk</BodyLong>
-    <BodyLong>- Skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse</BodyLong>
+    <BodyLong>- skal ikke benyttes til leverandørens produktside/nettbutikk</BodyLong>
+    <BodyLong>- skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse</BodyLong>
   </Alert>
 )
 
