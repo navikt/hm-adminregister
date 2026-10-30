@@ -54,15 +54,16 @@ export default function CreatePart() {
     const isoError = !isoCategory || isoCategory === ''
     const supplierError = !supplier || supplier === ''
     const hmsNrError = !hmsArtNr || hmsArtNr === ''
+    const levArtNrError = !levArtNr || levArtNr === ''
     setFieldError({
       titleErrorMessage: titleError ? 'Du må skrive en tittel' : undefined,
       isoCodeErrorMessage: isoError ? 'Du må velge en iso-kategori' : undefined,
       supplierErrorMessage: supplierError ? 'Du må velge en leverandør' : undefined,
       hmsNrErrorMessage: hmsNrError ? 'Du må skrive inn HMS-nr' : undefined,
-      levArtNrErrorMessage: !levArtNr || levArtNr === '' ? 'Du må skrive inn Lev-artnr' : undefined,
+      levArtNrErrorMessage: levArtNrError ? 'Du må skrive inn Lev-artnr' : undefined,
     })
 
-    return !(titleError || isoError)
+    return !(titleError || isoError || levArtNrError)
   }
 
   async function onSubmit() {
@@ -138,11 +139,22 @@ export default function CreatePart() {
     <FormBox title="Opprett ny del" icon={<PackageIcon />}>
       <VStack gap="space-16">
         <RadioGroup legend="" onChange={setPartType} value={partType}>
-          <Radio value="sparePart">Reservedel</Radio>
-          <Radio value="accessory">Tilbehør</Radio>
+          <Radio
+            value="sparePart"
+            description="Del som ikke endrer produktets funksjon, men som erstatter en utslitt eller ødelagt del som produktet opprinnelig består av."
+          >
+            Reservedel
+          </Radio>
+          <Radio
+            value="accessory"
+            description="Del som endrer produktets funksjon eller egenskaper, og som kan monteres på eller erstatte en del av produktet."
+          >
+            Tilbehør
+          </Radio>
         </RadioGroup>
         <TextField
-          label={labelRequired('Delens navn')}
+          label="Delens navn"
+          description="Delens navn må inneholde navn på hjelpemiddelet det passer til."
           id="productName"
           name="productName"
           type="text"
@@ -164,7 +176,7 @@ export default function CreatePart() {
           />
         )}
         <TextField
-          label={labelRequired('Lev-artnr')}
+          label="Lev-artnr"
           id="levArtNr"
           name="levArtNr"
           type="text"
@@ -174,7 +186,7 @@ export default function CreatePart() {
           error={fieldError?.levArtNrErrorMessage ?? ''}
         />
         <IsoComboboxProvider
-          label={labelRequired('Iso-kategori (kode)')}
+          label="ISO-kategori"
           description={'Søk etter isokategori delen passer best inn i'}
           selectedOptions={selectedOptions}
           options={isoCodesAndTitles || []}

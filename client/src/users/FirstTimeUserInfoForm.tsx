@@ -159,8 +159,8 @@ const FirstTimeUserInfoForm = ({
         <TextField
           {...register('newPassword', { required: true })}
           aria-required
-          label={labelRequired('Lag ett passord')}
-          description="Minst 8 karakterer langt"
+          label={labelRequired('Lag et passord')}
+          description="Minimum 8 tegn"
           type="password"
           name="newPassword"
           placeholder="********"
