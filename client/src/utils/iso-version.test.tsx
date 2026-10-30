@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react'
 
 import { updateProductIsoCategory, useSeriesV2 } from 'api/SeriesApi'
+import { unleashHandler } from 'mocks/handlers/unleashHandler'
 import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import { IsoMappingWarning } from 'products/IsoMappingWarning'
@@ -11,6 +12,16 @@ import { useActiveIsoCategories, useIsoCategories, useIsoCategories22 } from 'ut
 import { expect, test } from 'vitest'
 
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react'
+
+test('local feature flags default to ISO16 for the Docker backend', async () => {
+  server.use(...unleashHandler)
+  const response = await fetch(
+    new URL('/adminregister/features?feature=finnhjelpemiddel.iso22', window.location.origin)
+  )
+
+  expect(response.ok).toBe(true)
+  expect(await response.json()).toMatchObject({ 'finnhjelpemiddel.iso22': false })
+})
 
 test('mapping warning is only visible while the ISO22 flag is enabled', () => {
   const warning = (enabled: boolean) => (

@@ -185,7 +185,7 @@ const AdminDashboard = () => {
       <main className="show-menu">
         <VStack gap="space-8" style={{ maxWidth: '75rem' }}>
           <Heading level="1" size="large" spacing>
-            Admin dashboard
+            Oversikt
           </Heading>
           {(approveError || partsError || newsError) && (
             <Alert variant="error">Kunne ikke hente alle tall. Last siden på nytt eller prøv senere.</Alert>

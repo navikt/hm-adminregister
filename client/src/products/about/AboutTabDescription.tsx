@@ -97,10 +97,9 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
         {showEditDescriptionMode && (
           <>
             <BodyShort as="div" textColor="subtle">
-              Beskrivelsen vises på produktsiden og bør:
+              Beskrivelsen skal:
               <ul>
                 <li>Være mellom 100 og 750 tegn</li>
-                <li>Ikke inneholde tekniske data, for eksempel. “Totalvekt i str. 42x40”</li>
                 <li>Ha en nøytral språkstil uten markedsføringsuttrykk</li>
               </ul>
             </BodyShort>

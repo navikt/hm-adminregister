@@ -127,21 +127,56 @@ describe('Produktside', () => {
     expect(await screen.findByRole('button', { name: approvalButton })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: changeDescriptionButton })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: changeKeywordButton })).toBeInTheDocument()
+    expect(
+      screen.getByText('Nøkkelord gjør det enklere å få treff i søkefunksjonen på FinnHjelpemiddel')
+    ).toBeInTheDocument()
 
-    fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+    fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
     expect(await screen.findByRole('button', { name: addVariantButton })).toBeInTheDocument()
+    const variantGuidance = screen.getByRole('tabpanel')
+    expect(within(variantGuidance).getAllByRole('listitem')).toHaveLength(6)
+    expect(within(variantGuidance).getAllByRole('list')).toHaveLength(2)
+    expect(within(variantGuidance).getByText('Størrelse')).toBeInTheDocument()
+    expect(within(variantGuidance).getByText('Farge')).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText('Andre egenskaper som ikke påvirker produktets funksjon')
+    ).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText(
+        'Hvis produktet kun har én variant, skal variantnavnet være identisk med produktnavnet.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText(
+        'Hvis produktet har flere varianter, skal variantnavnet tydelig beskrive det som skiller variantene fra hverandre.'
+      )
+    ).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Bilder/ }))
     expect(await screen.findByRole('button', { name: addImagesButton })).toBeInTheDocument()
+    expect(within(screen.getByRole('tabpanel')).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'vise produkter slik de leveres',
+      'være høyoppløselige',
+      'ha produktet i fokus',
+      'ikke ha svart bakgrunn',
+    ])
+    expect(screen.queryByText(/Dra i bildene eller trykk på pilene/)).not.toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Dokumenter/ }))
     expect(await screen.findByRole('button', { name: addDocumentsButton })).toBeInTheDocument()
+    expect(
+      screen.getByText('Legg til nødvendige dokumenter til produktet, f.eks. brosjyre, bruksanvisning eller sprengskisse.')
+    ).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Videolenker/ }))
     expect(await screen.findByRole('button', { name: addVideoButton })).toBeInTheDocument()
+    expect(
+      screen.queryByText('Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.')
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Krav til video' })).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
   }, 15000)
 
@@ -169,7 +204,7 @@ describe('Produktside', () => {
     expect(screen.queryByRole('button', { name: changeDescriptionButton })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: changeKeywordButton })).not.toBeInTheDocument()
 
-    fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+    fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
     expect(screen.queryByRole('button', { name: addVariantButton })).not.toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Bilder/ }))
@@ -410,7 +445,7 @@ describe('Bred visning', () => {
       )
 
       await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
-      fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+      fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
 
       await waitFor(() => expect(visibleVariantNames()).toContain('Variant 6'))
       expect(visibleVariantNames()).toContain('Variant 10')
@@ -455,7 +490,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger spesifikasjoner på flere varianter' }))
     expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
@@ -466,7 +501,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     await waitFor(() =>
       expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument()
     )
-    expect(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Rediger spesifikasjoner på flere varianter' })).toBeInTheDocument()
   })
 
   test('beholder redigeringsmodus og ulagrede endringer naar publisering feiler', async () => {
@@ -502,7 +537,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger spesifikasjoner på flere varianter' }))
     expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
@@ -514,7 +549,6 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     // they don't have to redo their edits after a transient publish failure.
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(screen.getByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rediger spesifikasjoner på flere varianter' })).not.toBeInTheDocument()
   })
 })
-

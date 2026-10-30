@@ -86,7 +86,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
             <div className="line" />
             <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
               <FileCheckmarkFillIcon fontSize="1.5rem" aria-hidden />
-              <span>Dashboard</span>
+              <span>Oversikt</span>
             </HStack>
           </NavLink>
           <NavLink to="/rammeavtaler" className="page-link">
@@ -114,7 +114,7 @@ const NavigationLinks = ({ menuOpen }: { menuOpen: boolean }) => {
           <div className="line" />
           <HStack gap="space-8" style={{ paddingLeft: '16px' }}>
             <PersonGroupIcon fontSize="1.5rem" aria-hidden />
-            <span>Dashboard</span>
+            <span>Oversikt</span>
           </HStack>
         </NavLink>
       )}

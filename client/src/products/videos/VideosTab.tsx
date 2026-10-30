@@ -46,10 +46,6 @@ const VideoTab = ({
   return (
     <Tabs.Panel value="videos" className={styles.tabPanel}>
       <VStack gap="space-16">
-        {videos.length === 0 && (
-          <Alert variant="info">Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.</Alert>
-        )}
-
         <VideoRequirementBox />
 
         {videos.length > 0 && (

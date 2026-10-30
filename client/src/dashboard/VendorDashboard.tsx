@@ -135,7 +135,7 @@ const VendorDashboard = () => {
           <HStack gap="space-16" align="start" justify="space-between">
             <VStack gap="space-2">
               <Heading level="1" size="large" spacing>
-                Dashboard
+                Oversikt
               </Heading>
               <Button
                 variant="secondary"
@@ -168,7 +168,7 @@ const VendorDashboard = () => {
                   {productsToApproveCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall produkter som venter på godkjenning fra HMS-bruker.</BodyShort>
+              <BodyShort size="small">Antall produkter som venter på godkjenning fra administrator i Nav.</BodyShort>
             </Box>
 
             <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
@@ -188,7 +188,7 @@ const VendorDashboard = () => {
                   {rejectedProductsCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall produkter som er avslått av HMS-bruker.</BodyShort>
+              <BodyShort size="small">Antall produkter som er avslått av administrator i Nav.</BodyShort>
             </Box>
           </HStack>
           <Heading level="2" size="medium" style={{ marginTop: '2rem' }}>
@@ -212,7 +212,7 @@ const VendorDashboard = () => {
                   {mainProductsOnAgreementCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall produkter som er på en rammeavtale og mangler bilde.</BodyShort>
+              <BodyShort size="small">Antall produkter som er på rammeavtale og mangler bilde.</BodyShort>
             </Box>
             <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
               <Heading level="3" size="small">
@@ -256,7 +256,7 @@ const VendorDashboard = () => {
                   {mainProductsWithoutVideoOnAgreementCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall produkter som er på en rammeavtale og mangler video.</BodyShort>
+              <BodyShort size="small">Antall produkter som er på rammeavtale og mangler video.</BodyShort>
             </Box>
 
             <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
@@ -301,7 +301,7 @@ const VendorDashboard = () => {
                   {partsOnAgreementCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall tilbehør som er på en rammeavtale og mangler bilde.</BodyShort>
+              <BodyShort size="small">Antall tilbehør som er på rammeavtale og mangler bilde.</BodyShort>
             </Box>
 
             <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>
@@ -346,7 +346,7 @@ const VendorDashboard = () => {
                   {sparePartsOnAgreementCount}
                 </Heading>
               )}
-              <BodyShort size="small">Antall reservedeler som er på en rammeavtale og mangler bilde.</BodyShort>
+              <BodyShort size="small">Antall reservedeler som er på rammeavtale og mangler bilde.</BodyShort>
             </Box>
 
             <Box padding="space-16" borderRadius="8" background="raised" className={styles.box}>

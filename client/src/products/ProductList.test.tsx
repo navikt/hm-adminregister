@@ -139,6 +139,15 @@ test('Flere produkter', async () => {
   )
 
   expect(await screen.findAllByRole('listitem')).toHaveLength(7)
+  expect(
+    screen.getByText(
+      'Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv. F. eks. manuell rullestol. Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.'
+    )
+  ).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'finnhjelpemiddel@nav.no' })).toHaveAttribute(
+    'href',
+    'mailto:finnhjelpemiddel@nav.no'
+  )
 
   expect(await screen.findByRole('link', { name: /p1/ })).toHaveTextContent(/23/) //antall varianter
   expect(await screen.findByRole('link', { name: /Under endring/ }))
