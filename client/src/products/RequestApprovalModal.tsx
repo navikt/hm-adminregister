@@ -103,10 +103,11 @@ export const RequestApprovalModal = ({
           <>
             <BodyLong>{introText}</BodyLong>
             <ul>
-              <li>produktbeskrivelsen ikke inneholder tekniske data eller salgsord.</li>
-              <li>tekniske data er korrekte.</li>
-              <li>påkrevde felter i tekniske data for alle varianter er fylt inn.</li>
-              <li>produktet inneholder nødvendige bilder, brosjyre, bruksanvisning etc.</li>
+              <li>produktbeskrivelsen har en nøytral språkstil uten markedsføringsuttrykk</li>
+              <li>spesifikasjonene er korrekte</li>
+              <li>alle relevante spesifikasjoner er utfylt</li>
+              <li>produktet har minst to unike bilder</li>
+              <li>produktet har minst ett dokument, f. eks. brosjyre eller bruksanvisning</li>
             </ul>
             {hasErrors && (
               <>

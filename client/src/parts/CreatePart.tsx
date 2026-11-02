@@ -7,7 +7,6 @@ import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { isoCategoryFields, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { labelRequired } from 'utils/string-util'
 import { useActiveIsoCategories, useSuppliers } from 'utils/swr-hooks'
 import { PartDraftWithDTO } from 'utils/types/response-types'
 
@@ -53,7 +52,7 @@ export default function CreatePart() {
     const titleError = !title || title === ''
     const isoError = !isoCategory || isoCategory === ''
     const supplierError = !supplier || supplier === ''
-    const hmsNrError = !hmsArtNr || hmsArtNr === ''
+    const hmsNrError = loggedInUser?.isAdminOrHmsUser === true && !hmsArtNr?.trim()
     const levArtNrError = !levArtNr || levArtNr === ''
     setFieldError({
       titleErrorMessage: titleError ? 'Du må skrive en tittel' : undefined,
@@ -63,7 +62,7 @@ export default function CreatePart() {
       levArtNrErrorMessage: levArtNrError ? 'Du må skrive inn Lev-artnr' : undefined,
     })
 
-    return !(titleError || isoError || levArtNrError)
+    return !(titleError || isoError || levArtNrError || hmsNrError)
   }
 
   async function onSubmit() {
@@ -165,7 +164,7 @@ export default function CreatePart() {
         />
         {loggedInUser && loggedInUser.isAdminOrHmsUser && (
           <TextField
-            label={labelRequired('Hms-nr')}
+            label="Hms-nr"
             id="hmsNr"
             name="hmsNr"
             type="text"
@@ -199,7 +198,7 @@ export default function CreatePart() {
         {loggedInUser && loggedInUser.isAdminOrHmsUser && suppliers && (
           <Box asChild style={{ maxWidth: '475px' }}>
             <UNSAFE_Combobox
-              label={labelRequired('Leverandør')}
+              label="Leverandør"
               onToggleSelected={onToggleSelectedSupplier}
               onBlur={() => setFieldError({ ...fieldError, supplierErrorMessage: undefined })}
               onFocus={() => setFieldError({ ...fieldError, supplierErrorMessage: undefined })}
