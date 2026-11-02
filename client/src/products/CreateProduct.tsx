@@ -7,7 +7,6 @@ import IsoComboboxProvider from 'products/iso-combobox/IsoComboboxProvider'
 import { isoCategoryFields, useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { labelRequired } from 'utils/string-util'
 import { useActiveIsoCategories, useSuppliers } from 'utils/swr-hooks'
 import { SeriesDraftWithDTO } from 'utils/types/response-types'
 
@@ -110,10 +109,10 @@ export default function CreateProduct() {
   }
 
   return (
-    <FormBox title="Kom i gang med nytt produkt" icon={<PackageIcon />}>
+    <FormBox title="Opprett nytt produkt" icon={<PackageIcon />}>
       <VStack gap="space-48">
         <TextField
-          label={labelRequired('Produktnavn')}
+          label="Produktnavn"
           id="productName"
           name="productName"
           type="text"
@@ -123,8 +122,8 @@ export default function CreateProduct() {
           error={fieldError?.titleErrorMessage ?? ''}
         />
         <IsoComboboxProvider
-          label={labelRequired('Iso-kategori (kode)')}
-          description={'Søk etter isokategori produktet passer best inn i'}
+          label="ISO-kategori"
+          description="Velg ISO-kategorien produktet tilhører."
           selectedOptions={selectedOptions}
           options={isoCodesAndTitles || []}
           onToggleSelected={onToggleSelected}

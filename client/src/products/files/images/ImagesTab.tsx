@@ -67,7 +67,13 @@ const ImagesTab = ({ series, isEditable, showInputError }: Props) => {
       <Tabs.Panel value="images" className={productStyles.tabPanel}>
         {isEditable && (
           <Alert variant="info" className={styles.alertSpacing}>
-            Dra i bildene eller trykk på pilene for å endre rekkefølgen som vises på finnHjelpemiddel.no
+            Bildene skal:
+            <ul>
+              <li>vise produkter slik de leveres</li>
+              <li>være høyoppløselige</li>
+              <li>ha produktet i fokus</li>
+              <li>ikke ha svart bakgrunn</li>
+            </ul>
           </Alert>
         )}
 

@@ -477,7 +477,7 @@ const Product = () => {
                 value="variants"
                 label={
                   <TabLabel
-                    title="Egenskaper"
+                    title="Varianter"
                     numberOfElements={series.variants.length}
                     showAlert={true}
                     isValid={isValid}

@@ -41,10 +41,6 @@ export const ProductImageCard = forwardRef<HTMLDivElement, Props>(function Image
           >
             <ImageContainer uri={currentImage.uri} text={currentImage.text} />
           </button>
-          <VStack gap="space-16" align="center">
-            <i>Filnavn</i>
-            <span className="text-overflow-hidden-small">{currentImage.filename ?? 'OBS mangler beskrivelse'}</span>
-          </VStack>
         </VStack>
         {isEditable && (
           <div className={styles.moreMenuContainer}>
