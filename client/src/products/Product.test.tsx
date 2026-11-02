@@ -178,6 +178,12 @@ describe('Produktside', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Krav til video' })).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
+
+    fireEvent.click(await screen.findByRole('button', { name: approvalButton }))
+    const approvalDialog = await screen.findByRole('dialog')
+    expect(within(approvalDialog).getByText('Før du sender til godkjenning, sjekk at:')).toBeInTheDocument()
+    const approvalChecklist = within(approvalDialog).getAllByRole('list')[0]
+    expect(within(approvalChecklist).getAllByRole('listitem')).toHaveLength(5)
   }, 15000)
 
   test('Ikke-redigerbart produkt', async () => {
@@ -496,6 +502,19 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
 
     const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Før du publiserer, sjekk at:')).toBeInTheDocument()
+    const checklist = within(dialog).getAllByRole('list')[0]
+    expect(
+      within(checklist)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent)
+    ).toEqual([
+      'produktbeskrivelsen har en nøytral språkstil uten markedsføringsuttrykk',
+      'spesifikasjonene er korrekte',
+      'alle relevante spesifikasjoner er utfylt',
+      'produktet har minst to unike bilder',
+      'produktet har minst ett dokument, f. eks. brosjyre eller bruksanvisning',
+    ])
     fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
 
     await waitFor(() =>
