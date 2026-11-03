@@ -7,8 +7,8 @@ import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
-import { ProductRegistrationDTOV2 } from 'utils/types/response-types'
-import { afterEach,beforeEach, describe, expect, test, vi } from 'vitest'
+import { BulkTechDataUpdateDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react'
 
@@ -279,12 +279,12 @@ describe('Bred visning', () => {
     expect(container.innerHTML).not.toContain('minmax(16rem, 48rem)')
   })
 
-  test('paavirker ikke andre faner enn Egenskaper, selv om wideMode er paa for admin', async () => {
-    logIn(true)
+  test.each([true, false])('paavirker ikke andre faner enn Egenskaper, admin=%s', async (isAdmin) => {
+    logIn(isAdmin)
     useWideModeStore.getState().setWideMode(true)
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/produkter/test-wide-width-other-tab?tab=about']}>
+      <MemoryRouter initialEntries={[`/produkter/test-wide-width-other-tab-${isAdmin}?tab=about`]}>
         <Routes>
           <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
         </Routes>
@@ -296,7 +296,7 @@ describe('Bred visning', () => {
     expect(container.innerHTML).not.toContain('minmax(16rem, 1fr)')
   })
 
-  test('ignorerer wideMode for ikke-admin-brukere paa Egenskaper-fanen', async () => {
+  test('bruker bredere kolonnebredde for leverandører paa Egenskaper-fanen', async () => {
     logIn(false)
     useWideModeStore.getState().setWideMode(true)
 
@@ -309,17 +309,18 @@ describe('Bred visning', () => {
     )
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
-    expect(container.innerHTML).toContain('minmax(16rem, 48rem)')
+    expect(container.innerHTML).toContain('minmax(16rem, 1fr)')
+    expect(container.innerHTML).not.toContain('minmax(16rem, 48rem)')
   })
 
-  test('viser flere varianter per side i bred visning naar det er nok skjermbredde', async () => {
-    logIn(true)
+  test.each([true, false])('viser flere varianter per side i bred visning, admin=%s', async (isAdmin) => {
+    logIn(isAdmin)
 
     const manyVariants = Array.from({ length: 12 }, (_, i) => dummyVariant(`v${i + 1}`, `Variant ${i + 1}`))
     server.use(
       http.get(apiPath('api/v1/series/*'), () => {
         return HttpResponse.json({
-          ...dummyProduct('test-many-variants', 'defaultTitle', 'EDITABLE'),
+          ...dummyProduct(`test-many-variants-${isAdmin}`, 'defaultTitle', 'EDITABLE'),
           variants: manyVariants,
         })
       })
@@ -341,7 +342,7 @@ describe('Bred visning', () => {
 
     try {
       render(
-        <MemoryRouter initialEntries={['/produkter/test-many-variants?tab=variants']}>
+        <MemoryRouter initialEntries={[`/produkter/test-many-variants-${isAdmin}?tab=variants`]}>
           <Routes>
             <Route path={'/produkter/:seriesId'} element={<Product />}></Route>
           </Routes>
@@ -463,9 +464,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     const dialog = await screen.findByRole('dialog')
     fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
 
-    await waitFor(() =>
-      expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument())
     expect(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })).toBeInTheDocument()
   })
 
@@ -518,3 +517,173 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
   })
 })
 
+describe('Masseredigering av egenskaper', () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1500)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const variantWithWeight = (id: string, value: string): ProductRegistrationDTOV2 => ({
+    ...dummyVariant(id, `Variant ${id}`),
+    productData: {
+      attributes: {},
+      techData: [{ key: 'Vekt', value, unit: 'kg', type: 'NUMBER', required: false, options: [] }],
+    },
+  })
+
+  const renderVariants = (id: string, variants: ProductRegistrationDTOV2[], status = 'EDITABLE') => {
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () =>
+        HttpResponse.json({ ...dummyProduct(id, 'defaultTitle', status), variants })
+      ),
+      http.get(apiPath('admin/api/v1/product/registrations/series/*'), () => HttpResponse.json(variants)),
+      http.get(apiPath('vendor/api/v1/product/registrations/series/*'), () => HttpResponse.json(variants))
+    )
+    return render(
+      <MemoryRouter initialEntries={[`/produkter/${id}?tab=variants`]}>
+        <Routes>
+          <Route path="/produkter/:seriesId" element={<Product />} />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  test.each([false, true])('redigerer og kopierer før lagring med riktig API-rute, admin=%s', async (isAdmin) => {
+    logIn(isAdmin)
+    const seriesId = `bulk-copy-${isAdmin}`
+    const variants = [
+      variantWithWeight('1', '10'),
+      variantWithWeight('2', '20'),
+      variantWithWeight('3', '30'),
+      dummyVariant('4', 'Uten egenskap'),
+    ]
+    const requests: BulkTechDataUpdateDTO[] = []
+    const path = isAdmin
+      ? 'admin/api/v1/product/registrations/tech-data/bulk'
+      : `vendor/api/v1/product/registrations/series/${seriesId}/tech-data/bulk`
+    server.use(
+      http.put(apiPath(path), async ({ request }) => {
+        expect(new URL(request.url).searchParams.get('isoVersion')).toBe('v16')
+        const body = (await request.json()) as BulkTechDataUpdateDTO
+        requests.push(body)
+        const updated = body.updates.map((update) => {
+          const index = variants.findIndex((variant) => variant.id === update.productId)
+          const original = variants[index]
+          variants[index] = { ...original, productData: { ...original.productData, techData: update.techData } }
+          return variants[index]
+        })
+        return HttpResponse.json({ updated, failed: [] })
+      })
+    )
+    const { container } = renderVariants(seriesId, variants)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
+    fireEvent.click(screen.getAllByTitle('Kopier verdi til andre varianter')[0])
+
+    const dialog = await screen.findByRole('dialog', { name: 'Kopier verdi for "Vekt" til flere varianter' })
+    expect(within(dialog).queryByRole('checkbox', { name: 'Velg Variant 1' })).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Uten egenskap')).not.toBeInTheDocument()
+    expect(within(dialog).getByRole('checkbox', { name: 'Velg Variant 2' })).toBeChecked()
+    expect(within(dialog).getByRole('checkbox', { name: 'Velg Variant 3' })).toBeChecked()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Kopier til 2 varianter' }))
+
+    expect(screen.getByRole('textbox', { name: 'Vekt for Variant 2' })).toHaveValue('15')
+    expect(screen.getByRole('textbox', { name: 'Vekt for Variant 3' })).toHaveValue('15')
+    expect(requests).toHaveLength(0)
+    if (!isAdmin) {
+      expect(await axe(container)).toHaveNoViolations()
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+
+    await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })
+    expect(requests).toHaveLength(1)
+    expect(requests[0].updates.map((update) => update.productId)).toEqual(['1', '2', '3'])
+    expect(requests[0].updates.every((update) => update.techData[0].value === '15')).toBe(true)
+    expect(await screen.findAllByText('15 kg')).toHaveLength(3)
+  })
+
+  test.each(['PENDING_APPROVAL', 'DONE', 'REJECTED'])('skjuler leverandørens editor for status %s', async (status) => {
+    logIn(false)
+    renderVariants(`bulk-hidden-${status}`, [variantWithWeight('1', '10')], status)
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+  })
+
+  test('skjuler editoren for HMS-bruker uten admin- eller leverandørrolle', async () => {
+    logIn(false)
+    const loggedInUser = useAuthStore.getState().loggedInUser!
+    useAuthStore.getState().setLoggedInUser({
+      ...loggedInUser,
+      isSupplier: false,
+      isHmsUser: true,
+      isAdminOrHmsUser: true,
+    })
+    renderVariants('bulk-hidden-hms', [variantWithWeight('1', '10')])
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+  })
+
+  test('leverandør kan forkaste endringer uten å lagre', async () => {
+    logIn(false)
+    renderVariants('bulk-cancel', [variantWithWeight('1', '10')])
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Avbryt redigering' }))
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Forkast endringer' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+
+    expect(screen.getByRole('textbox', { name: 'Vekt for Variant 1' })).toHaveValue('10')
+    expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+  })
+
+  test('beholder bare mislykkede leverandørendringer for nytt forsøk', async () => {
+    logIn(false)
+    const variants = [variantWithWeight('1', '10'), variantWithWeight('2', '20')]
+    const requests: BulkTechDataUpdateDTO[] = []
+    server.use(
+      http.put(
+        apiPath('vendor/api/v1/product/registrations/series/bulk-partial/tech-data/bulk'),
+        async ({ request }) => {
+          const body = (await request.json()) as BulkTechDataUpdateDTO
+          requests.push(body)
+          if (requests.length === 1) {
+            variants[0] = {
+              ...variants[0],
+              productData: { ...variants[0].productData, techData: body.updates[0].techData },
+            }
+            return HttpResponse.json({
+              updated: [variants[0]],
+              failed: [{ productId: '2', message: 'Kunne ikke lagre endringen' }],
+            })
+          }
+          variants[1] = {
+            ...variants[1],
+            productData: { ...variants[1].productData, techData: body.updates[0].techData },
+          }
+          return HttpResponse.json({ updated: [variants[1]], failed: [] })
+        }
+      )
+    )
+    renderVariants('bulk-partial', variants)
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 2' }), { target: { value: '25' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+
+    expect(await screen.findByText(/Noen endringer kunne ikke lagres/)).toBeInTheDocument()
+    expect(screen.getByText('1 ulagret endring')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Vekt for Variant 2' })).toHaveValue('25')
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+
+    await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })
+    expect(requests[1].updates.map((update) => update.productId)).toEqual(['2'])
+    expect(screen.queryByText(/Noen endringer kunne ikke lagres/)).not.toBeInTheDocument()
+  })
+})

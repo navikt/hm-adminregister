@@ -35,11 +35,16 @@ export const updateProductVariant = async (
   fetchAPI(withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/${id}`), isoVersion), 'PUT', updatedProduct)
 
 export const bulkUpdateTechData = async (
+  isAdmin: boolean,
+  seriesId: string,
   bulkUpdateDTO: BulkTechDataUpdateDTO,
   isoVersion: IsoVersion = 'v16'
 ): Promise<BulkTechDataUpdateResultDTO> =>
   fetchAPI(
-    withIsoVersion(`${HM_REGISTER_URL()}/admreg/admin/api/v1/product/registrations/tech-data/bulk`, isoVersion),
+    withIsoVersion(
+      getPath(isAdmin, `/api/v1/product/registrations/${isAdmin ? '' : `series/${seriesId}/`}tech-data/bulk`),
+      isoVersion
+    ),
     'PUT',
     bulkUpdateDTO
   )

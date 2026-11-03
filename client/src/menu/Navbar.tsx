@@ -29,7 +29,7 @@ const Navbar = () => {
   const { loggedInUser } = useAuthStore()
 
   const isProductVariantsTab = /^\/produkter\/[^/]+$/.test(pathname) && new URLSearchParams(search).get('tab') === 'variants'
-  const showWideModeToggle = isProductVariantsTab && (loggedInUser?.isAdmin ?? false)
+  const showWideModeToggle = isProductVariantsTab && (loggedInUser?.isAdmin || loggedInUser?.isSupplier)
 
   return (
     <>
