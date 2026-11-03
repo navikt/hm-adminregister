@@ -94,7 +94,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const { wideMode } = useWideModeStore()
   const { setGlobalError } = useErrorStore()
   const techKeys = getAllUniqueTechDataKeys(series.variants)
-  const isWideMode = wideMode && (loggedInUser?.isAdmin ?? false)
+  const isWideMode = wideMode && (loggedInUser?.isAdmin || loggedInUser?.isSupplier)
   const [tableContainerRef, tableContainerWidth] = useElementWidth<HTMLDivElement>()
 
   const [techDataEditMode, setTechDataEditMode] = useState<boolean>(false)
@@ -217,7 +217,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
 
     setTechDataIsSaving(true)
     setTechDataSaveError(undefined)
-    bulkUpdateTechData(bulkUpdateDTO, isoVersion)
+    bulkUpdateTechData(loggedInUser?.isAdmin ?? false, series.id, bulkUpdateDTO, isoVersion)
       .then((result) => {
         const savedProductIds = result.updated.map((product) => product.id!)
         techDataChanges.clearForProducts(savedProductIds)
@@ -521,7 +521,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                     <Table.Row>
                       <Table.HeaderCell scope="row">
                         {series.status === 'EDITABLE' &&
-                          loggedInUser?.isAdmin &&
+                          (loggedInUser?.isAdmin || loggedInUser?.isSupplier) &&
                           techKeys.length > 0 &&
                           (!techDataEditMode ? (
                             <Button

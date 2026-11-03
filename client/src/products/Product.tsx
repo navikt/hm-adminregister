@@ -323,7 +323,7 @@ const Product = () => {
         columns={
           // Wide mode only widens the layout while the "Egenskaper" (variants) tab is active -
           // it must not affect any other tab or page.
-          wideMode && loggedInUser?.isAdmin && activeTab === 'variants'
+          wideMode && (loggedInUser?.isAdmin || loggedInUser?.isSupplier) && activeTab === 'variants'
             ? { xs: 1, sm: 'minmax(16rem, 1fr) 200px', xl: 'minmax(16rem, 1fr) 250px' }
             : { xs: 1, sm: 'minmax(16rem, 48rem) 200px', xl: 'minmax(16rem, 48rem) 250px' }
         }

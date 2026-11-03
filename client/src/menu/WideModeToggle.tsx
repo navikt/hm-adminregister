@@ -8,7 +8,7 @@ const WideModeToggle = () => {
   const { loggedInUser } = useAuthStore()
   const { wideMode, toggleWideMode } = useWideModeStore()
 
-  if (!loggedInUser?.isAdmin) {
+  if (!loggedInUser?.isAdmin && !loggedInUser?.isSupplier) {
     return null
   }
 
@@ -28,4 +28,3 @@ const WideModeToggle = () => {
 }
 
 export default WideModeToggle
-
