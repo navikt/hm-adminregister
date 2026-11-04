@@ -1,6 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import { BulkTechDataUpdateDTO, ExtendedTechDataDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
+import {
+  BulkVariantUpdateDTO,
+  ExtendedTechDataDTO,
+  ProductRegistrationDTOV2,
+  VariantUpdate,
+} from 'utils/types/response-types'
 
 export type TechDataChange = {
   productId: string
@@ -10,9 +15,28 @@ export type TechDataChange = {
 
 const changeKey = (productId: string, key: string) => `${productId}::${key}`
 
-export function useTechDataChanges() {
+export function useVariantChanges() {
   // Map is keyed by "productId::key" so we never need to worry about ordering/duplicates.
   const [changes, setChanges] = useState<Map<string, TechDataChange>>(new Map())
+  const [articleNames, setArticleNames] = useState<Map<string, string>>(new Map())
+
+  const setArticleName = useCallback((productId: string, value: string) => {
+    setArticleNames((prev) => new Map(prev).set(productId, value))
+  }, [])
+
+  const getArticleName = (productId: string, fallback: string): string => articleNames.get(productId) ?? fallback
+
+  const articleNameErrors = useMemo(() => {
+    const errors = new Map<string, string>()
+    articleNames.forEach((value, productId) => {
+      if (!value.trim()) {
+        errors.set(productId, 'Variantnavn er påkrevd')
+      } else if (value.trim().length > 1024) {
+        errors.set(productId, 'Variantnavn kan ikke være lengre enn 1024 tegn')
+      }
+    })
+    return errors
+  }, [articleNames])
 
   const setValue = useCallback((productId: string, key: string, value: string) => {
     setChanges((prev) => {
@@ -38,6 +62,11 @@ export function useTechDataChanges() {
   // successful save, so edits for variants that failed to save are kept for the admin to retry,
   // while edits for variants that saved successfully are cleared.
   const clearForProducts = useCallback((productIds: string[]) => {
+    setArticleNames((prev) => {
+      const next = new Map(prev)
+      productIds.forEach((productId) => next.delete(productId))
+      return next
+    })
     setChanges((prev) => {
       const idsToClear = new Set(productIds)
       const next = new Map<string, TechDataChange>()
@@ -50,39 +79,50 @@ export function useTechDataChanges() {
     })
   }, [])
 
-  const clearAll = useCallback(() => setChanges(new Map()), [])
+  const clearAll = useCallback(() => {
+    setChanges(new Map())
+    setArticleNames(new Map())
+  }, [])
 
   const changedProductIds = useMemo(() => {
-    return Array.from(new Set(Array.from(changes.values()).map((change) => change.productId)))
-  }, [changes])
+    return Array.from(
+      new Set([...Array.from(changes.values()).map((change) => change.productId), ...articleNames.keys()])
+    )
+  }, [changes, articleNames])
 
-  const changeCount = changes.size
+  const changeCount = changes.size + articleNames.size
 
   const buildBulkUpdateDTO = useCallback(
-    (variantsById: Map<string, ProductRegistrationDTOV2>): BulkTechDataUpdateDTO => {
+    (variantsById: Map<string, ProductRegistrationDTOV2>): BulkVariantUpdateDTO => {
       const updates = changedProductIds
-        .map((productId) => {
+        .map((productId): VariantUpdate | null => {
           const variant = variantsById.get(productId)
           if (!variant) return null
           const techData: ExtendedTechDataDTO[] = variant.productData.techData.map((field) => {
             const change = changes.get(changeKey(productId, field.key))
             return change ? { ...field, value: change.value.trim() } : field
           })
-          return { productId, techData, version: variant.version ?? null }
+          const articleName = articleNames.get(productId)
+          return {
+            productId,
+            techData,
+            version: variant.version ?? null,
+            ...(articleName !== undefined ? { articleName: articleName.trim() } : {}),
+          }
         })
-        .filter(
-          (update): update is { productId: string; techData: ExtendedTechDataDTO[]; version: number | null } =>
-            update !== null
-        )
+        .filter((update): update is VariantUpdate => update !== null)
 
       return { updates }
     },
-    [changes, changedProductIds]
+    [changes, changedProductIds, articleNames]
   )
 
   return {
     getValue,
     setValue,
+    getArticleName,
+    setArticleName,
+    articleNameErrors,
     isChanged,
     clearForProducts,
     clearAll,

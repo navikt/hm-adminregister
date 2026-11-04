@@ -1,14 +1,14 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { bulkUpdateTechData, deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
+import { bulkUpdateVariants, deleteProducts, setVariantToActive, setVariantToExpired } from 'api/ProductApi'
 import { moveProductsToSeries } from 'api/SeriesApi'
 import ConfirmModal from 'felleskomponenter/ConfirmModal'
 import ExportModal, { ExportField, ExportScope } from 'felleskomponenter/export/ExportModal'
 import CopyTechDataValueModal from 'products/variants/CopyTechDataValueModal'
 import MoveProductVariantsModal from 'products/variants/MoveProductVariantsModal'
 import TechDataFieldControl from 'products/variants/TechDataFieldControl'
-import { useTechDataChanges } from 'products/variants/useTechDataChanges'
+import { useVariantChanges } from 'products/variants/useVariantChanges'
 import { buildDefaultFileName } from 'utils/export/exportUtils'
 import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
 import { getAllUniqueTechDataKeys } from 'utils/product-util'
@@ -46,6 +46,7 @@ import {
   Table,
   Tabs,
   Tag,
+  TextField,
   VStack,
 } from '@navikt/ds-react'
 
@@ -67,16 +68,16 @@ const helpTextWorksWith = (
 // bredde, slik at flere varianter vises samtidig på store skjermer i stedet for tomrom.
 const MIN_COLUMNS_PER_PAGE = 5
 const LABEL_COLUMN_WIDTH_PX = 250
-const TECH_DATA_EDIT_LABEL_COLUMN_WIDTH_PX = 180
+const VARIANT_EDIT_LABEL_COLUMN_WIDTH_PX = 180
 const VARIANT_COLUMN_WIDTH_PX = 220
 
 export interface VariantsTabHandle {
   /**
-   * Discards any uncommitted tech-data changes and exits edit mode, without asking for
+   * Discards any uncommitted variant changes and exits edit mode, without asking for
    * confirmation. Used when the admin publishes the product while still in edit mode, so a
    * publish never leaves the UI in a half-edited state with unsaved local changes.
    */
-  discardTechDataEditsAndExit: () => void
+  discardVariantEditsAndExit: () => void
 }
 
 interface VariantsTabProps {
@@ -97,10 +98,10 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const isWideMode = wideMode && (loggedInUser?.isAdmin || loggedInUser?.isSupplier)
   const [tableContainerRef, tableContainerWidth] = useElementWidth<HTMLDivElement>()
 
-  const [techDataEditMode, setTechDataEditMode] = useState<boolean>(false)
-  const labelColumnWidth = techDataEditMode ? TECH_DATA_EDIT_LABEL_COLUMN_WIDTH_PX : LABEL_COLUMN_WIDTH_PX
+  const [variantEditMode, setVariantEditMode] = useState<boolean>(false)
+  const labelColumnWidth = variantEditMode ? VARIANT_EDIT_LABEL_COLUMN_WIDTH_PX : LABEL_COLUMN_WIDTH_PX
   const columnsPerPage =
-    isWideMode || techDataEditMode
+    isWideMode || variantEditMode
       ? Math.max(
           isWideMode ? MIN_COLUMNS_PER_PAGE : 1,
           Math.floor((tableContainerWidth - labelColumnWidth) / VARIANT_COLUMN_WIDTH_PX)
@@ -117,11 +118,11 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   const [copyTechDataSource, setCopyTechDataSource] = useState<
     { product: ProductRegistrationDTOV2; key: string; value: string } | undefined
   >(undefined)
-  const [techDataSaveError, setTechDataSaveError] = useState<string | undefined>(undefined)
-  const [techDataIsSaving, setTechDataIsSaving] = useState<boolean>(false)
-  const techDataChanges = useTechDataChanges()
+  const [variantSaveError, setVariantSaveError] = useState<string | undefined>(undefined)
+  const [isSavingVariants, setIsSavingVariants] = useState<boolean>(false)
+  const variantChanges = useVariantChanges()
 
-  const [techDataSnapshot, setTechDataSnapshot] = useState<Map<string, ProductRegistrationDTOV2>>(new Map())
+  const [variantSnapshot, setVariantSnapshot] = useState<Map<string, ProductRegistrationDTOV2>>(new Map())
 
   const { mutateVariants } = userProductVariantsBySeriesId(series.id)
 
@@ -186,18 +187,18 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
 
   const variantsById = new Map(series.variants.map((product) => [product.id!, product]))
 
-  const closeTechDataEditMode = () => {
-    techDataChanges.clearAll()
-    setTechDataSaveError(undefined)
-    setTechDataEditMode(false)
-    setTechDataSnapshot(new Map())
+  const closeVariantEditMode = () => {
+    variantChanges.clearAll()
+    setVariantSaveError(undefined)
+    setVariantEditMode(false)
+    setVariantSnapshot(new Map())
   }
 
-  const onCancelTechDataEdit = () => {
-    if (techDataChanges.changeCount > 0) {
+  const onCancelVariantEdit = () => {
+    if (variantChanges.changeCount > 0) {
       setCancelEditConfirmationModalIsOpen(true)
     } else {
-      closeTechDataEditMode()
+      closeVariantEditMode()
     }
   }
 
@@ -205,27 +206,28 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   // avslutte redigeringsmodus uten bekreftelsesdialog, i stedet for å la produktet publiseres
   // mens tabellen fortsatt viser halvferdige, ulagrede endringer.
   useImperativeHandle(ref, () => ({
-    discardTechDataEditsAndExit: () => {
+    discardVariantEditsAndExit: () => {
       setCancelEditConfirmationModalIsOpen(false)
-      closeTechDataEditMode()
+      closeVariantEditMode()
     },
   }))
 
-  const onSaveTechDataChanges = () => {
-    const bulkUpdateDTO = techDataChanges.buildBulkUpdateDTO(techDataSnapshot)
+  const onSaveVariantChanges = () => {
+    if (variantChanges.articleNameErrors.size > 0) return
+    const bulkUpdateDTO = variantChanges.buildBulkUpdateDTO(variantSnapshot)
     if (bulkUpdateDTO.updates.length === 0) return
 
-    setTechDataIsSaving(true)
-    setTechDataSaveError(undefined)
-    bulkUpdateTechData(loggedInUser?.isAdmin ?? false, series.id, bulkUpdateDTO, isoVersion)
+    setIsSavingVariants(true)
+    setVariantSaveError(undefined)
+    bulkUpdateVariants(loggedInUser?.isAdmin ?? false, series.id, bulkUpdateDTO, isoVersion)
       .then((result) => {
         const savedProductIds = result.updated.map((product) => product.id!)
-        techDataChanges.clearForProducts(savedProductIds)
+        variantChanges.clearForProducts(savedProductIds)
         mutateVariants()
         mutateSeries()
 
         if (result.updated.length > 0) {
-          setTechDataSnapshot((prev) => {
+          setVariantSnapshot((prev) => {
             const next = new Map(prev)
             result.updated.forEach((product) => next.set(product.id!, product))
             return next
@@ -240,23 +242,23 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
               return `${name}: ${failure.message}`
             })
             .join(', ')
-          setTechDataSaveError(`Noen endringer kunne ikke lagres og er beholdt for retting: ${names}`)
+          setVariantSaveError(`Noen endringer kunne ikke lagres og er beholdt for retting: ${names}`)
         } else {
-          setTechDataEditMode(false)
+          setVariantEditMode(false)
         }
       })
       .catch((error) => {
         setGlobalError(error.status, error.message)
       })
       .finally(() => {
-        setTechDataIsSaving(false)
+        setIsSavingVariants(false)
       })
   }
 
   const onCopyTechDataConfirm = (targetProductIds: string[]) => {
     if (!copyTechDataSource) return
     targetProductIds.forEach((productId) => {
-      techDataChanges.setValue(productId, copyTechDataSource.key, copyTechDataSource.value)
+      variantChanges.setValue(productId, copyTechDataSource.key, copyTechDataSource.value)
     })
     setCopyTechDataSource(undefined)
   }
@@ -273,7 +275,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
     ? copyTechDataTargetVariants.reduce(
         (acc, variant) => {
           const techField = variant.productData.techData.find((field) => field.key === copyTechDataSource.key)
-          acc[variant.id!] = techDataChanges.getValue(variant.id!, copyTechDataSource.key, techField?.value ?? '')
+          acc[variant.id!] = variantChanges.getValue(variant.id!, copyTechDataSource.key, techField?.value ?? '')
           return acc
         },
         {} as Record<string, string>
@@ -401,10 +403,10 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
         />
       )}
       <ConfirmModal
-        title={'Du har ulagrede endringer i teknisk data. Vil du forkaste dem?'}
+        title={'Du har ulagrede endringer i variantene. Vil du forkaste dem?'}
         confirmButtonText={'Forkast endringer'}
         onClick={() => {
-          closeTechDataEditMode()
+          closeVariantEditMode()
           setCancelEditConfirmationModalIsOpen(false)
         }}
         onClose={() => setCancelEditConfirmationModalIsOpen(false)}
@@ -513,7 +515,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                 </HStack>
               )}
               <div
-                className={`${styles.variantTable} ${techDataEditMode ? styles.variantTableEditMode : ''}`}
+                className={`${styles.variantTable} ${variantEditMode ? styles.variantTableEditMode : ''}`}
                 ref={tableContainerRef}
               >
                 <Table>
@@ -522,19 +524,18 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                       <Table.HeaderCell scope="row">
                         {series.status === 'EDITABLE' &&
                           (loggedInUser?.isAdmin || loggedInUser?.isSupplier) &&
-                          techKeys.length > 0 &&
-                          (!techDataEditMode ? (
+                          (!variantEditMode ? (
                             <Button
                               className="fit-content"
                               variant="secondary"
                               size="small"
                               icon={<PencilIcon aria-hidden />}
                               onClick={() => {
-                                setTechDataSnapshot(new Map(series.variants.map((v) => [v.id!, v])))
-                                setTechDataEditMode(true)
+                                setVariantSnapshot(new Map(series.variants.map((v) => [v.id!, v])))
+                                setVariantEditMode(true)
                               }}
                             >
-                              Rediger egenskaper på flere varianter
+                              Rediger varianter
                             </Button>
                           ) : (
                             <Button
@@ -542,7 +543,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                               variant="tertiary"
                               size="small"
                               icon={<XMarkIcon aria-hidden />}
-                              onClick={onCancelTechDataEdit}
+                              onClick={onCancelVariantEdit}
                             >
                               Avbryt redigering
                             </Button>
@@ -616,8 +617,22 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                   <Table.Body>
                     <Table.Row>
                       <Table.HeaderCell scope="row">Variantnavn:</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`articleName-${i}`}>{product.articleName || '-'}</Table.DataCell>
+                      {paginatedVariants.map((product) => (
+                        <Table.DataCell key={`articleName-${product.id}`}>
+                          {variantEditMode ? (
+                            <TextField
+                              label={`Variantnavn for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
+                              hideLabel
+                              size="small"
+                              value={variantChanges.getArticleName(product.id!, product.articleName ?? '')}
+                              onChange={(event) => variantChanges.setArticleName(product.id!, event.target.value)}
+                              error={variantChanges.articleNameErrors.get(product.id!)}
+                              readOnly={isSavingVariants}
+                            />
+                          ) : (
+                            product.articleName || '-'
+                          )}
+                        </Table.DataCell>
                       ))}
                     </Table.Row>
                     <Table.Row>
@@ -690,7 +705,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                         <Table.HeaderCell scope="row">{key}</Table.HeaderCell>
                         {paginatedVariants.map((product, i) => {
                           const field = techDataFieldFor(product, key)
-                          if (!techDataEditMode) {
+                          if (!variantEditMode) {
                             return <Table.DataCell key={`${key}-${i}`}>{techValue(product, key) || '-'}</Table.DataCell>
                           }
                           if (!field) {
@@ -703,7 +718,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                               </Table.DataCell>
                             )
                           }
-                          const currentValue = techDataChanges.getValue(product.id!, key, field.value)
+                          const currentValue = variantChanges.getValue(product.id!, key, field.value)
                           return (
                             <Table.DataCell key={`${key}-${i}`}>
                               <VStack gap="space-2">
@@ -711,7 +726,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                                   <TechDataFieldControl
                                     techData={field}
                                     value={currentValue}
-                                    onChange={(value) => techDataChanges.setValue(product.id!, key, value)}
+                                    onChange={(value) => variantChanges.setValue(product.id!, key, value)}
                                     label={`${key} for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
                                   />
                                 </div>
@@ -745,32 +760,41 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
               {totalPages > 1 && (
                 <Pagination page={pageState} onPageChange={goToPage} count={totalPages} size="small" />
               )}
-              {techDataEditMode && (
+              {variantEditMode && (
                 <HStack justify="space-between" align="center" gap="space-16" wrap>
                   <BodyShort>
-                    {techDataChanges.changeCount === 0
+                    {variantChanges.changeCount === 0
                       ? 'Ingen endringer'
-                      : `${techDataChanges.changeCount} ulagret${techDataChanges.changeCount === 1 ? '' : 'e'} endring${
-                          techDataChanges.changeCount === 1 ? '' : 'er'
-                        }`}
+                      : variantChanges.changeCount === 1
+                        ? '1 ulagret endring'
+                        : `${variantChanges.changeCount} ulagrede endringer`}
                   </BodyShort>
                   <HStack gap="space-8">
-                    <Button variant="tertiary" size="small" onClick={onCancelTechDataEdit} disabled={techDataIsSaving}>
+                    <Button variant="tertiary" size="small" onClick={onCancelVariantEdit} disabled={isSavingVariants}>
                       Avbryt
                     </Button>
                     <Button
                       variant="primary"
                       size="small"
-                      onClick={onSaveTechDataChanges}
-                      disabled={techDataChanges.changeCount === 0 || techDataIsSaving}
-                      loading={techDataIsSaving}
+                      onClick={onSaveVariantChanges}
+                      disabled={
+                        variantChanges.changeCount === 0 ||
+                        isSavingVariants ||
+                        variantChanges.articleNameErrors.size > 0
+                      }
+                      loading={isSavingVariants}
                     >
                       Lagre endringer
                     </Button>
                   </HStack>
                 </HStack>
               )}
-              {techDataSaveError && <Alert variant="error">{techDataSaveError}</Alert>}
+              {variantEditMode && variantChanges.articleNameErrors.size > 0 && (
+                <Alert variant="error">
+                  Rett ugyldige variantnavn før du lagrer. Sjekk også varianter på andre sider.
+                </Alert>
+              )}
+              {variantSaveError && <Alert variant="error">{variantSaveError}</Alert>}
             </VStack>
           </Box>
         )}

@@ -4,8 +4,8 @@ import useSWR from 'swr'
 import { IsoVersion, useIsoVersion, withIsoVersion } from 'utils/iso-version'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import {
-  BulkTechDataUpdateDTO,
-  BulkTechDataUpdateResultDTO,
+  BulkVariantUpdateDTO,
+  BulkVariantUpdateResultDTO,
   DraftVariantDTO,
   ProductRegistrationDTO,
   ProductRegistrationDTOV2,
@@ -34,12 +34,12 @@ export const updateProductVariant = async (
 ): Promise<ProductRegistrationDTOV2> =>
   fetchAPI(withIsoVersion(getPath(isAdmin, `/api/v1/product/registrations/${id}`), isoVersion), 'PUT', updatedProduct)
 
-export const bulkUpdateTechData = async (
+export const bulkUpdateVariants = async (
   isAdmin: boolean,
   seriesId: string,
-  bulkUpdateDTO: BulkTechDataUpdateDTO,
+  bulkUpdateDTO: BulkVariantUpdateDTO,
   isoVersion: IsoVersion = 'v16'
-): Promise<BulkTechDataUpdateResultDTO> =>
+): Promise<BulkVariantUpdateResultDTO> =>
   fetchAPI(
     withIsoVersion(
       getPath(isAdmin, `/api/v1/product/registrations/${isAdmin ? '' : `series/${seriesId}/`}tech-data/bulk`),

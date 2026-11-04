@@ -7,7 +7,7 @@ import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
-import { BulkTechDataUpdateDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
+import { BulkVariantUpdateDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react'
@@ -422,8 +422,8 @@ describe('Bred visning', () => {
   })
 })
 
-describe('Forkast teknisk data-endringer ved publisering', () => {
-  test('avslutter redigeringsmodus for teknisk data naar admin publiserer produktet', async () => {
+describe('Forkast variantendringer ved publisering', () => {
+  test('avslutter redigering av varianter naar admin publiserer produktet', async () => {
     logIn(true)
 
     const variantWithTechData: ProductRegistrationDTOV2 = {
@@ -456,7 +456,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
     expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
@@ -465,7 +465,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
 
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument())
-    expect(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Rediger varianter' })).toBeInTheDocument()
   })
 
   test('beholder redigeringsmodus og ulagrede endringer naar publisering feiler', async () => {
@@ -501,7 +501,7 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
     expect(await screen.findByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
@@ -513,11 +513,11 @@ describe('Forkast teknisk data-endringer ved publisering', () => {
     // they don't have to redo their edits after a transient publish failure.
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(screen.getByRole('button', { name: 'Avbryt redigering' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rediger varianter' })).not.toBeInTheDocument()
   })
 })
 
-describe('Masseredigering av egenskaper', () => {
+describe('Masseredigering av varianter', () => {
   beforeEach(() => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1500)
   })
@@ -560,19 +560,23 @@ describe('Masseredigering av egenskaper', () => {
       variantWithWeight('3', '30'),
       dummyVariant('4', 'Uten egenskap'),
     ]
-    const requests: BulkTechDataUpdateDTO[] = []
+    const requests: BulkVariantUpdateDTO[] = []
     const path = isAdmin
       ? 'admin/api/v1/product/registrations/tech-data/bulk'
       : `vendor/api/v1/product/registrations/series/${seriesId}/tech-data/bulk`
     server.use(
       http.put(apiPath(path), async ({ request }) => {
         expect(new URL(request.url).searchParams.get('isoVersion')).toBe('v16')
-        const body = (await request.json()) as BulkTechDataUpdateDTO
+        const body = (await request.json()) as BulkVariantUpdateDTO
         requests.push(body)
         const updated = body.updates.map((update) => {
           const index = variants.findIndex((variant) => variant.id === update.productId)
           const original = variants[index]
-          variants[index] = { ...original, productData: { ...original.productData, techData: update.techData } }
+          variants[index] = {
+            ...original,
+            articleName: update.articleName ?? original.articleName,
+            productData: { ...original.productData, techData: update.techData },
+          }
           return variants[index]
         })
         return HttpResponse.json({ updated, failed: [] })
@@ -580,7 +584,10 @@ describe('Masseredigering av egenskaper', () => {
     )
     const { container } = renderVariants(seriesId, variants)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' }), {
+      target: { value: '  Nytt variantnavn  ' },
+    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
     fireEvent.click(screen.getAllByTitle('Kopier verdi til andre varianter')[0])
 
@@ -599,10 +606,13 @@ describe('Masseredigering av egenskaper', () => {
     }
     fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
 
-    await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })
+    await screen.findByRole('button', { name: 'Rediger varianter' })
     expect(requests).toHaveLength(1)
     expect(requests[0].updates.map((update) => update.productId)).toEqual(['1', '2', '3'])
     expect(requests[0].updates.every((update) => update.techData[0].value === '15')).toBe(true)
+    expect(requests[0].updates[0].articleName).toBe('Nytt variantnavn')
+    expect(requests[0].updates[1]).not.toHaveProperty('articleName')
+    expect(await screen.findByRole('cell', { name: 'Nytt variantnavn' })).toBeInTheDocument()
     expect(await screen.findAllByText('15 kg')).toHaveLength(3)
   })
 
@@ -611,7 +621,7 @@ describe('Masseredigering av egenskaper', () => {
     renderVariants(`bulk-hidden-${status}`, [variantWithWeight('1', '10')], status)
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
-    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rediger varianter' })).not.toBeInTheDocument()
   })
 
   test('skjuler editoren for HMS-bruker uten admin- eller leverandørrolle', async () => {
@@ -626,36 +636,41 @@ describe('Masseredigering av egenskaper', () => {
     renderVariants('bulk-hidden-hms', [variantWithWeight('1', '10')])
 
     await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
-    expect(screen.queryByRole('button', { name: 'Rediger egenskaper på flere varianter' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Rediger varianter' })).not.toBeInTheDocument()
   })
 
   test('leverandør kan forkaste endringer uten å lagre', async () => {
     logIn(false)
     renderVariants('bulk-cancel', [variantWithWeight('1', '10')])
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' }), {
+      target: { value: 'Forkast dette navnet' },
+    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
     fireEvent.click(screen.getByRole('button', { name: 'Avbryt redigering' }))
     const dialog = await screen.findByRole('dialog')
     fireEvent.click(within(dialog).getByRole('button', { name: 'Forkast endringer' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
 
     expect(screen.getByRole('textbox', { name: 'Vekt for Variant 1' })).toHaveValue('10')
+    expect(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' })).toHaveValue('Variant 1')
     expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
   })
 
   test('beholder bare mislykkede leverandørendringer for nytt forsøk', async () => {
     logIn(false)
     const variants = [variantWithWeight('1', '10'), variantWithWeight('2', '20')]
-    const requests: BulkTechDataUpdateDTO[] = []
+    const requests: BulkVariantUpdateDTO[] = []
     server.use(
       http.put(
         apiPath('vendor/api/v1/product/registrations/series/bulk-partial/tech-data/bulk'),
         async ({ request }) => {
-          const body = (await request.json()) as BulkTechDataUpdateDTO
+          const body = (await request.json()) as BulkVariantUpdateDTO
           requests.push(body)
           if (requests.length === 1) {
             variants[0] = {
               ...variants[0],
+              articleName: body.updates[0].articleName!,
               productData: { ...variants[0].productData, techData: body.updates[0].techData },
             }
             return HttpResponse.json({
@@ -665,6 +680,7 @@ describe('Masseredigering av egenskaper', () => {
           }
           variants[1] = {
             ...variants[1],
+            articleName: body.updates[0].articleName!,
             productData: { ...variants[1].productData, techData: body.updates[0].techData },
           }
           return HttpResponse.json({ updated: [variants[1]], failed: [] })
@@ -672,18 +688,64 @@ describe('Masseredigering av egenskaper', () => {
       )
     )
     renderVariants('bulk-partial', variants)
-    fireEvent.click(await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' }), {
+      target: { value: 'Nytt navn 1' },
+    })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 2' }), {
+      target: { value: 'Nytt navn 2' },
+    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), { target: { value: '15' } })
     fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 2' }), { target: { value: '25' } })
     fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
 
     expect(await screen.findByText(/Noen endringer kunne ikke lagres/)).toBeInTheDocument()
-    expect(screen.getByText('1 ulagret endring')).toBeInTheDocument()
+    expect(screen.getByText('2 ulagrede endringer')).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Vekt for Variant 2' })).toHaveValue('25')
+    expect(screen.getByRole('textbox', { name: 'Variantnavn for Variant 2' })).toHaveValue('Nytt navn 2')
+    expect(await screen.findByRole('textbox', { name: 'Variantnavn for Nytt navn 1' })).toHaveValue('Nytt navn 1')
     fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
 
-    await screen.findByRole('button', { name: 'Rediger egenskaper på flere varianter' })
+    await screen.findByRole('button', { name: 'Rediger varianter' })
     expect(requests[1].updates.map((update) => update.productId)).toEqual(['2'])
+    expect(requests[1].updates[0].articleName).toBe('Nytt navn 2')
+    expect(await screen.findByRole('cell', { name: 'Nytt navn 2' })).toBeInTheDocument()
     expect(screen.queryByText(/Noen endringer kunne ikke lagres/)).not.toBeInTheDocument()
   })
+
+  test.each([false, true])(
+    'avviser ugyldige navn og tillater navneendring uten egenskaper, admin=%s',
+    async (isAdmin) => {
+      logIn(isAdmin)
+      const seriesId = `name-only-${isAdmin}`
+      const variants = [dummyVariant('1', 'Uten egenskaper')]
+      const requests: BulkVariantUpdateDTO[] = []
+      const path = isAdmin
+        ? 'admin/api/v1/product/registrations/tech-data/bulk'
+        : `vendor/api/v1/product/registrations/series/${seriesId}/tech-data/bulk`
+      server.use(
+        http.put(apiPath(path), async ({ request }) => {
+          const body = (await request.json()) as BulkVariantUpdateDTO
+          requests.push(body)
+          variants[0] = { ...variants[0], articleName: body.updates[0].articleName! }
+          return HttpResponse.json({ updated: variants, failed: [] })
+        })
+      )
+      renderVariants(seriesId, variants)
+      fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+      const input = screen.getByRole('textbox', { name: 'Variantnavn for Uten egenskaper' })
+      for (const value of ['', '   ', 'x'.repeat(1025)]) {
+        fireEvent.change(input, { target: { value } })
+        expect(input).toHaveAttribute('aria-invalid', 'true')
+        expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+        expect(requests).toHaveLength(0)
+      }
+      fireEvent.change(input, { target: { value: '  Bare nytt navn  ' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+      await screen.findByRole('button', { name: 'Rediger varianter' })
+      expect(requests).toHaveLength(1)
+      expect(requests[0].updates[0]).toMatchObject({ productId: '1', articleName: 'Bare nytt navn', techData: [] })
+      expect(await screen.findByRole('cell', { name: 'Bare nytt navn' })).toBeInTheDocument()
+    }
+  )
 })

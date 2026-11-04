@@ -1,9 +1,9 @@
+import { ExtendedTechDataDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
 import { describe, expect, test } from 'vitest'
 
 import { act, renderHook } from '@testing-library/react'
 
-import { ExtendedTechDataDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
-import { useTechDataChanges } from './useTechDataChanges'
+import { useVariantChanges } from './useVariantChanges'
 
 const techDataField = (key: string, value: string): ExtendedTechDataDTO => ({
   key,
@@ -13,16 +13,20 @@ const techDataField = (key: string, value: string): ExtendedTechDataDTO => ({
   required: false,
 })
 
-const variant = (id: string, techData: ExtendedTechDataDTO[], version: number | null = null): ProductRegistrationDTOV2 =>
+const variant = (
+  id: string,
+  techData: ExtendedTechDataDTO[],
+  version: number | null = null
+): ProductRegistrationDTOV2 =>
   ({
     id,
     productData: { techData },
     version,
   }) as ProductRegistrationDTOV2
 
-describe('useTechDataChanges', () => {
+describe('useVariantChanges', () => {
   test('has no changes initially', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     expect(result.current.changeCount).toBe(0)
     expect(result.current.changedProductIds).toEqual([])
@@ -31,7 +35,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('setValue records a change and getValue/isChanged reflect it', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     act(() => result.current.setValue('p1', 'bredde', '42'))
 
@@ -45,7 +49,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('setValue overwrites a previous change for the same productId/key', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     act(() => result.current.setValue('p1', 'bredde', '42'))
     act(() => result.current.setValue('p1', 'bredde', '43'))
@@ -55,7 +59,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('clearForProducts only clears changes for the given productIds', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     act(() => {
       result.current.setValue('p1', 'bredde', '42')
@@ -70,7 +74,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('clearAll removes every change', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     act(() => {
       result.current.setValue('p1', 'bredde', '42')
@@ -84,7 +88,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('buildBulkUpdateDTO sends the full tech data array per touched product, with only changed values overridden', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     const p1 = variant('p1', [techDataField('bredde', '10'), techDataField('hoyde', '20')], 3)
     const p2 = variant('p2', [techDataField('bredde', '5')])
@@ -108,7 +112,7 @@ describe('useTechDataChanges', () => {
   })
 
   test('buildBulkUpdateDTO skips productIds that are no longer present in variantsById', () => {
-    const { result } = renderHook(() => useTechDataChanges())
+    const { result } = renderHook(() => useVariantChanges())
 
     act(() => result.current.setValue('missing-product', 'bredde', '99'))
 
@@ -116,4 +120,56 @@ describe('useTechDataChanges', () => {
 
     expect(dto.updates).toEqual([])
   })
+
+  test('saves names and properties together without confusing property keys with names', () => {
+    const { result } = renderHook(() => useVariantChanges())
+    const product = variant('p1', [techDataField('articleName', '10')], 3)
+    const nameOnly = variant('p2', [])
+
+    act(() => {
+      result.current.setValue('p1', 'articleName', '20')
+      result.current.setArticleName('p1', '  New name  ')
+      result.current.setArticleName('p2', 'Name without properties')
+    })
+
+    expect(result.current.changeCount).toBe(3)
+    expect(
+      result.current.buildBulkUpdateDTO(
+        new Map([
+          ['p1', product],
+          ['p2', nameOnly],
+        ])
+      ).updates
+    ).toEqual([
+      { productId: 'p1', articleName: 'New name', techData: [techDataField('articleName', '20')], version: 3 },
+      { productId: 'p2', articleName: 'Name without properties', techData: [], version: null },
+    ])
+
+    act(() => result.current.clearForProducts(['p1']))
+
+    expect(result.current.getArticleName('p1', 'Original')).toBe('Original')
+    expect(result.current.changedProductIds).toEqual(['p2'])
+    expect(result.current.changeCount).toBe(1)
+
+    act(() => result.current.clearAll())
+
+    expect(result.current.getArticleName('p2', 'Original')).toBe('Original')
+    expect(result.current.changeCount).toBe(0)
+  })
+
+  test.each(['', '   ', 'x'.repeat(1025)])(
+    'rejects invalid names and clears the error after correction (%#)',
+    (name) => {
+      const { result } = renderHook(() => useVariantChanges())
+
+      act(() => result.current.setArticleName('p1', name))
+      expect(result.current.articleNameErrors.has('p1')).toBe(true)
+
+      act(() => result.current.setArticleName('p1', `  ${'x'.repeat(1024)}  `))
+      expect(result.current.articleNameErrors.size).toBe(0)
+
+      act(() => result.current.clearAll())
+      expect(result.current.articleNameErrors.size).toBe(0)
+    }
+  )
 })
