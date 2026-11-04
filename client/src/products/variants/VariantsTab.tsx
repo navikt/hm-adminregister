@@ -156,6 +156,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
 
     deleteProducts(loggedInUser?.isAdmin ?? true, [variant.id], variant.isPublished)
       .then(() => {
+        variantChanges.clearForProducts([variant.id])
         mutateVariants()
         mutateSeries()
 

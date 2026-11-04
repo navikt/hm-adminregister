@@ -6,6 +6,7 @@ import { server } from 'mocks/server'
 import { HttpResponse, http } from 'msw'
 import Product from 'products/Product'
 import { useAuthStore } from 'utils/store/useAuthStore'
+import { useErrorStore } from 'utils/store/useErrorStore'
 import { useWideModeStore } from 'utils/store/useWideModeStore'
 import { BulkVariantUpdateDTO, ProductRegistrationDTOV2 } from 'utils/types/response-types'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -615,6 +616,87 @@ describe('Masseredigering av varianter', () => {
     expect(await screen.findByRole('cell', { name: 'Nytt variantnavn' })).toBeInTheDocument()
     expect(await screen.findAllByText('15 kg')).toHaveLength(3)
   })
+
+  test.each([true, false])(
+    'clears pending changes only after successful variant deletion, success=%s',
+    async (success) => {
+      logIn(true)
+      const seriesId = `bulk-delete-${success}`
+      const variants = [variantWithWeight('1', '10'), variantWithWeight('2', '20')]
+      const requests: BulkVariantUpdateDTO[] = []
+      const setGlobalError = vi.spyOn(useErrorStore.getState(), 'setGlobalError').mockImplementation(() => {})
+      server.use(
+        http.delete(apiPath('admin/api/v1/product/registrations/delete'), async ({ request }) => {
+          expect(await request.json()).toEqual(['1'])
+          if (!success) {
+            return HttpResponse.json({ message: 'Deletion failed' }, { status: 500 })
+          }
+          variants.splice(0, 1)
+          return HttpResponse.json({})
+        }),
+        http.put(apiPath('admin/api/v1/product/registrations/tech-data/bulk'), async ({ request }) => {
+          const body = (await request.json()) as BulkVariantUpdateDTO
+          requests.push(body)
+          variants[0] = {
+            ...variants[0],
+            articleName: body.updates[0].articleName!,
+            productData: { ...variants[0].productData, techData: body.updates[0].techData },
+          }
+          return HttpResponse.json({ updated: variants, failed: [] })
+        })
+      )
+      renderVariants(seriesId, variants)
+      fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' }), {
+        target: { value: '   ' },
+      })
+      fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), {
+        target: { value: '15' },
+      })
+      fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 2' }), {
+        target: { value: 'Remaining variant' },
+      })
+      fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 2' }), {
+        target: { value: '25' },
+      })
+      expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'Meny' })[0])
+      fireEvent.click((await screen.findAllByRole('button', { name: 'Slett' }))[0])
+      const dialog = await screen.findByRole('dialog', { name: 'Er du sikker på at du vil slette varianten?' })
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Slett' }))
+
+      if (!success) {
+        await waitFor(() => expect(setGlobalError).toHaveBeenCalled())
+        expect(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' })).toHaveValue('   ')
+        expect(screen.getByRole('textbox', { name: 'Vekt for Variant 1' })).toHaveValue('15')
+        expect(screen.getByText('Variantnavn er påkrevd')).toBeInTheDocument()
+        expect(screen.getByText('4 ulagrede endringer')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+        expect(requests).toHaveLength(0)
+        return
+      }
+
+      await waitFor(() =>
+        expect(screen.queryByRole('textbox', { name: 'Variantnavn for Variant 1' })).not.toBeInTheDocument()
+      )
+      expect(screen.queryByText('Variantnavn er påkrevd')).not.toBeInTheDocument()
+      expect(screen.getByText('2 ulagrede endringer')).toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Variantnavn for Variant 2' })).toHaveValue('Remaining variant')
+      expect(screen.getByRole('textbox', { name: 'Vekt for Variant 2' })).toHaveValue('25')
+      expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeEnabled()
+      fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+
+      await screen.findByRole('button', { name: 'Rediger varianter' })
+      expect(requests).toHaveLength(1)
+      expect(requests[0].updates).toHaveLength(1)
+      expect(requests[0].updates[0]).toMatchObject({
+        productId: '2',
+        articleName: 'Remaining variant',
+        techData: [{ key: 'Vekt', value: '25' }],
+      })
+    }
+  )
 
   test.each(['PENDING_APPROVAL', 'DONE', 'REJECTED'])('skjuler leverandørens editor for status %s', async (status) => {
     logIn(false)
