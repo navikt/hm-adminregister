@@ -132,7 +132,7 @@ const Product = () => {
     approveSeries(series!.id)
       .then(() => {
         mutateSeries()
-        variantsTabRef.current?.discardTechDataEditsAndExit()
+        variantsTabRef.current?.discardVariantEditsAndExit()
       })
       .catch((error) => setGlobalError(error.status, error.message))
   }
