@@ -20,6 +20,7 @@ export function useVariantChanges() {
   const [changes, setChanges] = useState<Map<string, TechDataChange>>(new Map())
   const [articleNames, setArticleNames] = useState<Map<string, string>>(new Map())
   const [hmsNumbers, setHmsNumbers] = useState<Map<string, string>>(new Map())
+  const [supplierRefs, setSupplierRefs] = useState<Map<string, string>>(new Map())
 
   const setArticleName = useCallback((productId: string, value: string) => {
     setArticleNames((prev) => new Map(prev).set(productId, value))
@@ -32,6 +33,20 @@ export function useVariantChanges() {
   }, [])
 
   const getHmsArtNr = (productId: string, fallback: string): string => hmsNumbers.get(productId) ?? fallback
+
+  const setSupplierRef = useCallback((productId: string, value: string) => {
+    setSupplierRefs((prev) => new Map(prev).set(productId, value))
+  }, [])
+
+  const getSupplierRef = (productId: string, fallback: string): string => supplierRefs.get(productId) ?? fallback
+
+  const supplierRefErrors = useMemo(() => {
+    const errors = new Map<string, string>()
+    supplierRefs.forEach((value, productId) => {
+      if (!value.trim()) errors.set(productId, 'Artikkelnummer er påkrevd')
+    })
+    return errors
+  }, [supplierRefs])
 
   const articleNameErrors = useMemo(() => {
     const errors = new Map<string, string>()
@@ -69,6 +84,11 @@ export function useVariantChanges() {
   // successful save, so edits for variants that failed to save are kept for the admin to retry,
   // while edits for variants that saved successfully are cleared.
   const clearForProducts = useCallback((productIds: string[]) => {
+    setSupplierRefs((prev) => {
+      const next = new Map(prev)
+      productIds.forEach((productId) => next.delete(productId))
+      return next
+    })
     setHmsNumbers((prev) => {
       const next = new Map(prev)
       productIds.forEach((productId) => next.delete(productId))
@@ -95,6 +115,7 @@ export function useVariantChanges() {
     setChanges(new Map())
     setArticleNames(new Map())
     setHmsNumbers(new Map())
+    setSupplierRefs(new Map())
   }, [])
 
   const changedProductIds = useMemo(() => {
@@ -103,14 +124,15 @@ export function useVariantChanges() {
         ...Array.from(changes.values()).map((change) => change.productId),
         ...articleNames.keys(),
         ...hmsNumbers.keys(),
+        ...supplierRefs.keys(),
       ])
     )
-  }, [changes, articleNames, hmsNumbers])
+  }, [changes, articleNames, hmsNumbers, supplierRefs])
 
-  const changeCount = changes.size + articleNames.size + hmsNumbers.size
+  const changeCount = changes.size + articleNames.size + hmsNumbers.size + supplierRefs.size
 
   const buildBulkUpdateDTO = useCallback(
-    (variantsById: Map<string, ProductRegistrationDTOV2>, allowHmsChange = false): BulkVariantUpdateDTO => {
+    (variantsById: Map<string, ProductRegistrationDTOV2>, isAdmin = false): BulkVariantUpdateDTO => {
       const updates = changedProductIds
         .map((productId): VariantUpdate | null => {
           const variant = variantsById.get(productId)
@@ -121,19 +143,23 @@ export function useVariantChanges() {
           })
           const articleName = articleNames.get(productId)
           const hmsArtNr = hmsNumbers.get(productId)
+          const supplierRef = supplierRefs.get(productId)
           return {
             productId,
             techData,
             version: variant.version ?? null,
             ...(articleName !== undefined ? { articleName: articleName.trim() } : {}),
-            ...(allowHmsChange && hmsArtNr !== undefined ? { hmsArtNr: hmsArtNr.trim() } : {}),
+            ...(isAdmin && hmsArtNr !== undefined ? { hmsArtNr: hmsArtNr.trim() } : {}),
+            ...((isAdmin || !variant.isPublished) && supplierRef !== undefined
+              ? { supplierRef: supplierRef.trim() }
+              : {}),
           }
         })
         .filter((update): update is VariantUpdate => update !== null)
 
       return { updates }
     },
-    [changes, changedProductIds, articleNames, hmsNumbers]
+    [changes, changedProductIds, articleNames, hmsNumbers, supplierRefs]
   )
 
   return {
@@ -143,6 +169,9 @@ export function useVariantChanges() {
     setArticleName,
     getHmsArtNr,
     setHmsArtNr,
+    getSupplierRef,
+    setSupplierRef,
+    supplierRefErrors,
     articleNameErrors,
     isChanged,
     clearForProducts,

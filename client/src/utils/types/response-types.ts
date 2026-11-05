@@ -180,6 +180,7 @@ export type VariantUpdate = {
   productId: string
   articleName?: string
   hmsArtNr?: string
+  supplierRef?: string
   techData: ExtendedTechDataDTO[]
   version: number | null
 }
