@@ -214,7 +214,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
   }))
 
   const onSaveVariantChanges = () => {
-    if (variantChanges.articleNameErrors.size > 0) return
+    if (variantChanges.articleNameErrors.size > 0 || variantChanges.supplierRefErrors.size > 0) return
     const bulkUpdateDTO = variantChanges.buildBulkUpdateDTO(variantSnapshot, loggedInUser?.isAdmin ?? false)
     if (bulkUpdateDTO.updates.length === 0) return
 
@@ -661,9 +661,26 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                     )}
                     <Table.Row>
                       <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`levart-${i}`}>
-                          {product.supplierRef ? (isUUID(product.supplierRef) ? '-' : product.supplierRef) : '-'}
+                      {paginatedVariants.map((product) => (
+                        <Table.DataCell key={`levart-${product.id}`}>
+                          {variantEditMode && (loggedInUser?.isAdmin || !product.isPublished) ? (
+                            <TextField
+                              label={`Leverandørens artikkelnummer for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
+                              hideLabel
+                              size="small"
+                              value={variantChanges.getSupplierRef(
+                                product.id!,
+                                isUUID(product.supplierRef) ? '' : product.supplierRef
+                              )}
+                              onChange={(event) => variantChanges.setSupplierRef(product.id!, event.target.value)}
+                              error={variantChanges.supplierRefErrors.get(product.id!)}
+                              readOnly={isSavingVariants}
+                            />
+                          ) : product.supplierRef && !isUUID(product.supplierRef) ? (
+                            product.supplierRef
+                          ) : (
+                            '-'
+                          )}
                         </Table.DataCell>
                       ))}
                     </Table.Row>
@@ -794,7 +811,8 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                       disabled={
                         variantChanges.changeCount === 0 ||
                         isSavingVariants ||
-                        variantChanges.articleNameErrors.size > 0
+                        variantChanges.articleNameErrors.size > 0 ||
+                        variantChanges.supplierRefErrors.size > 0
                       }
                       loading={isSavingVariants}
                     >
@@ -806,6 +824,11 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
               {variantEditMode && variantChanges.articleNameErrors.size > 0 && (
                 <Alert variant="error">
                   Rett ugyldige variantnavn før du lagrer. Sjekk også varianter på andre sider.
+                </Alert>
+              )}
+              {variantEditMode && variantChanges.supplierRefErrors.size > 0 && (
+                <Alert variant="error">
+                  Rett ugyldige artikkelnumre før du lagrer. Sjekk også varianter på andre sider.
                 </Alert>
               )}
               {variantSaveError && <Alert variant="error">{variantSaveError}</Alert>}

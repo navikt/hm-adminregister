@@ -633,6 +633,69 @@ describe('Masseredigering av varianter', () => {
     expect(await screen.findAllByText('15 kg')).toHaveLength(3)
   })
 
+  test.each([false, true])('edits supplier references with single-edit permissions, admin=%s', async (isAdmin) => {
+    logIn(isAdmin)
+    const seriesId = `supplier-ref-${isAdmin}`
+    const variants = [{ ...variantWithWeight('1', '10'), isPublished: false }, variantWithWeight('2', '20')]
+    const requests: BulkVariantUpdateDTO[] = []
+    const path = isAdmin
+      ? 'admin/api/v1/product/registrations/tech-data/bulk'
+      : `vendor/api/v1/product/registrations/series/${seriesId}/tech-data/bulk`
+    server.use(
+      http.put(apiPath(path), async ({ request }) => {
+        const body = (await request.json()) as BulkVariantUpdateDTO
+        requests.push(body)
+        const updated = body.updates.flatMap((update) => {
+          if (requests.length === 1 && update.productId === '1') return []
+          const index = variants.findIndex((variant) => variant.id === update.productId)
+          variants[index] = {
+            ...variants[index],
+            supplierRef: update.supplierRef ?? variants[index].supplierRef,
+            productData: { ...variants[index].productData, techData: update.techData },
+          }
+          return [variants[index]]
+        })
+        return HttpResponse.json({
+          updated,
+          failed: requests.length === 1 ? [{ productId: '1', message: 'Save failed' }] : [],
+        })
+      })
+    )
+    renderVariants(seriesId, variants)
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    const name = 'Leverandørens artikkelnummer for Variant 1'
+    fireEvent.change(screen.getByRole('textbox', { name }), { target: { value: '' } })
+    expect(screen.getByText('Artikkelnummer er påkrevd')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+    fireEvent.change(screen.getByRole('textbox', { name }), { target: { value: '  New ref  ' } })
+    const publishedName = 'Leverandørens artikkelnummer for Variant 2'
+    if (isAdmin) {
+      fireEvent.change(screen.getByRole('textbox', { name: publishedName }), {
+        target: { value: 'Admin ref' },
+      })
+    } else {
+      expect(screen.queryByRole('textbox', { name: publishedName })).not.toBeInTheDocument()
+      expect(screen.getByRole('cell', { name: 'REF-2' })).toBeInTheDocument()
+    }
+    fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 2' }), { target: { value: '25' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+    await screen.findByText(/Noen endringer kunne ikke lagres/)
+    expect(screen.getByRole('textbox', { name })).toHaveValue('  New ref  ')
+    expect(requests[0].updates.find((update) => update.productId === '1')).toMatchObject({
+      supplierRef: 'New ref',
+    })
+    if (isAdmin) {
+      expect(requests[0].updates.find((update) => update.productId === '2')).toHaveProperty('supplierRef', 'Admin ref')
+    } else {
+      expect(requests[0].updates.find((update) => update.productId === '2')).not.toHaveProperty('supplierRef')
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+    await screen.findByRole('button', { name: 'Rediger varianter' })
+    expect(requests[1].updates).toHaveLength(1)
+    expect(requests[1].updates[0]).toMatchObject({ productId: '1', supplierRef: 'New ref' })
+    expect(await screen.findByRole('cell', { name: 'New ref' })).toBeInTheDocument()
+  })
+
   test.each([' 001234 ', '   '])('admin can retry, discard and save an HMS-only edit (%#)', async (hmsArtNr) => {
     logIn(true)
     const seriesId = `hms-only-${hmsArtNr.trim() || 'clear'}`
