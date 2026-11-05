@@ -157,6 +157,46 @@ describe('useVariantChanges', () => {
     expect(result.current.changeCount).toBe(0)
   })
 
+  test('tracks HMS edits separately and sends them only when allowed', () => {
+    const { result } = renderHook(() => useVariantChanges())
+    const products = new Map([
+      ['p1', variant('p1', [techDataField('hmsArtNr', '10')])],
+      ['p2', variant('p2', [])],
+      ['p3', variant('p3', [])],
+    ])
+
+    act(() => {
+      result.current.setHmsArtNr('p1', ' 001234 ')
+      result.current.setValue('p1', 'hmsArtNr', '20')
+      result.current.setHmsArtNr('p2', '   ')
+      result.current.setArticleName('p3', 'Name only')
+    })
+
+    expect(result.current.changeCount).toBe(4)
+    expect(result.current.getHmsArtNr('p1', 'Original')).toBe(' 001234 ')
+    const updates = result.current.buildBulkUpdateDTO(products, true).updates
+    expect(updates.find((update) => update.productId === 'p1')).toMatchObject({
+      hmsArtNr: '001234',
+      techData: [techDataField('hmsArtNr', '20')],
+    })
+    expect(updates.find((update) => update.productId === 'p2')).toHaveProperty('hmsArtNr', '')
+    expect(updates.find((update) => update.productId === 'p3')).not.toHaveProperty('hmsArtNr')
+    result.current.buildBulkUpdateDTO(products).updates.forEach((update) => {
+      expect(update).not.toHaveProperty('hmsArtNr')
+    })
+
+    act(() => result.current.clearForProducts(['p1']))
+    expect(result.current.getHmsArtNr('p1', 'Original')).toBe('Original')
+    expect(result.current.changedProductIds).toEqual(['p3', 'p2'])
+    expect(result.current.changeCount).toBe(2)
+    expect(result.current.getHmsArtNr('p2', 'Original')).toBe('   ')
+
+    act(() => result.current.clearAll())
+    expect(result.current.getHmsArtNr('p2', 'Original')).toBe('Original')
+    expect(result.current.changedProductIds).toEqual([])
+    expect(result.current.changeCount).toBe(0)
+  })
+
   test.each(['', '   ', 'x'.repeat(1025)])(
     'rejects invalid names and clears the error after correction (%#)',
     (name) => {

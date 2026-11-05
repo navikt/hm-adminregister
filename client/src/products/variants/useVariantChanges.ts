@@ -19,12 +19,19 @@ export function useVariantChanges() {
   // Map is keyed by "productId::key" so we never need to worry about ordering/duplicates.
   const [changes, setChanges] = useState<Map<string, TechDataChange>>(new Map())
   const [articleNames, setArticleNames] = useState<Map<string, string>>(new Map())
+  const [hmsNumbers, setHmsNumbers] = useState<Map<string, string>>(new Map())
 
   const setArticleName = useCallback((productId: string, value: string) => {
     setArticleNames((prev) => new Map(prev).set(productId, value))
   }, [])
 
   const getArticleName = (productId: string, fallback: string): string => articleNames.get(productId) ?? fallback
+
+  const setHmsArtNr = useCallback((productId: string, value: string) => {
+    setHmsNumbers((prev) => new Map(prev).set(productId, value))
+  }, [])
+
+  const getHmsArtNr = (productId: string, fallback: string): string => hmsNumbers.get(productId) ?? fallback
 
   const articleNameErrors = useMemo(() => {
     const errors = new Map<string, string>()
@@ -62,6 +69,11 @@ export function useVariantChanges() {
   // successful save, so edits for variants that failed to save are kept for the admin to retry,
   // while edits for variants that saved successfully are cleared.
   const clearForProducts = useCallback((productIds: string[]) => {
+    setHmsNumbers((prev) => {
+      const next = new Map(prev)
+      productIds.forEach((productId) => next.delete(productId))
+      return next
+    })
     setArticleNames((prev) => {
       const next = new Map(prev)
       productIds.forEach((productId) => next.delete(productId))
@@ -82,18 +94,23 @@ export function useVariantChanges() {
   const clearAll = useCallback(() => {
     setChanges(new Map())
     setArticleNames(new Map())
+    setHmsNumbers(new Map())
   }, [])
 
   const changedProductIds = useMemo(() => {
     return Array.from(
-      new Set([...Array.from(changes.values()).map((change) => change.productId), ...articleNames.keys()])
+      new Set([
+        ...Array.from(changes.values()).map((change) => change.productId),
+        ...articleNames.keys(),
+        ...hmsNumbers.keys(),
+      ])
     )
-  }, [changes, articleNames])
+  }, [changes, articleNames, hmsNumbers])
 
-  const changeCount = changes.size + articleNames.size
+  const changeCount = changes.size + articleNames.size + hmsNumbers.size
 
   const buildBulkUpdateDTO = useCallback(
-    (variantsById: Map<string, ProductRegistrationDTOV2>): BulkVariantUpdateDTO => {
+    (variantsById: Map<string, ProductRegistrationDTOV2>, allowHmsChange = false): BulkVariantUpdateDTO => {
       const updates = changedProductIds
         .map((productId): VariantUpdate | null => {
           const variant = variantsById.get(productId)
@@ -103,18 +120,20 @@ export function useVariantChanges() {
             return change ? { ...field, value: change.value.trim() } : field
           })
           const articleName = articleNames.get(productId)
+          const hmsArtNr = hmsNumbers.get(productId)
           return {
             productId,
             techData,
             version: variant.version ?? null,
             ...(articleName !== undefined ? { articleName: articleName.trim() } : {}),
+            ...(allowHmsChange && hmsArtNr !== undefined ? { hmsArtNr: hmsArtNr.trim() } : {}),
           }
         })
         .filter((update): update is VariantUpdate => update !== null)
 
       return { updates }
     },
-    [changes, changedProductIds, articleNames]
+    [changes, changedProductIds, articleNames, hmsNumbers]
   )
 
   return {
@@ -122,6 +141,8 @@ export function useVariantChanges() {
     setValue,
     getArticleName,
     setArticleName,
+    getHmsArtNr,
+    setHmsArtNr,
     articleNameErrors,
     isChanged,
     clearForProducts,
