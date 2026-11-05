@@ -179,6 +179,7 @@ export type ExtendedTechDataDTO = components['schemas']['ExtendedTechDataDTO']
 export type VariantUpdate = {
   productId: string
   articleName?: string
+  hmsArtNr?: string
   techData: ExtendedTechDataDTO[]
   version: number | null
 }

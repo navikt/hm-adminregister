@@ -215,7 +215,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
 
   const onSaveVariantChanges = () => {
     if (variantChanges.articleNameErrors.size > 0) return
-    const bulkUpdateDTO = variantChanges.buildBulkUpdateDTO(variantSnapshot)
+    const bulkUpdateDTO = variantChanges.buildBulkUpdateDTO(variantSnapshot, loggedInUser?.isAdmin ?? false)
     if (bulkUpdateDTO.updates.length === 0) return
 
     setIsSavingVariants(true)
@@ -669,8 +669,21 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                     </Table.Row>
                     <Table.Row>
                       <Table.HeaderCell scope="row">Hms-nr:</Table.HeaderCell>
-                      {paginatedVariants.map((product, i) => (
-                        <Table.DataCell key={`hms-${i}`}>{product.hmsArtNr || '-'}</Table.DataCell>
+                      {paginatedVariants.map((product) => (
+                        <Table.DataCell key={`hms-${product.id}`}>
+                          {variantEditMode && loggedInUser?.isAdmin ? (
+                            <TextField
+                              label={`HMS-nr. for ${product.articleName || product.hmsArtNr || product.supplierRef}`}
+                              hideLabel
+                              size="small"
+                              value={variantChanges.getHmsArtNr(product.id!, product.hmsArtNr ?? '')}
+                              onChange={(event) => variantChanges.setHmsArtNr(product.id!, event.target.value)}
+                              readOnly={isSavingVariants}
+                            />
+                          ) : (
+                            product.hmsArtNr || '-'
+                          )}
+                        </Table.DataCell>
                       ))}
                     </Table.Row>
                     {loggedInUser?.isAdmin && (

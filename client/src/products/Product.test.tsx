@@ -576,6 +576,7 @@ describe('Masseredigering av varianter', () => {
           variants[index] = {
             ...original,
             articleName: update.articleName ?? original.articleName,
+            hmsArtNr: update.hmsArtNr !== undefined ? update.hmsArtNr || null : original.hmsArtNr,
             productData: { ...original.productData, techData: update.techData },
           }
           return variants[index]
@@ -586,6 +587,14 @@ describe('Masseredigering av varianter', () => {
     const { container } = renderVariants(seriesId, variants)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    if (isAdmin) {
+      fireEvent.change(screen.getByRole('textbox', { name: 'HMS-nr. for Variant 1' }), {
+        target: { value: ' 001234 ' },
+      })
+    } else {
+      expect(screen.queryByRole('textbox', { name: /HMS-nr\./ })).not.toBeInTheDocument()
+      expect(screen.getByRole('cell', { name: 'HMS-1' })).toBeInTheDocument()
+    }
     fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' }), {
       target: { value: '  Nytt variantnavn  ' },
     })
@@ -613,8 +622,62 @@ describe('Masseredigering av varianter', () => {
     expect(requests[0].updates.every((update) => update.techData[0].value === '15')).toBe(true)
     expect(requests[0].updates[0].articleName).toBe('Nytt variantnavn')
     expect(requests[0].updates[1]).not.toHaveProperty('articleName')
+    if (isAdmin) {
+      expect(requests[0].updates[0].hmsArtNr).toBe('001234')
+      expect(await screen.findByRole('cell', { name: '001234' })).toBeInTheDocument()
+    } else {
+      requests[0].updates.forEach((update) => expect(update).not.toHaveProperty('hmsArtNr'))
+    }
+    expect(requests[0].updates[1]).not.toHaveProperty('hmsArtNr')
     expect(await screen.findByRole('cell', { name: 'Nytt variantnavn' })).toBeInTheDocument()
     expect(await screen.findAllByText('15 kg')).toHaveLength(3)
+  })
+
+  test.each([' 001234 ', '   '])('admin can retry, discard and save an HMS-only edit (%#)', async (hmsArtNr) => {
+    logIn(true)
+    const seriesId = `hms-only-${hmsArtNr.trim() || 'clear'}`
+    const variants = [dummyVariant('1', 'Variant 1')]
+    const requests: BulkVariantUpdateDTO[] = []
+    server.use(
+      http.put(apiPath('admin/api/v1/product/registrations/tech-data/bulk'), async ({ request }) => {
+        const body = (await request.json()) as BulkVariantUpdateDTO
+        requests.push(body)
+        if (requests.length === 1) {
+          return HttpResponse.json({
+            updated: [],
+            failed: [{ productId: '1', message: 'Save failed' }],
+          })
+        }
+        variants[0] = { ...variants[0], hmsArtNr: body.updates[0].hmsArtNr || null }
+        return HttpResponse.json({ updated: variants, failed: [] })
+      })
+    )
+    renderVariants(seriesId, variants)
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    const name = 'HMS-nr. for Variant 1'
+    fireEvent.change(screen.getByRole('textbox', { name }), { target: { value: hmsArtNr } })
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+
+    await screen.findByText(/Noen endringer kunne ikke lagres/)
+    expect(screen.getByRole('textbox', { name })).toHaveValue(hmsArtNr)
+    expect(requests[0].updates).toHaveLength(1)
+    expect(requests[0].updates[0]).toMatchObject({ productId: '1', hmsArtNr: hmsArtNr.trim(), techData: [] })
+    expect(requests[0].updates[0]).not.toHaveProperty('articleName')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Avbryt redigering' }))
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Forkast endringer' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
+    expect(screen.getByRole('textbox', { name })).toHaveValue('HMS-1')
+    expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
+
+    fireEvent.change(screen.getByRole('textbox', { name }), { target: { value: hmsArtNr } })
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre endringer' }))
+    await screen.findByRole('button', { name: 'Rediger varianter' })
+    expect(requests).toHaveLength(2)
+    fireEvent.click(screen.getByRole('button', { name: 'Rediger varianter' }))
+    expect(screen.getByRole('textbox', { name })).toHaveValue(hmsArtNr.trim())
+    expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
   })
 
   test.each([true, false])(
@@ -653,6 +716,9 @@ describe('Masseredigering av varianter', () => {
       fireEvent.change(screen.getByRole('textbox', { name: 'Vekt for Variant 1' }), {
         target: { value: '15' },
       })
+      fireEvent.change(screen.getByRole('textbox', { name: 'HMS-nr. for Variant 1' }), {
+        target: { value: '123456' },
+      })
       fireEvent.change(screen.getByRole('textbox', { name: 'Variantnavn for Variant 2' }), {
         target: { value: 'Remaining variant' },
       })
@@ -671,7 +737,8 @@ describe('Masseredigering av varianter', () => {
         expect(screen.getByRole('textbox', { name: 'Variantnavn for Variant 1' })).toHaveValue('   ')
         expect(screen.getByRole('textbox', { name: 'Vekt for Variant 1' })).toHaveValue('15')
         expect(screen.getByText('Variantnavn er påkrevd')).toBeInTheDocument()
-        expect(screen.getByText('4 ulagrede endringer')).toBeInTheDocument()
+        expect(screen.getByRole('textbox', { name: 'HMS-nr. for Variant 1' })).toHaveValue('123456')
+        expect(screen.getByText('5 ulagrede endringer')).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Lagre endringer' })).toBeDisabled()
         expect(requests).toHaveLength(0)
         return
