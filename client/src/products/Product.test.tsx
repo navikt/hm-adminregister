@@ -103,6 +103,26 @@ beforeEach(() => {
 })
 
 describe('Produktside', () => {
+  test('Tom beskrivelse kan ikke lagres uten at brukeren skriver noe', async () => {
+    logIn(false)
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () =>
+        HttpResponse.json({ ...dummyProduct('empty-description', 'Testprodukt', 'EDITABLE'), text: '' })
+      )
+    )
+    render(
+      <MemoryRouter initialEntries={['/produkter/empty-description']}>
+        <Routes>
+          <Route path="/produkter/:seriesId" element={<Product />} />
+        </Routes>
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Legg til beskrivelse' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre' }))
+    expect(screen.getByText(/Beskrivelsen må være minst 100 tegn/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Lagre' })).toBeInTheDocument()
+  })
+
   test('Redigerbart produkt', async () => {
     logIn(false)
     const { container } = render(
