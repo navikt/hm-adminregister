@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { updateProductDescription } from 'api/SeriesApi'
 import RichTextEditorQuill from 'felleskomponenter/RichTextEditorQuill'
 import parse from 'html-react-parser'
+import type Quill from 'quill'
 import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
 import { SeriesDTO } from 'utils/types/response-types'
@@ -26,15 +27,16 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
   const [updatedDescription, setUpdatedDescription] = useState<string>(description)
   const { setGlobalError } = useErrorStore()
   const [descriptionLength, setDescriptionLength] = useState<number>(description?.length || 0)
+  const descriptionEditorRef = useRef<Quill | null>(null)
 
   //Vi lagrer description onBlur, så lagreknappen bare lukker for nå.
   const closeDescriptionEditor = () => {
-    if (descriptionLengthError) return
+    if (!validateDescription(descriptionEditorRef.current?.getText() ?? '')) return
     setShowEditDescriptionMode(false)
   }
 
   const handleSaveDescription = (updatedDescription: string) => {
-    if (descriptionLengthError) return
+    if (!validateDescription(descriptionEditorRef.current?.getText() ?? '')) return
     updateProductDescription(series!.id, updatedDescription)
       .then(() => mutateSeries())
       .catch((error) => {
@@ -42,14 +44,21 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
       })
   }
 
-  const onTextChange = (html: string, rawText: string) => {
+  const validateDescription = (rawText: string) => {
     setDescriptionLength(rawText.length)
-    if (rawText.length > 750) {
+    if (rawText.length < 100) {
+      setDescriptionLengthError('Beskrivelsen må være minst 100 tegn')
+    } else if (rawText.length > 750) {
       setDescriptionLengthError('Beskrivelsen kan ikke være lengre enn 750 tegn')
     } else {
       setDescriptionLengthError(undefined)
-      setUpdatedDescription(html)
+      return true
     }
+    return false
+  }
+
+  const onTextChange = (html: string, rawText: string) => {
+    if (validateDescription(rawText)) setUpdatedDescription(html)
   }
 
   return (
@@ -104,6 +113,7 @@ const AboutTabDescription = ({ series, mutateSeries, showInputError, isEditable 
               </ul>
             </BodyShort>
             <RichTextEditorQuill
+              ref={descriptionEditorRef}
               onTextChange={onTextChange}
               defaultValue={updatedDescription}
               className={styles.editor}
