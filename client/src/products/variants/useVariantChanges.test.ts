@@ -197,6 +197,39 @@ describe('useVariantChanges', () => {
     expect(result.current.changeCount).toBe(0)
   })
 
+  test('tracks supplier references, preserves failed edits and omits locked published references', () => {
+    const { result } = renderHook(() => useVariantChanges())
+    const products = new Map([
+      ['p1', { ...variant('p1', []), isPublished: false }],
+      ['p2', { ...variant('p2', []), isPublished: true }],
+    ])
+    act(() => {
+      result.current.setSupplierRef('p1', '   ')
+      result.current.setSupplierRef('p2', '  Published ref  ')
+    })
+    expect(result.current.supplierRefErrors.get('p1')).toBe('Artikkelnummer er påkrevd')
+    act(() => result.current.setSupplierRef('p1', '  New ref  '))
+    expect(result.current.supplierRefErrors.size).toBe(0)
+    expect(result.current.changeCount).toBe(2)
+    const supplierUpdates = result.current.buildBulkUpdateDTO(products).updates
+    expect(supplierUpdates.find((update) => update.productId === 'p1')).toHaveProperty('supplierRef', 'New ref')
+    expect(supplierUpdates.find((update) => update.productId === 'p2')).not.toHaveProperty('supplierRef')
+    expect(
+      result.current.buildBulkUpdateDTO(products, true).updates.find((update) => update.productId === 'p2')
+    ).toHaveProperty('supplierRef', 'Published ref')
+
+    act(() => result.current.clearForProducts(['p1']))
+    expect(result.current.getSupplierRef('p1', 'Original')).toBe('Original')
+    expect(result.current.getSupplierRef('p2', 'Original')).toBe('  Published ref  ')
+    expect(result.current.changedProductIds).toEqual(['p2'])
+    act(() => result.current.setSupplierRef('p2', ''))
+    expect(result.current.supplierRefErrors.has('p2')).toBe(true)
+    act(() => result.current.clearAll())
+    expect(result.current.getSupplierRef('p2', 'Original')).toBe('Original')
+    expect(result.current.supplierRefErrors.size).toBe(0)
+    expect(result.current.changeCount).toBe(0)
+  })
+
   test.each(['', '   ', 'x'.repeat(1025)])(
     'rejects invalid names and clears the error after correction (%#)',
     (name) => {
