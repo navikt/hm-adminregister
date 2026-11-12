@@ -428,9 +428,21 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
       <Tabs.Panel value="variants" className={styles.tabPanel}>
         {hasNoVariants && (
           <Alert variant={showInputError ? 'error' : 'info'}>
-            Produktet trenger en eller flere varianter. Her kan man legge inn varianter som varierer for eksempel i
-            størrelse eller farge. Alle variantene skal ha eget navn som skiller variantene fra hverandre,
-            artikkelnummer fra leverandør og teknisk data.
+            <ul>
+              <li>
+                Varianter av et produkt er funksjonelt like, men kan variere i for eksempel:
+                <ul>
+                  <li>Størrelse</li>
+                  <li>Farge</li>
+                  <li>Andre egenskaper som ikke påvirker produktets funksjon</li>
+                </ul>
+              </li>
+              <li>Hvis produktet kun har én variant, skal variantnavnet være identisk med produktnavnet.</li>
+              <li>
+                Hvis produktet har flere varianter, skal variantnavnet tydelig beskrive det som skiller variantene fra
+                hverandre.
+              </li>
+            </ul>
           </Alert>
         )}
         {!hasNoVariants && (
@@ -660,7 +672,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                       </Table.Row>
                     )}
                     <Table.Row>
-                      <Table.HeaderCell scope="row">Lev-artnr:</Table.HeaderCell>
+                      <Table.HeaderCell scope="row">Lev.art.nr:</Table.HeaderCell>
                       {paginatedVariants.map((product) => (
                         <Table.DataCell key={`levart-${product.id}`}>
                           {variantEditMode && (loggedInUser?.isAdmin || !product.isPublished) ? (
@@ -685,7 +697,7 @@ const VariantsTab = forwardRef<VariantsTabHandle, VariantsTabProps>(({ series, s
                       ))}
                     </Table.Row>
                     <Table.Row>
-                      <Table.HeaderCell scope="row">Hms-nr:</Table.HeaderCell>
+                      <Table.HeaderCell scope="row">Hms.nr:</Table.HeaderCell>
                       {paginatedVariants.map((product) => (
                         <Table.DataCell key={`hms-${product.id}`}>
                           {variantEditMode && loggedInUser?.isAdmin ? (
