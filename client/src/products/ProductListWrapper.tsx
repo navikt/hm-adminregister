@@ -17,6 +17,7 @@ import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/respo
 import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
+  BodyLong,
   Box,
   Button,
   Chips,
@@ -24,6 +25,7 @@ import {
   HStack,
   Heading,
   Label,
+  Link,
   Pagination,
   Search,
   Select,
@@ -396,6 +398,16 @@ const ProductListWrapper = () => {
         <Heading level="1" size="large" spacing>
           Produkter
         </Heading>
+        <VStack gap="space-8">
+          <BodyLong>
+            Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv. F. eks. manuell rullestol.
+            Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.
+          </BodyLong>
+          <BodyLong>
+            Det finnes unntak. Dersom du er i tvil, ta kontakt med{' '}
+            <Link href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</Link>
+          </BodyLong>
+        </VStack>
 
         <VStack gap={{ xs: 'space-16', md: 'space-32' }}>
           <HGrid

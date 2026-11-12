@@ -2,12 +2,10 @@ import { useForm } from 'react-hook-form'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { draftProductVariantV2 } from 'api/ProductApi'
-import { useSeriesV2 } from 'api/SeriesApi'
 import FormBox from 'felleskomponenter/FormBox'
-import { isoCategoryOf, useIsoVersion } from 'utils/iso-version'
+import { useIsoVersion } from 'utils/iso-version'
 import { useAuthStore } from 'utils/store/useAuthStore'
 import { useErrorStore } from 'utils/store/useErrorStore'
-import { labelRequired } from 'utils/string-util'
 import { DraftVariantDTO } from 'utils/types/response-types'
 import { newProductVariantSchema } from 'utils/zodSchema/newProduct'
 import { z } from 'zod'
@@ -36,10 +34,6 @@ const CreateProductVariant = () => {
     resolver: zodResolver(newProductVariantSchema),
     mode: 'onSubmit',
   })
-
-  const { data: series } = useSeriesV2(seriesId!)
-
-  const hasTechData = isoCategoryOf(series, isoVersion) || false
 
   async function onSubmit(data: FormData) {
     const newVariant: DraftVariantDTO = {
@@ -71,7 +65,7 @@ const CreateProductVariant = () => {
         <VStack gap="space-16">
           <TextField
             {...register('articleName', { required: true })}
-            label={labelRequired('Variantnavn')}
+            label="Variantnavn"
             id="articleName"
             name="articleName"
             type="text"
@@ -79,7 +73,7 @@ const CreateProductVariant = () => {
           />
           <TextField
             {...register('supplierRef', { required: true })}
-            label={labelRequired('Leverandør artikkelnummer')}
+            label="Leverandørartikkelnummer"
             id="supplierRef"
             name="supplierRef"
             type="text"
@@ -90,7 +84,7 @@ const CreateProductVariant = () => {
               Avbryt
             </Button>
             <Button type="submit" size="medium" disabled={isSubmitting}>
-              {hasTechData ? 'Opprett og legg til mer info' : 'Opprett'}
+              Opprett
             </Button>
           </HStack>
         </VStack>

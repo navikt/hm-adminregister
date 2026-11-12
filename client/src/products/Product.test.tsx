@@ -103,6 +103,26 @@ beforeEach(() => {
 })
 
 describe('Produktside', () => {
+  test('Tom beskrivelse kan ikke lagres uten at brukeren skriver noe', async () => {
+    logIn(false)
+    server.use(
+      http.get(apiPath('api/v1/series/*'), () =>
+        HttpResponse.json({ ...dummyProduct('empty-description', 'Testprodukt', 'EDITABLE'), text: '' })
+      )
+    )
+    render(
+      <MemoryRouter initialEntries={['/produkter/empty-description']}>
+        <Routes>
+          <Route path="/produkter/:seriesId" element={<Product />} />
+        </Routes>
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Legg til beskrivelse' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Lagre' }))
+    expect(screen.getByText(/Beskrivelsen må være minst 100 tegn/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Lagre' })).toBeInTheDocument()
+  })
+
   test('Redigerbart produkt', async () => {
     logIn(false)
     const { container } = render(
@@ -128,22 +148,63 @@ describe('Produktside', () => {
     expect(await screen.findByRole('button', { name: approvalButton })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: changeDescriptionButton })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: changeKeywordButton })).toBeInTheDocument()
+    expect(
+      screen.getByText('Nøkkelord gjør det enklere å få treff i søkefunksjonen på FinnHjelpemiddel')
+    ).toBeInTheDocument()
 
-    fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+    fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
     expect(await screen.findByRole('button', { name: addVariantButton })).toBeInTheDocument()
+    const variantGuidance = screen.getByRole('tabpanel')
+    expect(within(variantGuidance).getAllByRole('listitem')).toHaveLength(6)
+    expect(within(variantGuidance).getAllByRole('list')).toHaveLength(2)
+    expect(within(variantGuidance).getByText('Størrelse')).toBeInTheDocument()
+    expect(within(variantGuidance).getByText('Farge')).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText('Andre egenskaper som ikke påvirker produktets funksjon')
+    ).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText(
+        'Hvis produktet kun har én variant, skal variantnavnet være identisk med produktnavnet.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      within(variantGuidance).getByText(
+        'Hvis produktet har flere varianter, skal variantnavnet tydelig beskrive det som skiller variantene fra hverandre.'
+      )
+    ).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Bilder/ }))
     expect(await screen.findByRole('button', { name: addImagesButton })).toBeInTheDocument()
+    expect(within(screen.getByRole('tabpanel')).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'vise produkter slik de leveres',
+      'være høyoppløselige',
+      'ha produktet i fokus',
+      'ikke ha svart bakgrunn',
+    ])
+    expect(screen.queryByText(/Dra i bildene eller trykk på pilene/)).not.toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Dokumenter/ }))
     expect(await screen.findByRole('button', { name: addDocumentsButton })).toBeInTheDocument()
+    expect(
+      screen.getByText('Legg til nødvendige dokumenter til produktet, f.eks. brosjyre, bruksanvisning eller sprengskisse.')
+    ).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Videolenker/ }))
     expect(await screen.findByRole('button', { name: addVideoButton })).toBeInTheDocument()
+    expect(
+      screen.queryByText('Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.')
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Krav til video' })).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
+
+    fireEvent.click(await screen.findByRole('button', { name: approvalButton }))
+    const approvalDialog = await screen.findByRole('dialog')
+    expect(within(approvalDialog).getByText('Før du sender til godkjenning, sjekk at:')).toBeInTheDocument()
+    const approvalChecklist = within(approvalDialog).getAllByRole('list')[0]
+    expect(within(approvalChecklist).getAllByRole('listitem')).toHaveLength(5)
   }, 15000)
 
   test('Ikke-redigerbart produkt', async () => {
@@ -170,7 +231,7 @@ describe('Produktside', () => {
     expect(screen.queryByRole('button', { name: changeDescriptionButton })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: changeKeywordButton })).not.toBeInTheDocument()
 
-    fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+    fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
     expect(screen.queryByRole('button', { name: addVariantButton })).not.toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Bilder/ }))
@@ -263,7 +324,7 @@ describe('Bred visning', () => {
     expect(container.innerHTML).not.toContain('minmax(16rem, 1fr)')
   })
 
-  test('bruker bredere kolonnebredde paa Egenskaper-fanen naar wideMode er skrudd paa for admin', async () => {
+  test('bruker bredere kolonnebredde paa Varianter-fanen naar wideMode er skrudd paa for admin', async () => {
     logIn(true)
     useWideModeStore.getState().setWideMode(true)
 
@@ -280,7 +341,7 @@ describe('Bred visning', () => {
     expect(container.innerHTML).not.toContain('minmax(16rem, 48rem)')
   })
 
-  test.each([true, false])('paavirker ikke andre faner enn Egenskaper, admin=%s', async (isAdmin) => {
+  test.each([true, false])('paavirker ikke andre faner enn Varianter, admin=%s', async (isAdmin) => {
     logIn(isAdmin)
     useWideModeStore.getState().setWideMode(true)
 
@@ -297,7 +358,7 @@ describe('Bred visning', () => {
     expect(container.innerHTML).not.toContain('minmax(16rem, 1fr)')
   })
 
-  test('bruker bredere kolonnebredde for leverandører paa Egenskaper-fanen', async () => {
+  test('bruker bredere kolonnebredde for leverandører paa Varianter-fanen', async () => {
     logIn(false)
     useWideModeStore.getState().setWideMode(true)
 
@@ -368,8 +429,8 @@ describe('Bred visning', () => {
     }
   })
 
-  test('bruker riktig antall varianter i bred visning ogsaa naar Egenskaper-fanen aapnes etter foerste rendering', async () => {
-    // Regresjonstest: "Egenskaper"-fanen (VariantsTab) er ikke fanen som vises som standard ved
+  test('bruker riktig antall varianter i bred visning ogsaa naar Varianter-fanen aapnes etter foerste rendering', async () => {
+    // Regresjonstest: "Varianter"-fanen (VariantsTab) er ikke fanen som vises som standard ved
     // navigering (default er "Om produktet"), og selve variant-tabellen ligger i en Tabs.Panel
     // som kun monterer innholdet sitt når fanen faktisk er aktiv (Aksel sin lazy-oppførsel).
     // Det betyr at tabellens DOM-element ikke finnes i det hele tatt før brukeren klikker seg
@@ -380,7 +441,7 @@ describe('Bred visning', () => {
     // for øvrig fortsatt ville vært skjult som standard - selve refresh-fiksen kom av at brukeren
     // da gjerne landet direkte på et vindu der elementet alt fantes, f.eks. via en lenke med
     // ?tab=variants). Simulerer den faktiske brukerflyten: naviger inn (uten ?tab=variants),
-    // og klikk deretter på Egenskaper-fanen.
+    // og klikk deretter på Varianter-fanen.
     logIn(true)
     useWideModeStore.getState().setWideMode(true)
 
@@ -412,7 +473,7 @@ describe('Bred visning', () => {
       )
 
       await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
-      fireEvent.click(await screen.findByRole('tab', { name: /Egenskaper/ }))
+      fireEvent.click(await screen.findByRole('tab', { name: /Varianter/ }))
 
       await waitFor(() => expect(visibleVariantNames()).toContain('Variant 6'))
       expect(visibleVariantNames()).toContain('Variant 10')
@@ -463,6 +524,19 @@ describe('Forkast variantendringer ved publisering', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Publiser' }))
 
     const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Før du publiserer, sjekk at:')).toBeInTheDocument()
+    const checklist = within(dialog).getAllByRole('list')[0]
+    expect(
+      within(checklist)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent)
+    ).toEqual([
+      'produktbeskrivelsen har en nøytral språkstil uten markedsføringsuttrykk',
+      'spesifikasjonene er korrekte',
+      'alle relevante spesifikasjoner er utfylt',
+      'produktet har minst to unike bilder',
+      'produktet har minst ett dokument, f. eks. brosjyre eller bruksanvisning',
+    ])
     fireEvent.click(within(dialog).getByRole('button', { name: 'Publiser' }))
 
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Avbryt redigering' })).not.toBeInTheDocument())
@@ -585,6 +659,10 @@ describe('Masseredigering av varianter', () => {
       })
     )
     const { container } = renderVariants(seriesId, variants)
+
+    await screen.findByRole('heading', { level: 1, name: 'defaultTitle' })
+    expect(screen.getByRole('rowheader', { name: 'Lev.art.nr:' })).toBeInTheDocument()
+    expect(screen.getByRole('rowheader', { name: 'Hms.nr:' })).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: 'Rediger varianter' }))
     if (isAdmin) {
