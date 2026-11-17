@@ -96,7 +96,7 @@ export default function CreateSupplier() {
             id="homepage"
             type="text"
             name="homepage"
-            description="Eksempel: https://www.domene.no"
+            description="Eksempel: www.domene.no"
             autoComplete="on"
             error={errors.homepage && errors.homepage.message}
           />

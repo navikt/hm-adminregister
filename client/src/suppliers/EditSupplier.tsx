@@ -128,7 +128,7 @@ export default function EditSupplier() {
             id="homepage"
             type="text"
             name="homepage"
-            description="Eksempel: https://www.domene.no"
+            description="Eksempel: www.domene.no"
             autoComplete="off"
             error={errors.homepage && errors.homepage.message}
           />
