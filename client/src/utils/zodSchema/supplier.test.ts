@@ -7,19 +7,42 @@ describe.each([
   ['new supplier', newSupplierSchema.shape.homepage],
   ['edit supplier', editSupplierSchema.shape.homepage],
 ])('%s homepage', (_, homepage) => {
-  it.each(['www.nav.no', 'nav.no', 'http://www.nav.no', 'https://www.nav.no', 'https://nav.no/path?key=value'])(
-    'accepts %s',
-    (value) => {
-      expect(homepage.safeParse(value).success).toBe(true)
-    }
-  )
+  it.each([
+    'www.nav.no',
+    'nav.no',
+    'http://www.nav.no',
+    'https://www.nav.no',
+    'https://nav.no/path?key=value',
+    'https://user:pass@nav.no',
+    'http://user:pass@nav.no',
+    'nav.no:8080',
+    'nav.no:8080/path?key=value',
+    'nav.no/path?next=https://example.com',
+    'https://nav.no:443',
+    'nav.no:65535',
+    'https://nav.no:0',
+  ])('accepts %s without rewriting it', (value) => {
+    expect(homepage.parse(value)).toBe(value)
+  })
 
-  it.each(['ftp://www.nav.no', 'ftps://nav.no', 'mailto:info@nav.no', '//www.nav.no', 'www.nav .no', 'invalid'])(
-    'rejects %s',
-    (value) => {
-      expect(homepage.safeParse(value).success).toBe(false)
-    }
-  )
+  it.each([
+    'ftp://www.nav.no',
+    'ftps://nav.no',
+    'mailto:info@nav.no',
+    '//www.nav.no',
+    'www.nav .no',
+    'invalid',
+    'ftp.example://na v.no',
+    'ftp.example://nav.no',
+    'nav.no:abc',
+    'https://nav.no:abc',
+    'nav.no:65536',
+    'https://nav.no:65536',
+    'nav.no:-1',
+    'nav.no:99999',
+  ])('rejects %s', (value) => {
+    expect(homepage.safeParse(value).success).toBe(false)
+  })
 
   it.each(['', '   ', '  www.nav.no  '])('preserves trimming and optional values for "%s"', (value) => {
     expect(homepage.parse(value)).toBe(value.trim())

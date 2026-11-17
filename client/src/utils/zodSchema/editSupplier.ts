@@ -12,9 +12,22 @@ export const editSupplierSchema = z.object({
         if (value === '') {
           return true
         }
-        // Only http, https or no protocol
-        const urlPattern = /^(https?:\/\/)?(www\.)?([^:/\s]+\.\S{2,})$/
-        return urlPattern.test(value)
+        if (/[\s\\]/.test(value) || value.startsWith('//')) {
+          return false
+        }
+        const hasScheme = /^[a-z][a-z\d+.-]*:\/\//i.test(value)
+        try {
+          const url = new URL(hasScheme ? value : `https://${value}`)
+          if (!hasScheme && (url.username || url.password)) {
+            return false
+          }
+          return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname.includes('.')
+        } catch (error) {
+          if (error instanceof TypeError) {
+            return false
+          }
+          throw error
+        }
       },
       {
         message: 'Ugyldig format',
