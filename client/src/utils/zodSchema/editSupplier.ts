@@ -21,7 +21,19 @@ export const editSupplierSchema = z.object({
           if (!hasScheme && (url.username || url.password)) {
             return false
           }
-          return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname.includes('.')
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return false
+          }
+
+          // Tillat IPv6 i brackets
+          if (url.hostname.startsWith('[') && url.hostname.endsWith(']')) {
+            return true
+          }
+
+          // Valider at det er et gyldig domenenavn
+          const hostname = url.hostname.endsWith('.') ? url.hostname.slice(0, -1) : url.hostname
+          const labels = hostname.split('.')
+          return labels.length >= 2 && labels.every((label) => label.length > 0)
         } catch (error) {
           if (error instanceof TypeError) {
             return false

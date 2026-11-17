@@ -21,6 +21,12 @@ describe.each([
     'https://nav.no:443',
     'nav.no:65535',
     'https://nav.no:0',
+    'http://[2606:4700:4700::1111]/index.html',
+    'https://[::1]:8080/path',
+    '[2606:4700:4700::1111]/index.html',
+    'https://nav.no./path',
+    'nav.no.',
+    'https://127.0.0.1/path',
   ])('accepts %s without rewriting it', (value) => {
     expect(homepage.parse(value)).toBe(value)
   })
@@ -40,6 +46,15 @@ describe.each([
     'https://nav.no:65536',
     'nav.no:-1',
     'nav.no:99999',
+    'https://.no',
+    '.no',
+    'https://nav..no',
+    'nav..no',
+    'https://nav.no..',
+    'https://.',
+    'https://nav.',
+    'http://[2606:4700:4700::xyz]/index.html',
+    'ftp://[2606:4700:4700::1111]/index.html',
   ])('rejects %s', (value) => {
     expect(homepage.safeParse(value).success).toBe(false)
   })
