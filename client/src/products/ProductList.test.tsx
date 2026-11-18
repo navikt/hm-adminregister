@@ -138,12 +138,18 @@ test('Flere produkter', async () => {
     </MemoryRouter>
   )
 
-  expect(await screen.findAllByRole('listitem')).toHaveLength(7)
-  expect(
-    screen.getByText(
-      'Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv. F. eks. manuell rullestol. Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.'
+  expect(await screen.findAllByRole('listitem')).toHaveLength(10)
+  const guidanceList = screen
+    .getByText(
+      'Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv f. eks. manuell rullestol.'
     )
-  ).toBeInTheDocument()
+    .closest('ul')
+  expect(guidanceList).not.toBeNull()
+  expect(within(guidanceList!).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+    'Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv f. eks. manuell rullestol.',
+    'Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.',
+    'Det finnes unntak. Dersom du er i tvil, ta kontakt med finnhjelpemiddel@nav.no',
+  ])
   expect(screen.getByRole('link', { name: 'finnhjelpemiddel@nav.no' })).toHaveAttribute(
     'href',
     'mailto:finnhjelpemiddel@nav.no'

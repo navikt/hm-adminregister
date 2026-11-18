@@ -75,8 +75,8 @@ const ChangePartToProductModal = ({ isOpen, setIsOpen, onClick }: Props) => {
         <Content>
           <VStack gap="space-4">
             <IsoComboboxProvider
-              label={labelRequired('Iso-kategori (kode)')}
-              description={'Søk etter isokategori produktet passer best inn i'}
+              label={labelRequired('ISO-kategori (kode)')}
+              description={'Søk etter ISO-kategori produktet passer best inn i'}
               selectedOptions={selectedOptions}
               options={isoCodesAndTitles || []}
               onToggleSelected={onToggleSelected}

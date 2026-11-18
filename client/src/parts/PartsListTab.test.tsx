@@ -95,6 +95,21 @@ afterEach(() => {
   vi.mocked(exportRows).mockClear()
 })
 
+test('groups parts definitions in a bulleted list and preserves the existing information box', () => {
+  useAuthStore.setState({ loggedInUser: adminUser })
+  mockParts([])
+  renderTab()
+
+  const guidanceList = screen.getByText('Tilbehør:').closest('ul')
+  expect(guidanceList).not.toBeNull()
+  expect(within(guidanceList!).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+    'Deler er ikke fullverdige hjelpemidler og løser ikke et definert behov i seg selv. Deler deles inn i tilbehør eller reservedeler.',
+    'Tilbehør: Del som endrer produktets funksjon eller egenskaper, og som kan monteres på eller erstatte en del av produktet.',
+    'Reservedeler: Del som ikke endrer produktets funksjon, men som erstatter en utslitt eller ødelagt del som produktet opprinnelig består av.',
+  ])
+  expect(screen.getByRole('heading', { name: 'Informasjon om deler' })).toBeInTheDocument()
+})
+
 test('ISO22 export uses the active category and requests the active technical DTO version', async () => {
   useAuthStore.setState({ loggedInUser: adminUser })
   const versions: (string | null)[] = []

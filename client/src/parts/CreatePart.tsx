@@ -186,7 +186,7 @@ export default function CreatePart() {
         />
         <IsoComboboxProvider
           label="ISO-kategori"
-          description={'Søk etter isokategori delen passer best inn i'}
+          description={'Søk etter ISO-kategori delen passer best inn i'}
           selectedOptions={selectedOptions}
           options={isoCodesAndTitles || []}
           onToggleSelected={onToggleSelected}

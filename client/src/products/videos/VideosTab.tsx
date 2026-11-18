@@ -8,7 +8,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { PlusCircleIcon } from '@navikt/aksel-icons'
-import { Alert, BodyLong, BodyShort, Button, HStack, Heading, HelpText, Link, Tabs, VStack } from '@navikt/ds-react'
+import { Alert, BodyLong, BodyShort, Button, HStack, Heading, HelpText, Link, List, Tabs, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -103,16 +103,20 @@ const VideoRequirementBox = () => (
     <Heading spacing size="small" level="1">
       Krav til video
     </Heading>
-    <BodyLong>- er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</BodyLong>
-    <BodyLong>- er informativ og relevant til produktet</BodyLong>
-    <BodyLong>- er nøytral og har et objektivt preg</BodyLong>
-    <BodyLong>- er tekstet</BodyLong>
-    <HStack>
-      <BodyLong spacing>- er synstolket (gjelder videoer publisert etter 01.02.2024)</BodyLong>
-      <HelpText title="Informasjon om synstolking">
-        Synstolking betyr at viktig visuell informasjon i video bli beskrevet via lyd.
-      </HelpText>
-    </HStack>
+    <List>
+      <List.Item>er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)</List.Item>
+      <List.Item>er informativ og relevant til produktet</List.Item>
+      <List.Item>er nøytral og har et objektivt preg</List.Item>
+      <List.Item>er tekstet</List.Item>
+      <List.Item>
+        <HStack gap="space-8" align="center">
+          <span>er synstolket (gjelder videoer publisert etter 01.02.2024)</span>
+          <HelpText title="Informasjon om synstolking">
+            Synstolking betyr at viktig visuell informasjon i video bli beskrevet via lyd.
+          </HelpText>
+        </HStack>
+      </List.Item>
+    </List>
     <BodyLong>
       Les mer på{' '}
       <Link href="https://www.uutilsynet.no/wcag-standarden/12-tidsbaserte-medier/743" target="_blank">

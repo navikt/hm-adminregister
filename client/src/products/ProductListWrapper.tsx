@@ -17,7 +17,6 @@ import { SeriesDTO, SeriesSearchChunk, SeriesSearchDTO } from 'utils/types/respo
 import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
 import {
   Alert,
-  BodyLong,
   Box,
   Button,
   Chips,
@@ -26,6 +25,7 @@ import {
   Heading,
   Label,
   Link,
+  List,
   Pagination,
   Search,
   Select,
@@ -395,18 +395,22 @@ const ProductListWrapper = () => {
         gap={{ xs: 'space-16', md: 'space-24' }}
         maxWidth={loggedInUser && loggedInUser.isAdmin ? '80rem' : '64rem'}
       >
-        <Heading level="1" size="large" spacing>
-          Produkter
-        </Heading>
         <VStack gap="space-8">
-          <BodyLong>
-            Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv. F. eks. manuell rullestol.
-            Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.
-          </BodyLong>
-          <BodyLong>
-            Det finnes unntak. Dersom du er i tvil, ta kontakt med{' '}
-            <Link href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</Link>
-          </BodyLong>
+          <Heading level="1" size="large">
+            Produkter
+          </Heading>
+          <List>
+            <List.Item>
+              Produkter er fullverdige hjelpemidler som dekker et definert behov i seg selv f. eks. manuell rullestol.
+            </List.Item>
+            <List.Item>
+              Deler skal ikke registreres her, f. eks. rullestolveske, eller ryggstøtte til rullestol.
+            </List.Item>
+            <List.Item>
+              Det finnes unntak. Dersom du er i tvil, ta kontakt med{' '}
+              <Link href="mailto:finnhjelpemiddel@nav.no">finnhjelpemiddel@nav.no</Link>
+            </List.Item>
+          </List>
         </VStack>
 
         <VStack gap={{ xs: 'space-16', md: 'space-32' }}>
