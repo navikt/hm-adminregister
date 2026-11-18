@@ -41,16 +41,16 @@ import { useActiveIsoCategories } from 'utils/swr-hooks'
 
 import { ArrowLeftIcon, ExclamationmarkTriangleIcon, FloppydiskIcon, PencilWritingIcon } from '@navikt/aksel-icons'
 import {
-  Link as AkselLink,
   BodyShort,
   Box,
   Button,
   CopyButton,
   Detail,
+  Heading,
   HGrid,
   HStack,
-  Heading,
   Label,
+  Link as AkselLink,
   Loader,
   Tabs,
   Tag,
@@ -421,8 +421,8 @@ const Product = () => {
               {isEditable && loggedInUser?.isAdmin && showEditIsoCategoryMode && (
                 <HStack align="end" gap="space-8">
                   <IsoComboboxProvider
-                    label={labelRequired('Iso-kategori (kode)')}
-                    description={'Søk etter isokategori produktet passer best inn i'}
+                    label={labelRequired('ISO-kategori (kode)')}
+                    description={'Søk etter ISO-kategori produktet passer best inn i'}
                     selectedOptions={selectedOptions}
                     options={isoCodesAndTitles || []}
                     onToggleSelected={onToggleSelected}

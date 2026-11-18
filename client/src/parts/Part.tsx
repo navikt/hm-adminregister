@@ -35,15 +35,15 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { labelRequired } from 'utils/string-util'
 import { UpdatePartDTO } from 'utils/types/response-types'
 
-import { ArrowLeftIcon } from '@navikt/aksel-icons'
+import { ArrowLeftIcon, PencilIcon } from '@navikt/aksel-icons'
 import {
-  Link as AkselLink,
   BodyShort,
   Box,
   Button,
-  HGrid,
   Heading,
+  HGrid,
   Label,
+  Link as AkselLink,
   Loader,
   Switch,
   Tabs,
@@ -340,9 +340,17 @@ const Part = () => {
                   </BodyShort>
                   {series.isoMappingWarning && <IsoMappingWarning iso16={series.isoCategory?.isoCode} />}
                   {isEditable && (
-                    <Button variant="tertiary" onClick={() => setChangeIsoCategoryModalIsOpen(true)}>
-                      Endre ISO-kategori
-                    </Button>
+                    <Box paddingBlock="space-8 space-0">
+                      <Button
+                        className="fit-content"
+                        variant="secondary"
+                        data-color="neutral"
+                        icon={<PencilIcon aria-hidden />}
+                        onClick={() => setChangeIsoCategoryModalIsOpen(true)}
+                      >
+                        Endre ISO-kategori
+                      </Button>
+                    </Box>
                   )}
                 </VStack>
 

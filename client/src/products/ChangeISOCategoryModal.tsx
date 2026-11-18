@@ -6,7 +6,7 @@ import { useIsoVersion } from 'utils/iso-version'
 import { labelRequired } from 'utils/string-util'
 import { useActiveIsoCategories } from 'utils/swr-hooks'
 
-import { Button, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
+import { Button, Checkbox, Modal, Radio, RadioGroup, VStack } from '@navikt/ds-react'
 
 interface Props {
   isOpen: boolean
@@ -34,7 +34,12 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick, isPart = false }: 
   }, [isoVersion])
 
   const [resetTechnicalData, setResetTechnicalData] = useState<'Ja' | 'Nei'>('Nei')
+  const [resetPartTechnicalData, setResetPartTechnicalData] = useState(false)
   const [fieldError, setFieldError] = useState<Error | undefined>(undefined)
+
+  useEffect(() => {
+    setResetPartTechnicalData(false)
+  }, [isOpen, isPart, isoVersion])
 
   const handleSetFormValueIso = (value: string) => {
     const parts = value.split('-')
@@ -62,7 +67,7 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick, isPart = false }: 
 
   const onSubmit = () => {
     if (validateFields()) {
-      onClick(handleSetFormValueIso(isoCategory), resetTechnicalData === 'Ja')
+      onClick(handleSetFormValueIso(isoCategory), isPart ? resetPartTechnicalData : resetTechnicalData === 'Ja')
     }
   }
 
@@ -79,8 +84,8 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick, isPart = false }: 
         <Content>
           <VStack gap="space-16">
             <IsoComboboxProvider
-              label={labelRequired('Iso-kategori (kode)')}
-              description={'Søk etter isokategori delen passer best inn i'}
+              label={labelRequired('ISO-kategori (kode)')}
+              description={'Søk etter ISO-kategori delen passer best inn i'}
               selectedOptions={selectedOptions}
               options={isoCodesAndTitles || []}
               onToggleSelected={onToggleSelected}
@@ -89,14 +94,23 @@ const ChangeISOCategoryModal = ({ isOpen, setIsOpen, onClick, isPart = false }: 
               error={fieldError?.isoCodeErrorMessage ?? ''}
               maxSelected={{ limit: 1 }}
             />
-            <RadioGroup
-              legend="Velg om du vil nullstille alle felter eller beholde teknisk data som har samme navn i ny og gammel ISO"
-              value={resetTechnicalData}
-              onChange={(v) => setResetTechnicalData(v as 'Ja' | 'Nei')}
-            >
-              <Radio value="Nei">Behold teknisk data som passer ny ISO</Radio>
-              <Radio value="Ja">Nullstill alle felter</Radio>
-            </RadioGroup>
+            {isPart ? (
+              <Checkbox
+                checked={resetPartTechnicalData}
+                onChange={(event) => setResetPartTechnicalData(event.target.checked)}
+              >
+                Nullstill tekniske data
+              </Checkbox>
+            ) : (
+              <RadioGroup
+                legend="Velg om du vil nullstille alle felter eller beholde teknisk data som har samme navn i ny og gammel ISO"
+                value={resetTechnicalData}
+                onChange={(v) => setResetTechnicalData(v as 'Ja' | 'Nei')}
+              >
+                <Radio value="Nei">Behold teknisk data som passer ny ISO</Radio>
+                <Radio value="Ja">Nullstill alle felter</Radio>
+              </RadioGroup>
+            )}
           </VStack>
         </Content>
       </Modal.Body>

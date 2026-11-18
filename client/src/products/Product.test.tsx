@@ -190,6 +190,10 @@ describe('Produktside', () => {
     expect(
       screen.getByText('Legg til nødvendige dokumenter til produktet, f.eks. brosjyre, bruksanvisning eller sprengskisse.')
     ).toBeInTheDocument()
+    expect(within(screen.getByRole('tabpanel')).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'skal ikke benyttes til leverandørens produktside/nettbutikk',
+      'skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse',
+    ])
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('tab', { name: /Videolenker/ }))
@@ -198,6 +202,18 @@ describe('Produktside', () => {
       screen.queryByText('Videoene vises på FinnHjelpemiddel og vil sorteres alfabetisk.')
     ).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Krav til video' })).toBeInTheDocument()
+    const videoRequirements = within(screen.getByRole('tabpanel')).getAllByRole('listitem')
+    expect(videoRequirements).toHaveLength(5)
+    expect(videoRequirements.slice(0, 4).map((item) => item.textContent)).toEqual([
+      'er på norsk, svensk eller dansk språk (engelsk kan unntaksvis benyttes)',
+      'er informativ og relevant til produktet',
+      'er nøytral og har et objektivt preg',
+      'er tekstet',
+    ])
+    expect(
+      within(videoRequirements[4]).getByText('er synstolket (gjelder videoer publisert etter 01.02.2024)')
+    ).toBeInTheDocument()
+    expect(within(videoRequirements[4]).getByRole('button', { name: 'Informasjon om synstolking' })).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
 
     fireEvent.click(await screen.findByRole('button', { name: approvalButton }))

@@ -7,7 +7,7 @@ import SeriesListTab from 'parts/SeriesListTab'
 import { useAuthStore } from 'utils/store/useAuthStore'
 
 import { FileExportIcon, PlusIcon } from '@navikt/aksel-icons'
-import { BodyLong, Button, HStack, Heading, Tabs, VStack } from '@navikt/ds-react'
+import { BodyLong, Button, HStack, Heading, List, Tabs, VStack } from '@navikt/ds-react'
 
 const Parts = () => {
   const { loggedInUser } = useAuthStore()
@@ -29,22 +29,24 @@ const Parts = () => {
         gap={{ xs: 'space-8', md: 'space-24' }}
         maxWidth={loggedInUser && loggedInUser.isAdminOrHmsUser ? '80rem' : '64rem'}
       >
-        <Heading level="1" size="large" spacing>
-          Deler
-        </Heading>
         <VStack gap="space-8">
-          <BodyLong>
-            Deler er ikke fullverdige hjelpemidler og løser ikke et definert behov i seg selv. Deler deles inn i
-            tilbehør eller reservedeler.
-          </BodyLong>
-          <BodyLong>
-            Tilbehør: Del som endrer produktets funksjon eller egenskaper, og som kan monteres på eller erstatte en del
-            av produktet.
-          </BodyLong>
-          <BodyLong>
-            Reservedeler: Del som ikke endrer produktets funksjon, men som erstatter en utslitt eller ødelagt del som
-            produktet opprinnelig består av.
-          </BodyLong>
+          <Heading level="1" size="large">
+            Deler
+          </Heading>
+          <List>
+            <List.Item>
+              Deler er ikke fullverdige hjelpemidler og løser ikke et definert behov i seg selv. Deler deles inn i
+              tilbehør eller reservedeler.
+            </List.Item>
+            <List.Item>
+              <strong>Tilbehør:</strong> Del som endrer produktets funksjon eller egenskaper, og som kan monteres på
+              eller erstatte en del av produktet.
+            </List.Item>
+            <List.Item>
+              <strong>Reservedeler:</strong> Del som ikke endrer produktets funksjon, men som erstatter en utslitt eller
+              ødelagt del som produktet opprinnelig består av.
+            </List.Item>
+          </List>
         </VStack>
         <AlertWithCloseButton variant={'warning'} alertId={'tilbReadyAlert'}>
           <Heading size={'small'}>Informasjon om deler</Heading>

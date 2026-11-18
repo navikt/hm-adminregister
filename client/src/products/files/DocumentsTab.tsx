@@ -20,7 +20,7 @@ import { useErrorStore } from 'utils/store/useErrorStore'
 import { DocumentUrl, MediaInfoDTO, SeriesDTO } from 'utils/types/response-types'
 
 import { FilePdfIcon, FloppydiskIcon, LinkIcon, PlusCircleIcon, XMarkIcon } from '@navikt/aksel-icons'
-import { Alert, BodyLong, Button, Heading, HStack, Select, Tabs, TextField, VStack } from '@navikt/ds-react'
+import { Alert, Button, Heading, HStack, List, Select, Tabs, TextField, VStack } from '@navikt/ds-react'
 
 import styles from '../ProductPage.module.scss'
 
@@ -203,8 +203,12 @@ const DocumentUrlRequirementBox = () => (
     <Heading spacing size="small" level="2">
       Krav til lenke
     </Heading>
-    <BodyLong>- skal ikke benyttes til leverandørens produktside/nettbutikk</BodyLong>
-    <BodyLong>- skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse</BodyLong>
+    <List>
+      <List.Item>skal ikke benyttes til leverandørens produktside/nettbutikk</List.Item>
+      <List.Item>
+        skal benyttes til tekniske dokumenter på leverandørens hjemmeside, for eksempel sprengskisse
+      </List.Item>
+    </List>
   </Alert>
 )
 
