@@ -12,9 +12,34 @@ export const newSupplierSchema = z.object({
         if (value === '') {
           return true
         }
-        // Use a regular expression to check if the input resembles a URL with or without 'http://' or 'https://'.
-        const urlPattern = /^(https?:\/\/)(www\.)?(\S+\.\S{2,})$/
-        return urlPattern.test(value)
+        if (/[\s\\]/.test(value) || value.startsWith('//')) {
+          return false
+        }
+        const hasScheme = /^[a-z][a-z\d+.-]*:\/\//i.test(value)
+        try {
+          const url = new URL(hasScheme ? value : `https://${value}`)
+          if (!hasScheme && (url.username || url.password)) {
+            return false
+          }
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return false
+          }
+
+          // Tillat IPv6 i brackets
+          if (url.hostname.startsWith('[') && url.hostname.endsWith(']')) {
+            return true
+          }
+
+          // Valider at det er et gyldig domenenavn
+          const hostname = url.hostname.endsWith('.') ? url.hostname.slice(0, -1) : url.hostname
+          const labels = hostname.split('.')
+          return labels.length >= 2 && labels.every((label) => label.length > 0)
+        } catch (error) {
+          if (error instanceof TypeError) {
+            return false
+          }
+          throw error
+        }
       },
       {
         message: 'Ugyldig format',
